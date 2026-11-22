@@ -599,7 +599,8 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             row.judged = true;
             var $card = this.cards[verdict.feed_id];
             if ($card) {
-                $card.find('.NB-describe-card-tags').replaceWith(this.make_card_tags(row));
+                $card.find('.NB-describe-strip').replaceWith(this.make_match_strip(row));
+                $card.find('.NB-describe-match').replaceWith(this.make_match_label(row));
                 $card.find('.NB-describe-reason').replaceWith(this.make_reason(row));
                 $card.addClass('NB-describe-card-judged');
             }
@@ -634,8 +635,19 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
     // =========
 
     make_card: function (row) {
-        var feed = row.feed || {};
-        var $card = this.add_site_view.render_feed_card(feed, row.stories || []);
+        var feed = _.clone(row.feed || {});
+        var stories = this.card_stories(row);
+        // describe_feeds_view.js: a site found on the web has no feed record, so its freshness comes from the
+        // newest story the search read instead of saying it has none.
+        if (!feed.last_story_date && stories.length) {
+            feed.last_story_date = _.compact(_.pluck(stories, 'story_date')).sort().pop();
+        }
+        var $card = this.add_site_view.render_feed_card(feed, stories, {
+            strip: this.make_match_strip(row),
+            title_accessories: row.source === 'web' ? [this.make_web_icon()] : [],
+            title_aside: this.make_match_label(row),
+            lead: this.make_reason(row)
+        });
         $card.addClass('NB-describe-card' + (row.judged ? ' NB-describe-card-judged' : ''));
         // describe_feeds_view.js: row.feed_id is the row's key in this search. For a site found on the web that
         // NewsBlur has not saved it is a negative number, not a feed id, so it never goes in data-feed-id.
@@ -645,9 +657,23 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         if (!feed.id) {
             $card.attr('data-feed-url', feed.feed_address || row.feed_address);
         }
-        $card.find('.NB-add-site-card-header').after([this.make_card_tags(row), this.make_reason(row)]);
         this.cards[row.feed_id] = $card;
         return $card;
+    },
+
+    // describe_feeds_view.js: the stored story snapshots (apps/describe/models.py story_snapshot) as stories the
+    // story title rows can draw. Searches saved before the snapshot carried story_hash and story_feed_id still
+    // draw: their rows get the row key as a feed id and a made up hash, and a click tries the feed.
+    card_stories: function (row) {
+        var feed_id = (row.feed && row.feed.id) || row.feed_id;
+        return _.map(row.stories || [], function (story, index) {
+            var timestamp = story.story_date ? Date.parse(story.story_date) / 1000 : null;
+            return _.extend({}, story, {
+                story_feed_id: story.story_feed_id || feed_id,
+                story_hash: story.story_hash || ('describe:' + row.feed_id + ':' + index),
+                story_timestamp: story.story_timestamp || (timestamp ? Math.round(timestamp) : null)
+            });
+        });
     },
 
     // describe_feeds_view.js: $.make inserts its text argument as HTML (jquery.newsblur.js). Everything the
@@ -657,27 +683,40 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         return _.escape(value === null || value === undefined ? '' : String(value));
     },
 
-    make_card_tags: function (row) {
-        var tags = [];
-        if (row.judged && row.score !== null && row.score !== undefined) {
-            var level = row.score >= 8 ? 'high' : (row.score >= 5 ? 'medium' : 'low');
-            tags.push($.make('span', { className: 'NB-describe-score NB-describe-score-' + level, title: gettext('How well this feed matches your description') },
-                interpolate(gettext('%(score)s/10'), {score: row.score}, true)));
-        } else {
-            tags.push($.make('span', { className: 'NB-describe-score NB-describe-score-pending' }, gettext('Judging…')));
+    // describe_feeds_view.js: how well a feed matches, in words. The number is in the label's tooltip; the
+    // colored strip across the top of the card says the same thing at a glance.
+    match_level: function (row) {
+        if (!row.judged || row.score === null || row.score === undefined) return 'pending';
+        if (row.score >= 8) return 'strong';
+        if (row.score >= 5) return 'good';
+        return 'weak';
+    },
+
+    make_match_strip: function (row) {
+        return $.make('div', { className: 'NB-describe-strip NB-describe-strip-' + this.match_level(row) });
+    },
+
+    make_match_label: function (row) {
+        var level = this.match_level(row);
+        var labels = {
+            strong: gettext('Strong match'),
+            good: gettext('Good match'),
+            weak: gettext('Weak match'),
+            pending: gettext('Judging…')
+        };
+        var attrs = { className: 'NB-describe-match NB-describe-match-' + level };
+        if (level !== 'pending') {
+            attrs.title = interpolate(gettext('Scored %(score)s out of 10 for your description'), {score: row.score}, true);
         }
-        if (row.source === 'web') {
-            tags.push($.make('span', { className: 'NB-describe-source NB-describe-source-web', title: gettext('Found on the web during this search') }, [
-                $.make('img', { src: '/media/img/icons/lucide/globe.svg', className: 'NB-describe-source-icon' }),
-                gettext('Found on the web')
-            ]));
-        } else {
-            tags.push($.make('span', { className: 'NB-describe-source NB-describe-source-index', title: gettext('Already in NewsBlur’s feed index') }, [
-                $.make('img', { src: '/media/img/icons/lucide/rss.svg', className: 'NB-describe-source-icon' }),
-                gettext('NewsBlur index')
-            ]));
-        }
-        return $.make('div', { className: 'NB-describe-card-tags' }, tags);
+        return $.make('div', attrs, labels[level]);
+    },
+
+    make_web_icon: function () {
+        return $.make('img', {
+            src: '/media/img/icons/lucide/globe.svg',
+            className: 'NB-describe-web-icon',
+            title: gettext('Found on the web by this search. NewsBlur adds it when you try or subscribe.')
+        });
     },
 
     make_reason: function (row) {

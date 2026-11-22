@@ -26,10 +26,16 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.story_title_view = this;
 
         // Listen for feed title changes to update grid/list/magazine views in real time
-        this.story_feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
+        this.story_feed = this.get_story_feed();
         if (this.story_feed) {
             this.listenTo(this.story_feed, 'change:feed_title', this.update_feed_title);
         }
+    },
+
+    // story_title_view.js: the reader's model for this story's feed, or for a story in an Add Site card whose
+    // feed you don't subscribe to, the card's own feed model (add_site_view.js render_card_stories).
+    get_story_feed: function () {
+        return NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')) || this.options.feed_model;
     },
 
     update_feed_title: function () {
@@ -60,7 +66,7 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
             feed: (this.options.override_layout == 'split' ||
                 NEWSBLUR.reader.flags.river_view ||
                 NEWSBLUR.reader.flags.social_view) &&
-                NEWSBLUR.assets.get_feed(this.model.get('story_feed_id')),
+                this.get_story_feed(),
             options: this.options,
             show_content_preview: this.show_content_preview(template_name),
             content_preview_class: this.get_content_preview_class(),
@@ -448,8 +454,8 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
     color_feedbar: function () {
         var $inner = this.$st.find(".NB-storytitles-feed-border-inner");
         var $outer = this.$st.find(".NB-storytitles-feed-border-outer");
-        var feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
-        if (!feed) return;
+        var feed = this.get_story_feed();
+        if (!feed || !feed.get('favicon_color')) return;
 
         $inner.css('background-color', '#' + feed.get('favicon_fade'));
         $outer.css('background-color', '#' + feed.get('favicon_color'));
@@ -698,6 +704,10 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         e.stopPropagation();
         if (e.which == 1 && $('.NB-menu-manage-container:visible').length) return;
 
+        if (this.options.on_story_click) {
+            this.options.on_story_click(this.model);
+            return;
+        }
         if (this.options.on_dashboard) {
             console.log(['clicked story on dashboard', this.model]);
             this.options.on_dashboard.open_story(this.model);

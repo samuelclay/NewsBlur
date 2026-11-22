@@ -593,10 +593,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "आज %(limit)s में से %(remaining)s खोजें शेष"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "भेजने के लिए %(shortcut)s"
 
@@ -1304,9 +1300,6 @@ msgstr "अनुमत डोमेन"
 
 msgid "Alphabetical"
 msgstr "वर्णमाला क्रम"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "पहले से ही NewsBlur के फ़ीड इंडेक्स में है"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3237,11 +3230,8 @@ msgstr[1] "%(count)s पैटर्न मिले। उन लेखों �
 msgid "Found in the Account dialog"
 msgstr "खाता संवाद में उपलब्ध"
 
-msgid "Found on the web"
-msgstr "वेब पर मिला"
-
-msgid "Found on the web during this search"
-msgstr "इस खोज के दौरान वेब पर मिला"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "इस खोज से वेब पर मिला। आज़माने या सदस्यता लेने पर NewsBlur इसे जोड़ता है।"
 
 msgid "Free"
 msgstr "निःशुल्क"
@@ -3496,6 +3486,9 @@ msgstr "अच्छे लेख"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur पर अच्छे लेख"
 
+msgid "Good match"
+msgstr "अच्छा मेल"
+
 msgid "Goodies &amp; Extras"
 msgstr "उपयोगी चीज़ें &amp; अतिरिक्त सुविधाएँ"
 
@@ -3627,9 +3620,6 @@ msgstr "भावनात्मकता का स्तर"
 
 msgid "How often"
 msgstr "कितनी बार"
-
-msgid "How well this feed matches your description"
-msgstr "यह फ़ीड आपके विवरण से कितनी अच्छी तरह मेल खाती है"
 
 msgid "I'm Following"
 msgstr "मैं फ़ॉलो कर रहा/रही हूँ"
@@ -4502,9 +4492,6 @@ msgstr "NewsBlur अन्य सेवाओं से जुड़ा"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur ने आपके ब्राउज़र की भाषा %(language)s पहचानी।"
-
-msgid "NewsBlur index"
-msgstr "NewsBlur अनुक्रमणिका"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur अभी काम नहीं कर रहा है। <br> थोड़ी देर बाद फिर कोशिश करें।"
@@ -5978,6 +5965,10 @@ msgstr "वैज्ञानिक नए शोध को सरल भाष�
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "स्कोप्ड क्लासिफ़ायर केवल %(plan)s ग्राहकों के लिए उपलब्ध हैं।"
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "आपके विवरण के लिए 10 में से %(score)s अंक मिले"
+
 msgid "Scroll to comments"
 msgstr "टिप्पणियों तक स्क्रॉल करें"
 
@@ -6822,6 +6813,9 @@ msgstr "स्ट्रीम बाधित हुई। 10 सेकंड �
 
 msgid "Stripe Id:"
 msgstr "Stripe आईडी:"
+
+msgid "Strong match"
+msgstr "मज़बूत मेल"
 
 msgid "Style"
 msgstr "शैली"
@@ -7915,6 +7909,9 @@ msgstr "निर्णय की प्रतीक्षा हो रही �
 
 msgid "Warning: This is actually permanent"
 msgstr "चेतावनी: यह कार्रवाई वास्तव में स्थायी है"
+
+msgid "Weak match"
+msgstr "कमज़ोर मेल"
 
 msgid "Weather"
 msgstr "मौसम"

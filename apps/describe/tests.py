@@ -302,6 +302,8 @@ class Test_DescribePipeline(DescribeMongoTestCase):
                     "story_date": datetime.datetime(2026, 11, 1, 9, 0),
                     "story_content": f'<p><img src="{feed.feed_link}shot.png"> {feed.feed_title} <b>body</b> &amp; more</p>',
                     "image_urls": [],
+                    "story_hash": f"{feed.pk}:abc123",
+                    "story_feed_id": feed.pk,
                 }
             ],
         )
@@ -392,6 +394,9 @@ class Test_DescribePipeline(DescribeMongoTestCase):
         story = self.search.results[0]["stories"][0]
         self.assertEqual(story["image_urls"], ["https://site1.example.com/shot.png"])
         self.assertEqual(story["story_content"], "Site 1 body &amp; more")
+        # A click on the row opens this story in the feed (add_site_view.js open_card_story).
+        self.assertEqual(story["story_hash"], f"{self.feeds[0].pk}:abc123")
+        self.assertEqual(story["story_feed_id"], self.feeds[0].pk)
 
         resolve.assert_called_once()
         self.assertEqual(resolve.call_args.args[0], "https://webfound.example.com/")

@@ -595,10 +595,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Te quedan %(remaining)s de %(limit)s búsquedas hoy"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s para enviar"
 
@@ -1308,9 +1304,6 @@ msgstr "Dominios permitidos"
 
 msgid "Alphabetical"
 msgstr "Alfabético"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Ya está en el índice de feeds de NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3251,11 +3244,8 @@ msgstr[1] "Se encontraron %(count)s patrones. Selecciona el que mejor coincida c
 msgid "Found in the Account dialog"
 msgstr "Disponible en el cuadro de diálogo Cuenta"
 
-msgid "Found on the web"
-msgstr "Encontrado en la web"
-
-msgid "Found on the web during this search"
-msgstr "Encontrados en la web durante esta búsqueda"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Encontrado en la web con esta búsqueda. NewsBlur lo añade cuando lo pruebas o te suscribes."
 
 msgid "Free"
 msgstr "Gratis"
@@ -3512,6 +3502,9 @@ msgstr "Buenas lecturas"
 msgid "Good Reads on NewsBlur"
 msgstr "Buenas lecturas en NewsBlur"
 
+msgid "Good match"
+msgstr "Buena coincidencia"
+
 msgid "Goodies &amp; Extras"
 msgstr "Complementos &amp; extras"
 
@@ -3645,9 +3638,6 @@ msgstr "Cuánta emoción"
 
 msgid "How often"
 msgstr "¿Con qué frecuencia?"
-
-msgid "How well this feed matches your description"
-msgstr "Qué tan bien coincide este feed con tu descripción"
 
 msgid "I'm Following"
 msgstr "A quién sigo"
@@ -4526,9 +4516,6 @@ msgstr "NewsBlur conectado a otros servicios"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur detectó %(language)s en tu navegador."
-
-msgid "NewsBlur index"
-msgstr "Índice de NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur no está disponible en este momento. <br> Inténtalo de nuevo pronto."
@@ -6016,6 +6003,10 @@ msgstr "Científicos que explican nuevas investigaciones en lenguaje sencillo"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Los clasificadores de alcance limitado solo están disponibles para suscriptores de %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Puntuación de %(score)s sobre 10 para tu descripción"
+
 msgid "Scroll to comments"
 msgstr "Desplazarse a los comentarios"
 
@@ -6862,6 +6853,9 @@ msgstr "Conexión interrumpida. No se recibió respuesta durante 10 segundos."
 
 msgid "Stripe Id:"
 msgstr "ID de Stripe:"
+
+msgid "Strong match"
+msgstr "Coincidencia fuerte"
 
 msgid "Style"
 msgstr "Estilo"
@@ -7970,6 +7964,9 @@ msgstr "Esperando un veredicto…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Advertencia: Esto es realmente permanente"
+
+msgid "Weak match"
+msgstr "Coincidencia débil"
 
 msgid "Weather"
 msgstr "Clima"

@@ -87,6 +87,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var in_add_site_view = this.options.in_add_site_view;
         var override_layout = this.options.override_layout;
         var pane_anchor = this.options.pane_anchor;
+        // story_titles_view.js: an Add Site card (add_site_view.js render_card_stories) lends its rows the
+        // card's feed and handles their clicks itself.
+        var feed_model = this.options.feed_model;
+        var on_story_click = this.options.on_story_click;
         var stories = this.collection.map(function (story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
@@ -102,7 +106,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 on_trending_feed: on_trending_feed,
                 in_trending_view: in_trending_view,
                 in_popover: in_popover,
-                in_add_site_view: in_add_site_view
+                in_add_site_view: in_add_site_view,
+                feed_model: feed_model,
+                on_story_click: on_story_click
             }).render();
         });
         this.stories = stories;
@@ -393,6 +399,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var in_add_site_view = this.options.in_add_site_view;
             var override_layout = this.options.override_layout;
             var pane_anchor = this.options.pane_anchor;
+            var feed_model = this.options.feed_model;
+            var on_story_click = this.options.on_story_click;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
             var stories = _.compact(_.map(this.collection.models.slice(-1 * options.added), function (story) {
@@ -411,7 +419,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     on_trending_feed: on_trending_feed,
                     in_trending_view: in_trending_view,
                     in_popover: in_popover,
-                    in_add_site_view: in_add_site_view
+                    in_add_site_view: in_add_site_view,
+                    feed_model: feed_model,
+                    on_story_click: on_story_click
                 }).render();
             }));
             this.stories = this.stories.concat(stories);

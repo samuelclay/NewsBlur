@@ -529,10 +529,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "오늘 남은 검색 횟수: %(remaining)s/%(limit)s"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s 키로 보내기"
 
@@ -1224,9 +1220,6 @@ msgstr "허용된 도메인"
 
 msgid "Alphabetical"
 msgstr "가나다순"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "이미 NewsBlur의 피드 색인에 있습니다"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3118,11 +3111,8 @@ msgstr[0] "패턴 %(count)s개를 찾았습니다. 원하는 스토리와 가장
 msgid "Found in the Account dialog"
 msgstr "계정 대화상자에 있습니다"
 
-msgid "Found on the web"
-msgstr "웹에서 찾음"
-
-msgid "Found on the web during this search"
-msgstr "이번 검색 중 웹에서 찾음"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "이 검색으로 웹에서 찾았습니다. 시도하거나 구독하면 NewsBlur에서 추가합니다."
 
 msgid "Free"
 msgstr "무료"
@@ -3373,6 +3363,9 @@ msgstr "좋은 글"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur의 좋은 글"
 
+msgid "Good match"
+msgstr "일치도가 높습니다"
+
 msgid "Goodies &amp; Extras"
 msgstr "유용한 도구 &amp; 추가 기능"
 
@@ -3504,9 +3497,6 @@ msgstr "감정 표현 정도"
 
 msgid "How often"
 msgstr "빈도"
-
-msgid "How well this feed matches your description"
-msgstr "이 피드가 설명과 얼마나 일치하는지"
 
 msgid "I'm Following"
 msgstr "팔로잉"
@@ -4358,9 +4348,6 @@ msgstr "다른 서비스와 연동된 NewsBlur"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur에서 브라우저 언어를 %(language)s로 감지했습니다."
-
-msgid "NewsBlur index"
-msgstr "NewsBlur 색인"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur가 현재 다운되었습니다. <br>잠시 후 다시 시도하세요."
@@ -5795,6 +5782,10 @@ msgstr "새로운 연구를 쉬운 말로 설명하는 과학자들"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "범위 지정 분류기는 %(plan)s 구독자만 사용할 수 있습니다."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "설명과의 일치도를 10점 만점에 %(score)s점으로 평가했습니다"
+
 msgid "Scroll to comments"
 msgstr "댓글로 스크롤"
 
@@ -6628,6 +6619,9 @@ msgstr "스트림이 중단되었습니다. 10초 동안 응답이 없습니다.
 
 msgid "Stripe Id:"
 msgstr "Stripe ID:"
+
+msgid "Strong match"
+msgstr "정확히 일치"
 
 msgid "Style"
 msgstr "스타일"
@@ -7682,6 +7676,9 @@ msgstr "결과를 기다리는 중…"
 
 msgid "Warning: This is actually permanent"
 msgstr "경고: 이 작업은 실제로 영구적입니다"
+
+msgid "Weak match"
+msgstr "일치도가 낮습니다"
 
 msgid "Weather"
 msgstr "날씨"

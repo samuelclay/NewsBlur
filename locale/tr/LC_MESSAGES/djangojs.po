@@ -533,10 +533,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Bugün %(limit)s arama hakkınızdan %(remaining)s kaldı"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "Göndermek için %(shortcut)s"
 
@@ -1234,9 +1230,6 @@ msgstr "İzin Verilen Alan Adları"
 
 msgid "Alphabetical"
 msgstr "Alfabetik"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Zaten NewsBlur akış dizininde"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3164,11 +3157,8 @@ msgstr[0] "%(count)s desen bulundu. Görmek istediğiniz haberlerle en iyi eşle
 msgid "Found in the Account dialog"
 msgstr "Hesap iletişim kutusunda yer alır"
 
-msgid "Found on the web"
-msgstr "Web'de bulundu"
-
-msgid "Found on the web during this search"
-msgstr "Bu aramada web'de bulundu"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Bu arama sayesinde web'de bulundu. Denediğinizde veya abone olduğunuzda NewsBlur ekler."
 
 msgid "Free"
 msgstr "Ücretsiz"
@@ -3423,6 +3413,9 @@ msgstr "Okumaya Değer"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur'da okumaya değer haberler"
 
+msgid "Good match"
+msgstr "İyi eşleşme"
+
 msgid "Goodies &amp; Extras"
 msgstr "Ek Özellikler &amp; Ekstralar"
 
@@ -3554,9 +3547,6 @@ msgstr "Duygu yoğunluğu"
 
 msgid "How often"
 msgstr "Ne sıklıkla"
-
-msgid "How well this feed matches your description"
-msgstr "Bu akışın açıklamanızla ne kadar iyi eşleştiği"
 
 msgid "I'm Following"
 msgstr "Takip Ettiklerim"
@@ -4422,9 +4412,6 @@ msgstr "NewsBlur'ın diğer hizmetlerle bağlantıları"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur tarayıcınızın dilini algıladı: %(language)s."
-
-msgid "NewsBlur index"
-msgstr "NewsBlur dizini"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur şu anda çalışmıyor. <br> Lütfen biraz sonra tekrar deneyin."
@@ -5889,6 +5876,10 @@ msgstr "Yeni araştırmaları sade bir dille açıklayan bilim insanları"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Kapsamlı sınıflandırıcılar yalnızca %(plan)s abonelerine sunulur."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Açıklamanız için 10 üzerinden %(score)s puan aldı"
+
 msgid "Scroll to comments"
 msgstr "Yorumlara kaydır"
 
@@ -6730,6 +6721,9 @@ msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
 
 msgid "Stripe Id:"
 msgstr "Stripe Kimliği:"
+
+msgid "Strong match"
+msgstr "Güçlü eşleşme"
 
 msgid "Style"
 msgstr "Tarz"
@@ -7817,6 +7811,9 @@ msgstr "Bir karar bekleniyor…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Uyarı: Bu işlem gerçekten kalıcıdır"
+
+msgid "Weak match"
+msgstr "Zayıf eşleşme"
 
 msgid "Weather"
 msgstr "Hava Durumu"

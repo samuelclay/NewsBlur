@@ -593,10 +593,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "%(remaining)s מתוך %(limit)s חיפושים שנותרו להיום"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s לשליחה"
 
@@ -1304,9 +1300,6 @@ msgstr "דומיינים מותרים"
 
 msgid "Alphabetical"
 msgstr "לפי סדר אלפביתי"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "כבר נמצא באינדקס הפידים של NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3223,11 +3216,8 @@ msgstr[1] "נמצאו %(count)s תבניות. בחר את התבנית שהכי 
 msgid "Found in the Account dialog"
 msgstr "נמצא בחלון החשבון"
 
-msgid "Found on the web"
-msgstr "נמצא באינטרנט"
-
-msgid "Found on the web during this search"
-msgstr "נמצא באינטרנט במהלך החיפוש הזה"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "נמצא באינטרנט בחיפוש הזה. NewsBlur מוסיף אותו כשמנסים או נרשמים."
 
 msgid "Free"
 msgstr "חינם"
@@ -3482,6 +3472,9 @@ msgstr "קריאות מומלצות"
 msgid "Good Reads on NewsBlur"
 msgstr "קריאות מומלצות ב־NewsBlur"
 
+msgid "Good match"
+msgstr "התאמה טובה"
+
 msgid "Goodies &amp; Extras"
 msgstr "כלים &amp; תוספות"
 
@@ -3613,9 +3606,6 @@ msgstr "מידת הרגש"
 
 msgid "How often"
 msgstr "באיזו תדירות"
-
-msgid "How well this feed matches your description"
-msgstr "מידת ההתאמה של הפיד לתיאור שלך"
 
 msgid "I'm Following"
 msgstr "אני עוקב/ת"
@@ -4488,9 +4478,6 @@ msgstr "NewsBlur מחובר לשירותים אחרים"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur זיהה בדפדפן שלכם את השפה %(language)s."
-
-msgid "NewsBlur index"
-msgstr "אינדקס NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur לא זמין כרגע. <br> כדאי לנסות שוב בקרוב."
@@ -5954,6 +5941,10 @@ msgstr "מדענים מסבירים מחקרים חדשים בשפה פשוטה"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "מסווגים ממוקדים זמינים רק למנויי %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "קיבל ציון %(score)s מתוך 10 עבור התיאור שלך"
+
 msgid "Scroll to comments"
 msgstr "גלילה לתגובות"
 
@@ -6794,6 +6785,9 @@ msgstr "הזרם נקטע. לא התקבלה תגובה במשך 10 שניות."
 
 msgid "Stripe Id:"
 msgstr "מזהה Stripe:"
+
+msgid "Strong match"
+msgstr "התאמה חזקה"
 
 msgid "Style"
 msgstr "סגנון"
@@ -7871,6 +7865,9 @@ msgstr "ממתינים להכרעה…"
 
 msgid "Warning: This is actually permanent"
 msgstr "אזהרה: הפעולה הזו בלתי הפיכה"
+
+msgid "Weak match"
+msgstr "התאמה חלשה"
 
 msgid "Weather"
 msgstr "מזג אוויר"

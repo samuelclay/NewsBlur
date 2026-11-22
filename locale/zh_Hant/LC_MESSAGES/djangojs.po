@@ -529,10 +529,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "今天還能搜尋 %(remaining)s 次，共 %(limit)s 次"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "按 %(shortcut)s 傳送"
 
@@ -1224,9 +1220,6 @@ msgstr "允許的網域"
 
 msgid "Alphabetical"
 msgstr "依字母順序"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "已在 NewsBlur 的訂閱來源索引中"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3112,11 +3105,8 @@ msgstr[0] "找到 %(count)s 種模式。請選擇最符合你想看的文章的�
 msgid "Found in the Account dialog"
 msgstr "可在「帳戶」對話方塊中找到"
 
-msgid "Found on the web"
-msgstr "在網路上找到"
-
-msgid "Found on the web during this search"
-msgstr "在這次搜尋中於網路上找到"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "透過這項搜尋在網路上找到。你嘗試或訂閱時，NewsBlur 會將它新增。"
 
 msgid "Free"
 msgstr "免費"
@@ -3367,6 +3357,9 @@ msgstr "優質閱讀"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur 上的優質閱讀"
 
+msgid "Good match"
+msgstr "相符度佳"
+
 msgid "Goodies &amp; Extras"
 msgstr "實用工具 &amp; 額外功能"
 
@@ -3498,9 +3491,6 @@ msgstr "情感表現程度"
 
 msgid "How often"
 msgstr "頻率"
-
-msgid "How well this feed matches your description"
-msgstr "此訂閱來源與你的描述有多相符"
 
 msgid "I'm Following"
 msgstr "我追蹤的人"
@@ -4350,9 +4340,6 @@ msgstr "NewsBlur 已連結至其他服務"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur 從你的瀏覽器偵測到 %(language)s。"
-
-msgid "NewsBlur index"
-msgstr "NewsBlur 索引"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur 目前無法使用。<br> 請稍後再試。"
@@ -5787,6 +5774,10 @@ msgstr "科學家以淺白文字解說最新研究"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "範圍分類器僅供 %(plan)s 訂閱者使用。"
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "根據你的描述評分為 %(score)s／10 分"
+
 msgid "Scroll to comments"
 msgstr "捲動至留言"
 
@@ -6620,6 +6611,9 @@ msgstr "串流中斷。10 秒內未收到回應。"
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Strong match"
+msgstr "高度相符"
 
 msgid "Style"
 msgstr "風格"
@@ -7670,6 +7664,9 @@ msgstr "等待判定結果…"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作確實無法復原"
+
+msgid "Weak match"
+msgstr "相符度低"
 
 msgid "Weather"
 msgstr "天氣"

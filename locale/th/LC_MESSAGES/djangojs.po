@@ -529,10 +529,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "วันนี้เหลือการค้นหา %(remaining)s จาก %(limit)s ครั้ง"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s เพื่อส่ง"
 
@@ -1232,9 +1228,6 @@ msgstr "โดเมนที่อนุญาต"
 
 msgid "Alphabetical"
 msgstr "ตามตัวอักษร"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "มีอยู่ในดัชนีฟีดของ NewsBlur แล้ว"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3138,11 +3131,8 @@ msgstr[0] "พบรูปแบบ %(count)s รูปแบบ เลือก
 msgid "Found in the Account dialog"
 msgstr "พบในกล่องโต้ตอบบัญชี"
 
-msgid "Found on the web"
-msgstr "พบบนเว็บ"
-
-msgid "Found on the web during this search"
-msgstr "พบในเว็บระหว่างการค้นหานี้"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "พบจากการค้นหานี้บนเว็บ NewsBlur จะเพิ่มรายการนี้เมื่อคุณลองหรือสมัครรับข้อมูล"
 
 msgid "Free"
 msgstr "ฟรี"
@@ -3397,6 +3387,9 @@ msgstr "บทความน่าอ่าน"
 msgid "Good Reads on NewsBlur"
 msgstr "บทความน่าอ่านบน NewsBlur"
 
+msgid "Good match"
+msgstr "ตรงกันดี"
+
 msgid "Goodies &amp; Extras"
 msgstr "เครื่องมือเสริม &amp; ส่วนเพิ่มเติม"
 
@@ -3528,9 +3521,6 @@ msgstr "ระดับอารมณ์"
 
 msgid "How often"
 msgstr "ความถี่"
-
-msgid "How well this feed matches your description"
-msgstr "ฟีดนี้ตรงกับคำอธิบายของคุณมากเพียงใด"
 
 msgid "I'm Following"
 msgstr "ฉันกำลังติดตาม"
@@ -4390,9 +4380,6 @@ msgstr "บริการอื่นๆ ที่เชื่อมต่อ�
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur ตรวจพบ %(language)s จากเบราว์เซอร์ของคุณ"
-
-msgid "NewsBlur index"
-msgstr "ดัชนี NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "ขณะนี้ NewsBlur ใช้งานไม่ได้ <br> โปรดลองอีกครั้งในภายหลัง"
@@ -5837,6 +5824,10 @@ msgstr "นักวิทยาศาสตร์อธิบายงานว
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "ตัวจัดประเภทแบบกำหนดขอบเขตมีให้เฉพาะสมาชิก %(plan)s เท่านั้น"
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "ได้คะแนน %(score)s จาก 10 สำหรับคำอธิบายของคุณ"
+
 msgid "Scroll to comments"
 msgstr "เลื่อนไปยังความคิดเห็น"
 
@@ -6672,6 +6663,9 @@ msgstr "การเชื่อมต่อสตรีมถูกขัดจ
 
 msgid "Stripe Id:"
 msgstr "รหัส Stripe:"
+
+msgid "Strong match"
+msgstr "ตรงกันมาก"
 
 msgid "Style"
 msgstr "สไตล์"
@@ -7746,6 +7740,9 @@ msgstr "กำลังรอผลการตัดสิน…"
 
 msgid "Warning: This is actually permanent"
 msgstr "คำเตือน: การดำเนินการนี้ย้อนกลับไม่ได้"
+
+msgid "Weak match"
+msgstr "ตรงกันเล็กน้อย"
 
 msgid "Weather"
 msgstr "สภาพอากาศ"

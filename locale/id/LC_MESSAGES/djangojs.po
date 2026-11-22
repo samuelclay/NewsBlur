@@ -597,10 +597,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "%(remaining)s dari %(limit)s pencarian tersisa hari ini"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s untuk mengirim"
 
@@ -1308,9 +1304,6 @@ msgstr "Domain yang Diizinkan"
 
 msgid "Alphabetical"
 msgstr "Urut abjad"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Sudah ada di indeks feed NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3250,11 +3243,8 @@ msgstr[1] "Menemukan %(count)s pola. Pilih yang paling cocok dengan artikel yang
 msgid "Found in the Account dialog"
 msgstr "Ada di dialog Akun"
 
-msgid "Found on the web"
-msgstr "Ditemukan di web"
-
-msgid "Found on the web during this search"
-msgstr "Ditemukan di web selama pencarian ini"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Ditemukan di web melalui pencarian ini. NewsBlur akan menambahkannya saat Anda mencoba atau berlangganan."
 
 msgid "Free"
 msgstr "Gratis"
@@ -3509,6 +3499,9 @@ msgstr "Bacaan Bagus"
 msgid "Good Reads on NewsBlur"
 msgstr "Bacaan Bagus di NewsBlur"
 
+msgid "Good match"
+msgstr "Kecocokan bagus"
+
 msgid "Goodies &amp; Extras"
 msgstr "Fitur Tambahan &amp; Bonus"
 
@@ -3640,9 +3633,6 @@ msgstr "Seberapa banyak emosi"
 
 msgid "How often"
 msgstr "Seberapa sering"
-
-msgid "How well this feed matches your description"
-msgstr "Seberapa cocok feed ini dengan deskripsi Anda"
 
 msgid "I'm Following"
 msgstr "Saya Mengikuti"
@@ -4517,9 +4507,6 @@ msgstr "NewsBlur terhubung ke layanan lain"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur mendeteksi %(language)s dari browser Anda."
-
-msgid "NewsBlur index"
-msgstr "indeks NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur sedang tidak berfungsi. <br> Coba lagi nanti."
@@ -5997,6 +5984,10 @@ msgstr "Ilmuwan yang menjelaskan penelitian baru dengan bahasa sederhana"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Pengklasifikasi dengan cakupan folder atau global hanya tersedia bagi pelanggan %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Mendapat skor %(score)s dari 10 untuk deskripsi Anda"
+
 msgid "Scroll to comments"
 msgstr "Gulir ke komentar"
 
@@ -6843,6 +6834,9 @@ msgstr "Aliran terputus. Tidak ada respons selama 10 detik."
 
 msgid "Stripe Id:"
 msgstr "ID Stripe:"
+
+msgid "Strong match"
+msgstr "Kecocokan kuat"
 
 msgid "Style"
 msgstr "Gaya"
@@ -7949,6 +7943,9 @@ msgstr "Menunggu keputusan…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Peringatan: Tindakan ini benar-benar permanen"
+
+msgid "Weak match"
+msgstr "Kecocokan lemah"
 
 msgid "Weather"
 msgstr "Cuaca"

@@ -529,10 +529,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "今天还可搜索 %(remaining)s 次，共 %(limit)s 次"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "按 %(shortcut)s 发送"
 
@@ -1224,9 +1220,6 @@ msgstr "允许的域名"
 
 msgid "Alphabetical"
 msgstr "按字母顺序"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "已在 NewsBlur 的订阅源索引中"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3112,11 +3105,8 @@ msgstr[0] "找到 %(count)s 种模式。请选择最符合你想要的文章的�
 msgid "Found in the Account dialog"
 msgstr "在“账户”对话框中找到"
 
-msgid "Found on the web"
-msgstr "在网上找到"
-
-msgid "Found on the web during this search"
-msgstr "在本次搜索中通过网页找到"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "通过此搜索在网上找到。NewsBlur 会在你试用或订阅时添加它。"
 
 msgid "Free"
 msgstr "免费"
@@ -3367,6 +3357,9 @@ msgstr "优质阅读"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur 上的优质阅读"
 
+msgid "Good match"
+msgstr "匹配度不错"
+
 msgid "Goodies &amp; Extras"
 msgstr "好物 &amp; 附加功能"
 
@@ -3498,9 +3491,6 @@ msgstr "情感表达程度"
 
 msgid "How often"
 msgstr "频率"
-
-msgid "How well this feed matches your description"
-msgstr "此订阅源与你的描述的匹配程度"
 
 msgid "I'm Following"
 msgstr "我关注的人"
@@ -4350,9 +4340,6 @@ msgstr "NewsBlur 已连接到其他服务"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur 根据你的浏览器检测到 %(language)s。"
-
-msgid "NewsBlur index"
-msgstr "NewsBlur 索引"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur 当前不可用。<br> 请稍后重试。"
@@ -5787,6 +5774,10 @@ msgstr "用通俗语言解读最新研究的科学家"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "范围限定分类器仅对 %(plan)s 订阅用户开放。"
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "根据你的描述评分为 10 分中的 %(score)s 分"
+
 msgid "Scroll to comments"
 msgstr "滚动至评论"
 
@@ -6620,6 +6611,9 @@ msgstr "数据流中断。10 秒内未收到响应。"
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Strong match"
+msgstr "高度匹配"
 
 msgid "Style"
 msgstr "风格"
@@ -7670,6 +7664,9 @@ msgstr "正在等待评定结果…"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作无法撤销"
+
+msgid "Weak match"
+msgstr "匹配度较低"
 
 msgid "Weather"
 msgstr "天气"

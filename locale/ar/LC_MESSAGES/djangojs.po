@@ -850,10 +850,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "تبقّى لك %(remaining)s من أصل %(limit)s عملية بحث اليوم"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s للإرسال"
 
@@ -1599,9 +1595,6 @@ msgstr "النطاقات المسموح بها"
 
 msgid "Alphabetical"
 msgstr "أبجديًا"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "موجودة بالفعل في فهرس خلاصات NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3582,11 +3575,8 @@ msgstr[5] "عُثر على %(count)s نمط. اختر النمط الذي يطا
 msgid "Found in the Account dialog"
 msgstr "تجد هذا الخيار في نافذة الحساب"
 
-msgid "Found on the web"
-msgstr "عُثر عليه على الويب"
-
-msgid "Found on the web during this search"
-msgstr "عُثر عليه على الويب أثناء هذا البحث"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "عُثر عليه على الويب بهذا البحث. يضيفه NewsBlur عند تجربته أو الاشتراك فيه."
 
 msgid "Free"
 msgstr "مجاني"
@@ -3841,6 +3831,9 @@ msgstr "قراءات جيدة"
 msgid "Good Reads on NewsBlur"
 msgstr "قراءات جيدة على NewsBlur"
 
+msgid "Good match"
+msgstr "تطابق جيد"
+
 msgid "Goodies &amp; Extras"
 msgstr "المزايا &amp; الإضافات"
 
@@ -3972,9 +3965,6 @@ msgstr "مقدار التعبير العاطفي"
 
 msgid "How often"
 msgstr "عدد المرات"
-
-msgid "How well this feed matches your description"
-msgstr "مدى تطابق هذه الخلاصة مع وصفك"
 
 msgid "I'm Following"
 msgstr "أتابع"
@@ -4879,9 +4869,6 @@ msgstr "يتصل NewsBlur بخدمات أخرى"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "اكتشف NewsBlur أن لغة متصفحك هي %(language)s."
-
-msgid "NewsBlur index"
-msgstr "فهرس NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur متوقف حاليًا. <br> حاول مرة أخرى قريبًا."
@@ -6401,6 +6388,10 @@ msgstr "علماء يشرحون الأبحاث الجديدة بلغة واضح�
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "المصنّفات ذات النطاق المخصص متاحة فقط لمشتركي %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "حصل على تقييم %(score)s من 10 لوصفك"
+
 msgid "Scroll to comments"
 msgstr "انتقل إلى التعليقات"
 
@@ -7261,6 +7252,9 @@ msgstr "انقطع الاتصال. لم نتلقَّ أي استجابة خلا�
 
 msgid "Stripe Id:"
 msgstr "معرّف Stripe:"
+
+msgid "Strong match"
+msgstr "تطابق قوي"
 
 msgid "Style"
 msgstr "النمط"
@@ -8388,6 +8382,9 @@ msgstr "بانتظار النتيجة…"
 
 msgid "Warning: This is actually permanent"
 msgstr "تحذير: هذا الإجراء نهائي بالفعل"
+
+msgid "Weak match"
+msgstr "تطابق ضعيف"
 
 msgid "Weather"
 msgstr "الطقس"

@@ -531,10 +531,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Hôm nay bạn còn %(remaining)s trên %(limit)s lượt tìm kiếm"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s để gửi"
 
@@ -1234,9 +1230,6 @@ msgstr "Tên miền được phép"
 
 msgid "Alphabetical"
 msgstr "Theo thứ tự bảng chữ cái"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Đã có trong chỉ mục nguồn cấp của NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3155,11 +3148,8 @@ msgstr[0] "Tìm thấy %(count)s mẫu. Hãy chọn mẫu phù hợp nhất vớ
 msgid "Found in the Account dialog"
 msgstr "Xuất hiện trong hộp thoại Tài khoản"
 
-msgid "Found on the web"
-msgstr "Tìm thấy trên web"
-
-msgid "Found on the web during this search"
-msgstr "Tìm thấy trên web trong lần tìm kiếm này"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Tìm thấy trên web bằng tìm kiếm này. NewsBlur thêm mục này khi bạn dùng thử hoặc đăng ký theo dõi."
 
 msgid "Free"
 msgstr "Miễn phí"
@@ -3414,6 +3404,9 @@ msgstr "Bài đọc hay"
 msgid "Good Reads on NewsBlur"
 msgstr "Bài đọc hay trên NewsBlur"
 
+msgid "Good match"
+msgstr "Khớp tốt"
+
 msgid "Goodies &amp; Extras"
 msgstr "Công cụ &amp; tiện ích bổ sung"
 
@@ -3545,9 +3538,6 @@ msgstr "Mức độ cảm xúc"
 
 msgid "How often"
 msgstr "Tần suất"
-
-msgid "How well this feed matches your description"
-msgstr "Nguồn cấp này phù hợp với mô tả của bạn đến mức nào"
 
 msgid "I'm Following"
 msgstr "Tôi đang theo dõi"
@@ -4413,9 +4403,6 @@ msgstr "NewsBlur kết nối với các dịch vụ khác"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur phát hiện trình duyệt của bạn đang dùng %(language)s."
-
-msgid "NewsBlur index"
-msgstr "Chỉ mục NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur hiện không hoạt động. <br> Hãy thử lại sau."
@@ -5874,6 +5861,10 @@ msgstr "Các nhà khoa học giải thích nghiên cứu mới bằng ngôn ng�
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Bộ phân loại theo phạm vi chỉ dành cho người đăng ký %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Được chấm %(score)s trên 10 dựa trên mô tả của bạn"
+
 msgid "Scroll to comments"
 msgstr "Cuộn đến phần bình luận"
 
@@ -6715,6 +6706,9 @@ msgstr "Luồng bị gián đoạn. Không nhận được phản hồi trong 10
 
 msgid "Stripe Id:"
 msgstr "Mã Stripe:"
+
+msgid "Strong match"
+msgstr "Khớp mạnh"
 
 msgid "Style"
 msgstr "Phong cách"
@@ -7801,6 +7795,9 @@ msgstr "Đang chờ kết quả…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Cảnh báo: Thao tác này thực sự không thể hoàn tác"
+
+msgid "Weak match"
+msgstr "Khớp yếu"
 
 msgid "Weather"
 msgstr "Thời tiết"

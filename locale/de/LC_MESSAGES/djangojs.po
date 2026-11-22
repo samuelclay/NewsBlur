@@ -599,10 +599,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Heute noch %(remaining)s von %(limit)s Suchanfragen"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s zum Senden"
 
@@ -1316,9 +1312,6 @@ msgstr "Zulässige Domains"
 
 msgid "Alphabetical"
 msgstr "Alphabetisch"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Bereits im Feed-Index von NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3261,11 +3254,8 @@ msgstr[1] "%(count)s Muster gefunden. Wähle das Muster aus, das am besten zu de
 msgid "Found in the Account dialog"
 msgstr "Im Kontodialog zu finden"
 
-msgid "Found on the web"
-msgstr "Im Web gefunden"
-
-msgid "Found on the web during this search"
-msgstr "Bei dieser Suche im Web gefunden"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Durch diese Suche im Web gefunden. NewsBlur fügt sie hinzu, wenn du sie ausprobierst oder abonnierst."
 
 msgid "Free"
 msgstr "Kostenlos"
@@ -3520,6 +3510,9 @@ msgstr "Gute Lektüre"
 msgid "Good Reads on NewsBlur"
 msgstr "Gute Lektüre auf NewsBlur"
 
+msgid "Good match"
+msgstr "Gute Übereinstimmung"
+
 msgid "Goodies &amp; Extras"
 msgstr "Extras &amp; mehr"
 
@@ -3653,9 +3646,6 @@ msgstr "Wie viel Emotion"
 
 msgid "How often"
 msgstr "Wie oft"
-
-msgid "How well this feed matches your description"
-msgstr "Wie gut dieser Feed zu deiner Beschreibung passt"
 
 msgid "I'm Following"
 msgstr "Ich folge"
@@ -4533,9 +4523,6 @@ msgstr "NewsBlur mit anderen Diensten verbunden"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur hat %(language)s in deinem Browser erkannt."
-
-msgid "NewsBlur index"
-msgstr "NewsBlur-Index"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur ist derzeit nicht erreichbar. <br> Versuch es bald erneut."
@@ -6025,6 +6012,10 @@ msgstr "Forschende erklären neue Forschungsergebnisse in verständlicher Sprach
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Klassifikatoren mit Geltungsbereich sind nur für %(plan)s-Abonnenten verfügbar."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Für deine Beschreibung mit %(score)s von 10 bewertet"
+
 msgid "Scroll to comments"
 msgstr "Zu den Kommentaren scrollen"
 
@@ -6873,6 +6864,9 @@ msgstr "Stream unterbrochen. 10 Sekunden lang keine Antwort erhalten."
 
 msgid "Stripe Id:"
 msgstr "Stripe-ID:"
+
+msgid "Strong match"
+msgstr "Starke Übereinstimmung"
 
 msgid "Style"
 msgstr "Stil"
@@ -7978,6 +7972,9 @@ msgstr "Warte auf eine Bewertung…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Warnung: Das ist tatsächlich dauerhaft"
+
+msgid "Weak match"
+msgstr "Schwache Übereinstimmung"
 
 msgid "Weather"
 msgstr "Wetter"

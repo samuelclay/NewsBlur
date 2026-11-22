@@ -294,11 +294,13 @@ class MDescribeUsage(mongo.Document):
 
 
 def story_snapshot(story):
-    """The stored form of one story: what the Add Site feed card needs to draw its story preview.
+    """The stored form of one story: what the Add Site feed card needs to draw its story row.
 
-    add_site_view.js render_feed_card reads story_title, image_urls and
-    story_content, the same keys Feed.get_stories gives the other Discover
-    tabs. A whole story body is far too big to keep on every row, so the
+    add_site_view.js render_card_stories draws these with the site's story title
+    rows, which read the same keys Feed.get_stories gives the other Discover tabs.
+    story_hash and story_feed_id let a click open that story in the feed; a site
+    from the web hunt has neither, and describe_feeds_view.js card_stories fills
+    them in. A whole story body is far too big to keep on every row, so the
     content is cut down to its first image and a short run of plain text.
     """
     content = story.get("story_content") or ""
@@ -317,6 +319,9 @@ def story_snapshot(story):
         else (story_date or None),
         "image_urls": images,
         "story_content": escape(text),
+        "story_hash": story.get("story_hash") or "",
+        "story_feed_id": story.get("story_feed_id"),
+        "story_authors": story.get("story_authors") or "",
     }
 
 

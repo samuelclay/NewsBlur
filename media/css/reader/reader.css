@@ -33487,11 +33487,15 @@ button.NB-static-card-altlink {
     margin-left: 8px;
 }
 
-/* Subscribed two-row layout in add site list view */
+/* Subscribed actions in the add site list view sit on one line, like the feed cards' (add_site_view.js
+   make_card_actions) */
 .NB-feed-badge-subscribed-actions.NB-feed-badge-actions-add-site {
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: center;
     gap: 6px;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 .NB-subscribed-badge {
@@ -34559,56 +34563,17 @@ button.NB-static-card-altlink {
     grid-template-columns: 1fr;
 }
 
-/* List view: use CSS Grid to place actions next to header */
-.NB-add-site-results-list .NB-add-site-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-}
-
-.NB-add-site-results-list .NB-add-site-card-header {
-    grid-column: 1;
-    grid-row: 1;
-    align-items: flex-start;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions {
-    grid-column: 2;
-    grid-row: 1;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    margin-top: 0;
-    padding-top: 0;
+/* List view: render_feed_card puts the actions at the right end of the header, on one line */
+.NB-add-site-results-list .NB-add-site-card-header .NB-add-site-card-actions {
+    flex-shrink: 0;
+    margin: 0 0 0 12px;
+    padding: 0;
     border-top: none;
-    align-self: start;
-    margin-left: 12px;
 }
 
-.NB-add-site-results-list .NB-add-site-card-desc {
-    grid-column: 1 / -1;
-    grid-row: 2;
-}
-
-.NB-add-site-results-list .NB-add-site-card-stories {
-    grid-column: 1 / -1;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions .NB-add-site-card-add-group {
-    margin-left: 0;
-    max-width: 260px;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions-subscribed {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
+.NB-add-site-results-list .NB-add-site-card-header .NB-add-site-card-add-group {
+    flex: 0 1 auto;
+    width: 200px;
 }
 
 /* Grid Column Overrides - auto uses the base auto-fill rule above */
@@ -34628,12 +34593,13 @@ button.NB-static-card-altlink {
     grid-template-columns: repeat(4, 1fr);
 }
 
-/* Feed Card */
+/* Feed Card (add_site_view.js render_feed_card and make_source_card). The same colors and spacing as the
+   Search list's feed badges (.NB-trending-feed-badge), so a grid and a list read as one design. */
 .NB-add-site-card {
+    position: relative;
     background: #FFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 12px;
-    padding: 16px;
+    border: 1px solid #E8E8E6;
+    border-radius: 10px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
     display: flex;
     flex-direction: column;
@@ -34642,15 +34608,20 @@ button.NB-static-card-altlink {
 }
 
 .NB-add-site-card:hover {
-    border-color: #C0C0C0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #D0D0CE;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-add-site-card-top {
+    padding: 14px 16px 12px;
+    background: linear-gradient(180deg, #FCFCFC 0%, #F8F8F6 100%);
+    border-bottom: 1px solid #F0F0EE;
 }
 
 .NB-add-site-card-header {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 12px;
 }
 
 .NB-add-site-card-icon {
@@ -34684,14 +34655,26 @@ button.NB-static-card-altlink {
     min-width: 0;
 }
 
+/* The title, and on Describe cards the web icon and the match label after it */
+.NB-add-site-card-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+    margin-bottom: 2px;
+}
+
+/* A long title wraps to a second line rather than losing its end to the web icon and match label */
 .NB-add-site-card-title {
     font-size: 15px;
     font-weight: 600;
+    line-height: 1.3;
     color: #333;
-    margin-bottom: 4px;
+    min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .NB-add-site-card-meta {
@@ -34705,7 +34688,7 @@ button.NB-static-card-altlink {
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .NB-freshness-dot {
@@ -34743,8 +34726,11 @@ button.NB-static-card-altlink {
     font-size: 13px;
     color: #666;
     line-height: 1.4;
-    flex: 1;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
 }
 
 .NB-add-site-card-url {
@@ -34758,91 +34744,56 @@ button.NB-static-card-altlink {
     font-family: monospace;
 }
 
-/* Story Previews in Card */
+/* Stories in a card are the site's story title rows (add_site_view.js render_card_stories), edge to edge
+   like the Search list's. They take the card's spare height so the actions stay along the bottom. */
 .NB-add-site-card-stories {
-    background: #F8F8F8;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
+    flex: 1 1 auto;
 }
 
-.NB-add-site-card-story {
-    padding: 6px 0;
-    border-bottom: 1px solid #E8E8E8;
+.NB-add-site-card-stories .NB-story-titles {
+    margin: 0;
+    border: none;
 }
 
-.NB-add-site-card-story:last-child {
+.NB-add-site-card-stories .NB-story-title {
+    border-left: none;
+    border-right: none;
+}
+
+.NB-add-site-card-stories .NB-story-title:first-child {
+    border-top: none;
+}
+
+.NB-add-site-card-stories .NB-story-title:last-child {
     border-bottom: none;
-    padding-bottom: 0;
 }
 
-.NB-add-site-card-story:first-child {
-    padding-top: 0;
-}
-
-.NB-add-site-card-story-title {
-    font-size: 12px;
-    color: #555;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.NB-add-site-card-story-image {
-    width: 100%;
-    height: auto;
+/* In a grid card the thumbnail is a square at the top of its row, so a narrow card's wrapping title doesn't
+   stretch it into a tall strip */
+.NB-add-site-results-grid .NB-add-site-card-stories .NB-storytitles-story-image {
+    height: 78px;
     border-radius: 4px;
-    margin-bottom: 6px;
-    object-fit: cover;
 }
 
-.NB-add-site-card-story-image.NB-image-small {
-    width: 48px;
-    height: 48px;
-    float: left;
-    margin-right: 8px;
-    margin-bottom: 0;
+/* A feed without a favicon color (a site NewsBlur hasn't fetched yet) gets a quiet bar; story_title_view.js
+   color_feedbar sets the colored ones inline */
+.NB-add-site-card-stories .NB-storytitles-feed-border-inner,
+.NB-add-site-card-stories .NB-storytitles-feed-border-outer {
+    background-color: #E0E0DE;
 }
 
-.NB-add-site-card-story-image.NB-image-large {
-    max-height: 120px;
-}
-
-/* Story Content Preview */
-.NB-add-site-card-story-preview {
-    font-size: 11px;
-    color: #888;
-    line-height: 1.4;
-    margin-top: 4px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-1 {
-    -webkit-line-clamp: 1;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-2 {
-    -webkit-line-clamp: 2;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-3 {
-    -webkit-line-clamp: 3;
-}
-
-/* Card Actions */
-.NB-add-site-card-actions-row {
-    display: contents;
-}
-
+/* Card Actions: Try, Stats, then the folder picker and Add, on one line (add_site_view.js make_card_actions) */
 .NB-add-site-card-actions {
     display: flex;
     align-items: center;
     gap: 6px;
     margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid #F0F0F0;
+    padding: 10px 12px;
+    border-top: 1px solid #F0F0EE;
+}
+
+.NB-add-site-card-stories + .NB-add-site-card-actions {
+    margin-top: 0;
 }
 
 .NB-add-site-folder-select {
@@ -34870,7 +34821,8 @@ button.NB-static-card-altlink {
     gap: 0;
     margin-left: auto;
     min-width: 0;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
+    max-width: 240px;
     background: #F0F0F0;
     border-radius: 6px;
     padding: 3px;
@@ -34897,9 +34849,13 @@ button.NB-static-card-altlink {
     font-size: 11px;
 }
 
-/* Subscribed Card Actions */
+/* Subscribed Card Actions: the badge on the left, Stats and Open on the right */
 .NB-add-site-card-actions-subscribed {
-    gap: 8px;
+    gap: 6px;
+}
+
+.NB-add-site-card-actions-subscribed .NB-subscribed-badge {
+    margin-right: auto;
 }
 
 .NB-add-site-subscribed-indicator {
@@ -37505,17 +37461,22 @@ button.NB-static-card-altlink {
 
 
 .NB-dark .NB-add-site-card {
-    background: #2A2A2A;
-    border-color: #3A3A3A;
+    background: #252D30;
+    border-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card:hover {
-    border-color: #555;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-color: #4A5255;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-card-top {
+    background: linear-gradient(180deg, #303739 0%, #282D30 100%);
+    border-bottom-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-icon {
-    background: #3A3A3A;
+    background: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-title {
@@ -37523,11 +37484,11 @@ button.NB-static-card-altlink {
 }
 
 .NB-dark .NB-add-site-card-meta {
-    color: #888;
+    color: #808080;
 }
 
 .NB-dark .NB-add-site-card-desc {
-    color: #AAA;
+    color: #909090;
 }
 
 .NB-dark .NB-add-site-card-url {
@@ -37535,24 +37496,8 @@ button.NB-static-card-altlink {
     color: #999;
 }
 
-.NB-dark .NB-add-site-card-stories {
-    background: #333;
-}
-
-.NB-dark .NB-add-site-card-story {
-    border-color: #444;
-}
-
-.NB-dark .NB-add-site-card-story-title {
-    color: #CCC;
-}
-
-.NB-dark .NB-add-site-card-story-preview {
-    color: #999;
-}
-
 .NB-dark .NB-add-site-card-actions {
-    border-color: #3A3A3A;
+    border-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-add-group {
@@ -45139,43 +45084,65 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     transform: scale(0.97);
 }
 
-.NB-describe-card-tags {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: -4px 0 10px;
+/* Describe result cards (describe_feeds_view.js make_card): a strip across the top and a word in the title
+   row say how well the feed matches; the judge's reason leads, then the feed's own tagline, smaller. */
+.NB-describe-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 1;
 }
 
-.NB-describe-score {
-    display: inline-flex;
-    align-items: center;
+.NB-describe-strip-strong {
+    background: #6AA84F;
+}
+
+.NB-describe-strip-good {
+    background: #E3A93B;
+}
+
+.NB-describe-strip-weak {
+    background: #C9CCCF;
+}
+
+.NB-describe-strip-pending {
+    background: linear-gradient(90deg, #E4E7EB 0%, #B9CBE6 50%, #E4E7EB 100%);
+    background-size: 200% 100%;
+    animation: NB-describe-shimmer 1.4s linear infinite;
+}
+
+@keyframes NB-describe-shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: 0 0; }
+}
+
+.NB-describe-match {
+    margin-left: auto;
+    margin-top: 3px;
+    padding-left: 8px;
+    flex-shrink: 0;
     font-size: 11px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 999px;
-    line-height: 1;
-    letter-spacing: 0.02em;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.NB-describe-score-high {
-    background: #E3F3DB;
-    color: #2F6B17;
+.NB-describe-match-strong {
+    color: #3F7F24;
 }
 
-.NB-describe-score-medium {
-    background: #FFF1D6;
-    color: #8A5A00;
+.NB-describe-match-good {
+    color: #9A6A0B;
 }
 
-.NB-describe-score-low {
-    background: #F2F2F2;
-    color: #777;
+.NB-describe-match-weak {
+    color: #8A8F94;
 }
 
-.NB-describe-score-pending {
-    background: #EEF2F8;
-    color: #5C89C9;
+.NB-describe-match-pending {
+    color: #8A9BB3;
+    font-weight: 500;
     animation: NB-describe-fade 1.4s ease-in-out infinite;
 }
 
@@ -45184,50 +45151,30 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     50% { opacity: 0.45; }
 }
 
-.NB-describe-source {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 999px;
-    line-height: 1;
-    background: #F2F4F6;
-    color: #777;
-}
-
-.NB-describe-source-web {
-    background: #EAF0FB;
-    color: #2F5F9E;
-}
-
-.NB-describe-source-icon {
-    width: 11px;
-    height: 11px;
-    opacity: 0.7;
+.NB-describe-web-icon {
+    width: 13px;
+    height: 13px;
+    margin-top: 4px;
+    flex-shrink: 0;
+    opacity: 0.5;
 }
 
 .NB-describe-reason {
+    margin-top: 10px;
     font-size: 13px;
     line-height: 1.45;
-    color: #444;
-    margin: 0 0 12px;
-    padding: 8px 10px;
-    background: #F8F9FA;
-    border-left: 3px solid #5C89C9;
-    border-radius: 0 6px 6px 0;
+    color: #333;
 }
 
 .NB-describe-reason-pending {
     color: #999;
     font-style: italic;
-    border-left-color: #D0D4D8;
 }
 
-.NB-add-site-results-list .NB-describe-card-tags,
-.NB-add-site-results-list .NB-describe-reason {
-    grid-column: 1 / -1;
+.NB-describe-reason + .NB-add-site-card-desc {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #8A8A8A;
 }
 
 /* Empty state and upgrade */

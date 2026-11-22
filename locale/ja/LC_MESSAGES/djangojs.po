@@ -529,10 +529,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "本日の検索残り %(remaining)s 件／%(limit)s 件"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)sで送信"
 
@@ -1224,9 +1220,6 @@ msgstr "許可するドメイン"
 
 msgid "Alphabetical"
 msgstr "アルファベット順"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "すでに NewsBlur のフィードインデックスにあります"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3112,11 +3105,8 @@ msgstr[0] "%(count)s 件のパターンが見つかりました。読みたい�
 msgid "Found in the Account dialog"
 msgstr "アカウントダイアログにあります"
 
-msgid "Found on the web"
-msgstr "ウェブで見つかったフィード"
-
-msgid "Found on the web during this search"
-msgstr "今回の検索でウェブ上から見つかりました"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "この検索でウェブ上で見つかりました。試すか購読すると、NewsBlur が追加します。"
 
 msgid "Free"
 msgstr "無料"
@@ -3367,6 +3357,9 @@ msgstr "おすすめ記事"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlurのおすすめ記事"
 
+msgid "Good match"
+msgstr "良い一致"
+
 msgid "Goodies &amp; Extras"
 msgstr "便利な機能 &amp; その他"
 
@@ -3498,9 +3491,6 @@ msgstr "感情の強さ"
 
 msgid "How often"
 msgstr "頻度"
-
-msgid "How well this feed matches your description"
-msgstr "このフィードが説明にどの程度一致するか"
 
 msgid "I'm Following"
 msgstr "フォロー中"
@@ -4350,9 +4340,6 @@ msgstr "NewsBlurと連携するサービス"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlurがブラウザから%(language)sを検出しました。"
-
-msgid "NewsBlur index"
-msgstr "NewsBlurのインデックス"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlurは現在ダウンしています。<br>しばらくしてからもう一度お試しください。"
@@ -5787,6 +5774,10 @@ msgstr "新しい研究をわかりやすく解説する科学者"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "適用範囲を指定した分類器は%(plan)sの購読者のみご利用いただけます。"
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "説明の評価は 10 点中 %(score)s 点です"
+
 msgid "Scroll to comments"
 msgstr "コメントまでスクロール"
 
@@ -6620,6 +6611,9 @@ msgstr "ストリームが中断されました。10秒間応答がありませ�
 
 msgid "Stripe Id:"
 msgstr "Stripe ID："
+
+msgid "Strong match"
+msgstr "強い一致"
 
 msgid "Style"
 msgstr "スタイル"
@@ -7672,6 +7666,9 @@ msgstr "判定を待っています…"
 
 msgid "Warning: This is actually permanent"
 msgstr "警告：この操作は本当に取り消せません"
+
+msgid "Weak match"
+msgstr "弱い一致"
 
 msgid "Weather"
 msgstr "天気"

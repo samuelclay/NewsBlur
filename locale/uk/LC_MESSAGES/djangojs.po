@@ -662,10 +662,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Сьогодні залишилося пошуків: %(remaining)s із %(limit)s"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s — надіслати"
 
@@ -1385,9 +1381,6 @@ msgstr "Дозволені домени"
 
 msgid "Alphabetical"
 msgstr "За алфавітом"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Уже є в індексі стрічок NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3340,11 +3333,8 @@ msgstr[2] "Знайдено %(count)s шаблонів. Виберіть той,
 msgid "Found in the Account dialog"
 msgstr "Знайдіть у вікні «Обліковий запис»"
 
-msgid "Found on the web"
-msgstr "Знайдено в інтернеті"
-
-msgid "Found on the web during this search"
-msgstr "Знайдено в інтернеті під час цього пошуку"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Знайдено в інтернеті за цим пошуком. NewsBlur додає його, коли ви пробуєте або підписуєтеся."
 
 msgid "Free"
 msgstr "Безкоштовно"
@@ -3599,6 +3589,9 @@ msgstr "Хороші статті"
 msgid "Good Reads on NewsBlur"
 msgstr "Хороші статті на NewsBlur"
 
+msgid "Good match"
+msgstr "Хороший збіг"
+
 msgid "Goodies &amp; Extras"
 msgstr "Застосунки &amp; доповнення"
 
@@ -3730,9 +3723,6 @@ msgstr "Рівень емоційності"
 
 msgid "How often"
 msgstr "Як часто"
-
-msgid "How well this feed matches your description"
-msgstr "Наскільки ця стрічка відповідає вашому опису"
 
 msgid "I'm Following"
 msgstr "Я стежу"
@@ -4618,9 +4608,6 @@ msgstr "NewsBlur, підключений до інших сервісів"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur визначив мову вашого браузера: %(language)s."
-
-msgid "NewsBlur index"
-msgstr "Індекс NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur наразі не працює. <br> Спробуйте незабаром."
@@ -6113,6 +6100,10 @@ msgstr "Науковці простою мовою пояснюють нові �
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Класифікатори з обмеженою сферою дії доступні лише передплатникам %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Оцінка %(score)s з 10 за вашим описом"
+
 msgid "Scroll to comments"
 msgstr "Прокрутити до коментарів"
 
@@ -6964,6 +6955,9 @@ msgstr "Потокове з’єднання перервано. Відпові�
 
 msgid "Stripe Id:"
 msgstr "Ідентифікатор Stripe:"
+
+msgid "Strong match"
+msgstr "Точний збіг"
 
 msgid "Style"
 msgstr "Стиль"
@@ -8073,6 +8067,9 @@ msgstr "Очікування результату…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Увага: цю дію неможливо скасувати"
+
+msgid "Weak match"
+msgstr "Неточний збіг"
 
 msgid "Weather"
 msgstr "Погода"

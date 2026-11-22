@@ -595,10 +595,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Je kunt vandaag nog %(remaining)s van de %(limit)s zoekopdrachten uitvoeren"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s om te verzenden"
 
@@ -1306,9 +1302,6 @@ msgstr "Toegestane domeinen"
 
 msgid "Alphabetical"
 msgstr "Alfabetisch"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Staat al in de feedindex van NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3240,11 +3233,10 @@ msgstr[1] "%(count)s patronen gevonden. Selecteer het patroon dat het best overe
 msgid "Found in the Account dialog"
 msgstr "Te vinden in het accountvenster"
 
-msgid "Found on the web"
-msgstr "Gevonden op internet"
-
-msgid "Found on the web during this search"
-msgstr "Gevonden op het web tijdens deze zoekopdracht"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr ""
+"Gevonden op het web via deze zoekopdracht. NewsBlur voegt deze toe wanneer je het probeert of je erop "
+"abonneert."
 
 msgid "Free"
 msgstr "Gratis"
@@ -3499,6 +3491,9 @@ msgstr "Goede leestips"
 msgid "Good Reads on NewsBlur"
 msgstr "Goede leestips op NewsBlur"
 
+msgid "Good match"
+msgstr "Goede overeenkomst"
+
 msgid "Goodies &amp; Extras"
 msgstr "Extra’s &amp; meer"
 
@@ -3630,9 +3625,6 @@ msgstr "Hoeveel emotie"
 
 msgid "How often"
 msgstr "Hoe vaak"
-
-msgid "How well this feed matches your description"
-msgstr "Hoe goed deze feed bij je beschrijving past"
 
 msgid "I'm Following"
 msgstr "Ik volg"
@@ -4507,9 +4499,6 @@ msgstr "NewsBlur gekoppeld aan andere diensten"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur heeft %(language)s gedetecteerd in je browser."
-
-msgid "NewsBlur index"
-msgstr "index van NewsBlur"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur is momenteel niet beschikbaar. <br> Probeer het straks opnieuw."
@@ -5995,6 +5984,10 @@ msgstr "Wetenschappers leggen nieuw onderzoek uit in begrijpelijke taal"
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Gerichte classifiers zijn alleen beschikbaar voor %(plan)s-abonnees."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Score: %(score)s van de 10 voor je beschrijving"
+
 msgid "Scroll to comments"
 msgstr "Naar de reacties scrollen"
 
@@ -6839,6 +6832,9 @@ msgstr "Stream onderbroken. 10 seconden lang geen antwoord ontvangen."
 
 msgid "Stripe Id:"
 msgstr "Stripe-ID:"
+
+msgid "Strong match"
+msgstr "Sterke overeenkomst"
 
 msgid "Style"
 msgstr "Stijl"
@@ -7941,6 +7937,9 @@ msgstr "Wachten op een oordeel…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Waarschuwing: dit is echt permanent"
+
+msgid "Weak match"
+msgstr "Zwakke overeenkomst"
 
 msgid "Weather"
 msgstr "Weer"

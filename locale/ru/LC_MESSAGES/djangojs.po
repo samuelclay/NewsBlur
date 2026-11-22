@@ -664,10 +664,6 @@ msgid "%(remaining)s of %(limit)s searches left today"
 msgstr "Сегодня осталось поисков: %(remaining)s из %(limit)s"
 
 #, python-format
-msgid "%(score)s/10"
-msgstr "%(score)s/10"
-
-#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s для отправки"
 
@@ -1389,9 +1385,6 @@ msgstr "Разрешённые домены"
 
 msgid "Alphabetical"
 msgstr "По алфавиту"
-
-msgid "Already in NewsBlur’s feed index"
-msgstr "Уже есть в индексе лент NewsBlur"
 
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
@@ -3344,11 +3337,8 @@ msgstr[2] "Найдено %(count)s шаблонов. Выберите тот, �
 msgid "Found in the Account dialog"
 msgstr "Находится в окне «Аккаунт»"
 
-msgid "Found on the web"
-msgstr "Найдено в интернете"
-
-msgid "Found on the web during this search"
-msgstr "Найдено в интернете в ходе этого поиска"
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Найдено в интернете с помощью этого поиска. NewsBlur добавляет его, когда вы пробуете или подписываетесь."
 
 msgid "Free"
 msgstr "Бесплатно"
@@ -3603,6 +3593,9 @@ msgstr "Хорошие статьи"
 msgid "Good Reads on NewsBlur"
 msgstr "Хорошие статьи на NewsBlur"
 
+msgid "Good match"
+msgstr "Хорошее совпадение"
+
 msgid "Goodies &amp; Extras"
 msgstr "Полезное &amp; дополнения"
 
@@ -3734,9 +3727,6 @@ msgstr "Насколько выразительно"
 
 msgid "How often"
 msgstr "Как часто"
-
-msgid "How well this feed matches your description"
-msgstr "Насколько эта лента соответствует вашему описанию"
 
 msgid "I'm Following"
 msgstr "Мои подписки"
@@ -4622,9 +4612,6 @@ msgstr "Сервисы, связанные с NewsBlur"
 #, python-format
 msgid "NewsBlur detected %(language)s from your browser."
 msgstr "NewsBlur определил язык вашего браузера: %(language)s."
-
-msgid "NewsBlur index"
-msgstr "NewsBlur индекс"
 
 msgid "NewsBlur is down right now. <br> Try again soon."
 msgstr "NewsBlur сейчас недоступен. <br> Повторите попытку позже."
@@ -6123,6 +6110,10 @@ msgstr "Учёные простым языком рассказывают о н�
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Классификаторы с ограниченной областью действия доступны только подписчикам %(plan)s."
 
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Оценка %(score)s из 10 за ваше описание"
+
 msgid "Scroll to comments"
 msgstr "Прокрутить к комментариям"
 
@@ -6976,6 +6967,9 @@ msgstr "Поток прерван. Ответ не получен в течен�
 
 msgid "Stripe Id:"
 msgstr "Идентификатор Stripe:"
+
+msgid "Strong match"
+msgstr "Точное совпадение"
 
 msgid "Style"
 msgstr "Стиль"
@@ -8088,6 +8082,9 @@ msgstr "Ожидание вердикта…"
 
 msgid "Warning: This is actually permanent"
 msgstr "Внимание: это действие необратимо"
+
+msgid "Weak match"
+msgstr "Неточное совпадение"
 
 msgid "Weather"
 msgstr "Погода"
