@@ -6,12 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
 import android.text.Editable
-import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.TextWatcher
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,11 +17,16 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.newsblur.R
+import com.newsblur.activity.AiCreditsActivity
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.databinding.IncludeAiClassifierSectionBinding
 import com.newsblur.design.AiClassifierPalette
@@ -36,12 +36,22 @@ import com.newsblur.domain.ClassifierScope
 import com.newsblur.domain.Story
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
+import com.newsblur.network.domain.AiClassifierUsageResponse
+import com.newsblur.network.domain.AiCredits
 import com.newsblur.network.domain.PromptTestResponse
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.AiCreditsAction
+import com.newsblur.util.AiCreditsNoticeStyle
+import com.newsblur.util.AiCreditsStage
+import com.newsblur.util.AiCreditsStatus
+import com.newsblur.util.AiCreditsText
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.PrefConstants.ThemeValue
 import com.newsblur.util.UIUtils
 import com.newsblur.view.TrainerCapsuleView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 /**
@@ -50,8 +60,11 @@ import kotlin.math.roundToInt
  * make_image_filter_section and laid out like clients/ios/Classes/TrainerAIPromptSection.swift.
  * Saved prompts are capsules (view/TrainerCapsuleView.kt) that toggle between focus and hidden or
  * get removed, a new prompt can be typed (with a live preview capsule) and tested on the current
- * story. Any account can do all of that, but AI filters only run on Premium Archive or Pro, so
- * other accounts see a banner leading to the upgrade screen (AiFilterAccess.kt).
+ * story. Any account can do all of that, but AI filters only run on a paid plan's monthly AI
+ * credits. Each section shows the credit meter, what a filter on this site spends, and the notice
+ * for a free account, low credits, usage billing or a pause (AiFilterAccess.kt, util/AiCreditsText.kt).
+ * The credits refresh whenever the trainer comes back to the front, such as from the AI credits
+ * screen (activity/AiCreditsActivity.kt) or Stripe.
  *
  * Prompt edits go straight into [classifier]. Call [commit] right before the trainer saves, then
  * Classifier.recordChanges, as IntelTrainerSections.kt does.
@@ -77,10 +90,47 @@ class AiClassifierSections(
     private val colors = AiClassifierPalette.colors(theme)
     private val trainerColors = TrainerPalette.colors(theme)
     private val medium: Typeface? = ResourcesCompat.getFont(context, R.font.whitney_ssm_medium_bas)
+    private val creditsText = AiCreditsText(context)
+    private var credits: AiCredits? = prefsRepo.getAiCredits()
+
+    // The site's estimates from /analyzer/ai_classifier_usage, once it answers.
+    private var usage: AiClassifierUsageResponse? = null
     private val sections = listOf(Section(imagePrompt = false), Section(imagePrompt = true))
 
     fun bind() {
         sections.forEach { it.bind() }
+        // AiClassifierSections.kt rereads the credits each time the trainer is in front again, so
+        // a change made on the AI credits screen, in Stripe or on the web shows on return.
+        val owner = fragment.viewLifecycleOwner
+        owner.lifecycle.addObserver(
+            LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) refreshCredits()
+            },
+        )
+    }
+
+    private fun refreshCredits() {
+        prefsRepo.getAiCredits()?.let { credits = it }
+        sections.forEach { it.refresh() }
+        val owner = fragment.viewLifecycleOwner
+        owner.lifecycleScope.launch {
+            val response = withContext(Dispatchers.IO) { classifierApi.getAiClassifierUsage(feedId) }
+            if (!response.isSuccess) return@launch
+            response.aiCredits?.let {
+                credits = it
+                prefsRepo.setAiCredits(it)
+            }
+            usage = response
+            sections.forEach { it.refresh() }
+        }
+    }
+
+    private fun openCredits(action: AiCreditsAction? = null) {
+        if (action == AiCreditsAction.UPGRADE) {
+            UIUtils.startSubscriptionActivity(context)
+        } else {
+            context.startActivity(AiCreditsActivity.intent(context, action))
+        }
     }
 
     /** Keeps a typed but unadded prompt, since the web saves its live preview pill too. */
@@ -181,7 +231,7 @@ class AiClassifierSections(
 
             bindImageGrid()
             bindPreviewRow()
-            bindArchiveBanner()
+            bindCreditsBox()
             renderSavedList()
             refresh()
         }
@@ -206,13 +256,12 @@ class AiClassifierSections(
             renderPreviewRow()
             binding.aiTestButton.isEnabled = status.testEnabled
             binding.aiTestButton.alpha = if (binding.aiTestButton.isEnabled) 1f else 0.5f
-            binding.aiBanner.isVisible = status.showsArchiveBanner
+            renderCredits(status.creditsStage)
         }
 
         private fun status(): AiSectionStatus =
             AiFilterAccess.status(
-                isArchive = prefsRepo.getIsArchive(),
-                isPro = prefsRepo.getIsPro(),
+                credits = credits,
                 savedScores = scores.values,
                 typedPrompt = typedPrompt,
                 hasStory = story != null,
@@ -221,31 +270,74 @@ class AiClassifierSections(
                 isTesting = tester.isTesting,
             )
 
-        /** "AI filters are saved but only run on Premium Archive.", the whole banner opening the upgrade screen. */
-        private fun bindArchiveBanner() {
-            val banner = binding.aiBanner
-            val link = context.getString(R.string.ai_filters_archive_link)
-            val message = context.getString(R.string.ai_filters_archive_only, link)
-            val text = SpannableStringBuilder(message)
-            val start = message.indexOf(link)
-            if (start >= 0) {
-                val end = start + link.length
-                text.setSpan(ForegroundColorSpan(colors.archiveBannerLink), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                text.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                text.setSpan(UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        /** The credit meter opens the AI credits screen; the notice's button goes where its state leads. */
+        private fun bindCreditsBox() {
+            binding.aiCreditsUsed.setTextColor(trainerColors.textPrimary)
+            binding.aiCreditsUsed.typeface = medium
+            binding.aiCreditsResets.setTextColor(trainerColors.textSecondary)
+            binding.aiCreditsEstimate.setTextColor(trainerColors.textSecondary)
+            ContextCompat.getDrawable(context, R.drawable.ic_chevron_right)?.mutate()?.let { chevron ->
+                val size = dp(14)
+                chevron.setBounds(0, 0, size, size)
+                chevron.setTint(trainerColors.textSecondary)
+                chevron.isAutoMirrored = true
+                binding.aiCreditsResets.setCompoundDrawablesRelative(null, null, chevron, null)
             }
-            banner.text = text
-            banner.setTextColor(colors.archiveBannerText)
-            banner.background =
-                RippleDrawable(
-                    ColorStateList.valueOf(colors.archiveBannerBorder),
-                    rounded(colors.archiveBannerBackground, colors.archiveBannerBorder),
-                    null,
-                )
-            banner.setOnClickListener { UIUtils.startSubscriptionActivity(context) }
+            binding.aiCreditsMeter.background =
+                RippleDrawable(ColorStateList.valueOf(colors.badgeBackground), null, rounded(colors.badgeBackground))
+            binding.aiCreditsMeter.contentDescription = context.getString(R.string.ai_credits_open)
+            binding.aiCreditsMeter.setOnClickListener { openCredits() }
+            styleButton(binding.aiCreditsAction)
         }
 
-        private fun styleButton(button: com.google.android.material.button.MaterialButton) {
+        private fun renderCredits(stage: AiCreditsStage) {
+            val credits = credits
+            binding.aiCreditsBox.isVisible = stage != AiCreditsStage.HIDDEN && credits != null
+            if (credits == null || stage == AiCreditsStage.HIDDEN) return
+
+            val showsMeter = AiCreditsStatus.showsMeter(credits)
+            binding.aiCreditsMeter.isVisible = showsMeter
+            if (showsMeter) {
+                binding.aiCreditsUsed.text = creditsText.meter(credits)
+                binding.aiCreditsResets.text = creditsText.resets(credits)
+                binding.aiCreditsBar.bind(
+                    AiCreditsStatus.meterFraction(credits),
+                    colors.meterTrack,
+                    colors.meterColor(AiCreditsStatus.meterLevel(credits)),
+                )
+            }
+
+            val perMonth = usage?.let { if (imagePrompt) it.imageCreditsPerMonth else it.textCreditsPerMonth }
+            val estimate = perMonth?.takeIf { AiCreditsStatus.isRunning(credits) }?.let { creditsText.estimate(it, imagePrompt) }
+            binding.aiCreditsEstimate.text = estimate
+            binding.aiCreditsEstimate.isVisible = estimate != null
+
+            val notice = creditsText.notice(credits)
+            binding.aiCreditsNotice.isVisible = notice != null
+            if (notice == null) return
+            val (fill, border, text) =
+                when (notice.style) {
+                    AiCreditsNoticeStyle.UPGRADE -> Triple(colors.upgradeBackground, colors.upgradeBorder, colors.upgradeText)
+                    AiCreditsNoticeStyle.WARNING -> Triple(colors.warningBackground, colors.warningBorder, colors.warningText)
+                    AiCreditsNoticeStyle.PAUSED -> Triple(colors.pausedBackground, colors.pausedBorder, colors.pausedText)
+                    AiCreditsNoticeStyle.BILLING -> Triple(colors.billingBackground, colors.billingBorder, colors.billingText)
+                }
+            binding.aiCreditsNotice.background = rounded(fill, border, radiusDp = 8)
+            binding.aiCreditsMessage.text = notice.message
+            binding.aiCreditsMessage.setTextColor(text)
+            binding.aiCreditsMessage.typeface = medium
+            binding.aiCreditsDetail.text = notice.detail
+            binding.aiCreditsDetail.setTextColor(text)
+            binding.aiCreditsDetail.isVisible = !notice.detail.isNullOrEmpty()
+            binding.aiCreditsAction.text = notice.actionLabel
+            binding.aiCreditsAction.isVisible = notice.action != null && notice.actionLabel != null
+            binding.aiCreditsAction.setOnClickListener { openCredits(notice.action) }
+            binding.aiCreditsSecondary.text = notice.secondary
+            binding.aiCreditsSecondary.setTextColor(text)
+            binding.aiCreditsSecondary.isVisible = notice.secondary != null
+        }
+
+        private fun styleButton(button: MaterialButton) {
             button.backgroundTintList = ColorStateList.valueOf(colors.accent)
             button.setTextColor(colors.accentText)
         }

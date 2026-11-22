@@ -1,5 +1,6 @@
 package com.newsblur.activity
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
@@ -16,11 +17,14 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivitySubscriptionBinding
 import com.newsblur.databinding.ViewSubscriptionFeatureRowBinding
 import com.newsblur.databinding.ViewSubscriptionTierBinding
+import com.newsblur.design.AiClassifierPalette
 import com.newsblur.di.IconLoader
 import com.newsblur.network.UserApi
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
+import com.newsblur.util.AiCreditsStatus
+import com.newsblur.util.AiCreditsText
 import com.newsblur.util.AppConstants
 import com.newsblur.util.BetterLinkMovementMethod
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -39,6 +43,8 @@ private data class SubscriptionFeature(
     val iconRes: Int,
     val colorRes: Int,
     val upcoming: Boolean = false,
+    // A plurals titleRes filled in with this number, such as a plan's monthly AI credits.
+    val quantity: Int? = null,
 )
 
 private data class SubscriptionTierConfig(
@@ -102,6 +108,7 @@ class SubscriptionActivity : NbActivity() {
     private var billingErrorMessage: String? = null
     private var availableSubscriptions: Map<String, ProductDetails> = emptyMap()
     private var activeSubscriptionState = ActiveSubscriptionState()
+    private val creditsText by lazy { AiCreditsText(this) }
 
     private val premiumTier =
         SubscriptionTierConfig(
@@ -122,6 +129,12 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.premium_custom_rss, R.drawable.ic_rss, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.premium_text_view, R.drawable.ic_file_edit, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.premium_discover_related, R.drawable.ic_world, R.color.premium_feature_teal),
+                    SubscriptionFeature(
+                        R.plurals.premium_ai_credits,
+                        R.drawable.ic_ai_text_filter,
+                        R.color.premium_feature_purple,
+                        quantity = AiCreditsStatus.PREMIUM_CREDITS,
+                    ),
                     SubscriptionFeature(R.string.premium_shiloh, R.drawable.ic_dining, R.color.premium_feature_brown),
                 ),
             showDogImage = true,
@@ -142,7 +155,12 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.archive_web_feeds, R.drawable.ic_web_feed, R.color.premium_feature_purple),
                     SubscriptionFeature(R.string.archive_listen, R.drawable.ic_listen, R.color.premium_feature_cyan),
                     SubscriptionFeature(R.string.archive_ask_ai, android.R.drawable.ic_menu_help, R.color.premium_feature_ai),
-                    SubscriptionFeature(R.string.premium_natural_language_classifiers, R.drawable.ic_ai_text_filter, R.color.premium_feature_purple),
+                    SubscriptionFeature(
+                        R.plurals.plan_ai_credits,
+                        R.drawable.ic_ai_text_filter,
+                        R.color.premium_feature_purple,
+                        quantity = AiCreditsStatus.ARCHIVE_CREDITS,
+                    ),
                     SubscriptionFeature(R.string.archive_train_folder, R.drawable.ic_folder, R.color.premium_feature_mint),
                     SubscriptionFeature(R.string.archive_train_globally, R.drawable.ic_world, R.color.premium_feature_indigo),
                     SubscriptionFeature(R.string.archive_daily_briefing, R.drawable.ic_briefing_cutout, R.color.premium_feature_orange),
@@ -175,6 +193,12 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.pro_enable_sites, R.drawable.ic_sheets, R.color.premium_feature_green),
                     SubscriptionFeature(R.string.pro_all_feeds_fetched, R.drawable.ic_bolt, R.color.premium_feature_orange),
                     SubscriptionFeature(R.string.pro_listen, R.drawable.ic_listen, R.color.premium_feature_cyan),
+                    SubscriptionFeature(
+                        R.plurals.plan_ai_credits,
+                        R.drawable.ic_ai_text_filter,
+                        R.color.premium_feature_purple,
+                        quantity = AiCreditsStatus.PRO_CREDITS,
+                    ),
                     SubscriptionFeature(R.string.pro_regex_train, android.R.drawable.ic_menu_edit, R.color.premium_feature_yellow),
                     SubscriptionFeature(R.string.pro_priority_support, android.R.drawable.ic_menu_call, R.color.premium_feature_yellow),
                     SubscriptionFeature(R.string.pro_natural_language_search, R.drawable.ic_search_2, R.color.premium_feature_gray, upcoming = true),
@@ -248,6 +272,40 @@ class SubscriptionActivity : NbActivity() {
                 true
             }
         binding.textPolicies.text = UIUtils.fromHtml(getString(R.string.premium_policies))
+        binding.buttonAiCredits.setOnClickListener { startActivity(Intent(this, AiCreditsActivity::class.java)) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        renderAiCreditsCard()
+    }
+
+    // SubscriptionActivity.kt: a plan's monthly AI credits come with the Play subscriptions above,
+    // so the card shows them here and opens AiCreditsActivity.kt for the rest.
+    private fun renderAiCreditsCard() {
+        val credits = prefsRepo.getAiCredits()
+        binding.containerAiCredits.isVisible = credits != null && AiCreditsStatus.showsMeter(credits)
+        if (credits == null || !binding.containerAiCredits.isVisible) return
+        val colors = AiClassifierPalette.colors(prefsRepo.getResolvedTheme(this))
+        binding.containerAiCredits.setCardBackgroundColor(palette.cardBackground)
+        binding.containerAiCredits.strokeColor = palette.border
+        binding.textAiCreditsTitle.setTextColor(palette.primaryText)
+        binding.textAiCreditsUsed.setTextColor(palette.primaryText)
+        binding.textAiCreditsResets.setTextColor(palette.secondaryText)
+        binding.textAiCreditsUsed.text = creditsText.meter(credits)
+        binding.textAiCreditsResets.text = creditsText.resets(credits)
+        binding.barAiCredits.bind(
+            AiCreditsStatus.meterFraction(credits),
+            colors.meterTrack,
+            colors.meterColor(AiCreditsStatus.meterLevel(credits)),
+        )
+        // The statement alone: the Premium screen offers nothing outside Google Play.
+        val notice = creditsText.notice(credits, withActions = false)
+        binding.textAiCreditsNotice.text = notice?.message
+        binding.textAiCreditsNotice.isVisible = notice != null
+        binding.textAiCreditsNotice.setTextColor(palette.secondaryText)
+        binding.buttonAiCredits.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.positive))
+        binding.buttonAiCredits.setTextColor(ContextCompat.getColor(this, R.color.white))
     }
 
     private fun setupBilling() {
@@ -326,7 +384,13 @@ class SubscriptionActivity : NbActivity() {
             val featureBinding = ViewSubscriptionFeatureRowBinding.inflate(inflater, tierBinding.containerFeatures, false)
             val iconColor = ContextCompat.getColor(this, feature.colorRes)
 
-            featureBinding.textTitle.setText(feature.titleRes)
+            val quantity = feature.quantity
+            if (quantity != null) {
+                featureBinding.textTitle.text =
+                    resources.getQuantityString(feature.titleRes, quantity, AiCreditsStatus.formatPlanCredits(quantity, creditsText.locale))
+            } else {
+                featureBinding.textTitle.setText(feature.titleRes)
+            }
             featureBinding.textTitle.setTextColor(if (feature.upcoming) palette.secondaryText else palette.primaryText)
             featureBinding.textUpcoming.setTextColor(palette.secondaryText)
             featureBinding.textUpcoming.isVisible = feature.upcoming

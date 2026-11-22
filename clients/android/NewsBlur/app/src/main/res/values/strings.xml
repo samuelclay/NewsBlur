@@ -451,7 +451,16 @@ people together to talk about the world.</string>
     <string name="premium_custom_rss">Custom RSS feeds for saved stories</string>
     <string name="premium_text_view">Text view conveniently extracts the story</string>
     <string name="premium_discover_related">Discover related stories and sites</string>
-    <string name="premium_natural_language_classifiers">Natural language text and image classifiers</string>
+    <!-- SubscriptionActivity.kt: Premium's AI filter line. %1$s is the monthly AI credits Premium includes, 5. -->
+    <plurals name="premium_ai_credits">
+        <item quantity="one">AI text and image filters, with %1$s AI credit a month</item>
+        <item quantity="other">AI text and image filters, with %1$s AI credits a month</item>
+    </plurals>
+    <!-- SubscriptionActivity.kt: Premium Archive's and Premium Pro's AI filter line. %1$s is the monthly AI credits the plan includes, 50 or 500. -->
+    <plurals name="plan_ai_credits">
+        <item quantity="one">%1$s AI credit a month for AI filters</item>
+        <item quantity="other">%1$s AI credits a month for AI filters</item>
+    </plurals>
     <string name="premium_shiloh">You feed Lyric, NewsBlur\'s hungry hound, for 6 days</string>
 
     <string name="archive_everything_premium">Everything in the premium subscription, of course</string>
@@ -1530,9 +1539,112 @@ people together to talk about the world.</string>
     <!-- AiClassifierSections.kt: %1$s is the folder's name. -->
     <string name="ai_scope_folder_named">All sites in %1$s</string>
     <string name="ai_scope_requires_archive">Requires Premium Archive</string>
-    <!-- AiClassifierSections.kt: shown when an account without Premium Archive saves or types an AI filter. %1$s is ai_filters_archive_link, shown as a link to the upgrade screen. -->
-    <string name="ai_filters_archive_only">AI filters are saved but only run on %1$s.</string>
-    <string name="ai_filters_archive_link">Premium Archive</string>
+
+    <!-- util/AiCreditsText.kt: AI credits, which every paid plan includes each month to run AI text and image filters
+         (apps/analyzer/ai_credits.py). A credit is one US cent of what the filters cost to run. Credit amounts show
+         with up to one decimal place, dates as a short month and day such as Dec 1, and dollar amounts such as $0.62. -->
+    <string name="ai_credits_title">AI credits</string>
+    <!-- AiCreditsText.kt: the credit meter. %1$s is the credits used this month, such as 12.3, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <plurals name="ai_credits_meter">
+        <item quantity="one">%1$s of %2$s AI credit used</item>
+        <item quantity="other">%1$s of %2$s AI credits used</item>
+    </plurals>
+    <!-- AiCreditsText.kt: beside the credit meter. %1$s is the 1st of next month, such as Dec 1. -->
+    <string name="ai_credits_resets">Resets %1$s</string>
+    <!-- AiCreditsText.kt: a free account that has or is typing an AI filter. %1$s, %2$s and %3$s are the monthly credits of Premium, Premium Archive and Premium Pro: 5, 50 and 500. -->
+    <string name="ai_credits_free">AI filters are saved but only run on Premium. Premium includes %1$s AI credits a month, Archive %2$s and Pro %3$s.</string>
+    <string name="ai_credits_upgrade">Upgrade</string>
+    <!-- AiCreditsText.kt: %1$s is about how many credits one filter on this site uses a month, such as 0.4, from the stories it published last month. -->
+    <string name="ai_credits_estimate_text">A text filter on this site uses about %1$s credits a month</string>
+    <string name="ai_credits_estimate_image">An image filter on this site uses about %1$s credits a month</string>
+    <!-- AiCreditsText.kt: like ai_credits_estimate_text for a site that uses almost nothing. %1$s is 0.1. -->
+    <string name="ai_credits_estimate_text_small">A text filter on this site uses less than %1$s credits a month</string>
+    <string name="ai_credits_estimate_image_small">An image filter on this site uses less than %1$s credits a month</string>
+    <!-- AiCreditsText.kt: most of the month's credits are used. %1$s is the day they run out at the last week's pace, such as Nov 27. -->
+    <string name="ai_credits_runs_out">At this pace your credits run out around %1$s.</string>
+    <!-- AiCreditsText.kt: %1$s is the 1st of next month, such as Dec 1, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <plurals name="ai_credits_paused">
+        <item quantity="one">Your AI filters are paused until %1$s. This month’s %2$s AI credit is used.</item>
+        <item quantity="other">Your AI filters are paused until %1$s. This month’s %2$s AI credits are used.</item>
+    </plurals>
+    <!-- AiCreditsText.kt: %1$s is the reader's monthly limit, such as $5.00, and %2$s the 1st of next month, such as Dec 1. -->
+    <string name="ai_credits_paused_limit">Your AI filters reached your %1$s monthly limit and are paused until %2$s.</string>
+    <!-- AiCreditsText.kt: %1$s is the credits the plan includes, such as 50, and %2$s what credits past them cost so far this month, such as $0.37. The plural follows %1$s. -->
+    <plurals name="ai_credits_billing_on">
+        <item quantity="one">Usage billing is on. Credits past your %1$s cost 1¢ each: %2$s so far this month.</item>
+        <item quantity="other">Usage billing is on. Credits past your %1$s cost 1¢ each: %2$s so far this month.</item>
+    </plurals>
+    <!-- AiCreditsText.kt: usage billing on a plan without credits. %1$s is what credits cost so far this month, such as $0.37. -->
+    <string name="ai_credits_billing_on_no_plan">Usage billing is on. AI credits cost 1¢ each: %1$s so far this month.</string>
+    <!-- AiCreditsText.kt: %1$s is what usage billing hasn't charged yet, such as $0.37, %2$s the smallest charge, $1.00, and %3$s the amount charged right away, $10.00. -->
+    <string name="ai_credits_unbilled">%1$s is waiting to be charged: at the start of next month if it’s at least %2$s, or right away at %3$s.</string>
+    <string name="ai_credits_keep_running">Keep filters running</string>
+    <string name="ai_credits_billing_explainer">Past your credits, filters keep running at 1¢ per credit.</string>
+    <!-- AiCreditsText.kt: %1$s is what usage billing would cost this month at the reader's pace, such as $0.62. -->
+    <string name="ai_credits_billing_forecast">About %1$s this month at your pace.</string>
+    <string name="ai_credits_turn_on_billing">Turn on usage billing</string>
+    <!-- AiCreditsText.kt: describes ai_credits_turn_on_billing. %1$s is what it would cost this month at the reader's pace, such as $0.62. -->
+    <string name="ai_credits_turn_on_detail">1¢ per credit past your plan’s, about %1$s this month</string>
+    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per credit past your plan’s</string>
+    <!-- AiCreditsText.kt: under ai_credits_turn_on_billing. %1$s is the 1st of next month, such as Dec 1. -->
+    <string name="ai_credits_or_wait">or wait until %1$s</string>
+    <string name="ai_credits_manage_billing">Manage billing</string>
+    <string name="ai_credits_change_limit">Change limit</string>
+    <!-- AiClassifierSections.kt and SubscriptionActivity.kt: opens AiCreditsActivity.kt. -->
+    <string name="ai_credits_open">See AI credits</string>
+    <!-- AiCreditsActivity.kt: %1$s is the credits the plan includes, such as 50. The plural follows %1$s. -->
+    <plurals name="ai_credits_plan_summary">
+        <item quantity="one">Your plan includes %1$s AI credit a month for AI text and image filters. Credits reset on the 1st, and unused ones don’t carry over.</item>
+        <item quantity="other">Your plan includes %1$s AI credits a month for AI text and image filters. Credits reset on the 1st, and unused ones don’t carry over.</item>
+    </plurals>
+    <!-- AiCreditsActivity.kt: %1$s is the credits used by the end of the month at the last week's pace, such as 41.2, and %2$s the credits the plan includes, such as 50. The plural follows %2$s. -->
+    <plurals name="ai_credits_forecast_month">
+        <item quantity="one">At this pace you’ll use about %1$s of your %2$s credit this month.</item>
+        <item quantity="other">At this pace you’ll use about %1$s of your %2$s credits this month.</item>
+    </plurals>
+    <string name="ai_credits_unlimited">This server doesn’t count AI credits, so AI filters always run.</string>
+    <string name="ai_credits_load_failed">Couldn’t load your AI credits. Pull down to try again.</string>
+    <!-- AiCreditsActivity.kt: usage billing keeps AI filters running past the plan's credits, billed by Stripe. -->
+    <string name="usage_billing_title">Usage billing</string>
+    <!-- AiCreditsActivity.kt: %1$s is the smallest charge, $1.00, and %2$s the amount charged right away, $10.00. -->
+    <string name="usage_billing_terms">Your card is charged at the start of each month once it comes to at least %1$s, or right away once it reaches %2$s. Smaller amounts wait for later months.</string>
+    <string name="usage_billing_set_up">Set up usage billing</string>
+    <!-- AiCreditsActivity.kt: opens Stripe's billing portal, where the card can be changed and invoices seen. -->
+    <string name="usage_billing_manage">Update card on Stripe</string>
+    <string name="usage_billing_cancel">Turn off usage billing</string>
+    <!-- AiCreditsActivity.kt: %1$s is the smallest charge, $1.00. -->
+    <string name="usage_billing_cancel_confirm">Turn off usage billing? Credits already past your plan’s are charged now if they come to %1$s, and AI filters pause once this month’s credits are used.</string>
+    <string name="usage_billing_cancel_keep">Keep it on</string>
+    <string name="usage_billing_cancelled">Usage billing is off.</string>
+    <string name="usage_billing_cancel_failed">Couldn’t turn off usage billing. Please try again.</string>
+    <string name="usage_billing_limit_label">Monthly limit</string>
+    <string name="usage_billing_limit_hint">No limit</string>
+    <string name="usage_billing_limit_help">Filters pause when usage billing reaches it. Leave empty for no limit.</string>
+    <string name="usage_billing_limit_save">Save limit</string>
+    <string name="usage_billing_limit_saved">Monthly limit saved</string>
+    <string name="usage_billing_limit_cleared">Monthly limit removed</string>
+    <string name="usage_billing_limit_failed">Couldn’t save the monthly limit. Please try again.</string>
+    <!-- AiCreditsActivity.kt: %1$s is an example amount, such as 10.50 or 10,50, in the language's decimal separator. -->
+    <string name="usage_billing_limit_invalid">Enter the limit in dollars, such as %1$s.</string>
+    <!-- AiCreditsText.kt: %1$s is the reader's monthly limit, such as $5.00. -->
+    <string name="usage_billing_limit_read_only">Monthly limit: %1$s</string>
+    <string name="usage_billing_no_limit">No monthly limit</string>
+    <string name="usage_billing_history_title">Usage billing history</string>
+    <string name="usage_billing_no_invoices">No usage billing invoices yet.</string>
+    <!-- AiCreditsActivity.kt: an invoice Stripe hasn't charged yet. -->
+    <string name="usage_billing_upcoming">Upcoming</string>
+    <string name="usage_billing_invoice">Invoice</string>
+    <!-- AiCreditsActivity.kt: how many AI credits an invoice line bills. %1$s is a whole number, such as 1,200. -->
+    <plurals name="usage_billing_quantity">
+        <item quantity="one">%1$s credit</item>
+        <item quantity="other">%1$s credits</item>
+    </plurals>
+    <string name="usage_billing_stripe_failed">Couldn’t reach Stripe. Please try again.</string>
+    <string name="usage_billing_already_active">Usage billing is already set up.</string>
+    <string name="usage_billing_activating">Turning on usage billing. This takes a few seconds once Stripe confirms your payment details.</string>
+    <string name="usage_billing_activating_slow">Stripe is still confirming your billing. Pull down to check again in a moment.</string>
+    <string name="usage_billing_setup_complete">Usage billing is on. Your AI filters keep running past your credits.</string>
+    <string name="usage_billing_no_browser">Install a web browser to set up usage billing.</string>
 
     <!-- strings.xml: Listen, the read-aloud player (ListenManager.kt and the listen package). -->
     <string name="listen_story_button">Listen</string>
