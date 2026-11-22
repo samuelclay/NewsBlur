@@ -869,6 +869,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
     },
 
     mark_read_stories_above_scroll: function (scroll_y) {
+        // story_titles_view.js: the new stories pill's own scroll and the arrival after it aren't reading
+        // (reader.js hold_mark_read_for_new_stories).
+        if (NEWSBLUR.reader.new_stories_arriving()) return;
         var $story_titles = this.$story_titles;
         var score = NEWSBLUR.reader.get_unread_view_score();
         var unread_stories = [];

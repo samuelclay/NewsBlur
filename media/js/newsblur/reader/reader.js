@@ -122,6 +122,10 @@
                 // and brings it back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE.
                 REALTIME_PILL_HIDE_AFTER_SCROLLING: 5000,
                 REALTIME_PILL_RETURN_AFTER_IDLE: 3 * 60 * 1000,
+                // story_titles_view.js marks nothing read on scroll for this long after the pill brings stories in:
+                // the pill's own scroll, and common/motion.js arrive opening the new rows from no height (320ms,
+                // staggered by at most 400ms more).
+                REALTIME_NEW_STORY_ARRIVAL_HOLD: 1000,
                 FILL_OUT_PAGES: 100,
                 FILL_OUT_PAGES_FIND_STORY_TITLE: 5,
                 FILL_OUT_PAGES_SEARCH_STORY_TITLE: 10,
@@ -8033,6 +8037,17 @@
             }, this), 500);
         },
 
+        // reader.js: the scroll the pill makes and the arrival after it aren't reading. Until the new rows have their
+        // height, the row under the top of the list is an old one, and story_titles_view.js
+        // mark_read_stories_above_scroll would mark the new stories above it read.
+        hold_mark_read_for_new_stories: function () {
+            this.flags['new_stories_arriving_until'] = Date.now() + this.constants.REALTIME_NEW_STORY_ARRIVAL_HOLD;
+        },
+
+        new_stories_arriving: function () {
+            return Date.now() < (this.flags['new_stories_arriving_until'] || 0);
+        },
+
         // reader.js: The pill was clicked with more stories waiting than REALTIME_NEW_STORY_CAP. It shows the 20
         // newest-dated waiting stories as if the list had just opened: it fetches the ones it only counted, replaces
         // the list with them and lets go of everything else, and the list pages in afresh below them as the reader
@@ -8132,6 +8147,7 @@
                 }).concat(announced_feed_ids || []));
             }
             this.hold_story_scroll_for_new_stories();
+            this.hold_mark_read_for_new_stories();
             this.$s.$story_titles.stop().scrollTop(0);
             var collection = this.model.stories;
             collection.no_more_stories = false;
@@ -8149,6 +8165,7 @@
             var shown = {};
             _.each(waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP), function (entry) { shown[entry.story_hash] = true; });
             var collection = this.model.stories;
+            this.hold_mark_read_for_new_stories();
             NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, function () {
                 return _.compact(_.map(collection.insert_realtime_stories(stories, true), function (story) {
                     return story.story_title_view && story.story_title_view.el;
@@ -8196,6 +8213,7 @@
             // reader.js: a newest-first list goes all the way to its top before the stories arrive there, so they
             // push the rows below them down instead of the browser keeping the old rows in view.
             var $story_titles = this.$s.$story_titles;
+            this.hold_mark_read_for_new_stories();
             if (!list.oldest_first) $story_titles.stop().scrollTop(0);
             this.hold_story_scroll_for_new_stories();
             // reader.js: common/motion.js slides the stories in from the top, or up into the end of an oldest-first list.
