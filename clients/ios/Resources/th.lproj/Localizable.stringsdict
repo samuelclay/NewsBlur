@@ -16,7 +16,7 @@
 			<string>เพิ่มฟีด %1$@ รายการไปยัง %2$@ ไม่ได้</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>ใช้เครดิต AI ไปแล้ว %2$@ เครดิต เกิน %1$@ ของแพ็กเกจ %3$@</string>
+			<string>ใช้เครดิต AI ไปแล้ว %2$@ เครดิต ซึ่งเกิน %4$@ ในแพ็กเกจของคุณ %3$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>ใช้เครดิต AI ไปแล้ว %2$@ จาก %1$@</string>
+			<string>ใช้เครดิต AI ไปแล้ว %2$@ จากทั้งหมด %3$@</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>อัปเดตเมื่อ %@ สัปดาห์ก่อน</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตที่เกิน %1$@ คิดเครดิตละ 1¢: ใช้ไปแล้ว %2$@ ในเดือนนี้</string>
+			<string>เปิดการเรียกเก็บเงินตามการใช้งาน เครดิตที่เกิน %2$@ ของคุณมีค่าใช้จ่าย 1¢ ต่อ 1,000 เครดิต: เดือนนี้ใช้ไปแล้ว %3$@</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

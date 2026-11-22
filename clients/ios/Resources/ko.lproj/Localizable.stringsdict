@@ -16,7 +16,7 @@
 			<string>%2$@에 피드 %1$@개를 추가하지 못했습니다.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>AI 크레딧 %2$@개 사용, 요금제의 %1$@ %3$@ 초과</string>
+			<string>AI 크레딧 %2$@개 사용, 요금제 한도 %4$@ 초과 %3$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>AI 크레딧 %1$@ 중 %2$@ 사용</string>
+			<string>AI 크레딧 %3$@개 중 %2$@개 사용</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>%@주 전에 업데이트됨</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>사용량 결제가 켜져 있습니다. %1$@을(를) 초과한 크레딧은 개당 1¢입니다. 이번 달 현재까지 %2$@입니다.</string>
+			<string>사용량 기준 결제가 켜져 있습니다. %2$@ 초과 크레딧은 1,000개당 1¢입니다. 이번 달 현재까지 %3$@입니다.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

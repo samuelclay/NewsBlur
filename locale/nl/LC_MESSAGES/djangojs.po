@@ -957,12 +957,18 @@ msgstr "1 maand"
 msgid "1 year"
 msgstr "1 jaar"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1¢ per tegoed boven je abonnement, deze maand ongeveer %(cost)s."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 AI-credits per maand voor AI-filters"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1¢ per tegoed boven het aantal van je abonnement."
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 AI-credits per maand voor AI-filters"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ per 1.000 credits boven je abonnementslimiet; deze maand ongeveer %(cost)s."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ per 1.000 credits boven je abonnementslimiet."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
@@ -981,12 +987,6 @@ msgstr "3 keer per dag"
 
 msgid "5 years"
 msgstr "5 jaar"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 AI-tegoeden per maand voor AI-filters"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 AI-tegoed per maand voor AI-filters"
 
 msgid "5× faster feed updates"
 msgstr "5× snellere feedupdates"
@@ -1026,10 +1026,10 @@ msgstr "Een blurblog met gedeelde artikelen"
 msgid "A clearer, closer sound"
 msgstr "Een helderder, warmer geluid"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
 msgstr ""
-"Eén tegoed staat voor 1¢ aan AI: ongeveer 700 artikelen met een tekstfilter of 100 met een "
-"afbeeldingsfilter."
+"Eén credit staat ongeveer gelijk aan één artikel dat door een tekstfilter gaat. Een afbeeldingsfilter "
+"gebruikt ongeveer 10 credits per artikel."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Een map met feeds die als één stroom worden gelezen"
@@ -1056,8 +1056,8 @@ msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "Een tekstfilter op deze site verbruikt ongeveer %(count)s tegoed per maand."
 msgstr[1] "Een tekstfilter op deze site verbruikt ongeveer %(count)s tegoeden per maand."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Een tekstfilter op deze site verbruikt minder dan een tiende tegoed per maand."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Een tekstfilter op deze site gebruikt minder dan één credit per maand."
 
 msgid "AI Filter"
 msgstr "AI-filter"
@@ -1068,14 +1068,19 @@ msgstr "AI-model"
 msgid "AI credits"
 msgstr "AI-tegoeden"
 
+msgid "AI filters"
+msgstr "AI-filters"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI-filters worden opgeslagen, maar worden alleen uitgevoerd op %(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"AI-filters worden opgeslagen, maar werken alleen met Premium. Premium bevat 5 AI-tegoedpunten per maand, "
-"Archive 50 en Pro 500."
+"AI-filters worden opgeslagen, maar werken alleen met Premium. Premium bevat 1.000 AI-credits per maand, "
+"Archive 10.000 en Pro 100.000."
 
 msgid "AI filters run without credits on this server."
 msgstr "AI-filters gebruiken op deze server geen tegoed."
@@ -1083,8 +1088,8 @@ msgstr "AI-filters gebruiken op deze server geen tegoed."
 msgid "AI finds the stories"
 msgstr "AI vindt de artikelen"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "AI-tekst- en afbeeldingsfilters, met 5 AI-tegoeden per maand"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "AI-tekst- en afbeeldingsfilters, met 1.000 AI-tegoed per maand"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Door AI samengestelde samenvatting van je topartikelen"
@@ -1354,8 +1359,8 @@ msgid_plural "An image filter on this site uses about %(count)s credits a month.
 msgstr[0] "Een afbeeldingsfilter op deze site verbruikt ongeveer %(count)s tegoed per maand."
 msgstr[1] "Een afbeeldingsfilter op deze site verbruikt ongeveer %(count)s tegoeden per maand."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Een afbeeldingsfilter op deze site verbruikt minder dan een tiende tegoed per maand."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Een afbeeldingsfilter op deze site gebruikt minder dan één credit per maand."
 
 msgid "Analysis timed out. Please try again."
 msgstr "Time-out bij de analyse. Probeer het opnieuw."
@@ -2381,16 +2386,8 @@ msgstr "Bezorging"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Beschrijf een artikel dat je zoekt, dan analyseren we de pagina opnieuw om het te vinden."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Beschrijf een onderwerp en AI beoordeelt elk artikel aan de hand van je prompt, zodat je overeenkomsten "
-"kunt uitlichten of verbergen."
-
 msgid "Describe what to focus or hide"
 msgstr "Beschrijf wat je wilt uitlichten of verbergen"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen van elk artikel op basis van je prompt."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3667,6 +3664,9 @@ msgstr "Afbeeldingsvoorbeeld"
 msgid "Image prompt"
 msgstr "Afbeeldingsprompt"
 
+msgid "Images"
+msgstr "Afbeeldingen"
+
 msgid "Immediately"
 msgstr "Onmiddellijk"
 
@@ -4353,12 +4353,6 @@ msgstr "Native apps"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Natuurlijk"
-
-msgid "Natural Language Image Classifier"
-msgstr "Beeldclassifier voor natuurlijke taal"
-
-msgid "Natural Language Text Classifier"
-msgstr "Tekstclassifier in natuurlijke taal"
 
 msgid "Nature"
 msgstr "Natuur"
@@ -5057,13 +5051,15 @@ msgstr "Bezig met verwerken..."
 msgid "Part of a story URL"
 msgstr "Deel van een artikel-URL"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Als je tegoed op is, blijven je filters werken voor 1¢ per tegoedpunt."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Als je je tegoed hebt verbruikt, blijven filters actief voor 1¢ per 1.000 tegoed."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Als je het tegoed van je abonnement hebt verbruikt, worden filters gepauzeerd tot de 1e. Met betalen op "
-"basis van gebruik blijven ze actief voor 1¢ per tegoed."
+"Als je je tegoed van je abonnement hebt verbruikt, worden filters gepauzeerd tot de 1e. Met betalen naar "
+"gebruik blijven ze actief voor 1¢ per 1.000 tegoed."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Plak een URL en NewsBlur maakt een feed van de pagina, ook zonder RSS."
@@ -5259,8 +5255,8 @@ msgstr "Premiumdetails"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premiumlettertypen vereisen een %(link_start)spremiumaccount%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium bevat 5 AI-tegoedpunten per maand, Archive 50 en Pro 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium bevat 1.000 AI-credits per maand, Archive 10.000 en Pro 100.000."
 
 msgid "Premium renewal"
 msgstr "Verlenging van Premium"
@@ -7740,14 +7736,14 @@ msgid "Usage billing charges"
 msgstr "Kosten voor betalen op basis van gebruik"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
 msgstr[0] ""
-"Facturering op basis van gebruik is ingeschakeld. Tegoedpunten boven je limiet van %(count)s kosten 1¢ per "
-"stuk: deze maand tot nu toe %(cost)s."
+"Betalen naar gebruik is ingeschakeld. Tegoed boven je %(count)s kost 1¢ per 1.000: tot nu toe deze maand "
+"%(cost)s."
 msgstr[1] ""
-"Facturering op basis van gebruik is ingeschakeld. Tegoedpunten boven je limiet van %(count)s kosten 1¢ per "
-"stuk: deze maand tot nu toe %(cost)s."
+"Betalen naar gebruik is ingeschakeld. Tegoed boven je %(count)s kost 1¢ per 1.000: tot nu toe deze maand "
+"%(cost)s."
 
 #, python-format
 msgid "Use %(language)s"

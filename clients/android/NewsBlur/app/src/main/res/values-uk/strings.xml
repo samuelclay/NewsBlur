@@ -1328,13 +1328,11 @@
     <string name="ai_filter_content_label">Фільтр вмісту</string>
     <string name="ai_filter_image_label">Фільтр зображень</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Класифікатор тексту природною мовою</string>
-    <string name="ai_image_classifier_header">Класифікатор зображень природною мовою</string>
-    <string name="ai_text_classifier_explainer">Опишіть тему, і ШІ оцінить кожну статтю за вашим запитом, щоб виділяти або приховувати відповідні статті.</string>
-    <string name="ai_image_classifier_explainer">Опишіть, що потрібно шукати, і ШІ аналізуватиме зображення в кожній статті відповідно до вашого запиту.</string>
+    <string name="ai_filters_title">AI-фільтри</string>
+    <string name="ai_filter_mode_text">Текст</string>
+    <string name="ai_filter_mode_images">Зображення</string>
     <string name="ai_text_prompt_hint">наприклад, «ШІ та машинне навчання» або «місцева політика»</string>
     <string name="ai_image_prompt_hint">наприклад, «фуд-фотографія» або «діаграми та графіки»</string>
-    <string name="ai_prompt_placeholder">Опишіть, що виділяти або приховувати</string>
     <string name="ai_prompt_type_content">Вміст</string>
     <string name="ai_prompt_type_image">Зображення</string>
     <string name="ai_prompt_focus">Фокусувати статті, що відповідають умовам</string>
@@ -1380,10 +1378,20 @@
     <string name="ai_credits_resets">Скидається %1$s</string>
     <string name="ai_credits_free">Фільтри AI збережено, але вони працюють лише з Premium. У Premium передбачено %1$s кредитів AI на місяць, в Archive — %2$s, а в Pro — %3$s.</string>
     <string name="ai_credits_upgrade">Перейти на вищий план</string>
-    <string name="ai_credits_estimate_text">Текстовий фільтр на цьому сайті використовує близько %1$s кредитів на місяць</string>
-    <string name="ai_credits_estimate_image">Графічний фільтр на цьому сайті використовує приблизно %1$s кредитів на місяць</string>
-    <string name="ai_credits_estimate_text_small">Текстовий фільтр на цьому сайті використовує менш ніж %1$s кредитів на місяць</string>
-    <string name="ai_credits_estimate_image_small">Графічний фільтр на цьому сайті використовує менше ніж %1$s кредитів на місяць</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="few">Текстовий фільтр на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+        <item quantity="many">Текстовий фільтр на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+        <item quantity="one">Текстовий фільтр на цьому сайті використовує приблизно %1$s кредит на місяць</item>
+        <item quantity="other">Текстовий фільтр на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="few">Фільтр зображень на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+        <item quantity="many">Фільтр зображень на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+        <item quantity="one">Фільтр зображень на цьому сайті використовує приблизно %1$s кредит на місяць</item>
+        <item quantity="other">Фільтр зображень на цьому сайті використовує приблизно %1$s кредитів на місяць</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Текстовий фільтр на цьому сайті використовує менше одного кредиту на місяць</string>
+    <string name="ai_credits_image_estimate_under_one">Фільтр зображень на цьому сайті використовує менше одного кредиту на місяць</string>
     <string name="ai_credits_runs_out">За нинішніх темпів ваші кредити закінчаться приблизно %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="few">Ваші фільтри AI призупинено до %1$s. Кредити AI за цей місяць (%2$s) використано.</item>
@@ -1392,29 +1400,29 @@
         <item quantity="other">Фільтри ШІ призупинено до %1$s. Цього місяця використано всі %2$s кредитів ШІ.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Фільтри ШІ досягли вашого місячного ліміту %1$s і призупинені до %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="few">Оплату за використання ввімкнено. Кредити понад ваш ліміт %1$s коштують 1¢ за кожен: цього місяця використано %2$s.</item>
-        <item quantity="many">Оплату за використання ввімкнено. Кредити понад %1$s вашого плану коштують 1¢ за кожен: цього місяця використано %2$s.</item>
-        <item quantity="one">Оплату за використання ввімкнено. Кредити понад ваш ліміт %1$s коштують 1¢ за кожен: цього місяця використано %2$s.</item>
-        <item quantity="other">Оплату за використання ввімкнено. Кредити понад ваш ліміт %1$s коштують 1¢ за кожен: цього місяця використано %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="few">Оплату за використання ввімкнено. Кредити понад ваш ліміт %1$s коштують 1¢ за %2$s: цього місяця використано %3$s.</item>
+        <item quantity="many">Оплата за використання ввімкнена. Кредити понад ліміт вашого %1$s коштують 1¢ за %2$s: цього місяця використано %3$s.</item>
+        <item quantity="one">Оплата за використання ввімкнена. Кредити понад ліміт вашого %1$s коштують 1¢ за %2$s: цього місяця використано %3$s.</item>
+        <item quantity="other">Оплата за використання ввімкнена. Кредити понад ліміт вашого %1$s коштують 1¢ за %2$s: цього місяця використано %3$s.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Оплату за використання ввімкнено. Кредити ШІ коштують 1¢ кожен: цього місяця використано %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Оплату за використання ввімкнено. AI-кредити коштують 1¢ за %1$s: за цей місяць використано %2$s.</string>
     <string name="ai_credits_unbilled">Очікує на списання сума %1$s: на початку наступного місяця, якщо вона становитиме щонайменше %2$s, або негайно, коли сягне %3$s.</string>
     <string name="ai_credits_keep_running">Не призупиняти фільтри</string>
-    <string name="ai_credits_billing_explainer">Після вичерпання кредитів фільтри продовжать працювати — 1¢ за кредит.</string>
+    <string name="ai_credits_billing_rate">Коли кредити вичерпаються, фільтри продовжать працювати за ціною 1¢ за %1$s кредитів.</string>
     <string name="ai_credits_billing_forecast">За нинішнього темпу за цей місяць буде використано близько %1$s.</string>
     <string name="ai_credits_turn_on_billing">Увімкнути оплату за використання</string>
-    <string name="ai_credits_turn_on_detail">1¢ за кожен кредит понад ліміт вашого плану, приблизно %1$s цього місяця</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ за кожен кредит понад ліміт вашого плану</string>
+    <string name="ai_credits_turn_on_rate">1¢ за %1$s кредитів понад ваш тарифний ліміт, приблизно %2$s цього місяця</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ за %1$s кредитів понад ліміт вашого плану</string>
     <string name="ai_credits_or_wait">або зачекайте до %1$s</string>
     <string name="ai_credits_manage_billing">Керувати оплатою</string>
     <string name="ai_credits_change_limit">Змінити ліміт</string>
     <string name="ai_credits_open">Переглянути кредити ШІ</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="few">Ваш план передбачає %1$s кредитів AI на місяць для текстових і графічних фільтрів AI. Кредити поновлюються 1-го числа, а невикористані не переносяться на наступний місяць.</item>
-        <item quantity="many">Ваш план включає %1$s кредитів ШІ на місяць для текстових фільтрів і фільтрів зображень. Кредити оновлюються 1-го числа, а невикористані не переносяться.</item>
-        <item quantity="one">Ваш план передбачає %1$s кредит ШІ на місяць для текстових і графічних фільтрів ШІ. Кредити поновлюються 1-го числа, невикористані не переносяться.</item>
-        <item quantity="other">Ваш план передбачає %1$s кредитів AI на місяць для текстових і графічних фільтрів AI. Кредити поновлюються 1-го числа, а невикористані не переносяться на наступний місяць.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="few">Ваш план включає %1$s кредитів ШІ на місяць. Один кредит — це приблизно одна стаття, оброблена текстовим фільтром; фільтр зображень використовує приблизно 10 кредитів на статтю. Кредити оновлюються 1-го числа, а невикористані не переносяться.</item>
+        <item quantity="many">Ваш план включає %1$s кредитів ШІ на місяць. Один кредит — це приблизно одна стаття, оброблена текстовим фільтром; фільтр зображень використовує приблизно 10 кредитів на статтю. Кредити поновлюються 1-го числа, а невикористані не переносяться.</item>
+        <item quantity="one">Ваш план включає %1$s кредитів ШІ на місяць. Один кредит — це приблизно одна стаття, оброблена текстовим фільтром; фільтр зображень використовує приблизно 10 кредитів на статтю. Кредити оновлюються 1-го числа, а невикористані не переносяться.</item>
+        <item quantity="other">Ваш тариф включає %1$s AI-кредитів на місяць. Одного кредиту вистачає приблизно на одну статтю через текстовий фільтр; фільтр зображень використовує приблизно 10 кредитів на статтю. Кредити поновлюються 1-го числа, а невикористані не переносяться на наступний місяць.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="few">За нинішнього темпу цього місяця буде використано близько %1$s із ваших %2$s кредитів.</item>

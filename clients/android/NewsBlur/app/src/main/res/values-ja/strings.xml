@@ -1256,13 +1256,11 @@
     <string name="ai_filter_content_label">コンテンツフィルター</string>
     <string name="ai_filter_image_label">画像フィルター</string>
     <string name="ai_filter_chip">%1$s：%2$s</string>
-    <string name="ai_text_classifier_header">自然言語テキスト分類器</string>
-    <string name="ai_image_classifier_header">自然言語画像分類器</string>
-    <string name="ai_text_classifier_explainer">トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事をフォーカスまたは非表示にします。</string>
-    <string name="ai_image_classifier_explainer">探したい内容を説明すると、AIが各記事の画像をプロンプトに照らして分析します。</string>
+    <string name="ai_filters_title">AIフィルター</string>
+    <string name="ai_filter_mode_text">テキスト</string>
+    <string name="ai_filter_mode_images">画像</string>
     <string name="ai_text_prompt_hint">例：「AIと機械学習」や「地域政治」</string>
     <string name="ai_image_prompt_hint">例：「料理の写真」や「チャートとグラフ」</string>
-    <string name="ai_prompt_placeholder">フォーカスまたは非表示にする内容を説明</string>
     <string name="ai_prompt_type_content">コンテンツ</string>
     <string name="ai_prompt_type_image">画像</string>
     <string name="ai_prompt_focus">一致する記事にフォーカス</string>
@@ -1299,32 +1297,36 @@
     <string name="ai_credits_resets">%1$sにリセット</string>
     <string name="ai_credits_free">AIフィルターは保存されていますが、実行できるのはプレミアムのみです。プレミアムには月%1$sのAIクレジットが含まれ、アーカイブは%2$s、Proは%3$sです。</string>
     <string name="ai_credits_upgrade">アップグレード</string>
-    <string name="ai_credits_estimate_text">このサイトのテキストフィルターは、月に約%1$sクレジットを使用します</string>
-    <string name="ai_credits_estimate_image">このサイトの画像フィルターは、月に約%1$sクレジットを使用します</string>
-    <string name="ai_credits_estimate_text_small">このサイトのテキストフィルターは、月に%1$sクレジット未満を使用します</string>
-    <string name="ai_credits_estimate_image_small">このサイトの画像フィルターは、月に%1$sクレジット未満を使用します</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">このサイトのテキストフィルターは、月に約%1$sクレジットを使います</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">このサイトの画像フィルターは、月に約%1$sクレジットを使います</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">このサイトのテキストフィルターは、月に1クレジット未満しか使いません</string>
+    <string name="ai_credits_image_estimate_under_one">このサイトの画像フィルターは、月に1クレジット未満しか使いません</string>
     <string name="ai_credits_runs_out">このペースでは、%1$sごろにクレジットがなくなる見込みです。</string>
     <plurals name="ai_credits_paused">
         <item quantity="other">AIフィルターは%1$sまで一時停止しています。今月のAIクレジット%2$sを使い切りました。</item>
     </plurals>
     <string name="ai_credits_paused_limit">AIフィルターは月間上限の%1$sに達したため、%2$sまで一時停止しています。</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="other">従量課金が有効です。プランの%1$sを超えたクレジットは1件あたり1¢です。今月の利用額は%2$sです。</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">従量課金は有効です。%1$sのクレジットを超過した分は%2$sあたり1¢です。今月の利用額：%3$s</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">従量課金が有効です。AIクレジットは1件あたり1¢です。今月の利用額は%1$sです。</string>
+    <string name="ai_credits_billing_on_rate_no_plan">従量課金は有効です。AIクレジットは%1$sあたり1¢です。今月の利用額：%2$s</string>
     <string name="ai_credits_unbilled">%1$sは請求待ちです。来月初めに%2$s以上であれば請求されるか、%3$sに達した時点ですぐに請求されます。</string>
     <string name="ai_credits_keep_running">フィルターを実行し続ける</string>
-    <string name="ai_credits_billing_explainer">クレジットの上限を超えても、フィルターは1クレジットあたり1¢で引き続き実行されます。</string>
+    <string name="ai_credits_billing_rate">クレジットを使い切った後も、フィルターは%1$sクレジットあたり1¢で引き続き動作します。</string>
     <string name="ai_credits_billing_forecast">現在のペースでは、今月は約%1$sになる見込みです。</string>
     <string name="ai_credits_turn_on_billing">従量課金を有効にする</string>
-    <string name="ai_credits_turn_on_detail">プランの上限を超えたクレジットは1件あたり1¢。今月の見込み：約%1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">プランの上限を超えたクレジットは1件あたり1¢</string>
+    <string name="ai_credits_turn_on_rate">プランのクレジットを超過した分は%1$sクレジットあたり1¢、今月は約%2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">プランの上限を超えると、%1$sクレジットあたり1¢</string>
     <string name="ai_credits_or_wait">または%1$sまで待つ</string>
     <string name="ai_credits_manage_billing">請求を管理</string>
     <string name="ai_credits_change_limit">上限を変更</string>
     <string name="ai_credits_open">AIクレジットを確認</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="other">プランには、AIテキスト・画像フィルター用のAIクレジットが月に%1$s含まれます。クレジットは毎月1日にリセットされ、未使用分は繰り越されません。</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">プランには毎月%1$sのAIクレジットが含まれます。テキストフィルターでは記事1件につき約1クレジット、画像フィルターでは記事1件につき約10クレジットを使います。クレジットは毎月1日にリセットされ、未使用分は繰り越されません。</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="other">このペースでは、今月は%2$sクレジットのうち約%1$sを使用する見込みです。</item>

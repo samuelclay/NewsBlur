@@ -887,12 +887,18 @@ msgstr "1 個月"
 msgid "1 year"
 msgstr "1 年"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "超出方案包含點數後，每點收費 1¢，本月約為 %(cost)s。"
+msgid "10,000 AI credits a month for AI filters"
+msgstr "AI 篩選器每月可用 10,000 點 AI 點數"
 
-msgid "1¢ per credit past your plan's."
-msgstr "超出方案額度後，每點 1 美分。"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "AI 篩選器每月可用 100,000 點 AI 點數"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "超出方案額度後，每 1,000 點需付 1¢，本月約 %(cost)s。"
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "超出方案額度後，每 1,000 點需付 1¢。"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
@@ -911,12 +917,6 @@ msgstr "每日 3 次"
 
 msgid "5 years"
 msgstr "5 年"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "AI 篩選器每月 50 點 AI 點數"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "AI 篩選器每月 500 點 AI 點數"
 
 msgid "5× faster feed updates"
 msgstr "訂閱來源更新速度快 5 倍"
@@ -953,8 +953,8 @@ msgstr "分享文章的 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "更清晰、更貼近的音質"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "每點 AI 點數價值 1 美分：約可透過文字篩選器處理 700 篇文章，或透過圖片篩選器處理 100 篇。"
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "文字篩選器處理一篇文章約需 1 點。圖片篩選器處理一篇文章約需 10 點。"
 
 msgid "A folder of feeds read as one stream"
 msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
@@ -980,8 +980,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "此網站的文字篩選器每月約使用 %(count)s 點數。"
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "此網站的文字篩選器每月使用不到十分之一點。"
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "這個網站的文字篩選器每月使用不到 1 點。"
 
 msgid "AI Filter"
 msgstr "AI 篩選器"
@@ -992,12 +992,17 @@ msgstr "AI 模型"
 msgid "AI credits"
 msgstr "AI 點數"
 
+msgid "AI filters"
+msgstr "AI 篩選器"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI 篩選器已儲存，但只會在 %(tier_link)s 上執行。"
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "AI 篩選器已儲存，但只有 Premium 會執行。Premium 每月含 5 點 AI 點數，Archive 含 50 點，Pro 含 500 點。"
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr "AI 篩選器會儲存，但只有 Premium 才會執行。Premium 每月包含 1,000 點 AI 點數，Archive 包含 10,000 點，Pro 則包含 100,000 點。"
 
 msgid "AI filters run without credits on this server."
 msgstr "在此伺服器上，AI 篩選器執行時不會使用點數。"
@@ -1005,8 +1010,8 @@ msgstr "在此伺服器上，AI 篩選器執行時不會使用點數。"
 msgid "AI finds the stories"
 msgstr "由 AI 找出文章"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "AI 文字與圖片篩選器，每月含 5 點 AI 點數"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "AI 文字與圖片篩選器，每月提供 1,000 點 AI 點數"
 
 msgid "AI-curated summary of your top stories"
 msgstr "由 AI 精選的熱門文章摘要"
@@ -1262,8 +1267,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "此網站的圖片篩選器每月約使用 %(count)s 點數。"
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "此網站的圖片篩選器每月使用不到十分之一點數。"
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "這個網站的圖片篩選器每月使用不到 1 點。"
 
 msgid "Analysis timed out. Please try again."
 msgstr "分析逾時。請再試一次。"
@@ -2260,14 +2265,8 @@ msgstr "語音表現"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "描述你要找的文章，我們會重新分析頁面來尋找。"
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "描述一個主題，AI 會根據你的提示為每篇文章評分，並將符合的文章設為焦點或隱藏。"
-
 msgid "Describe what to focus or hide"
 msgstr "描述要聚焦或隱藏的內容"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "描述你要尋找的內容，AI 會根據你的提示分析每篇文章的圖片。"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3523,6 +3522,9 @@ msgstr "圖片預覽"
 msgid "Image prompt"
 msgstr "圖片提示"
 
+msgid "Images"
+msgstr "圖片"
+
 msgid "Immediately"
 msgstr "立即"
 
@@ -4188,12 +4190,6 @@ msgstr "原生應用程式"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "自然"
-
-msgid "Natural Language Image Classifier"
-msgstr "自然語言圖片分類器"
-
-msgid "Natural Language Text Classifier"
-msgstr "自然語言文字分類器"
 
 msgid "Nature"
 msgstr "自然"
@@ -4870,11 +4866,13 @@ msgstr "解析中…"
 msgid "Part of a story URL"
 msgstr "文章網址的一部分"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "超出方案點數後，篩選器會繼續執行，每點收費 1¢。"
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "用完額度後，篩選器仍會以每 1,000 點 1¢ 的費率繼續執行。"
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
-msgstr "用完方案點數後，篩選器會暫停，直到每月 1 日。啟用用量計費後，篩選器會繼續執行，每點收費 1¢。"
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr "用完方案點數後，篩選器會暫停，直到每月 1 日。啟用用量計費後，篩選器會以每 1,000 點 1¢ 的費率繼續執行。"
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "貼上任何網址，NewsBlur 就會從頁面建立訂閱來源，即使沒有 RSS 也可以。"
@@ -5067,8 +5065,8 @@ msgstr "Premium 詳情"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premium 字型需要%(link_start)s進階帳戶%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium 每月含 5 點 AI 點數，Archive 含 50 點，Pro 含 500 點。"
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium 每月包含 1,000 點 AI 點數，Archive 包含 10,000 點，Pro 則包含 100,000 點。"
 
 msgid "Premium renewal"
 msgstr "Premium 續訂"
@@ -7464,9 +7462,9 @@ msgid "Usage billing charges"
 msgstr "用量計費費用"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "用量計費已開啟。超出方案包含的 %(count)s 點後，每點收費 1¢：本月目前為 %(cost)s。"
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "已啟用用量計費。超出你的 %(count)s 後，每 1,000 點數收取 1¢：本月至今為 %(cost)s。"
 
 #, python-format
 msgid "Use %(language)s"

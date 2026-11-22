@@ -1256,13 +1256,11 @@
     <string name="ai_filter_content_label">內容篩選器</string>
     <string name="ai_filter_image_label">影像篩選器</string>
     <string name="ai_filter_chip">%1$s：%2$s</string>
-    <string name="ai_text_classifier_header">自然語言文字分類器</string>
-    <string name="ai_image_classifier_header">自然語言影像分類器</string>
-    <string name="ai_text_classifier_explainer">描述一個主題，AI 會根據你的提示為每篇文章評分，讓你聚焦或隱藏符合條件的文章。</string>
-    <string name="ai_image_classifier_explainer">描述你要尋找的內容，AI 會根據你的提示分析每篇文章中的圖片。</string>
+    <string name="ai_filters_title">AI 篩選器</string>
+    <string name="ai_filter_mode_text">文字</string>
+    <string name="ai_filter_mode_images">圖片</string>
     <string name="ai_text_prompt_hint">例如：「AI 和機器學習」或「地方政治」</string>
     <string name="ai_image_prompt_hint">例如：「美食攝影」或「圖表」</string>
-    <string name="ai_prompt_placeholder">描述要設為焦點或隱藏的內容</string>
     <string name="ai_prompt_type_content">內容</string>
     <string name="ai_prompt_type_image">圖片</string>
     <string name="ai_prompt_focus">聚焦符合條件的文章</string>
@@ -1299,32 +1297,36 @@
     <string name="ai_credits_resets">重設時間：%1$s</string>
     <string name="ai_credits_free">AI 篩選器已儲存，但只有 Premium 才會執行。Premium 每月包含 %1$s 點 AI 點數，Archive 包含 %2$s 點，Pro 包含 %3$s 點。</string>
     <string name="ai_credits_upgrade">升級</string>
-    <string name="ai_credits_estimate_text">此網站的文字篩選器每月大約會使用 %1$s 點數</string>
-    <string name="ai_credits_estimate_image">此網站的圖片篩選器每月約使用 %1$s 點數</string>
-    <string name="ai_credits_estimate_text_small">此網站的文字篩選器每月使用量少於 %1$s 點數</string>
-    <string name="ai_credits_estimate_image_small">此網站的圖片篩選器每月使用的點數不到 %1$s 點</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">這個網站的文字篩選器每月約使用 %1$s 點</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">這個網站的圖片篩選器每月約使用 %1$s 點</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">這個網站的文字篩選器每月使用不到 1 點</string>
+    <string name="ai_credits_image_estimate_under_one">這個網站的圖片篩選器每月使用不到 1 點</string>
     <string name="ai_credits_runs_out">依目前的使用速度，點數大約會在 %1$s 用完。</string>
     <plurals name="ai_credits_paused">
         <item quantity="other">你的 AI 篩選器已暫停，直到 %1$s。本月的 %2$s 點 AI 點數已用完。</item>
     </plurals>
     <string name="ai_credits_paused_limit">你的 AI 篩選器已達每月 %1$s 點的上限，並暫停至 %2$s。</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="other">用量計費已啟用。超過方案額度的點數每點 1¢：本月至今已使用 %2$s，方案額度為 %1$s。</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">已啟用用量計費。超出你的 %1$s 額度後，每 %2$s 點需付 1¢：本月至今已用 %3$s。</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">用量計費已啟用。AI 點數每點 1¢：本月至今已使用 %1$s。</string>
+    <string name="ai_credits_billing_on_rate_no_plan">已啟用用量計費。AI 點數每 %1$s 點需付 1¢：本月至今已用 %2$s。</string>
     <string name="ai_credits_unbilled">%1$s 尚待扣款：若金額至少達到 %2$s，會在下月初扣款；否則會在金額達到 %3$s 時立即扣款。</string>
     <string name="ai_credits_keep_running">讓篩選器繼續運作</string>
-    <string name="ai_credits_billing_explainer">超過額度後，篩選器仍會繼續執行，每點 1¢。</string>
+    <string name="ai_credits_billing_rate">超出你的點數後，篩選器仍會繼續運作，每 %1$s 點數收取 1¢。</string>
     <string name="ai_credits_billing_forecast">依目前使用速度，本月約 %1$s。</string>
     <string name="ai_credits_turn_on_billing">啟用依用量計費</string>
-    <string name="ai_credits_turn_on_detail">超過方案額度後，每點 1¢，本月約 %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">超過方案額度後，每點 1¢</string>
+    <string name="ai_credits_turn_on_rate">超出方案額度後，每 %1$s 點需付 1¢，本月約 %2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">超出你的方案額度後，每 %1$s 點數收取 1¢</string>
     <string name="ai_credits_or_wait">或等到 %1$s</string>
     <string name="ai_credits_manage_billing">管理帳單</string>
     <string name="ai_credits_change_limit">變更上限</string>
     <string name="ai_credits_open">查看 AI 點數</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="other">你的方案每月包含 %1$s 點 AI 點數，可用於 AI 文字與圖片篩選器。點數會在每月 1 日重設，未使用的點數不會累積。</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">你的方案每月包含 %1$s 點 AI 點數。文字篩選器處理一篇文章約需 1 點；圖片篩選器處理一篇文章約需 10 點。點數會在每月 1 日重設，未使用的點數不會累計。</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="other">依目前的使用速度，本月大約會用掉 %2$s 點中的 %1$s 點。</item>

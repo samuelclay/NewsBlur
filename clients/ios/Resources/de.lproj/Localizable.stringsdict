@@ -18,7 +18,7 @@
 			<string>%1$@ Feeds konnten nicht zu %2$@ hinzugefügt werden.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -29,12 +29,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ KI-Credits verbraucht, %3$@ über deinem Kontingent von %1$@</string>
+			<string>%2$@ KI-Credit verwendet, %3$@ über deinem Abo-Kontingent von %4$@</string>
 			<key>other</key>
-			<string>%2$@ KI-Credits verbraucht, %3$@ über dein Tarifkontingent von %1$@ hinaus</string>
+			<string>%2$@ KI-Guthabenpunkte verbraucht, davon %3$@ über deinem Tarifguthaben von %4$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ von %1$@ KI-Credit verbraucht</string>
+			<string>%2$@ von %3$@ KI-Credit verwendet</string>
 			<key>other</key>
-			<string>%2$@ von %1$@ KI-Credits verbraucht</string>
+			<string>%2$@ von %3$@ KI-Guthabenpunkten verbraucht</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -930,7 +930,7 @@
 			<string>Vor %@ Wochen aktualisiert</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -941,9 +941,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Die nutzungsbasierte Abrechnung ist aktiviert. Credits über dein %1$@ hinaus kosten je 1 ¢: diesen Monat bisher %2$@.</string>
+			<string>Die nutzungsabhängige Abrechnung ist aktiviert. Credits über deinem Kontingent von %2$@ kosten 1¢ pro 1.000: diesen Monat bisher %3$@.</string>
 			<key>other</key>
-			<string>Die nutzungsabhängige Abrechnung ist aktiviert. Credits über dein Kontingent von %1$@ kosten jeweils 1 ¢: diesen Monat bisher %2$@.</string>
+			<string>Die nutzungsabhängige Abrechnung ist aktiviert. Credits über deinem Kontingent von %2$@ kosten 1¢ pro 1.000: diesen Monat bisher %3$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

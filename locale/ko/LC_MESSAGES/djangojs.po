@@ -887,12 +887,18 @@ msgstr "1개월"
 msgid "1 year"
 msgstr "1년"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "요금제 포함량을 초과한 크레딧당 1¢이며, 이번 달에는 약 %(cost)s입니다."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "AI 필터에 매월 AI 크레딧 10,000개"
 
-msgid "1¢ per credit past your plan's."
-msgstr "요금제 초과 크레딧당 1¢"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "AI 필터에 매월 AI 크레딧 100,000개"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "요금제 포함량 초과분은 크레딧 1,000개당 1¢이며, 이번 달에는 약 %(cost)s입니다."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "요금제 포함량 초과분은 크레딧 1,000개당 1¢입니다."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할 수 있습니다."
@@ -911,12 +917,6 @@ msgstr "하루 3회"
 
 msgid "5 years"
 msgstr "5년"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "AI 필터용 월 50 AI 크레딧"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "AI 필터용 월 500 AI 크레딧"
 
 msgid "5× faster feed updates"
 msgstr "피드 업데이트 5배 빠르게"
@@ -953,8 +953,8 @@ msgstr "공유한 스토리를 모아 보는 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "더 선명하고 가까운 소리"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "크레딧 1개는 AI 사용액 1¢에 해당하며, 텍스트 필터로 약 700개, 이미지 필터로 약 100개의 스토리를 처리할 수 있습니다."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "텍스트 필터로 스토리 하나를 처리하는 데 크레딧 약 1개가 듭니다. 이미지 필터는 스토리 하나당 크레딧 약 10개를 사용합니다."
 
 msgid "A folder of feeds read as one stream"
 msgstr "여러 피드를 하나의 스트림으로 모아 읽기"
@@ -980,8 +980,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "이 사이트의 텍스트 필터는 한 달에 크레딧 %(count)s개 정도를 사용합니다."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "이 사이트의 텍스트 필터는 한 달에 크레딧 10분의 1 미만을 사용합니다."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "이 사이트의 텍스트 필터는 한 달에 크레딧 1개 미만을 사용합니다."
 
 msgid "AI Filter"
 msgstr "AI 필터"
@@ -992,12 +992,17 @@ msgstr "AI 모델"
 msgid "AI credits"
 msgstr "AI 크레딧"
 
+msgid "AI filters"
+msgstr "AI 필터"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI 필터는 저장되지만 %(tier_link)s에서만 실행됩니다."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "AI 필터가 저장되었지만 프리미엄에서만 실행됩니다. 프리미엄에는 월 5개의 AI 크레딧, 아카이브에는 50개, 프로에는 500개가 포함됩니다."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr "AI 필터는 저장되지만 프리미엄에서만 실행됩니다. 프리미엄에는 매월 AI 크레딧 1,000개, 아카이브에는 10,000개, 프로에는 100,000개가 포함됩니다."
 
 msgid "AI filters run without credits on this server."
 msgstr "이 서버에서는 AI 필터를 크레딧 없이 실행할 수 있습니다."
@@ -1005,8 +1010,8 @@ msgstr "이 서버에서는 AI 필터를 크레딧 없이 실행할 수 있습�
 msgid "AI finds the stories"
 msgstr "AI가 스토리를 찾아줍니다"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "월 5 AI 크레딧이 제공되는 AI 텍스트 및 이미지 필터"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "월 1,000 AI 크레딧이 포함된 AI 텍스트 및 이미지 필터"
 
 msgid "AI-curated summary of your top stories"
 msgstr "AI가 선별한 주요 스토리 요약"
@@ -1262,8 +1267,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "이 사이트의 이미지 필터는 한 달에 크레딧 %(count)s개 정도를 사용합니다."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "이 사이트의 이미지 필터는 한 달에 크레딧 0.1개 미만을 사용합니다."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "이 사이트의 이미지 필터는 한 달에 크레딧 1개 미만을 사용합니다."
 
 msgid "Analysis timed out. Please try again."
 msgstr "분석 시간이 초과되었습니다. 다시 시도해 주세요."
@@ -2264,14 +2269,8 @@ msgstr "전달 방식"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "찾고 있는 스토리를 설명해 주세요. 페이지를 다시 분석해 찾아보겠습니다."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "주제를 설명하면 AI가 각 스토리를 프롬프트와 비교해 점수를 매겨 일치하는 스토리를 강조하거나 숨깁니다."
-
 msgid "Describe what to focus or hide"
 msgstr "집중하거나 숨길 내용을 설명하세요"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "찾을 내용을 설명하면 AI가 프롬프트에 따라 각 스토리의 이미지를 분석합니다."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3529,6 +3528,9 @@ msgstr "이미지 미리보기"
 msgid "Image prompt"
 msgstr "이미지 프롬프트"
 
+msgid "Images"
+msgstr "이미지"
+
 msgid "Immediately"
 msgstr "즉시"
 
@@ -4196,12 +4198,6 @@ msgstr "네이티브 앱"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "자연스러운"
-
-msgid "Natural Language Image Classifier"
-msgstr "자연어 이미지 분류기"
-
-msgid "Natural Language Text Classifier"
-msgstr "자연어 텍스트 분류기"
 
 msgid "Nature"
 msgstr "자연"
@@ -4878,11 +4874,13 @@ msgstr "분석 중..."
 msgid "Part of a story URL"
 msgstr "스토리 URL의 일부"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "포함된 크레딧을 모두 사용한 후에도 필터는 크레딧당 1¢의 요금으로 계속 실행됩니다."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "크레딧을 모두 사용해도 필터는 크레딧 1,000개당 1¢로 계속 실행됩니다."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
-msgstr "요금제에 포함된 크레딧을 초과하면 필터가 매월 1일까지 일시 중지됩니다. 사용량 청구를 이용하면 크레딧당 1¢로 계속 실행할 수 있습니다."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr "요금제의 크레딧을 모두 사용하면 매월 1일까지 필터가 일시 중지됩니다. 사용량 기준 결제를 설정하면 크레딧 1,000개당 1¢로 계속 실행됩니다."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "URL을 붙여넣으면 RSS가 없어도 NewsBlur가 해당 페이지에서 피드를 만듭니다."
@@ -5075,8 +5073,8 @@ msgstr "프리미엄 상세 정보"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "프리미엄 글꼴을 사용하려면 %(link_start)s프리미엄 계정%(link_end)s이 필요합니다."
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "프리미엄에는 월 5개의 AI 크레딧, 아카이브에는 50개, 프로에는 500개가 포함됩니다."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "프리미엄에는 매월 AI 크레딧 1,000개, 아카이브에는 10,000개, 프로에는 100,000개가 포함됩니다."
 
 msgid "Premium renewal"
 msgstr "프리미엄 갱신"
@@ -7476,9 +7474,9 @@ msgid "Usage billing charges"
 msgstr "사용량 과금 요금"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "사용량 기반 결제가 켜져 있습니다. %(count)s개를 초과한 크레딧은 개당 1¢입니다. 이번 달 현재까지 %(cost)s입니다."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "사용량 기반 결제가 켜져 있습니다. %(count)s 크레딧을 초과한 사용량은 1,000크레딧당 1¢입니다. 이번 달 현재까지 %(cost)s입니다."
 
 #, python-format
 msgid "Use %(language)s"

@@ -955,12 +955,18 @@ msgstr "1 महीना"
 msgid "1 year"
 msgstr "1 वर्ष"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "आपके प्लान की सीमा से अधिक हर क्रेडिट के लिए 1¢; इस महीने लगभग %(cost)s।"
+msgid "10,000 AI credits a month for AI filters"
+msgstr "AI फ़िल्टर के लिए हर महीने 10,000 AI क्रेडिट"
 
-msgid "1¢ per credit past your plan's."
-msgstr "आपके प्लान के क्रेडिट से अधिक उपयोग पर प्रति क्रेडिट 1¢।"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "AI फ़िल्टर के लिए हर महीने 100,000 AI क्रेडिट"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "आपकी योजना में शामिल क्रेडिट से अधिक उपयोग पर हर 1,000 क्रेडिट के लिए 1¢, इस महीने लगभग %(cost)s।"
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "आपके प्लान में शामिल क्रेडिट से ज़्यादा इस्तेमाल पर हर 1,000 क्रेडिट के लिए 1¢।"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "पढ़ने, कार्रवाइयों, प्रशिक्षण और खोज के लिए 28 टूल उपलब्ध हैं।"
@@ -979,12 +985,6 @@ msgstr "दिन में 3 बार"
 
 msgid "5 years"
 msgstr "5 साल"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "AI फ़िल्टर के लिए हर महीने 50 AI क्रेडिट"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "AI फ़िल्टर के लिए हर महीने 500 AI क्रेडिट"
 
 msgid "5× faster feed updates"
 msgstr "5× तेज़ फ़ीड अपडेट"
@@ -1024,8 +1024,8 @@ msgstr "साझा किए गए लेखों का blurblog"
 msgid "A clearer, closer sound"
 msgstr "और साफ़, और क़रीबी आवाज़"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "एक क्रेडिट से 1¢ का AI उपयोग मिलता है: टेक्स्ट फ़िल्टर से लगभग 700 लेख या इमेज फ़िल्टर से 100 लेख।"
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "टेक्स्ट फ़िल्टर से एक लेख पर लगभग 1 क्रेडिट लगता है। इमेज फ़िल्टर से एक लेख पर लगभग 10 क्रेडिट लगते हैं।"
 
 msgid "A folder of feeds read as one stream"
 msgstr "एक फ़ोल्डर की फ़ीडों को एक स्ट्रीम की तरह पढ़ें"
@@ -1052,8 +1052,8 @@ msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "इस साइट पर टेक्स्ट फ़िल्टर का मासिक उपयोग लगभग %(count)s क्रेडिट है।"
 msgstr[1] "इस साइट पर टेक्स्ट फ़िल्टर का मासिक उपयोग लगभग %(count)s क्रेडिट है।"
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "इस साइट पर टेक्स्ट फ़िल्टर का मासिक उपयोग एक क्रेडिट के दसवें हिस्से से भी कम है।"
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "इस साइट पर टेक्स्ट फ़िल्टर हर महीने एक क्रेडिट से कम इस्तेमाल करता है।"
 
 msgid "AI Filter"
 msgstr "AI फ़िल्टर"
@@ -1064,14 +1064,19 @@ msgstr "AI मॉडल"
 msgid "AI credits"
 msgstr "AI क्रेडिट"
 
+msgid "AI filters"
+msgstr "AI फ़िल्टर"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AI फ़िल्टर सहेजे जाते हैं, लेकिन केवल %(tier_link)s पर चलते हैं।"
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"AI फ़िल्टर सहेजे गए हैं, लेकिन केवल Premium पर चलते हैं। Premium में हर महीने 5 AI क्रेडिट, Archive में 50 "
-"और Pro में 500 क्रेडिट शामिल हैं।"
+"AI फ़िल्टर सहेजे जाते हैं, लेकिन सिर्फ़ Premium पर चलते हैं। Premium में हर महीने 1,000 AI क्रेडिट, Archive"
+" में 10,000 और Pro में 100,000 क्रेडिट शामिल हैं।"
 
 msgid "AI filters run without credits on this server."
 msgstr "इस सर्वर पर AI फ़िल्टर बिना क्रेडिट के चलते हैं।"
@@ -1079,8 +1084,8 @@ msgstr "इस सर्वर पर AI फ़िल्टर बिना क�
 msgid "AI finds the stories"
 msgstr "AI लेख ढूँढ़ता है"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "AI टेक्स्ट और इमेज फ़िल्टर, हर महीने 5 AI क्रेडिट के साथ"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "हर महीने 1,000 AI क्रेडिट के साथ AI टेक्स्ट और छवि फ़िल्टर"
 
 msgid "AI-curated summary of your top stories"
 msgstr "आपके प्रमुख लेखों का AI-चयनित सारांश"
@@ -1350,8 +1355,8 @@ msgid_plural "An image filter on this site uses about %(count)s credits a month.
 msgstr[0] "इस साइट पर इमेज फ़िल्टर का मासिक उपयोग लगभग %(count)s क्रेडिट है।"
 msgstr[1] "इस साइट पर इमेज फ़िल्टर का मासिक उपयोग लगभग %(count)s क्रेडिट है।"
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "इस साइट पर इमेज फ़िल्टर का मासिक उपयोग एक क्रेडिट के दसवें हिस्से से भी कम है।"
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "इस साइट पर इमेज फ़िल्टर में हर महीने एक से कम क्रेडिट लगता है।"
 
 msgid "Analysis timed out. Please try again."
 msgstr "विश्लेषण का समय समाप्त हो गया। कृपया फिर कोशिश करें।"
@@ -2372,16 +2377,8 @@ msgstr "प्रस्तुति"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "आप जिस लेख को ढूँढ़ रहे हैं उसका वर्णन करें और हम उसे खोजने के लिए पेज का फिर से विश्लेषण करेंगे।"
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"किसी विषय का वर्णन करें और AI आपके निर्देश के आधार पर हर लेख को स्कोर करेगा, ताकि मेल खाने वाले लेखों को "
-"प्राथमिकता दी जा सके या छिपाया जा सके।"
-
 msgid "Describe what to focus or hide"
 msgstr "बताएँ कि किस पर ध्यान देना है या क्या छिपाना है"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "बताएँ कि क्या देखना है और AI आपके निर्देश के आधार पर हर लेख की छवियों का विश्लेषण करेगा।"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3656,6 +3653,9 @@ msgstr "छवि पूर्वावलोकन"
 msgid "Image prompt"
 msgstr "छवि प्रॉम्प्ट"
 
+msgid "Images"
+msgstr "छवियाँ"
+
 msgid "Immediately"
 msgstr "तुरंत"
 
@@ -4342,12 +4342,6 @@ msgstr "नेटिव ऐप्स"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "स्वाभाविक"
-
-msgid "Natural Language Image Classifier"
-msgstr "प्राकृतिक भाषा छवि क्लासिफ़ायर"
-
-msgid "Natural Language Text Classifier"
-msgstr "प्राकृतिक भाषा टेक्स्ट क्लासिफ़ायर"
 
 msgid "Nature"
 msgstr "प्रकृति"
@@ -5044,13 +5038,15 @@ msgstr "पार्स हो रहा है..."
 msgid "Part of a story URL"
 msgstr "लेख के URL का एक हिस्सा"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "आपके क्रेडिट ख़त्म होने के बाद भी फ़िल्टर चलते रहेंगे; प्रति क्रेडिट 1¢ का शुल्क लगेगा।"
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "आपके क्रेडिट खत्म होने के बाद भी, फ़िल्टर हर 1,000 क्रेडिट पर 1¢ की दर से चलते रहेंगे।"
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"आपके प्लान के क्रेडिट खत्म होने के बाद, फ़िल्टर महीने की 1 तारीख तक रुक जाते हैं। उपयोग-आधारित बिलिंग चालू "
-"रखने पर प्रति क्रेडिट 1¢ लगता है।"
+"आपकी योजना के क्रेडिट खत्म होने पर, फ़िल्टर पहली तारीख तक रुक जाएँगे। उपयोग-आधारित बिलिंग से वे हर 1,000 "
+"क्रेडिट पर 1¢ की दर से चलते रहेंगे।"
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "कोई भी URL पेस्ट करें और NewsBlur पेज से फ़ीड बना देगा, भले ही उसमें RSS न हो।"
@@ -5244,8 +5240,8 @@ msgstr "Premium का विवरण"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "प्रीमियम फ़ॉन्ट के लिए %(link_start)sप्रीमियम खाता%(link_end)s आवश्यक है"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium में हर महीने 5 AI क्रेडिट, Archive में 50 और Pro में 500 क्रेडिट शामिल हैं।"
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium में हर महीने 1,000 AI क्रेडिट, Archive में 10,000 और Pro में 100,000 क्रेडिट शामिल हैं।"
 
 msgid "Premium renewal"
 msgstr "Premium नवीनीकरण"
@@ -7712,10 +7708,14 @@ msgid "Usage billing charges"
 msgstr "उपयोग-आधारित बिलिंग शुल्क"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "उपयोग-आधारित बिलिंग चालू है। आपके %(count)s से अधिक हर क्रेडिट का मूल्य 1¢ है: इस महीने अब तक %(cost)s।"
-msgstr[1] "उपयोग-आधारित बिलिंग चालू है। आपके %(count)s से अधिक हर क्रेडिट का मूल्य 1¢ है: इस महीने अब तक %(cost)s।"
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] ""
+"उपयोग के आधार पर बिलिंग चालू है। आपके %(count)s से ज़्यादा क्रेडिट की लागत प्रति 1,000 क्रेडिट पर 1¢ है: इस"
+" महीने अब तक %(cost)s।"
+msgstr[1] ""
+"उपयोग के आधार पर बिलिंग चालू है। आपके %(count)s से ज़्यादा क्रेडिट की लागत प्रति 1,000 क्रेडिट पर 1¢ है: इस"
+" महीने अब तक %(cost)s।"
 
 #, python-format
 msgid "Use %(language)s"

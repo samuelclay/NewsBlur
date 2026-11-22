@@ -1256,13 +1256,11 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="ai_filter_content_label">Bộ lọc nội dung</string>
     <string name="ai_filter_image_label">Bộ lọc hình ảnh</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Bộ phân loại văn bản ngôn ngữ tự nhiên</string>
-    <string name="ai_image_classifier_header">Bộ phân loại hình ảnh bằng ngôn ngữ tự nhiên</string>
-    <string name="ai_text_classifier_explainer">Mô tả một chủ đề, AI sẽ chấm điểm từng bài viết dựa trên yêu cầu của bạn để tập trung vào các bài khớp hoặc ẩn chúng.</string>
-    <string name="ai_image_classifier_explainer">Mô tả nội dung cần tìm, AI sẽ phân tích hình ảnh của từng bài viết dựa trên yêu cầu của bạn.</string>
+    <string name="ai_filters_title">Bộ lọc AI</string>
+    <string name="ai_filter_mode_text">Văn bản</string>
+    <string name="ai_filter_mode_images">Hình ảnh</string>
     <string name="ai_text_prompt_hint">ví dụ: “AI và học máy” hoặc “chính trị địa phương”</string>
     <string name="ai_image_prompt_hint">ví dụ: “ảnh chụp món ăn” hoặc “biểu đồ và đồ thị”</string>
-    <string name="ai_prompt_placeholder">Mô tả nội dung cần tập trung hoặc ẩn</string>
     <string name="ai_prompt_type_content">Nội dung</string>
     <string name="ai_prompt_type_image">Hình ảnh</string>
     <string name="ai_prompt_focus">Tập trung vào bài viết khớp với tiêu chí</string>
@@ -1299,32 +1297,36 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="ai_credits_resets">Đặt lại %1$s</string>
     <string name="ai_credits_free">Bộ lọc AI đã được lưu nhưng chỉ chạy trên Premium. Premium bao gồm %1$s tín dụng AI mỗi tháng, Archive %2$s và Pro %3$s.</string>
     <string name="ai_credits_upgrade">Nâng cấp</string>
-    <string name="ai_credits_estimate_text">Bộ lọc văn bản trên trang web này dùng khoảng %1$s tín dụng mỗi tháng</string>
-    <string name="ai_credits_estimate_image">Bộ lọc hình ảnh trên trang web này dùng khoảng %1$s tín dụng mỗi tháng</string>
-    <string name="ai_credits_estimate_text_small">Bộ lọc văn bản trên trang web này dùng chưa đến %1$s tín dụng mỗi tháng</string>
-    <string name="ai_credits_estimate_image_small">Bộ lọc hình ảnh trên trang web này dùng chưa đến %1$s tín dụng mỗi tháng</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">Bộ lọc văn bản trên trang web này dùng khoảng %1$s tín dụng mỗi tháng</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">Bộ lọc hình ảnh trên trang web này dùng khoảng %1$s tín dụng mỗi tháng</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Bộ lọc văn bản trên trang web này dùng chưa đến một tín dụng mỗi tháng</string>
+    <string name="ai_credits_image_estimate_under_one">Bộ lọc hình ảnh trên trang web này dùng chưa đến một tín dụng mỗi tháng</string>
     <string name="ai_credits_runs_out">Với tốc độ này, tín dụng của bạn sẽ hết vào khoảng %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="other">Bộ lọc AI của bạn tạm dừng đến %1$s. Bạn đã dùng hết %2$s tín dụng AI của tháng này.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Bộ lọc AI của bạn đã đạt giới hạn hàng tháng %1$s và sẽ tạm dừng đến %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="other">Thanh toán theo mức sử dụng đang bật. Số tín dụng vượt quá %1$s có giá 1¢ mỗi tín dụng: tháng này đến nay là %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">Thanh toán theo mức sử dụng đang bật. Số tín dụng vượt quá %1$s sẽ tính phí 1¢ cho mỗi %2$s: %3$s tính đến thời điểm này trong tháng.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Thanh toán theo mức sử dụng đang bật. Tín dụng AI có giá 1¢ mỗi tín dụng: tháng này đến nay là %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Thanh toán theo mức sử dụng đang bật. Tín dụng AI có giá 1¢ cho mỗi %1$s: đã dùng %2$s trong tháng này.</string>
     <string name="ai_credits_unbilled">%1$s đang chờ tính phí: vào đầu tháng sau nếu đạt ít nhất %2$s, hoặc tính ngay khi đạt %3$s.</string>
     <string name="ai_credits_keep_running">Tiếp tục chạy bộ lọc</string>
-    <string name="ai_credits_billing_explainer">Khi dùng hết tín dụng, các bộ lọc vẫn chạy với giá 1¢ mỗi tín dụng.</string>
+    <string name="ai_credits_billing_rate">Khi dùng hết tín dụng, bộ lọc tiếp tục chạy với giá 1¢ cho mỗi %1$s tín dụng.</string>
     <string name="ai_credits_billing_forecast">Theo tốc độ sử dụng hiện tại, tháng này khoảng %1$s.</string>
     <string name="ai_credits_turn_on_billing">Bật tính phí theo mức sử dụng</string>
-    <string name="ai_credits_turn_on_detail">1¢ cho mỗi tín dụng vượt quá gói của bạn, tháng này ước tính khoảng %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ cho mỗi tín dụng vượt quá gói của bạn</string>
+    <string name="ai_credits_turn_on_rate">1¢ cho mỗi %1$s tín dụng vượt quá gói của bạn, khoảng %2$s trong tháng này</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ cho mỗi %1$s tín dụng vượt quá gói của bạn</string>
     <string name="ai_credits_or_wait">hoặc chờ đến %1$s</string>
     <string name="ai_credits_manage_billing">Quản lý thanh toán</string>
     <string name="ai_credits_change_limit">Thay đổi giới hạn</string>
     <string name="ai_credits_open">Xem tín dụng AI</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="other">Gói của bạn bao gồm %1$s tín dụng AI mỗi tháng cho bộ lọc văn bản và hình ảnh AI. Tín dụng được đặt lại vào ngày 1 và số chưa dùng không được chuyển sang tháng sau.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">Gói của bạn bao gồm %1$s tín dụng AI mỗi tháng. Một tín dụng tương đương khoảng một bài viết qua bộ lọc văn bản; bộ lọc hình ảnh dùng khoảng 10 tín dụng cho mỗi bài viết. Tín dụng được đặt lại vào ngày 1 và số chưa dùng không được chuyển sang tháng sau.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="other">Với tốc độ này, tháng này bạn sẽ dùng khoảng %1$s trong số %2$s tín dụng.</item>

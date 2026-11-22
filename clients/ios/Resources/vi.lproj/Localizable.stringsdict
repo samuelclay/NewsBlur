@@ -16,7 +16,7 @@
 			<string>Không thể thêm %1$@ nguồn cấp dữ liệu vào %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã dùng %2$@ tín dụng AI, vượt quá %1$@ của gói bạn %3$@</string>
+			<string>Đã dùng %2$@ tín dụng AI, %3$@ vượt quá %4$@ trong gói của bạn</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Đã dùng %2$@ trên tổng %1$@ tín dụng AI</string>
+			<string>Đã dùng %2$@ trên tổng số %3$@ tín dụng AI</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>Cập nhật %@ tuần trước</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Thanh toán theo mức sử dụng đang bật. Số tín dụng vượt quá %1$@ có giá 1¢ mỗi tín dụng: tháng này đến nay là %2$@.</string>
+			<string>Thanh toán theo mức sử dụng đang bật. Tín dụng vượt quá %2$@ của bạn có giá 1¢ cho mỗi 1.000: đã dùng %3$@ trong tháng này.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

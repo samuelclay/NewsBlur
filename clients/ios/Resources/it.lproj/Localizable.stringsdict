@@ -20,7 +20,7 @@
 			<string>Impossibile aggiungere %1$@ feed a %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -31,14 +31,14 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>Usati %2$@ crediti AI, %3$@ oltre i %1$@ del tuo piano</string>
+			<string>Hai usato %2$@ crediti AI, %3$@ oltre i %4$@ inclusi nel tuo piano</string>
 			<key>one</key>
-			<string>Utilizzato %2$@ credito AI, %3$@ oltre la soglia di %1$@ del tuo piano</string>
+			<string>Hai usato %2$@ credito AI, %3$@ oltre i %4$@ inclusi nel tuo piano</string>
 			<key>other</key>
-			<string>Crediti AI usati: %2$@; %3$@ oltre i %1$@ inclusi nel tuo piano</string>
+			<string>%2$@ crediti AI usati, %3$@ oltre il limite del tuo piano di %4$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -49,11 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%2$@ di %1$@ crediti AI utilizzati</string>
+			<string>%2$@ di %3$@ crediti AI usati</string>
 			<key>one</key>
-			<string>%2$@ di %1$@ credito AI utilizzato</string>
+			<string>Hai usato %2$@ credito AI su %3$@</string>
 			<key>other</key>
-			<string>Usati %2$@ crediti AI su %1$@</string>
+			<string>%2$@ di %3$@ crediti AI usati</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -1046,7 +1046,7 @@
 			<string>Aggiornato %@ settimane fa</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -1057,11 +1057,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>La fatturazione a consumo è attiva. I crediti oltre il tuo %1$@ costano 1¢ ciascuno: %2$@ finora questo mese.</string>
+			<string>La fatturazione a consumo è attiva. I crediti oltre i %2$@ inclusi nel tuo piano costano 1¢ ogni 1.000: finora questo mese hai usato %3$@.</string>
 			<key>one</key>
-			<string>La fatturazione a consumo è attiva. I crediti oltre i %1$@ costano 1¢ ciascuno: finora questo mese ne hai usati %2$@.</string>
+			<string>La fatturazione a consumo è attiva. I crediti oltre i %2$@ inclusi nel tuo piano costano 1¢ ogni 1.000: finora questo mese hai usato %3$@.</string>
 			<key>other</key>
-			<string>La fatturazione a consumo è attiva. Ogni credito oltre la soglia di %1$@ costa 1¢: questo mese finora %2$@.</string>
+			<string>La fatturazione a consumo è attiva. I crediti oltre i %2$@ inclusi nel tuo piano costano 1¢ ogni 1.000: finora questo mese hai usato %3$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

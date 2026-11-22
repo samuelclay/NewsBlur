@@ -341,11 +341,17 @@ msgstr "เว็บไซต์ 1,024 แห่ง การค้นหาข�
 msgid "1,024 sites, search, text view, river of news"
 msgstr "1,024 เว็บไซต์, ค้นหา, มุมมองข้อความ และฟีดข่าวรวม"
 
+msgid "10,000 AI credits a month for AI filters"
+msgstr "เครดิต AI 10,000 เครดิตต่อเดือนสำหรับตัวกรอง AI"
+
 msgid "100 feeds"
 msgstr "100 ฟีด"
 
 msgid "100 sources, 3 feeds"
 msgstr "100 แหล่งข่าว, 3 ฟีด"
+
+msgid "100,000 AI credits a month for AI filters"
+msgstr "เครดิต AI 100,000 เครดิตต่อเดือนสำหรับตัวกรอง AI"
 
 msgid "12 sites"
 msgstr "12 เว็บไซต์"
@@ -370,12 +376,6 @@ msgstr "404 - NewsBlur ไม่พบหน้านี้"
 
 msgid "5-min fetching, regex training, 10,000 sites"
 msgstr "ดึงข้อมูลทุก 5 นาที, ฝึกด้วย regex, รองรับ 10,000 เว็บไซต์"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "เครดิต AI 50 เครดิตต่อเดือนสำหรับตัวกรอง AI"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "เครดิต AI 500 เครดิตต่อเดือนสำหรับตัวกรอง AI"
 
 msgid "64 sites"
 msgstr "64 เว็บไซต์"
@@ -617,8 +617,8 @@ msgstr "ตัวกรองรูปภาพ AI"
 msgid "AI skill"
 msgstr "ทักษะ AI"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI 5 เครดิตต่อเดือน"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI 1,000 เครดิตต่อเดือน"
 
 msgctxt "notification email classifier match"
 msgid "AI text filter"
@@ -1017,31 +1017,31 @@ msgstr "สอบถามชุมชน หรือทดลองใช้ N
 
 #, python-format
 msgid ""
-"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
-"credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a "
-"monthly limit so it never costs more than you want."
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
 msgid_plural ""
-"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
-" credit past your plan's costs 1 cent, which comes to about $%(forecast_overage)s this month. You can set a"
-" monthly limit so it never costs more than you want."
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about $%(forecast_overage)s this month. You "
+"can set a monthly limit so it never costs more than you want."
 msgstr[0] ""
-"หากใช้งานในอัตราปัจจุบัน เดือนนี้จะใช้ประมาณ %(counter)s เครดิต เมื่อเปิดการเรียกเก็บเงินตามการใช้งาน "
-"เครดิตที่เกินแพ็กเกจจะคิดเครดิตละ 1 เซนต์ รวมแล้วเดือนนี้ประมาณ $%(forecast_overage)s "
-"ตั้งวงเงินรายเดือนเพื่อไม่ให้มีค่าใช้จ่ายเกินที่ต้องการได้"
+"หากยังใช้งานในอัตรานี้ เดือนนี้จะใช้ประมาณ %(credits_text)s เครดิต เมื่อเปิดการเรียกเก็บเงินตามการใช้งาน "
+"เครดิตที่เกินแพ็กเกจจะคิดราคา 1 เซนต์ต่อ 1,000 เครดิต ซึ่งเดือนนี้จะมีค่าใช้จ่ายประมาณ "
+"$%(forecast_overage)s คุณกำหนดวงเงินรายเดือนเพื่อไม่ให้มีค่าใช้จ่ายเกินที่ต้องการได้"
 
 #, python-format
 msgid ""
-"At the pace they've been running, this month would use about %(counter)s credit. With usage billing, every "
-"credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You can"
-" set a monthly limit so it never costs more than you want."
+"At the pace they've been running, this month would use about %(credits_text)s credit. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
 msgid_plural ""
-"At the pace they've been running, this month would use about %(counter)s credits. With usage billing, every"
-" credit past your plan's costs 1 cent, which comes to about <b>$%(forecast_overage)s</b> this month. You "
-"can set a monthly limit so it never costs more than you want."
+"At the pace they've been running, this month would use about %(credits_text)s credits. With usage billing, "
+"credits past your plan's cost 1 cent per 1,000, which comes to about <b>$%(forecast_overage)s</b> this "
+"month. You can set a monthly limit so it never costs more than you want."
 msgstr[0] ""
-"หากใช้งานในอัตราที่ผ่านมา เดือนนี้จะใช้เครดิตประมาณ %(counter)s เครดิต เมื่อใช้การเรียกเก็บเงินตามการใช้งาน"
-" เครดิตที่เกินจากแผนจะคิดหน่วยละ 1 เซนต์ รวมเป็นประมาณ <b>$%(forecast_overage)s</b> ในเดือนนี้ "
-"ตั้งขีดจำกัดรายเดือนเพื่อควบคุมค่าใช้จ่ายไม่ให้เกินที่ต้องการได้"
+"หากยังใช้งานในอัตรานี้ เดือนนี้จะใช้ประมาณ %(credits_text)s เครดิต เมื่อเปิดการเรียกเก็บเงินตามการใช้งาน "
+"เครดิตที่เกินแพ็กเกจจะคิดราคา 1 เซนต์ต่อ 1,000 เครดิต ซึ่งเดือนนี้จะมีค่าใช้จ่ายประมาณ "
+"<b>$%(forecast_overage)s</b> คุณกำหนดวงเงินรายเดือนเพื่อไม่ให้มีค่าใช้จ่ายเกินที่ต้องการได้"
 
 msgid "Authentication uses OAuth 2.0 &mdash; your client will handle the flow automatically."
 msgstr "การยืนยันตัวตนใช้ OAuth 2.0 &mdash; ไคลเอ็นต์ของคุณจะจัดการขั้นตอนต่าง ๆ โดยอัตโนมัติ"
@@ -1551,6 +1551,9 @@ msgstr "บันทึกบทความไม่ได้ ไม่พบ�
 
 msgid "Could not unsave story, not found"
 msgstr "ยกเลิกการบันทึกบทความไม่ได้ ไม่พบบทความ"
+
+msgid "Couldn't reach Stripe to charge what's due. Please try again."
+msgstr "เชื่อมต่อ Stripe เพื่อเรียกเก็บเงินที่ค้างชำระไม่สำเร็จ โปรดลองอีกครั้ง"
 
 msgid "Couldn't reach Stripe. Please try again."
 msgstr "เชื่อมต่อ Stripe ไม่ได้ โปรดลองอีกครั้ง"
@@ -7309,25 +7312,25 @@ msgstr "ตัวกรอง AI ของคุณใช้ถึงขีด�
 
 #, python-format
 msgid ""
-"Your AI filters used this month's %(counter)s AI credit, so they've stopped scoring new stories. They start"
-" again on %(date)s, when your credits reset."
+"Your AI filters used this month's %(included_text)s AI credit, so they've stopped scoring new stories. They"
+" start again on %(date)s, when your credits reset."
 msgid_plural ""
-"Your AI filters used all %(counter)s of this month's AI credits, so they've stopped scoring new stories. "
-"They start again on %(date)s, when your credits reset."
+"Your AI filters used all %(included_text)s of this month's AI credits, so they've stopped scoring new "
+"stories. They start again on %(date)s, when your credits reset."
 msgstr[0] ""
-"ตัวกรอง AI ของคุณใช้เครดิต AI ประจำเดือนนี้ไปแล้ว %(counter)s เครดิต จึงหยุดให้คะแนนบทความใหม่ "
-"โดยจะเริ่มทำงานอีกครั้งในวันที่ %(date)s เมื่อเครดิตรีเซ็ต"
+"ตัวกรอง AI ของคุณใช้เครดิต AI ประจำเดือนนี้ไปแล้ว %(included_text)s เครดิต จึงหยุดให้คะแนนบทความใหม่ "
+"และจะเริ่มทำงานอีกครั้งในวันที่ %(date)s เมื่อเครดิตรีเซ็ต"
 
 #, python-format
 msgid ""
-"Your AI filters used this month's <b>%(counter)s</b> AI credit, so they've stopped scoring new stories. "
-"They start again on <b>%(date)s</b>, when your credits reset."
-msgid_plural ""
-"Your AI filters used all <b>%(counter)s</b> of this month's AI credits, so they've stopped scoring new "
+"Your AI filters used this month's <b>%(included_text)s</b> AI credit, so they've stopped scoring new "
 "stories. They start again on <b>%(date)s</b>, when your credits reset."
+msgid_plural ""
+"Your AI filters used all <b>%(included_text)s</b> of this month's AI credits, so they've stopped scoring "
+"new stories. They start again on <b>%(date)s</b>, when your credits reset."
 msgstr[0] ""
-"ตัวกรอง AI ของคุณใช้เครดิต AI <b>%(counter)s</b> ของเดือนนี้ครบแล้ว จึงหยุดให้คะแนนบทความใหม่ "
-"โดยจะเริ่มทำงานอีกครั้งในวันที่ <b>%(date)s</b> เมื่อเครดิตรีเซ็ต"
+"ตัวกรอง AI ของคุณใช้เครดิต AI ประจำเดือนนี้ไปแล้ว <b>%(included_text)s</b> จึงหยุดให้คะแนนบทความใหม่ "
+"และจะเริ่มทำงานอีกครั้งในวันที่ <b>%(date)s</b> เมื่อเครดิตรีเซ็ต"
 
 msgid "Your AI filters used this month's credits"
 msgstr "ตัวกรอง AI ของคุณใช้เครดิตประจำเดือนนี้หมดแล้ว"

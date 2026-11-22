@@ -1280,13 +1280,11 @@ om over de wereld te praten.</string>
     <string name="ai_filter_content_label">Inhoudsfilter</string>
     <string name="ai_filter_image_label">Afbeeldingsfilter</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Classifier voor natuurlijke taal voor tekst</string>
-    <string name="ai_image_classifier_header">Classifier voor natuurlijke taal voor afbeeldingen</string>
-    <string name="ai_text_classifier_explainer">Beschrijf een onderwerp en AI beoordeelt elk artikel op basis van je prompt om overeenkomsten uit te lichten of te verbergen.</string>
-    <string name="ai_image_classifier_explainer">Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen in elk artikel op basis van je prompt.</string>
+    <string name="ai_filters_title">AI-filters</string>
+    <string name="ai_filter_mode_text">Tekst</string>
+    <string name="ai_filter_mode_images">Afbeeldingen</string>
     <string name="ai_text_prompt_hint">bijv. “AI en machine learning” of “lokale politiek”</string>
     <string name="ai_image_prompt_hint">bijv. “voedselfotografie” of “diagrammen en grafieken”</string>
-    <string name="ai_prompt_placeholder">Beschrijf wat je wilt uitlichten of verbergen</string>
     <string name="ai_prompt_type_content">Inhoud</string>
     <string name="ai_prompt_type_image">Afbeelding</string>
     <string name="ai_prompt_focus">Focusartikelen die overeenkomen</string>
@@ -1326,35 +1324,41 @@ om over de wereld te praten.</string>
     <string name="ai_credits_resets">Wordt opnieuw ingesteld op %1$s</string>
     <string name="ai_credits_free">AI-filters zijn opgeslagen, maar werken alleen met Premium. Premium omvat %1$s AI-credits per maand, Archive %2$s en Pro %3$s.</string>
     <string name="ai_credits_upgrade">Upgraden</string>
-    <string name="ai_credits_estimate_text">Een tekstfilter op deze site gebruikt ongeveer %1$s credits per maand</string>
-    <string name="ai_credits_estimate_image">Een afbeeldingsfilter op deze site gebruikt ongeveer %1$s credits per maand</string>
-    <string name="ai_credits_estimate_text_small">Een tekstfilter op deze site gebruikt minder dan %1$s tegoed per maand</string>
-    <string name="ai_credits_estimate_image_small">Een afbeeldingsfilter op deze site gebruikt minder dan %1$s credits per maand</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="one">Een tekstfilter op deze site gebruikt ongeveer %1$s credit per maand</item>
+        <item quantity="other">Een tekstfilter op deze site gebruikt ongeveer %1$s credits per maand</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="one">Een afbeeldingsfilter op deze site verbruikt ongeveer %1$s tegoed per maand</item>
+        <item quantity="other">Een afbeeldingsfilter op deze site gebruikt ongeveer %1$s credits per maand</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Een tekstfilter op deze site gebruikt minder dan één credit per maand</string>
+    <string name="ai_credits_image_estimate_under_one">Een afbeeldingsfilter op deze site gebruikt minder dan één credit per maand</string>
     <string name="ai_credits_runs_out">Bij dit tempo is je tegoed rond %1$s op.</string>
     <plurals name="ai_credits_paused">
         <item quantity="one">Je AI-filters zijn gepauzeerd tot %1$s. Het %2$s AI-tegoed van deze maand is verbruikt.</item>
         <item quantity="other">Je AI-filters zijn gepauzeerd tot %1$s. Je hebt deze maand je %2$s AI-credits opgebruikt.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Je AI-filters hebben de maandelijkse limiet van %1$s bereikt en zijn gepauzeerd tot %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="one">Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per stuk: deze maand tot nu toe %2$s.</item>
-        <item quantity="other">Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per stuk: deze maand tot nu toe %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="one">Betalen naar gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per %2$s: deze maand tot nu toe %3$s.</item>
+        <item quantity="other">Betalen naar gebruik is ingeschakeld. Credits boven je %1$s kosten 1¢ per %2$s: deze maand tot nu toe %3$s.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Betalen op basis van gebruik is ingeschakeld. AI-credits kosten € 0,01 per stuk: deze maand tot nu toe %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Betalen naar gebruik is ingeschakeld. AI-credits kosten 1¢ per %1$s: deze maand tot nu toe %2$s.</string>
     <string name="ai_credits_unbilled">Er staat %1$s klaar om in rekening te worden gebracht: aan het begin van volgende maand als het minstens %2$s is, of meteen bij %3$s.</string>
     <string name="ai_credits_keep_running">Filters actief houden</string>
-    <string name="ai_credits_billing_explainer">Boven je inbegrepen credits blijven filters werken voor 1¢ per credit.</string>
+    <string name="ai_credits_billing_rate">Als je je tegoed hebt verbruikt, blijven filters actief voor 1¢ per %1$s tegoed.</string>
     <string name="ai_credits_billing_forecast">Bij dit tempo deze maand ongeveer %1$s.</string>
     <string name="ai_credits_turn_on_billing">Betalen op basis van gebruik inschakelen</string>
-    <string name="ai_credits_turn_on_detail">1¢ per credit boven je abonnement, deze maand ongeveer %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">€ 0,01 per credit boven je abonnementslimiet</string>
+    <string name="ai_credits_turn_on_rate">1¢ per %1$s credits boven je abonnementslimiet; deze maand ongeveer %2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ per %1$s tegoed boven je abonnement</string>
     <string name="ai_credits_or_wait">of wacht tot %1$s</string>
     <string name="ai_credits_manage_billing">Facturering beheren</string>
     <string name="ai_credits_change_limit">Limiet wijzigen</string>
     <string name="ai_credits_open">AI-credits bekijken</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="one">Je abonnement omvat %1$s AI-credit per maand voor AI-tekst- en afbeeldingsfilters. Credits worden op de 1e vernieuwd en ongebruikte credits worden niet meegenomen.</item>
-        <item quantity="other">Je abonnement omvat %1$s AI-credits per maand voor AI-tekst- en afbeeldingsfilters. Credits worden op de 1e opnieuw ingesteld; ongebruikte credits worden niet meegenomen.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="one">Je abonnement bevat %1$s AI-credit per maand. Eén credit staat ongeveer gelijk aan één artikel dat door een tekstfilter gaat; een afbeeldingsfilter gebruikt ongeveer 10 credits per artikel. De credits worden op de 1e van de maand vernieuwd en ongebruikte credits worden niet meegenomen.</item>
+        <item quantity="other">Je abonnement bevat %1$s AI-credits per maand. Eén credit staat ongeveer gelijk aan één artikel dat door een tekstfilter gaat; een afbeeldingsfilter gebruikt ongeveer 10 credits per artikel. De credits worden op de 1e van de maand vernieuwd en ongebruikte credits worden niet meegenomen.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="one">In dit tempo gebruik je deze maand ongeveer %1$s van je tegoed van %2$s.</item>

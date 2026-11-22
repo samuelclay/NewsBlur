@@ -1256,13 +1256,11 @@
     <string name="ai_filter_content_label">内容过滤器</string>
     <string name="ai_filter_image_label">图像过滤器</string>
     <string name="ai_filter_chip">%1$s：%2$s</string>
-    <string name="ai_text_classifier_header">自然语言文本分类器</string>
-    <string name="ai_image_classifier_header">自然语言图像分类器</string>
-    <string name="ai_text_classifier_explainer">描述一个主题，AI 会根据你的提示为每篇文章评分，以聚焦或隐藏匹配的文章。</string>
-    <string name="ai_image_classifier_explainer">描述要查找的内容，AI 会根据你的提示分析每篇文章中的图片。</string>
+    <string name="ai_filters_title">AI 筛选器</string>
+    <string name="ai_filter_mode_text">文本</string>
+    <string name="ai_filter_mode_images">图片</string>
     <string name="ai_text_prompt_hint">例如：“AI 和机器学习”或“地方政治”</string>
     <string name="ai_image_prompt_hint">例如：“美食摄影”或“图表”</string>
-    <string name="ai_prompt_placeholder">描述要聚焦或隐藏的内容</string>
     <string name="ai_prompt_type_content">内容</string>
     <string name="ai_prompt_type_image">图片</string>
     <string name="ai_prompt_focus">聚焦匹配的文章</string>
@@ -1299,32 +1297,36 @@
     <string name="ai_credits_resets">将于 %1$s 重置</string>
     <string name="ai_credits_free">AI 筛选器已保存，但只有高级版才能运行。高级版每月包含 %1$s 个 AI 额度，归档版包含 %2$s 个，专业版包含 %3$s 个。</string>
     <string name="ai_credits_upgrade">升级</string>
-    <string name="ai_credits_estimate_text">此网站的文字筛选器每月约使用 %1$s 个点数</string>
-    <string name="ai_credits_estimate_image">此网站的图片筛选器每月约使用 %1$s 个额度</string>
-    <string name="ai_credits_estimate_text_small">此网站的文本筛选器每月使用的额度少于 %1$s</string>
-    <string name="ai_credits_estimate_image_small">此网站的图片筛选器每月使用的点数少于 %1$s 个</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">此网站的文本筛选器每月使用约 %1$s 个点数</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">此网站上的图像筛选器每月约使用 %1$s 个积分</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">此网站的文本筛选器每月使用不到 1 个点数</string>
+    <string name="ai_credits_image_estimate_under_one">此网站上的图像筛选器每月使用不到 1 个积分</string>
     <string name="ai_credits_runs_out">按目前的使用速度，点数大约会在 %1$s 用完。</string>
     <plurals name="ai_credits_paused">
         <item quantity="other">你的 AI 筛选器已暂停，将于 %1$s 恢复。本月的 %2$s 个 AI 额度已用完。</item>
     </plurals>
     <string name="ai_credits_paused_limit">你的 AI 筛选器已达到每月上限 %1$s，将暂停至 %2$s。</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="other">按用量计费已开启。超出套餐额度后，每个额度收费 1¢：本月至今已产生 %2$s 费用，套餐额度为 %1$s。</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">用量计费已开启。超出你的 %1$s 后，每 %2$s 收费 1¢：本月迄今已使用 %3$s。</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">按用量计费已开启。每个 AI 额度收费 1¢：本月至今已产生 %1$s 费用。</string>
+    <string name="ai_credits_billing_on_rate_no_plan">按用量计费已开启。AI 积分每 %1$s 个收费 1 美分：本月至今已用 %2$s。</string>
     <string name="ai_credits_unbilled">%1$s 尚待扣款：如果金额至少达到 %2$s，将在下月初扣款；达到 %3$s 时则会立即扣款。</string>
     <string name="ai_credits_keep_running">保持筛选器运行</string>
-    <string name="ai_credits_billing_explainer">超出套餐额度后，筛选器仍会继续运行，每个额度收费 1¢。</string>
+    <string name="ai_credits_billing_rate">超过你的额度后，筛选器将继续运行，每 %1$s 个额度收费 1¢。</string>
     <string name="ai_credits_billing_forecast">按目前的使用速度，本月预计约 %1$s。</string>
     <string name="ai_credits_turn_on_billing">开启按用量计费</string>
-    <string name="ai_credits_turn_on_detail">超出套餐额度后，每个额度收费 1¢，本月预计约 %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">超出套餐额度后，每个额度收费 1¢</string>
+    <string name="ai_credits_turn_on_rate">超出套餐额度后，每 %1$s 个积分收费 1 美分，本月约为 %2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">超出你的套餐额度后，每 %1$s 个额度收费 1¢</string>
     <string name="ai_credits_or_wait">或等到 %1$s</string>
     <string name="ai_credits_manage_billing">管理账单</string>
     <string name="ai_credits_change_limit">更改上限</string>
     <string name="ai_credits_open">查看 AI 点数</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="other">你的套餐每月包含 %1$s 个 AI 额度，可用于 AI 文本和图片筛选器。额度每月 1 日重置，未使用的额度不会结转。</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">你的套餐每月包含 %1$s 个 AI 积分。一个积分大约可通过文本筛选器处理一篇文章；图像筛选器每篇文章约需 10 个积分。积分每月 1 日重置，未使用的积分不会结转。</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="other">按目前的使用速度，本月预计会用掉 %2$s 个点数中的约 %1$s 个。</item>

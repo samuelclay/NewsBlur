@@ -1280,13 +1280,11 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ai_filter_content_label">Inhaltsfilter</string>
     <string name="ai_filter_image_label">Bildfilter</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Klassifikator für natürlichsprachliche Texte</string>
-    <string name="ai_image_classifier_header">Bildklassifikator für natürliche Sprache</string>
-    <string name="ai_text_classifier_explainer">Beschreibe ein Thema, und die KI bewertet jeden Artikel anhand deiner Eingabe, um passende Artikel hervorzuheben oder auszublenden.</string>
-    <string name="ai_image_classifier_explainer">Beschreibe, wonach du suchst, und die KI analysiert die Bilder in jedem Artikel anhand deiner Eingabe.</string>
+    <string name="ai_filters_title">KI-Filter</string>
+    <string name="ai_filter_mode_text">Text</string>
+    <string name="ai_filter_mode_images">Bilder</string>
     <string name="ai_text_prompt_hint">z. B. „KI und maschinelles Lernen“ oder „Lokalpolitik“</string>
     <string name="ai_image_prompt_hint">z. B. „Food-Fotografie“ oder „Diagramme und Grafiken“</string>
-    <string name="ai_prompt_placeholder">Beschreibe, worauf der Fokus liegen oder was ausgeblendet werden soll</string>
     <string name="ai_prompt_type_content">Inhalt</string>
     <string name="ai_prompt_type_image">Bild</string>
     <string name="ai_prompt_focus">Fokus-Artikel, die zutreffen</string>
@@ -1326,35 +1324,41 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="ai_credits_resets">Wird am %1$s zurückgesetzt</string>
     <string name="ai_credits_free">KI-Filter sind gespeichert, laufen aber nur mit Premium. Premium umfasst %1$s KI-Credits pro Monat, Archive %2$s und Pro %3$s.</string>
     <string name="ai_credits_upgrade">Upgrade</string>
-    <string name="ai_credits_estimate_text">Ein Textfilter für diese Website verbraucht etwa %1$s Credits pro Monat</string>
-    <string name="ai_credits_estimate_image">Ein Bildfilter auf dieser Website verbraucht etwa %1$s Credits pro Monat</string>
-    <string name="ai_credits_estimate_text_small">Ein Textfilter auf dieser Website verbraucht weniger als %1$s Guthaben pro Monat</string>
-    <string name="ai_credits_estimate_image_small">Ein Bildfilter für diese Website verbraucht weniger als %1$s Credits pro Monat</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="one">Ein Textfilter auf dieser Website verbraucht etwa %1$s Credit pro Monat</item>
+        <item quantity="other">Ein Textfilter auf dieser Website verbraucht etwa %1$s Credits pro Monat</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="one">Ein Bildfilter auf dieser Website verbraucht etwa %1$s Guthabenpunkt pro Monat</item>
+        <item quantity="other">Ein Bildfilter auf dieser Website verbraucht etwa %1$s Credits pro Monat</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Ein Textfilter auf dieser Website verbraucht weniger als einen Credit pro Monat</string>
+    <string name="ai_credits_image_estimate_under_one">Ein Bildfilter auf dieser Website verbraucht weniger als einen Credit pro Monat</string>
     <string name="ai_credits_runs_out">Bei diesem Verbrauch sind deine Credits etwa am %1$s aufgebraucht.</string>
     <plurals name="ai_credits_paused">
         <item quantity="one">Deine KI-Filter sind bis zum %1$s pausiert. Dieser Monat hat %2$s KI-Credit verbraucht.</item>
         <item quantity="other">Deine KI-Filter sind bis %1$s pausiert. Deine %2$s KI-Credits für diesen Monat sind aufgebraucht.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Deine KI-Filter haben dein monatliches Limit von %1$s erreicht und sind bis %2$s pausiert.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="one">Die nutzungsbasierte Abrechnung ist aktiviert. Credits über dein %1$s hinaus kosten je 1 ¢: diesen Monat bisher %2$s.</item>
-        <item quantity="other">Die nutzungsbasierte Abrechnung ist aktiviert. Credits über dein %1$s hinaus kosten je 1 ¢: diesen Monat bisher %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="one">Die nutzungsabhängige Abrechnung ist aktiviert. Credits über deinem Kontingent von %1$s kosten 1¢ pro %2$s: diesen Monat bisher %3$s.</item>
+        <item quantity="other">Die nutzungsabhängige Abrechnung ist aktiviert. Credits über deinem Kontingent von %1$s kosten 1¢ pro %2$s: diesen Monat bisher %3$s.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Die nutzungsabhängige Abrechnung ist aktiviert. KI-Credits kosten jeweils 1 ¢: diesen Monat bisher %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Die nutzungsabhängige Abrechnung ist aktiviert. KI-Credits kosten 1¢ pro %1$s: diesen Monat bisher %2$s.</string>
     <string name="ai_credits_unbilled">%1$s wird noch abgerechnet: zu Beginn des nächsten Monats, wenn der Betrag mindestens %2$s beträgt, oder sofort bei %3$s.</string>
     <string name="ai_credits_keep_running">Filter weiterlaufen lassen</string>
-    <string name="ai_credits_billing_explainer">Sind deine Credits aufgebraucht, laufen die Filter für je 1 ¢ pro Credit weiter.</string>
+    <string name="ai_credits_billing_rate">Wenn dein Guthaben aufgebraucht ist, laufen die Filter für 1 ¢ pro %1$s Guthabenpunkte weiter.</string>
     <string name="ai_credits_billing_forecast">Bei diesem Tempo diesen Monat etwa %1$s.</string>
     <string name="ai_credits_turn_on_billing">Nutzungsabhängige Abrechnung aktivieren</string>
-    <string name="ai_credits_turn_on_detail">Je 1 ¢ pro Credit über dein Tarifkontingent hinaus, diesen Monat etwa %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1 ¢ pro Credit über dein Kontingent hinaus</string>
+    <string name="ai_credits_turn_on_rate">1¢ pro %1$s Credits über dein Abo-Kontingent hinaus, diesen Monat etwa %2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1 ¢ pro %1$s Guthabenpunkte über dein Tarifguthaben hinaus</string>
     <string name="ai_credits_or_wait">oder bis zum %1$s warten</string>
     <string name="ai_credits_manage_billing">Abrechnung verwalten</string>
     <string name="ai_credits_change_limit">Limit ändern</string>
     <string name="ai_credits_open">KI-Credits anzeigen</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="one">Dein Tarif umfasst %1$s KI-Credit pro Monat für KI-Text- und Bildfilter. Die Credits werden am 1. zurückgesetzt und nicht genutzte verfallen.</item>
-        <item quantity="other">Dein Tarif umfasst %1$s KI-Credits pro Monat für KI-Text- und Bildfilter. Die Credits werden am 1. zurückgesetzt und nicht genutzte verfallen.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="one">Dein Abo umfasst %1$s KI-Credit pro Monat. Ein Credit entspricht ungefähr einem Artikel, der einen Textfilter durchläuft; ein Bildfilter verbraucht etwa 10 Credits pro Artikel. Die Credits werden am 1. zurückgesetzt und nicht genutzte Credits verfallen.</item>
+        <item quantity="other">Dein Abo umfasst %1$s KI-Credits pro Monat. Ein Credit entspricht ungefähr einem Artikel, der einen Textfilter durchläuft; ein Bildfilter verbraucht etwa 10 Credits pro Artikel. Die Credits werden am 1. zurückgesetzt und nicht genutzte Credits verfallen.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="one">Bei diesem Tempo verbrauchst du diesen Monat etwa %1$s deines Guthabens von %2$s.</item>

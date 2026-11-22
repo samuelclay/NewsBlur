@@ -16,7 +16,7 @@
 			<string>%1$@ feed tidak dapat ditambahkan ke %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%2$@ kredit AI digunakan, %3$@ melebihi jatah %1$@ paket Anda</string>
+			<string>%2$@ kredit AI digunakan, %3$@ melebihi batas paket Anda %4$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>%2$@ dari %1$@ kredit AI telah digunakan</string>
+			<string>%2$@ dari %3$@ kredit AI telah digunakan</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>Diperbarui %@ minggu lalu</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi jatah %1$@ dikenai biaya 1¢ per kredit: sejauh ini %2$@ bulan ini.</string>
+			<string>Penagihan berdasarkan pemakaian aktif. Kredit yang melebihi %2$@ Anda dikenai biaya 1¢ per 1.000: sejauh ini %3$@ bulan ini.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

@@ -18,7 +18,7 @@
 			<string>%1$@ feeds konden niet worden toegevoegd aan %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -29,12 +29,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ AI-credits gebruikt, %3$@ boven de %1$@ van je abonnement</string>
+			<string>%2$@ AI-credit gebruikt, %3$@ boven je abonnementslimiet van %4$@</string>
 			<key>other</key>
-			<string>%2$@ AI-credits gebruikt, %3$@ boven de %1$@ van je abonnement</string>
+			<string>%2$@ AI-tegoed verbruikt, %3$@ boven je abonnement van %4$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ van de %1$@ AI-credit gebruikt</string>
+			<string>%2$@ van %3$@ AI-credit gebruikt</string>
 			<key>other</key>
-			<string>%2$@ van de %1$@ AI-tegoedeenheden verbruikt</string>
+			<string>%2$@ van de %3$@ AI-tegoed verbruikt</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -930,7 +930,7 @@
 			<string>%@ weken geleden bijgewerkt</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -941,9 +941,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Betalen op basis van gebruik is ingeschakeld. Credits boven je %1$@ kosten 1¢ per stuk: deze maand tot nu toe %2$@.</string>
+			<string>Betalen naar gebruik is ingeschakeld. Credits boven je %2$@ kosten 1¢ per 1.000: deze maand tot nu toe %3$@.</string>
 			<key>other</key>
-			<string>Betalen op basis van gebruik is ingeschakeld. Credits boven je limiet van %1$@ kosten € 0,01 per stuk: deze maand tot nu toe %2$@.</string>
+			<string>Betalen naar gebruik is ingeschakeld. Credits boven je %2$@ kosten 1¢ per 1.000: deze maand tot nu toe %3$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

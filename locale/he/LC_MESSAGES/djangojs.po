@@ -955,12 +955,18 @@ msgstr "חודש אחד"
 msgid "1 year"
 msgstr "שנה אחת"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1¢ לכל נקודת זכות מעבר למכסה בתוכנית שלך, בערך %(cost)s החודש."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10,000 קרדיטי AI בחודש למסנני AI"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1¢ לכל קרדיט מעבר למכסה שבתוכנית שלך."
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100,000 קרדיטי AI בחודש למסנני AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ לכל 1,000 קרדיטים מעבר למכסה בתוכנית שלך, בערך %(cost)s החודש."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ לכל 1,000 קרדיטים מעבר למכסה בתוכנית שלך."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ולגילוי."
@@ -979,12 +985,6 @@ msgstr "3 פעמים ביום"
 
 msgid "5 years"
 msgstr "5 שנים"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 קרדיטי AI בחודש למסנני AI"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 נקודות AI בחודש למסנני AI"
 
 msgid "5× faster feed updates"
 msgstr "עדכוני פידים מהירים פי 5"
@@ -1024,8 +1024,8 @@ msgstr "בלוג שיתופים של כתבות"
 msgid "A clearer, closer sound"
 msgstr "צליל ברור וקרוב יותר"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "קרדיט אחד שווה 1¢ של AI: כ־700 כתבות דרך מסנן טקסט או 100 דרך מסנן תמונות."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "קרדיט אחד מספיק בערך לסינון כתבה אחת באמצעות מסנן טקסט. מסנן תמונות צורך בערך 10 קרדיטים לכתבה."
 
 msgid "A folder of feeds read as one stream"
 msgstr "תיקיית פידים שנקראת כזרם אחד"
@@ -1052,8 +1052,8 @@ msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "מסנן טקסט באתר הזה משתמש בכ־%(count)s קרדיט בחודש."
 msgstr[1] "מסנן טקסט באתר הזה משתמש בכ־%(count)s קרדיטים בחודש."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "מסנן טקסט באתר הזה משתמש בפחות מעשירית קרדיט בחודש."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "מסנן טקסט באתר הזה צורך פחות מקרדיט אחד בחודש."
 
 msgid "AI Filter"
 msgstr "מסנן AI"
@@ -1064,14 +1064,19 @@ msgstr "מודל בינה מלאכותית"
 msgid "AI credits"
 msgstr "קרדיטי AI"
 
+msgid "AI filters"
+msgstr "מסנני AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "מסנני בינה מלאכותית נשמרים, אך פועלים רק ב־%(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"מסנני הבינה המלאכותית נשמרו, אך פועלים רק עם Premium. מינוי Premium כולל 5 נקודות זכות לבינה מלאכותית "
-"בחודש, Archive כולל 50 ו-Pro כולל 500."
+"מסנני AI נשמרים, אך פועלים רק עם Premium. תוכנית Premium כוללת 1,000 קרדיטי AI בחודש, Archive כוללת 10,000 "
+"ו־Pro כוללת 100,000."
 
 msgid "AI filters run without credits on this server."
 msgstr "בשרת הזה מסנני בינה מלאכותית פועלים ללא נקודות זכות."
@@ -1079,8 +1084,8 @@ msgstr "בשרת הזה מסנני בינה מלאכותית פועלים ללא
 msgid "AI finds the stories"
 msgstr "AI מאתר את הכתבות"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "מסנני טקסט ותמונות מבוססי AI, עם 5 קרדיטי AI בחודש"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "מסנני טקסט ותמונות מבוססי AI, עם 1,000 נקודות זכות AI בחודש"
 
 msgid "AI-curated summary of your top stories"
 msgstr "סיכום של הכתבות המובילות שלך שנבחר באמצעות AI"
@@ -1350,8 +1355,8 @@ msgid_plural "An image filter on this site uses about %(count)s credits a month.
 msgstr[0] "מסנן תמונות באתר הזה משתמש בכ־%(count)s קרדיט בחודש."
 msgstr[1] "מסנן תמונות באתר הזה משתמש בכ־%(count)s קרדיטים בחודש."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "מסנן תמונות באתר הזה משתמש בפחות מעשירית קרדיט בחודש."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "מסנן תמונות באתר הזה צורך פחות מקרדיט אחד בחודש."
 
 msgid "Analysis timed out. Please try again."
 msgstr "הזמן שהוקצב לניתוח הסתיים. נא לנסות שוב."
@@ -2368,14 +2373,8 @@ msgstr "הקראה"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "תארו את הכתבה שאתם מחפשים, וננתח מחדש את הדף כדי למצוא אותה."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "תארו נושא, והבינה המלאכותית תדרג כל כתבה לפי ההנחיה שלכם כדי למקד את התוצאות או להסתיר התאמות."
-
 msgid "Describe what to focus or hide"
 msgstr "תארו במה להתמקד או מה להסתיר"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "תאר מה לחפש, וה-AI ינתח את התמונות בכל כתבה בהתאם להנחיה שלך."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3642,6 +3641,9 @@ msgstr "תצוגה מקדימה של תמונה"
 msgid "Image prompt"
 msgstr "הנחיה לתמונה"
 
+msgid "Images"
+msgstr "תמונות"
+
 msgid "Immediately"
 msgstr "מיידית"
 
@@ -4328,12 +4330,6 @@ msgstr "אפליקציות מקוריות"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "טבעי"
-
-msgid "Natural Language Image Classifier"
-msgstr "מסווג תמונות בשפה טבעית"
-
-msgid "Natural Language Text Classifier"
-msgstr "מסווג טקסט בשפה טבעית"
 
 msgid "Nature"
 msgstr "טבע"
@@ -5024,13 +5020,15 @@ msgstr "מנתח..."
 msgid "Part of a story URL"
 msgstr "חלק מכתובת ה-URL של הכתבה"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "לאחר ניצול נקודות הזכות שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל נקודת זכות."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "לאחר מיצוי הקרדיטים שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל 1,000 קרדיטים."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"מעבר למכסת הקרדיטים בתוכנית שלך, המסננים מושהים עד ה־1 בחודש. חיוב לפי שימוש משאיר אותם פעילים בעלות של 1¢ "
-"לכל קרדיט."
+"לאחר מיצוי הקרדיטים הכלולים במינוי שלך, המסננים יושהו עד ל־1 בחודש. חיוב לפי שימוש ישאיר אותם פעילים בעלות "
+"של 1¢ לכל 1,000 קרדיטים."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "הדביקו כתובת URL כלשהי ו־NewsBlur ייצור מהעמוד פיד, גם ללא RSS."
@@ -5224,8 +5222,8 @@ msgstr "פרטי Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "גופני Premium דורשים %(link_start)sחשבון Premium%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "מינוי Premium כולל 5 נקודות זכות לבינה מלאכותית בחודש, Archive כולל 50 ו-Pro כולל 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "תוכנית Premium כוללת 1,000 קרדיטי AI בחודש, Archive כוללת 10,000 ו־Pro כוללת 100,000."
 
 msgid "Premium renewal"
 msgstr "חידוש Premium"
@@ -7668,10 +7666,10 @@ msgid "Usage billing charges"
 msgstr "חיובים לפי שימוש"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "החיוב לפי שימוש מופעל. כל נקודת זכות מעבר ל־%(count)s עולה 1¢: עד כה החודש %(cost)s."
-msgstr[1] "החיוב לפי שימוש מופעל. כל נקודת זכות מעבר ל־%(count)s עולה 1¢: עד כה החודש %(cost)s."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "חיוב לפי שימוש מופעל. נקודות זכות מעבר ל־%(count)s עולות 1¢ לכל 1,000: %(cost)s עד כה החודש."
+msgstr[1] "חיוב לפי שימוש מופעל. נקודות זכות מעבר ל־%(count)s עולות 1¢ לכל 1,000: %(cost)s עד כה החודש."
 
 #, python-format
 msgid "Use %(language)s"

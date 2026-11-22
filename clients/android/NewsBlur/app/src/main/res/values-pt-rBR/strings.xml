@@ -1304,13 +1304,11 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="ai_filter_content_label">Filtro de conteúdo</string>
     <string name="ai_filter_image_label">Filtro de imagem</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Classificador de texto em linguagem natural</string>
-    <string name="ai_image_classifier_header">Classificador de imagens por linguagem natural</string>
-    <string name="ai_text_classifier_explainer">Descreva um tema e a IA avaliará cada artigo com base no seu prompt para colocá-lo em Foco ou ocultar os que corresponderem.</string>
-    <string name="ai_image_classifier_explainer">Descreva o que você quer encontrar e a IA analisará as imagens de cada artigo com base no seu prompt.</string>
+    <string name="ai_filters_title">Filtros de IA</string>
+    <string name="ai_filter_mode_text">Texto</string>
+    <string name="ai_filter_mode_images">Imagens</string>
     <string name="ai_text_prompt_hint">por exemplo, “IA e aprendizado de máquina” ou “política local”</string>
     <string name="ai_image_prompt_hint">por exemplo, “fotografia de comida” ou “gráficos e diagramas”</string>
-    <string name="ai_prompt_placeholder">Descreva o que deve ser priorizado ou oculto</string>
     <string name="ai_prompt_type_content">Conteúdo</string>
     <string name="ai_prompt_type_image">Imagem</string>
     <string name="ai_prompt_focus">Artigos em foco que correspondem</string>
@@ -1353,10 +1351,18 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="ai_credits_resets">Redefine em %1$s</string>
     <string name="ai_credits_free">Os filtros de IA estão salvos, mas só funcionam no Premium. O Premium inclui %1$s créditos de IA por mês, %2$s no Archive e %3$s no Pro.</string>
     <string name="ai_credits_upgrade">Fazer upgrade</string>
-    <string name="ai_credits_estimate_text">Um filtro de texto neste site usa cerca de %1$s créditos por mês</string>
-    <string name="ai_credits_estimate_image">Um filtro de imagem neste site usa cerca de %1$s créditos por mês</string>
-    <string name="ai_credits_estimate_text_small">Um filtro de texto neste site usa menos de %1$s créditos por mês</string>
-    <string name="ai_credits_estimate_image_small">Um filtro de imagem neste site usa menos de %1$s créditos por mês</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="many">Um filtro de texto neste site usa cerca de %1$s créditos por mês</item>
+        <item quantity="one">Um filtro de texto neste site usa cerca de %1$s crédito por mês</item>
+        <item quantity="other">Um filtro de texto neste site usa cerca de %1$s créditos por mês</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="many">Um filtro de imagem neste site usa cerca de %1$s créditos por mês</item>
+        <item quantity="one">Um filtro de imagem neste site usa cerca de %1$s crédito por mês</item>
+        <item quantity="other">Um filtro de imagem neste site usa cerca de %1$s créditos por mês</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Um filtro de texto neste site usa menos de um crédito por mês</string>
+    <string name="ai_credits_image_estimate_under_one">Um filtro de imagem neste site usa menos de um crédito por mês</string>
     <string name="ai_credits_runs_out">Nesse ritmo, seus créditos acabarão por volta de %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="many">Seus filtros de IA estão pausados até %1$s. Os créditos de IA deste mês (%2$s) foram usados.</item>
@@ -1364,27 +1370,27 @@ as pessoas para conversar sobre o mundo.</string>
         <item quantity="other">Seus filtros de IA estão pausados até %1$s. Os %2$s créditos de IA deste mês foram usados.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Seus filtros de IA atingiram o limite mensal de %1$s e estão pausados até %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="many">A cobrança por uso está ativada. Os créditos acima de %1$s custam 1¢ cada: %2$s até agora neste mês.</item>
-        <item quantity="one">A cobrança por uso está ativada. Os créditos que excederem %1$s custam 1¢ cada: %2$s até agora neste mês.</item>
-        <item quantity="other">A cobrança por uso está ativada. Os créditos que excederem %1$s custam 1¢ cada: %2$s até agora neste mês.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="many">A cobrança por uso está ativada. Os créditos que excederem %1$s custam 1¢ por %2$s: %3$s até agora neste mês.</item>
+        <item quantity="one">A cobrança por uso está ativada. Os créditos que excederem %1$s custam 1¢ por %2$s: %3$s até agora neste mês.</item>
+        <item quantity="other">A cobrança por uso está ativada. Os créditos que excederem %1$s custam 1¢ por %2$s: %3$s até agora neste mês.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">A cobrança por uso está ativada. Os créditos de IA custam 1¢ cada: %1$s até agora neste mês.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">A cobrança por uso está ativada. Os créditos de IA custam 1¢ por %1$s: %2$s até agora neste mês.</string>
     <string name="ai_credits_unbilled">%1$s aguarda cobrança: no início do próximo mês, se for pelo menos %2$s, ou imediatamente, quando chegar a %3$s.</string>
     <string name="ai_credits_keep_running">Manter filtros ativos</string>
-    <string name="ai_credits_billing_explainer">Acima do limite de créditos, os filtros continuam funcionando por 1¢ por crédito.</string>
+    <string name="ai_credits_billing_rate">Depois que seus créditos acabarem, os filtros continuarão funcionando por 1¢ a cada %1$s créditos.</string>
     <string name="ai_credits_billing_forecast">Cerca de %1$s neste mês, no ritmo atual.</string>
     <string name="ai_credits_turn_on_billing">Ativar cobrança por uso</string>
-    <string name="ai_credits_turn_on_detail">1¢ por crédito acima do limite do seu plano, cerca de %1$s neste mês</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ por crédito além do limite do seu plano</string>
+    <string name="ai_credits_turn_on_rate">1¢ por %1$s créditos além do seu plano, cerca de %2$s neste mês</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ a cada %1$s créditos além dos incluídos no seu plano</string>
     <string name="ai_credits_or_wait">ou espere até %1$s</string>
     <string name="ai_credits_manage_billing">Gerenciar cobrança</string>
     <string name="ai_credits_change_limit">Alterar limite</string>
     <string name="ai_credits_open">Ver créditos de IA</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="many">Seu plano inclui %1$s créditos de IA por mês para filtros de texto e imagem com IA. Os créditos são renovados no dia 1, e os não utilizados não acumulam.</item>
-        <item quantity="one">Seu plano inclui %1$s crédito de IA por mês para filtros de texto e imagem com IA. Os créditos são renovados no dia 1, e os não utilizados não acumulam.</item>
-        <item quantity="other">Seu plano inclui %1$s créditos de IA por mês para filtros de texto e imagem com IA. Os créditos são renovados no dia 1º e não acumulam.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="many">Seu plano inclui %1$s créditos de IA por mês. Um crédito equivale a processar cerca de um artigo com um filtro de texto; um filtro de imagem usa cerca de 10 créditos por artigo. Os créditos são renovados no dia 1º e os não utilizados não são acumulados.</item>
+        <item quantity="one">Seu plano inclui %1$s crédito de IA por mês. Um crédito equivale a processar cerca de um artigo com um filtro de texto; um filtro de imagem usa cerca de 10 créditos por artigo. Os créditos são renovados no dia 1º e os não utilizados não são acumulados.</item>
+        <item quantity="other">Seu plano inclui %1$s créditos de IA por mês. Um crédito equivale a aproximadamente um artigo processado por um filtro de texto; um filtro de imagem usa cerca de 10 créditos por artigo. Os créditos são renovados no dia 1 e não acumulam.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="many">Nesse ritmo, você usará cerca de %1$s dos seus %2$s créditos neste mês.</item>

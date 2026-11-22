@@ -20,7 +20,7 @@
 			<string>Impossible d’ajouter %1$@ flux à %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -31,14 +31,14 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%2$@ crédits IA utilisés, %3$@ au-delà de la limite de votre forfait (%1$@)</string>
+			<string>%2$@ crédit IA utilisé, %3$@ au-delà des %4$@ inclus dans votre abonnement</string>
 			<key>one</key>
-			<string>%2$@ crédit IA utilisé, %3$@ au-delà des %1$@ inclus dans votre offre</string>
+			<string>%2$@ crédit IA utilisé, %3$@ au-delà des %4$@ inclus dans votre abonnement</string>
 			<key>other</key>
-			<string>%2$@ crédits IA utilisés, %3$@ au-delà de la limite de %1$@ de votre offre</string>
+			<string>%2$@ crédits IA utilisés, %3$@ au-delà des %4$@ de votre abonnement</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -49,11 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>%2$@ crédit IA utilisé sur %1$@</string>
+			<string>%2$@ crédits IA utilisés sur %3$@</string>
 			<key>one</key>
-			<string>%2$@ crédit IA utilisé sur %1$@</string>
+			<string>%2$@ crédit IA utilisé sur %3$@</string>
 			<key>other</key>
-			<string>%2$@ sur %1$@ crédits IA utilisés</string>
+			<string>%2$@ crédit IA utilisé sur %3$@</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -1046,7 +1046,7 @@
 			<string>Mis à jour il y a %@ semaines</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -1057,11 +1057,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>many</key>
-			<string>La facturation à l’usage est activée. Les crédits au-delà de %1$@ coûtent 1 ¢ chacun : %2$@ utilisés jusqu’ici ce mois-ci.</string>
+			<string>La facturation à l’usage est activée. Les crédits au-delà de votre %2$@ coûtent 1 ¢ par 1 000 : %3$@ utilisés depuis le début du mois.</string>
 			<key>one</key>
-			<string>La facturation à l’usage est activée. Les crédits au-delà de votre limite de %1$@ coûtent 1¢ chacun : %2$@ jusqu’à présent ce mois-ci.</string>
+			<string>La facturation à l’usage est activée. Les crédits au-delà de votre %2$@ coûtent 1 ¢ par 1 000 : %3$@ utilisés depuis le début du mois.</string>
 			<key>other</key>
-			<string>La facturation à l’utilisation est activée. Les crédits au-delà des %1$@ inclus dans votre offre coûtent 1¢ chacun : %2$@ utilisés ce mois-ci.</string>
+			<string>La facturation à l’usage est activée. Les crédits au-delà de votre %2$@ coûtent 1 ¢ par 1 000 : %3$@ utilisés depuis le début du mois.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

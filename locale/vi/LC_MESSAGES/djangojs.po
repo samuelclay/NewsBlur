@@ -891,12 +891,18 @@ msgstr "1 tháng"
 msgid "1 year"
 msgstr "1 năm"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1¢ cho mỗi tín dụng vượt quá mức trong gói của bạn, tháng này khoảng %(cost)s."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 tín dụng AI mỗi tháng cho bộ lọc AI"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1 xu cho mỗi tín dụng vượt quá gói của bạn"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 tín dụng AI mỗi tháng cho bộ lọc AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ cho mỗi 1.000 tín dụng vượt quá gói của bạn, khoảng %(cost)s trong tháng này."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ cho mỗi 1.000 tín dụng vượt quá gói của bạn."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Có 28 công cụ, hỗ trợ đọc, thao tác, huấn luyện và khám phá."
@@ -915,12 +921,6 @@ msgstr "3 lần mỗi ngày"
 
 msgid "5 years"
 msgstr "5 năm"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 tín dụng AI mỗi tháng cho bộ lọc AI"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 tín dụng AI mỗi tháng cho bộ lọc AI"
 
 msgid "5× faster feed updates"
 msgstr "Cập nhật nguồn cấp dữ liệu nhanh hơn 5 lần"
@@ -959,10 +959,10 @@ msgstr "Blurblog gồm các bài viết được chia sẻ"
 msgid "A clearer, closer sound"
 msgstr "Âm thanh rõ và gần hơn"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
 msgstr ""
-"Một tín dụng tương đương 1 xu sử dụng AI: xử lý được khoảng 700 bài viết qua bộ lọc văn bản hoặc 100 bài "
-"viết qua bộ lọc hình ảnh."
+"Một tín dụng tương đương khoảng một bài viết qua bộ lọc văn bản. Bộ lọc hình ảnh dùng khoảng 10 tín dụng "
+"cho mỗi bài viết."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Một thư mục gồm các nguồn cấp dữ liệu được đọc như một luồng"
@@ -988,8 +988,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "Một bộ lọc văn bản trên trang web này dùng khoảng %(count)s tín dụng mỗi tháng."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Một bộ lọc văn bản trên trang web này dùng chưa đến một phần mười tín dụng mỗi tháng."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Bộ lọc văn bản trên trang web này dùng chưa đến một tín dụng mỗi tháng."
 
 msgid "AI Filter"
 msgstr "Bộ lọc AI"
@@ -1000,14 +1000,19 @@ msgstr "Mô hình AI"
 msgid "AI credits"
 msgstr "Tín dụng AI"
 
+msgid "AI filters"
+msgstr "Bộ lọc AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Bộ lọc AI được lưu nhưng chỉ chạy trên %(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"Bộ lọc AI đã được lưu nhưng chỉ chạy trên Premium. Premium bao gồm 5 tín dụng AI mỗi tháng, Archive 50 và "
-"Pro 500."
+"Bộ lọc AI được lưu nhưng chỉ chạy với Premium. Premium có 1.000 tín dụng AI mỗi tháng, Archive có 10.000 và"
+" Pro có 100.000."
 
 msgid "AI filters run without credits on this server."
 msgstr "Bộ lọc AI chạy trên máy chủ này mà không cần tín dụng."
@@ -1015,8 +1020,8 @@ msgstr "Bộ lọc AI chạy trên máy chủ này mà không cần tín dụng.
 msgid "AI finds the stories"
 msgstr "AI tìm các bài viết"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "Bộ lọc văn bản và hình ảnh AI, kèm 5 tín dụng AI mỗi tháng"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Bộ lọc văn bản và hình ảnh AI, với 1.000 tín dụng AI mỗi tháng"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Bản tóm tắt do AI chọn lọc từ các bài viết hàng đầu"
@@ -1280,8 +1285,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "Một bộ lọc hình ảnh trên trang web này dùng khoảng %(count)s tín dụng mỗi tháng."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Một bộ lọc hình ảnh trên trang web này dùng chưa đến một phần mười tín dụng mỗi tháng."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Bộ lọc hình ảnh trên trang web này dùng chưa đến một tín dụng mỗi tháng."
 
 msgid "Analysis timed out. Please try again."
 msgstr "Phân tích quá thời gian chờ. Vui lòng thử lại."
@@ -2293,16 +2298,8 @@ msgstr "Cách đọc"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Hãy mô tả bài viết bạn đang tìm, chúng tôi sẽ phân tích lại trang để tìm bài đó."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Mô tả một chủ đề để AI chấm điểm từng bài viết dựa trên lời nhắc của bạn, giúp tập trung vào hoặc ẩn các "
-"bài khớp."
-
 msgid "Describe what to focus or hide"
 msgstr "Mô tả nội dung cần tập trung hoặc ẩn"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Mô tả những gì cần tìm, AI sẽ phân tích hình ảnh trong từng bài viết dựa trên lời nhắc của bạn."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3576,6 +3573,9 @@ msgstr "Xem trước hình ảnh"
 msgid "Image prompt"
 msgstr "Lời nhắc về hình ảnh"
 
+msgid "Images"
+msgstr "Hình ảnh"
+
 msgid "Immediately"
 msgstr "Ngay lập tức"
 
@@ -4255,12 +4255,6 @@ msgstr "Ứng dụng gốc"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Tự nhiên"
-
-msgid "Natural Language Image Classifier"
-msgstr "Bộ phân loại hình ảnh bằng ngôn ngữ tự nhiên"
-
-msgid "Natural Language Text Classifier"
-msgstr "Bộ phân loại văn bản ngôn ngữ tự nhiên"
 
 msgid "Nature"
 msgstr "Thiên nhiên"
@@ -4951,13 +4945,15 @@ msgstr "Đang phân tích..."
 msgid "Part of a story URL"
 msgstr "Một phần URL của bài viết"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Khi dùng hết tín dụng, bộ lọc vẫn chạy với giá 1¢ mỗi tín dụng."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Khi hết tín dụng, bộ lọc vẫn tiếp tục chạy với mức phí 1¢ cho mỗi 1.000 tín dụng."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Khi dùng hết tín dụng trong gói, bộ lọc sẽ tạm dừng đến ngày 1. Thanh toán theo mức sử dụng giúp bộ lọc "
-"tiếp tục chạy với giá 1¢ mỗi tín dụng."
+"Khi dùng hết tín dụng trong gói, bộ lọc sẽ tạm dừng cho đến ngày 1. Thanh toán theo mức sử dụng giúp bộ lọc"
+" tiếp tục chạy với mức phí 1¢ cho mỗi 1.000 tín dụng."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Dán bất kỳ URL nào và NewsBlur sẽ tạo nguồn cấp dữ liệu từ trang đó, ngay cả khi không có RSS."
@@ -5150,8 +5146,8 @@ msgstr "Thông tin gói Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Phông chữ Premium yêu cầu %(link_start)stài khoản Premium%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium bao gồm 5 tín dụng AI mỗi tháng, Archive 50 và Pro 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium có 1.000 tín dụng AI mỗi tháng, Archive có 10.000 và Pro có 100.000."
 
 msgid "Premium renewal"
 msgstr "Gia hạn Premium"
@@ -7599,11 +7595,11 @@ msgid "Usage billing charges"
 msgstr "Phí thanh toán theo mức sử dụng"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
 msgstr[0] ""
-"Thanh toán theo mức sử dụng đang bật. Tín dụng vượt quá mức %(count)s của gói có giá 1¢ mỗi tín dụng: tháng"
-" này đã dùng %(cost)s."
+"Đã bật tính phí theo mức sử dụng. Tín dụng vượt quá %(count)s có giá 1¢ cho mỗi 1.000 tín dụng: %(cost)s "
+"tính đến thời điểm này trong tháng."
 
 #, python-format
 msgid "Use %(language)s"

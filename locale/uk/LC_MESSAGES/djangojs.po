@@ -1026,12 +1026,18 @@ msgstr "1 місяць"
 msgid "1 year"
 msgstr "1 рік"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1¢ за кредит понад ліміт вашого плану — цього місяця близько %(cost)s."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10 000 кредитів ШІ на місяць для фільтрів ШІ"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1¢ за кожен кредит понад ліміт вашого плану."
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100 000 AI-кредитів на місяць для AI-фільтрів"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ за 1 000 кредитів понад ліміт вашого тарифу, приблизно %(cost)s цього місяця."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ за 1 000 кредитів понад ліміт вашого плану."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Доступно 28 інструментів для читання, дій, навчання та пошуку нового."
@@ -1050,12 +1056,6 @@ msgstr "3 рази на день"
 
 msgid "5 years"
 msgstr "5 років"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 кредитів ШІ на місяць для фільтрів ШІ"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 кредитів ШІ на місяць для фільтрів ШІ"
 
 msgid "5× faster feed updates"
 msgstr "Оновлення стрічок у 5 разів швидше"
@@ -1098,8 +1098,10 @@ msgstr "Blurblog із поширеними статтями"
 msgid "A clearer, closer sound"
 msgstr "Чіткіше й ближче звучання"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "Кредит дорівнює 1¢ на послуги ШІ: приблизно 700 статей через текстовий фільтр або 100 через графічний."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr ""
+"Один кредит — це приблизно одна стаття, оброблена текстовим фільтром. Фільтр зображень використовує "
+"приблизно 10 кредитів на статтю."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Папка стрічок, які читаються як один потік"
@@ -1127,8 +1129,8 @@ msgstr[0] "Текстовий фільтр на цьому сайті викор
 msgstr[1] "Текстовий фільтр на цьому сайті використовує приблизно %(count)s кредити на місяць."
 msgstr[2] "Текстовий фільтр на цьому сайті використовує приблизно %(count)s кредитів на місяць."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Текстовий фільтр на цьому сайті використовує менш ніж десяту частину кредиту на місяць."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Текстовий фільтр на цьому сайті використовує менш як один кредит на місяць."
 
 msgid "AI Filter"
 msgstr "Фільтр ШІ"
@@ -1139,14 +1141,19 @@ msgstr "Модель ШІ"
 msgid "AI credits"
 msgstr "Кредити ШІ"
 
+msgid "AI filters"
+msgstr "Фільтри ШІ"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Фільтри ШІ зберігаються, але працюють лише на %(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"Фільтри ШІ збережено, але вони працюють лише з Premium. Підписка Premium включає 5 кредитів ШІ на місяць, "
-"Archive — 50, а Pro — 500."
+"Фільтри ШІ збережено, але вони працюють лише з Premium. Premium включає 1 000 кредитів ШІ на місяць, "
+"Archive — 10 000, а Pro — 100 000."
 
 msgid "AI filters run without credits on this server."
 msgstr "На цьому сервері фільтри ШІ працюють без кредитів."
@@ -1154,8 +1161,8 @@ msgstr "На цьому сервері фільтри ШІ працюють бе
 msgid "AI finds the stories"
 msgstr "ШІ знаходить статті"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "Текстові та графічні фільтри ШІ, 5 кредитів ШІ на місяць"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Текстові й графічні фільтри ШІ, 1 000 кредитів ШІ на місяць"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Добірка найважливіших статей за допомогою ШІ"
@@ -1433,8 +1440,8 @@ msgstr[0] "Графічний фільтр на цьому сайті викор
 msgstr[1] "Графічний фільтр на цьому сайті використовує приблизно %(count)s кредити на місяць."
 msgstr[2] "Графічний фільтр на цьому сайті використовує приблизно %(count)s кредитів на місяць."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Графічний фільтр на цьому сайті використовує менш ніж десяту частину кредиту на місяць."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Фільтр зображень на цьому сайті використовує менше одного кредиту на місяць."
 
 msgid "Analysis timed out. Please try again."
 msgstr "Час очікування аналізу вичерпано. Спробуйте ще раз."
@@ -2466,16 +2473,8 @@ msgstr "Подача"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Опишіть статтю, яку шукаєте, і ми повторно проаналізуємо сторінку, щоб знайти її."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Опишіть тему, і ШІ оцінюватиме кожну статтю за вашим запитом, щоб зосередити увагу на відповідних або "
-"приховати їх."
-
 msgid "Describe what to focus or hide"
 msgstr "Опишіть, на чому зосередитися або що приховати"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Опишіть, що потрібно шукати, і ШІ проаналізує зображення кожної статті відповідно до вашого запиту."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3763,6 +3762,9 @@ msgstr "Попередній перегляд зображення"
 msgid "Image prompt"
 msgstr "Запит для зображення"
 
+msgid "Images"
+msgstr "Зображення"
+
 msgid "Immediately"
 msgstr "Негайно"
 
@@ -4460,12 +4462,6 @@ msgstr "Нативні застосунки"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Природний"
-
-msgid "Natural Language Image Classifier"
-msgstr "Класифікатор зображень природною мовою"
-
-msgid "Natural Language Text Classifier"
-msgstr "Класифікатор тексту природною мовою"
 
 msgid "Nature"
 msgstr "Природа"
@@ -5170,13 +5166,15 @@ msgstr "Обробка..."
 msgid "Part of a story URL"
 msgstr "Частина URL статті"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Після вичерпання кредитів фільтри продовжать працювати за ціною 1¢ за кредит."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Коли кредити вичерпаються, фільтри продовжать працювати за ціною 1¢ за 1 000 кредитів."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Після вичерпання кредитів вашого тарифу фільтри призупиняться до 1-го числа. Оплата за використання дає "
-"змогу продовжити їхню роботу за 1¢ за кредит."
+"Коли кредити вашого плану вичерпаються, фільтри призупиняться до 1-го числа. Оплата за використання дає "
+"змогу продовжити їхню роботу за ціною 1¢ за 1 000 кредитів."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Вставте будь-яку URL-адресу, і NewsBlur створить стрічку зі сторінки, навіть без RSS."
@@ -5371,8 +5369,8 @@ msgstr "Деталі Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Для преміум-шрифтів потрібен %(link_start)sпреміум-акаунт%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "План Premium включає 5 кредитів ШІ на місяць, Archive — 50, а Pro — 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium включає 1 000 кредитів ШІ на місяць, Archive — 10 000, а Pro — 100 000."
 
 msgid "Premium renewal"
 msgstr "Поновлення Premium"
@@ -7867,17 +7865,17 @@ msgid "Usage billing charges"
 msgstr "Списання за використання"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
 msgstr[0] ""
-"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
-"місяця: %(cost)s."
+"Оплату за використання ввімкнено. Кредити понад ваш ліміт %(count)s коштують 1¢ за 1 000: цього місяця "
+"використано %(cost)s."
 msgstr[1] ""
-"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
-"місяця: %(cost)s."
+"Оплату за використання ввімкнено. Кредити понад ваш ліміт %(count)s коштують 1¢ за 1 000: цього місяця "
+"використано %(cost)s."
 msgstr[2] ""
-"Оплата за використання увімкнена. Кредити понад ваш ліміт %(count)s коштують по 1¢ кожен. Наразі цього "
-"місяця: %(cost)s."
+"Оплату за використання ввімкнено. Кредити понад %(count)s коштують 1¢ за 1 000: цього місяця наразі "
+"%(cost)s."
 
 #, python-format
 msgid "Use %(language)s"

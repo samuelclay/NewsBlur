@@ -16,7 +16,7 @@
 			<string>有 %1$@ 个订阅源无法添加到 %2$@。</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已使用 %2$@ 个 AI 额度，超出套餐额度 %1$@ 的部分为 %3$@</string>
+			<string>已使用 %2$@ 个 AI 额度，超出你的套餐额度 %4$@ %3$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>已使用 %2$@ / %1$@ 个 AI 点数</string>
+			<string>已使用 %2$@ / %3$@ 个 AI 积分</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>更新于 %@ 周前</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>按用量计费已开启。超出套餐额度后，每个额度收费 1¢：本月至今已产生 %2$@ 费用，套餐额度为 %1$@。</string>
+			<string>按用量计费已开启。超出你的 %2$@ 额度后，每 1,000 个积分收费 1 美分：本月至今已用 %3$@。</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

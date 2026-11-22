@@ -959,12 +959,18 @@ msgstr "1 mois"
 msgid "1 year"
 msgstr "1 an"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1 ¢ par crédit au-delà de ceux inclus dans votre offre, soit environ %(cost)s ce mois-ci."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10 000 crédits IA par mois pour les filtres IA"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1 ¢ par crédit au-delà de ceux de votre forfait."
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100 000 crédits IA par mois pour les filtres IA"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1 ¢ par 1 000 crédits au-delà de ceux inclus dans votre abonnement, environ %(cost)s ce mois-ci."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1 ¢ par 1 000 crédits au-delà de ceux inclus dans votre abonnement."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "28 outils sont disponibles pour la lecture, les actions, l’entraînement et la découverte."
@@ -983,12 +989,6 @@ msgstr "3 fois par jour"
 
 msgid "5 years"
 msgstr "5 ans"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 crédits IA par mois pour les filtres IA"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 crédits IA par mois pour les filtres IA"
 
 msgid "5× faster feed updates"
 msgstr "Mises à jour des flux 5 fois plus rapides"
@@ -1028,8 +1028,10 @@ msgstr "Un blurblog d’articles partagés"
 msgid "A clearer, closer sound"
 msgstr "Un son plus clair et plus proche"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "Un crédit représente 1 ¢ d’IA : environ 700 articles avec un filtre de texte ou 100 avec un filtre d’image."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr ""
+"Un crédit correspond environ au traitement d’un article par un filtre textuel. Un filtre d’image utilise "
+"environ 10 crédits par article."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Un dossier de flux affiché comme un seul fil"
@@ -1056,8 +1058,8 @@ msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "Un filtre de texte sur ce site utilise environ %(count)s crédit par mois."
 msgstr[1] "Un filtre de texte sur ce site utilise environ %(count)s crédits par mois."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Un filtre de texte sur ce site utilise moins d’un dixième de crédit par mois."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Un filtre textuel sur ce site utilise moins d’un crédit par mois."
 
 msgid "AI Filter"
 msgstr "Filtre IA"
@@ -1068,14 +1070,19 @@ msgstr "Modèle d’IA"
 msgid "AI credits"
 msgstr "Crédits IA"
 
+msgid "AI filters"
+msgstr "Filtres IA"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Les filtres IA sont enregistrés, mais ne s’exécutent que sur %(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"Les filtres IA sont enregistrés, mais ne fonctionnent qu’avec Premium. Premium comprend 5 crédits IA par "
-"mois, Archive 50 et Pro 500."
+"Les filtres IA sont enregistrés, mais ne fonctionnent qu’avec Premium. Premium comprend 1 000 crédits IA "
+"par mois, Archive 10 000 et Pro 100 000."
 
 msgid "AI filters run without credits on this server."
 msgstr "Les filtres IA fonctionnent sans crédits sur ce serveur."
@@ -1083,8 +1090,8 @@ msgstr "Les filtres IA fonctionnent sans crédits sur ce serveur."
 msgid "AI finds the stories"
 msgstr "L’IA trouve les articles"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "Filtres de texte et d’image par IA, avec 5 crédits IA par mois"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Filtres de texte et d’images par IA, avec 1 000 crédits IA par mois"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Résumé de vos principaux articles sélectionné par l’IA"
@@ -1358,8 +1365,8 @@ msgid_plural "An image filter on this site uses about %(count)s credits a month.
 msgstr[0] "Un filtre d’image sur ce site utilise environ %(count)s crédit par mois."
 msgstr[1] "Un filtre d’image sur ce site utilise environ %(count)s crédits par mois."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Un filtre d’image sur ce site utilise moins d’un dixième de crédit par mois."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Un filtre d’image sur ce site utilise moins d’un crédit par mois."
 
 msgid "Analysis timed out. Please try again."
 msgstr "L’analyse a expiré. Veuillez réessayer."
@@ -2390,18 +2397,8 @@ msgstr "Débit"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Décrivez l’article que vous recherchez et nous réanalyserons la page pour le trouver."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Décrivez un sujet et l’IA évaluera chaque article selon votre consigne pour mettre en avant ou masquer les "
-"correspondances."
-
 msgid "Describe what to focus or hide"
 msgstr "Décrivez ce qu’il faut mettre en avant ou masquer"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr ""
-"Décrivez ce qu’il faut rechercher et l’IA analysera les images de chaque article en fonction de votre "
-"consigne."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3693,6 +3690,9 @@ msgstr "Aperçu de l’image"
 msgid "Image prompt"
 msgstr "Consigne d’image"
 
+msgid "Images"
+msgstr "Images"
+
 msgid "Immediately"
 msgstr "Immédiatement"
 
@@ -4383,12 +4383,6 @@ msgstr "Applications natives"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Naturelle"
-
-msgid "Natural Language Image Classifier"
-msgstr "Classificateur d’images en langage naturel"
-
-msgid "Natural Language Text Classifier"
-msgstr "Classificateur de texte en langage naturel"
 
 msgid "Nature"
 msgstr "Nature"
@@ -5089,13 +5083,15 @@ msgstr "Analyse en cours…"
 msgid "Part of a story URL"
 msgstr "Partie d’une URL d’article"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Au-delà de vos crédits inclus, les filtres continuent de fonctionner au tarif de 1 ¢ par crédit."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Une fois vos crédits épuisés, les filtres continuent de fonctionner au tarif de 1 ¢ pour 1 000 crédits."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Au-delà des crédits inclus dans votre forfait, les filtres sont suspendus jusqu’au 1er. La facturation à "
-"l’usage les maintient actifs à 1 ¢ par crédit."
+"Lorsque vous aurez épuisé les crédits de votre abonnement, les filtres seront suspendus jusqu’au 1er. La "
+"facturation à l’usage les maintient actifs au tarif de 1 ¢ pour 1 000 crédits."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Collez n’importe quelle URL et NewsBlur crée un flux à partir de la page, même sans RSS."
@@ -5293,8 +5289,8 @@ msgstr "Détails de Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Les polices Premium nécessitent un %(link_start)scompte Premium%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium comprend 5 crédits IA par mois, Archive 50 et Pro 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium inclut 1 000 crédits IA par mois, Archive 10 000 et Pro 100 000."
 
 msgid "Premium renewal"
 msgstr "Renouvellement Premium"
@@ -7800,14 +7796,14 @@ msgid "Usage billing charges"
 msgstr "Frais de facturation à l’usage"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
 msgstr[0] ""
-"La facturation à l’usage est activée. Les crédits au-delà de vos %(count)s coûtent 1 ¢ chacun : %(cost)s "
-"jusqu’ici ce mois-ci."
+"La facturation à l’usage est activée. Les crédits dépassant les %(count)s qui vous sont attribués coûtent 1"
+" ¢ pour 1 000 : %(cost)s depuis le début du mois."
 msgstr[1] ""
-"La facturation à l’usage est activée. Les crédits au-delà de vos %(count)s coûtent 1 ¢ chacun : %(cost)s "
-"jusqu’ici ce mois-ci."
+"La facturation à l’usage est activée. Les crédits dépassant les %(count)s qui vous sont attribués coûtent 1"
+" ¢ pour 1 000 : %(cost)s depuis le début du mois."
 
 #, python-format
 msgid "Use %(language)s"

@@ -887,12 +887,18 @@ msgstr "1 เดือน"
 msgid "1 year"
 msgstr "1 ปี"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "คิดเครดิตละ 1¢ เมื่อใช้เกินแพ็กเกจ เดือนนี้ประมาณ %(cost)s"
+msgid "10,000 AI credits a month for AI filters"
+msgstr "เครดิต AI 10,000 เครดิตต่อเดือนสำหรับตัวกรอง AI"
 
-msgid "1¢ per credit past your plan's."
-msgstr "เครดิตละ 1¢ เมื่อใช้เกินจำนวนในแผน"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "เครดิต AI 100,000 เครดิตต่อเดือนสำหรับตัวกรอง AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "คิดเครดิตละ 1¢ ต่อ 1,000 เครดิตที่เกินจากแพ็กเกจของคุณ ประมาณ %(cost)s ในเดือนนี้"
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ ต่อ 1,000 เครดิตที่เกินจากแพ็กเกจของคุณ"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "มีเครื่องมือ 28 รายการ ครอบคลุมการอ่าน การดำเนินการ การฝึกตัวกรอง และการค้นพบเนื้อหา"
@@ -911,12 +917,6 @@ msgstr "วันละ 3 ครั้ง"
 
 msgid "5 years"
 msgstr "5 ปี"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "เครดิต AI 50 เครดิตต่อเดือนสำหรับตัวกรอง AI"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "เครดิต AI 500 เครดิตต่อเดือนสำหรับตัวกรอง AI"
 
 msgid "5× faster feed updates"
 msgstr "อัปเดตฟีดเร็วขึ้น 5 เท่า"
@@ -955,10 +955,10 @@ msgstr "Blurblog ของบทความที่แชร์"
 msgid "A clearer, closer sound"
 msgstr "เสียงชัดและใกล้ยิ่งขึ้น"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
 msgstr ""
-"เครดิตหนึ่งหน่วยมีมูลค่า 1¢ สำหรับ AI: ครอบคลุมบทความประมาณ 700 รายการผ่านตัวกรองข้อความ หรือ 100 "
-"รายการผ่านตัวกรองรูปภาพ"
+"เครดิต 1 เครดิตเทียบได้กับการประมวลผลบทความหนึ่งรายการผ่านตัวกรองข้อความ ตัวกรองรูปภาพใช้ประมาณ 10 "
+"เครดิตต่อบทความ"
 
 msgid "A folder of feeds read as one stream"
 msgstr "โฟลเดอร์ฟีดที่อ่านรวมเป็นสตรีมเดียว"
@@ -984,8 +984,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "ตัวกรองข้อความบนเว็บไซต์นี้ใช้เครดิตประมาณ %(count)s เครดิตต่อเดือน"
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "ตัวกรองข้อความบนเว็บไซต์นี้ใช้เครดิตไม่ถึงหนึ่งในสิบต่อเดือน"
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "ตัวกรองข้อความบนเว็บไซต์นี้ใช้ไม่ถึง 1 เครดิตต่อเดือน"
 
 msgid "AI Filter"
 msgstr "ตัวกรอง AI"
@@ -996,14 +996,19 @@ msgstr "โมเดล AI"
 msgid "AI credits"
 msgstr "เครดิต AI"
 
+msgid "AI filters"
+msgstr "ตัวกรอง AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "ตัวกรอง AI บันทึกแล้ว แต่จะทำงานเฉพาะบน %(tier_link)s เท่านั้น"
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"บันทึกตัวกรอง AI แล้ว แต่จะทำงานได้เฉพาะใน Premium เท่านั้น Premium ให้เครดิต AI 5 เครดิตต่อเดือน, Archive "
-"ให้ 50 เครดิต และ Pro ให้ 500 เครดิต"
+"ตัวกรอง AI จะถูกบันทึกไว้ แต่ทำงานได้เฉพาะเมื่อใช้ Premium เท่านั้น Premium มีเครดิต AI 1,000 "
+"เครดิตต่อเดือน, Archive มี 10,000 เครดิต และ Pro มี 100,000 เครดิต"
 
 msgid "AI filters run without credits on this server."
 msgstr "ตัวกรอง AI ทำงานบนเซิร์ฟเวอร์นี้โดยไม่ใช้เครดิต"
@@ -1011,8 +1016,8 @@ msgstr "ตัวกรอง AI ทำงานบนเซิร์ฟเว�
 msgid "AI finds the stories"
 msgstr "AI ค้นหาบทความให้"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "ตัวกรองข้อความและรูปภาพด้วย AI พร้อมเครดิต AI 5 เครดิตต่อเดือน"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "ตัวกรองข้อความและรูปภาพ AI พร้อมเครดิต AI 1,000 เครดิตต่อเดือน"
 
 msgid "AI-curated summary of your top stories"
 msgstr "สรุปข่าวเด่นของคุณที่คัดสรรโดย AI"
@@ -1276,8 +1281,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตประมาณ %(count)s เครดิตต่อเดือน"
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตไม่ถึงหนึ่งในสิบหน่วยต่อเดือน"
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "ตัวกรองรูปภาพบนเว็บไซต์นี้ใช้เครดิตไม่ถึง 1 เครดิตต่อเดือน"
 
 msgid "Analysis timed out. Please try again."
 msgstr "การวิเคราะห์หมดเวลา โปรดลองอีกครั้ง"
@@ -2284,14 +2289,8 @@ msgstr "การนำเสนอ"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "อธิบายบทความที่คุณกำลังหา แล้วเราจะวิเคราะห์หน้าเว็บอีกครั้งเพื่อค้นหา"
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "อธิบายหัวข้อ แล้ว AI จะให้คะแนนแต่ละเรื่องตามคำสั่งของคุณ เพื่อเน้นหรือซ่อนเรื่องที่ตรงกัน"
-
 msgid "Describe what to focus or hide"
 msgstr "อธิบายสิ่งที่ต้องการเน้นหรือซ่อน"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "อธิบายสิ่งที่ต้องการค้นหา แล้ว AI จะวิเคราะห์ภาพของแต่ละบทความตามคำสั่งของคุณ"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3557,6 +3556,9 @@ msgstr "ตัวอย่างรูปภาพ"
 msgid "Image prompt"
 msgstr "พรอมต์รูปภาพ"
 
+msgid "Images"
+msgstr "รูปภาพ"
+
 msgid "Immediately"
 msgstr "ทันที"
 
@@ -4230,12 +4232,6 @@ msgstr "แอปเนทีฟ"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "เป็นธรรมชาติ"
-
-msgid "Natural Language Image Classifier"
-msgstr "ตัวจำแนกรูปภาพด้วยภาษาธรรมชาติ"
-
-msgid "Natural Language Text Classifier"
-msgstr "ตัวจัดประเภทข้อความด้วยภาษาธรรมชาติ"
 
 msgid "Nature"
 msgstr "ธรรมชาติ"
@@ -4916,13 +4912,15 @@ msgstr "กำลังประมวลผล..."
 msgid "Part of a story URL"
 msgstr "ส่วนหนึ่งของ URL บทความ"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "เมื่อใช้เครดิตเกินแพ็กเกจ ตัวกรองจะทำงานต่อโดยคิดเครดิตละ 1¢"
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "เมื่อใช้เครดิตเกินกำหนด ตัวกรองจะทำงานต่อโดยคิดราคา 1¢ ต่อ 1,000 เครดิต"
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"เมื่อใช้เครดิตเกินแพ็กเกจ ตัวกรองจะหยุดทำงานจนถึงวันที่ 1 การเรียกเก็บเงินตามการใช้งานจะช่วยให้ทำงานต่อ "
-"โดยคิดเครดิตละ 1¢"
+"เมื่อใช้เครดิตเกินแพ็กเกจ ตัวกรองจะหยุดทำงานจนถึงวันที่ 1 "
+"การเรียกเก็บเงินตามการใช้งานช่วยให้ตัวกรองทำงานต่อได้ในราคา 1¢ ต่อ 1,000 เครดิต"
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "วาง URL ใดก็ได้ แล้ว NewsBlur จะสร้างฟีดจากหน้าเว็บ แม้ไม่มี RSS"
@@ -5115,8 +5113,8 @@ msgstr "รายละเอียด Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "ฟอนต์พรีเมียมต้องใช้%(link_start)sบัญชีพรีเมียม%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium ให้เครดิต AI 5 เครดิตต่อเดือน, Archive ให้ 50 เครดิต และ Pro ให้ 500 เครดิต"
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium มีเครดิต AI 1,000 เครดิตต่อเดือน, Archive มี 10,000 เครดิต และ Pro มี 100,000 เครดิต"
 
 msgid "Premium renewal"
 msgstr "การต่ออายุ Premium"
@@ -7546,9 +7544,11 @@ msgid "Usage billing charges"
 msgstr "ค่าใช้จ่ายจากการเรียกเก็บเงินตามการใช้งาน"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตที่เกิน %(count)s คิดเครดิตละ 1¢: เดือนนี้ใช้ไปแล้ว %(cost)s"
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] ""
+"เปิดการเรียกเก็บเงินตามการใช้งานแล้ว เครดิตส่วนที่เกิน %(count)s คิด 1¢ ต่อ 1,000 เครดิต: เดือนนี้ใช้ไปแล้ว"
+" %(cost)s"
 
 #, python-format
 msgid "Use %(language)s"

@@ -1280,13 +1280,11 @@
     <string name="ai_filter_content_label">कंटेंट फ़िल्टर</string>
     <string name="ai_filter_image_label">इमेज फ़िल्टर</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">प्राकृतिक भाषा टेक्स्ट क्लासिफ़ायर</string>
-    <string name="ai_image_classifier_header">प्राकृतिक भाषा छवि क्लासिफ़ायर</string>
-    <string name="ai_text_classifier_explainer">किसी विषय का वर्णन करें और AI आपके निर्देश के आधार पर हर लेख को स्कोर करके मेल खाने वाले लेखों को फ़ोकस या छिपा देगा।</string>
-    <string name="ai_image_classifier_explainer">बताएँ कि क्या ढूँढ़ना है और AI आपके निर्देश के आधार पर हर लेख की छवियों का विश्लेषण करेगा।</string>
+    <string name="ai_filters_title">AI फ़िल्टर</string>
+    <string name="ai_filter_mode_text">पाठ</string>
+    <string name="ai_filter_mode_images">छवियाँ</string>
     <string name="ai_text_prompt_hint">उदाहरण: “AI और मशीन लर्निंग” या “स्थानीय राजनीति”</string>
     <string name="ai_image_prompt_hint">उदाहरण: “खाने की फ़ोटोग्राफ़ी” या “चार्ट और ग्राफ़”</string>
-    <string name="ai_prompt_placeholder">बताएँ कि किन चीज़ों पर फ़ोकस करना है या क्या छिपाना है</string>
     <string name="ai_prompt_type_content">सामग्री</string>
     <string name="ai_prompt_type_image">छवि</string>
     <string name="ai_prompt_focus">मेल खाने वाले फ़ोकस लेख</string>
@@ -1326,35 +1324,41 @@
     <string name="ai_credits_resets">%1$s को रीसेट होगा</string>
     <string name="ai_credits_free">AI फ़िल्टर सहेजे गए हैं, लेकिन केवल Premium पर चलते हैं। Premium में हर महीने %1$s AI क्रेडिट शामिल हैं, Archive में %2$s और Pro में %3$s।</string>
     <string name="ai_credits_upgrade">अपग्रेड करें</string>
-    <string name="ai_credits_estimate_text">इस साइट पर एक टेक्स्ट फ़िल्टर हर महीने लगभग %1$s क्रेडिट इस्तेमाल करता है</string>
-    <string name="ai_credits_estimate_image">इस साइट पर एक इमेज फ़िल्टर हर महीने लगभग %1$s क्रेडिट इस्तेमाल करता है</string>
-    <string name="ai_credits_estimate_text_small">इस साइट पर एक टेक्स्ट फ़िल्टर हर महीने %1$s से कम क्रेडिट इस्तेमाल करता है।</string>
-    <string name="ai_credits_estimate_image_small">इस साइट पर एक इमेज फ़िल्टर हर महीने %1$s से कम क्रेडिट इस्तेमाल करता है</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="one">इस साइट पर टेक्स्ट फ़िल्टर हर महीने लगभग %1$s क्रेडिट इस्तेमाल करता है</item>
+        <item quantity="other">इस साइट पर टेक्स्ट फ़िल्टर हर महीने लगभग %1$s क्रेडिट इस्तेमाल करता है</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="one">इस साइट पर एक छवि फ़िल्टर हर महीने लगभग %1$s क्रेडिट इस्तेमाल करता है</item>
+        <item quantity="other">इस साइट पर इमेज फ़िल्टर में हर महीने लगभग %1$s क्रेडिट लगते हैं</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">इस साइट पर टेक्स्ट फ़िल्टर हर महीने एक क्रेडिट से कम इस्तेमाल करता है</string>
+    <string name="ai_credits_image_estimate_under_one">इस साइट पर इमेज फ़िल्टर में हर महीने एक से कम क्रेडिट लगता है</string>
     <string name="ai_credits_runs_out">इसी रफ़्तार से आपके क्रेडिट लगभग %1$s तक ख़त्म हो जाएँगे।</string>
     <plurals name="ai_credits_paused">
         <item quantity="one">आपके AI फ़िल्टर %1$s तक रुके हुए हैं। इस महीने का %2$s AI क्रेडिट इस्तेमाल हो गया है।</item>
         <item quantity="other">आपके AI फ़िल्टर %1$s तक रुके हुए हैं। इस महीने के %2$s AI क्रेडिट इस्तेमाल हो चुके हैं।</item>
     </plurals>
     <string name="ai_credits_paused_limit">आपके AI फ़िल्टरों ने %1$s की मासिक सीमा पूरी कर ली है और %2$s तक रुके हुए हैं।</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="one">उपयोग के लिए बिलिंग चालू है। आपके %1$s से अधिक क्रेडिट की कीमत हर एक के लिए 1¢ है: इस महीने अब तक %2$s।</item>
-        <item quantity="other">उपयोग के लिए बिलिंग चालू है। आपके %1$s से अधिक क्रेडिट की कीमत हर एक के लिए 1¢ है: इस महीने अब तक %2$s।</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="one">इस्तेमाल के आधार पर बिलिंग चालू है। आपके %1$s में शामिल क्रेडिट से ज़्यादा इस्तेमाल पर हर %2$s के लिए 1¢ लगता है: इस महीने अब तक %3$s।</item>
+        <item quantity="other">इस्तेमाल के आधार पर बिलिंग चालू है। आपके %1$s में शामिल क्रेडिट से ज़्यादा इस्तेमाल पर हर %2$s के लिए 1¢ लगता है: इस महीने अब तक %3$s।</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">उपयोग-आधारित बिलिंग चालू है। AI क्रेडिट की कीमत 1¢ प्रति क्रेडिट है: इस महीने अब तक %1$s।</string>
+    <string name="ai_credits_billing_on_rate_no_plan">उपयोग के आधार पर बिलिंग चालू है। AI क्रेडिट की कीमत %1$s के लिए 1¢ है: इस महीने अब तक %2$s।</string>
     <string name="ai_credits_unbilled">%1$s का शुल्क लिया जाना बाकी है: अगले महीने की शुरुआत में, यदि यह कम से कम %2$s हो, या तुरंत %3$s पर।</string>
     <string name="ai_credits_keep_running">फ़िल्टर चालू रखें</string>
-    <string name="ai_credits_billing_explainer">आपके शामिल क्रेडिट से अधिक होने पर, फ़िल्टर 1¢ प्रति क्रेडिट की दर से चलते रहेंगे।</string>
+    <string name="ai_credits_billing_rate">आपके क्रेडिट खत्म होने के बाद भी, फ़िल्टर हर %1$s क्रेडिट पर 1¢ की दर से चलते रहेंगे।</string>
     <string name="ai_credits_billing_forecast">आपकी मौजूदा रफ़्तार से इस महीने लगभग %1$s।</string>
     <string name="ai_credits_turn_on_billing">उपयोग-आधारित बिलिंग चालू करें</string>
-    <string name="ai_credits_turn_on_detail">आपके प्लान में शामिल क्रेडिट से अधिक हर क्रेडिट के लिए 1¢, इस महीने लगभग %1$s</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">आपके प्लान की सीमा से अधिक हर क्रेडिट के लिए 1¢</string>
+    <string name="ai_credits_turn_on_rate">आपकी योजना में शामिल क्रेडिट से अधिक उपयोग पर %1$s के लिए 1¢, इस महीने लगभग %2$s</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">आपकी योजना के क्रेडिट से अधिक इस्तेमाल पर हर %1$s क्रेडिट के लिए 1¢</string>
     <string name="ai_credits_or_wait">या %1$s तक प्रतीक्षा करें</string>
     <string name="ai_credits_manage_billing">बिलिंग प्रबंधित करें</string>
     <string name="ai_credits_change_limit">सीमा बदलें</string>
     <string name="ai_credits_open">AI क्रेडिट देखें</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="one">आपके प्लान में AI टेक्स्ट और इमेज फ़िल्टरों के लिए हर महीने %1$s AI क्रेडिट शामिल है। क्रेडिट हर महीने की 1 तारीख़ को रीसेट होते हैं और बचे हुए क्रेडिट अगले महीने में नहीं जुड़ते।</item>
-        <item quantity="other">आपके प्लान में AI टेक्स्ट और इमेज फ़िल्टर के लिए हर महीने %1$s AI क्रेडिट शामिल हैं। क्रेडिट हर महीने की 1 तारीख को रीसेट होते हैं और इस्तेमाल न किए गए क्रेडिट आगे नहीं जुड़ते।</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="one">आपके प्लान में हर महीने %1$s AI क्रेडिट शामिल है। टेक्स्ट फ़िल्टर से एक लेख पर लगभग 1 क्रेडिट लगता है; इमेज फ़िल्टर से एक लेख पर लगभग 10 क्रेडिट लगते हैं। क्रेडिट हर महीने की 1 तारीख़ को रीसेट होते हैं और बचे हुए क्रेडिट आगे नहीं जुड़ते।</item>
+        <item quantity="other">आपकी योजना में हर महीने %1$s AI क्रेडिट शामिल हैं। टेक्स्ट फ़िल्टर से गुज़रने में एक लेख के लिए लगभग एक क्रेडिट लगता है; इमेज फ़िल्टर में प्रति लेख लगभग 10 क्रेडिट लगते हैं। क्रेडिट हर महीने की 1 तारीख़ को रीसेट होते हैं और इस्तेमाल न किए गए क्रेडिट अगले महीने नहीं जुड़ते।</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="one">इस गति से आप इस महीने अपने %2$s क्रेडिट का लगभग %1$s इस्तेमाल करेंगे।</item>

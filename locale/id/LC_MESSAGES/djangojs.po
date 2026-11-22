@@ -959,12 +959,18 @@ msgstr "1 bulan"
 msgid "1 year"
 msgstr "1 tahun"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "1¢ untuk setiap kredit yang melebihi jatah paket Anda, sekitar %(cost)s bulan ini."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "10.000 kredit AI per bulan untuk filter AI"
 
-msgid "1¢ per credit past your plan's."
-msgstr "1¢ per kredit di luar jatah paket"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "100.000 kredit AI per bulan untuk filter AI"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "1¢ per 1.000 kredit melebihi jatah paket Anda, sekitar %(cost)s bulan ini."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "1¢ per 1.000 kredit melebihi jatah paket Anda."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemukan konten."
@@ -983,12 +989,6 @@ msgstr "3 kali sehari"
 
 msgid "5 years"
 msgstr "5 tahun"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "50 kredit AI per bulan untuk filter AI"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "500 kredit AI per bulan untuk filter AI"
 
 msgid "5× faster feed updates"
 msgstr "Pembaruan feed 5× lebih cepat"
@@ -1028,10 +1028,10 @@ msgstr "Blurblog berisi artikel yang dibagikan"
 msgid "A clearer, closer sound"
 msgstr "Suara yang lebih jernih dan dekat"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
 msgstr ""
-"Satu kredit bernilai 1¢ untuk AI: sekitar 700 artikel melalui filter teks atau 100 artikel melalui filter "
-"gambar."
+"Satu kredit kira-kira cukup untuk memproses satu artikel dengan filter teks. Filter gambar menggunakan "
+"sekitar 10 kredit per artikel."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
@@ -1058,8 +1058,8 @@ msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "Filter teks pada situs ini menggunakan sekitar %(count)s kredit per bulan."
 msgstr[1] "Filter teks pada situs ini menggunakan sekitar %(count)s kredit per bulan."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Filter teks pada situs ini menggunakan kurang dari sepersepuluh kredit per bulan."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Filter teks di situs ini menggunakan kurang dari satu kredit per bulan."
 
 msgid "AI Filter"
 msgstr "Filter AI"
@@ -1070,14 +1070,19 @@ msgstr "Model AI"
 msgid "AI credits"
 msgstr "Kredit AI"
 
+msgid "AI filters"
+msgstr "Filter AI"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Filter AI disimpan, tetapi hanya dijalankan di %(tier_link)s."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"Filter AI disimpan, tetapi hanya berjalan dengan Premium. Premium mencakup 5 kredit AI per bulan, Archive "
-"50, dan Pro 500."
+"Filter AI disimpan, tetapi hanya berjalan dengan Premium. Premium mencakup 1.000 kredit AI per bulan, "
+"Archive 10.000, dan Pro 100.000."
 
 msgid "AI filters run without credits on this server."
 msgstr "Filter AI berjalan tanpa kredit di server ini."
@@ -1085,8 +1090,8 @@ msgstr "Filter AI berjalan tanpa kredit di server ini."
 msgid "AI finds the stories"
 msgstr "AI menemukan artikel"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "Filter teks dan gambar AI, dengan 5 kredit AI per bulan"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Filter teks dan gambar AI, dengan 1.000 kredit AI per bulan"
 
 msgid "AI-curated summary of your top stories"
 msgstr "Ringkasan pilihan AI dari artikel teratas Anda"
@@ -1356,8 +1361,8 @@ msgid_plural "An image filter on this site uses about %(count)s credits a month.
 msgstr[0] "Filter gambar pada situs ini menggunakan sekitar %(count)s kredit per bulan."
 msgstr[1] "Filter gambar pada situs ini menggunakan sekitar %(count)s kredit per bulan."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Filter gambar pada situs ini menggunakan kurang dari sepersepuluh kredit per bulan."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Filter gambar di situs ini menggunakan kurang dari satu kredit per bulan."
 
 msgid "Analysis timed out. Please try again."
 msgstr "Analisis kehabisan waktu. Silakan coba lagi."
@@ -2379,16 +2384,8 @@ msgstr "Penyampaian"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Jelaskan artikel yang Anda cari, dan kami akan menganalisis ulang halaman untuk menemukannya."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr ""
-"Jelaskan sebuah topik dan AI akan menilai setiap artikel berdasarkan perintah Anda untuk menyorot atau "
-"menyembunyikan artikel yang cocok."
-
 msgid "Describe what to focus or hide"
 msgstr "Jelaskan hal yang ingin difokuskan atau disembunyikan"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Jelaskan apa yang perlu dicari, dan AI akan menganalisis gambar setiap artikel berdasarkan perintah Anda."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3673,6 +3670,9 @@ msgstr "Pratinjau gambar"
 msgid "Image prompt"
 msgstr "Prompt gambar"
 
+msgid "Images"
+msgstr "Gambar"
+
 msgid "Immediately"
 msgstr "Segera"
 
@@ -4359,12 +4359,6 @@ msgstr "Aplikasi Native"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Alami"
-
-msgid "Natural Language Image Classifier"
-msgstr "Pengklasifikasi Gambar Bahasa Alami"
-
-msgid "Natural Language Text Classifier"
-msgstr "Pengklasifikasi Teks Bahasa Alami"
 
 msgid "Nature"
 msgstr "Alam"
@@ -5063,13 +5057,15 @@ msgstr "Mengurai..."
 msgid "Part of a story URL"
 msgstr "Bagian dari URL artikel"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per kredit."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per 1.000 kredit."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Setelah kredit paket Anda habis, filter akan dijeda hingga tanggal 1. Penagihan berdasarkan penggunaan "
-"membuat filter tetap berjalan dengan biaya 1¢ per kredit."
+"Jika kredit paket Anda habis, filter akan dijeda hingga tanggal 1. Dengan penagihan berdasarkan pemakaian, "
+"filter tetap berjalan dengan biaya 1¢ per 1.000 kredit."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Tempel URL apa pun dan NewsBlur akan membuat feed dari halamannya, bahkan tanpa RSS."
@@ -5265,8 +5261,8 @@ msgstr "Detail Premium"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Font premium memerlukan %(link_start)sakun premium%(link_end)s"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium mencakup 5 kredit AI per bulan, Archive 50, dan Pro 500."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium mencakup 1.000 kredit AI per bulan, Archive 10.000, dan Pro 100.000."
 
 msgid "Premium renewal"
 msgstr "Perpanjangan Premium"
@@ -7746,14 +7742,14 @@ msgid "Usage billing charges"
 msgstr "Biaya penagihan berdasarkan penggunaan"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
 msgstr[0] ""
-"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi %(count)s Anda dikenai biaya 1¢ per kredit: "
-"sejauh ini %(cost)s bulan ini."
+"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi batas %(count)s dikenai biaya 1¢ per 1.000: "
+"%(cost)s sejauh ini bulan ini."
 msgstr[1] ""
-"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi %(count)s Anda dikenai biaya 1¢ per kredit: "
-"sejauh ini %(cost)s bulan ini."
+"Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi batas %(count)s dikenai biaya 1¢ per 1.000: "
+"%(cost)s sejauh ini bulan ini."
 
 #, python-format
 msgid "Use %(language)s"

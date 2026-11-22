@@ -1256,13 +1256,11 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="ai_filter_content_label">Filter Konten</string>
     <string name="ai_filter_image_label">Filter Gambar</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Pengklasifikasi Teks Bahasa Alami</string>
-    <string name="ai_image_classifier_header">Pengklasifikasi Gambar Bahasa Alami</string>
-    <string name="ai_text_classifier_explainer">Jelaskan suatu topik, lalu AI akan menilai setiap artikel berdasarkan perintah Anda untuk memfokuskan atau menyembunyikan artikel yang cocok.</string>
-    <string name="ai_image_classifier_explainer">Jelaskan apa yang perlu dicari, lalu AI akan menganalisis gambar pada setiap artikel berdasarkan perintah Anda.</string>
+    <string name="ai_filters_title">Filter AI</string>
+    <string name="ai_filter_mode_text">Teks</string>
+    <string name="ai_filter_mode_images">Gambar</string>
     <string name="ai_text_prompt_hint">misalnya, “AI dan pembelajaran mesin” atau “politik lokal”</string>
     <string name="ai_image_prompt_hint">misalnya, “fotografi makanan” atau “bagan dan grafik”</string>
-    <string name="ai_prompt_placeholder">Jelaskan apa yang ingin difokuskan atau disembunyikan</string>
     <string name="ai_prompt_type_content">Konten</string>
     <string name="ai_prompt_type_image">Gambar</string>
     <string name="ai_prompt_focus">Fokuskan artikel yang cocok</string>
@@ -1299,32 +1297,36 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="ai_credits_resets">Diatur ulang %1$s</string>
     <string name="ai_credits_free">Filter AI tersimpan, tetapi hanya berjalan di Premium. Premium mencakup %1$s kredit AI per bulan, Archive %2$s dan Pro %3$s.</string>
     <string name="ai_credits_upgrade">Tingkatkan</string>
-    <string name="ai_credits_estimate_text">Filter teks di situs ini menggunakan sekitar %1$s kredit per bulan</string>
-    <string name="ai_credits_estimate_image">Filter gambar di situs ini menggunakan sekitar %1$s kredit per bulan</string>
-    <string name="ai_credits_estimate_text_small">Filter teks di situs ini menggunakan kurang dari %1$s kredit per bulan</string>
-    <string name="ai_credits_estimate_image_small">Filter gambar di situs ini menggunakan kurang dari %1$s kredit per bulan</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="other">Filter teks di situs ini menggunakan sekitar %1$s kredit per bulan</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="other">Filter gambar di situs ini menggunakan sekitar %1$s kredit per bulan</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Filter teks di situs ini menggunakan kurang dari satu kredit per bulan</string>
+    <string name="ai_credits_image_estimate_under_one">Filter gambar di situs ini menggunakan kurang dari satu kredit per bulan</string>
     <string name="ai_credits_runs_out">Dengan laju ini, kredit Anda akan habis sekitar %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="other">Filter AI Anda dijeda hingga %1$s. %2$s kredit AI bulan ini telah digunakan.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Filter AI Anda telah mencapai batas bulanan %1$s dan dijeda hingga %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="other">Penagihan berdasarkan penggunaan aktif. Kredit yang melebihi jatah %1$s dikenai biaya 1¢ per kredit: sejauh ini %2$s bulan ini.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="other">Penagihan berdasarkan pemakaian aktif. Kredit yang melebihi %1$s Anda dikenai biaya 1¢ per %2$s: sejauh ini %3$s bulan ini.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Penagihan berdasarkan penggunaan aktif. Kredit AI dikenai biaya 1¢ per kredit: sejauh ini %1$s bulan ini.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Penagihan berdasarkan pemakaian aktif. Kredit AI dikenai biaya 1¢ per %1$s: sejauh ini %2$s bulan ini.</string>
     <string name="ai_credits_unbilled">%1$s menunggu untuk ditagihkan: pada awal bulan depan jika jumlahnya minimal %2$s, atau langsung saat mencapai %3$s.</string>
     <string name="ai_credits_keep_running">Biarkan filter tetap berjalan</string>
-    <string name="ai_credits_billing_explainer">Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per kredit.</string>
+    <string name="ai_credits_billing_rate">Setelah kredit Anda habis, filter tetap berjalan dengan biaya 1¢ per %1$s kredit.</string>
     <string name="ai_credits_billing_forecast">Dengan laju penggunaan Anda, sekitar %1$s bulan ini.</string>
     <string name="ai_credits_turn_on_billing">Aktifkan penagihan berdasarkan penggunaan</string>
-    <string name="ai_credits_turn_on_detail">1¢ per kredit setelah jatah paket Anda, sekitar %1$s bulan ini</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per kredit setelah jatah paket Anda</string>
+    <string name="ai_credits_turn_on_rate">1¢ per %1$s kredit melebihi jatah paket Anda, sekitar %2$s bulan ini</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ per %1$s kredit setelah batas paket Anda</string>
     <string name="ai_credits_or_wait">atau tunggu hingga %1$s</string>
     <string name="ai_credits_manage_billing">Kelola penagihan</string>
     <string name="ai_credits_change_limit">Ubah batas</string>
     <string name="ai_credits_open">Lihat kredit AI</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="other">Paket Anda mencakup %1$s kredit AI per bulan untuk filter teks dan gambar AI. Kredit direset setiap tanggal 1 dan yang tidak terpakai tidak dibawa ke bulan berikutnya.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="other">Paket Anda mencakup %1$s kredit AI per bulan. Satu kredit kira-kira cukup untuk memproses satu artikel dengan filter teks; filter gambar menggunakan sekitar 10 kredit per artikel. Kredit direset pada tanggal 1 dan kredit yang tidak terpakai tidak akan diakumulasikan.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="other">Dengan laju ini, Anda akan menggunakan sekitar %1$s dari %2$s kredit bulan ini.</item>

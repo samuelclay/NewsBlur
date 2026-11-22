@@ -18,7 +18,7 @@
 			<string>%1$@ फ़ीड को %2$@ में नहीं जोड़ा जा सका।</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -29,12 +29,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ AI क्रेडिट इस्तेमाल हुए, आपके प्लान की %1$@ सीमा से %3$@ अधिक</string>
+			<string>%2$@ AI क्रेडिट इस्तेमाल हुआ, आपकी योजना के %4$@ से %3$@ अधिक</string>
 			<key>other</key>
-			<string>%2$@ AI क्रेडिट इस्तेमाल हुए, आपके प्लान के %1$@ से अधिक %3$@</string>
+			<string>%2$@ AI क्रेडिट इस्तेमाल किए गए, %3$@ आपकी योजना के %4$@ से ज़्यादा</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%1$@ AI क्रेडिट में से %2$@ इस्तेमाल हुआ</string>
+			<string>%3$@ में से %2$@ AI क्रेडिट इस्तेमाल हुआ</string>
 			<key>other</key>
-			<string>%1$@ में से %2$@ AI क्रेडिट इस्तेमाल हुए</string>
+			<string>%2$@ में से %3$@ AI क्रेडिट इस्तेमाल किए गए</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -930,7 +930,7 @@
 			<string>%@ सप्ताह पहले अपडेट किया गया</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -941,9 +941,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>उपयोग के लिए बिलिंग चालू है। आपके %1$@ से अधिक क्रेडिट की कीमत हर एक के लिए 1¢ है: इस महीने अब तक %2$@।</string>
+			<string>उपयोग के आधार पर बिलिंग चालू है। आपके %2$@ से अधिक क्रेडिट की कीमत हर 1,000 पर 1¢ है: इस महीने अब तक %3$@।</string>
 			<key>other</key>
-			<string>उपयोग-आधारित बिलिंग चालू है। आपके %1$@ से ज़्यादा क्रेडिट की कीमत 1¢ प्रति क्रेडिट है: इस महीने अब तक %2$@।</string>
+			<string>इस्तेमाल के आधार पर बिलिंग चालू है। आपके %2$@ में शामिल क्रेडिट से ज़्यादा इस्तेमाल पर हर 1,000 क्रेडिट के लिए 1¢ लगता है: इस महीने अब तक %3$@।</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

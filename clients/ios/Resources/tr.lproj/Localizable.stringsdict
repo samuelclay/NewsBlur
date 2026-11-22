@@ -18,7 +18,7 @@
 			<string>%1$@ akış %2$@ konumuna eklenemedi.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -29,12 +29,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ yapay zekâ kredisi kullanıldı; planınızdaki %1$@ sınırını %3$@ aştı</string>
+			<string>%2$@ yapay zekâ kredisi kullanıldı; planınızdaki %4$@ sınırını %3$@ aştınız</string>
 			<key>other</key>
-			<string>%2$@ AI kredisi kullanıldı; planınızdaki %1$@ sınırını %3$@ aştınız</string>
+			<string>%2$@ yapay zekâ kredisi kullanıldı; %4$@ sınırınızı %3$@ aşıyor</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%1$@ AI kredisinin %2$@ kadarı kullanıldı</string>
+			<string>%3$@ yapay zekâ kredisinden %2$@ tanesi kullanıldı</string>
 			<key>other</key>
-			<string>%1$@ AI kredisinin %2$@ kadarı kullanıldı</string>
+			<string>%2$@ / %3$@ yapay zekâ kredisi kullanıldı</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -930,7 +930,7 @@
 			<string>%@ hafta önce güncellendi</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -941,9 +941,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Kullanım ücretlendirmesi açık. %1$@ planınızı aşan kredilerin her biri 1¢: bu ay şimdiye kadar %2$@.</string>
+			<string>Kullanım bazlı ücretlendirme açık. %2$@ sınırını aşan krediler 1.000 kredi başına 1¢: Bu ay şimdiye kadar %3$@.</string>
 			<key>other</key>
-			<string>Kullanım başına faturalandırma açık. %1$@ üzerindeki kredilerin her biri 1¢: Bu ay şimdiye kadar %2$@.</string>
+			<string>Kullanım bazlı ücretlendirme açık. %2$@ sınırını aşan krediler 1.000 kredi başına 1¢: Bu ay şimdiye kadar %3$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

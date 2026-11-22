@@ -866,7 +866,7 @@
 			<string>Forward %@ seconds</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -877,12 +877,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ of %1$@ AI credit used</string>
+			<string>%2$@ of %3$@ AI credit used</string>
 			<key>other</key>
-			<string>%2$@ of %1$@ AI credits used</string>
+			<string>%2$@ of %3$@ AI credits used</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -893,9 +893,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%2$@ AI credits used, %3$@ past your plan's %1$@</string>
+			<string>%2$@ AI credits used, %3$@ past your plan's %4$@</string>
 			<key>other</key>
-			<string>%2$@ AI credits used, %3$@ past your plan's %1$@</string>
+			<string>%2$@ AI credits used, %3$@ past your plan's %4$@</string>
 		</dict>
 	</dict>
 	<key>This month's %@ AI credits are used.</key>
@@ -914,7 +914,7 @@
 			<string>This month's %@ AI credits are used.</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -925,9 +925,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</string>
+			<string>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</string>
 			<key>other</key>
-			<string>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</string>
+			<string>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</string>
 		</dict>
 	</dict>
 	<key>A text filter on this site uses about %2$@ credits a month</key>

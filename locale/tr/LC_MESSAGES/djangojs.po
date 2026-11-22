@@ -893,12 +893,18 @@ msgstr "1 ay"
 msgid "1 year"
 msgstr "1 yıl"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "Planınızdaki kredileri aşan her kredi 1¢; bu ay yaklaşık %(cost)s."
+msgid "10,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 10.000 yapay zekâ kredisi"
 
-msgid "1¢ per credit past your plan's."
-msgstr "Planınızı aşan her kredi için 1 sent."
+msgid "100,000 AI credits a month for AI filters"
+msgstr "Yapay zekâ filtreleri için ayda 100.000 yapay zekâ kredisi"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "Planınızdaki kredileri aştıktan sonra her 1.000 kredi için 1¢; bu ay yaklaşık %(cost)s."
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "Planınızdaki kredileri aştıktan sonra her 1.000 kredi için 1¢."
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
@@ -917,12 +923,6 @@ msgstr "Günde 3 kez"
 
 msgid "5 years"
 msgstr "5 yıl"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "Yapay zekâ filtreleri için ayda 50 yapay zekâ kredisi"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "Yapay zekâ filtreleri için ayda 500 yapay zekâ kredisi"
 
 msgid "5× faster feed updates"
 msgstr "5 kat daha hızlı akış güncellemeleri"
@@ -959,10 +959,10 @@ msgstr "Paylaşılan haberlerden oluşan bir blurblog"
 msgid "A clearer, closer sound"
 msgstr "Daha net ve yakın bir ses"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
 msgstr ""
-"Bir kredi, 1 sentlik yapay zekâ kullanımı demektir: metin filtresiyle yaklaşık 700 haber veya görsel "
-"filtresiyle 100 haber."
+"Metin filtresinden geçirilen yaklaşık bir haber için 1 kredi kullanılır. Görsel filtresinden geçirilen her "
+"haber için yaklaşık 10 kredi kullanılır."
 
 msgid "A folder of feeds read as one stream"
 msgstr "Tek bir haber akışı olarak okunan bir klasör"
@@ -988,8 +988,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "Bu sitedeki bir metin filtresi ayda yaklaşık %(count)s kredi kullanır."
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "Bu sitedeki bir metin filtresi ayda bir kredinin onda birinden azını kullanır."
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "Bu sitedeki bir metin filtresi ayda bir krediden az kullanır."
 
 msgid "AI Filter"
 msgstr "Yapay zekâ filtresi"
@@ -1000,14 +1000,19 @@ msgstr "Yapay zekâ modeli"
 msgid "AI credits"
 msgstr "Yapay zekâ kredileri"
 
+msgid "AI filters"
+msgstr "Yapay zekâ filtreleri"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "Yapay zekâ filtreleri kaydedilir ancak yalnızca %(tier_link)s üzerinde çalışır."
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
 msgstr ""
-"Yapay zekâ filtreleri kaydedilir, ancak yalnızca Premium'da çalışır. Premium ayda 5 yapay zekâ kredisi, "
-"Archive 50 ve Pro 500 kredi içerir."
+"Yapay zekâ filtreleri kaydedilir ancak yalnızca Premium'da çalışır. Premium ayda 1.000, Archive 10.000 ve "
+"Pro 100.000 yapay zekâ kredisi içerir."
 
 msgid "AI filters run without credits on this server."
 msgstr "Bu sunucuda yapay zekâ filtreleri kredi kullanmadan çalışır."
@@ -1015,8 +1020,8 @@ msgstr "Bu sunucuda yapay zekâ filtreleri kredi kullanmadan çalışır."
 msgid "AI finds the stories"
 msgstr "Haberleri yapay zekâ bulur"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "Ayda 5 yapay zekâ kredisi içeren yapay zekâ metin ve görsel filtreleri"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "Ayda 1.000 yapay zekâ kredisiyle yapay zekâ metin ve görsel filtreleri"
 
 msgid "AI-curated summary of your top stories"
 msgstr "En önemli haberlerinizin yapay zekâ tarafından derlenmiş özeti"
@@ -1280,8 +1285,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "Bu sitedeki bir görsel filtresi ayda yaklaşık %(count)s kredi kullanır."
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "Bu sitedeki bir görsel filtresi ayda bir kredinin onda birinden azını kullanır."
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "Bu sitedeki bir görsel filtresi ayda bir krediden az kullanır."
 
 msgid "Analysis timed out. Please try again."
 msgstr "Analiz zaman aşımına uğradı. Lütfen tekrar deneyin."
@@ -2298,14 +2303,8 @@ msgstr "Sunum"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Aradığınız haberi açıklayın; bulmak için sayfayı yeniden analiz edelim."
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "Bir konu açıklayın; yapay zekâ, odaklanmanız veya gizlemeniz için her haberi isteminize göre puanlasın."
-
 msgid "Describe what to focus or hide"
 msgstr "Neye odaklanılacağını veya neyin gizleneceğini açıklayın"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "Neye bakılacağını açıklayın; yapay zekâ her haberin görsellerini isteminize göre analiz etsin."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3585,6 +3584,9 @@ msgstr "Görsel önizlemesi"
 msgid "Image prompt"
 msgstr "Görsel istemi"
 
+msgid "Images"
+msgstr "Görseller"
+
 msgid "Immediately"
 msgstr "Hemen"
 
@@ -4264,12 +4266,6 @@ msgstr "Yerel Uygulamalar"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "Doğal"
-
-msgid "Natural Language Image Classifier"
-msgstr "Doğal Dil Görsel Sınıflandırıcısı"
-
-msgid "Natural Language Text Classifier"
-msgstr "Doğal Dil Metin Sınıflandırıcısı"
 
 msgid "Nature"
 msgstr "Doğa"
@@ -4960,13 +4956,15 @@ msgstr "Ayrıştırılıyor..."
 msgid "Part of a story URL"
 msgstr "Haber URL'sinin bir bölümü"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "Kredileriniz bittikten sonra filtreler kredi başına 1¢ karşılığında çalışmaya devam eder."
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "Kredileriniz tükendikten sonra da filtreler her 1.000 kredi için 1¢ karşılığında çalışmaya devam eder."
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
 msgstr ""
-"Planınızdaki krediler bittiğinde filtreler ayın 1'ine kadar duraklatılır. Kullanım ücretlendirmesiyle kredi"
-" başına 1¢ ödeyerek çalışmaya devam edebilirler."
+"Planınızdaki kredileri aştığınızda filtreler ayın 1'ine kadar duraklar. Kullanım bazlı ücretlendirme, 1.000"
+" kredi başına 1¢ karşılığında çalışmaya devam etmelerini sağlar."
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "Herhangi bir URL yapıştırın; RSS olmasa bile NewsBlur sayfadan bir akış oluşturur."
@@ -5161,8 +5159,8 @@ msgstr "Premium ayrıntıları"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "Premium yazı tipleri için %(link_start)spremium hesap%(link_end)s gerekir"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "Premium ayda 5 yapay zekâ kredisi, Archive 50 ve Pro 500 kredi içerir."
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "Premium ayda 1.000, Archive 10.000 ve Pro 100.000 yapay zekâ kredisi içerir."
 
 msgid "Premium renewal"
 msgstr "Premium yenileme"
@@ -7615,11 +7613,9 @@ msgid "Usage billing charges"
 msgstr "Kullanım ücretlendirmesi"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] ""
-"Kullanım ücretlendirmesi açık. %(count)s sınırınızı aşan kredilerin her biri 1¢: bu ay şu ana kadar "
-"%(cost)s."
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "Kullanım ücretlendirmesi açık. %(count)s sınırını aşan her 1.000 kredi 1¢: bu ay şimdiye kadar %(cost)s."
 
 #, python-format
 msgid "Use %(language)s"

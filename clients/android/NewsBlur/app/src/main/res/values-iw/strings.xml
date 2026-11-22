@@ -1304,13 +1304,11 @@
     <string name="ai_filter_content_label">מסנן תוכן</string>
     <string name="ai_filter_image_label">מסנן תמונות</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">מסווג טקסט בשפה טבעית</string>
-    <string name="ai_image_classifier_header">מסווג תמונות בשפה טבעית</string>
-    <string name="ai_text_classifier_explainer">תארו נושא והבינה המלאכותית תדרג כל כתבה לפי מידת ההתאמה להנחיה שלך, כדי למקד או להסתיר התאמות.</string>
-    <string name="ai_image_classifier_explainer">תארו מה לחפש, והבינה המלאכותית תנתח את התמונות בכל כתבה בהתאם להנחיה שלכם.</string>
+    <string name="ai_filters_title">מסנני AI</string>
+    <string name="ai_filter_mode_text">טקסט</string>
+    <string name="ai_filter_mode_images">תמונות</string>
     <string name="ai_text_prompt_hint">לדוגמה: ״בינה מלאכותית ולמידת מכונה״ או ״פוליטיקה מקומית״</string>
     <string name="ai_image_prompt_hint">לדוגמה: ״צילום אוכל״ או ״תרשימים וגרפים״</string>
-    <string name="ai_prompt_placeholder">תארו במה להתמקד או מה להסתיר</string>
     <string name="ai_prompt_type_content">תוכן</string>
     <string name="ai_prompt_type_image">תמונה</string>
     <string name="ai_prompt_focus">מיקוד בכתבות שתואמות</string>
@@ -1353,10 +1351,18 @@
     <string name="ai_credits_resets">האיפוס יתבצע %1$s</string>
     <string name="ai_credits_free">מסנני AI נשמרים, אך פועלים רק עם Premium. מינוי Premium כולל %1$s זיכויי AI בחודש, %2$s של Archive ו־%3$s של Pro.</string>
     <string name="ai_credits_upgrade">שדרוג</string>
-    <string name="ai_credits_estimate_text">מסנן טקסט באתר הזה משתמש בכ-%1$s נקודות קרדיט בחודש</string>
-    <string name="ai_credits_estimate_image">מסנן תמונות באתר הזה משתמש בכ־%1$s קרדיטים בחודש</string>
-    <string name="ai_credits_estimate_text_small">מסנן טקסט באתר הזה משתמש בפחות מ־%1$s קרדיטים בחודש</string>
-    <string name="ai_credits_estimate_image_small">מסנן תמונות באתר הזה משתמש בפחות מ-%1$s נקודות קרדיט בחודש</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="one">מסנן טקסט באתר הזה משתמש בכ־%1$s קרדיט בחודש</item>
+        <item quantity="other">מסנן טקסט באתר הזה צורך בערך %1$s קרדיטים בחודש</item>
+        <item quantity="two">מסנן טקסט באתר הזה משתמש בכ־%1$s קרדיטים בחודש</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="one">מסנן תמונות באתר הזה משתמש בכ־%1$s נקודת זכות בחודש</item>
+        <item quantity="other">מסנן תמונות באתר הזה צורך בערך %1$s קרדיטים בחודש</item>
+        <item quantity="two">מסנן תמונות באתר הזה משתמש בכ־%1$s נקודות זכות בחודש</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">מסנן טקסט באתר הזה צורך פחות מקרדיט אחד בחודש</string>
+    <string name="ai_credits_image_estimate_under_one">מסנן תמונות באתר הזה צורך פחות מקרדיט אחד בחודש</string>
     <string name="ai_credits_runs_out">בקצב הזה, הקרדיטים שלך ייגמרו בסביבות %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="one">המסננים מבוססי הבינה המלאכותית שלך הושהו עד %1$s. נוצל הקרדיט החודשי %2$s לבינה מלאכותית.</item>
@@ -1364,27 +1370,27 @@
         <item quantity="two">מסנני ה-AI שלך מושהים עד %1$s. נוצלו %2$s קרדיטי ה-AI שלך לחודש הזה.</item>
     </plurals>
     <string name="ai_credits_paused_limit">המסננים מבוססי הבינה המלאכותית שלך הגיעו למגבלה החודשית של %1$s והושהו עד %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="one">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
-        <item quantity="other">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
-        <item quantity="two">חיוב לפי שימוש מופעל. על זיכויים מעבר ל־%1$s תחויבו בסנט אחד לכל זיכוי: %2$s עד כה החודש.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="one">חיוב לפי שימוש מופעל. קרדיטים מעבר ל־%1$s שלך עולים 1¢ לכל %2$s: %3$s עד כה החודש.</item>
+        <item quantity="other">חיוב לפי שימוש מופעל. קרדיטים מעבר ל־%1$s שלך עולים 1¢ לכל %2$s: %3$s עד כה החודש.</item>
+        <item quantity="two">חיוב לפי שימוש מופעל. נקודות זכות מעבר ל־%1$s עולות 1¢ לכל %2$s: %3$s עד כה החודש.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">חיוב לפי שימוש פעיל. כל נקודת קרדיט ל-AI עולה 1¢: עד כה החודש %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">חיוב לפי שימוש מופעל. קרדיט AI עולה 1¢ לכל %1$s: %2$s עד כה החודש.</string>
     <string name="ai_credits_unbilled">%1$s ממתין לחיוב: בתחילת החודש הבא אם הסכום יגיע לפחות ל־%2$s, או מיד כשיגיע ל־%3$s.</string>
     <string name="ai_credits_keep_running">השארת המסננים פעילים</string>
-    <string name="ai_credits_billing_explainer">לאחר ניצול הקרדיטים שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל קרדיט.</string>
+    <string name="ai_credits_billing_rate">לאחר מיצוי הקרדיטים שלך, המסננים ימשיכו לפעול בעלות של 1¢ לכל %1$s קרדיטים.</string>
     <string name="ai_credits_billing_forecast">בקצב שלך, החודש צפויים לשמש בערך %1$s.</string>
     <string name="ai_credits_turn_on_billing">הפעלת חיוב לפי שימוש</string>
-    <string name="ai_credits_turn_on_detail">1¢ לכל קרדיט מעבר לתוכנית שלך, בערך %1$s החודש</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ לכל נקודת קרדיט מעבר למכסה של התוכנית שלך</string>
+    <string name="ai_credits_turn_on_rate">1¢ לכל %1$s קרדיטים מעבר למכסה בתוכנית שלך, בערך %2$s החודש</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ לכל %1$s נקודות זכות מעבר ל־</string>
     <string name="ai_credits_or_wait">או להמתין עד %1$s</string>
     <string name="ai_credits_manage_billing">ניהול חיובים</string>
     <string name="ai_credits_change_limit">שינוי המגבלה</string>
     <string name="ai_credits_open">צפייה בנקודות קרדיט ל-AI</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="one">התוכנית שלך כוללת %1$s נקודת קרדיט ל-AI בחודש עבור מסנני טקסט ותמונות. נקודות הקרדיט מתאפסות בראשון לחודש, ויתרה שלא נוצלה אינה עוברת לחודש הבא.</item>
-        <item quantity="other">התוכנית שלך כוללת %1$s קרדיטי AI בחודש למסנני טקסט ותמונות מבוססי AI. הקרדיטים מתאפסים ב־1 בכל חודש, וקרדיטים שלא נוצלו לא עוברים לחודש הבא.</item>
-        <item quantity="two">המינוי שלך כולל %1$s זיכויי AI בחודש למסנני טקסט ותמונות מבוססי AI. הזיכויים מתאפסים ב־1 בחודש, וזיכויים שלא נוצלו אינם מועברים לחודש הבא.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="one">התוכנית שלך כוללת %1$s קרדיט AI בחודש. קרדיט אחד מספיק בערך לסינון כתבה אחת באמצעות מסנן טקסט; מסנן תמונות צורך בערך 10 קרדיטים לכתבה. הקרדיטים מתאפסים ב־1 בחודש, וקרדיטים שלא נוצלו אינם מועברים לחודש הבא.</item>
+        <item quantity="other">התוכנית שלך כוללת %1$s קרדיטי AI בחודש. קרדיט אחד מספיק בערך לסינון כתבה אחת באמצעות מסנן טקסט; מסנן תמונות צורך בערך 10 קרדיטים לכתבה. הקרדיטים מתאפסים ב־1 בחודש, וקרדיטים שלא נוצלו אינם מועברים לחודש הבא.</item>
+        <item quantity="two">התוכנית שלך כוללת %1$s קרדיטי AI בחודש. קרדיט אחד מספיק בערך לסינון כתבה אחת באמצעות מסנן טקסט; מסנן תמונות צורך בערך 10 קרדיטים לכתבה. הקרדיטים מתאפסים ב־1 בחודש, וקרדיטים שלא נוצלו אינם מועברים לחודש הבא.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="one">בקצב הזה ייעשה החודש שימוש בכ־%1$s מתוך קרדיט ה־%2$s שלך.</item>

@@ -22,7 +22,7 @@
 			<string>Nie udało się dodać %1$@ kanałów do %2$@.</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -33,16 +33,16 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Wykorzystano %2$@ kredytów AI, w tym %3$@ ponad limit %1$@ w Twoim planie</string>
+			<string>Wykorzystano %2$@ kredytów AI, %3$@ powyżej limitu %4$@</string>
 			<key>many</key>
-			<string>Wykorzystano %2$@ kredytów AI, %3$@ ponad limit %1$@ w Twoim planie</string>
+			<string>Wykorzystano %2$@ kredytów AI, %3$@ ponad limit planu wynoszący %4$@</string>
 			<key>one</key>
-			<string>Wykorzystano %2$@ kredyt AI, w tym %3$@ ponad limit %1$@ w Twoim planie</string>
+			<string>Wykorzystano %2$@ kredyt AI, %3$@ ponad limit planu wynoszący %4$@</string>
 			<key>other</key>
-			<string>Wykorzystano %2$@ kredytów AI, czyli %3$@ ponad limit %1$@ w Twoim planie</string>
+			<string>Wykorzystano %2$@ kredytów AI, %3$@ ponad limit %4$@ w Twoim planie</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -53,13 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Wykorzystano %2$@ z %1$@ kredytów AI</string>
+			<string>Wykorzystano %2$@ z %3$@ kredytów AI</string>
 			<key>many</key>
-			<string>Wykorzystano %2$@ z %1$@ kredytów AI</string>
+			<string>Wykorzystano %2$@ z %3$@ kredytów AI</string>
 			<key>one</key>
-			<string>Wykorzystano %2$@ z %1$@ kredytu AI</string>
+			<string>Wykorzystano %2$@ z %3$@ kredytu AI</string>
 			<key>other</key>
-			<string>Wykorzystano %2$@ z %1$@ kredytów AI</string>
+			<string>Wykorzystano %2$@ z %3$@ kredytów AI</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -1162,7 +1162,7 @@
 			<string>Zaktualizowano %@ tygodni temu</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -1173,13 +1173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %1$@ kosztują 1¢ za sztukę. W tym miesiącu wykorzystano już %2$@.</string>
+			<string>Rozliczanie według użycia jest włączone. Kredyty powyżej limitu %2$@ kosztują 1¢ za 1 000: dotychczas w tym miesiącu %3$@.</string>
 			<key>many</key>
-			<string>Rozliczanie za użycie jest włączone. Kredyty powyżej limitu %1$@ kosztują 1¢ za sztukę: w tym miesiącu wykorzystano już %2$@.</string>
+			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %2$@ kosztują 1¢ za 1000: %3$@ w tym miesiącu.</string>
 			<key>one</key>
-			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %1$@ kosztują 1¢ za sztukę: w tym miesiącu wykorzystano już %2$@.</string>
+			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %2$@ kosztują 1¢ za 1000: %3$@ w tym miesiącu.</string>
 			<key>other</key>
-			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %1$@ kosztują 1¢ za sztukę. W tym miesiącu wykorzystano już %2$@.</string>
+			<string>Rozliczanie według użycia jest włączone. Kredyty ponad limit %2$@ kosztują 1¢ za 1000: %3$@ w tym miesiącu.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

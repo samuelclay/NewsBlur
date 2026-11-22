@@ -22,7 +22,7 @@
 			<string>Не удалось добавить ленты (%1$@) в папку «%2$@».</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -33,16 +33,16 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Использовано %2$@ кредитов ИИ, сверх лимита вашего плана (%1$@) — %3$@</string>
+			<string>Использовано %2$@ кредитов ИИ, %3$@ сверх лимита вашего плана %4$@</string>
 			<key>many</key>
-			<string>Использовано %2$@ кредитов ИИ, сверх лимита по вашему плану (%1$@) — %3$@</string>
+			<string>Использовано %2$@ ИИ-кредитов — на %3$@ больше лимита вашего тарифа %4$@</string>
 			<key>one</key>
-			<string>Использован %2$@ кредит ИИ, сверх лимита вашего плана (%1$@) — %3$@</string>
+			<string>Использован %2$@ ИИ-кредит — на %3$@ больше лимита вашего тарифа %4$@</string>
 			<key>other</key>
-			<string>Использовано %2$@ AI-кредитов, на %3$@ больше включённых в ваш план %1$@</string>
+			<string>Использовано %2$@ кредитов ИИ, %3$@ сверх лимита вашего тарифа %4$@</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -53,13 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+			<string>Использовано %2$@ из %3$@ кредитов ИИ</string>
 			<key>many</key>
-			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+			<string>Использовано %2$@ из %3$@ кредитов ИИ</string>
 			<key>one</key>
-			<string>Использован %2$@ из %1$@ кредита ИИ</string>
+			<string>Использован %2$@ из %3$@ ИИ-кредитов</string>
 			<key>other</key>
-			<string>Использовано %2$@ из %1$@ кредитов ИИ</string>
+			<string>Использовано %2$@ из %3$@ кредитов ИИ</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -1162,7 +1162,7 @@
 			<string>Обновлено %@ недель назад</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -1173,13 +1173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>few</key>
-			<string>Оплата за использование включена. Каждый кредит сверх лимита вашего плана (%1$@) стоит 1¢: за этот месяц использовано %2$@.</string>
+			<string>Оплата по использованию включена. За кредиты сверх лимита %2$@ взимается 1¢ за 1 000: за этот месяц начислено %3$@.</string>
 			<key>many</key>
-			<string>Оплата по факту использования включена. Кредиты сверх лимита %1$@ стоят 1¢ каждый. За этот месяц использовано %2$@.</string>
+			<string>Оплата по факту использования включена. Кредиты сверх лимита вашего плана %2$@ стоят 1¢ за 1 000: за этот месяц использовано %3$@.</string>
 			<key>one</key>
-			<string>Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$@ стоят по 1¢ за штуку: в этом месяце использовано %2$@.</string>
+			<string>Оплата по факту включена. Кредиты сверх лимита вашего тарифа %2$@ стоят 1¢ за 1 000: в этом месяце использовано %3$@.</string>
 			<key>other</key>
-			<string>Оплата за использование включена. Каждый кредит сверх лимита вашего плана (%1$@) стоит 1¢: за этот месяц использовано %2$@.</string>
+			<string>Оплата по факту использования включена. Кредиты сверх лимита вашего плана %2$@ стоят 1¢ за 1 000: за этот месяц использовано %3$@.</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>

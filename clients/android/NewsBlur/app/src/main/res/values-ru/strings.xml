@@ -1328,13 +1328,11 @@
     <string name="ai_filter_content_label">Фильтр содержимого</string>
     <string name="ai_filter_image_label">Фильтр изображений</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Классификатор текста на естественном языке</string>
-    <string name="ai_image_classifier_header">Классификатор изображений на естественном языке</string>
-    <string name="ai_text_classifier_explainer">Опишите тему, и ИИ оценит каждую статью по вашему запросу, чтобы выделять подходящие или скрывать их.</string>
-    <string name="ai_image_classifier_explainer">Опишите, что нужно найти, и ИИ проверит изображения в каждой статье по вашему запросу.</string>
+    <string name="ai_filters_title">ИИ-фильтры</string>
+    <string name="ai_filter_mode_text">Текст</string>
+    <string name="ai_filter_mode_images">Изображения</string>
     <string name="ai_text_prompt_hint">например, «ИИ и машинное обучение» или «местная политика»</string>
     <string name="ai_image_prompt_hint">например, «фуд-фотография» или «диаграммы и графики»</string>
-    <string name="ai_prompt_placeholder">Опишите, что выделять или скрывать</string>
     <string name="ai_prompt_type_content">Содержимое</string>
     <string name="ai_prompt_type_image">Изображение</string>
     <string name="ai_prompt_focus">Статьи в фокусе, соответствующие условию</string>
@@ -1380,10 +1378,20 @@
     <string name="ai_credits_resets">Сброс %1$s</string>
     <string name="ai_credits_free">Настройки AI-фильтров сохранены, но они работают только в Premium. В Premium входит %1$s AI-кредитов в месяц, в Archive — %2$s, а в Pro — %3$s.</string>
     <string name="ai_credits_upgrade">Перейти на платный тариф</string>
-    <string name="ai_credits_estimate_text">Текстовый фильтр на этом сайте использует около %1$s кредитов в месяц</string>
-    <string name="ai_credits_estimate_image">Графический фильтр на этом сайте расходует около %1$s кредитов в месяц</string>
-    <string name="ai_credits_estimate_text_small">Текстовый фильтр на этом сайте расходует менее %1$s кредитов в месяц</string>
-    <string name="ai_credits_estimate_image_small">Графический фильтр на этом сайте использует менее %1$s кредитов в месяц</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="few">Текстовый фильтр на этом сайте расходует около %1$s кредитов в месяц</item>
+        <item quantity="many">Текстовый фильтр на этом сайте расходует около %1$s кредитов в месяц</item>
+        <item quantity="one">Текстовый фильтр на этом сайте расходует около %1$s кредита в месяц.</item>
+        <item quantity="other">Текстовый фильтр на этом сайте расходует около %1$s кредитов в месяц</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="few">Фильтр изображений на этом сайте расходует около %1$s кредитов в месяц.</item>
+        <item quantity="many">Фильтр изображений на этом сайте использует около %1$s кредитов в месяц</item>
+        <item quantity="one">Фильтр изображений на этом сайте расходует около %1$s кредита в месяц.</item>
+        <item quantity="other">Фильтр изображений на этом сайте расходует около %1$s кредитов в месяц</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Текстовый фильтр на этом сайте расходует меньше одного кредита в месяц</string>
+    <string name="ai_credits_image_estimate_under_one">Фильтр изображений на этом сайте использует менее одного кредита в месяц</string>
     <string name="ai_credits_runs_out">При таком темпе ваши кредиты закончатся примерно %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="few">Работа AI-фильтров приостановлена до %1$s. Кредиты на этот месяц (%2$s) израсходованы.</item>
@@ -1392,29 +1400,29 @@
         <item quantity="other">Фильтры ИИ приостановлены до %1$s. Кредиты ИИ за этот месяц (%2$s) израсходованы.</item>
     </plurals>
     <string name="ai_credits_paused_limit">Вы достигли месячного лимита кредитов ИИ (%1$s). Фильтры ИИ приостановлены до %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="few">Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$s стоят по 1¢ за штуку: в этом месяце использовано %2$s.</item>
-        <item quantity="many">Оплата по факту использования включена. Каждый кредит сверх лимита вашего плана стоит 1¢: в этом месяце использовано %2$s сверх лимита %1$s.</item>
-        <item quantity="one">Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$s стоят по 1¢ за штуку: в этом месяце использовано %2$s.</item>
-        <item quantity="other">Оплата по факту использования включена. Кредиты сверх включённых в ваш план %1$s стоят по 1¢ за штуку: в этом месяце использовано %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="few">Оплата по использованию включена. За кредиты сверх лимита %1$s взимается 1¢ за %2$s: за этот месяц начислено %3$s.</item>
+        <item quantity="many">Оплата по факту использования включена. Кредиты сверх лимита вашего плана %1$s стоят 1¢ за %2$s: за этот месяц использовано %3$s.</item>
+        <item quantity="one">Оплата по факту использования включена. Кредиты сверх лимита вашего плана %1$s стоят 1¢ за %2$s: за этот месяц использовано %3$s.</item>
+        <item quantity="other">Оплата по факту использования включена. Кредиты сверх лимита вашего плана %1$s стоят 1¢ за %2$s: за этот месяц использовано %3$s.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">Оплата за использование включена. Каждый кредит ИИ стоит 1¢: за этот месяц использовано %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">Оплата по факту включена. Стоимость ИИ-кредитов — 1¢ за %1$s: в этом месяце использовано %2$s.</string>
     <string name="ai_credits_unbilled">Ожидает списания сумма %1$s: в начале следующего месяца, если она составит не менее %2$s, или сразу, когда достигнет %3$s.</string>
     <string name="ai_credits_keep_running">Оставить фильтры включёнными</string>
-    <string name="ai_credits_billing_explainer">После исчерпания включённых кредитов фильтры продолжат работать по цене 1¢ за кредит.</string>
+    <string name="ai_credits_billing_rate">После исчерпания кредитов фильтры продолжат работать по цене 1¢ за %1$s кредитов.</string>
     <string name="ai_credits_billing_forecast">При таком темпе за этот месяц будет использовано около %1$s.</string>
     <string name="ai_credits_turn_on_billing">Включить оплату по факту использования</string>
-    <string name="ai_credits_turn_on_detail">1¢ за каждый кредит сверх включённых в ваш план, около %1$s в этом месяце</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ за каждый кредит сверх лимита вашего плана</string>
+    <string name="ai_credits_turn_on_rate">1¢ за %1$s кредитов сверх лимита вашего тарифа — около %2$s в этом месяце</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ за %1$s кредитов сверх лимита вашего плана</string>
     <string name="ai_credits_or_wait">или подождать до %1$s</string>
     <string name="ai_credits_manage_billing">Управление оплатой</string>
     <string name="ai_credits_change_limit">Изменить лимит</string>
     <string name="ai_credits_open">Посмотреть кредиты ИИ</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="few">В ваш план входит %1$s AI-кредитов в месяц для текстовых и графических AI-фильтров. Кредиты обновляются 1-го числа, неиспользованные кредиты не переносятся на следующий месяц.</item>
-        <item quantity="many">В ваш план входит %1$s кредитов ИИ в месяц для текстовых фильтров и фильтров изображений. Кредиты обновляются 1-го числа, а неиспользованные не переносятся.</item>
-        <item quantity="one">Ваш план включает %1$s кредит ИИ в месяц для текстовых и графических фильтров ИИ. Кредиты обновляются 1-го числа, неиспользованные кредиты не переносятся.</item>
-        <item quantity="other">В ваш план входит %1$s AI-кредитов в месяц для текстовых и графических AI-фильтров. Кредиты обновляются 1-го числа, неиспользованные кредиты не переносятся на следующий месяц.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="few">В ваш план входит %1$s кредитов ИИ в месяц. Одного кредита хватает примерно на одну статью при использовании текстового фильтра; фильтр изображений расходует около 10 кредитов на статью. Кредиты обновляются 1-го числа, а неиспользованные не переносятся.</item>
+        <item quantity="many">Ваш план включает %1$s кредитов ИИ в месяц. Один кредит — это примерно одна статья, обработанная текстовым фильтром; фильтр изображений расходует около 10 кредитов на статью. Кредиты обновляются 1-го числа, неиспользованные кредиты не переносятся.</item>
+        <item quantity="one">В ваш план входит %1$s кредит ИИ в месяц. Одного кредита хватает примерно на одну статью при использовании текстового фильтра; фильтр изображений расходует около 10 кредитов на статью. Кредиты обновляются 1-го числа, а неиспользованные не переносятся.</item>
+        <item quantity="other">В ваш тариф включено %1$s ИИ-кредитов в месяц. Одного кредита хватает примерно на одну статью, обработанную текстовым фильтром; фильтр изображений использует около 10 кредитов на статью. Кредиты обновляются 1-го числа каждого месяца, неиспользованные кредиты не переносятся.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="few">При таком темпе за этот месяц будет использовано около %1$s из %2$s кредитов.</item>

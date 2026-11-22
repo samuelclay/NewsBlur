@@ -1304,13 +1304,11 @@ le persone per parlare del mondo.</string>
     <string name="ai_filter_content_label">Filtro dei contenuti</string>
     <string name="ai_filter_image_label">Filtro immagini</string>
     <string name="ai_filter_chip">%1$s: %2$s</string>
-    <string name="ai_text_classifier_header">Classificatore di testo in linguaggio naturale</string>
-    <string name="ai_image_classifier_header">Classificatore di immagini in linguaggio naturale</string>
-    <string name="ai_text_classifier_explainer">Descrivi un argomento e l’IA valuterà ogni articolo in base al tuo prompt per mettere in evidenza o nascondere le corrispondenze.</string>
-    <string name="ai_image_classifier_explainer">Descrivi cosa cercare e l’IA analizzerà le immagini di ogni articolo in base al tuo prompt.</string>
+    <string name="ai_filters_title">Filtri AI</string>
+    <string name="ai_filter_mode_text">Testo</string>
+    <string name="ai_filter_mode_images">Immagini</string>
     <string name="ai_text_prompt_hint">ad es. “intelligenza artificiale e apprendimento automatico” o “politica locale”</string>
     <string name="ai_image_prompt_hint">ad es. “fotografia di cibo” o “grafici e diagrammi”</string>
-    <string name="ai_prompt_placeholder">Descrivi cosa mettere in evidenza o nascondere</string>
     <string name="ai_prompt_type_content">Contenuto</string>
     <string name="ai_prompt_type_image">Immagine</string>
     <string name="ai_prompt_focus">Metti in evidenza gli articoli che corrispondono</string>
@@ -1353,10 +1351,18 @@ le persone per parlare del mondo.</string>
     <string name="ai_credits_resets">Si azzera %1$s</string>
     <string name="ai_credits_free">I filtri AI sono salvati, ma funzionano solo con Premium. Premium include %1$s crediti AI al mese, Archive %2$s e Pro %3$s.</string>
     <string name="ai_credits_upgrade">Passa a un piano superiore</string>
-    <string name="ai_credits_estimate_text">Un filtro di testo su questo sito usa circa %1$s crediti al mese</string>
-    <string name="ai_credits_estimate_image">Un filtro immagini su questo sito usa circa %1$s crediti al mese</string>
-    <string name="ai_credits_estimate_text_small">Un filtro di testo su questo sito usa meno di %1$s crediti al mese</string>
-    <string name="ai_credits_estimate_image_small">Un filtro immagini su questo sito usa meno di %1$s crediti al mese</string>
+    <plurals name="ai_credits_text_estimate">
+        <item quantity="many">Un filtro di testo su questo sito usa circa %1$s crediti al mese</item>
+        <item quantity="one">Un filtro di testo su questo sito usa circa %1$s credito al mese</item>
+        <item quantity="other">Un filtro di testo su questo sito usa circa %1$s crediti al mese</item>
+    </plurals>
+    <plurals name="ai_credits_image_estimate">
+        <item quantity="many">Un filtro per immagini su questo sito usa circa %1$s crediti al mese</item>
+        <item quantity="one">Un filtro immagini su questo sito usa circa %1$s credito al mese</item>
+        <item quantity="other">Un filtro per immagini su questo sito usa circa %1$s crediti al mese</item>
+    </plurals>
+    <string name="ai_credits_text_estimate_under_one">Un filtro di testo su questo sito usa meno di un credito al mese</string>
+    <string name="ai_credits_image_estimate_under_one">Un filtro per immagini su questo sito usa meno di un credito al mese</string>
     <string name="ai_credits_runs_out">Di questo passo, i tuoi crediti finiranno intorno al %1$s.</string>
     <plurals name="ai_credits_paused">
         <item quantity="many">I tuoi filtri AI sono in pausa fino al %1$s. Questo mese sono stati usati %2$s crediti AI.</item>
@@ -1364,27 +1370,27 @@ le persone per parlare del mondo.</string>
         <item quantity="other">I tuoi filtri AI sono in pausa fino a %1$s. Hai usato i %2$s crediti AI di questo mese.</item>
     </plurals>
     <string name="ai_credits_paused_limit">I tuoi filtri AI hanno raggiunto il limite mensile di %1$s e sono in pausa fino al %2$s.</string>
-    <plurals name="ai_credits_billing_on">
-        <item quantity="many">La fatturazione a consumo è attiva. I crediti oltre il tuo %1$s costano 1¢ ciascuno: %2$s finora questo mese.</item>
-        <item quantity="one">La fatturazione a consumo è attiva. I crediti oltre i %1$s costano 1¢ ciascuno: finora questo mese ne hai usati %2$s.</item>
-        <item quantity="other">La fatturazione a consumo è attiva. I crediti oltre i %1$s costano 1¢ ciascuno: finora questo mese ne hai usati %2$s.</item>
+    <plurals name="ai_credits_billing_on_rate">
+        <item quantity="many">La fatturazione a consumo è attiva. I crediti oltre i %1$s inclusi nel tuo piano costano 1¢ ogni %2$s: finora questo mese hai usato %3$s.</item>
+        <item quantity="one">La fatturazione a consumo è attiva. I crediti oltre i %1$s inclusi nel tuo piano costano 1¢ ogni %2$s: finora questo mese hai usato %3$s.</item>
+        <item quantity="other">La fatturazione a consumo è attiva. I crediti oltre i %1$s inclusi nel tuo piano costano 1¢ ogni %2$s: finora questo mese hai usato %3$s.</item>
     </plurals>
-    <string name="ai_credits_billing_on_no_plan">La fatturazione a consumo è attiva. I crediti AI costano 1¢ ciascuno: questo mese finora %1$s.</string>
+    <string name="ai_credits_billing_on_rate_no_plan">La fatturazione a consumo è attiva. I crediti AI costano 1¢ ogni %1$s: finora questo mese hai usato %2$s.</string>
     <string name="ai_credits_unbilled">%1$s è in attesa di addebito: all\'inizio del prossimo mese se raggiunge almeno %2$s, oppure subito se arriva a %3$s.</string>
     <string name="ai_credits_keep_running">Mantieni attivi i filtri</string>
-    <string name="ai_credits_billing_explainer">Oltre i crediti inclusi, i filtri continuano a funzionare al costo di 1¢ per credito.</string>
+    <string name="ai_credits_billing_rate">Esauriti i tuoi crediti, i filtri continuano a funzionare al costo di 1¢ ogni %1$s crediti.</string>
     <string name="ai_credits_billing_forecast">Al ritmo attuale, questo mese spenderai circa %1$s.</string>
     <string name="ai_credits_turn_on_billing">Attiva la fatturazione a consumo</string>
-    <string name="ai_credits_turn_on_detail">1¢ per ogni credito oltre quelli inclusi nel tuo piano, circa %1$s questo mese</string>
-    <string name="ai_credits_turn_on_detail_no_forecast">1¢ per ogni credito oltre la soglia del tuo piano</string>
+    <string name="ai_credits_turn_on_rate">1¢ ogni %1$s crediti oltre quelli inclusi nel tuo piano, circa %2$s questo mese</string>
+    <string name="ai_credits_turn_on_rate_no_forecast">1¢ ogni %1$s crediti oltre il limite del tuo piano</string>
     <string name="ai_credits_or_wait">oppure aspetta fino al %1$s</string>
     <string name="ai_credits_manage_billing">Gestisci la fatturazione</string>
     <string name="ai_credits_change_limit">Modifica il limite</string>
     <string name="ai_credits_open">Visualizza i crediti AI</string>
-    <plurals name="ai_credits_plan_summary">
-        <item quantity="many">Il tuo piano include %1$s crediti AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non utilizzati non vengono trasferiti al mese successivo.</item>
-        <item quantity="one">Il tuo piano include %1$s credito AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non utilizzati non vengono trasferiti al mese successivo.</item>
-        <item quantity="other">Il tuo piano include %1$s crediti AI al mese per i filtri di testo e immagini AI. I crediti si azzerano il giorno 1 e quelli non usati non vengono riportati al mese successivo.</item>
+    <plurals name="ai_credits_plan_includes">
+        <item quantity="many">Il tuo piano include %1$s crediti AI al mese. Un credito equivale circa a un articolo elaborato da un filtro di testo; un filtro per immagini usa circa 10 crediti per articolo. I crediti si azzerano il giorno 1 e quelli non usati non si accumulano.</item>
+        <item quantity="one">Il tuo piano include %1$s credito AI al mese. Un credito equivale circa a un articolo elaborato da un filtro di testo; un filtro per immagini usa circa 10 crediti per articolo. I crediti si azzerano il giorno 1 e quelli non usati non si accumulano.</item>
+        <item quantity="other">Il tuo piano include %1$s crediti AI al mese. Un credito equivale circa a un articolo elaborato da un filtro di testo; un filtro per immagini usa circa 10 crediti per articolo. I crediti si azzerano il giorno 1 e quelli non usati non si accumulano.</item>
     </plurals>
     <plurals name="ai_credits_forecast_month">
         <item quantity="many">A questo ritmo userai circa %1$s dei tuoi %2$s crediti questo mese.</item>

@@ -887,12 +887,18 @@ msgstr "1か月"
 msgid "1 year"
 msgstr "1年"
 
-#, python-format
-msgid "1¢ per credit past your plan's, about %(cost)s this month."
-msgstr "プランのクレジットを超えた分は1クレジットあたり1¢。今月は約%(cost)sです。"
+msgid "10,000 AI credits a month for AI filters"
+msgstr "AIフィルター用のAIクレジットを毎月10,000付与"
 
-msgid "1¢ per credit past your plan's."
-msgstr "プランのクレジット超過分は1件あたり1¢。"
+msgid "100,000 AI credits a month for AI filters"
+msgstr "AIフィルター用のAIクレジットを毎月100,000付与"
+
+#, python-format
+msgid "1¢ per 1,000 credits past your plan's, about %(cost)s this month."
+msgstr "プランのクレジットを超過した分は1,000クレジットあたり1¢、今月は約%(cost)sです。"
+
+msgid "1¢ per 1,000 credits past your plan's."
+msgstr "プランのクレジット超過分は1,000クレジットあたり1¢です。"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "記事の閲覧、操作、学習、検索などに使える28個のツールがあります。"
@@ -911,12 +917,6 @@ msgstr "1日3回"
 
 msgid "5 years"
 msgstr "5年"
-
-msgid "50 AI credits a month for AI filters"
-msgstr "AIフィルター用のAIクレジットは月50件"
-
-msgid "500 AI credits a month for AI filters"
-msgstr "AIフィルター用のAIクレジットは月500件"
 
 msgid "5× faster feed updates"
 msgstr "フィード更新が5倍高速"
@@ -953,8 +953,8 @@ msgstr "共有した記事のBlurblog"
 msgid "A clearer, closer sound"
 msgstr "より明瞭で近くに感じる音声"
 
-msgid "A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."
-msgstr "クレジット1件はAI処理1セント分です。テキストフィルターなら約700件、画像フィルターなら約100件の記事を処理できます。"
+msgid "A credit is about one story through a text filter. An image filter uses about 10 credits a story."
+msgstr "テキストフィルターでは記事1件につき約1クレジット、画像フィルターでは記事1件につき約10クレジットを使います。"
 
 msgid "A folder of feeds read as one stream"
 msgstr "複数のフィードを1つのストリームとして読むフォルダー"
@@ -980,8 +980,8 @@ msgid "A text filter on this site uses about %(count)s credit a month."
 msgid_plural "A text filter on this site uses about %(count)s credits a month."
 msgstr[0] "このサイトのテキストフィルターは、月に約%(count)sクレジットを使用します。"
 
-msgid "A text filter on this site uses less than a tenth of a credit a month."
-msgstr "このサイトのテキストフィルターは、月に0.1クレジット未満を使用します。"
+msgid "A text filter on this site uses less than one credit a month."
+msgstr "このサイトのテキストフィルターは、月に1クレジット未満しか使いません。"
 
 msgid "AI Filter"
 msgstr "AIフィルター"
@@ -992,12 +992,17 @@ msgstr "AIモデル"
 msgid "AI credits"
 msgstr "AIクレジット"
 
+msgid "AI filters"
+msgstr "AIフィルター"
+
 #, python-format
 msgid "AI filters are saved but only run on %(tier_link)s."
 msgstr "AIフィルターは保存されますが、%(tier_link)sでのみ実行されます。"
 
-msgid "AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "AIフィルターは保存されますが、プレミアムでのみ実行されます。プレミアムには月5クレジット、アーカイブには50クレジット、Proには500クレジットが含まれます。"
+msgid ""
+"AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and"
+" Pro 100,000."
+msgstr "AIフィルターは保存されますが、プレミアムでのみ実行されます。プレミアムには毎月1,000、アーカイブには10,000、Proには100,000のAIクレジットが含まれます。"
 
 msgid "AI filters run without credits on this server."
 msgstr "このサーバーでは、AIフィルターはクレジットを消費せずに実行されます。"
@@ -1005,8 +1010,8 @@ msgstr "このサーバーでは、AIフィルターはクレジットを消費�
 msgid "AI finds the stories"
 msgstr "AIが記事を見つけます"
 
-msgid "AI text and image filters, with 5 AI credits a month"
-msgstr "AIテキスト・画像フィルター、月5 AIクレジット付き"
+msgid "AI text and image filters, with 1,000 AI credits a month"
+msgstr "月間1,000 AIクレジット付きのAIテキスト・画像フィルター"
 
 msgid "AI-curated summary of your top stories"
 msgstr "注目記事をAIが選んで要約"
@@ -1262,8 +1267,8 @@ msgid "An image filter on this site uses about %(count)s credit a month."
 msgid_plural "An image filter on this site uses about %(count)s credits a month."
 msgstr[0] "このサイトの画像フィルターは、月に約%(count)sクレジットを使用します。"
 
-msgid "An image filter on this site uses less than a tenth of a credit a month."
-msgstr "このサイトの画像フィルターは、月に0.1クレジット未満を使用します。"
+msgid "An image filter on this site uses less than one credit a month."
+msgstr "このサイトの画像フィルターは、月に1クレジット未満しか使いません。"
 
 msgid "Analysis timed out. Please try again."
 msgstr "分析がタイムアウトしました。もう一度お試しください。"
@@ -2260,14 +2265,8 @@ msgstr "話し方"
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "探している記事の内容を説明してください。ページを再解析して見つけます。"
 
-msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
-msgstr "トピックを説明すると、AIが各記事をプロンプトに照らして評価し、一致する記事を優先表示または非表示にします。"
-
 msgid "Describe what to focus or hide"
 msgstr "注目する内容、または非表示にする内容を説明してください"
-
-msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
-msgstr "探したい内容を入力すると、AIがプロンプトに基づいて各記事の画像を分析します。"
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -3523,6 +3522,9 @@ msgstr "画像プレビュー"
 msgid "Image prompt"
 msgstr "画像プロンプト"
 
+msgid "Images"
+msgstr "画像"
+
 msgid "Immediately"
 msgstr "すぐに"
 
@@ -4188,12 +4190,6 @@ msgstr "ネイティブアプリ"
 msgctxt "listen delivery"
 msgid "Natural"
 msgstr "自然"
-
-msgid "Natural Language Image Classifier"
-msgstr "自然言語画像分類器"
-
-msgid "Natural Language Text Classifier"
-msgstr "自然言語テキスト分類器"
 
 msgid "Nature"
 msgstr "自然"
@@ -4870,11 +4866,13 @@ msgstr "解析中…"
 msgid "Part of a story URL"
 msgstr "記事URLの一部"
 
-msgid "Past your credits, filters keep running at 1¢ per credit."
-msgstr "クレジットを使い切った後も、1クレジットあたり1¢でフィルターを実行し続けます。"
+msgid "Past your credits, filters keep running at 1¢ per 1,000 credits."
+msgstr "クレジットを超過した後も、フィルターは1,000クレジットあたり1¢で引き続き実行されます。"
 
-msgid "Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit."
-msgstr "プランのクレジットを超えると、フィルターは毎月1日まで一時停止します。従量課金を有効にすると、1クレジットあたり1¢で実行し続けます。"
+msgid ""
+"Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 "
+"credits."
+msgstr "プランのクレジットを超過すると、毎月1日までフィルターは一時停止します。従量課金を有効にすると、1,000クレジットあたり1¢で引き続き実行されます。"
 
 msgid "Paste any URL and NewsBlur creates a feed from the page, even without RSS."
 msgstr "任意のURLを貼り付けると、NewsBlurがRSSのないページからもフィードを作成します。"
@@ -5067,8 +5065,8 @@ msgstr "プレミアムの詳細"
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
 msgstr "プレミアムフォントを使用するには、%(link_start)sプレミアムアカウント%(link_end)sが必要です"
 
-msgid "Premium includes 5 AI credits a month, Archive 50 and Pro 500."
-msgstr "プレミアムには月5クレジット、アーカイブには50クレジット、Proには500クレジットが含まれます。"
+msgid "Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."
+msgstr "プレミアムには毎月1,000、アーカイブには10,000、Proには100,000のAIクレジットが含まれます。"
 
 msgid "Premium renewal"
 msgstr "プレミアムの更新"
@@ -7466,9 +7464,9 @@ msgid "Usage billing charges"
 msgstr "従量課金の請求"
 
 #, python-format
-msgid "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month."
-msgstr[0] "従量課金はオンです。%(count)sを超えたクレジットは1つあたり1¢です。今月の利用額：%(cost)s"
+msgid "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgid_plural "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month."
+msgstr[0] "従量課金は有効です。%(count)sクレジットを超える分は1,000クレジットあたり1¢です。今月の利用額：%(cost)s。"
 
 #, python-format
 msgid "Use %(language)s"

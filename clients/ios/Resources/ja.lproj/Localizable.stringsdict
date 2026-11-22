@@ -16,7 +16,7 @@
 			<string>%1$@件のフィードを%2$@に追加できませんでした。</string>
 		</dict>
 	</dict>
-	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<key>%2$@ AI credits used, %3$@ past your plan's %4$@</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_past_plan@</string>
@@ -27,10 +27,10 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>AIクレジットを%2$@使用しました。プランの%1$@を超えた分は%3$@です</string>
+			<string>%2$@ AIクレジットを使用、プランの上限%4$@を%3$@超過</string>
 		</dict>
 	</dict>
-	<key>%2$@ of %1$@ AI credits used</key>
+	<key>%2$@ of %3$@ AI credits used</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@ai_credits_used@</string>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>AIクレジットを%1$@中%2$@使用</string>
+			<string>AIクレジットを%3$@中%2$@使用</string>
 		</dict>
 	</dict>
 	<key>%@ Widget Sites</key>
@@ -814,7 +814,7 @@
 			<string>%@週間前に更新</string>
 		</dict>
 	</dict>
-	<key>Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.</key>
+	<key>Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%1$#@usage_billing_included_credits@</string>
@@ -825,7 +825,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>other</key>
-			<string>従量課金が有効です。プランの%1$@を超えたクレジットは1件あたり1¢です。今月の利用額は%2$@です。</string>
+			<string>従量課金は有効です。%2$@のクレジットを超過した分は1,000クレジットあたり1¢です。今月の利用額：%3$@</string>
 		</dict>
 	</dict>
 	<key>You are subscribed to %@ sites</key>
