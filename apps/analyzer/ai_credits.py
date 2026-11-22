@@ -170,10 +170,6 @@ def _monthly_charge_key(user_id, month):
     return "%s:%s:%s:charged" % (KEY_PREFIX, user_id, month)
 
 
-def _emailed_key(user_id, month, reason):
-    return "%s:%s:%s:emailed:%s" % (KEY_PREFIX, user_id, month, reason)
-
-
 def _limit_microdollars(profile):
     if not profile.usage_billing_limit:
         return None
@@ -229,8 +225,7 @@ def spend(user_id, feature, cost_usd):
     cost_micro = max(1, int(round(cost_usd * 1_000_000)))
     local_now = _now_local(profile)
     month = _month(local_now)
-    r = _redis()
-    pipe = r.pipeline()
+    pipe = _redis().pipeline()
     pipe.incrby(_month_key(user_id, month), cost_micro)
     pipe.expire(_month_key(user_id, month), MONTH_KEY_TTL)
     pipe.incrby(_day_key(user_id, local_now.date()), cost_micro)
@@ -241,12 +236,13 @@ def spend(user_id, feature, cost_usd):
     if billing:
         _count_overage(profile, month, used_micro, included_micro)
 
+    # The request that pauses filters is the only one whose spending crosses the line, since
+    # INCRBY hands each request its own total, so the reader is emailed once.
     reason = _pause_reason(profile, used_micro)
     if reason in ("credits", "limit") and _pause_reason(profile, previous_micro) is None:
-        if r.set(_emailed_key(user_id, month, reason), 1, nx=True, ex=MONTH_KEY_TTL):
-            from apps.profile.tasks import EmailAICreditsPaused
+        from apps.profile.tasks import EmailAICreditsPaused
 
-            EmailAICreditsPaused.delay(user_id, reason)
+        EmailAICreditsPaused.delay(user_id, reason)
 
 
 def _count_overage(profile, month, used_micro, included_micro):

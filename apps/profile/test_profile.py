@@ -2517,16 +2517,22 @@ class Test_UsageBillingWebhooks(TestCase):
         self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
         staff.assert_called_once()
 
-    @patch("apps.analyzer.ai_credits.charge_unbilled")
-    def test_turning_usage_billing_off_charges_what_is_due(self, charge_unbilled):
-        Profile.objects.filter(pk=self.profile.pk).update(is_usage_billing=True, stripe_id="cus_hooks")
+    def test_turning_usage_billing_off_charges_what_is_past_the_minimum(self):
+        """Turning it off charges what's past the plan now, but never under $1."""
+        from apps.analyzer import ai_credits
+        from apps.analyzer.test_ai_credits import FakeStripeInvoices, isolate_ai_credits
 
-        response = json.decode(self.client.post(reverse("cancel-usage-billing")).content)
-
-        self.assertEqual(response["code"], 0)
-        self.assertFalse(response["ai_credits"]["is_usage_billing"])
-        self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
-        self.assertEqual(charge_unbilled.call_args.args[1], 100, "At least $1, like every charge")
+        isolate_ai_credits(self)
+        for overage, charged in ((60, []), (150, [150])):
+            Profile.objects.filter(pk=self.profile.pk).update(
+                is_premium=True, is_usage_billing=True, stripe_id="cus_hooks"
+            )
+            ai_credits._redis().set(ai_credits._unbilled_key(self.user.pk), overage)
+            with FakeStripeInvoices().installed() as invoices:
+                response = json.decode(self.client.post(reverse("cancel-usage-billing")).content)
+            self.assertEqual(invoices.charged, charged, overage)
+            self.assertFalse(response["ai_credits"]["is_usage_billing"])
+            self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
 
     def test_a_monthly_limit_has_to_be_a_positive_amount(self):
         for value in ("-5", "0", "NaN", "Infinity", "five", "20000"):
