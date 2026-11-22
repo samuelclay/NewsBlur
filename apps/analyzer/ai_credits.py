@@ -114,6 +114,25 @@ return taken
 """
 
 
+# ai_credits.py: Settles a pending invoice (ARGV[1]) whose credits can be charged again, in one
+# step: removing it from the reader's pending invoices (KEYS[1]) claims its credits, and they go
+# back to their months in the unbilled hash (KEYS[2]). Returns 0 when another charge got there
+# first, so the credits only ever go back once.
+_RETURN_PENDING_CREDITS = """
+local taken = redis.call('HGET', KEYS[1], ARGV[1])
+if not taken then
+    return 0
+end
+redis.call('HDEL', KEYS[1], ARGV[1])
+local months = cjson.decode(taken)
+for month, credits in pairs(months) do
+    redis.call('HINCRBY', KEYS[2], month, credits)
+end
+redis.call('EXPIRE', KEYS[2], tonumber(ARGV[2]))
+return 1
+"""
+
+
 def _redis():
     return redis.Redis(connection_pool=settings.REDIS_POOL)
 
@@ -199,8 +218,9 @@ def settle_pending_invoices(profile):
 
     ai_credits.py: A paid one keeps its credits charged. Anything else is deleted or voided, and
     its credits go back to be charged again. One Stripe still can't answer about stays pending.
-    Removing the pending entry is the claim on its credits, so two charges settling at once
-    can't both give them back.
+    Removing the pending entry and giving its credits back happen in one step
+    (_RETURN_PENDING_CREDITS), so two charges settling at once can't both give them back, and a
+    worker stopping between the two can't lose them.
     """
     import stripe
 
@@ -210,7 +230,7 @@ def settle_pending_invoices(profile):
     if not pending:
         return
     stripe.api_key = settings.STRIPE_SECRET
-    for invoice_id, taken_json in pending.items():
+    for invoice_id in pending:
         invoice_id = _text(invoice_id)
         try:
             paid = stripe.Invoice.retrieve(invoice_id).status == "paid"
@@ -219,8 +239,15 @@ def settle_pending_invoices(profile):
             continue
         if paid:
             r.hdel(pending_key, invoice_id)
-        elif _cancel_invoice(invoice_id) and r.hdel(pending_key, invoice_id):
-            _give_back(r, profile.user_id, json.loads(_text(taken_json)))
+        elif _cancel_invoice(invoice_id):
+            r.eval(
+                _RETURN_PENDING_CREDITS,
+                2,
+                pending_key,
+                _unbilled_key(profile.user_id),
+                invoice_id,
+                UNBILLED_KEY_TTL,
+            )
 
 
 def unbilled_credits(profile):
