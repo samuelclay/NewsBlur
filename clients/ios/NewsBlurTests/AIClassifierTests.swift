@@ -668,6 +668,16 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             let paused = try XCTUnwrap(AICreditsNotice.make(credits(pausedCredits), offersBilling: true))
             XCTAssertEqual(paused.tone, .paused)
             XCTAssertEqual(paused.meter?.fraction, 1)
+            XCTAssertEqual(paused.meter?.usedText, "50 of 50 AI credits used")
+            var overshot = pausedCredits
+            overshot["used"] = 50.2
+            let pastPlan = try XCTUnwrap(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter)
+            XCTAssertEqual(pastPlan.usedText, "50.2 AI credits used, 0.2 past your plan's 50",
+                           "The last request can run a little past the plan's credits")
+            XCTAssertNil(pastPlan.planShare, "Without usage billing nothing past the plan is billed, so the bar stays whole")
+            overshot["used"] = 50.04
+            XCTAssertEqual(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter?.usedText,
+                           "50 of 50 AI credits used", "Never \"0 past your plan's 50\"")
             XCTAssertEqual(paused.messages, ["Your AI filters are paused until Dec 1.", "This month's 50 AI credits are used."])
             XCTAssertEqual(paused.button, AICreditsNotice.ActionButton(
                 title: "Turn on usage billing", detail: "1¢ per credit past your plan's, about $0.62 this month",
@@ -676,11 +686,15 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         }
     }
 
-    /// Rule: with usage billing on, the trainer shows what it has cost this month and what's waiting to be charged,
-    /// and a reached limit names the limit and the day filters run again. Managing either opens the AI credits screen.
+    /// Rule: with usage billing on, the meter says how many credits went past the plan's and splits the bar where they
+    /// do, the trainer shows what that has cost this month and what's waiting to be charged, and a reached limit names
+    /// the limit and the day filters run again. Managing either opens the AI credits screen.
     func test_usageBillingShowsTheMonthsCostAndAReachedLimit() throws {
         try withEnglishInterface {
             let billing = try XCTUnwrap(AICreditsNotice.make(credits(billingCredits), offersBilling: true))
+            XCTAssertEqual(billing.meter?.usedText, "87 AI credits used, 37 past your plan's 50")
+            XCTAssertEqual(try XCTUnwrap(billing.meter?.planShare), 50.0 / 87, accuracy: 0.0001,
+                           "The meter shows where the plan's credits end and billing begins")
             XCTAssertEqual(billing.messages, [
                 "Usage billing is on. Credits past your 50 cost 1¢ each: $0.37 so far this month.",
                 "$0.37 is waiting to be charged: at the start of next month if it's at least $1, or right away at $10.",

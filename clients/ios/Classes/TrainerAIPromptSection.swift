@@ -624,13 +624,17 @@ struct TrainerAICreditsNoticeView: View {
                 (Text(meter.usedText).foregroundColor(TrainerAIPalette.text)
                     + Text(meter.resetText.map { " \u{00B7} \($0)" } ?? "").foregroundColor(TrainerAIPalette.secondaryText))
                     .font(fontBuilder("WhitneySSm-Medium", 12))
+                    // A button label centers wrapped lines; the summary reads from the leading edge like the rest.
+                    .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.forward")
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(TrainerAIPalette.secondaryText)
             }
-            AICreditsMeter(fraction: meter.fraction, fill: meterFill, height: 6)
+            AICreditsMeter(fraction: meter.fraction, fill: meter.planShare == nil ? meterFill : AICreditsPalette.green,
+                           height: 6, planShare: meter.planShare,
+                           overflowFill: notice.tone == .paused ? AICreditsPalette.red : AICreditsPalette.accent)
         }
         .contentShape(Rectangle())
     }
@@ -671,7 +675,7 @@ struct TrainerAICreditsNoticeView: View {
         switch notice.tone {
         case .paused: return AICreditsPalette.red
         case .warning: return AICreditsPalette.amber
-        case .normal, .upgrade: return notice.meter.map { $0.fraction >= 1 } == true ? AICreditsPalette.accent : AICreditsPalette.green
+        case .normal, .upgrade: return notice.meter?.planShare == nil ? AICreditsPalette.green : AICreditsPalette.accent
         }
     }
 

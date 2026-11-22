@@ -882,6 +882,22 @@
 			<string>%2$@ of %1$@ AI credits used</string>
 		</dict>
 	</dict>
+	<key>%2$@ AI credits used, %3$@ past your plan's %1$@</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@ai_credits_past_plan@</string>
+		<key>ai_credits_past_plan</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>one</key>
+			<string>%2$@ AI credits used, %3$@ past your plan's %1$@</string>
+			<key>other</key>
+			<string>%2$@ AI credits used, %3$@ past your plan's %1$@</string>
+		</dict>
+	</dict>
 	<key>This month's %@ AI credits are used.</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

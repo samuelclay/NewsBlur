@@ -461,7 +461,9 @@ struct AICreditsView: View {
                     .foregroundColor(AICreditsPalette.text)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("ai-credits-used")
-                AICreditsMeter(fraction: credits.usedFraction, fill: AICreditsPalette.meterFill(for: credits), height: 10)
+                AICreditsMeter(fraction: credits.usedFraction, fill: AICreditsPalette.meterFill(for: credits), height: 10,
+                               planShare: credits.planShareOfUsage,
+                               overflowFill: credits.status == .pausedAtLimit ? AICreditsPalette.red : AICreditsPalette.accent)
             }
             if let resetText = credits.resetText {
                 Text(resetText)
@@ -822,14 +824,27 @@ struct AICreditsMeter: View {
     let fraction: Double
     let fill: Color
     var height: CGFloat = 6
+    /// Where the plan's credits end on a full meter that runs past them (AICredits.planShareOfUsage): the plan's part
+    /// keeps fill and the rest takes overflowFill, like the web's usage billing meter.
+    var planShare: Double? = nil
+    var overflowFill: Color = AICreditsPalette.accent
 
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Capsule().fill(AICreditsPalette.track)
-                Capsule().fill(fill)
-                    // A little use still shows, so a meter that has started never looks empty.
-                    .frame(width: fraction > 0 ? max(height, geometry.size.width * fraction) : 0)
+                if let planShare {
+                    HStack(spacing: 2) {
+                        Rectangle().fill(fill)
+                            .frame(width: max(0, geometry.size.width * planShare - 1))
+                        Rectangle().fill(overflowFill)
+                    }
+                    .clipShape(Capsule())
+                } else {
+                    Capsule().fill(fill)
+                        // A little use still shows, so a meter that has started never looks empty.
+                        .frame(width: fraction > 0 ? max(height, geometry.size.width * fraction) : 0)
+                }
             }
             // AICreditsView.swift fills the meter from the leading edge, so it runs right to left in Arabic and Hebrew.
             .environment(\.layoutDirection, NBLocalization.isRightToLeft ? .rightToLeft : .leftToRight)
@@ -860,12 +875,14 @@ enum AICreditsPalette {
     static var fieldBackground: Color { Color.themed([0xFFFFFF, 0xFFFBF5, 0x2C2C2E, 0x1C1C1E]) }
     static var fieldBorder: Color { Color.themed([0xC7C7CC, 0xD4C8B8, 0x555555, 0x444444]) }
 
-    /// Green while credits last, amber running low, red paused, and the accent once usage billing is past them.
+    /// Green while credits last, amber running low and red paused. Past the plan's credits on usage billing the plan's
+    /// part stays green and AICreditsMeter draws the rest in the accent.
     static func meterFill(for credits: AICredits) -> Color {
+        if credits.planShareOfUsage != nil { return green }
         switch credits.status {
         case .pausedForCredits, .pausedAtLimit: return red
         case .warning: return amber
-        case .usageBilling: return credits.used >= Double(credits.included) ? accent : credits.isWarning ? amber : green
+        case .usageBilling: return credits.isWarning ? amber : green
         case .running, .free, .unlimited: return green
         }
     }

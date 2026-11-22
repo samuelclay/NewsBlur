@@ -305,7 +305,21 @@ struct AICredits: Equatable {
     /// "12.3 of 50 AI credits used", or nil for usage billing without included credits.
     var usedText: String? {
         guard included > 0 else { return nil }
-        return NBLocalization.plural("%2$@ of %1$@ AI credits used", count: included, with: AICreditsFormat.credits(used))
+        // AIClassifiers.swift compares the numbers as shown, so 50.04 of 50 never reads "0 past your plan's 50".
+        let shownUsed = AICreditsFormat.shownCredits(used)
+        guard shownUsed > Double(included) else {
+            return NBLocalization.plural("%2$@ of %1$@ AI credits used", count: included, with: AICreditsFormat.credits(used))
+        }
+        return NBLocalization.plural("%2$@ AI credits used, %3$@ past your plan's %1$@", count: included,
+                                     arguments: [AICreditsFormat.credits(used),
+                                                 AICreditsFormat.credits(shownUsed - Double(included))])
+    }
+
+    /// Usage billing past the plan's credits draws the meter as the plan's share of what was used, then the part past
+    /// it, like the web. Nil while the plan's credits last, or without usage billing.
+    var planShareOfUsage: Double? {
+        guard isUsageBilling, included > 0, used > Double(included) else { return nil }
+        return Double(included) / used
     }
 
     var resetText: String? {
@@ -463,6 +477,12 @@ extension NBLocalization {
     static func plural(_ source: String, value: Double, display: String) -> String {
         String(format: text(source), locale: Locale(identifier: resolvedLanguage), arguments: [NSNumber(value: value), display])
     }
+
+    /// AIClassifiers.swift picks a plural form for count (%1$@) in a message with several other values (%2$@ on).
+    static func plural(_ source: String, count: Int, arguments: [String]) -> String {
+        String(format: text(source), locale: Locale(identifier: resolvedLanguage),
+               arguments: [NSNumber(value: count)] + arguments.map { $0 as CVarArg })
+    }
 }
 
 /// What a trainer AI section says about the reader's credits (TrainerAIPromptSection.swift), for each Status.
@@ -489,6 +509,8 @@ struct AICreditsNotice: Equatable {
         let fraction: Double
         let usedText: String
         let resetText: String?
+        /// AICredits.planShareOfUsage: where the plan's credits end on a meter that runs past them.
+        var planShare: Double?
     }
 
     struct ActionButton: Equatable {
@@ -508,7 +530,9 @@ struct AICreditsNotice: Equatable {
     /// billing on elsewhere sees what it has cost and their limit.
     static func make(_ credits: AICredits, offersBilling: Bool) -> AICreditsNotice? {
         let offersSetup = offersBilling && credits.isBillingAvailable && !credits.isUsageBilling
-        let meter = credits.usedText.map { Meter(fraction: credits.usedFraction, usedText: $0, resetText: credits.resetText) }
+        let meter = credits.usedText.map {
+            Meter(fraction: credits.usedFraction, usedText: $0, resetText: credits.resetText, planShare: credits.planShareOfUsage)
+        }
         switch credits.status {
         case .unlimited:
             return nil
