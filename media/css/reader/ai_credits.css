@@ -4,8 +4,8 @@
 
 /* ai_credits.css: The month bar, the trainer strip, the account dialog's AI credits tab and the
    notice when credits run low (media/js/newsblur/reader/reader_ai_credits.js). The bar's tones
-   reuse the intelligence colors: focus green, the trainer's amber, hidden red, and the AI
-   filter header's blue for credits usage billing pays for. */
+   reuse the intelligence colors over a light gray track: focus green, the trainer's amber and
+   hidden red. */
 
 .NB-ai-credits-strip,
 .NB-ai-credits-notice,
@@ -13,9 +13,7 @@
     --ai-credits-ok: #34912E;
     --ai-credits-warn: #C98A0B;
     --ai-credits-out: #A90103;
-    --ai-credits-billing: #4A90D9;
     --ai-credits-track: #E6E7E2;
-    --ai-credits-past-plan: #F1EDE3;
     --ai-credits-ink: #3F4446;
     --ai-credits-muted: #8E8F88;
     --ai-credits-alert-wash: #FBF3F1;
@@ -28,9 +26,7 @@
     --ai-credits-ok: #4CAF46;
     --ai-credits-warn: #E0A33A;
     --ai-credits-out: #E0605C;
-    --ai-credits-billing: #6AA6E8;
     --ai-credits-track: #3A3E40;
-    --ai-credits-past-plan: #35322C;
     --ai-credits-ink: #D9DADB;
     --ai-credits-muted: #8F9293;
     --ai-credits-alert-wash: #33272A;
@@ -40,7 +36,6 @@
 .NB-ai-credits-tone-ok { --ai-credits-tone: var(--ai-credits-ok); }
 .NB-ai-credits-tone-warn { --ai-credits-tone: var(--ai-credits-warn); }
 .NB-ai-credits-tone-out { --ai-credits-tone: var(--ai-credits-out); }
-.NB-ai-credits-tone-billing { --ai-credits-tone: var(--ai-credits-ok); }
 
 /* The month bar */
 
@@ -59,9 +54,7 @@
 }
 
 .NB-ai-credits-bar-used,
-.NB-ai-credits-bar-forecast,
-.NB-ai-credits-bar-billed,
-.NB-ai-credits-bar-past-plan {
+.NB-ai-credits-bar-forecast {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -82,17 +75,6 @@
         transparent 2px 5px
     );
     opacity: 0.45;
-}
-
-.NB-ai-credits-bar-past-plan {
-    right: 0;
-    background: var(--ai-credits-past-plan);
-    border-radius: 0 4px 4px 0;
-}
-
-.NB-ai-credits-bar-billed {
-    background: var(--ai-credits-billing);
-    border-radius: 0;
 }
 
 /* The plan's credits end here. */
@@ -182,28 +164,118 @@
     line-height: 1.4;
 }
 
-/* The trainer: one strip under both AI sections */
+/* The trainer: one AI filter card (reader_classifier.js make_ai_filter_card). The text and
+   image sections keep their own markup and wiring, but their boxes step aside (display:
+   contents) so the card lays their parts out as one column: the selected mode's compose area,
+   then both saved lists, then the credits row. */
 
+.NB-classifier-ai-filter-card .NB-ai-filter-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.NB-ai-filter-card-body > .NB-classifier-content-filter-section,
+.NB-ai-filter-card-body > .NB-classifier-image-filter-section,
+.NB-ai-filter-card-body > div > .NB-fieldset-fields,
+.NB-ai-filter-card-body .NB-classifier-content-classifiers {
+    display: contents;
+}
+
+.NB-ai-filter-card-body .NB-ai-filter-compose {
+    order: 1;
+}
+
+.NB-ai-filter-card-body .NB-content-filter-saved-list,
+.NB-ai-filter-card-body .NB-image-filter-saved-list {
+    order: 2;
+}
+
+.NB-ai-filter-card-body .NB-ai-credits-trainer {
+    order: 3;
+}
+
+.NB-classifier-ai-filter-card[data-mode="text"] .NB-classifier-image-filter-section .NB-ai-filter-compose,
+.NB-classifier-ai-filter-card[data-mode="image"] .NB-classifier-content-filter-section .NB-ai-filter-compose {
+    display: none !important;
+}
+
+.NB-ai-filter-card-body .NB-content-filter-saved-list:empty,
+.NB-ai-filter-card-body .NB-image-filter-saved-list:empty,
+.NB-ai-filter-card-body .NB-content-filter-test-status:empty,
+.NB-ai-filter-card-body .NB-image-filter-test-status:empty {
+    display: none;
+}
+
+/* The Text / Images switch in the card's header */
+.NB-classifier-ai-filter-card .NB-ai-filter-modes {
+    display: inline-flex;
+    padding: 2px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode {
+    padding: 3px 12px;
+    border-radius: 5px;
+    color: #707070;
+    text-decoration: none;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode:hover {
+    color: #404040;
+}
+
+.NB-classifier-ai-filter-card .NB-ai-filter-mode.NB-active {
+    background: #fff;
+    color: #303030;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-modes {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-mode {
+    color: #9A9C9D;
+}
+
+.NB-dark .NB-classifier-ai-filter-card .NB-ai-filter-mode.NB-active {
+    background: #45494B;
+    color: #E6E6E6;
+    box-shadow: none;
+}
+
+/* The credits row at the bottom of the card: a line, a bar, and at most one colored line. */
 .NB-ai-credits-trainer {
     display: none;
-    margin: 14px 0 0;
 }
 
 .NB-ai-credits-strip {
     font-size: 12px;
-    padding: 10px 12px;
+    padding: 10px 0 0;
     border-top: 1px solid var(--ai-credits-track);
 }
 
-.NB-ai-credits-strip.NB-ai-credits-strip-alert {
-    border-top: none;
-    border-left: 3px solid var(--ai-credits-tone);
-    border-radius: 0 4px 4px 0;
-    background: var(--ai-credits-alert-wash);
+.NB-ai-credits-strip .NB-ai-credits-strip-heading {
+    text-decoration: none;
+    color: inherit;
 }
 
-.NB-ai-credits-strip.NB-ai-credits-tone-warn {
-    background: var(--ai-credits-warn-wash);
+.NB-ai-credits-chevron {
+    color: var(--ai-credits-muted);
+    font-size: 16px;
+    line-height: 1;
+}
+
+.NB-ai-credits-strip .NB-ai-credits-strip-heading:hover .NB-ai-credits-chevron {
+    color: var(--ai-credits-ink);
+}
+
+.NB-ai-credits-strip .NB-ai-credits-action {
+    margin-top: 6px;
 }
 
 .NB-ai-filter-estimate {

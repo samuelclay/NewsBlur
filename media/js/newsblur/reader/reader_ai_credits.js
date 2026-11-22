@@ -45,12 +45,11 @@ NEWSBLUR.AICredits = {
         return date.toLocaleDateString(this.locale(), { month: 'short', day: 'numeric' });
     },
 
-    // The month bar's color follows the intelligence colors: green while credits last,
-    // amber near the end, red when filters are paused, blue for credits usage billing pays for.
+    // The month bar's color follows the intelligence colors: green while credits last, amber
+    // near the end, red when filters are paused. Past the plan with usage billing it stays green.
     tone: function (state) {
         if (state.is_paused) return 'out';
         if (state.is_warning) return 'warn';
-        if (state.is_usage_billing && state.used > state.included) return 'billing';
         return 'ok';
     },
 
@@ -80,8 +79,9 @@ NEWSBLUR.AICredits = {
         return interpolate(gettext("Resets %(date)s"), { date: this.format_day(state.resets_on) }, true);
     },
 
-    // The month bar: the solid part is what's used, the striped part where this pace ends the
-    // month, and the notch the plan's credits. Past the notch is what usage billing would pay for.
+    // The month bar: green (or amber, or red) for what's used over a light gray track, a striped
+    // stretch for where the last week's pace ends the month, and a notch where the plan's credits
+    // end once the bar runs past them.
     make_month_bar: function (state, options) {
         options = options || {};
         var included = state.included;
@@ -96,9 +96,6 @@ NEWSBLUR.AICredits = {
         var percent = function (credits) {
             return Math.max(0, Math.min(100, credits / scale * 100));
         };
-        var plan_used = included ? Math.min(used, included) : used;
-        var billed = state.is_usage_billing && used > included ? used - included : 0;
-        var past_plan = included && scale > included;
 
         return $.make('div', {
             className: 'NB-ai-credits-bar NB-ai-credits-tone-' + this.tone(state) +
@@ -106,20 +103,12 @@ NEWSBLUR.AICredits = {
             role: 'img',
             'aria-label': this.summary_text(state)
         }, [
-            (past_plan && $.make('div', {
-                className: 'NB-ai-credits-bar-past-plan',
-                style: 'left: ' + percent(included) + '%'
-            })),
             (projected > used && $.make('div', {
                 className: 'NB-ai-credits-bar-forecast',
                 style: 'width: ' + percent(projected) + '%'
             })),
-            $.make('div', { className: 'NB-ai-credits-bar-used', style: 'width: ' + percent(plan_used) + '%' }),
-            (billed && $.make('div', {
-                className: 'NB-ai-credits-bar-billed',
-                style: 'left: ' + percent(included) + '%; width: ' + (percent(used) - percent(included)) + '%'
-            })),
-            (past_plan && $.make('div', {
+            $.make('div', { className: 'NB-ai-credits-bar-used', style: 'width: ' + percent(used) + '%' }),
+            (included && scale > included && $.make('div', {
                 className: 'NB-ai-credits-bar-notch',
                 style: 'left: ' + percent(included) + '%'
             }))
@@ -225,18 +214,16 @@ NEWSBLUR.AICredits = {
         ]);
     },
 
-    // reader_classifier.js: The strip under the trainer's two AI sections, or null when there's
-    // nothing to show (a self-hosted server, or a free account, whose sections say so instead).
+    // reader_classifier.js: The credits row at the bottom of the trainer's AI filter card, or null
+    // when there's nothing to show (a self-hosted server, or a free account, whose card says so
+    // instead). The row opens the account dialog's AI credits tab, which has the reset date.
     make_trainer_strip: function (state) {
         if (!this.is_counted(state) || state.pause_reason === 'plan') return null;
         var description = this.describe(state);
-        return $.make('div', {
-            className: 'NB-ai-credits-strip NB-ai-credits-tone-' + this.tone(state) +
-                (description.title ? ' NB-ai-credits-strip-alert' : '')
-        }, [
-            $.make('div', { className: 'NB-ai-credits-strip-heading' }, [
+        return $.make('div', { className: 'NB-ai-credits-strip NB-ai-credits-tone-' + this.tone(state) }, [
+            $.make('a', { href: '#', className: 'NB-ai-credits-strip-heading NB-ai-credits-open-settings' }, [
                 $.make('span', { className: 'NB-ai-credits-summary' }).text(this.summary_text(state)),
-                $.make('span', { className: 'NB-ai-credits-resets' }).text(this.resets_text(state))
+                $.make('span', { className: 'NB-ai-credits-chevron', 'aria-hidden': 'true' }, '\u203a')
             ]),
             this.make_month_bar(state),
             (description.title && $.make('div', { className: 'NB-ai-credits-title' }).text(description.title)),

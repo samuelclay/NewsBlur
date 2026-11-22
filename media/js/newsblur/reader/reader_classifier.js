@@ -800,12 +800,8 @@ var classifier_prototype = {
                         this.make_story_title_section(story_title),
                         // Section 3: URL
                         this.make_story_url_section(story),
-                        // Section 4: AI Content Filter (text-only prompt classifier)
-                        this.make_content_filter_section(),
-                        // Section 5: AI Image Filter (VLM prompt classifier)
-                        this.make_image_filter_section(),
-                        // This month's AI credits, shared by both AI sections (reader_ai_credits.js)
-                        $.make('div', { className: 'NB-ai-credits-trainer' }),
+                        // Section 4: AI filters, text and image, in one card
+                        this.make_ai_filter_card(),
                         // Section 6: Combined Authors (story author + feed authors)
                         this.make_combined_authors_section(story),
                         // Section 7: Combined Tags (story tags + feed tags)
@@ -1250,22 +1246,13 @@ var classifier_prototype = {
         var feed_id = this.feed_id;
         var story = this.story;
 
-        var ai_svg = NEWSBLUR.ClassifierConstants.AI_FILTER_ICON;
-
         var $prompt_classifier = this.make_prompt_classifier(
             '<span class="NB-classifier-content-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', '', 'content'
         );
 
-        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-content-filter-section', 'data-section': 'content_prompt' }, [
-            $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', { className: 'NB-content-filter-header' }, [
-                    $.make('span', { className: 'NB-content-filter-header-icon' }, ai_svg),
-                    gettext('Natural Language Text Classifier')
-                ])
-            ]),
+        var $section = $.make('div', { className: 'NB-classifier-content-filter-section', 'data-section': 'content_prompt' }, [
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Describe a topic and AI will score each story against your prompt to focus or hide matches.')),
-                $.make('div', { className: 'NB-classifier-input-row' }, [
+                $.make('div', { className: 'NB-classifier-input-row NB-ai-filter-compose' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-content-prompt-input',
@@ -1275,13 +1262,13 @@ var classifier_prototype = {
                         className: 'NB-content-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
                     }, gettext('Test on this story')))
                 ]),
-                $.make('div', { className: 'NB-content-filter-test-status' }),
+                $.make('div', { className: 'NB-content-filter-test-status NB-ai-filter-compose' }),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                    $.make('div', { className: 'NB-classifier-this-story NB-ai-filter-compose', style: 'display: none' }, [
                         $prompt_classifier
                     ]),
-                    $.make('div', { className: 'NB-content-filter-saved-list' }),
-                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner NB-ai-filter-compose' }),
+                    $.make('div', { className: 'NB-content-filter-saved-list' })
                 ])
             ])
         ]);
@@ -1293,6 +1280,7 @@ var classifier_prototype = {
 
         var update_content_prompt = function () {
             var text = $.trim($input.val());
+            $('.NB-classifier-this-story', $section).toggle(!!text.length);
             var $btn = $('.NB-content-filter-test-button', $section);
             var $banner = $('.NB-ai-filter-upgrade-banner', $section);
             if (text.length) {
@@ -1309,10 +1297,7 @@ var classifier_prototype = {
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
-                // Only hide banner if no saved classifiers
-                var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
-                if (!has_saved) $banner.empty().hide();
-                self.render_ai_credits_strip();
+                self.show_ai_banner($section);
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1380,6 +1365,7 @@ var classifier_prototype = {
             $list.append($pill);
 
             $input.val('').focus();
+            $('.NB-classifier-this-story', $section).hide();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
             $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
             $placeholder.css('font-style', 'italic');
@@ -1393,16 +1379,50 @@ var classifier_prototype = {
         return $section;
     },
 
-    // reader_classifier.js: Under an AI section that has a filter in it, typed or saved: for a
-    // free account, that AI filters only run on Premium; otherwise about how many credits a
-    // filter like it spends on this site a month (reader_ai_credits.js).
+    // reader_classifier.js: One card for AI filters: a Text / Images switch picks which of the two
+    // compose areas shows (make_content_filter_section and make_image_filter_section keep all
+    // their wiring), while both saved lists and the month's credits always show below it.
+    make_ai_filter_card: function () {
+        return $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-ai-filter-card', 'data-mode': 'text' }, [
+            $.make('h5', { className: 'NB-classifier-section-header' }, [
+                $.make('span', { className: 'NB-content-filter-header' }, [
+                    $.make('span', { className: 'NB-content-filter-header-icon' }, NEWSBLUR.ClassifierConstants.AI_FILTER_ICON),
+                    gettext('AI filters')
+                ]),
+                $.make('div', { className: 'NB-ai-filter-modes', role: 'tablist' }, [
+                    $.make('a', { href: '#', className: 'NB-ai-filter-mode NB-active', 'data-mode': 'text', role: 'tab', 'aria-selected': 'true' }, gettext('Text')),
+                    $.make('a', { href: '#', className: 'NB-ai-filter-mode', 'data-mode': 'image', role: 'tab', 'aria-selected': 'false' }, gettext('Images'))
+                ])
+            ]),
+            $.make('div', { className: 'NB-fieldset-fields NB-ai-filter-card-body' }, [
+                this.make_content_filter_section(),
+                this.make_image_filter_section(),
+                $.make('div', { className: 'NB-ai-credits-trainer' })
+            ])
+        ]);
+    },
+
+    switch_ai_filter_mode: function (mode) {
+        var $card = this.$modal.find('.NB-classifier-ai-filter-card');
+        $card.attr('data-mode', mode);
+        $card.find('.NB-ai-filter-mode').each(function () {
+            var selected = $(this).attr('data-mode') === mode;
+            $(this).toggleClass('NB-active', selected).attr('aria-selected', selected ? 'true' : 'false');
+        });
+        var $section = $card.find(mode === 'image' ? '.NB-classifier-image-filter-section' : '.NB-classifier-content-filter-section');
+        $section.find('.NB-classifier-content-prompt-input, .NB-classifier-prompt-input').focus();
+    },
+
+    // reader_classifier.js: The line under a compose area: for a free account with an AI filter,
+    // that AI filters only run on Premium; otherwise about how many credits a filter like this
+    // one spends on this site a month (reader_ai_credits.js).
     show_ai_banner: function ($section) {
         var $banner = $('.NB-ai-filter-upgrade-banner', $section);
         var state = NEWSBLUR.AICredits.state();
         var include_images = $section.is('.NB-classifier-image-filter-section');
         var $content = null;
         if (state && state.pause_reason === 'plan') {
-            $content = NEWSBLUR.AICredits.make_plan_banner();
+            if (this.ai_card_has_filter()) $content = NEWSBLUR.AICredits.make_plan_banner();
         } else if (NEWSBLUR.AICredits.is_counted(state) && this.ai_usage) {
             var estimate = NEWSBLUR.AICredits.estimate_text(include_images ?
                 this.ai_usage.image_credits_per_month : this.ai_usage.text_credits_per_month, include_images);
@@ -1416,25 +1436,23 @@ var classifier_prototype = {
         this.render_ai_credits_strip();
     },
 
-    ai_section_has_filter: function ($section) {
-        return $section.find('.NB-content-filter-saved-list .NB-classifier-container, ' +
+    ai_card_has_filter: function () {
+        if (!this.$modal) return false;
+        var $card = this.$modal.find('.NB-classifier-ai-filter-card');
+        return $card.find('.NB-content-filter-saved-list .NB-classifier-container, ' +
             '.NB-image-filter-saved-list .NB-classifier-container').length > 0 ||
-            !!$.trim($section.find('.NB-classifier-content-prompt-input, .NB-classifier-prompt-input').val() || '');
+            _.any($card.find('.NB-classifier-content-prompt-input, .NB-classifier-prompt-input'), function (input) {
+                return !!$.trim($(input).val() || '');
+            });
     },
 
-    // reader_classifier.js: The month's credits under both AI sections, once there's an AI
-    // filter in either of them, or always while credits are low or filters are paused.
+    // reader_classifier.js: The month's credits at the bottom of the AI filter card, for every
+    // account whose credits are counted (reader_ai_credits.js make_trainer_strip).
     render_ai_credits_strip: function () {
         if (!this.$modal) return;
         var $container = this.$modal.find('.NB-ai-credits-trainer');
         if (!$container.length) return;
-        var self = this;
-        var state = NEWSBLUR.AICredits.state();
-        var has_filter = _.any(this.$modal.find('.NB-classifier-content-filter-section, .NB-classifier-image-filter-section'), function (section) {
-            return self.ai_section_has_filter($(section));
-        });
-        var $strip = state && (has_filter || state.is_paused || state.is_warning) &&
-            NEWSBLUR.AICredits.make_trainer_strip(state);
+        var $strip = NEWSBLUR.AICredits.make_trainer_strip(NEWSBLUR.AICredits.state());
         if ($strip) {
             $container.html($strip).show();
         } else {
@@ -1453,8 +1471,7 @@ var classifier_prototype = {
             self.ai_usage = data;
             NEWSBLUR.AICredits.update(data.ai_credits);
             self.$modal.find('.NB-classifier-content-filter-section, .NB-classifier-image-filter-section').each(function () {
-                var $section = $(this);
-                if (self.ai_section_has_filter($section)) self.show_ai_banner($section);
+                self.show_ai_banner($(this));
             });
             self.render_ai_credits_strip();
         });
@@ -1484,12 +1501,7 @@ var classifier_prototype = {
 
         var prompt_keys = _.keys(prompts || {});
 
-        if (prompt_keys.length) {
-            this.show_ai_banner($section);
-        } else {
-            $('.NB-ai-filter-upgrade-banner', $section).empty().hide();
-            this.render_ai_credits_strip();
-        }
+        this.show_ai_banner($section);
 
         if (!prompt_keys.length) return;
 
@@ -1515,9 +1527,6 @@ var classifier_prototype = {
         var feed_id = this.feed_id;
         var story = this.story;
 
-        // SVG icon for the header
-        var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-
         // Build image thumbnails from the current story
         var image_urls = (story && story.get('image_urls')) || [];
         var $image_grid = '';
@@ -1529,7 +1538,7 @@ var classifier_prototype = {
                     $.make('img', { src: secure_url, loading: 'lazy' })
                 ]));
             });
-            $image_grid = $.make('div', { className: 'NB-image-filter-grid' }, $thumbs);
+            $image_grid = $.make('div', { className: 'NB-image-filter-grid NB-ai-filter-compose' }, $thumbs);
         }
 
         // Build the live classifier pill
@@ -1537,17 +1546,10 @@ var classifier_prototype = {
             '<span class="NB-classifier-prompt-placeholder">' + _.escape(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt) + '</span>', ''
         );
 
-        var $section = $.make('div', { className: 'NB-modal-field NB-fieldset NB-classifier-image-filter-section', 'data-section': 'prompt' }, [
-            $.make('h5', { className: 'NB-classifier-section-header' }, [
-                $.make('span', { className: 'NB-image-filter-header' }, [
-                    $.make('span', { className: 'NB-image-filter-header-icon' }, vision_svg),
-                    gettext('Natural Language Image Classifier')
-                ])
-            ]),
+        var $section = $.make('div', { className: 'NB-classifier-image-filter-section', 'data-section': 'prompt' }, [
             $.make('div', { className: 'NB-fieldset-fields NB-classifiers' }, [
-                $.make('div', { className: 'NB-classifier-section-explainer' }, gettext('Describe what to look for and AI will analyze each story\u2019s images against your prompt.')),
                 $image_grid,
-                $.make('div', { className: 'NB-classifier-input-row' }, [
+                $.make('div', { className: 'NB-classifier-input-row NB-ai-filter-compose' }, [
                     $.make('input', {
                         type: 'text',
                         className: 'NB-classifier-prompt-input',
@@ -1557,13 +1559,13 @@ var classifier_prototype = {
                         className: 'NB-image-filter-test-button NB-modal-submit-button NB-modal-submit-green NB-disabled'
                     }, image_urls.length === 1 ? gettext('Test on this image') : gettext('Test on these images')))
                 ]),
-                $.make('div', { className: 'NB-image-filter-test-status' }),
+                $.make('div', { className: 'NB-image-filter-test-status NB-ai-filter-compose' }),
                 $.make('div', { className: 'NB-classifier-content-classifiers' }, [
-                    $.make('div', { className: 'NB-classifier-this-story' }, [
+                    $.make('div', { className: 'NB-classifier-this-story NB-ai-filter-compose', style: 'display: none' }, [
                         $prompt_classifier
                     ]),
-                    $.make('div', { className: 'NB-image-filter-saved-list' }),
-                    $.make('div', { className: 'NB-ai-filter-upgrade-banner' })
+                    $.make('div', { className: 'NB-ai-filter-upgrade-banner NB-ai-filter-compose' }),
+                    $.make('div', { className: 'NB-image-filter-saved-list' })
                 ])
             ])
         ]);
@@ -1576,6 +1578,7 @@ var classifier_prototype = {
 
         var update_prompt_classifier = function () {
             var text = $.trim($input.val());
+            $('.NB-classifier-this-story', $section).toggle(!!text.length);
             var $btn = $('.NB-image-filter-test-button', $section);
             var $banner = $('.NB-ai-filter-upgrade-banner', $section);
             if (text.length) {
@@ -1592,9 +1595,7 @@ var classifier_prototype = {
                 $placeholder.css('font-style', 'italic');
                 $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
                 $btn.addClass('NB-disabled');
-                var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
-                if (!has_saved) $banner.empty().hide();
-                self.render_ai_credits_strip();
+                self.show_ai_banner($section);
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1694,6 +1695,7 @@ var classifier_prototype = {
             $list.append($pill);
 
             $input.val('').focus();
+            $('.NB-classifier-this-story', $section).hide();
             $pill_classifier.removeClass('NB-classifier-like NB-classifier-dislike');
             $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
             $placeholder.css('font-style', 'italic');
@@ -1838,12 +1840,7 @@ var classifier_prototype = {
 
         var prompt_keys = _.keys(image_prompts || {});
 
-        if (prompt_keys.length) {
-            this.show_ai_banner($section);
-        } else {
-            $('.NB-ai-filter-upgrade-banner', $section).empty().hide();
-            this.render_ai_credits_strip();
-        }
+        this.show_ai_banner($section);
 
         if (!prompt_keys.length) return;
 
@@ -3644,6 +3641,11 @@ var classifier_prototype = {
             self.close(function () {
                 NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
             });
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-ai-filter-mode' }, function ($t, $p) {
+            e.preventDefault();
+            self.switch_ai_filter_mode($t.attr('data-mode'));
         });
 
         $.targetIs(e, { tagSelector: '.NB-ai-credits-open-settings' }, function ($t, $p) {
