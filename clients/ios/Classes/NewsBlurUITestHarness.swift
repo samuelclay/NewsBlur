@@ -1176,13 +1176,13 @@ private enum ReaderUITestFixtures {
     /// apps/analyzer/ai_credits.py state() for the fixture account: an Archive month a quarter used, or a free plan.
     private static var aiCredits: [String: Any] {
         [
-            "included": freeAccount ? 0 : 50, "used": freeAccount ? 0 : 12.34, "remaining": freeAccount ? 0 : 37.66,
+            "included": freeAccount ? 0 : 10_000, "used": freeAccount ? 0 : 2_340, "remaining": freeAccount ? 0 : 7_660,
             "month": "2026-11", "resets_on": "2026-12-01", "is_unlimited": false, "is_billing_available": true,
             "is_usage_billing": false, "monthly_limit": NSNull(), "overage_credits": 0, "overage_usd": 0.0,
             "unbilled_usd": 0.0, "minimum_charge_usd": 1.0, "immediate_charge_usd": 10.0,
             "is_paused": freeAccount, "pause_reason": freeAccount ? "plan" : NSNull(), "is_warning": false,
-            "credit_usd": 0.01,
-            "forecast": freeAccount ? NSNull() : ["credits": 31.2, "credits_per_day": 1.1, "runs_out_on": NSNull(), "overage_usd": 0.0],
+            "credit_usd": 0.00001,
+            "forecast": freeAccount ? NSNull() : ["credits": 6_240, "credits_per_day": 220, "runs_out_on": NSNull(), "overage_usd": 0.0],
         ]
     }
 
@@ -1190,7 +1190,7 @@ private enum ReaderUITestFixtures {
         switch path {
         case "/analyzer/ai_classifier_usage":
             return ["code": 0, "can_use_ai": !freeAccount, "ai_credits": aiCredits, "stories_per_month": 300,
-                    "text_credits_per_month": 0.42, "image_credits_per_month": 3.0]
+                    "text_credits_per_month": 420, "image_credits_per_month": 3_000]
         case "/classifier/save":
             return ["code": 1]
         case "/classifier/test_prompt":

@@ -662,7 +662,7 @@ struct AICreditsView: View {
     var howCreditsWorkCard: some View {
         card(title: NBLocalization.text("How credits work")) {
             VStack(alignment: .leading, spacing: 8) {
-                bodyText(NBLocalization.text("A credit covers about 700 stories through a text filter, or 100 through an image filter."))
+                bodyText(NBLocalization.text("A credit is about one story through a text filter. An image filter uses about 10 credits a story."))
                 Text(NBLocalization.text("Credits reset on the 1st of each month and don't carry over."))
                     .font(.system(size: 13))
                     .foregroundColor(AICreditsPalette.secondaryText)

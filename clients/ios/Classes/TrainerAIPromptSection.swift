@@ -318,9 +318,11 @@ import SwiftUI
         return AICreditsNotice.make(credits, offersBilling: UsageBillingFeature.isEnabled)
     }
 
-    /// About what a filter of this kind on this site spends a month, while the reader's filters run.
+    /// About what a filter of this kind on this site spends a month, while the reader's filters run. A blurblog or
+    /// river has no site of its own to estimate.
     func estimateText(_ kind: PromptClassifierKind) -> String? {
-        guard let usage, let credits, [.running, .warning, .usageBilling].contains(credits.status) else { return nil }
+        guard let usage, let credits, [.running, .warning, .usageBilling].contains(credits.status),
+              (Int(context?.feedId ?? "") ?? 0) > 0 else { return nil }
         return AIClassifierUsage.estimateText(usage.creditsPerMonth(for: kind), kind: kind)
     }
 

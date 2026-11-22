@@ -302,17 +302,19 @@ struct AICredits: Equatable {
 
     // MARK: Wording
 
-    /// "12.3 of 50 AI credits used", or nil for usage billing without included credits.
+    /// "12,340 of 10,000 AI credits used", or nil for usage billing without included credits.
     var usedText: String? {
         guard included > 0 else { return nil }
-        // AIClassifiers.swift compares the numbers as shown, so 50.04 of 50 never reads "0 past your plan's 50".
+        // AIClassifiers.swift compares whole credits as shown, so 10,000.4 of 10,000 never reads "0 past your plan's".
         let shownUsed = AICreditsFormat.shownCredits(used)
+        let plan = AICreditsFormat.credits(Double(included))
         guard shownUsed > Double(included) else {
-            return NBLocalization.plural("%2$@ of %1$@ AI credits used", count: included, with: AICreditsFormat.credits(used))
+            return NBLocalization.plural("%2$@ of %3$@ AI credits used", count: included,
+                                         arguments: [AICreditsFormat.credits(used), plan])
         }
-        return NBLocalization.plural("%2$@ AI credits used, %3$@ past your plan's %1$@", count: included,
+        return NBLocalization.plural("%2$@ AI credits used, %3$@ past your plan's %4$@", count: included,
                                      arguments: [AICreditsFormat.credits(used),
-                                                 AICreditsFormat.credits(shownUsed - Double(included))])
+                                                 AICreditsFormat.credits(shownUsed - Double(included)), plan])
     }
 
     /// Usage billing past the plan's credits draws the meter as the plan's share of what was used, then the part past
@@ -332,7 +334,7 @@ struct AICredits: Equatable {
     }
 
     static var freeText: String {
-        NBLocalization.text("AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500.")
+        NBLocalization.text("AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000.")
     }
 
     var runsOutText: String? {
@@ -362,10 +364,11 @@ struct AICredits: Equatable {
     var billingText: [String] {
         var lines: [String]
         if included > 0 {
-            lines = [NBLocalization.plural("Usage billing is on. Credits past your %1$@ cost 1¢ each: %2$@ so far this month.",
-                                           count: included, with: AICreditsFormat.money(overageUSD))]
+            lines = [NBLocalization.plural("Usage billing is on. Credits past your %2$@ cost 1¢ per 1,000: %3$@ so far this month.",
+                                           count: included,
+                                           arguments: [AICreditsFormat.credits(Double(included)), AICreditsFormat.money(overageUSD)])]
         } else {
-            lines = [String(format: NBLocalization.text("Usage billing is on. Every credit costs 1¢: %@ so far this month."),
+            lines = [String(format: NBLocalization.text("Usage billing is on. Credits cost 1¢ per 1,000: %@ so far this month."),
                             AICreditsFormat.money(overageUSD))]
         }
         if unbilledUSD > 0 {
@@ -395,13 +398,16 @@ struct AICredits: Equatable {
 
     /// How usage billing works, offered while credits run low or are used up.
     var billingOfferText: String {
-        ([NBLocalization.text("Past your credits, filters keep running at 1¢ per credit.")] + [forecastOverageText].compactMap { $0 })
+        ([NBLocalization.text("Past your credits, filters keep running at 1¢ per 1,000 credits.")] + [forecastOverageText].compactMap { $0 })
             .joined(separator: " ")
     }
 
     var turnOnBillingDetail: String {
-        guard let overage = forecast?.overageUSD, overage > 0 else { return NBLocalization.text("1¢ per credit past your plan's") }
-        return String(format: NBLocalization.text("1¢ per credit past your plan's, about %@ this month"), AICreditsFormat.money(overage))
+        guard let overage = forecast?.overageUSD, overage > 0 else {
+            return NBLocalization.text("1¢ per 1,000 credits past your plan's")
+        }
+        return String(format: NBLocalization.text("1¢ per 1,000 credits past your plan's, about %@ this month"),
+                      AICreditsFormat.money(overage))
     }
 
     var waitText: String {
@@ -416,19 +422,14 @@ struct AICredits: Equatable {
 
 /// AIClassifiers.swift formats credits, dollars and the server's calendar days in the interface language.
 enum AICreditsFormat {
-    /// Credits with up to one decimal place, like "12.3" or "50".
+    /// Whole credits, grouped like the interface language, such as "12,340".
     static func credits(_ value: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.locale = NBLocalization.formattingLocale
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 0
-        formatter.maximumFractionDigits = 1
-        return formatter.string(from: NSNumber(value: shownCredits(value))) ?? String(shownCredits(value))
+        NBLocalization.formattedCount(Int(shownCredits(value)))
     }
 
-    /// The number credits(_:) shows, so a plural form agrees with it: 0.96 shows as "1 credit".
+    /// The whole number credits(_:) shows, so a plural form and a comparison agree with what the reader reads.
     static func shownCredits(_ value: Double) -> Double {
-        (value * 10).rounded() / 10
+        value.rounded()
     }
 
     /// Dollars as the web shows them. The minimum charge reads "$1" rather than "$1.00".
@@ -591,11 +592,15 @@ struct AIClassifierUsage: Equatable {
             && lhs.imageCreditsPerMonth == rhs.imageCreditsPerMonth
     }
 
-    /// "A text filter on this site uses about 0.4 credits a month". A site that published nothing last month, or a
-    /// river, has no estimate. Anything that rounds to nothing still reads "about 0.1".
-    static func estimateText(_ credits: Double, kind: PromptClassifierKind) -> String? {
-        guard credits > 0 else { return nil }
-        let shown = max(0.1, AICreditsFormat.shownCredits(credits))
+    /// "A text filter on this site uses about 1,400 credits a month", or that it uses less than one for a site that
+    /// published next to nothing last month. Like every credit number, the estimate rounds to a whole credit first.
+    static func estimateText(_ credits: Double, kind: PromptClassifierKind) -> String {
+        let shown = AICreditsFormat.shownCredits(credits)
+        guard shown >= 1 else {
+            return kind == .image
+                ? NBLocalization.text("An image filter on this site uses less than one credit a month")
+                : NBLocalization.text("A text filter on this site uses less than one credit a month")
+        }
         let display = AICreditsFormat.credits(shown)
         return kind == .image
             ? NBLocalization.plural("An image filter on this site uses about %2$@ credits a month", value: shown, display: display)

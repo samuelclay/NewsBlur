@@ -63,11 +63,11 @@ import XCTest
 /// apps/analyzer/ai_credits.py state() for an Archive month, which each test bends into the state it needs.
 private func creditsJSON(_ changes: [String: Any] = [:]) -> [String: Any] {
     var json: [String: Any] = [
-        "included": 50, "used": 12.34, "remaining": 37.66, "month": "2026-11", "resets_on": "2026-12-01",
+        "included": 10_000, "used": 2_340, "remaining": 7_660, "month": "2026-11", "resets_on": "2026-12-01",
         "is_unlimited": false, "is_billing_available": true, "is_usage_billing": false, "monthly_limit": NSNull(),
         "overage_credits": 0, "overage_usd": 0.0, "unbilled_usd": 0.0, "minimum_charge_usd": 1.0,
         "immediate_charge_usd": 10.0, "is_paused": false, "pause_reason": NSNull(), "is_warning": false,
-        "credit_usd": 0.01, "forecast": NSNull(),
+        "credit_usd": 0.00001, "forecast": NSNull(),
     ]
     json.merge(changes) { $1 }
     return json
@@ -84,25 +84,25 @@ private let freeCredits: [String: Any] = [
 
 /// Running low on the 20th, at a pace that runs out on the 27th and would cost 62 cents past the plan's credits.
 private let warningCredits: [String: Any] = [
-    "used": 41.5, "remaining": 8.5, "is_warning": true,
-    "forecast": ["credits": 112.0, "credits_per_day": 3.1, "runs_out_on": "2026-11-27", "overage_usd": 0.62],
+    "used": 8_300, "remaining": 1_700, "is_warning": true,
+    "forecast": ["credits": 72_000, "credits_per_day": 3_100, "runs_out_on": "2026-11-27", "overage_usd": 0.62],
 ]
 
 /// The month's credits used up, at the same pace.
 private let pausedCredits: [String: Any] = [
-    "used": 50.0, "remaining": 0.0, "is_paused": true, "pause_reason": "credits", "is_warning": true,
-    "forecast": ["credits": 112.0, "credits_per_day": 3.1, "runs_out_on": NSNull(), "overage_usd": 0.62],
+    "used": 10_000, "remaining": 0, "is_paused": true, "pause_reason": "credits", "is_warning": true,
+    "forecast": ["credits": 72_000, "credits_per_day": 3_100, "runs_out_on": NSNull(), "overage_usd": 0.62],
 ]
 
 /// Usage billing past the plan's credits, with $0.37 waiting for the $1 minimum charge.
 private let billingCredits: [String: Any] = [
-    "used": 87.0, "remaining": 0.0, "is_usage_billing": true, "overage_credits": 37, "overage_usd": 0.37,
+    "used": 47_000, "remaining": 0, "is_usage_billing": true, "overage_credits": 37_000, "overage_usd": 0.37,
     "unbilled_usd": 0.37, "is_warning": true,
 ]
 
 /// Usage billing stopped at the reader's $5 monthly limit.
 private let limitCredits: [String: Any] = [
-    "used": 550.0, "remaining": 0.0, "is_usage_billing": true, "monthly_limit": 5.0, "overage_credits": 500,
+    "used": 510_000, "remaining": 0, "is_usage_billing": true, "monthly_limit": 5.0, "overage_credits": 500_000,
     "overage_usd": 5.0, "is_paused": true, "pause_reason": "limit", "is_warning": true,
 ]
 
@@ -496,7 +496,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_reopeningTheTrainerLoadsCreditsAgainAndKeepsTheDraft() throws {
         let transport = RecordingAITransport()
         transport.responses["/analyzer/ai_classifier_usage"] = [
-            "code": 0, "ai_credits": creditsJSON(["used": 20.0]), "text_credits_per_month": 0.42, "image_credits_per_month": 3.0,
+            "code": 0, "ai_credits": creditsJSON(["used": 4_000]), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
         ]
         transport.holdsResponses = true
         var stored: [[String: Any]] = []
@@ -509,16 +509,16 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(fetches.count, 1, "One open shares one fetch")
         XCTAssertEqual(fetches.first?.method, "GET")
         XCTAssertEqual(fetches.first?.parameters["feed_id"] as? String, "42")
-        XCTAssertEqual(model.credits?.used, 12.34, "The profile's credits show until the server answers")
+        XCTAssertEqual(model.credits?.used, 2_340, "The profile's credits show until the server answers")
         transport.releaseHeldResponses()
-        XCTAssertEqual(model.credits?.used, 20.0)
+        XCTAssertEqual(model.credits?.used, 4_000)
         XCTAssertEqual(stored.count, 1)
-        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 20.0)
+        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 4_000)
         model.setDraft("Apple earnings coverage", for: .content)
 
         // The reader's filters spend more, then the trainer opens on the same story again.
         transport.responses["/analyzer/ai_classifier_usage"] = [
-            "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 0.42, "image_credits_per_month": 3.0,
+            "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
         ]
         model.prepare(feedId: "42", storyHash: "42:abc")
         XCTAssertEqual(transport.requests(to: "/analyzer/ai_classifier_usage").count, 2, "Reopening asks again")
@@ -598,7 +598,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         try withEnglishInterface {
             let transport = RecordingAITransport()
             transport.responses["/analyzer/ai_classifier_usage"] = [
-                "code": 0, "ai_credits": creditsJSON(), "text_credits_per_month": 0.42, "image_credits_per_month": 0.04,
+                "code": 0, "ai_credits": creditsJSON(), "text_credits_per_month": 1_428, "image_credits_per_month": 0,
             ]
             var opened: [Bool] = []
             let model = makeModel(transport: transport, profile: Self.archiveProfile, openCredits: { opened.append($0) })
@@ -606,19 +606,19 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
 
             let notice = try XCTUnwrap(model.creditsNotice(.content, saved: []), "The meter shows before any filter exists")
             XCTAssertEqual(notice.tone, .normal)
-            XCTAssertEqual(notice.meter?.usedText, "12.3 of 50 AI credits used")
+            XCTAssertEqual(notice.meter?.usedText, "2,340 of 10,000 AI credits used")
             XCTAssertEqual(notice.meter?.resetText, "Resets Dec 1")
-            XCTAssertEqual(try XCTUnwrap(notice.meter?.fraction), 12.34 / 50, accuracy: 0.0001)
+            XCTAssertEqual(try XCTUnwrap(notice.meter?.fraction), 0.234, accuracy: 0.0001)
             XCTAssertNil(model.creditsNotice(.image, saved: [PromptClassifier(prompt: "Charts", kind: .image, score: 1,
                                                                               scope: .feed, folderName: "")]))
-            XCTAssertEqual(model.estimateText(.content), "A text filter on this site uses about 0.4 credits a month")
-            XCTAssertEqual(model.estimateText(.image), "An image filter on this site uses about 0.1 credits a month",
-                           "A filter that costs almost nothing still reads as costing something")
+            XCTAssertEqual(model.estimateText(.content), "A text filter on this site uses about 1,428 credits a month")
+            XCTAssertEqual(model.estimateText(.image), "An image filter on this site uses less than one credit a month",
+                           "A site that published nothing last month still says what a filter would cost")
             model.perform(.openCredits)
             XCTAssertEqual(opened, [false], "The meter opens the AI credits screen")
 
             transport.responses["/analyzer/ai_classifier_usage"] = [
-                "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 0.42, "image_credits_per_month": 3.0,
+                "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
             ]
             model.prepare(feedId: "42", storyHash: nil)
             XCTAssertEqual(model.creditsNotice(.content, saved: [])?.tone, .paused)
@@ -629,6 +629,24 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     /// Rule: running low warns with the day credits run out at this pace. While the app may open Stripe it offers to
     /// keep filters running and says what that would cost this month, leaving the cost out when the pace costs
     /// nothing; with UsageBillingFeature.swift off it offers nothing to pay.
+    /// Rule: every credit number shows as a whole credit rounded to the nearest, even from a server that still sends
+    /// decimals, and the amount past the plan compares the rounded numbers.
+    func test_creditNumbersRoundToTheNearestWholeCredit() {
+        withEnglishInterface {
+            XCTAssertEqual(credits(["used": 2_340.6]).usedText, "2,341 of 10,000 AI credits used")
+            XCTAssertEqual(credits(["used": 10_012.6]).usedText, "10,013 AI credits used, 13 past your plan's 10,000")
+            XCTAssertEqual(credits(["used": 10_000.4]).usedText, "10,000 of 10,000 AI credits used")
+            XCTAssertEqual(credits(["forecast": ["credits": 16_268.7, "runs_out_on": NSNull(), "overage_usd": 0.0]]).forecastText,
+                           "At this pace, this month will use about 16,269 AI credits.")
+            XCTAssertEqual(AIClassifierUsage.estimateText(1_427.5, kind: .content),
+                           "A text filter on this site uses about 1,428 credits a month")
+            XCTAssertEqual(AIClassifierUsage.estimateText(0.6, kind: .image),
+                           "An image filter on this site uses about 1 credit a month")
+            XCTAssertEqual(AIClassifierUsage.estimateText(0.4, kind: .content),
+                           "A text filter on this site uses less than one credit a month")
+        }
+    }
+
     func test_runningLowWarnsWhenCreditsRunOutAndOffersBillingWithTheMonthsCost() throws {
         try withEnglishInterface {
             UsageBillingFeature.isEnabled = true
@@ -638,14 +656,14 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             XCTAssertEqual(warning.messages, ["At this pace your credits run out around Nov 27."])
             XCTAssertEqual(warning.button, AICreditsNotice.ActionButton(
                 title: "Keep filters running",
-                detail: "Past your credits, filters keep running at 1¢ per credit. About $0.62 this month at your pace.",
+                detail: "Past your credits, filters keep running at 1¢ per 1,000 credits. About $0.62 this month at your pace.",
                 action: .setUpBilling))
 
             var noCost = warningCredits
             noCost["forecast"] = ["credits": 49.0, "credits_per_day": 1.0, "runs_out_on": NSNull(), "overage_usd": 0.0]
             let calm = try XCTUnwrap(AICreditsNotice.make(credits(noCost), offersBilling: true))
             XCTAssertEqual(calm.messages, [], "No run-out day when the pace lasts the month")
-            XCTAssertEqual(calm.button?.detail, "Past your credits, filters keep running at 1¢ per credit.")
+            XCTAssertEqual(calm.button?.detail, "Past your credits, filters keep running at 1¢ per 1,000 credits.")
 
             var unavailable = warningCredits
             unavailable["is_billing_available"] = false
@@ -668,19 +686,19 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             let paused = try XCTUnwrap(AICreditsNotice.make(credits(pausedCredits), offersBilling: true))
             XCTAssertEqual(paused.tone, .paused)
             XCTAssertEqual(paused.meter?.fraction, 1)
-            XCTAssertEqual(paused.meter?.usedText, "50 of 50 AI credits used")
+            XCTAssertEqual(paused.meter?.usedText, "10,000 of 10,000 AI credits used")
             var overshot = pausedCredits
-            overshot["used"] = 50.2
+            overshot["used"] = 10_012
             let pastPlan = try XCTUnwrap(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter)
-            XCTAssertEqual(pastPlan.usedText, "50.2 AI credits used, 0.2 past your plan's 50",
+            XCTAssertEqual(pastPlan.usedText, "10,012 AI credits used, 12 past your plan's 10,000",
                            "The last request can run a little past the plan's credits")
             XCTAssertNil(pastPlan.planShare, "Without usage billing nothing past the plan is billed, so the bar stays whole")
-            overshot["used"] = 50.04
+            overshot["used"] = 10_000.4
             XCTAssertEqual(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter?.usedText,
-                           "50 of 50 AI credits used", "Never \"0 past your plan's 50\"")
-            XCTAssertEqual(paused.messages, ["Your AI filters are paused until Dec 1.", "This month's 50 AI credits are used."])
+                           "10,000 of 10,000 AI credits used", "Never \"0 past your plan's 10,000\"")
+            XCTAssertEqual(paused.messages, ["Your AI filters are paused until Dec 1.", "This month's 10,000 AI credits are used."])
             XCTAssertEqual(paused.button, AICreditsNotice.ActionButton(
-                title: "Turn on usage billing", detail: "1¢ per credit past your plan's, about $0.62 this month",
+                title: "Turn on usage billing", detail: "1¢ per 1,000 credits past your plan's, about $0.62 this month",
                 action: .setUpBilling))
             XCTAssertEqual(paused.footnote, "or wait until Dec 1")
         }
@@ -692,11 +710,11 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     func test_usageBillingShowsTheMonthsCostAndAReachedLimit() throws {
         try withEnglishInterface {
             let billing = try XCTUnwrap(AICreditsNotice.make(credits(billingCredits), offersBilling: true))
-            XCTAssertEqual(billing.meter?.usedText, "87 AI credits used, 37 past your plan's 50")
-            XCTAssertEqual(try XCTUnwrap(billing.meter?.planShare), 50.0 / 87, accuracy: 0.0001,
+            XCTAssertEqual(billing.meter?.usedText, "47,000 AI credits used, 37,000 past your plan's 10,000")
+            XCTAssertEqual(try XCTUnwrap(billing.meter?.planShare), 10_000.0 / 47_000, accuracy: 0.0001,
                            "The meter shows where the plan's credits end and billing begins")
             XCTAssertEqual(billing.messages, [
-                "Usage billing is on. Credits past your 50 cost 1¢ each: $0.37 so far this month.",
+                "Usage billing is on. Credits past your 10,000 cost 1¢ per 1,000: $0.37 so far this month.",
                 "$0.37 is waiting to be charged: at the start of next month if it's at least $1, or right away at $10.",
             ])
             XCTAssertEqual(billing.button?.action, .manageBilling)
@@ -1859,18 +1877,18 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
     /// profile; invoices load only for a reader with usage billing, since nobody else has any.
     func test_loadShowsTheProfilesCreditsThenTheServersAndInvoicesOnlyWithBilling() throws {
         let transport = RecordingAITransport()
-        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(["used": 30.0])]
+        transport.responses["/analyzer/ai_classifier_usage"] = ["code": 0, "ai_credits": creditsJSON(["used": 6_000])]
         transport.holdsResponses = true
         var stored: [[String: Any]] = []
         let model = makeModel(transport: transport, credits: credits(), storeCredits: { stored.append($0) })
 
         model.load()
-        XCTAssertEqual(model.credits?.used, 12.34)
+        XCTAssertEqual(model.credits?.used, 2_340)
         XCTAssertEqual(transport.requests.map(\.path), ["/analyzer/ai_classifier_usage"], "No invoices without usage billing")
         XCTAssertEqual(transport.requests.first?.parameters["feed_id"] as? String, "0")
         transport.releaseHeldResponses()
-        XCTAssertEqual(model.credits?.used, 30.0)
-        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 30.0)
+        XCTAssertEqual(model.credits?.used, 6_000)
+        XCTAssertEqual(AICredits(json: try XCTUnwrap(stored.first))?.used, 6_000)
         XCTAssertEqual(model.historyState, .notSetUp)
 
         transport.holdsResponses = false
@@ -2185,7 +2203,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
                 XCTAssertNil(notice.footnote)
             }
             XCTAssertEqual(try trainerNotice(pausedCredits)?.messages,
-                           ["Your AI filters are paused until Dec 1.", "This month's 50 AI credits are used."])
+                           ["Your AI filters are paused until Dec 1.", "This month's 10,000 AI credits are used."])
             XCTAssertEqual(try trainerNotice(warningCredits)?.messages, ["At this pace your credits run out around Nov 27."])
             var billingWithLimit = billingCredits
             billingWithLimit["monthly_limit"] = 5.0
