@@ -1602,9 +1602,10 @@ msgstr "削除"
 
 msgid ""
 "Describe what to focus on or hide in plain language, for a story's text or its images. AI filters score "
-"stories just like the intelligence trainer. A credit covers about 700 stories through a text filter or 100 "
-"through an image filter, and usage billing keeps filters running past your credits at 1 cent each."
-msgstr "記事のテキストや画像について、フォーカスする内容や非表示にする内容を自然な言葉で説明してください。AIフィルターはインテリジェンストレーナーと同様に記事をスコア付けします。クレジット1件で、テキストフィルターなら約700件、画像フィルターなら約100件の記事を処理できます。従量課金を有効にすると、クレジットを使い切った後もフィルターが動作し、1件あたり1セントが課金されます。"
+"stories just like the intelligence trainer. A credit is about one story through a text filter, and an image"
+" filter uses about 10 credits a story. Usage billing keeps filters running past your credits at 1 cent per "
+"1,000 credits."
+msgstr "記事の本文や画像について、何にフォーカスするか、何を非表示にするかを自然な言葉で指定します。AIフィルターはインテリジェンストレーナーと同じように記事を評価します。テキストフィルターでは記事1件につき約1クレジット、画像フィルターでは記事1件につき約10クレジットを使用します。従量課金を有効にすると、クレジットを使い切った後も、1,000クレジットあたり1セントでフィルターを使い続けられます。"
 
 msgid "Description"
 msgstr "説明"
