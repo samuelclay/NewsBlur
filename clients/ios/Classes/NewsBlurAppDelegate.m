@@ -783,6 +783,20 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         }
         
         // NewsBlurAppDelegate.m opens the story's actual feed independently of other widget selections.
+        if (![self getFeed:feedId] && [query[@"siteTitle"] length]) {
+            // DiscoverFeedsViewController.swift uses the same exact-story lookup when previewing an unsubscribed site.
+            NSDictionary *site = @{@"id": feedId, @"feed_title": query[@"siteTitle"],
+                                   @"feed_address": query[@"siteAddress"] ?: @""};
+            [self cleanUpTryFeed];
+            self.inFindingStoryMode = YES;
+            self.findingStoryStartDate = [NSDate date];
+            self.findingStoryDictionary = nil;
+            self.storiesCollection.readFilterOverride = @"all";
+            self.storiesCollection.notificationStoryHash = storyHash;
+            self.storiesCollection.notificationStory = nil;
+            [self loadTryFeedDetailView:feedId withStory:storyHash isSocial:NO withUser:site showFindingStory:YES];
+            return YES;
+        }
         [self loadFeed:feedId withStory:storyHash animated:NO];
 
         return YES;

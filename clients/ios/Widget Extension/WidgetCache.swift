@@ -20,7 +20,10 @@ enum WidgetCacheError: String, Error {
 class WidgetCache {
     private static let logger = Logger(subsystem: "com.newsblur.widget", category: "stories")
     let source: String
+    private var trendingType: String? { WidgetStorySource(rawValue: source)?.trendingType }
+    private var storiesPerMonth = 30
     private var cacheFilename = "Stories.json"
+    private var catalog = WidgetSourceCatalog(dictionary: [:])
 
     init(source: String = "all") { self.source = source }
 
@@ -95,7 +98,7 @@ class WidgetCache {
             completionHandler()
             return
         }
-        guard !feeds.isEmpty else {
+        guard trendingType != nil || !feeds.isEmpty else {
             stories = []
             error = .noFeeds
             completionHandler()
@@ -110,9 +113,10 @@ class WidgetCache {
 
     private func loadStoryPage() {
         let remainingTime = storyLoadDeadline.timeIntervalSinceNow
-        let combinedFeeds = feeds.map { $0.id }.joined(separator: "&f=")
+        let path = WidgetStorySource.requestPath(source: source, feedIDs: feeds.map { $0.id }, page: storyPages.page,
+                                               limit: Constant.limit, storiesPerMonth: storiesPerMonth)
         guard remainingTime > 0,
-              let url = hostURL(with: "/reader/river_stories_widget/?include_hidden=false&thumbnail_size=192&page=\(storyPages.page)&infrequent=false&order=newest&read_filter=unread&limit=\(Constant.limit)&f=\(combinedFeeds)") else {
+              let url = hostURL(with: path) else {
             finishStoryLoading(reachedEnd: false)
             return
         }
@@ -143,8 +147,19 @@ class WidgetCache {
             finishStoryLoading(reachedEnd: false)
             return
         }
-        let pageStories = storyArray.map { Story(from: $0) }
-        let hiddenCount = dictionary["hidden_stories_removed"] as? Int ?? 0
+        let visible = storyArray.filter { ($0["score"] as? Int ?? 0) >= 0 }
+        let sites = dictionary["feeds"] as? [AnyDictionary] ?? []
+        var sitesByID: [String: [String: String]] = [:]
+        for site in sites {
+            guard let id = site["id"] as? NSNumber else { continue }
+            var metadata = ["id": id.stringValue]
+            for key in ["feed_title", "feed_address", "favicon_color", "favicon_fade"] {
+                metadata[key] = site[key] as? String
+            }
+            sitesByID[id.stringValue] = metadata
+        }
+        let pageStories = visible.map { Story(from: $0, sites: sitesByID) }
+        let hiddenCount = (dictionary["hidden_stories_removed"] as? Int ?? 0) + storyArray.count - visible.count
         let page = storyPages.page
         let result = storyPages.append(pageStories, hiddenCount: hiddenCount)
         Self.logger.notice("Story page \(page, privacy: .public): visible=\(pageStories.count, privacy: .public), hidden=\(hiddenCount, privacy: .public), accumulated=\(self.storyPages.stories.count, privacy: .public)")
@@ -204,10 +219,16 @@ class WidgetCache {
     }
     
     func feed(for story: Story) -> Feed? {
-        return feeds.first(where: { $0.id == story.feed })
+        if let feed = feeds.first(where: { $0.id == story.feed }) { return feed }
+        if var details = catalog.feeds[story.feed] {
+            details["id"] = story.feed
+            return Feed(from: details)
+        }
+        return story.site.map { Feed(from: $0) }
     }
     
     func loadCachedStories() {
+        error = nil
         feeds = []
         stories = []
         
@@ -233,16 +254,18 @@ class WidgetCache {
             }
         }
         
-        let catalog = WidgetSourceCatalog.load(defaults: defaults)
+        catalog = WidgetSourceCatalog.load(defaults: defaults)
         let ids = catalog.feedIDs(for: source)
         feeds = ids.compactMap { id in
             guard var dictionary = catalog.feeds[id] else { return nil }
             dictionary["id"] = id
             return Feed(from: dictionary)
         }
-        cacheFilename = WidgetSourceCatalog.cacheFilename(host: host ?? "", username: defaults.string(forKey: "share:username") ?? "", source: source, feedIDs: ids)
+        storiesPerMonth = (defaults.object(forKey: "widget:infrequent_stories_per_month") as? NSNumber)?.intValue ?? 30
+        let cacheSource = source == WidgetStorySource.infrequent.rawValue ? "\(source):\(storiesPerMonth)" : source
+        cacheFilename = WidgetSourceCatalog.cacheFilename(host: host ?? "", username: defaults.string(forKey: "share:username") ?? "", source: cacheSource, feedIDs: ids)
         guard token?.isEmpty == false else { error = .notLoggedIn; return }
-        guard !feeds.isEmpty else { error = .noFeeds; return }
+        guard trendingType != nil || !feeds.isEmpty else { error = .noFeeds; return }
 
         guard let url = storiesURL else {
             return
@@ -256,6 +279,7 @@ class WidgetCache {
             decoder.dataDecodingStrategy = .base64
             
             stories = try decoder.decode([Story].self, from: json)
+            if stories.isEmpty { error = .noStories }
         } catch {
             NSLog("Error \(error)")
         }
@@ -283,72 +307,13 @@ class WidgetCache {
         }
     }
     
-    func save(feedImage: UIImage, for identifier: String) {
-        feedImageCache[identifier] = feedImage
-        save(image: feedImage, to: feedImagesURL, for: identifier)
-    }
-    
-    func save(image: UIImage, to folderURL: URL?, for identifier: String) {
-        guard let folderURL else {
-            return
-        }
-        
-        createWidgetFolder(url: folderURL)
-        
-        do {
-            let imageURL = folderURL.appendingPathComponent(identifier).appendingPathExtension(Constant.imageExtension)
-            
-            try image.pngData()?.write(to: imageURL)
-        } catch {
-            NSLog("Image saving error: \(error)")
-        }
-    }
-    
-    typealias ImageCompletion = (UIImage?, String?) -> Void
-    
-    func feedImage(for feed: String, completion: @escaping ImageCompletion) {
-        guard let url = hostURL(with: "/reader/favicons?feed_ids=\(feed)") else {
-            completion(nil, feed)
-            return
-        }
-        
-        if let image = cachedFeedImage(for: feed) {
-            completion(image, feed)
-            return
-        }
-        
-        loaders[feed] = Loader(url: url) { (result) in
-            DispatchQueue.main.async {
-                defer {
-                    self.loaders[feed] = nil
-                }
-                
-                switch result {
-                case .success(let data):
-                    guard let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? AnyDictionary,
-                          let base64 = dictionary[feed] as? String,
-                          let imageData = Data(base64Encoded: base64, options: .ignoreUnknownCharacters),
-                          let image = UIImage(data: imageData) else {
-                        completion(nil, feed)
-                        return
-                    }
-                    
-                    self.save(feedImage: image, for: feed)
-                    completion(image, feed)
-                case .failure:
-                    completion(nil, feed)
-                }
-            }
-        }
-    }
-    
     func cachedFeedImage(for feed: String) -> UIImage? {
         if let image = feedImageCache[feed] {
             return image
         }
 
         // WidgetCache.swift reuses the account-bound bulk icons also displayed by WidgetConfiguration.swift.
-        if let data = WidgetSourceCatalog.load().favicon(for: feed), let image = UIImage(data: data) {
+        if let data = catalog.favicon(for: feed), let image = UIImage(data: data) {
             feedImageCache[feed] = image
             return image
         }

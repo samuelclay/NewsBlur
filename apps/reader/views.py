@@ -3268,6 +3268,11 @@ def load_river_stories__redis(request):
 def load_river_stories_widget(request):
     logging.user(request, "Widget load")
     river_stories_data = json.decode(load_river_stories__redis(request).content)
+    add_widget_thumbnails(request, river_stories_data["stories"])
+    return river_stories_data
+
+
+def add_widget_thumbnails(request, stories):
     timeout = 3
     start = time.time()
 
@@ -3341,7 +3346,7 @@ def load_river_stories_widget(request):
 
     # Find the image thumbnails and download in parallel
     thumbnail_urls = []
-    for story in river_stories_data["stories"]:
+    for story in stories:
         thumbnail_values = list(story["secure_image_thumbnails"].values())
         for thumbnail_value in thumbnail_values:
             if "data:" in thumbnail_value:
@@ -3358,15 +3363,13 @@ def load_river_stories_widget(request):
         if not page:
             continue
         thumbnail_data[page["url"]] = page["data"]
-    for story in river_stories_data["stories"]:
+    for story in stories:
         thumbnail_values = list(story["secure_image_thumbnails"].values())
         if thumbnail_values and thumbnail_values[0] in thumbnail_data:
             page_url = thumbnail_values[0]
             story["select_thumbnail_data"] = thumbnail_data[page_url]
 
     logging.user(request, ("Elapsed Time: %ss" % (time.time() - start)))
-
-    return river_stories_data
 
 
 @json.json_view
@@ -5975,6 +5978,9 @@ def load_trending_stories(request):
     limit = min(int(request.GET.get("limit", 12)), 100)
     order = request.GET.get("order", "newest")
     read_filter = request.GET.get("read_filter", "all")
+    widget = is_true(request.GET.get("widget", False))
+    if widget:
+        limit = min(limit, 6)
     offset = (page - 1) * limit
     now = localtime_for_timezone(datetime.datetime.now(), user.profile.timezone)
     nowtz = now
@@ -6183,6 +6189,15 @@ def load_trending_stories(request):
     }
     type_label = type_labels[trending_type]
     logging.user(request, "~FCLoading ~SB%s~SN %s stories (p. %s)" % (len(stories), type_label, page))
+
+    if widget:
+        visible = [story for story in stories if story["score"] >= 0]
+        add_widget_thumbnails(request, visible)
+        return {
+            "stories": visible,
+            "feeds": unsub_feeds,
+            "hidden_stories_removed": len(stories) - len(visible),
+        }
 
     return {
         "stories": stories,

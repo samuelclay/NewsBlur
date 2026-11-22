@@ -1463,6 +1463,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
     [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [defaults setObject:preview forKey:@"widget:preview_images_size"];
+    [defaults setObject:[userPreferences objectForKey:@"infrequent_stories_per_month"] forKey:@"widget:infrequent_stories_per_month"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     // FeedsObjCViewController.m publishes the complete catalog for per-widget folder/site selection.
     NSDictionary *widgetCatalog = @{@"feeds": results[@"feeds"] ?: @{},
@@ -2483,6 +2484,16 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     if (![identifier isKindOfClass:[NSString class]]) {
         identifier = notification.userInfo.allKeys.firstObject;
+    }
+
+    // MenuViewController.m also changes this preference directly, producing a defaults notification without a key.
+    if (!identifier || [identifier isEqual:@"infrequent_stories_per_month"]) {
+        NSNumber *limit = [[NSUserDefaults standardUserDefaults] objectForKey:@"infrequent_stories_per_month"];
+        NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        if (limit && ![limit isEqual:[defaults objectForKey:@"widget:infrequent_stories_per_month"]]) {
+            [defaults setObject:limit forKey:@"widget:infrequent_stories_per_month"];
+            [self.appDelegate.storyPagesViewController reloadWidget];
+        }
     }
     
     // Listen/ListenPreferences.swift sends Listen and story button preferences to the server.
