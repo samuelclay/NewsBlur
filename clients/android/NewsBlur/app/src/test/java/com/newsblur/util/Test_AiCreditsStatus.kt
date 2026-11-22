@@ -123,6 +123,7 @@ class Test_AiCreditsStatus {
     @Test
     fun test_credits_are_whole_numbers_grouped_in_the_reader_s_language() {
         assertEquals("12,340", AiCreditsStatus.formatCredits(12_340.4, Locale.US))
+        assertEquals("An older server's decimals round to the nearest credit, not down", "88", AiCreditsStatus.formatCredits(87.5, Locale.US))
         assertEquals("12.340", AiCreditsStatus.formatCredits(12_340.0, Locale.GERMANY))
         assertEquals("100,000", AiCreditsStatus.formatPlanCredits(AiCreditsStatus.PRO_CREDITS, Locale.US))
     }
@@ -136,8 +137,9 @@ class Test_AiCreditsStatus {
     @Test
     fun test_a_site_estimate_is_whole_credits_or_less_than_one() {
         assertEquals(1_372, AiCreditsStatus.estimateCredits(1_371.6))
-        assertTrue(AiCreditsStatus.isUnderOneCredit(0.6))
-        assertFalse("A credit and a half is at least one", AiCreditsStatus.isUnderOneCredit(1.5))
+        assertTrue(AiCreditsStatus.isUnderOneCredit(0.4))
+        assertFalse("0.6 rounds to one credit", AiCreditsStatus.isUnderOneCredit(0.6))
+        assertEquals(1, AiCreditsStatus.estimateCredits(0.6))
         assertFalse(AiCreditsStatus.isUnderOneCredit(0.0))
         assertNull("No stories last month, no estimate", AiCreditsStatus.estimateCredits(0.0))
     }

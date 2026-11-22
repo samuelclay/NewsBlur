@@ -102,9 +102,9 @@ object AiCreditsStatus {
         return (credits.used / credits.included).toFloat().coerceIn(0f, 1f)
     }
 
-    // AiCreditsStatus.kt: credits as whole numbers, as formatCredits shows them (DecimalFormat
-    // rounds a double's exact value half-even).
-    private fun displayed(value: Double): BigDecimal = BigDecimal(value).setScale(0, RoundingMode.HALF_EVEN)
+    // AiCreditsStatus.kt: every credit number the app shows is rounded to the nearest whole credit
+    // first, so an older server's decimals never show and comparisons match what's on screen.
+    private fun displayed(value: Double): BigDecimal = BigDecimal(value).setScale(0, RoundingMode.HALF_UP)
 
     /**
      * Whether the meter reads as past the plan's credits, comparing the numbers as they show, so
@@ -192,11 +192,11 @@ object AiCreditsStatus {
         locale: Locale,
     ): String = NumberFormat.getIntegerInstance(locale).format(value)
 
-    /** Whether a site's monthly estimate is under one credit, and reads "less than one credit a month". */
+    /** Whether a site's monthly estimate rounds to no whole credit, and reads "less than one credit a month". */
     @JvmStatic
-    fun isUnderOneCredit(value: Double): Boolean = value > 0 && value < 1
+    fun isUnderOneCredit(value: Double): Boolean = value > 0 && displayed(value).signum() == 0
 
-    /** A site's monthly estimate as a whole number of credits, or null when the site published nothing last month. */
+    /** A site's monthly estimate rounded to whole credits, or null when the site published nothing last month. */
     @JvmStatic
     fun estimateCredits(value: Double): Int? = if (value <= 0) null else displayed(value).toInt()
 }
