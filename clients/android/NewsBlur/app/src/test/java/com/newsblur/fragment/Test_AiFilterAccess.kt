@@ -4,6 +4,7 @@ import com.newsblur.domain.Classifier
 import com.newsblur.network.domain.AiCredits
 import com.newsblur.util.AiCreditsStage
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -66,7 +67,21 @@ class Test_AiFilterAccess {
 
             assertTrue(free.showsTestButton)
             assertTrue(free.testEnabled)
-            assertEquals(paid.copy(creditsStage = AiCreditsStage.FREE), free)
+            assertEquals(paid.showsTestButton to paid.testEnabled, free.showsTestButton to free.testEnabled)
         }
+    }
+
+    @Test
+    fun test_the_account_s_meter_and_notice_show_once_but_each_section_keeps_its_estimate() {
+        val paused = premium.copy(used = 5.0, isPaused = true, pauseReason = "credits")
+
+        assertTrue(status(credits = paused, imagePrompt = false).showsCreditsSummary)
+        val image = status(credits = paused, imagePrompt = true, imageCount = 1)
+        assertFalse("The image section doesn't repeat the pause", image.showsCreditsSummary)
+        assertEquals("but still has its credit box for its own estimate", AiCreditsStage.PAUSED_CREDITS, image.creditsStage)
+        assertTrue(
+            "A free account hears about plans in whichever section has a filter",
+            status(typedPrompt = "Charts", imagePrompt = true, imageCount = 1).showsCreditsSummary,
+        )
     }
 }

@@ -361,11 +361,7 @@ class AiCreditsActivity : NbActivity() {
         if (showsMeter) {
             binding.creditsUsed.text = text.meter(credits)
             binding.creditsResets.text = text.resets(credits)
-            binding.creditsBar.bind(
-                AiCreditsStatus.meterFraction(credits),
-                colors.meterTrack,
-                colors.meterColor(AiCreditsStatus.meterLevel(credits)),
-            )
+            binding.creditsBar.bind(credits, colors)
         }
 
         val forecast = text.forecastMonth(credits)

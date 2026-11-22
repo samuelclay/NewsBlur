@@ -63,9 +63,19 @@ class AiCreditsText(
         return SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton), locale).format(date)
     }
 
-    /** "12.3 of 50 AI credits used". */
+    /** "12.3 of 50 AI credits used", or "87.4 AI credits used, 37.4 past your plan's 50". */
     fun meter(credits: AiCredits): String =
-        resources.getQuantityString(R.plurals.ai_credits_meter, credits.included, credits(credits.used), planCredits(credits.included))
+        if (AiCreditsStatus.isPastPlan(credits)) {
+            resources.getQuantityString(
+                R.plurals.ai_credits_meter_past,
+                credits.included,
+                credits(credits.used),
+                credits(AiCreditsStatus.pastPlanCredits(credits)),
+                planCredits(credits.included),
+            )
+        } else {
+            resources.getQuantityString(R.plurals.ai_credits_meter, credits.included, credits(credits.used), planCredits(credits.included))
+        }
 
     /** "Resets Dec 1". */
     fun resets(credits: AiCredits): String = context.getString(R.string.ai_credits_resets, shortDate(credits.resetsOn))

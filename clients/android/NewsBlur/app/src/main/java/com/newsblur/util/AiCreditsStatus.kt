@@ -1,6 +1,8 @@
 package com.newsblur.util
 
 import com.newsblur.network.domain.AiCredits
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -97,6 +99,30 @@ object AiCreditsStatus {
         if (credits.included <= 0) return if (credits.used > 0) 1f else 0f
         return (credits.used / credits.included).toFloat().coerceIn(0f, 1f)
     }
+
+    // AiCreditsStatus.kt: credits rounded to one decimal place, as formatCredits shows them
+    // (DecimalFormat rounds a double's exact value half-even).
+    private fun displayed(value: Double): BigDecimal = BigDecimal(value).setScale(1, RoundingMode.HALF_EVEN)
+
+    /**
+     * Whether the meter reads as past the plan's credits, comparing the numbers as they show, so
+     * 50.04 used of 50 still reads "50 of 50".
+     */
+    @JvmStatic
+    fun isPastPlan(credits: AiCredits): Boolean = credits.included > 0 && displayed(credits.used) > BigDecimal(credits.included)
+
+    /** The credits past the plan's, as the meter shows them, such as 37.4. */
+    @JvmStatic
+    fun pastPlanCredits(credits: AiCredits): Double =
+        if (isPastPlan(credits)) displayed(credits.used).subtract(BigDecimal(credits.included)).toDouble() else 0.0
+
+    /**
+     * With usage billing past the plan's credits, the share of the bar the plan's own credits
+     * fill, the rest being billed credits. Null for a bar in one color.
+     */
+    @JvmStatic
+    fun planShare(credits: AiCredits): Float? =
+        if (credits.isUsageBilling && isPastPlan(credits)) (credits.included / credits.used).toFloat().coerceIn(0f, 1f) else null
 
     /** Whether filters score stories this month, so a site's estimate is worth showing. */
     @JvmStatic

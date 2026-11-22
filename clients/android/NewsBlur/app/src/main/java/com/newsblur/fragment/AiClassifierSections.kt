@@ -256,7 +256,7 @@ class AiClassifierSections(
             renderPreviewRow()
             binding.aiTestButton.isEnabled = status.testEnabled
             binding.aiTestButton.alpha = if (binding.aiTestButton.isEnabled) 1f else 0.5f
-            renderCredits(status.creditsStage)
+            renderCredits(status)
         }
 
         private fun status(): AiSectionStatus =
@@ -290,21 +290,20 @@ class AiClassifierSections(
             styleButton(binding.aiCreditsAction)
         }
 
-        private fun renderCredits(stage: AiCreditsStage) {
+        private fun renderCredits(status: AiSectionStatus) {
             val credits = credits
-            binding.aiCreditsBox.isVisible = stage != AiCreditsStage.HIDDEN && credits != null
-            if (credits == null || stage == AiCreditsStage.HIDDEN) return
+            if (credits == null || status.creditsStage == AiCreditsStage.HIDDEN) {
+                binding.aiCreditsBox.isVisible = false
+                return
+            }
 
-            val showsMeter = AiCreditsStatus.showsMeter(credits)
+            // AiFilterAccess.kt: the account's meter and notice show once, in the first section.
+            val showsMeter = status.showsCreditsSummary && AiCreditsStatus.showsMeter(credits)
             binding.aiCreditsMeter.isVisible = showsMeter
             if (showsMeter) {
                 binding.aiCreditsUsed.text = creditsText.meter(credits)
                 binding.aiCreditsResets.text = creditsText.resets(credits)
-                binding.aiCreditsBar.bind(
-                    AiCreditsStatus.meterFraction(credits),
-                    colors.meterTrack,
-                    colors.meterColor(AiCreditsStatus.meterLevel(credits)),
-                )
+                binding.aiCreditsBar.bind(credits, colors)
             }
 
             val perMonth = usage?.let { if (imagePrompt) it.imageCreditsPerMonth else it.textCreditsPerMonth }
@@ -312,8 +311,9 @@ class AiClassifierSections(
             binding.aiCreditsEstimate.text = estimate
             binding.aiCreditsEstimate.isVisible = estimate != null
 
-            val notice = creditsText.notice(credits)
+            val notice = creditsText.notice(credits)?.takeIf { status.showsCreditsSummary }
             binding.aiCreditsNotice.isVisible = notice != null
+            binding.aiCreditsBox.isVisible = showsMeter || estimate != null || notice != null
             if (notice == null) return
             val (fill, border, text) =
                 when (notice.style) {

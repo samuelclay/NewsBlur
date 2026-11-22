@@ -1549,6 +1549,11 @@ people together to talk about the world.</string>
         <item quantity="one">%1$s of %2$s AI credit used</item>
         <item quantity="other">%1$s of %2$s AI credits used</item>
     </plurals>
+    <!-- AiCreditsText.kt: the credit meter once more credits are used than the plan includes. %1$s is the credits used this month, such as 87.4, %2$s how many of those are past the plan's, such as 37.4, and %3$s the credits the plan includes, such as 50. The plural follows %3$s. -->
+    <plurals name="ai_credits_meter_past">
+        <item quantity="one">%1$s AI credits used, %2$s past your plan’s %3$s</item>
+        <item quantity="other">%1$s AI credits used, %2$s past your plan’s %3$s</item>
+    </plurals>
     <!-- AiCreditsText.kt: beside the credit meter. %1$s is the 1st of next month, such as Dec 1. -->
     <string name="ai_credits_resets">Resets %1$s</string>
     <!-- AiCreditsText.kt: a free account that has or is typing an AI filter. %1$s, %2$s and %3$s are the monthly credits of Premium, Premium Archive and Premium Pro: 5, 50 and 500. -->

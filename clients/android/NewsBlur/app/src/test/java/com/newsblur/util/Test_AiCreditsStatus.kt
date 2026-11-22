@@ -81,6 +81,24 @@ class Test_AiCreditsStatus {
     }
 
     @Test
+    fun test_the_meter_reads_past_the_plan_only_when_the_shown_numbers_are() {
+        assertTrue(AiCreditsStatus.isPastPlan(billing.copy(used = 87.37)))
+        assertEquals(37.4, AiCreditsStatus.pastPlanCredits(billing.copy(used = 87.37)), 0.0)
+        assertFalse("50.04 shows as 50 of 50", AiCreditsStatus.isPastPlan(running.copy(used = 50.04)))
+        assertEquals(0.0, AiCreditsStatus.pastPlanCredits(running.copy(used = 50.04)), 0.0)
+        assertTrue("50.06 shows as 50.1", AiCreditsStatus.isPastPlan(running.copy(used = 50.06)))
+        assertFalse("A free plan has no credits to be past", AiCreditsStatus.isPastPlan(billing.copy(included = 0)))
+    }
+
+    @Test
+    fun test_only_usage_billing_past_the_plan_splits_the_bar() {
+        assertEquals("The plan's 50 of 87 used", 50 / 87f, AiCreditsStatus.planShare(billing)!!, 0.0001f)
+        assertEquals("Paused at the limit still splits", 50 / 87f, AiCreditsStatus.planShare(pausedLimit)!!, 0.0001f)
+        assertNull("Paused for credits has nothing billed", AiCreditsStatus.planShare(pausedCredits.copy(used = 50.5)))
+        assertNull("Usage billing within the plan is one color", AiCreditsStatus.planShare(billing.copy(used = 20.0)))
+    }
+
+    @Test
     fun test_only_a_plan_with_credits_has_a_meter() {
         assertTrue(AiCreditsStatus.showsMeter(pausedLimit))
         assertFalse(AiCreditsStatus.showsMeter(free))

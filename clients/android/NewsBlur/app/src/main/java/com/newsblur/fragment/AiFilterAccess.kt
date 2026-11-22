@@ -8,6 +8,10 @@ import com.newsblur.util.AiCreditsStatus
 internal data class AiSectionStatus(
     // The section's AI credit box (util/AiCreditsStatus.kt), or HIDDEN for none.
     val creditsStage: AiCreditsStage,
+    // Whether the section shows the account's meter and notice as well as its own estimate. They
+    // show once, in the text section, except a free account's notice, which is about each
+    // section's own filter.
+    val showsCreditsSummary: Boolean,
     // The test button shows when there is a story to test, and for image filters, images in it.
     val showsTestButton: Boolean,
     val testEnabled: Boolean,
@@ -35,6 +39,7 @@ internal object AiFilterAccess {
         val stage = AiCreditsStatus.stage(credits)
         return AiSectionStatus(
             creditsStage = if (stage == AiCreditsStage.FREE && !hasFilters) AiCreditsStage.HIDDEN else stage,
+            showsCreditsSummary = !imagePrompt || stage == AiCreditsStage.FREE,
             showsTestButton = hasStory && (!imagePrompt || imageCount > 0),
             testEnabled = typedPrompt.isNotBlank() && !isTesting,
         )

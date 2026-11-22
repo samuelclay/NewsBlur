@@ -47,6 +47,9 @@ object AiClassifierPalette {
         val meterFill: Int,
         val meterWarning: Int,
         val meterPaused: Int,
+        // The bar's share for credits past the plan's, billed by usage billing: the trainer's blue AI
+        // accent (TrainerPalette.kt promptAccent), or meterPaused once they reach the monthly limit.
+        val meterPast: Int,
         val matchBackground: Int,
         val matchText: Int,
         val matchBorder: Int,
@@ -100,6 +103,7 @@ object AiClassifierPalette {
             meterFill = 0xFF709E5D.toInt(),
             meterWarning = 0xFFE0A030.toInt(),
             meterPaused = 0xFFC62828.toInt(),
+            meterPast = 0xFF5A6BD9.toInt(),
             matchBackground = 0xFFE8F5E9.toInt(),
             matchText = 0xFF2E7D32.toInt(),
             matchBorder = 0xFFA5D6A7.toInt(),
@@ -163,6 +167,7 @@ object AiClassifierPalette {
             meterFill = 0xFF7ECE72.toInt(),
             meterWarning = 0xFFE6A040.toInt(),
             meterPaused = 0xFFEF5350.toInt(),
+            meterPast = 0xFF7B8BEB.toInt(),
             matchBackground = 0xFF1A2E1A.toInt(),
             matchText = 0xFF66BB6A.toInt(),
             matchBorder = 0xFF2E7D32.toInt(),

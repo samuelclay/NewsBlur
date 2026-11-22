@@ -294,11 +294,7 @@ class SubscriptionActivity : NbActivity() {
         binding.textAiCreditsResets.setTextColor(palette.secondaryText)
         binding.textAiCreditsUsed.text = creditsText.meter(credits)
         binding.textAiCreditsResets.text = creditsText.resets(credits)
-        binding.barAiCredits.bind(
-            AiCreditsStatus.meterFraction(credits),
-            colors.meterTrack,
-            colors.meterColor(AiCreditsStatus.meterLevel(credits)),
-        )
+        binding.barAiCredits.bind(credits, colors)
         // The statement alone: the Premium screen offers nothing outside Google Play.
         val notice = creditsText.notice(credits, withActions = false)
         binding.textAiCreditsNotice.text = notice?.message
