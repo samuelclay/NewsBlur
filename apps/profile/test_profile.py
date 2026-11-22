@@ -559,12 +559,16 @@ class Test_SetupPremiumHistoryStripe(TestCase):
         self, mock_customer, mock_charges, mock_refund
     ):
         mock_customer.return_value = MagicMock(id="cus_test123")
-        mock_charges.return_value = MagicMock(
-            data=[
-                self._charge("ch_credits", 150, "ai_credits"),
-                self._charge("ch_premium", 3600, days_ago=40),
-            ]
-        )
+        # A reader whose filters keep reaching the $10 charge: more AI credit charges than a
+        # small page of recent charges holds, all after the plan's payment.
+        charges = [self._charge("ch_credits_%s" % n, 1000, "ai_credits", days_ago=n) for n in range(12)]
+        charges.append(self._charge("ch_premium", 3600, days_ago=40))
+
+        def list_charges(limit=10, starting_after=None, **kwargs):
+            start = [charge.id for charge in charges].index(starting_after) + 1 if starting_after else 0
+            return MagicMock(data=charges[start : start + limit], has_more=start + limit < len(charges))
+
+        mock_charges.side_effect = list_charges
 
         self.profile.refund_latest_stripe_payment()
 

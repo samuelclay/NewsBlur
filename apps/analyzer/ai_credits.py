@@ -19,6 +19,7 @@ away, so a runaway filter can't build up a large bill before the month ends.
 
 import calendar
 import datetime
+import json
 import math
 
 import redis
@@ -180,6 +181,47 @@ def _charge_number_key(user_id):
     return "%s:%s:charges" % (KEY_PREFIX, user_id)
 
 
+def _pending_key(user_id):
+    return "%s:%s:pending" % (KEY_PREFIX, user_id)
+
+
+def _give_back(r, user_id, taken):
+    """Return credits taken for a charge to the months they came from."""
+    pipe = r.pipeline()
+    for month, month_credits in taken.items():
+        pipe.hincrby(_unbilled_key(user_id), month, month_credits)
+    pipe.expire(_unbilled_key(user_id), UNBILLED_KEY_TTL)
+    pipe.execute()
+
+
+def settle_pending_invoices(profile):
+    """Settle invoices a failed charge left behind that Stripe couldn't be asked about then.
+
+    ai_credits.py: A paid one keeps its credits charged. Anything else is deleted or voided, and
+    its credits go back to be charged again. One Stripe still can't answer about stays pending.
+    """
+    import stripe
+
+    r = _redis()
+    pending_key = _pending_key(profile.user_id)
+    pending = r.hgetall(pending_key)
+    if not pending:
+        return
+    stripe.api_key = settings.STRIPE_SECRET
+    for invoice_id, taken_json in pending.items():
+        invoice_id = _text(invoice_id)
+        try:
+            paid = stripe.Invoice.retrieve(invoice_id).status == "paid"
+        except stripe.error.StripeError as e:
+            logging.error("~BR~FWStill can't check AI credits invoice %s: %s" % (invoice_id, e))
+            continue
+        if paid:
+            r.hdel(pending_key, invoice_id)
+        elif _cancel_invoice(invoice_id):
+            _give_back(r, profile.user_id, json.loads(_text(taken_json)))
+            r.hdel(pending_key, invoice_id)
+
+
 def unbilled_credits(profile):
     """Credits past the plan's that haven't been charged yet, from every month."""
     return sum(int(credits) for credits in _redis().hvals(_unbilled_key(profile.user_id)))
@@ -304,6 +346,7 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
 
     if not profile.stripe_id:
         return 0
+    settle_pending_invoices(profile)
     r = _redis()
     unbilled_key = _unbilled_key(profile.user_id)
     taken = r.eval(_TAKE_UNBILLED_CREDITS, 1, unbilled_key, minimum_credits, before_month or "")
@@ -311,13 +354,6 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
     credits = sum(taken.values())
     if not credits:
         return 0
-
-    def give_back():
-        pipe = r.pipeline()
-        for month, month_credits in taken.items():
-            pipe.hincrby(unbilled_key, month, month_credits)
-        pipe.expire(unbilled_key, UNBILLED_KEY_TTL)
-        pipe.execute()
 
     charge_number = r.incr(_charge_number_key(profile.user_id))
     # The same charge can't be made twice, even when a request to Stripe is retried.
@@ -349,9 +385,12 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
         stripe.Invoice.finalize_invoice(invoice_id, auto_advance=True)
     except stripe.error.StripeError as e:
         if invoice_id is None or _cancel_invoice(invoice_id):
-            give_back()
+            _give_back(r, profile.user_id, taken)
             logging.error("~BR~FWCouldn't invoice %s AI credits, they'll be charged later: %s" % (credits, e))
         else:
+            # The invoice's state is unknown, so the next charge settles it before going on.
+            r.hset(_pending_key(profile.user_id), invoice_id, json.dumps(taken))
+            r.expire(_pending_key(profile.user_id), UNBILLED_KEY_TTL)
             logging.error("~BR~FWCouldn't finish invoice %s for %s AI credits: %s" % (invoice_id, credits, e))
         return 0
     try:

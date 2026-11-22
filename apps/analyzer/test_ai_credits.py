@@ -64,8 +64,9 @@ FEB_1 = datetime.datetime(2027, 2, 1, 0, 5)
 class FakeStripeInvoices:
     """Stands in for the Stripe invoice calls ai_credits.charge_unbilled makes. `charged` holds
     the cents of every invoice paid and `cancelled` the invoices deleted or voided.
-    `fail_create`, `fail_finalize` and `decline` fail the next invoice at that step; a failed
-    finalize goes through at Stripe but its response never comes back."""
+    `fail_create`, `fail_item`, `fail_finalize` and `decline` fail the next invoice at that step;
+    a failed finalize goes through at Stripe but its response never comes back. `fail_retrieve`
+    fails that many invoice lookups."""
 
     def __init__(self):
         self.charged = []
@@ -73,7 +74,9 @@ class FakeStripeInvoices:
         self.items = {}
         self.status = {}
         self.fail_create = False
+        self.fail_item = False
         self.fail_finalize = False
+        self.fail_retrieve = 0
         self.decline = False
 
     @contextmanager
@@ -100,6 +103,9 @@ class FakeStripeInvoices:
         return stripe.Invoice.construct_from({"id": invoice_id}, "sk_test")
 
     def create_item(self, invoice=None, amount=None, **kwargs):
+        if self.fail_item:
+            self.fail_item = False
+            raise stripe.error.APIConnectionError("Stripe is down")
         self.items[invoice] = amount
 
     def finalize(self, invoice_id, **kwargs):
@@ -109,6 +115,9 @@ class FakeStripeInvoices:
             raise stripe.error.APIConnectionError("The response never came back")
 
     def retrieve(self, invoice_id):
+        if self.fail_retrieve:
+            self.fail_retrieve -= 1
+            raise stripe.error.APIConnectionError("Stripe is still down")
         return stripe.Invoice.construct_from({"id": invoice_id, "status": self.status[invoice_id]}, "sk_test")
 
     def cancel(self, invoice_id):
@@ -346,6 +355,23 @@ class Test_AICredits(TransactionTestCase):
             self.assertEqual(invoices.charged, [])
             with at(DEC_1 + datetime.timedelta(days=1)):
                 ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [120])
+
+    def test_an_invoice_stripe_couldnt_answer_about_is_settled_before_the_next_charge(self):
+        """The invoice's line failed and Stripe couldn't be asked about the draft, so its credits
+        are neither charged nor dropped: the next charge deletes the draft and charges them."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.fail_item = True
+            invoices.fail_retrieve = 1
+            with at(NOV_10):
+                self.spend(5 + 120)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+                self.assertEqual(invoices.charged, [])
+            with at(DEC_1 + datetime.timedelta(days=1)):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(len(invoices.cancelled), 1)
         self.assertEqual(invoices.charged, [120])
 
     def test_a_declined_card_turns_usage_billing_off(self):

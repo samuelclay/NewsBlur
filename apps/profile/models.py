@@ -217,8 +217,20 @@ class Profile(models.Model):
         """The customer's latest Stripe charge that isn't for AI credits, as a list of at most
         one, for the refunds that refund the latest payment. Usage billing charges AI credits
         on the same customer (apps/analyzer/ai_credits.py), and those aren't the plan's payment."""
-        charges = stripe.Charge.list(customer=stripe_customer_id, limit=10, expand=["data.invoice"]).data
-        return [charge for charge in charges if not Profile.is_ai_credits_charge(charge)][:1]
+        starting_after = None
+        while True:
+            params = {"customer": stripe_customer_id, "limit": 100, "expand": ["data.invoice"]}
+            if starting_after:
+                params["starting_after"] = starting_after
+            page = stripe.Charge.list(**params)
+            for charge in page.data:
+                if not Profile.is_ai_credits_charge(charge):
+                    return [charge]
+            # A reader whose filters keep reaching the $10 charge can have many AI credit
+            # charges after the plan's payment, so the search pages past them.
+            if getattr(page, "has_more", False) is not True or not page.data:
+                return []
+            starting_after = page.data[-1].id
 
     @staticmethod
     def is_ai_credits_charge(payment):
