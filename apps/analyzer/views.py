@@ -435,8 +435,9 @@ def save_prompt_classifier(request):
 # requests (jev.IMAGE_REQUEST_WORKERS).
 TEST_PROMPT_MAX_IMAGES = 5
 
-# views.py: Readers without Premium Archive can try AI filters this many times a day, to see
-# whether a filter matches before upgrading. Archive runs the filters and tests without a cap.
+# views.py: Readers whose filters aren't running can try AI filters this many times a day, to
+# see whether a filter matches: free accounts, and plans whose monthly AI credits are used up
+# (apps/analyzer/ai_credits.py). Otherwise tests spend credits like the filters do.
 TEST_PROMPT_DAILY_LIMIT = 10
 
 
@@ -454,12 +455,12 @@ def test_prompt_classifier(request):
     """Test an AI filter against one story with Jev, by its text or by each of its images.
 
     views.py: Open to every account. Anyone can write AI filters and see how they judge a
-    story; they only score stories on Premium Archive, which the trainer says next to them.
-    Accounts without Archive get TEST_PROMPT_DAILY_LIMIT tests a day. A test reserves its
-    slot before Jev is called, so simultaneous tests can't all slip under the limit, and
-    gives it back when it fails, so a failed request doesn't use one up.
+    story; they only score stories while the reader has AI credits, which the trainer shows
+    next to them. Readers whose filters aren't running get TEST_PROMPT_DAILY_LIMIT tests a
+    day. A test reserves its slot before Jev is called, so simultaneous tests can't all slip
+    under the limit, and gives it back when it fails, so a failed request doesn't use one up.
     """
-    from apps.analyzer import jev
+    from apps.analyzer import ai_credits, jev
 
     post = request.POST
     prompt_text = post.get("prompt", "").strip()
@@ -487,7 +488,7 @@ def test_prompt_classifier(request):
     if include_images and not image_urls:
         return {"code": -1, "message": gettext("Story has no images")}
 
-    counted = not request.user.profile.can_use_ai_classifiers
+    counted = not ai_credits.can_run(request.user.profile)
     if counted:
         count_key = _test_prompt_count_key(request.user)
         r = redis.Redis(connection_pool=settings.REDIS_POOL)
@@ -496,17 +497,26 @@ def test_prompt_classifier(request):
         if reserved > TEST_PROMPT_DAILY_LIMIT:
             r.decr(count_key)
             logging.user(request, "~FRAI filter test limit reached")
+            if request.user.profile.can_use_ai_classifiers:
+                message = ngettext(
+                    "You've used today's %(count)s free AI filter test. It resets at midnight, "
+                    "and your AI credits reset on the 1st.",
+                    "You've used today's %(count)s free AI filter tests. They reset at midnight, "
+                    "and your AI credits reset on the 1st.",
+                    TEST_PROMPT_DAILY_LIMIT,
+                )
+            else:
+                message = ngettext(
+                    "You've used today's %(count)s free AI filter test. It resets at midnight. "
+                    "Premium includes monthly AI credits that run your filters on every new story.",
+                    "You've used today's %(count)s free AI filter tests. They reset at midnight. "
+                    "Premium includes monthly AI credits that run your filters on every new story.",
+                    TEST_PROMPT_DAILY_LIMIT,
+                )
             return {
                 "code": -1,
                 "test_limit_reached": True,
-                "message": ngettext(
-                    "You've used today's %(count)s free AI filter test. It resets at midnight. "
-                    "Premium Archive includes unlimited tests and runs your filters on every new story.",
-                    "You've used today's %(count)s free AI filter tests. They reset at midnight. "
-                    "Premium Archive includes unlimited tests and runs your filters on every new story.",
-                    TEST_PROMPT_DAILY_LIMIT,
-                )
-                % {"count": TEST_PROMPT_DAILY_LIMIT},
+                "message": message % {"count": TEST_PROMPT_DAILY_LIMIT},
             }
 
     test_filter = SimpleNamespace(
@@ -863,3 +873,37 @@ def popularity_query(request):
     )
 
     return response
+
+
+@ajax_login_required
+@json.json_view
+def get_ai_classifier_usage(request):
+    """This month's AI credits, and about how many a month AI filters on a site spend.
+
+    views.py: The trainer shows the estimate next to each AI filter section. avg_cost_per_text,
+    avg_cost_per_image, current_cycle_spend, usage_billing_limit and is_limit_reached are
+    for iOS and Android builds from before AI credits, which still read them.
+    """
+    from apps.analyzer import ai_credits
+
+    profile = request.user.profile
+    credits = ai_credits.state(profile)
+    feed_id = int(request.GET.get("feed_id", 0) or request.POST.get("feed_id", 0) or 0)
+    stories_per_month = 0
+    if feed_id:
+        feed = Feed.get_by_id(feed_id)
+        stories_per_month = (feed and feed.stories_last_month) or 0
+
+    return {
+        "code": 0,
+        "can_use_ai": profile.can_use_ai_classifiers,
+        "ai_credits": credits,
+        "stories_per_month": stories_per_month,
+        "text_credits_per_month": ai_credits.estimate_monthly_credits(stories_per_month, False),
+        "image_credits_per_month": ai_credits.estimate_monthly_credits(stories_per_month, True),
+        "avg_cost_per_text": ai_credits.TEXT_STORY_CREDITS * ai_credits.CREDIT_USD,
+        "avg_cost_per_image": ai_credits.IMAGE_STORY_CREDITS * ai_credits.CREDIT_USD,
+        "current_cycle_spend": credits["overage_usd"],
+        "usage_billing_limit": credits["monthly_limit"],
+        "is_limit_reached": credits["pause_reason"] == "limit",
+    }

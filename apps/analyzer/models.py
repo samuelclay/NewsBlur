@@ -1007,12 +1007,15 @@ class MClassifierPrompt(mongo.Document):
         filter count_unreads_for_subscribers in utils/feed_fetcher.py scores with, so a
         muted feed isn't classified either. Every user with a feed_id=0 prompt used to come
         back for every feed, so each fetch anywhere on NewsBlur ran their prompts against
-        feeds they don't subscribe to. Anyone can save AI filters, but they only run on
-        Premium Archive (Premium Pro sets is_archive too), so other accounts aren't
-        candidates.
+        feeds they don't subscribe to. Anyone can save AI filters, but they only run on plans
+        with monthly AI credits (every Premium tier sets is_premium) or with usage billing
+        (apps/analyzer/ai_credits.py), so other accounts aren't candidates.
 
         Returns set of user_ids with applicable prompts, or empty set.
         """
+        from django.db.models import Q
+
+        from apps.analyzer import ai_credits
         from apps.reader.models import UserSubscription
 
         feed_users = set(cls.objects.filter(feed_id=feed_id).distinct("user_id"))
@@ -1020,14 +1023,14 @@ class MClassifierPrompt(mongo.Document):
         candidate_user_ids = feed_users | global_users
         if not candidate_user_ids:
             return set()
-        return set(
-            UserSubscription.objects.filter(
-                feed_id=feed_id,
-                active=True,
-                user_id__in=candidate_user_ids,
-                user__profile__is_archive=True,
-            ).values_list("user_id", flat=True)
+        subscribers = UserSubscription.objects.filter(
+            feed_id=feed_id, active=True, user_id__in=candidate_user_ids
         )
+        if not ai_credits.is_unlimited():
+            subscribers = subscribers.filter(
+                Q(user__profile__is_premium=True) | Q(user__profile__is_usage_billing=True)
+            )
+        return set(subscribers.values_list("user_id", flat=True))
 
     @classmethod
     def get_prompts_by_feed(cls, user_id, feed_ids, folder_feed_ids=None):
@@ -1104,14 +1107,15 @@ class MClassifierPrompt(mongo.Document):
         if not stories:
             return {}
 
-        # AI filters only run on Premium Archive and Premium Pro, with no usage limit.
+        # AI filters run while the month's AI credits last, or past them with usage billing.
+        from apps.analyzer import ai_credits
         from apps.profile.models import Profile
 
         try:
             profile = Profile.objects.get(user_id=user_id)
         except Profile.DoesNotExist:
             return {}
-        if not profile.can_use_ai_classifiers:
+        if not ai_credits.can_run(profile):
             return {}
 
         # Group stories by feed_id for efficient classification

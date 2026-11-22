@@ -1,0 +1,23 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}{% current_domain as domain %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</h2>
+
+    {% if reason == "limit" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with date=resets_on|language_date:"F j" %}Your AI filters reached the <b>${{ monthly_limit }}</b> monthly limit you set for usage billing, so they've stopped scoring new stories. They start again on <b>{{ date }}</b>.{% endblocktrans %}</p>
+
+    <p style="line-height: 20px;"><a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=ai_credits" style="color: #1251ba;">{% trans "Raise or remove the limit" %}</a></p>
+    {% else %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with date=resets_on|language_date:"F j" count counter=included %}Your AI filters used this month's <b>{{ counter }}</b> AI credit, so they've stopped scoring new stories. They start again on <b>{{ date }}</b>, when your credits reset.{% plural %}Your AI filters used all <b>{{ counter }}</b> of this month's AI credits, so they've stopped scoring new stories. They start again on <b>{{ date }}</b>, when your credits reset.{% endblocktrans %}</p>
+
+    <p style="line-height: 20px;">{% blocktrans trimmed count counter=forecast_credits %}At the pace they've been running, this month would use about {{ counter }} credit. With usage billing, every credit past your plan's costs 1 cent, which comes to about <b>${{ forecast_overage }}</b> this month. You can set a monthly limit so it never costs more than you want.{% plural %}At the pace they've been running, this month would use about {{ counter }} credits. With usage billing, every credit past your plan's costs 1 cent, which comes to about <b>${{ forecast_overage }}</b> this month. You can set a monthly limit so it never costs more than you want.{% endblocktrans %}</p>
+
+    <p style="line-height: 20px;"><a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=ai_credits" style="color: #1251ba;">{% trans "Turn on usage billing" %}</a></p>
+    {% endif %}
+
+    <p style="line-height: 20px;">{% trans "Stories your filters already scored keep their scores, and the rest of your training keeps working." %}</p>
+{% endblock %}
+
+{% block resources_header %}{% endblock resources_header %}

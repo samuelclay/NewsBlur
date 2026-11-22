@@ -7,6 +7,7 @@ PaymentHistory tracks all billing events.
 
 import datetime
 import hashlib
+import math
 import re
 import time
 import uuid
@@ -36,7 +37,10 @@ from zebra.signals import (
     zebra_webhook_charge_succeeded,
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
+    zebra_webhook_customer_subscription_deleted,
     zebra_webhook_customer_subscription_updated,
+    zebra_webhook_invoice_payment_failed,
+    zebra_webhook_invoice_payment_succeeded,
 )
 
 from apps.ask_ai.usage import AskAIUsageTracker
@@ -146,10 +150,25 @@ class Profile(models.Model):
     def can_use_ai_classifiers(self):
         """Whether this account's natural language text and image filters score stories.
 
-        models.py: Anyone can create and test AI filters. They run on Premium Archive,
-        which Premium Pro includes, with no usage limit.
+        models.py: Anyone can create and test AI filters. They run on every plan that includes
+        monthly AI credits (Premium, Premium Archive and Premium Pro) and for anyone with usage
+        billing, until the month's credits or limit run out (apps/analyzer/ai_credits.py).
         """
-        return bool(self.is_archive or self.is_pro)
+        from apps.analyzer import ai_credits
+
+        return bool(
+            ai_credits.monthly_credits(self)
+            or ai_credits.has_usage_billing(self)
+            or ai_credits.is_unlimited()
+        )
+
+    @property
+    def is_self_hosted_ai(self):
+        """True on a server that runs Jev without Stripe billing, like a self-hosted NewsBlur,
+        where AI credits are never counted (apps/analyzer/ai_credits.py is_unlimited)."""
+        from apps.analyzer import ai_credits, jev
+
+        return ai_credits.is_unlimited() and jev.is_configured()
 
     def __str__(self):
         return "%s <%s>%s%s%s" % (
@@ -176,19 +195,28 @@ class Profile(models.Model):
         return price
 
     @staticmethod
-    def is_usage_billing_subscription(subscription):
-        """True for an AI classifier metered sub from the retired usage billing setup.
-
-        Usage billing is gone, but readers who set it up still have one, now billing $0
-        because nothing reports usage to it. It shares the Stripe customer with the yearly
-        tier sub, so switching, canceling, and reactivating the tier sub must all skip it
-        (apps/profile/models.py).
-        """
-        usage_price_ids = set(
+    def usage_billing_price_ids():
+        """The AI credit price, plus the per-classification prices usage billing used before
+        credits, which subscriptions keep until move_ai_billing_to_credits swaps them."""
+        return set(
             filter(
-                None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
+                None,
+                [
+                    getattr(settings, "STRIPE_PRICE_AI_CREDITS", ""),
+                    settings.STRIPE_PRICE_TEXT_CLASSIFICATION,
+                    settings.STRIPE_PRICE_IMAGE_CLASSIFICATION,
+                ],
             )
         )
+
+    @staticmethod
+    def is_usage_billing_subscription(subscription):
+        """True for the AI filter metered sub that setup_usage_billing creates (apps/profile/views.py).
+
+        It shares the Stripe customer with the yearly tier sub, so switching, canceling, and
+        reactivating the tier sub must all skip it (apps/profile/models.py).
+        """
+        usage_price_ids = Profile.usage_billing_price_ids()
         if not usage_price_ids:
             return False
         items = subscription.get("items")
@@ -344,6 +372,8 @@ class Profile(models.Model):
         return AskAIUsageTracker(self.user).get_usage_message()
 
     def canonical(self):
+        from apps.analyzer import ai_credits
+
         return {
             "is_premium": self.is_premium,
             "is_archive": self.is_archive,
@@ -360,15 +390,14 @@ class Profile(models.Model):
             "has_found_friends": self.has_found_friends,
             "has_trained_intelligence": self.has_trained_intelligence,
             "dashboard_date": self.dashboard_date,
-            # models.py: Whether AI filters run on this account, for the iOS and Android apps,
-            # which read user_profile from /reader/feeds. The web reads it from
-            # templates/base.html NEWSBLUR.Globals.
+            # models.py: Whether AI filters run on this account and how much of this month's
+            # AI credits are left, for the iOS and Android apps, which read user_profile from
+            # /reader/feeds. The web reads them from templates/base.html NEWSBLUR.Globals.
             "can_use_ai_classifiers": self.can_use_ai_classifiers,
-            # models.py: Usage billing is gone. App builds released before then still read
-            # these three, and these values keep their billing screens hidden.
-            "is_usage_billing": False,
-            "is_self_hosted_ai": False,
-            "usage_billing_limit": None,
+            "ai_credits": ai_credits.state(self),
+            "is_usage_billing": bool(self.is_usage_billing),
+            "is_self_hosted_ai": self.is_self_hosted_ai,
+            "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
     def save(self, *args, **kwargs):
@@ -3173,6 +3202,52 @@ class Profile(models.Model):
         logging.user(self.user, "~BB~FM~SBSending first share to blurblog email to: %s" % self.user.email)
 
     @in_account_language
+    def send_ai_credits_paused_email(self, reason):
+        """Tell the reader their AI filters stopped scoring stories for the rest of the month.
+
+        models.py: reason is "credits" when the plan's monthly AI credits ran out without usage
+        billing, or "limit" when usage billing reached the reader's monthly limit. Sent at most
+        once a month for each, by apps/analyzer/ai_credits.py spend.
+        """
+        from apps.analyzer import ai_credits
+
+        if not self.user.email or not self.send_emails:
+            logging.user(self.user, "~FM~SB~FRNot~FM sending AI credits paused email: no email")
+            return
+
+        credits = ai_credits.state(self)
+        forecast = credits["forecast"] or {}
+        data = dict(
+            user=self.user,
+            reason=reason,
+            included=credits["included"],
+            resets_on=datetime.datetime.strptime(credits["resets_on"], "%Y-%m-%d"),
+            monthly_limit="%.2f" % (credits["monthly_limit"] or 0),
+            forecast_credits=int(math.ceil(forecast.get("credits") or credits["used"])),
+            forecast_overage="%.2f" % forecast.get("overage_usd", 0),
+        )
+        text = render_to_string("mail/email_ai_credits_paused.txt", data)
+        html = render_to_string("mail/email_ai_credits_paused.xhtml", data)
+        if reason == "limit":
+            subject = gettext("Your AI filters reached your monthly limit")
+        else:
+            subject = gettext("Your AI filters used this month's credits")
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
+            to=["%s <%s>" % (self.user, self.user.email)],
+            headers=self.email_unsubscribe_headers(),
+        )
+        msg.attach_alternative(html, "text/html")
+        msg.send()
+
+        MSentEmail.record(receiver_user_id=self.user.pk, email_type="ai_credits_paused_%s" % reason)
+        logging.user(
+            self.user, "~BB~FM~SBSending AI credits paused email (%s): %s" % (reason, self.user.email)
+        )
+
+    @in_account_language
     def send_new_premium_email(self, force=False):
         if not self.user.email or not self.send_emails:
             return
@@ -4685,10 +4760,33 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
 
     purpose = metadata.get("purpose", "")
     if purpose == "usage_billing":
-        # models.py: Usage billing for AI filters is retired. A checkout started before
-        # that can still complete; it only created a metered subscription that nothing
-        # reports usage to, so there's nothing to grant.
-        logging.debug(" ---> Ignoring retired usage billing checkout for user %s" % newsblur_user_id)
+        # models.py: The reader turned on usage billing for AI credits past their plan's
+        # (apps/analyzer/ai_credits.py).
+        stripe_id = full_json["data"]["object"].get("customer")
+        subscription_id = full_json["data"]["object"].get("subscription")
+        try:
+            profile = User.objects.get(pk=int(newsblur_user_id)).profile
+        except User.DoesNotExist:
+            logging.debug(" ---> Couldn't find user for usage billing setup: %s" % newsblur_user_id)
+            return
+        if stripe_id and not profile.stripe_id:
+            profile.stripe_id = stripe_id
+        profile.is_usage_billing = True
+        profile.save()
+        if subscription_id:
+            from apps.analyzer import ai_credits
+
+            try:
+                import stripe
+
+                stripe.api_key = settings.STRIPE_SECRET
+                stripe.Subscription.modify(
+                    subscription_id,
+                    billing_thresholds={"amount_gte": ai_credits.BILLING_THRESHOLD_CENTS},
+                )
+            except Exception as e:
+                logging.debug(" ---> Failed to set billing threshold: %s" % e)
+        logging.user(profile.user, "~BC~SB~FBStripe usage billing setup complete")
         return
 
     # Handle gift purchase completion
@@ -4898,6 +4996,100 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
 
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
+
+
+def stripe_usage_billing_subscription_deleted(sender, full_json, **kwargs):
+    """Turn usage billing off when the reader cancels its subscription in the Stripe portal.
+
+    models.py: Overage would otherwise keep being reported to a customer with no metered
+    price, so filters would run past the included AI credits for free
+    (apps/analyzer/ai_credits.py).
+    """
+    subscription = full_json["data"]["object"]
+    if not Profile.is_usage_billing_subscription(subscription):
+        return
+    stripe_customer_id = subscription.get("customer")
+    for profile in Profile.objects.filter(stripe_id=stripe_customer_id, is_usage_billing=True):
+        profile.is_usage_billing = False
+        profile.save()
+        logging.user(profile.user, "~BC~SB~FBStripe usage billing subscription cancelled")
+
+
+zebra_webhook_customer_subscription_deleted.connect(stripe_usage_billing_subscription_deleted)
+
+
+def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
+    """Notify staff when a usage billing threshold invoice is auto-charged."""
+    from apps.profile.tasks import EmailStaffNotification
+
+    invoice = full_json["data"]["object"]
+    billing_reason = invoice.get("billing_reason", "")
+
+    # Only handle invoices from the subscription's billing threshold
+    # (apps/analyzer/ai_credits.py BILLING_THRESHOLD_CENTS).
+    if billing_reason != "threshold":
+        return
+
+    stripe_customer_id = invoice.get("customer")
+    amount_cents = invoice.get("amount_paid", 0)
+    amount_dollars = amount_cents / 100.0
+    invoice_id = invoice.get("id", "unknown")
+
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_customer_id)
+        username = profile.user.username
+        logging.user(
+            profile.user,
+            "~BC~SB~FBStripe usage billing threshold invoice paid: $%.2f" % amount_dollars,
+        )
+    except Profile.DoesNotExist:
+        username = "unknown (stripe: %s)" % stripe_customer_id
+
+    EmailStaffNotification.delay(
+        event_type="usage_billing_threshold_charged",
+        subject="Usage billing auto-charge: %s charged $%.2f" % (username, amount_dollars),
+        body="User %s was auto-charged $%.2f for AI credits past their plan (threshold invoice).\n"
+        "Invoice: %s\nStripe customer: %s" % (username, amount_dollars, invoice_id, stripe_customer_id),
+    )
+
+
+def stripe_usage_billing_invoice_failed(sender, full_json, **kwargs):
+    """Notify staff when a usage billing threshold invoice payment fails."""
+    from apps.profile.tasks import EmailStaffNotification
+
+    invoice = full_json["data"]["object"]
+    billing_reason = invoice.get("billing_reason", "")
+
+    if billing_reason != "threshold":
+        return
+
+    stripe_customer_id = invoice.get("customer")
+    amount_cents = invoice.get("amount_due", 0)
+    amount_dollars = amount_cents / 100.0
+    invoice_id = invoice.get("id", "unknown")
+
+    try:
+        profile = Profile.objects.get(stripe_id=stripe_customer_id)
+        username = profile.user.username
+        logging.user(
+            profile.user,
+            "~FC~SB~FRStripe usage billing threshold invoice FAILED: $%.2f" % amount_dollars,
+        )
+    except Profile.DoesNotExist:
+        username = "unknown (stripe: %s)" % stripe_customer_id
+
+    EmailStaffNotification.delay(
+        event_type="usage_billing_threshold_failed",
+        subject="FAILED usage billing charge: %s $%.2f" % (username, amount_dollars),
+        body="User %s FAILED to pay $%.2f for AI credits past their plan (threshold invoice).\n"
+        "Invoice: %s\nStripe customer: %s\n\n"
+        "Action needed: check if their payment method is valid."
+        % (username, amount_dollars, invoice_id, stripe_customer_id),
+    )
+
+
+zebra_webhook_invoice_payment_succeeded.connect(stripe_usage_billing_invoice_paid)
+zebra_webhook_invoice_payment_failed.connect(stripe_usage_billing_invoice_failed)
 
 
 def change_password(user, old_password, new_password, only_check=False):

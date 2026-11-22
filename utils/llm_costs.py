@@ -276,6 +276,14 @@ class LLMCostTracker:
         except Exception as e:
             logging.error(f"Failed to record LLM cost to Redis: {e}")
 
+        # AI filter requests spend the reader's monthly AI credits (apps/analyzer/ai_credits.py).
+        try:
+            from apps.analyzer import ai_credits
+
+            ai_credits.spend(user_id, feature, cost_usd)
+        except Exception as e:
+            logging.error(f"Failed to spend AI credits: {e}")
+
         # Record to MongoDB for detailed historical analysis
         try:
             cost_record = MLLMCost(

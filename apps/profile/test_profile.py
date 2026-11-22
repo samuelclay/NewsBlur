@@ -2409,10 +2409,15 @@ class Test_UsageBillingSubscriptionIsolation(TestCase):
         self.assertEqual(kwargs["items"], [{"price": Profile.plan_to_stripe_price("premium")}])
 
 
+@override_settings(
+    STRIPE_PRICE_AI_CREDITS="price_ai_credit",
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
 class Test_ProfileCanonicalAIFilters(TestCase):
     """Profile.canonical() is the user_profile the iOS and Android apps load from
-    /reader/feeds. can_use_ai_classifiers tells them whether AI filters run on the
-    account (apps/profile/models.py)."""
+    /reader/feeds. can_use_ai_classifiers and ai_credits tell them whether AI filters run on
+    the account and how much of the month's AI credits are left (apps/profile/models.py)."""
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -2423,31 +2428,398 @@ class Test_ProfileCanonicalAIFilters(TestCase):
     def payload(self):
         return json.decode(json.encode(Profile.objects.get(pk=self.profile.pk)))
 
-    def test_ai_filters_run_on_premium_archive_and_pro(self):
-        for tier, expected in (
+    def test_ai_filters_run_on_every_plan_with_credits_and_on_usage_billing(self):
+        for flags, expected in (
             ({}, False),
-            ({"is_premium": True}, False),
-            ({"is_premium": True, "is_archive": True}, True),
-            ({"is_premium": True, "is_pro": True}, True),
+            ({"is_premium": True}, True),
+            ({"is_usage_billing": True, "stripe_id": "cus_canonical"}, True),
+            ({"is_usage_billing": True, "stripe_id": None}, False),
         ):
-            flags = dict(is_premium=False, is_archive=False, is_pro=False)
-            flags.update(tier)
-            Profile.objects.filter(pk=self.profile.pk).update(**flags)
-            self.assertIs(self.payload()["can_use_ai_classifiers"], expected, tier)
+            values = dict(
+                is_premium=False, is_archive=False, is_pro=False, is_usage_billing=False, stripe_id=None
+            )
+            values.update(flags)
+            Profile.objects.filter(pk=self.profile.pk).update(**values)
+            payload = self.payload()
+            self.assertIs(payload["can_use_ai_classifiers"], expected, flags)
+            self.assertIs(payload["ai_credits"]["is_paused"], not expected, flags)
 
-    def test_a_former_usage_billing_customer_isnt_billed_or_upgraded(self):
-        """Usage billing no longer turns AI filters on, and app builds released before it
-        was retired must keep their billing screens hidden."""
+    def test_released_apps_still_see_usage_billing_and_its_limit(self):
         Profile.objects.filter(pk=self.profile.pk).update(
-            is_premium=True, is_usage_billing=True, usage_billing_limit="25.50"
+            is_premium=True, is_usage_billing=True, stripe_id="cus_canonical", usage_billing_limit="25.50"
         )
 
         payload = self.payload()
 
-        self.assertIs(payload["can_use_ai_classifiers"], False)
-        self.assertIs(payload["is_usage_billing"], False)
-        self.assertIs(payload["is_self_hosted_ai"], False)
-        self.assertIsNone(payload["usage_billing_limit"])
+        self.assertIs(payload["is_usage_billing"], True)
+        self.assertIs(payload["ai_credits"]["is_usage_billing"], True)
+        self.assertEqual(payload["usage_billing_limit"], 25.5)
+
+
+@override_settings(STRIPE_PRICE_AI_CREDITS="price_ai_credit")
+class Test_UsageBillingWebhooks(TestCase):
+    """Stripe webhooks that turn usage billing for AI credits on and off (apps/profile/models.py)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="usagehooks", password="password", email="hooks@test.com"
+        )
+        self.profile = self.user.profile
+
+    def subscription(self, price_id):
+        return {
+            "id": "sub_hooks",
+            "customer": "cus_hooks",
+            "items": {"data": [{"id": "si_hooks", "price": {"id": price_id}}]},
+        }
+
+    @patch("stripe.Subscription.modify")
+    def test_checkout_turns_usage_billing_on_with_the_ten_dollar_threshold(self, modify):
+        from apps.profile.models import stripe_checkout_session_completed
+
+        stripe_checkout_session_completed(
+            None,
+            full_json={
+                "data": {
+                    "object": {
+                        "metadata": {"newsblur_user_id": str(self.user.pk), "purpose": "usage_billing"},
+                        "customer": "cus_hooks",
+                        "subscription": "sub_hooks",
+                    }
+                }
+            },
+        )
+
+        profile = Profile.objects.get(pk=self.profile.pk)
+        self.assertTrue(profile.is_usage_billing)
+        self.assertEqual(profile.stripe_id, "cus_hooks")
+        modify.assert_called_once_with("sub_hooks", billing_thresholds={"amount_gte": 1000})
+
+    def test_cancelling_the_usage_subscription_turns_usage_billing_off(self):
+        from apps.profile.models import stripe_usage_billing_subscription_deleted
+
+        Profile.objects.filter(pk=self.profile.pk).update(is_usage_billing=True, stripe_id="cus_hooks")
+
+        stripe_usage_billing_subscription_deleted(
+            None, full_json={"data": {"object": self.subscription("newsblur-premium-36")}}
+        )
+        self.assertTrue(Profile.objects.get(pk=self.profile.pk).is_usage_billing, "A tier sub isn't billing")
+
+        stripe_usage_billing_subscription_deleted(
+            None, full_json={"data": {"object": self.subscription("price_ai_credit")}}
+        )
+        self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
+
+    def test_a_monthly_limit_has_to_be_a_positive_amount(self):
+        client = Client()
+        client.login(username="usagehooks", password="password")
+        for value in ("-5", "0", "NaN", "Infinity", "five", "20000"):
+            response = json.decode(client.post(reverse("save-usage-billing-limit"), {"limit": value}).content)
+            self.assertEqual(response["code"], -1, value)
+        self.assertIsNone(Profile.objects.get(pk=self.profile.pk).usage_billing_limit)
+
+        response = json.decode(client.post(reverse("save-usage-billing-limit"), {"limit": "$7.5"}).content)
+        self.assertEqual(response["limit"], 7.5)
+        response = json.decode(client.post(reverse("save-usage-billing-limit"), {"limit": ""}).content)
+        self.assertIsNone(Profile.objects.get(pk=self.profile.pk).usage_billing_limit)
+
+
+@override_settings(
+    STRIPE_PRICE_AI_CREDITS="price_ai_credit",
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_MoveAIBillingToCredits(TestCase):
+    """manage.py move_ai_billing_to_credits swaps the per-classification prices for credits."""
+
+    def setUp(self):
+        user = User.objects.create_user(username="movecredits", password="password", email="move@test.com")
+        Profile.objects.filter(user=user).update(is_usage_billing=True, stripe_id="cus_move")
+        self.old_subscription = stripe.Subscription.construct_from(
+            {
+                "id": "sub_old_usage",
+                "object": "subscription",
+                "items": {
+                    "object": "list",
+                    "data": [
+                        {
+                            "id": "si_text",
+                            "object": "subscription_item",
+                            "price": {"id": "price_text_classifier"},
+                        },
+                        {
+                            "id": "si_image",
+                            "object": "subscription_item",
+                            "price": {"id": "price_image_classifier"},
+                        },
+                    ],
+                },
+            },
+            "sk_test",
+        )
+
+    @patch("stripe.Subscription.modify")
+    @patch("stripe.Subscription.list")
+    def test_old_prices_are_replaced_by_the_credit_price(self, list_subscriptions, modify):
+        list_subscriptions.return_value = MagicMock(data=[self.old_subscription])
+
+        call_command("move_ai_billing_to_credits", stdout=MagicMock())
+        modify.assert_not_called()
+
+        call_command("move_ai_billing_to_credits", "--commit", stdout=MagicMock())
+        modify.assert_called_once_with(
+            "sub_old_usage",
+            items=[
+                {"id": "si_text", "deleted": True},
+                {"id": "si_image", "deleted": True},
+                {"price": "price_ai_credit"},
+            ],
+            proration_behavior="none",
+            billing_thresholds={"amount_gte": 1000},
+        )
+
+
+@override_settings(
+    STRIPE_PRICE_AI_CREDITS="price_ai_credit",
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+class Test_UsageBillingAppMode(TestCase):
+    """The iOS and Android apps post a platform to setup_usage_billing and
+    manage_usage_billing and get the Stripe URL back as JSON, then open it in an
+    in-app browser. Stripe returns that browser to usage_billing_app_return, which
+    hands off to the app's fixed scheme (apps/profile/views.py)."""
+
+    STRIPE_ID = "cus_usageappmode"
+    CHECKOUT_URL = "https://checkout.stripe.com/c/pay/cs_test_app"
+    PORTAL_URL = "https://billing.stripe.com/p/session/test_app"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="usageappmode", password="password", email="usageappmode@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = self.STRIPE_ID
+        self.profile.save()
+        self.client = Client()
+        self.client.login(username="usageappmode", password="password")
+        self.domain = Site.objects.get_current().domain
+
+    def _usage_sub(self):
+        return stripe.Subscription.construct_from(
+            {
+                "id": "sub_usage",
+                "object": "subscription",
+                "customer": self.STRIPE_ID,
+                "status": "active",
+                "items": {
+                    "object": "list",
+                    "data": [
+                        {
+                            "id": "si_credits",
+                            "object": "subscription_item",
+                            "price": {"id": "price_ai_credit"},
+                        },
+                    ],
+                },
+            },
+            "sk_test",
+        )
+
+    def _app_return_url(self, platform, status):
+        return "https://%s%s?platform=%s&status=%s" % (
+            self.domain,
+            reverse("usage-billing-app-return"),
+            platform,
+            status,
+        )
+
+    # --- Setting up usage billing --------------------------------------------
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_returns_checkout_url(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "url": self.CHECKOUT_URL})
+        _, kwargs = mock_session.call_args
+        self.assertEqual(kwargs["success_url"], self._app_return_url("ios", "setup_complete"))
+        self.assertEqual(kwargs["cancel_url"], self._app_return_url("ios", "cancelled"))
+        self.assertEqual(kwargs["metadata"], {"newsblur_user_id": self.user.pk, "purpose": "usage_billing"})
+        self.assertEqual(kwargs["customer"], self.STRIPE_ID)
+        self.assertEqual(kwargs["line_items"], [{"price": "price_ai_credit"}])
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_already_active(self, mock_list, mock_session):
+        """The duplicate subscription guard still holds in app mode, so no second checkout opens."""
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "android"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "already_active": True})
+        mock_session.assert_not_called()
+
+    @override_settings(STRIPE_PRICE_AI_CREDITS="")
+    @patch("stripe.checkout.Session.create")
+    def test_app_setup_without_prices_returns_error(self, mock_session):
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+        self.assertNotIn("url", content)
+        mock_session.assert_not_called()
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_app_setup_stripe_failure_returns_error(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.side_effect = stripe.error.APIConnectionError("Stripe is down")
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+
+    def test_app_setup_logged_out_returns_json_403(self):
+        """An expired app session gets JSON, not a redirect to the login page."""
+        response = Client().post(reverse("setup-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(json.decode(response.content)["code"], -1)
+
+    def test_web_setup_logged_out_still_redirects_to_login(self):
+        response = Client().post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(settings.LOGIN_URL, response["Location"])
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_web_setup_still_redirects_to_checkout(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.CHECKOUT_URL)
+        _, kwargs = mock_session.call_args
+        index_url = "https://%s%s" % (self.domain, reverse("index"))
+        self.assertEqual(kwargs["success_url"], index_url + "?next=ai_credits&usage_billing=setup_complete")
+        self.assertEqual(kwargs["cancel_url"], index_url + "?next=ai_credits")
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_unknown_platform_gets_the_web_redirect(self, mock_list, mock_session):
+        """Only the fixed app platforms switch to JSON; anything else is the web flow."""
+        mock_list.return_value = MagicMock(data=[])
+        mock_session.return_value = MagicMock(url=self.CHECKOUT_URL)
+
+        response = self.client.post(reverse("setup-usage-billing"), {"platform": "https://evil.example"})
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.CHECKOUT_URL)
+        _, kwargs = mock_session.call_args
+        self.assertNotIn("evil", kwargs["success_url"])
+
+    @patch("stripe.checkout.Session.create")
+    @patch("stripe.Subscription.list")
+    def test_web_setup_already_active_still_redirects(self, mock_list, mock_session):
+        mock_list.return_value = MagicMock(data=[self._usage_sub()])
+
+        response = self.client.post(reverse("setup-usage-billing"))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response["Location"],
+            "https://%s%s?next=ai_credits&usage_billing=already_active" % (self.domain, reverse("index")),
+        )
+        mock_session.assert_not_called()
+
+    # --- Managing usage billing ----------------------------------------------
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_app_manage_returns_portal_url(self, mock_portal):
+        mock_portal.return_value = MagicMock(url=self.PORTAL_URL)
+
+        response = self.client.post(reverse("manage-usage-billing"), {"platform": "android-alpha"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.decode(response.content), {"code": 0, "url": self.PORTAL_URL})
+        mock_portal.assert_called_once_with(
+            customer=self.STRIPE_ID,
+            return_url=self._app_return_url("android-alpha", "portal_return"),
+        )
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_app_manage_without_stripe_id_returns_error(self, mock_portal):
+        self.profile.stripe_id = None
+        self.profile.save()
+
+        response = self.client.post(reverse("manage-usage-billing"), {"platform": "ios"})
+
+        self.assertEqual(response.status_code, 200)
+        content = json.decode(response.content)
+        self.assertEqual(content["code"], -1)
+        self.assertTrue(content["message"])
+        mock_portal.assert_not_called()
+
+    @patch("stripe.billing_portal.Session.create")
+    def test_web_manage_still_redirects_to_portal(self, mock_portal):
+        mock_portal.return_value = MagicMock(url=self.PORTAL_URL)
+
+        response = self.client.post(reverse("manage-usage-billing"))
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], self.PORTAL_URL)
+        mock_portal.assert_called_once_with(
+            customer=self.STRIPE_ID,
+            return_url="https://%s%s?next=ai_credits" % (self.domain, reverse("index")),
+        )
+
+    # --- Returning from Stripe to the app ------------------------------------
+
+    def test_app_return_redirects_to_each_platform_scheme(self):
+        """The in-app browser has no NewsBlur session, so this works logged out."""
+        schemes = {
+            "ios": "newsblur-auth",
+            "android": "newsblur-auth-android",
+            "android-alpha": "newsblur-auth-android-alpha",
+        }
+        for platform, scheme in schemes.items():
+            for status in ("setup_complete", "cancelled", "portal_return"):
+                with self.subTest(platform=platform, status=status):
+                    response = Client().get(
+                        reverse("usage-billing-app-return"), {"platform": platform, "status": status}
+                    )
+
+                    self.assertEqual(response.status_code, 302)
+                    self.assertEqual(response["Location"], "%s://usage-billing?status=%s" % (scheme, status))
+
+    def test_app_return_rejects_unknown_platform_or_status(self):
+        for params in (
+            {"platform": "evil", "status": "setup_complete"},
+            {"platform": "javascript", "status": "cancelled"},
+            {"platform": "ios", "status": "https://evil.example"},
+            {"platform": "ios"},
+            {"status": "setup_complete"},
+            {},
+        ):
+            with self.subTest(params=params):
+                response = Client().get(reverse("usage-billing-app-return"), params)
+
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response["Location"], reverse("index"))
 
 
 class Test_StaffPremiumUpgradeEmail(TestCase):

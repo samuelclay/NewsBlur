@@ -23,6 +23,16 @@ def EmailNewUser(user_id):
     user_profile.send_new_user_email()
 
 
+@app.task(name="email-ai-credits-paused")
+def EmailAICreditsPaused(user_id, reason):
+    """tasks.py: Queued by apps/analyzer/ai_credits.py when a reader's AI filters pause."""
+    try:
+        user_profile = Profile.objects.get(user__pk=user_id)
+    except Profile.DoesNotExist:
+        return
+    user_profile.send_ai_credits_paused_email(reason)
+
+
 @app.task(name="email-new-premium")
 def EmailNewPremium(user_id):
     user_profile = Profile.objects.get(user__pk=user_id)

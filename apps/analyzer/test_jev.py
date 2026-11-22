@@ -15,8 +15,9 @@ from django.test import TransactionTestCase, override_settings
 from django.test.client import Client
 from PIL import Image
 
-from apps.analyzer import jev
+from apps.analyzer import ai_credits, jev
 from apps.analyzer.models import MClassifierPrompt
+from apps.analyzer.test_ai_credits import isolate_ai_credits
 from apps.analyzer.views import TEST_PROMPT_DAILY_LIMIT, _test_prompt_count_key
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
@@ -106,7 +107,9 @@ class Test_JevPromptClassification(TransactionTestCase):
     ]
 
     def setUp(self):
+        isolate_ai_credits(self)
         self.user = User.objects.create_user(username="jevuser", password="testpass", email="jev@test.com")
+        self.user.profile.is_premium = True
         self.user.profile.is_archive = True
         self.user.profile.save()
         self.feed = Feed.objects.get(pk=1)
@@ -268,9 +271,11 @@ class Test_JevPromptClassification(TransactionTestCase):
             MClassifierPrompt.classify_stories(self.user.pk, self.stories)
         self.assertEqual(self.cached(prompt), {}, "A reply missing answers is a failure too")
 
-    def test_filters_dont_run_without_premium_archive(self):
-        """Anyone can save AI filters, but they only score stories on Premium Archive."""
+    def test_filters_dont_run_on_a_free_account(self):
+        """Anyone can save AI filters, but they only score stories on a plan with AI credits
+        or with usage billing (apps/analyzer/ai_credits.py)."""
         self.add_prompt("sports", "hidden")
+        self.user.profile.is_premium = False
         self.user.profile.is_archive = False
         self.user.profile.save()
 
@@ -280,7 +285,13 @@ class Test_JevPromptClassification(TransactionTestCase):
         self.assertEqual(api.requests, [])
         self.assertNotIn(self.user.pk, MClassifierPrompt.feed_has_prompt_subscribers(self.feed.pk))
 
-        self.user.profile.is_archive = True
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        self.assertIn(self.user.pk, MClassifierPrompt.feed_has_prompt_subscribers(self.feed.pk))
+
+        self.user.profile.is_premium = False
+        self.user.profile.is_usage_billing = True
+        self.user.profile.stripe_id = "cus_jevfree"
         self.user.profile.save()
         self.assertIn(self.user.pk, MClassifierPrompt.feed_has_prompt_subscribers(self.feed.pk))
 
@@ -375,8 +386,10 @@ class Test_TestPromptView(TransactionTestCase):
     ]
 
     def setUp(self):
+        isolate_ai_credits(self)
         self.client = Client()
         self.user = User.objects.create_user(username="jevtester", password="testpass", email="t@test.com")
+        self.set_plan(is_premium=False)
         self.client.login(username="jevtester", password="testpass")
         self.story = MStory(
             story_feed_id=1,
@@ -396,14 +409,18 @@ class Test_TestPromptView(TransactionTestCase):
         self.redis.delete(_test_prompt_count_key(self.user))
         self.story.delete()
 
+    def set_plan(self, **flags):
+        for flag, value in dict(dict(is_premium=False, is_archive=False, is_pro=False), **flags).items():
+            setattr(self.user.profile, flag, value)
+        self.user.profile.save()
+
     def post(self, **data):
         data.setdefault("story_hash", self.story.story_hash)
         data.setdefault("prompt", "sports")
         return self.client.post("/classifier/test_prompt", data).json()
 
     def test_a_free_account_can_test_a_filter(self):
-        """Anyone can try a filter; only Archive accounts get it applied."""
-        self.assertFalse(self.user.profile.is_archive)
+        """Anyone can try a filter; only plans with AI credits get it applied."""
         with fake_jev(probability=0.93, describe={"Hide anything about sports": "sports"}):
             result = self.post(prompt="Hide anything about sports", classifier_type="hidden")
         self.assertEqual(result["code"], 0)
@@ -424,8 +441,8 @@ class Test_TestPromptView(TransactionTestCase):
         self.assertEqual(result["image_results"], [1, 0])
         self.assertEqual(result["classification"], 1)
 
-    def test_without_archive_a_reader_gets_ten_tests_a_day(self):
-        """Readers without Premium Archive can try filters a few times a day. A failed test
+    def test_a_free_account_gets_ten_tests_a_day(self):
+        """Readers whose filters don't run can try them a few times a day. A failed test
         doesn't use one up, and the test past the limit never reaches Jev."""
         with fake_jev(status_code=500):
             for _ in range(3):
@@ -455,9 +472,16 @@ class Test_TestPromptView(TransactionTestCase):
         self.assertEqual(first["code"], 0)
         self.assertTrue(overlapping[0]["test_limit_reached"])
 
-    def test_premium_archive_tests_arent_capped(self):
-        self.user.profile.is_archive = True
-        self.user.profile.save()
+    def test_tests_arent_capped_while_credits_last(self):
+        self.set_plan(is_premium=True)
         with fake_jev(probability=0.9):
             results = [self.post()["code"] for _ in range(TEST_PROMPT_DAILY_LIMIT + 2)]
         self.assertEqual(set(results), {0})
+
+    def test_a_reader_out_of_credits_gets_ten_tests_a_day(self):
+        self.set_plan(is_premium=True)
+        ai_credits.spend(self.user.pk, "story_classification", 5.1 * ai_credits.CREDIT_USD)
+        with fake_jev(probability=0.9), patch("apps.profile.tasks.EmailAICreditsPaused.delay"):
+            results = [self.post() for _ in range(TEST_PROMPT_DAILY_LIMIT + 1)]
+        self.assertEqual([r["code"] for r in results[:-1]], [0] * TEST_PROMPT_DAILY_LIMIT)
+        self.assertTrue(results[-1]["test_limit_reached"])

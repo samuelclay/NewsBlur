@@ -501,7 +501,10 @@ STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
 ZEBRA_ENABLE_APP = True
 
-# Stripe Metered Billing for AI Classifiers
+# Stripe metered billing for AI credits past a plan's monthly ones, 1 cent each
+# (apps/analyzer/ai_credits.py). Without it, AI credits aren't counted, as on a self-hosted
+# server. The two per-classification prices are the ones usage billing used before credits.
+STRIPE_PRICE_AI_CREDITS = ""
 STRIPE_PRICE_TEXT_CLASSIFICATION = ""
 STRIPE_PRICE_IMAGE_CLASSIFICATION = ""
 
