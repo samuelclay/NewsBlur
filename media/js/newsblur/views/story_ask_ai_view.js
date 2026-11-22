@@ -26,7 +26,7 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
         this.question_id = options.question_id;
         this.custom_question = options.custom_question;
         this.transcription_error = options.transcription_error;
-        this.model = this.normalize_model_key(options.model) || 'anthropic';  // Default to the server's default model key
+        this.model = NEWSBLUR.Views.StoryAskAiView.choose_model_key(options.model);
         this.thinking = options.thinking || false;
 
         // If there's a transcription error, show "Audio not transcribed" as the question text
@@ -1064,6 +1064,20 @@ NEWSBLUR.Views.StoryAskAiView = Backbone.View.extend({
             return true;
         }
         return false;
+    }
+
+}, {
+
+    // story_ask_ai_view.js: The model to ask with, from a saved preference or the model a menu
+    // passed in. A key the server doesn't list, including no preference at all, falls back to
+    // the server's ASK_AI_MODEL, so an install whose ASK_AI_MODELS lists only its own models
+    // answers the first question from the model its settings chose.
+    choose_model_key: function (model) {
+        var models = (NEWSBLUR.Globals && NEWSBLUR.Globals.ask_ai_models) || [];
+        var key = NEWSBLUR.Views.StoryAskAiView.prototype.normalize_model_key(model);
+        if (!models.length || _.find(models, function (m) { return m.key === key; })) return key;
+        var default_model = _.find(models, function (m) { return m.is_default; }) || models[0];
+        return default_model.key;
     }
 
 });

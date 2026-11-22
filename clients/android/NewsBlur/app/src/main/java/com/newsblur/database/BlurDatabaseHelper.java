@@ -926,8 +926,9 @@ public class BlurDatabaseHelper {
     /**
      * Marks a range of stories in a subset of feeds as read. Does not update unread counts;
      * the caller must use updateLocalFeedCounts() or the /reader/feed_unread_count API.
+     * A replay (ReadingAction.kt followup) skips stories published after actionTime; see ClusterReadStore.kt.
      */
-    public void markStoriesRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan, long actionTime) {
+    public void markStoriesRead(@NonNull FeedSet fs, @Nullable Long olderThan, @Nullable Long newerThan, long actionTime, boolean replay) {
         String rangeSelection = null;
         if (olderThan != null)
             rangeSelection = DatabaseConstants.STORY_TIMESTAMP + " <= " + olderThan;
@@ -954,7 +955,7 @@ public class BlurDatabaseHelper {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
             try {
-                new ClusterReadStore(dbRW).applyBulkRead(conjoinSelections(feedSelection, rangeSelection), actionTime);
+                new ClusterReadStore(dbRW).applyBulkRead(conjoinSelections(feedSelection, rangeSelection), actionTime, replay);
                 dbRW.setTransactionSuccessful();
             } finally {
                 dbRW.endTransaction();

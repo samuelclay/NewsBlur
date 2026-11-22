@@ -424,7 +424,15 @@
 - (NSArray *)storiesByIncludingNotificationStory:(NSArray *)stories {
     NSDictionary *target = self.notificationStory;
     if (!stories || !target || !self.readFilterOverride ||
-        ![[NSString stringWithFormat:@"%@", target[@"story_feed_id"]] isEqualToString:self.activeFeedIdStr]) return stories;
+        ![target[@"story_hash"] isEqualToString:self.notificationStoryHash]) return stories;
+
+    if (self.isTrending) {
+        // StoriesCollection.m preserves the server's ranking when the article is still on the list.
+        for (NSDictionary *story in stories) {
+            if ([story[@"story_hash"] isEqualToString:target[@"story_hash"]]) return stories;
+        }
+        return [stories arrayByAddingObject:target];
+    }
 
     // StoriesCollection.m retains one exact lookup beyond the loaded pages, without changing their page numbers.
     BOOL hasCurrentTarget = NO;

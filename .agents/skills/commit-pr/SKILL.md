@@ -56,6 +56,8 @@ Cache these for the run. If the branch is `main`, stop: propose a branch name an
 
 **Visual evidence for UI changes.** If the change is visible on screen, capture before/after screenshots and attach them with `gh pr create --attach 'path.png#Alt text'` (or `gh pr edit --attach` on an existing PR; gh 2.99+ uploads and rewrites the body). For a web change the headless helper `.agents/skills/investigate-forum/screenshot.py` captures a logged-in worktree stack without a browser; the claude-in-chrome tools work too when Sam has asked for browser use. Backend-only PRs show the failing-then-passing test output instead.
 
+Open every screenshot with the Read tool before attaching it and confirm it shows what its alt text claims: the right screen, the right theme, the fix actually visible. After the PR is created or edited, read the body back (`gh pr view --json body -q .body`) and confirm every image is an uploaded URL, not a local path. If a screenshot could not be captured, say so in the body; never describe evidence that is not there.
+
 ### 1. Pre-flight: run what CI runs
 
 Django Tests runs `python manage.py test apps` (see `tests.yml`); locally run the modules the diff touches, from the worktree's own web container:
@@ -66,6 +68,10 @@ docker exec -t newsblur_web_<worktree> sh -c "black --check --line-length 110 <c
 ```
 
 If the worktree stack is stopped, `make worktree` from the worktree brings it back. iOS and Android changes follow the build commands in CLAUDE.md and `clients/ios/CLAUDE.md`; at minimum the compile-only check must pass. Fix failures before committing.
+
+**Lean-diff pass.** Read [references/engineering-principles.md](references/engineering-principles.md), then read the whole diff once and take out what does not need to ship: scratch scripts, unused settings, narration comments, redundant test setup. Stay inside the scope Sam asked for.
+
+**New or changed tests.** When the diff adds or changes a test case, run the `deslopify-tests` skill in review mode before committing and apply its verdicts. The test written first to reproduce a reported bug (CLAUDE.md, Bug Fixing Workflow) already has its proof, since it failed before the fix; it still goes through review so a second test that only restates the fix is caught.
 
 ### 2. Stage and commit
 
@@ -79,6 +85,8 @@ git push                                             # after that
 ```
 
 If the branch is behind `main`, rebase (`git pull --rebase origin main`), never merge. Never force-push a PR branch unless Sam explicitly asks.
+
+A contributor's fork PR pushes differently: see "Contributor PRs from forks" below.
 
 ### 4. Create or update the PR
 
@@ -99,7 +107,24 @@ Draft keeps early CI churn out of the review queue; section 5.5 promotes it in t
 
 **PR exists:** the push already updated it. Edit the body only if the scope changed (`gh pr edit <n> --body ...`).
 
-Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (`make deploy`, `make celery`, or both; migrations; Celery restart). Cut author process notes.
+Write the body for a reviewer walking in cold: what changed and why, what to check, exact test commands with before and after output, deploy notes (migrations; Celery restart; and the targets below).
+
+Pick the deploy targets from the files in the diff, not from habit:
+
+| The diff touches | Deploy note |
+|---|---|
+| Python or templates served by web | `make deploy` |
+| Anything under `media/js` or `media/css` | `make deploy_static` in place of `make deploy`. It is a full web deploy that also builds and uploads the assets; `make deploy` never ships JS or CSS |
+| Code a Celery task runs (tasks, models and helpers they call, the feed fetcher) | `make celery`, in addition to the web target |
+| Only `clients/ios` or `clients/android` | None; it ships in the next store build |
+
+Read `git log --no-merges origin/main..HEAD` first: when a later commit reversed an earlier one, the body describes the final state. Then sort every fact into one of three piles before writing:
+
+1. **Before facts** could have been written before anyone knew the fix: the forum report, the broken behavior, who it affected, the constraint. They go in Context.
+2. **Approach facts** say why this change fits the code that is already there: the helper it reuses, the path it stays on, the convention it follows. They go in Summary, after what changed.
+3. **Cut facts** are about how the patch was reached: rejected options, the order things were tried, speculative future benefits. They stay out.
+
+Show test evidence as `Before: <command> -> <failure>` and `After: <same command> -> <result>`. Never invent a baseline; when only the after exists, say what was run and what passed.
 
 ### 5. Watch CI
 
@@ -148,18 +173,19 @@ After **every** push that changes the head SHA, inspect the checks on that head:
 gh pr checks --json name,workflow,bucket,state,link
 ```
 
-`Claude PR Review` and `Codex PR Review` are the automated review tasks. While either has `bucket: pending`, wait for it the way section 5 waits (their recent durations come from `gh run list --workflow=claude-pr-review.yml` and `codex-pr-review.yml`; Codex normally takes 3 to 9 minutes). When neither is pending for the current head, the review wait is over: query the threads once more and handle what they posted.
+`Claude PR Review` and `Codex PR Review` are the automated review tasks; identify them by workflow, not by a name that happens to contain "review". While either has `bucket: pending`, wait for it the way section 5 waits (their recent durations come from `gh run list --workflow=claude-pr-review.yml` and `codex-pr-review.yml`; Codex normally takes 3 to 9 minutes). When neither is pending for the current head, the review wait is over: query the threads once more and handle what they posted.
 
-Review threads, not flat PR comments, are the source of truth. New threads are appended, so query the tail (`last: 100`); with `first: 100` a PR that reaches its hundred-and-first thread hides every new one, which happened on #2133 at exactly 100.
+Review threads, not flat PR comments, are the source of truth. Read every page: a single `first: 100` query hides each thread past the hundredth, which happened on #2133 at exactly 100, and a single `last: 100` hides old unresolved ones. `--paginate` follows `endCursor` and prints one JSON document per page.
 
 ```bash
 PR=$(gh pr view --json number -q .number)
-gh api graphql -F owner=samuelclay -F repo=NewsBlur -F number="$PR" -f query='
-query($owner: String!, $repo: String!, $number: Int!) {
+gh api graphql --paginate -F owner=samuelclay -F repo=NewsBlur -F number="$PR" -f query='
+query($owner: String!, $repo: String!, $number: Int!, $endCursor: String) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
-      reviewThreads(last: 100) {
+      reviewThreads(first: 100, after: $endCursor) {
         totalCount
+        pageInfo { hasNextPage endCursor }
         nodes {
           id
           isResolved
@@ -195,14 +221,35 @@ After any follow-up push, repeat the review-task check for the new head, wait on
 
 **Final verification, mandatory, immediately before ending the turn:** re-run the thread query and `gh pr checks` against the current head and confirm the Goal holds. If not, keep working or report the blocker explicitly.
 
+## Contributor PRs from forks
+
+Sections 3, 5 and 6 assume a branch in `samuelclay/NewsBlur`. A PR from someone's fork differs in five places. The `contributor-prs` skill covers the work around them (reproducing, interviewing Sam, the comment to the contributor).
+
+- **Checkout and update.** `gh pr checkout <N> -b pr-<N>` in a worktree. Bring the branch up to date with `git merge origin/main`, never a rebase: the push has to stay a fast-forward of their branch. Their commits stay and yours go on top.
+- **Push with an explicit refspec**, then confirm it landed:
+  ```bash
+  git push git@github.com:<owner>/NewsBlur.git HEAD:refs/heads/<their branch>
+  git ls-remote git@github.com:<owner>/NewsBlur.git <their branch>
+  ```
+  Sam's machines set `push.default=matching`, so a bare `git push` from that checkout also tries to push local `main` to the fork, and GitHub rejects the whole push.
+- **Body.** A maintainer can edit a fork PR's description, and `gh pr edit <N> --body-file <file> --attach <png>` uploads images there too. Keep the contributor's text and append below it.
+- **CI needs approval.** Each new head's workflow runs can sit at `action_required` and `gh pr checks` then lists nothing. Read the pushed head first and confirm the PR changes nothing under `.github/` (`gh pr view <N> --json files`). Every workflow here triggers on `pull_request`, so fork code runs without secrets. Then approve each run:
+  ```bash
+  gh run list --commit <full 40-character sha> --json databaseId,name,conclusion
+  gh api -X POST repos/samuelclay/NewsBlur/actions/runs/<id>/approve
+  ```
+  A shortened SHA makes `gh run list --commit` return nothing. A subagent reports the run IDs and waits; the lead approves.
+- **No bot review.** Claude PR Review and Codex PR Review fail during setup on a fork PR because they get no secrets ("Could not fetch an OIDC token", "Error reading server info"). They post no threads, so section 6 has nothing to clear and zero unresolved threads proves nothing. Read the whole diff yourself and say in the report that no bot reviewed it.
+
 ## When Sam says merge
 
 Only when Sam says so in that session; the skill never merges on its own. The repo uses merge commits, not squashes.
 
 1. Order: workflow and bot PRs first, then the rest oldest first. Check whether Sam already merged one (`gh pr view N --json state,mergedBy`); a commit pushed to a branch after its PR merged is not on `main` and needs its own PR.
-2. `gh pr merge N --merge`. When GitHub answers that the merge commit cannot be created, bring the branch up to date in its worktree with `git merge origin/main` (a merge, not a rebase: the branch has been reviewed as it is), resolve, run the touched app's suite (the full `apps` suite when models or the fetcher changed), push, then merge.
+2. `gh pr merge N --merge --match-head-commit <full sha of the head you reviewed>`, so a commit pushed after the review can't ride in. GitHub reports `mergeable: UNKNOWN` for a few seconds after every merge into `main`; query again before merging the next PR. When GitHub answers that the merge commit cannot be created, bring the branch up to date in its worktree with `git merge origin/main` (a merge, not a rebase: the branch has been reviewed as it is), resolve, run the touched app's suite (the full `apps` suite when models or the fetcher changed), push, then merge.
 3. Two PRs that both inserted test classes at the same spot conflict in the test file only, with git interleaving the classes: keep our side of every hunk, re-insert `main`'s new top-level classes whole, and check the merged file's class set is the union of both parents and that a class edited on both sides ends up as `main`'s superset.
-4. After the last merge: stop the worktree stacks, and tell Sam what is merged but not deployed and which post-deploy steps (migrations, data scripts) the forum replies assume.
+4. After the last merge: stop the worktree stacks, and tell Sam what is merged but not deployed, which targets deploy it (the table in section 4, taken across every merged PR), and which post-deploy steps (migrations, data scripts) the forum replies assume.
+5. If Sam asks for the deploy as well: wait for Django Tests on the last merge commit on `main`. `make deploy_static` builds JS and CSS from the local `main` checkout, so bring it to that commit first with `git fetch origin main && git merge --ff-only origin/main` (`git pull` is set to rebase and refuses while any file is uncommitted) and confirm `git status --short media/` prints nothing. Run each target as `make <target> > <log> 2>&1 < /dev/null`, then read the PLAY RECAP for `unreachable=` or `failed=` above zero.
 
 ## Generic default body (when the caller supplies none)
 
@@ -222,7 +269,7 @@ Only when Sam says so in that session; the skill never merges on its own. The re
 
 ## Deploy notes
 
-<make deploy, make celery, or both; migrations; Celery restart>
+<make deploy, or make deploy_static when JS or CSS changed; make celery for task code; migrations; Celery restart>
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 

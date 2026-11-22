@@ -64,6 +64,10 @@ KIND_UNSUPPORTED = "unsupported"  # front page, r/all, r/popular
 # than the hourly poll only re-reads the cache.
 POLLED_FEED_FLOOR_MINUTES = 60
 SINGLE_FEED_FLOOR_MINUTES = 12 * 60
+# A comment-thread or search feed doubles its floor for each fetch in a row that found
+# nothing new, up to a week, and drops back to SINGLE_FEED_FLOOR_MINUTES when something
+# arrives: most threads go quiet within days and would otherwise spend two requests a day.
+SINGLE_FEED_MAX_FLOOR_MINUTES = 7 * 24 * 60
 
 # Subreddit and user names as Reddit allows them; anything else never reaches a URL.
 SUBREDDIT_NAME_RE = re.compile(r"^[A-Za-z0-9_]{2,21}$")
@@ -216,14 +220,19 @@ def is_reddit_address(address):
     return bool(address and REDDIT_ADDRESS_RE.match(address.strip()))
 
 
-def reddit_fetch_floor_minutes(address):
+def reddit_fetch_floor_minutes(address, feed_id=None):
     """The shortest interval the scheduler may fetch this Reddit feed at, or None for
-    feeds that are not Reddit or that spend nothing extra. See utils/reddit_fetcher.py."""
+    feeds that are not Reddit or that spend nothing extra. A quiet comment-thread or
+    search feed (feed_id given) backs off further. See utils/reddit_fetcher.py."""
     if not is_reddit_address(address):
         return None
     kind = RedditFetcher.for_address(address).feed_kind()
     if kind in (KIND_COMMENTS, KIND_SEARCH):
-        return SINGLE_FEED_FLOOR_MINUTES
+        quiet_fetches = 0
+        if feed_id:
+            fetcher = RedditFetcher(AddressOnlyFeed(address, pk=feed_id))
+            quiet_fetches = fetcher.single_feed_state().get("quiet") or 0
+        return min(SINGLE_FEED_FLOOR_MINUTES * 2**quiet_fetches, SINGLE_FEED_MAX_FLOOR_MINUTES)
     if kind == KIND_LISTING:
         return POLLED_FEED_FLOOR_MINUTES
     return None
@@ -245,8 +254,8 @@ class AddressOnlyFeed:
     """Stands in for a Feed when only its address needs parsing (the poller and the
     scheduler classify thousands of addresses without loading feeds)."""
 
-    def __init__(self, address):
-        self.pk = None
+    def __init__(self, address, pk=None):
+        self.pk = pk
         self.feed_address = address
         self.feed_link = ""
         self.feed_title = ""
@@ -928,18 +937,22 @@ class RedditFetcher:
 
     def save_single_feed_state(self, limit, created_times):
         """Size the next fetch from how many items this one found that the last one
-        had not: about 1.5x that, or the full page when every item was new."""
+        had not: about 1.5x that, or the full page when every item was new. Also count
+        fetches in a row that found nothing new, which stretch the feed's scheduling floor
+        (reddit_fetch_floor_minutes)."""
         if not getattr(self.feed, "pk", None):
             return
         created_times = [created for created in created_times if created]
-        previous_newest = self.single_feed_state().get("newest") or 0
+        previous = self.single_feed_state()
+        previous_newest = previous.get("newest") or 0
         new_count = sum(1 for created in created_times if created > previous_newest)
         if created_times and new_count >= limit:
             next_limit = SINGLE_FEED_MAX_LIMIT
         else:
             next_limit = math.ceil(new_count * 1.5) + 3
         next_limit = max(SINGLE_FEED_MIN_LIMIT, min(SINGLE_FEED_MAX_LIMIT, next_limit))
-        state = {"limit": next_limit, "newest": max(created_times + [previous_newest])}
+        quiet = 0 if new_count else (previous.get("quiet") or 0) + 1
+        state = {"limit": next_limit, "newest": max(created_times + [previous_newest]), "quiet": quiet}
         self.redis_connection().set(
             SINGLE_FEED_STATE_KEY % self.feed.pk, json.dumps(state), ex=SINGLE_FEED_STATE_TTL
         )

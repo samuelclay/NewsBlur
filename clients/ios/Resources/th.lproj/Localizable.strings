@@ -108,6 +108,7 @@
 "Add" = "เพิ่ม";
 "Add %1$@ feeds to “%2$@” folder" = "เพิ่มฟีด %1$@ รายการไปยังโฟลเดอร์ “%2$@”";
 "Add %@" = "เพิ่ม %@";
+"Add %@ to rotation" = "เพิ่ม %@ ในการสลับเสียง";
 "Add + Discover Sites" = "เพิ่ม + ค้นพบเว็บไซต์";
 "Add Site" = "เพิ่มเว็บไซต์";
 "Add Sites" = "เพิ่มเว็บไซต์";
@@ -175,6 +176,7 @@
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
 "App Icon" = "ไอคอนแอป";
+"Appearance" = "รูปลักษณ์";
 "Apply training across a folder" = "ใช้การฝึกกับทั้งโฟลเดอร์";
 "Apply training globally" = "ใช้การฝึกกับทุกฟีด";
 "Arctic Cyan" = "สีฟ้าไซแอนอาร์กติก";
@@ -285,6 +287,7 @@
 "Custom Search Query" = "คำค้นหาแบบกำหนดเอง";
 "Custom [listen delivery]" = "กำหนดเอง";
 "Custom feed title" = "ชื่อฟีดที่กำหนดเอง";
+"Custom server" = "เซิร์ฟเวอร์กำหนดเอง";
 "Customize auto-read by site or folder" = "ปรับแต่งการทำเครื่องหมายว่าอ่านอัตโนมัติตามเว็บไซต์หรือโฟลเดอร์";
 "Daily" = "รายวัน";
 "Daily Briefing" = "สรุปข่าวประจำวัน";
@@ -358,6 +361,7 @@
 "Engineers writing about how large systems fail" = "วิศวกรเขียนถึงสาเหตุที่ระบบขนาดใหญ่ล้มเหลว";
 "Enter URL phrase..." = "ป้อนวลี URL...";
 "Enter a custom search query..." = "ป้อนคำค้นหาที่กำหนดเอง...";
+"Enter a valid custom server URL." = "ป้อน URL เซิร์ฟเวอร์กำหนดเองที่ถูกต้อง";
 "Enter a web page URL..." = "ป้อน URL ของหน้าเว็บ...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "ป้อน URL ของหน้าเว็บใดก็ได้ แล้ว NewsBlur จะใช้ AI วิเคราะห์โครงสร้างของหน้า ค้นหาบทความ และสร้างฟีด RSS แบบกำหนดเองที่คุณสมัครรับได้";
 "Enter author phrase..." = "ป้อนวลีชื่อผู้เขียน...";
@@ -403,6 +407,7 @@
 "Film photography with notes on cameras and film stocks" = "การถ่ายภาพด้วยฟิล์ม พร้อมบันทึกเกี่ยวกับกล้องและฟิล์มแต่ละชนิด";
 "Filter" = "ตัวกรอง";
 "Filter stories by date range" = "กรองบทความตามช่วงวันที่";
+"Find %@ in the voice list" = "ค้นหา %@ ในรายการเสียง";
 "Find Friends" = "ค้นหาเพื่อน";
 "Find feeds" = "ค้นหาฟีด";
 "Find feeds about “%@”" = "ค้นหาฟีดเกี่ยวกับ “%@”";
@@ -525,6 +530,7 @@
 "Invoice" = "ใบแจ้งหนี้";
 "Judging" = "กำลังประเมิน";
 "Judging…" = "กำลังประเมิน…";
+"Keep fades, without movement." = "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keyboard Shortcuts" = "แป้นพิมพ์ลัด";
@@ -540,6 +546,7 @@
 "Lavender Iris" = "ไอริสลาเวนเดอร์";
 "Layout" = "เค้าโครง";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "เว้นว่างไว้เพื่อใช้ NewsBlur หรือป้อน URL ของการติดตั้งที่โฮสต์เอง การเปลี่ยนแปลงจะมีผลเมื่อเปิดแอปครั้งถัดไป";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "เว้นว่างไว้เพื่อใช้ NewsBlur หรือป้อน URL ของการติดตั้งที่โฮสต์เอง การเปลี่ยนแปลงมีผลทันทีสำหรับการเข้าสู่ระบบและสมัครสมาชิก";
 "Left" = "ซ้าย";
 "Length & Style" = "ความยาวและรูปแบบ";
 "Light" = "สว่าง";
@@ -770,6 +777,7 @@
 "On scroll or selection" = "เมื่อเลื่อนหรือเลือก";
 "One" = "หนึ่ง";
 "One column" = "หนึ่งคอลัมน์";
+"One voice per story, in this order." = "หนึ่งเสียงต่อบทความ ตามลำดับนี้";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "มีเพียง %1$@ จาก %2$@ เว็บไซต์ของคุณที่ได้รับการจัดทำดัชนีเพื่อค้นพบเนื้อหา อัปเกรดเพื่อจัดทำดัชนีเว็บไซต์ทั้งหมดและรับคำแนะนำที่ปรับให้เหมาะกับคุณ";
 "Only Title" = "เฉพาะชื่อเรื่อง";
 "Only on Selection" = "เฉพาะเมื่อเลือก";
@@ -880,6 +888,7 @@
 "Reads your %@ stories" = "อ่านบทความของคุณ %@";
 "Recommended for %@" = "แนะนำสำหรับ %@";
 "Recording..." = "กำลังบันทึก...";
+"Reduce motion" = "ลดการเคลื่อนไหว";
 "Refine with a hint" = "ปรับให้ละเอียดด้วยคำใบ้";
 "Refine with this title" = "ปรับการค้นหาด้วยชื่อนี้";
 "Refresh NewsBlur" = "รีเฟรช NewsBlur";
@@ -892,6 +901,7 @@
 "Related sites" = "เว็บไซต์ที่เกี่ยวข้อง";
 "Reload Sites" = "โหลดเว็บไซต์อีกครั้ง";
 "Reloading..." = "กำลังโหลดใหม่...";
+"Remove %@ from rotation" = "นำ %@ ออกจากการสลับเสียง";
 "Remove This List" = "นำรายการนี้ออก";
 "Remove from Up Next" = "นำออกจากคิวถัดไป";
 "Remove from history" = "นำออกจากประวัติ";
@@ -910,6 +920,7 @@
 "Reply" = "ตอบกลับ";
 "Reply to %@" = "ตอบกลับ %@";
 "Replying" = "กำลังตอบกลับ";
+"Reset" = "รีเซ็ต";
 "Resets %@" = "รีเซ็ต %@";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
@@ -971,6 +982,8 @@
 "Select a feed or folder" = "เลือกฟีดหรือโฟลเดอร์";
 "Select a feed variant" = "เลือกเวอร์ชันของฟีด";
 "Select feeds to add" = "เลือกฟีดที่จะเพิ่ม";
+"Selected" = "เลือกแล้ว";
+"Selected voice" = "เสียงที่เลือก";
 "Send" = "ส่ง";
 "Send This Story To..." = "ส่งบทความนี้ไปยัง...";
 "Send To…" = "ส่งไปยัง…";
@@ -1279,9 +1292,12 @@
 "Usage billing history" = "ประวัติการเรียกเก็บเงินตามการใช้งาน";
 "Usage-based billing is enabled for natural language classifiers." = "เปิดใช้การเรียกเก็บเงินตามการใช้งานสำหรับตัวจำแนกภาษาธรรมชาติแล้ว";
 "Use %@" = "ใช้ %@";
+"Use a custom server" = "ใช้เซิร์ฟเวอร์กำหนดเอง";
 "Use another sign-in method" = "ใช้วิธีลงชื่อเข้าใช้อื่น";
 "Use both" = "ใช้ทั้งสองแบบ";
+"Use only this voice" = "ใช้เฉพาะเสียงนี้";
 "Use system size" = "ใช้ขนาดตามระบบ";
+"Use voice" = "ใช้เสียงนี้";
 "User info" = "ข้อมูลผู้ใช้";
 "Username" = "ชื่อผู้ใช้";
 "Username or Email" = "ชื่อผู้ใช้หรืออีเมล";
@@ -1295,6 +1311,7 @@
 "View mode" = "โหมดการแสดงผล";
 "Voice" = "เสียง";
 "Voice and music balance" = "ปรับสมดุลเสียงพูดและดนตรี";
+"Voice rotation" = "สลับเสียงอ่าน";
 "Voice settings" = "การตั้งค่าเสียง";
 "Waiting for a verdict…" = "กำลังรอผลการประเมิน…";
 "Warm" = "โทนอุ่น";

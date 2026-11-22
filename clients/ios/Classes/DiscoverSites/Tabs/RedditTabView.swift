@@ -25,16 +25,17 @@ struct RedditTabView: View {
                     onSubmit: {
                         viewModel.searchFeeds(type: "reddit", query: viewModel.redditState.searchQuery)
                     },
-                    viewMode: $viewModel.feedViewMode
+                    viewMode: showsCategories && UIDevice.current.userInterfaceIdiom != .phone ? nil : $viewModel.feedViewMode
                 )
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
 
-                if !viewModel.redditState.categories.isEmpty && viewModel.redditState.searchQuery.isEmpty {
+                if showsCategories {
                     DiscoverCategoryPillsView(
                         categories: viewModel.redditState.categories,
                         selectedCategory: $viewModel.redditState.selectedCategory,
-                        selectedSubcategory: $viewModel.redditState.selectedSubcategory
+                        selectedSubcategory: $viewModel.redditState.selectedSubcategory,
+                        viewMode: UIDevice.current.userInterfaceIdiom == .phone ? nil : $viewModel.feedViewMode
                     )
                     .onChange(of: viewModel.redditState.selectedCategory) { _ in
                         reloadFeeds()
@@ -79,6 +80,10 @@ struct RedditTabView: View {
                 reloadFeeds()
             }
         }
+    }
+
+    private var showsCategories: Bool {
+        !viewModel.redditState.categories.isEmpty && viewModel.redditState.searchQuery.isEmpty
     }
 
     @ViewBuilder

@@ -25,6 +25,7 @@ internal object FolderListTransition {
         anchorBottom: Float,
         expanding: Boolean,
         revealDistance: Float,
+        reduceMotion: Boolean = false,
     ): List<Motion> {
         val previous = before.associateBy { it.id }
         val current = after.associateBy { it.id }
@@ -42,7 +43,7 @@ internal object FolderListTransition {
                 previous[row.id]?.let { old -> (row.top - old.top).takeIf { it > 0f } }
             } ?: max(revealDistance, viewportBottom - anchorBottom)
 
-        return after.map { row ->
+        val motions = after.map { row ->
             val old = previous[row.id]
             val incomingTop =
                 if (entersFromAbove(row)) {
@@ -63,6 +64,16 @@ internal object FolderListTransition {
                     row.top - min(revealDistance, max(0f, row.top - anchorBottom))
                 }
             Motion(row, row.copy(top = destination, alpha = 0f))
+        }
+        if (!reduceMotion) return motions
+        // FolderListTransition.kt keeps opacity interpolation while pinning live rows to their
+        // final layout and outgoing drawings to the place where they were visible.
+        return motions.map { motion ->
+            if (motion.after.id in current) {
+                motion.copy(before = motion.before.copy(top = motion.after.top, indicatorRotation = motion.after.indicatorRotation))
+            } else {
+                motion.copy(after = motion.after.copy(top = motion.before.top, indicatorRotation = motion.before.indicatorRotation))
+            }
         }
     }
 }

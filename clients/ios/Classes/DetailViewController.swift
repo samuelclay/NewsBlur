@@ -733,7 +733,7 @@ class DetailViewController: BaseViewController {
         finishDuoSourceEntrance()
         // DetailViewController.swift animates the existing reader host rather than replacing its loaded document during the column change.
         view.layoutIfNeeded()
-        UIView.animate(withDuration: UIAccessibility.isReduceMotionEnabled ? 0 : 0.25,
+        UIView.animate(withDuration: ReaderMotion.reduceMotion ? 0 : 0.25,
                        delay: 0, options: [.beginFromCurrentState, .allowUserInteraction, .curveEaseInOut]) {
             self.applyDuoFullscreenReaderToggle()
             self.view.layoutIfNeeded()
@@ -789,7 +789,8 @@ class DetailViewController: BaseViewController {
     }
 
     @objc var areStoryTitlesCollapsed: Bool {
-        guard storyTitlesOnLeft, !isPhoneOrCompact else {
+        // FeedDetailObjCViewController.m must route Dashboard's Sidebar button to Feeds, not an absent title column.
+        guard storyTitlesOnLeft, !storyTitlesInDashboard, !isPhoneOrCompact else {
             return false
         }
         if isDuoFullscreenReader { return true }
@@ -1516,13 +1517,15 @@ class DetailViewController: BaseViewController {
     }
 
     @objc func dismissFullscreenSidebarOverlayAfterFeedSelection() {
+        // FeedsViewController.swift loads dashboard modules through this hook without selecting a reader source.
+        guard !storyTitlesInDashboard else { return }
         finishDuoSourceEntrance()
         expandedFeedsReveal = nil
         if isDuoFullscreenReader { applyDuoFullscreenSidebar(.storyTitles, animated: true); return }
         if isBrowsingDuoSources {
             // DetailViewController.swift keeps source browsing beside Feeds until a story is explicitly selected.
             appDelegate.updateSplitBehavior(false)
-            if !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled,
+            if UIView.areAnimationsEnabled,
                viewIfLoaded?.window != nil, let titles = feedDetailViewController,
                titles.isLegacyTable, let collection = titles.storiesCollection {
                 // NewsBlurAppDelegate.m resets the source before this hook, so this generation belongs to the new selection.
@@ -1570,7 +1573,7 @@ class DetailViewController: BaseViewController {
         guard isBrowsingDuoSources, feedDetailViewController === titles,
               let collection = titles.storiesCollection,
               pending.collection == ObjectIdentifier(collection), pending.fetchID == titles.fetchRequestId,
-              !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled else {
+              UIView.areAnimationsEnabled else {
             finishDuoSourceEntrance()
             return
         }
@@ -1594,7 +1597,7 @@ class DetailViewController: BaseViewController {
     }
 
     private func animateDuoSourceEntrance() {
-        guard isBrowsingDuoSources, !UIAccessibility.isReduceMotionEnabled, UIView.areAnimationsEnabled,
+        guard isBrowsingDuoSources, UIView.areAnimationsEnabled,
               viewIfLoaded?.window != nil else { return }
         // DetailViewController.swift animates only explicit source selections after native column geometry settles; fetch/layout updates never replay it.
         appDelegate.splitViewController?.view.layoutIfNeeded()
@@ -1603,7 +1606,9 @@ class DetailViewController: BaseViewController {
         let originalTransform = titles.layer.sublayerTransform
         let originalAlpha = titles.alpha
         // DetailViewController.swift keeps the clipping container stationary while its title content enters from beneath Feeds.
-        titles.layer.sublayerTransform = CATransform3DTranslate(originalTransform, -24, 0, 0)
+        if !ReaderMotion.reduceMotion {
+            titles.layer.sublayerTransform = CATransform3DTranslate(originalTransform, -24, 0, 0)
+        }
         titles.alpha = originalAlpha * 0.72
         let animator = UIViewPropertyAnimator(duration: 0.28, curve: .easeOut) {
             titles.layer.sublayerTransform = originalTransform
@@ -1853,6 +1858,8 @@ class DetailViewController: BaseViewController {
     private var isAdjustingStoryTitleColumns = false
 
     private func setStoryTitlesCollapsed(_ requestedCollapse: Bool, animated: Bool) {
+        // DetailViewController.swift's layout callbacks must not reopen the standalone column while Dashboard owns the titles.
+        guard !storyTitlesInDashboard else { return }
         if !showsStoryTitlesBesideTiledFeeds { restoreReaderBesideStoryTitles() }
         guard storyTitlesOnLeft, !isPhoneOrCompact else {
             return
@@ -1940,13 +1947,13 @@ class DetailViewController: BaseViewController {
             return
         }
         
-        if [.left].contains(layout) {
+        if !storyTitlesInDashboard, [.left].contains(layout) {
             coordinator.animate { context in
                 self.verticalDividerViewLeadingConstraint.constant = (self.isTemporaryFullScreen || self.isDuoFullscreenReader)
                     ? 0
                     : self.verticalDividerPosition
             }
-        } else if [.top, .bottom].contains(layout) {
+        } else if !storyTitlesInDashboard, [.top, .bottom].contains(layout) {
             coordinator.animate { context in
                 self.horizontalDividerViewBottomConstraint.constant = self.horizontalDividerPosition
             }

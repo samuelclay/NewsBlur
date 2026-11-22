@@ -108,6 +108,7 @@
 "Add" = "जोड़ें";
 "Add %1$@ feeds to “%2$@” folder" = "“%2$@” फ़ोल्डर में %1$@ फ़ीड जोड़ें";
 "Add %@" = "%@ जोड़ें";
+"Add %@ to rotation" = "%@ को क्रम में जोड़ें";
 "Add + Discover Sites" = "साइटें जोड़ें + खोजें";
 "Add Site" = "साइट जोड़ें";
 "Add Sites" = "साइटें जोड़ें";
@@ -175,6 +176,7 @@
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
 "App Icon" = "ऐप आइकन";
+"Appearance" = "प्रकटन";
 "Apply training across a folder" = "किसी फ़ोल्डर की सभी साइटों पर प्रशिक्षण लागू करें";
 "Apply training globally" = "प्रशिक्षण सभी जगह लागू करें";
 "Arctic Cyan" = "आर्कटिक सियान";
@@ -285,6 +287,7 @@
 "Custom Search Query" = "कस्टम खोज क्वेरी";
 "Custom [listen delivery]" = "कस्टम";
 "Custom feed title" = "कस्टम फ़ीड शीर्षक";
+"Custom server" = "कस्टम सर्वर";
 "Customize auto-read by site or folder" = "साइट या फ़ोल्डर के अनुसार स्वतः-पढ़ने की सुविधा अनुकूलित करें";
 "Daily" = "दैनिक";
 "Daily Briefing" = "दैनिक ब्रीफ़िंग";
@@ -358,6 +361,7 @@
 "Engineers writing about how large systems fail" = "इंजीनियर बड़े सिस्टम की विफलताओं के बारे में लिखते हुए";
 "Enter URL phrase..." = "URL वाक्यांश दर्ज करें...";
 "Enter a custom search query..." = "कस्टम खोज क्वेरी दर्ज करें...";
+"Enter a valid custom server URL." = "कृपया मान्य कस्टम सर्वर URL दर्ज करें।";
 "Enter a web page URL..." = "वेब पेज का URL दर्ज करें...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "किसी भी वेब पेज का URL डालें। NewsBlur AI से पेज की संरचना का विश्लेषण करेगा, लेख ढूँढेगा और एक कस्टम RSS फ़ीड बनाएगा, जिसकी आप सदस्यता ले सकते हैं।";
 "Enter author phrase..." = "लेखक का वाक्यांश दर्ज करें...";
@@ -403,6 +407,7 @@
 "Film photography with notes on cameras and film stocks" = "कैमरों और फ़िल्म के प्रकारों पर टिप्पणियों के साथ फ़िल्म फ़ोटोग्राफ़ी";
 "Filter" = "फ़िल्टर";
 "Filter stories by date range" = "तिथि सीमा के अनुसार लेख फ़िल्टर करें";
+"Find %@ in the voice list" = "आवाज़ों की सूची में %@ खोजें";
 "Find Friends" = "मित्र खोजें";
 "Find feeds" = "फ़ीड खोजें";
 "Find feeds about “%@”" = "“%@” के बारे में फ़ीड खोजें";
@@ -525,6 +530,7 @@
 "Invoice" = "चालान";
 "Judging" = "मूल्यांकन";
 "Judging…" = "मूल्यांकन…";
+"Keep fades, without movement." = "बिना गति के फ़ेड प्रभाव बनाए रखें।";
 "Keeps the dark icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन बनाए रखता है।";
 "Keeps the light icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।";
 "Keyboard Shortcuts" = "कीबोर्ड शॉर्टकट";
@@ -540,6 +546,7 @@
 "Lavender Iris" = "लैवेंडर आइरिस";
 "Layout" = "लेआउट";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlur इस्तेमाल करने के लिए खाली छोड़ें, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह ऐप अगली बार खुलने पर लागू होगा।";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "इसे खाली छोड़ें तो NewsBlur इस्तेमाल होगा, या अपने स्वयं-होस्ट किए गए इंस्टॉलेशन का URL दर्ज करें। यह लॉग इन और साइन अप के लिए तुरंत प्रभावी होगा।";
 "Left" = "बाएँ";
 "Length & Style" = "लंबाई और शैली";
 "Light" = "हल्का";
@@ -770,6 +777,7 @@
 "On scroll or selection" = "स्क्रॉल करने या चुनने पर";
 "One" = "एक";
 "One column" = "एक स्तंभ";
+"One voice per story, in this order." = "हर लेख के लिए एक आवाज़, इसी क्रम में।";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "खोज के लिए आपकी %2$@ साइटों में से केवल %1$@ ही अनुक्रमित हैं। सभी साइटों को अनुक्रमित करने और आपके लिए व्यक्तिगत सुझाव पाने के लिए अपग्रेड करें।";
 "Only Title" = "केवल शीर्षक";
 "Only on Selection" = "केवल चयन पर";
@@ -880,6 +888,7 @@
 "Reads your %@ stories" = "आपके %@ लेख पढ़ता है";
 "Recommended for %@" = "%@ के लिए सुझाया गया";
 "Recording..." = "रिकॉर्ड हो रहा है...";
+"Reduce motion" = "गति कम करें";
 "Refine with a hint" = "संकेत देकर परिष्कृत करें";
 "Refine with this title" = "इस शीर्षक से खोज को बेहतर बनाएँ";
 "Refresh NewsBlur" = "NewsBlur रीफ़्रेश करें";
@@ -892,6 +901,7 @@
 "Related sites" = "संबंधित साइटें";
 "Reload Sites" = "साइटें फिर से लोड करें";
 "Reloading..." = "फिर से लोड हो रहा है...";
+"Remove %@ from rotation" = "%@ को क्रम से हटाएँ";
 "Remove This List" = "यह सूची हटाएँ";
 "Remove from Up Next" = "अगला सुनें सूची से हटाएँ";
 "Remove from history" = "इतिहास से हटाएँ";
@@ -910,6 +920,7 @@
 "Reply" = "जवाब दें";
 "Reply to %@" = "%@ को जवाब दें";
 "Replying" = "जवाब दिया जा रहा है";
+"Reset" = "रीसेट करें";
 "Resets %@" = "%@ पर रीसेट होता है";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
@@ -971,6 +982,8 @@
 "Select a feed or folder" = "कोई फ़ीड या फ़ोल्डर चुनें";
 "Select a feed variant" = "फ़ीड का एक रूप चुनें";
 "Select feeds to add" = "जोड़ने के लिए फ़ीड चुनें";
+"Selected" = "चयनित";
+"Selected voice" = "चुनी गई आवाज़";
 "Send" = "भेजें";
 "Send This Story To..." = "यह लेख भेजें...";
 "Send To…" = "भेजें…";
@@ -1279,9 +1292,12 @@
 "Usage billing history" = "उपयोग बिलिंग का इतिहास";
 "Usage-based billing is enabled for natural language classifiers." = "प्राकृतिक भाषा क्लासिफ़ायर के लिए उपयोग-आधारित बिलिंग चालू है।";
 "Use %@" = "%@ का उपयोग करें";
+"Use a custom server" = "कस्टम सर्वर इस्तेमाल करें";
 "Use another sign-in method" = "साइन इन करने का कोई दूसरा तरीका इस्तेमाल करें";
 "Use both" = "दोनों का उपयोग करें";
+"Use only this voice" = "केवल इस आवाज़ का उपयोग करें";
 "Use system size" = "सिस्टम का आकार इस्तेमाल करें";
+"Use voice" = "आवाज़ चुनें";
 "User info" = "उपयोगकर्ता जानकारी";
 "Username" = "उपयोगकर्ता नाम";
 "Username or Email" = "उपयोगकर्ता नाम या ईमेल";
@@ -1295,6 +1311,7 @@
 "View mode" = "दृश्य मोड";
 "Voice" = "आवाज़";
 "Voice and music balance" = "आवाज़ और संगीत का संतुलन";
+"Voice rotation" = "आवाज़ों का क्रम";
 "Voice settings" = "आवाज़ की सेटिंग्स";
 "Waiting for a verdict…" = "निर्णय की प्रतीक्षा में…";
 "Warm" = "गर्म";

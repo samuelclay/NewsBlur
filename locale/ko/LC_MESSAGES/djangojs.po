@@ -1053,6 +1053,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "스토리 태그 %(count)s개 추가"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "순환 목록에 %(voice)s 추가"
+
 msgid "Add Folder"
 msgstr "폴더 추가"
 
@@ -1115,6 +1119,9 @@ msgstr "다음 재생 목록에 추가"
 
 msgid "Add to folder"
 msgstr "폴더에 추가"
+
+msgid "Add to rotation"
+msgstr "순환 목록에 추가"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1296,6 +1303,9 @@ msgstr "공개된 웹페이지라면 무엇이든 가능합니다. Twitter 프�
 
 msgid "Any time"
 msgstr "전체 기간"
+
+msgid "Appearance"
+msgstr "모양"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2056,6 +2066,9 @@ msgstr "크리에이티브"
 
 msgid "Credit"
 msgstr "크레딧"
+
+msgid "Current voice"
+msgstr "현재 음성"
 
 msgid "Cursors"
 msgstr "커서"
@@ -2929,6 +2942,10 @@ msgstr "금융"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)s 친구 찾기"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "음성 목록에서 %(voice)s 찾기"
+
 msgid "Find Friends"
 msgstr "친구 찾기"
 
@@ -3116,12 +3133,6 @@ msgstr "무료 + 구독 · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "무료 + 구독 · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "무료 베타 · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "무료 베타 · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "무료 · Android, iPhone, iPad &amp; Mac"
 
@@ -3216,6 +3227,9 @@ msgstr "전체 너비"
 
 msgid "Full-Text Search"
 msgstr "전체 텍스트 검색"
+
+msgid "Full-screen list"
+msgstr "전체 화면 목록"
 
 msgid "Full-text search across all stories"
 msgstr "모든 스토리 전문 검색"
@@ -3575,6 +3589,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "새 창에서"
 
+msgid "In rotation"
+msgstr "순환 목록에 있음"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3612,6 +3629,9 @@ msgstr "업데이트가 드문 사이트의 스토리"
 
 msgid "Infrequent stories per month"
 msgstr "업데이트가 드문 사이트 기준(월 스토리 수)"
+
+msgid "Inline list"
+msgstr "인라인 목록"
 
 msgid "Insta-fetch stories"
 msgstr "스토리 즉시 가져오기"
@@ -3694,6 +3714,9 @@ msgstr "최소한의 논평과 함께 헤드라인만"
 msgid "Just the headlines, no commentary"
 msgstr "의견 없이 헤드라인만"
 
+msgid "Keep fades, without movement."
+msgstr "움직임 없이 페이드 효과를 유지합니다."
+
 msgid "Keep others unread"
 msgstr "나머지는 읽지 않은 상태로 유지"
 
@@ -3754,6 +3777,9 @@ msgstr "마지막 업데이트"
 
 msgid "Last seen:"
 msgstr "마지막 확인:"
+
+msgid "Layout"
+msgstr "레이아웃"
 
 msgid "Leave unread"
 msgstr "읽지 않은 상태로 두기"
@@ -3840,6 +3866,9 @@ msgstr "피드를 불러오는 중..."
 
 msgid "Loading more briefings..."
 msgstr "브리핑을 더 불러오는 중..."
+
+msgid "Loading the next unread story..."
+msgstr "다음 읽지 않은 스토리를 불러오는 중..."
 
 msgid "Loading voices..."
 msgstr "음성을 불러오는 중..."
@@ -4380,6 +4409,9 @@ msgstr "다음 단계 "
 msgid "Next story"
 msgstr "다음 스토리"
 
+msgid "Next unread"
+msgstr "다음 읽지 않은 스토리"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "다음으로 모든 뉴스레터를 포함하는 필터를 만들어 NewsBlur의 맞춤 주소로 전달되도록 설정하세요."
 
@@ -4687,6 +4719,11 @@ msgid "Old password"
 msgstr "이전 비밀번호"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s일보다 오래됨"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "%(year)s년 %(month)s %(day)s일 이전"
 
@@ -4716,6 +4753,9 @@ msgstr "Docker로 명령 한 번에 설치"
 
 msgid "One sentence"
 msgstr "한 문장"
+
+msgid "One voice per story, in this order."
+msgstr "이 순서대로 기사마다 음성을 바꿉니다."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "피드가 있는 사이트에서 한 번의 클릭으로 구독하세요. ‘추가 기능’ 탭에서 사이트 추가용 사용자 지정 URL을 사용하세요."
@@ -5421,6 +5461,9 @@ msgstr "사용 완료"
 msgid "Reduce clutter in your river of stories"
 msgstr "스토리 스트림의 복잡함 줄이기"
 
+msgid "Reduce motion"
+msgstr "동작 줄이기"
+
 msgid "Refer"
 msgstr "추천"
 
@@ -5473,6 +5516,10 @@ msgstr "에피소드별 재생 위치 기억하기"
 
 msgid "Remove"
 msgstr "삭제"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "순환 목록에서 %(voice)s 삭제"
 
 msgid "Remove from Up Next"
 msgstr "다음 재생 목록에서 삭제"
@@ -5934,6 +5981,12 @@ msgstr "섹션이나 카테고리 같은 패턴과 일치하도록 URL의 일부
 
 msgid "Select title phrase"
 msgstr "제목 구문 선택"
+
+msgid "Selected"
+msgstr "선택됨"
+
+msgid "Selected voice"
+msgstr "선택한 음성"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "스토리 제목 목록에서 스토리를 선택하면 읽음으로 표시됩니다."
@@ -6477,6 +6530,12 @@ msgstr "%(date)s 이전의 스토리"
 msgid "Stories on %(date)s"
 msgstr "%(date)s의 스토리"
 
+msgid "Stories open inside the list"
+msgstr "스토리를 목록 안에서 열기"
+
+msgid "Stories open on their own screen"
+msgstr "스토리를 별도 화면에서 열기"
+
 msgid "Stories per day"
 msgstr "일별 스토리 수"
 
@@ -6527,6 +6586,9 @@ msgstr "스토리 글꼴"
 
 msgid "Story URL"
 msgstr "스토리 URL"
+
+msgid "Story cards open on their own screen"
+msgstr "스토리 카드를 별도 화면에서 열기"
 
 msgid "Story clustering"
 msgstr "스토리 클러스터링"
@@ -7515,11 +7577,18 @@ msgstr "자연어 분류기에 사용량 기반 요금제가 활성화되어 있
 msgid "Use %(language)s"
 msgstr "%(language)s 사용"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "%(voice)s만 사용"
+
 msgid "Use 12-hour clock"
 msgstr "12시간제 사용"
 
 msgid "Use 24-hour clock"
 msgstr "24시간제 사용"
+
+msgid "Use only this voice"
+msgstr "이 음성만 사용"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "받은편지함 분류, 주제 조사, 피드 점검에 프롬프트 템플릿 사용"
@@ -7529,6 +7598,9 @@ msgstr "브라우저 기본 컨텍스트 메뉴 사용"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "브라우저 확장 프로그램과 피드 리더에서 이 URL 템플릿을 사용해 NewsBlur에서 피드를 구독하세요."
+
+msgid "Use voice"
+msgstr "음성 사용"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "위젯으로 읽지 않은 스토리 수와 새 스토리를 한눈에 확인하세요"
@@ -7596,8 +7668,14 @@ msgstr "음성"
 msgid "Voice recording failed. Please try again."
 msgstr "음성 녹음에 실패했습니다. 다시 시도해 주세요."
 
+msgid "Voice rotation"
+msgstr "음성 순환"
+
 msgid "Voice settings"
 msgstr "음성 설정"
+
+msgid "Voices"
+msgstr "음성"
 
 msgid "Waiting for a verdict…"
 msgstr "결과를 기다리는 중…"

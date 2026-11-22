@@ -1,0 +1,55 @@
+{
+  "version": "17.0",
+  "prepared_at": "2026-11-15",
+  "app_language_count": 21,
+  "apple_locale_count": 21,
+  "google_locale_count": 21,
+  "unsupported_locales": [
+
+  ],
+  "english_source_sha256": {
+    "metadata": "12b468b0e70e17a8904a863f546f5b6a91605ba67ac4a37432a839b0e385dbe9",
+    "releases/17.0": "eea772ac5fdce20bd64a9e5a51f8ec9c81b8412d1edd2eb5b50fcc11aa8dc40b",
+    "products": "2bf04a5c3611a2840bfb51c2e7df2ab47a127308d05655fb2131fad333aaed3d"
+  },
+  "translation_batches": {
+    "west": [
+      "es",
+      "fr",
+      "de",
+      "pt-BR",
+      "it",
+      "nl",
+      "pl"
+    ],
+    "east": [
+      "tr",
+      "ru",
+      "uk",
+      "ar",
+      "he",
+      "hi",
+      "id"
+    ],
+    "asia": [
+      "vi",
+      "th",
+      "ja",
+      "ko",
+      "zh-Hans",
+      "zh-Hant"
+    ]
+  },
+  "independent_review": {
+    "west": "Reviewed by Asia translator",
+    "east_and_asia": "Reviewed by West translator",
+    "result": "No unresolved text issues after corrections"
+  },
+  "validation": {
+    "ios_fields": 294,
+    "macos_fields": 294,
+    "android_fields": 336,
+    "status": "passed"
+  },
+  "store_readback_status": "Pending upload; local validation does not establish store submission"
+}

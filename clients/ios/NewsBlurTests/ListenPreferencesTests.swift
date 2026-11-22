@@ -3,7 +3,7 @@ import XCTest
 @testable import NewsBlur
 
 final class Test_ListenPreferences: XCTestCase {
-    private let keys = [ListenPreferences.voicesKey, ListenPreferences.deliveryKey, ListenPreferences.stabilityKey,
+    private let keys = [ListenPreferences.rotationsKey, ListenPreferences.voicesKey, ListenPreferences.deliveryKey, ListenPreferences.stabilityKey,
                         ListenPreferences.similarityKey, ListenPreferences.styleKey, ListenPreferences.speakerBoostKey,
                         ListenPreferences.speedKey, ListenPreferences.autoContinueKey, ListenPreferences.highlightKey,
                         "show_sideoption_train", "show_sideoption_share", "show_sideoption_save", "show_ask_ai",
@@ -41,6 +41,58 @@ final class Test_ListenPreferences: XCTestCase {
         return ["preferences": String(decoding: data, as: UTF8.self)]
     }
 
+    @MainActor func test_slowRotationSaveCannotOverwriteNewerEdits() throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        let oldManager = app.networkManager
+        let oldProfile = app.dictUserProfile
+        let server = DelayedPreferenceServer()
+        app.networkManager = server
+        defer {
+            app.networkManager = oldManager
+            app.dictUserProfile = oldProfile
+        }
+        let first = [ListenRotationVoice(id: "a", name: "Amelia")]
+        let latest = first + [ListenRotationVoice(id: "b", name: "Jon")]
+        ListenPreferences.setRotation(first, forLanguage: "en")
+        ListenPreferences.setRotation(latest, forLanguage: "en")
+        XCTAssertEqual(ListenPreferences.rotations["en"], latest)
+        while let complete = server.requests.popLast() { complete() }
+        XCTAssertEqual(server.savedRotations["en"]?.map { $0["voice_id"] }, ["a", "b"])
+    }
+
+    // ListenPreferencesTests.swift: server sync must preserve order and names, discard malformed/duplicate
+    // entries, and clear the old account's list. Treating the nested JSON as listen_voices would lose it.
+    func test_rotationSyncAndAccountReset() {
+        ListenPreferences.syncFromUserProfile(["preferences": ["listen_voice_rotations":
+            "{\"en\":[{\"voice_id\":\"a\",\"name\":\"Amelia\"},{\"voice_id\":\"a\"},{\"voice_id\":\"b\",\"name\":\"Jon\"},{\"voice_id\":\"\"}],\"fr\":false}"]])
+        XCTAssertEqual(ListenPreferences.rotations["en"]?.map(\.id), ["a", "b"])
+        XCTAssertEqual(ListenPreferences.rotations["en"]?.last?.name, "Jon")
+        XCTAssertNil(ListenPreferences.rotations["fr"])
+        ListenPreferences.syncFromUserProfile(["preferences": [:]])
+        XCTAssertTrue(ListenPreferences.rotations.isEmpty)
+    }
+
+    // ListenPreferencesTests.swift: advancing at manifest refresh instead of story change would skip voices.
+    // The requested voice consumes its turn even when the provider temporarily uses a fallback.
+    func test_rotationKeepsStoryVoiceAndResetsWithSession() {
+        let lists = ["en": [ListenRotationVoice(id: "a", name: "A"), ListenRotationVoice(id: "b", name: "B")],
+                     "fr": [ListenRotationVoice(id: "c", name: "C"), ListenRotationVoice(id: "d", name: "D")]]
+        var session = ListenVoiceRotationSession()
+        session.beginStory("one", rotations: lists)
+        XCTAssertEqual(session.choices, ["en": "a", "fr": "c"])
+        session.record(language: "en", resolvedVoice: "fallback")
+        session.beginStory("one", rotations: lists)
+        XCTAssertEqual(session.choices["en"], "a")
+        session.beginStory("two", rotations: lists)
+        XCTAssertEqual(session.choices, ["en": "b", "fr": "c"])
+        session.record(language: "en", resolvedVoice: "b")
+        session.beginStory("three", rotations: lists)
+        XCTAssertEqual(session.choices["en"], "a")
+        session = ListenVoiceRotationSession()
+        session.beginStory("four", rotations: lists)
+        XCTAssertEqual(session.choices["en"], "a")
+    }
+
     private func notifications(during work: () -> Void) -> (writes: Int, listenKeys: [String]) {
         var writes = 0
         var listenKeys: [String] = []
@@ -71,5 +123,21 @@ final class Test_ListenPreferences: XCTestCase {
         XCTAssertGreaterThan(changed.writes, 0)
         XCTAssertEqual(changed.listenKeys, [ListenPreferences.speedKey])
         XCTAssertEqual(ListenPreferences.speed, 1.5)
+    }
+}
+
+private final class DelayedPreferenceServer: AFHTTPSessionManager {
+    var requests: [() -> Void] = []
+    var savedRotations: [String: [[String: String]]] = [:]
+    override func post(_ url: String, parameters: Any?, progress: ((Progress) -> Void)?,
+                       success: ((URLSessionDataTask, Any?) -> Void)?,
+                       failure: ((URLSessionDataTask?, Error) -> Void)?) -> URLSessionDataTask? {
+        let task = URLSession.shared.dataTask(with: URL(string: url)!)
+        let values = parameters as? [String: String]
+        requests.append {
+            self.savedRotations = ListenJSON.objectFromString(values?[ListenPreferences.rotationsKey]) as? [String: [[String: String]]] ?? [:]
+            success?(task, ["code": 1])
+        }
+        return task
     }
 }

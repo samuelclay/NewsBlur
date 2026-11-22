@@ -232,13 +232,9 @@
     border: 0;
     text-decoration: none;
     color: inherit;
-    transition: background 0.18s ease, transform 0.15s ease;
+    transition: background 0.18s ease;
     display: block;
     background: rgba(75, 85, 99, 0.07);
-}
-
-.NB-modal.NB-modal-faq .NB-faq-tier-summary-modal a.NB-faq-tier:hover {
-    transform: translateY(-1px);
 }
 
 /* Tier-specific tints (light mode) */
@@ -509,11 +505,7 @@
     line-height: 1;
     border: 1px solid transparent;
     text-decoration: none;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-
-.NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button:active {
-    transform: translateY(1px);
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .NB-modal.NB-modal-faq .NB-faq-answer a.NB-faq-button-primary {

@@ -1,0 +1,87 @@
+"""
+player.py: the Listen and podcast player (views/media_player_view.js) on a phone. It floats as a
+one-row bar at each screen's bottom, opens as a bottom sheet when tapped, and closes
+from the shade.
+
+It uses whatever the account's player already holds (playback state restores on load), since
+starting Listen would call the text-to-speech service. With an empty player it skips.
+"""
+
+PLAYER = """(() => {
+    var p = document.querySelector('.NB-media-player'), r = p.getBoundingClientRect();
+    return {in_body: p.parentElement === document.body, hidden: p.classList.contains('NB-hidden'),
+            expanded: p.classList.contains('NB-mobile-player-expanded'),
+            top: Math.round(r.top), bottom: Math.round(r.bottom), height: Math.round(r.height)};
+})()"""
+
+
+def run(ctx):
+    page = ctx.page
+    ctx.login("/")
+    player = ctx.evaluate(PLAYER)
+    if player["hidden"]:
+        print("SKIP player: nothing is loaded in this account's player")
+        return
+    ctx.check("the player moves out of the feed list onto every screen", player["in_body"], player)
+    taskbar_bottom = ctx.evaluate(
+        "Math.round(document.querySelector('.left-south .NB-taskbar-container').getBoundingClientRect().bottom)"
+    )
+    floor = ctx.evaluate("window.innerHeight")
+    ctx.check(
+        "on the feed list it floats at the bottom, clear of the taskbar under the header",
+        player["top"] >= taskbar_bottom and floor - 24 <= player["bottom"] <= floor,
+        (player, taskbar_bottom, floor),
+    )
+    ctx.check("collapsed, it is a single row", player["height"] <= 72, player)
+    ctx.shot("01-feeds")
+
+    ctx.open_feed(ctx.pick_feed())
+    ctx.set_layout("grid")
+    ctx.tap_story(1)
+    player = ctx.evaluate(PLAYER)
+    toolbar_bottom = ctx.evaluate(
+        "Math.round(document.querySelector('.NB-mobile-story-toolbar').getBoundingClientRect().bottom)"
+    )
+    ctx.check(
+        "on the story screen it floats at the bottom, clear of the toolbar under the nav bar",
+        player["top"] >= toolbar_bottom and floor - 24 <= player["bottom"] <= floor,
+        (player, toolbar_bottom, floor),
+    )
+    ctx.shot("02-story")
+
+    # A story read aloud shows Next story in the bar, whose tap opened the full player instead
+    # of moving on. Next story is stubbed out so the account's player keeps its story.
+    if ctx.evaluate("!!document.querySelector('.NB-media-player .NB-media-player-next')"):
+        ctx.evaluate(
+            "(() => { var p = NEWSBLUR.app.media_player; p.next_taps = 0; "
+            "p.listen_play_next = function (e) { if (e) e.stopPropagation(); p.next_taps += 1; return true; }; "
+            "p.delegateEvents(); })()"
+        )
+        page.locator(".NB-media-player .NB-media-player-next").tap()
+        ctx.wait(500)
+        tapped = ctx.evaluate(
+            "({taps: NEWSBLUR.app.media_player.next_taps, "
+            "expanded: document.querySelector('.NB-media-player').classList.contains('NB-mobile-player-expanded')})"
+        )
+        ctx.check("Next story in the bar moves on without opening the player", tapped["taps"] == 1 and not tapped["expanded"], tapped)
+
+    page.locator(".NB-media-player .NB-media-player-title").tap()
+    ctx.wait(600)
+    player = ctx.evaluate(PLAYER)
+    ctx.check(
+        "tapping the bar opens the full player as a sheet",
+        player["expanded"] and player["bottom"] == ctx.viewport["height"],
+        player,
+    )
+    ctx.check(
+        "the sheet shows the scrubber and controls",
+        ctx.evaluate(
+            "$('.NB-media-player .NB-media-player-row-scrubber:visible, .NB-media-player .NB-media-player-skip-back:visible').length == 2"
+        ),
+    )
+    ctx.shot("03-expanded")
+    page.locator(".NB-mobile-player-shade").tap(position={"x": 200, "y": 60})
+    ctx.wait(500)
+    ctx.check("tapping outside collapses it", not ctx.evaluate(PLAYER)["expanded"])
+    ctx.check("and it stays on the story screen", ctx.state()["screen"] == "story")
+    ctx.check_no_page_errors()

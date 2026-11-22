@@ -2,6 +2,55 @@
 import Foundation
 import CryptoKit
 
+enum WidgetLink {
+    case background
+    case story(feedID: String, hash: String, site: [String: String]?)
+    case status(String)
+
+    func url(source: String) -> URL {
+        var link = URLComponents(string: "newsblurwidget://")!
+        var items = [URLQueryItem(name: "source", value: source)]
+        switch self {
+        case .background:
+            link.host = "open"
+        case let .status(error):
+            items.append(URLQueryItem(name: "error", value: error))
+        case let .story(feedID, hash, site):
+            items.append(URLQueryItem(name: "feedId", value: feedID))
+            items.append(URLQueryItem(name: "storyHash", value: hash))
+            if let title = site?["feed_title"] {
+                items.append(URLQueryItem(name: "siteTitle", value: title))
+            }
+            if let address = site?["feed_address"] {
+                items.append(URLQueryItem(name: "siteAddress", value: address))
+            }
+        }
+        link.queryItems = items
+        return link.url!
+    }
+}
+
+enum WidgetStorySource: String, CaseIterable {
+    case infrequent
+    case widelyRead = "trending:well_read"
+    case longReads = "trending:long_reads"
+    case goodReads = "trending:good_reads"
+
+    var trendingType: String? {
+        self == .infrequent ? nil : String(rawValue.dropFirst("trending:".count))
+    }
+
+    static func requestPath(source: String, feedIDs: [String], page: Int, limit: Int, storiesPerMonth: Int) -> String {
+        let paging = "page=\(page)&limit=\(limit)&order=newest&read_filter=unread"
+        if let trendingType = Self(rawValue: source)?.trendingType {
+            return "/reader/trending_stories/?\(paging)&trending_type=\(trendingType)&widget=true"
+        }
+        let threshold = source == Self.infrequent.rawValue ? String(storiesPerMonth) : "false"
+        let feeds = feedIDs.map { "&f=\($0)" }.joined()
+        return "/reader/river_stories_widget/?\(paging)&include_hidden=false&thumbnail_size=192&infrequent=\(threshold)\(feeds)"
+    }
+}
+
 struct WidgetSourceCatalog {
     static let group = "group.com.newsblur.NewsBlur-Group"
     static let key = "widget:source_catalog"
@@ -37,11 +86,29 @@ struct WidgetSourceCatalog {
         return dictionary
     }
 
+    private func encodedFavicon(for feed: String) -> String? {
+        guard let metadata = feeds[feed] else { return nil }
+        return favicons[feed] ?? metadata["favicon"] as? String
+    }
+
     func favicon(for feed: String) -> Data? {
-        guard feeds[feed] != nil,
-              let encoded = favicons[feed] ?? feeds[feed]?["favicon"] as? String,
+        guard let encoded = encodedFavicon(for: feed),
               let data = Data(base64Encoded: encoded), !data.isEmpty else { return nil }
         return data
+    }
+
+    func pickerSites(matching search: String) -> [(id: String, name: String, favicon: Data?)] {
+        let matches = feeds.compactMap { id, feed -> (id: String, name: String)? in
+            let title = feed["feed_title"] as? String ?? id
+            guard search.isEmpty || title.localizedStandardContains(search) else { return nil }
+            return (id, title)
+        }.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
+
+        // WidgetConfiguration.swift sends the entire options list between devices in one reply.
+        // Use feed symbols when inline images would add more than 128 KiB to that reply.
+        let encodedBytes = matches.reduce(0) { $0 + (encodedFavicon(for: $1.id)?.utf8.count ?? 0) }
+        let includeIcons = encodedBytes <= 128 * 1024 * 4 / 3
+        return matches.map { ($0.id, $0.name, includeIcons ? favicon(for: $0.id) : nil) }
     }
 
     static func store(dictionary: [String: Any], username: String, host: String, defaults: UserDefaults) {
@@ -116,7 +183,7 @@ struct WidgetSourceCatalog {
     }
 
     func feedIDs(for source: String) -> [String] {
-        if source == "all" { return feeds.keys.sorted() }
+        if source == "all" || source == WidgetStorySource.infrequent.rawValue { return feeds.keys.sorted() }
         if source.hasPrefix("feed:") {
             let id = String(source.dropFirst(5))
             return feeds[id] == nil ? [] : [id]

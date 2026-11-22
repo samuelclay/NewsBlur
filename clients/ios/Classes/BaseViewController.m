@@ -58,6 +58,11 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 #pragma mark -
 #pragma mark View methods
 
+- (void)viewIsAppearing:(BOOL)animated {
+    [super viewIsAppearing:animated];
+    [ReaderMotion screen:self];
+}
+
 - (void)informError:(id)error {
     [self informError:error details:nil statusCode:0];
 }
@@ -125,7 +130,11 @@ static UISplitViewControllerSplitBehavior NBSplitBehaviorFromDecision(StorySplit
 - (void)updateTheme {
     // Subclasses should override this, calling super, to update their nav bar, table, etc
     
+#if TARGET_OS_MACCATALYST
+    appDelegate.splitViewController.view.backgroundColor = UIColor.clearColor;
+#else
     appDelegate.splitViewController.view.backgroundColor = UIColorFromLightDarkRGB(0x555555, 0x777777);
+#endif
 }
 
 - (void)tableView:(UITableView *)tableView redisplayCellAtIndexPath:(NSIndexPath *)indexPath {

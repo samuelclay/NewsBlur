@@ -240,6 +240,13 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
 
     override func resetFeedDetail() {
+        if isViewLoaded { ReaderMotion.leave(storyTitlesTable) }
+        ReaderMotion.session(self).reset()
+        storyCache.motionSession.reset()
+        if viewIfLoaded?.window == nil {
+            ReaderMotion.session(self).prepareForAppearance()
+            storyCache.motionSession.prepareForAppearance()
+        }
         cancelTryFeedRefresh()
         lastShownStoryLocation = nil
         super.resetFeedDetail()
@@ -546,6 +553,8 @@ class FeedDetailViewController: FeedDetailObjCViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        ReaderMotion.session(self).prepareForAppearance()
+        storyCache.motionSession.prepareForAppearance()
         super.viewWillAppear(animated)
 
         correctReturnFrameIfNeeded()
@@ -555,6 +564,9 @@ class FeedDetailViewController: FeedDetailObjCViewController {
         super.viewDidAppear(animated)
 
         correctReturnFrameIfNeeded()
+        // FeedDetailViewController.swift starts cached rows after the push and its selection reload have completed.
+        ReaderMotion.presentRows(storyTitlesTable, owner: self)
+        storyCache.motionSession.didAppear()
     }
     
     @objc override func loadingFeed() {

@@ -139,6 +139,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic) NSUInteger faviconWriteGeneration;
 @property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingWidgetNavigation;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *openingWidgetNavigation;
 @property (nonatomic, strong, readwrite) StoryScoreRefresher *storyScoreRefresher;
 
 - (void)presentFeedDetailAfterFeedSelection;
@@ -684,6 +686,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             }];
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
+            self.pendingWidgetNavigation = nil;
             BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
 #if TARGET_OS_MACCATALYST
             if (!self.window) {
@@ -759,7 +762,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (BOOL)openURL:(NSURL *)url {
     if ([self handleFeedSubscriptionURL:url]) return YES;
-    if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
+    if ([url.scheme isEqualToString:@"newsblurwidget"]) {
         NSMutableDictionary *query = [NSMutableDictionary dictionary];
         
         for (NSURLQueryItem *item in [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO].queryItems) {
@@ -770,25 +773,75 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         NSString *storyHash = query[@"storyHash"];
         NSString *error = query[@"error"];
         
-        if (error.length) {
-            [self popToRootWithCompletion:^{
-                [self showWidgetSites];
-            }];
-            
+        BOOL opensConfiguredSource = [query[@"source"] length] &&
+            ([error isEqualToString:@"noStories"] || [error isEqualToString:@"loading"]);
+        if (error.length && !opensConfiguredSource) {
+            if (self.activeUsername.length && ![error isEqualToString:@"notLoggedIn"]) {
+                [self popToRootWithCompletion:^{ [self showWidgetSites]; }];
+            }
             return YES;
         }
         
-        if (!feedId.length || !storyHash.length) {
-            return NO;
-        }
-        
-        // NewsBlurAppDelegate.m opens the story's actual feed independently of other widget selections.
-        [self loadFeed:feedId withStory:storyHash animated:NO];
+        if ((![query[@"source"] length] && !feedId.length) || (feedId.length > 0) != (storyHash.length > 0)) return NO;
 
+        self.pendingNotificationStory = nil;
+        self.pendingDailyBriefingStoryHash = nil;
+        self.pendingFolder = nil;
+        self.pendingWidgetNavigation = query;
+        [self openPendingWidgetNavigation];
         return YES;
     }
-    
+
     return NO;
+}
+
+- (void)openPendingWidgetNavigation {
+    NSDictionary *query = self.pendingWidgetNavigation;
+    // SceneDelegate.swift may deliver the URL before the account and its folder paths are available.
+    if (!query || !self.activeUsername.length || !self.feedsViewController || !self.dictFoldersArray.count) return;
+#if TARGET_OS_MACCATALYST
+    if (!self.window) return;
+#endif
+    self.pendingWidgetNavigation = nil;
+    self.pendingFolder = nil;
+    NSString *feedId = query[@"feedId"];
+    NSString *source = query[@"source"];
+    NSString *siteSource = feedId.length ? [@"feed:" stringByAppendingString:feedId] : nil;
+    [self cleanUpTryFeed];
+    self.openingWidgetNavigation = query;
+    BOOL selected = [self.feedsViewController selectWidgetSource:source ?: siteSource];
+    if (!selected && siteSource && ![source isEqualToString:siteSource]) {
+        // NewsBlurAppDelegate.m can still open a story after its widget folder was renamed or deleted.
+        selected = [self.feedsViewController selectWidgetSource:siteSource];
+    }
+    if (!selected && feedId.length) {
+        if (![self getFeed:feedId] && [query[@"siteTitle"] length]) {
+            NSDictionary *site = @{@"id": feedId, @"feed_title": query[@"siteTitle"],
+                                   @"feed_address": query[@"siteAddress"] ?: @""};
+            [self.storiesCollection reset];
+            [self prepareWidgetStoryLookup];
+            [self loadTryFeedDetailView:feedId withStory:query[@"storyHash"] isSocial:NO withUser:site showFindingStory:YES];
+        } else {
+            [self loadFeed:feedId withStory:query[@"storyHash"] animated:NO];
+        }
+    }
+    self.openingWidgetNavigation = nil;
+}
+
+- (void)prepareWidgetStoryLookup {
+    NSDictionary *query = self.openingWidgetNavigation;
+    if (!query) return;
+    NSString *hash = query[@"storyHash"];
+    self.tryFeedFeedId = query[@"feedId"];
+    self.tryFeedStoryId = hash;
+    self.tryFeedStoryTitle = nil;
+    self.inFindingStoryMode = hash.length > 0;
+    self.findingStoryStartDate = hash.length ? [NSDate date] : nil;
+    self.findingStoryDictionary = nil;
+    if (hash.length) {
+        self.storiesCollection.notificationStoryHash = hash;
+        self.storiesCollection.readFilterOverride = @"all";
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -861,6 +914,29 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     
     return self.cachedURL;
+}
+
++ (NSString *)normalizedServerURLString:(NSString *)urlString {
+    return NBNormalizedServerURLString(urlString);
+}
+
+- (void)setCustomDomainPreference:(NSString *)urlString {
+    NSString *trimmedURLString = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *previousURL = self.url;
+
+    if (trimmedURLString.length) {
+        [defaults setObject:trimmedURLString forKey:@"custom_domain"];
+    } else {
+        [defaults removeObjectForKey:@"custom_domain"];
+    }
+
+    self.cachedURL = nil;
+    if (![self.url isEqualToString:previousURL]) {
+        // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
+        [ListenStoryBridge stopForAccountChange];
+        [self clearNetworkManager];
+    }
 }
 
 - (NSString *)host {
@@ -1169,12 +1245,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
                 if (!appDelegate) {
                     return;
                 }
-                NSString *previousURL = appDelegate.url;
-                appDelegate.cachedURL = nil;
-                if (![appDelegate.url isEqualToString:previousURL]) {
-                    // NewsBlurAppDelegate.m cancels old-server requests before login accepts credentials again.
-                    [ListenStoryBridge stopForAccountChange];
-                    [appDelegate clearNetworkManager];
+                [appDelegate setCustomDomainPreference:[[NSUserDefaults standardUserDefaults] stringForKey:@"custom_domain"]];
+                if ([appDelegate.loginViewController isKindOfClass:[OnboardingAccountViewController class]]) {
+                    [(OnboardingAccountViewController *)appDelegate.loginViewController customServerDidChange];
                 }
             }];
         }
@@ -2264,6 +2337,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     [storiesCollection setActiveFeed:feed];
     [storiesCollection setActiveFolder:folder];
+    if (self.openingWidgetNavigation) {
+        [self prepareWidgetStoryLookup];
+        self.skipTryFeedCleanup = YES;
+    }
     readStories = [NSMutableArray array];
     if (folder != nil) {
         [folderCountCache removeObjectForKey:folder];
@@ -2286,6 +2363,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.pendingFolder = nil;
     self.pendingDailyBriefingStoryHash = nil;
     self.pendingNotificationStory = nil;
+    self.pendingWidgetNavigation = nil;
     self.tryFeedFeedId = nil;
     self.tryFeedStoryId = nil;
     self.tryFeedStoryTitle = nil;
@@ -2452,6 +2530,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.tryFeedStoryTitle = storyTitle;
     
     [self.storiesCollection reset];
+    [self prepareWidgetStoryLookup];
     if (openingNotification) {
         self.storiesCollection.readFilterOverride = @"all";
         self.storiesCollection.notificationStoryHash = contentId;
@@ -2668,6 +2747,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // NewsBlurAppDelegate.m preserves pending navigation when a late feed refresh finishes after the window closes.
     if (!self.window) return;
 #endif
+    if (self.pendingWidgetNavigation) {
+        [self openPendingWidgetNavigation];
+        return;
+    }
     NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
                                                                                 pendingFolder:self.pendingFolder];
 
@@ -2680,8 +2763,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self loadFeed:self.pendingNotificationStory[@"feedId"]
             withStory:self.pendingNotificationStory[@"storyHash"] animated:NO];
     } else if (self.inFindingStoryMode) {
-        if (storiesCollection.readFilterOverride && !storiesCollection.isRiverOrSocial &&
-            [storiesCollection.activeFeedIdStr isEqualToString:self.tryFeedFeedId]) {
+        if (storiesCollection.readFilterOverride &&
+            ([storiesCollection.notificationStoryHash isEqualToString:self.tryFeedStoryId] ||
+             (!storiesCollection.isRiverOrSocial && [storiesCollection.activeFeedIdStr isEqualToString:self.tryFeedFeedId]))) {
             // NewsBlurAppDelegate.m leaves an active notification lookup on its current page while feeds refresh.
             self.pendingFolder = nil;
             return;
@@ -2977,7 +3061,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     
     [feedDetailView.storiesCollection reset];
-    
+    [self prepareWidgetStoryLookup];
+
     if ([folder isEqualToString:@"river_global"]) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;
@@ -4035,13 +4120,27 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     if (feedIds.count) {
         [[StoryFirstPageCache shared] invalidateSnapshotsForAccount:self.activeUsername host:self.url];
     }
+    // NewsBlurAppDelegate.m includes the selected story, matching reader/models.py's cutoff adjustment.
+    NSString *direction = older ? @"<=" : @">=";
+    // NewsBlurAppDelegate.m finds the feeds with a cached unread story in range in one query, so marking a river of
+    // hundreds of feeds only reads and writes the few that have something to change.
+    NSMutableSet *feedIdsInRange = [NSMutableSet set];
+    [self.database inDatabase:^(FMDatabase *db) {
+        NSString *sql = [NSString stringWithFormat:@"SELECT DISTINCT story_feed_id FROM unread_hashes "
+                         "WHERE story_timestamp %@ ?", direction];
+        FMResultSet *cursor = [db executeQuery:sql, @(cutoff)];
+        while ([cursor next]) {
+            NSString *feedIdInRange = [cursor stringForColumnIndex:0];
+            if (feedIdInRange) [feedIdsInRange addObject:feedIdInRange];
+        }
+        [cursor close];
+    }];
     for (NSString *feedId in feedIds) {
         NSString *feedIdString = [NSString stringWithFormat:@"%@", feedId];
+        if (![feedIdsInRange containsObject:feedIdString]) continue;
         NSDictionary *unreadCounts = [self.dictUnreadCounts objectForKey:feedIdString];
         NSMutableDictionary *newUnreadCounts = [unreadCounts mutableCopy] ?: [@{@"ps": @0, @"nt": @0, @"ng": @0} mutableCopy];
         NSMutableArray *stories = [NSMutableArray array];
-        // NewsBlurAppDelegate.m includes the selected story, matching reader/models.py's cutoff adjustment.
-        NSString *direction = older ? @"<=" : @">=";
         
         [self.database inDatabase:^(FMDatabase *db) {
             NSString *sql = [NSString stringWithFormat:@"SELECT * FROM stories s "
@@ -4913,14 +5012,19 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 }
 
 - (UIView *)makeFeedTitle:(NSDictionary *)feed {
+    // FeedsViewController.swift reuses the active collection for each background dashboard module.
+    BOOL isDashboard = self.detailViewController.storyTitlesInDashboard ||
+        (storiesCollection.isRiverView && [storiesCollection.activeFolder isEqualToString:@"dashboard"]);
     // Return nil if no feed is provided and no special folder is active
-    if (!feed && !storiesCollection.activeFolder) {
+    if (!feed && !storiesCollection.activeFolder && !isDashboard) {
         return nil;
     }
 
     UILabel *titleLabel = [[UILabel alloc] init];
     // NewsBlurAppDelegate.m indents titles in code so each title reuses its unpadded translation.
-    if (storiesCollection.isSocialRiverView &&
+    if (isDashboard) {
+        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
+    } else if (storiesCollection.isSocialRiverView &&
         [storiesCollection.activeFolder isEqualToString:@"river_blurblogs"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Shared Stories"]];
     } else if (storiesCollection.isSocialRiverView &&
@@ -4935,9 +5039,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"trending:good_reads"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"Good Reads"]];
-    } else if (storiesCollection.isRiverView &&
-               [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-        titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"NewsBlur Dashboard"]];
     } else if (storiesCollection.isRiverView &&
                [storiesCollection.activeFolder isEqualToString:@"everything"]) {
         titleLabel.text = [@"     " stringByAppendingString:[NBLocalization text:@"All Site Stories"]];
@@ -4983,11 +5084,13 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     titleLabel.shadowColor = UIColorFromRGB(0xF0F0F0);
     titleLabel.shadowOffset = CGSizeMake(0, 1);
     titleLabel.center = CGPointMake(0, -2);
-    if (!storiesCollection.isSocialView) {
+    if (!storiesCollection.isSocialView || isDashboard) {
         titleLabel.center = CGPointMake(28, -2);
         NSString *feedIdStr = [NSString stringWithFormat:@"%@", [feed objectForKey:@"id"]];
         UIImage *titleImage;
-        if (storiesCollection.isSocialRiverView &&
+        if (isDashboard) {
+            titleImage = [UIImage imageNamed:@"saved-stories"];
+        } else if (storiesCollection.isSocialRiverView &&
             [storiesCollection.activeFolder isEqualToString:@"river_global"]) {
             titleImage = [UIImage imageNamed:@"global-shares"];
         } else if (storiesCollection.isRiverView &&
@@ -5005,9 +5108,6 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"everything"]) {
             titleImage = [UIImage imageNamed:@"all-stories"];
-        } else if (storiesCollection.isRiverView &&
-                   [storiesCollection.activeFolder isEqualToString:@"dashboard"]) {
-            titleImage = [UIImage imageNamed:@"saved-stories"];
         } else if (storiesCollection.isRiverView &&
                    [storiesCollection.activeFolder isEqualToString:@"infrequent"]) {
             titleImage = [UIImage imageNamed:@"ak-icon-infrequent.png"];

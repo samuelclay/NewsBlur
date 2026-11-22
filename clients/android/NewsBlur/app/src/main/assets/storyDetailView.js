@@ -40,22 +40,53 @@ function NB_open_story_image(image, show_actions) {
         !image.complete || image.naturalWidth <= 1 || image.naturalHeight <= 1) return false;
     var src = image.currentSrc || image.src;
     if (!/^(https?:|data:image\/)/i.test(src)) return false;
-    var browser_src = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src) ?
-        image.getAttribute('data-nb-original-src') : src;
+    var cached = /^https:\/\/appassets\.androidplatform\.net\/images\//i.test(src);
+    var original_src = image.getAttribute('data-nb-original-src');
+    var browser_src = cached ? original_src : src;
+    var thumbnail_src = null;
+    var link = image.closest('a[href]');
+    if (link && link.href !== src) {
+        var public_link = /^https?:$/i.test(link.protocol) && link.hostname !== 'appassets.androidplatform.net';
+        var links_to_photo = public_link && (link.href === image.src || link.href === original_src ||
+            /\.(?:jpe?g|png|gif|webp|avif|bmp|ico)$/i.test(link.pathname));
+        if (links_to_photo) {
+            if (link.href !== browser_src) {
+                thumbnail_src = src;
+                src = link.href;
+            }
+            browser_src = link.href;
+        } else if (!show_actions) {
+            return false;
+        }
+    }
     var token = image.getAttribute('data-nb-viewer-token');
     if (!token) {
         token = String(++NB_story_image_sequence);
         image.setAttribute('data-nb-viewer-token', token);
     }
-    var link = image.closest('a[href]');
     window.NewsBlurImages.postMessage(JSON.stringify({
         generation: load.content, token: token, src: src, title: image.alt || image.title || 'Story image',
-        browserSrc: browser_src,
+        browserSrc: browser_src, thumbnailSrc: thumbnail_src,
         hoverText: image.title || '', showActions: show_actions === true,
         link: show_actions === true && link && /^https?:/i.test(link.href) ? link.href : null,
         naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
         rect: NB_story_image_rect(token, load.content)
     }));
+    return true;
+}
+
+// storyDetailView.js hit-tests native tap candidates; ReaderTapGestures.kt confirms before revealing controls.
+function NB_is_blank_story_tap_at(x, y, native_width) {
+    if (!(native_width > 0)) return false;
+    var viewport = window.visualViewport;
+    var scale = (viewport ? viewport.width : document.documentElement.clientWidth) / native_width;
+    var target = document.elementFromPoint(x * scale + (viewport ? viewport.offsetLeft : 0),
+        y * scale + (viewport ? viewport.offsetTop : 0));
+    var selection = window.getSelection && window.getSelection();
+    if (!target || !target.closest || !target.closest('.NB-story') ||
+        target.closest('a,button,input,textarea,select,label,summary,img,video,audio,iframe,' +
+            '[contenteditable],[role="button"],[role="link"],.NB-media-card') ||
+        (selection && !selection.isCollapsed)) return false;
     return true;
 }
 

@@ -19,7 +19,14 @@ struct DiscoverSearchBarView: View {
     var body: some View {
         Group {
             if let viewMode {
-                if #available(iOS 16.0, *) {
+                if UIDevice.current.userInterfaceIdiom == .phone {
+                    HStack(spacing: 8) {
+                        // DiscoverSearchBarView.swift keeps phone tags full width by fitting an icon picker beside search.
+                        searchField.frame(minWidth: 120, maxWidth: .infinity)
+                        DiscoverViewModePicker(viewMode: viewMode, compact: true)
+                            .fixedSize()
+                    }
+                } else if #available(iOS 16.0, *) {
                     ViewThatFits(in: .horizontal) {
                         HStack(spacing: 8) {
                             // DiscoverSearchBarView.swift reserves editable text width beside the search icon and clear button.
@@ -89,10 +96,13 @@ struct DiscoverSearchBarView: View {
 @available(iOS 15.0, *)
 struct DiscoverViewModePicker: View {
     @Binding var viewMode: DiscoverSitesFeedViewMode
+    var compact = false
 
     var body: some View {
         Group {
-            if #available(iOS 16.0, *) {
+            if compact {
+                modeButtons(stackedLabels: false)
+            } else if #available(iOS 16.0, *) {
                 ViewThatFits(in: .horizontal) {
                     modeButtons(stackedLabels: false)
                     modeButtons(stackedLabels: true)
@@ -118,7 +128,9 @@ struct DiscoverViewModePicker: View {
     private func modeButton(_ mode: DiscoverSitesFeedViewMode, title: String, icon: String, stackedLabel: Bool) -> some View {
         Button { viewMode = mode } label: {
             Group {
-                if stackedLabel {
+                if compact {
+                    Image(systemName: icon)
+                } else if stackedLabel {
                     VStack(spacing: 4) {
                         Image(systemName: icon)
                         Text(title)
@@ -128,9 +140,9 @@ struct DiscoverViewModePicker: View {
                         .labelStyle(.titleAndIcon)
                 }
             }
-            .font(.subheadline.weight(.medium))
-            .padding(.horizontal, 12)
-            .frame(minHeight: 44)
+            .font(compact ? .system(size: 16, weight: .medium) : .subheadline.weight(.medium))
+            .padding(.horizontal, compact ? 0 : 12)
+            .frame(minWidth: compact ? 44 : 0, minHeight: 44)
             .foregroundColor(viewMode == mode ? DiscoverColors.textPrimary : DiscoverColors.textSecondary)
             .background(viewMode == mode ? DiscoverColors.cardBackground : Color.clear, in: Capsule())
         }

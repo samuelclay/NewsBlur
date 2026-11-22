@@ -83,6 +83,25 @@
         return res.sendStatus(500);
       });
     });
+    // Feed.expire_original_page (apps/rss_feeds/models.py) deletes a page nobody has opened
+    // in a month. A file that's already gone counts as deleted.
+    app.delete(/^\/original_page\/(\d+)\/?/, function(req, res) {
+      var feedId, feedIdDir, filePath;
+      feedId = parseInt(req.params[0], 10);
+      feedIdDir = splitFeedId(feedId);
+      filePath = `${DB_PATH}/${feedIdDir}.zhtml`;
+      return fsPromises.unlink(filePath).then(function() {
+        log.debug(`Deleting: ${feedId} (${filePath})`);
+        return res.send("OK");
+      }).catch(function(err) {
+        if (err.code === 'ENOENT') {
+          return res.send("OK");
+        } else {
+          log.debug(`Error deleting original page: ${feedId} (${filePath}) ${err}`);
+          return res.sendStatus(500);
+        }
+      });
+    });
     splitFeedId = function(feedId) {
       var rgx;
       feedId += '';

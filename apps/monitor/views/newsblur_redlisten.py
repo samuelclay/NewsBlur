@@ -17,6 +17,8 @@ POLL_FIELDS = (
     "polled_batches",
     "result_budget",
     "request_budget",
+    "set_aside_requests",
+    "set_aside_results",
     "expected_results",
     "spent_results",
     "spent_requests",
@@ -30,8 +32,9 @@ class RedListen(View):
         """
         Prometheus metrics for the RedListen Reddit budget (utils/redlisten.py): this
         month's requests and results against the plan and the 99% background cap,
-        today's spend by the poller, scheduled feed fetches and one-offs, and the
-        latest hourly poll (utils/redlisten_poller.py).
+        today's and the last 24 hours' spend by the poller, scheduled feed fetches and
+        one-offs, the month-end projection at that pace, and the latest hourly poll
+        (utils/redlisten_poller.py).
         """
         chart_name = "redlisten"
         formatted_data = {}
@@ -59,6 +62,22 @@ class RedListen(View):
                 formatted_data[
                     f"today_{kind}_{unit}"
                 ] = f'{chart_name}{{metric="today_{unit}",kind="{kind}"}} {value}'
+            # Rolling 24 hours, the pace the poller sets aside for (utils/redlisten_poller.py).
+            last_day_requests, last_day_results = budget.last_day_spend(kind)
+            formatted_data[
+                f"last_day_{kind}_requests"
+            ] = f'{chart_name}{{metric="last_day_requests",kind="{kind}"}} {last_day_requests:.0f}'
+            formatted_data[
+                f"last_day_{kind}_results"
+            ] = f'{chart_name}{{metric="last_day_results",kind="{kind}"}} {last_day_results:.0f}'
+
+        projected_requests, projected_results = budget.projected_month()
+        formatted_data[
+            "projected_month_requests"
+        ] = f'{chart_name}{{metric="projected_month_requests"}} {projected_requests:.0f}'
+        formatted_data[
+            "projected_month_results"
+        ] = f'{chart_name}{{metric="projected_month_results"}} {projected_results:.0f}'
 
         try:
             last_poll = json.loads(r.get(LAST_POLL_KEY) or "{}")

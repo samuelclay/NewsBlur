@@ -67,7 +67,10 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         "change .NB-listen-filter-select": "change_filter",
         "click .NB-listen-filter-clear": "clear_filter",
         "click .NB-listen-filters-reset": "clear_filters",
-        "click .NB-listen-voice": "click_voice",
+        "click .NB-listen-voice-use": "click_voice",
+        "click .NB-listen-voice-add": "click_voice_add",
+        "click .NB-listen-rotation-remove": "click_rotation_remove",
+        "click .NB-listen-rotation-jump": "click_rotation_jump",
         "click .NB-listen-voice-preview": "click_voice_preview",
         "click .NB-listen-option": "change_option",
         "click .NB-listen-finetune-toggle": "toggle_finetune",
@@ -111,6 +114,7 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         this.listenTo(this.media_player, 'listen:manifest', function (manifest) {
             this.manifest = manifest;
             this.render_status();
+            this.render_rotation();
         });
         this.listenTo(this.media_player, 'listen:usage', this.render_usage);
         this.listenTo(this.media_player, 'playback_rate_changed', function (rate) {
@@ -152,6 +156,7 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
                 ])
             ], 'NB-listen-voice-section'),
             $.make('div', { className: 'NB-listen-voice-browser' }, [
+                $.make('div', { className: 'NB-listen-rotation' }),
                 // listen_settings_popover.js: type "text", because jquery.hotkeys only stands down
                 // for text inputs, and a search input would let s, m, y and space act on the story.
                 $.make('input', {
@@ -161,7 +166,7 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
                     'aria-label': gettext('Search voices')
                 }),
                 $.make('div', { className: 'NB-listen-filters' }),
-                $.make('div', { className: 'NB-listen-voice-list', role: 'listbox' }),
+                $.make('div', { className: 'NB-listen-voice-list', role: 'group', 'aria-label': gettext('Voices') }),
                 $.make('div', { className: 'NB-listen-status' })
             ]),
             this.make_section(gettext('Delivery'), gettext('How much emotion'), [
@@ -397,22 +402,26 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         var data = this.voices_data;
         if (data && data.selected && data.selected[language]) return data.selected[language];
         if (data && data.defaults && data.defaults[language]) return data.defaults[language];
+        if (this.manifest && this.manifest.language === language && this.manifest.voice) {
+            return this.manifest.voice.voice_id;
+        }
         return null;
     },
 
     recommended_voices: function () {
         var voices = (this.voices_by_language[this.language] || []).slice();
-        var selected_id = this.selected_voice_id();
-        var cached = NEWSBLUR.ListenSettingsPopover.voice_cache[selected_id];
-        if (selected_id && cached && cached.language === this.language &&
-            !_.any(voices, function (v) { return v.voice_id === selected_id; })) {
-            // listen_settings_popover.js: A voice picked from the library stays at the top.
-            voices.unshift(cached);
-        }
-        return voices;
+        // listen_settings_popover.js: Keep chosen library voices reachable after reopening the
+        // picker, even when their original library page hasn't been loaded in this session.
+        var chosen = _.map(this.rotation_voices(), function (voice) {
+            return NEWSBLUR.ListenSettingsPopover.voice_cache[voice.voice_id] || voice;
+        });
+        return _.reject(chosen, function (voice) {
+            return _.any(voices, function (candidate) { return candidate.voice_id === voice.voice_id; });
+        }).concat(voices);
     },
 
     render_voice_list: function () {
+        this.render_rotation();
         var $list = this.$('.NB-listen-voice-list');
         var scroll_top = $list.scrollTop();
         var all_recommended = this.recommended_voices();
@@ -422,7 +431,6 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
             return _.contains(recommended_ids, voice.voice_id);
         });
         var curated_loaded = !!this.voices_by_language[this.language];
-        var selected_voice_id = this.selected_voice_id();
 
         $list.empty();
         if (!recommended.length && !more.length) {
@@ -442,13 +450,13 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
             $list.append(this.make_list_header(title, this.has_filters() ?
                 interpolate(ngettext('%(count)s match', '%(count)s matches', recommended.length), { count: recommended.length }, true) : ''));
             _.each(recommended, function (voice) {
-                $list.append(this.make_voice_row(voice, voice.voice_id === selected_voice_id));
+                $list.append(this.make_voice_row(voice));
             }, this);
         }
         if (more.length || this.library.loading) {
             $list.append(this.make_list_header(gettext('More voices'), ''));
             _.each(more, function (voice) {
-                $list.append(this.make_voice_row(voice, voice.voice_id === selected_voice_id));
+                $list.append(this.make_voice_row(voice));
             }, this);
             if (this.library.loading) $list.append(this.make_loading_row());
         }
@@ -469,37 +477,54 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         ]);
     },
 
-    make_voice_row: function (voice, is_selected) {
+    make_voice_row: function (voice) {
         NEWSBLUR.ListenSettingsPopover.voice_cache[voice.voice_id] = voice;
+        var rotation = this.rotation_voices();
+        var in_rotation = _.contains(_.pluck(rotation, 'voice_id'), voice.voice_id);
+        var is_selected = in_rotation && rotation.length === 1;
+        var action_label = is_selected ? gettext('Selected') :
+            (rotation.length > 1 ? gettext('Use only this voice') : gettext('Use voice'));
         var traits = _.compact(_.map(this.TRAITS, function (trait) {
             return this.filter_label(trait, voice[trait]);
         }, this)).join(' · ');
         // listen_settings_popover.js: $.make inserts text as HTML, and library voice names and
         // descriptions are written by ElevenLabs users, so everything here is escaped.
         return $.make('div', {
-            className: 'NB-listen-voice' + (is_selected ? ' NB-selected' : ''),
+            className: 'NB-listen-voice' + (in_rotation ? ' NB-selected' : ''),
             'data-voice-id': voice.voice_id,
-            role: 'option',
-            'aria-selected': is_selected ? 'true' : 'false'
+            role: 'group',
+            'aria-label': voice.name
         }, [
-            $.make('div', { className: 'NB-listen-voice-check' }, is_selected ? this.SVG_CHECK : ''),
-            $.make('div', { className: 'NB-listen-voice-text' }, [
+            $.make('div', { className: 'NB-listen-voice-check' }, in_rotation ? this.SVG_CHECK : ''),
+            $.make('button', {
+                type: 'button', className: 'NB-listen-voice-text NB-listen-voice-use',
+                disabled: is_selected,
+                title: is_selected ? gettext('Selected') :
+                    interpolate(gettext('Use %(voice)s only'), { voice: voice.name }, true)
+            }, [
                 $.make('div', { className: 'NB-listen-voice-title' }, [
                     $.make('span', { className: 'NB-listen-voice-name' }, _.escape(voice.name)),
                     voice.description && $.make('span', { className: 'NB-listen-voice-description' }, _.escape(voice.description))
                 ]),
-                traits && $.make('div', { className: 'NB-listen-voice-traits' }, _.escape(traits))
+                traits && $.make('div', { className: 'NB-listen-voice-traits' }, _.escape(traits)),
+                $.make('span', { className: 'NB-listen-voice-action-label' }, action_label)
             ]),
-            this.make_preview_button(voice.voice_id)
+            this.make_preview_button(voice.voice_id),
+            $.make('button', {
+                type: 'button', className: 'NB-listen-voice-add', disabled: in_rotation,
+                title: in_rotation ? gettext('In rotation') : gettext('Add to rotation'),
+                'aria-label': interpolate(gettext('Add %(voice)s to rotation'), { voice: voice.name }, true)
+            }, in_rotation ? this.SVG_CHECK : '+')
         ]);
     },
 
     make_preview_button: function (voice_id) {
         var state = this.preview_state(voice_id);
-        return $.make('div', {
+        return $.make('button', {
+            type: 'button',
             className: 'NB-listen-voice-preview' + (state ? ' NB-' + state : ''),
             title: state ? gettext('Stop preview') : gettext('Preview this voice'),
-            role: 'button'
+            'aria-label': state ? gettext('Stop preview') : gettext('Preview this voice')
         }, state === 'loading' ? '<div class="NB-listen-spinner"></div>' :
             (state === 'playing' ? this.SVG_STOP : this.SVG_PLAY));
     },
@@ -699,6 +724,9 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         NEWSBLUR.assets.listen_library(params, _.bind(function (data) {
             if (!this._open || request_id !== this.library.request_id) return;
             this.library.loading = false;
+            _.each(data.voices || [], function (voice) {
+                NEWSBLUR.ListenSettingsPopover.voice_cache[voice.voice_id] = voice;
+            });
             this.library.voices = this.library.voices.concat(data.voices || []);
             this.library.has_more = !!data.has_more;
             this.render_voice_list();
@@ -783,30 +811,134 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         this.apply_filters();
     },
 
-    click_voice: function (e) {
-        if ($(e.target).closest('.NB-listen-voice-preview').length) return;
-        var voice_id = $(e.currentTarget).attr('data-voice-id');
-        if (!voice_id || voice_id === this.selected_voice_id()) return;
-        var language = this.language;
-        var voices = {};
-        try {
-            voices = JSON.parse(NEWSBLUR.assets.preference('listen_voices') || '{}') || {};
-        } catch (err) {
-            voices = {};
-        }
-        voices[language] = voice_id;
-        var check = this.SVG_CHECK;
-        this.$('.NB-listen-voice').each(function () {
-            var is_selected = $(this).attr('data-voice-id') === voice_id;
-            $(this).toggleClass('NB-selected', is_selected).attr('aria-selected', is_selected ? 'true' : 'false')
-                .find('.NB-listen-voice-check').html(is_selected ? check : '');
+    // listen_settings_popover.js: A normal pick replaces the mix. Adding or removing voices
+    // affects the next story only; the paragraph playing now keeps its narrator.
+    voice_entry: function (voice_id) {
+        var voice = _.find((this.voices_by_language || {})[this.language] || [], function (candidate) {
+            return candidate.voice_id === voice_id;
         });
+        if (!voice && this.manifest && this.manifest.voice && this.manifest.voice.voice_id === voice_id) {
+            voice = this.manifest.voice;
+        }
+        if (!voice) voice = NEWSBLUR.ListenSettingsPopover.voice_cache[voice_id];
+        return { voice_id: voice_id, name: voice ? voice.name : gettext('Current voice') };
+    },
 
-        NEWSBLUR.assets.preference('listen_voices', JSON.stringify(voices), _.bind(function () {
-            if (this.media_player.is_listen() && language === this.story_language) {
+    rotation_voices: function () {
+        var rotation = this.media_player.listen_voice_rotations()[this.language];
+        if (rotation && rotation.length) return rotation;
+        var selected = this.selected_voice_id();
+        return selected ? [this.voice_entry(selected)] : [];
+    },
+
+    render_rotation: function () {
+        var voices = this.rotation_voices();
+        var is_rotation = voices.length > 1;
+        var $rotation = this.$('.NB-listen-rotation').empty().toggleClass('NB-single-voice', !is_rotation);
+        $rotation.append($.make('div', { className: 'NB-listen-rotation-title' },
+            is_rotation ? gettext('Voice rotation') : gettext('Selected voice')));
+        if (is_rotation) {
+            $rotation.append($.make('div', { className: 'NB-listen-rotation-description' },
+                gettext('One voice per story, in this order.')));
+        }
+        var $voices = $.make('ol', { className: 'NB-listen-rotation-voices' });
+        _.each(voices, function (voice, index) {
+            var name = voice.name || this.voice_entry(voice.voice_id).name;
+            $voices.append($.make('li', { className: 'NB-listen-rotation-voice' }, [
+                $.make('button', {
+                    type: 'button', className: 'NB-listen-rotation-jump', 'data-voice-id': voice.voice_id,
+                    title: interpolate(gettext('Find %(voice)s in the voice list'), { voice: name }, true)
+                }, [
+                    is_rotation && $.make('span', { className: 'NB-listen-rotation-number' }, String(index + 1)),
+                    $.make('span', { className: 'NB-listen-rotation-name' }, _.escape(name))
+                ]),
+                is_rotation && $.make('button', {
+                    type: 'button', className: 'NB-listen-rotation-remove', 'data-voice-id': voice.voice_id,
+                    title: interpolate(gettext('Remove %(voice)s from rotation'), { voice: name }, true),
+                    'aria-label': interpolate(gettext('Remove %(voice)s from rotation'), { voice: name }, true)
+                }, this.SVG_CLEAR)
+            ]));
+        }, this);
+        $rotation.append($voices);
+    },
+
+    click_rotation_jump: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var voice_id = $(e.currentTarget).attr('data-voice-id');
+        var find_row = _.bind(function () {
+            return this.$('.NB-listen-voice').filter(function () {
+                return $(this).attr('data-voice-id') === voice_id;
+            }).first();
+        }, this);
+        var $row = find_row();
+        if (!$row.length) {
+            // listen_settings_popover.js: Reveal a chosen voice hidden by search or filters.
+            this.clear_filters();
+            $row = find_row();
+        }
+        var list = this.$('.NB-listen-voice-list')[0];
+        if (!list || !$row.length) return;
+        var row = $row[0];
+        var top = list.scrollTop + row.getBoundingClientRect().top - list.getBoundingClientRect().top;
+        list.scrollTop = Math.max(0, top - (list.clientHeight - row.offsetHeight) / 2);
+    },
+
+    save_rotation: function (rotation, use_voice, callback) {
+        var language = this.language;
+        var rotations = this.media_player.listen_voice_rotations();
+        rotations[language] = rotation;
+        var preferences = { listen_voice_rotations: JSON.stringify(rotations) };
+        var voices;
+        try { voices = JSON.parse(NEWSBLUR.assets.preference('listen_voices') || '{}'); }
+        catch (err) { voices = {}; }
+        if (!voices || _.isArray(voices) || !_.isObject(voices)) voices = {};
+        if (voices[language] !== rotation[0].voice_id) {
+            voices[language] = rotation[0].voice_id;
+            preferences.listen_voices = JSON.stringify(voices);
+        }
+        if (use_voice) this.media_player.listen_rotation_positions[language] = use_voice;
+        NEWSBLUR.assets.save_preferences(preferences, callback);
+        this.render_voice_list();
+        this.render_status();
+        this.fit_list_height();
+    },
+
+    click_voice: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var voice_id = $(e.currentTarget).closest('.NB-listen-voice').attr('data-voice-id');
+        if (!voice_id) return;
+        this.stop_preview();
+        var language = this.language;
+        this.save_rotation([this.voice_entry(voice_id)], voice_id, _.bind(function () {
+            var rotation = this.media_player.listen_voice_rotations()[language] || [];
+            if (rotation.length === 1 && rotation[0].voice_id === voice_id &&
+                this.media_player.is_listen() && language === this.story_language) {
                 this.media_player.listen_restart({ voice_id: voice_id });
             }
         }, this));
+    },
+
+    click_voice_add: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var voice_id = $(e.currentTarget).closest('.NB-listen-voice').attr('data-voice-id');
+        if (!voice_id) return;
+        var rotation = this.rotation_voices().slice();
+        if (_.contains(_.pluck(rotation, 'voice_id'), voice_id)) return;
+        rotation.push(this.voice_entry(voice_id));
+        this.save_rotation(rotation);
+    },
+
+    click_rotation_remove: function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var voice_id = $(e.currentTarget).attr('data-voice-id');
+        var rotation = this.rotation_voices();
+        if (rotation.length < 2) return;
+        rotation = _.reject(rotation, function (voice) { return voice.voice_id === voice_id; });
+        this.save_rotation(rotation);
     },
 
     click_voice_preview: function (e) {

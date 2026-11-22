@@ -1414,6 +1414,10 @@ msgstr[3] "أضف %(count)s وسوم للقصة"
 msgstr[4] "أضف %(count)s وسمًا للقصة"
 msgstr[5] "أضف %(count)s وسم للقصة"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "إضافة %(voice)s إلى التناوب"
+
 msgid "Add Folder"
 msgstr "إضافة مجلد"
 
@@ -1476,6 +1480,9 @@ msgstr "إضافة إلى التالي"
 
 msgid "Add to folder"
 msgstr "أضف إلى مجلد"
+
+msgid "Add to rotation"
+msgstr "إضافة إلى التناوب"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1690,6 +1697,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "في أي وقت"
+
+msgid "Appearance"
+msgstr "المظهر"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2487,6 +2497,9 @@ msgstr "إبداعي"
 
 msgid "Credit"
 msgstr "رصيد"
+
+msgid "Current voice"
+msgstr "الصوت الحالي"
 
 msgid "Cursors"
 msgstr "المؤشرات"
@@ -3376,6 +3389,10 @@ msgstr "التمويل"
 msgid "Find %(value_1)s Friends"
 msgstr "العثور على أصدقاء من %(value_1)s"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "العثور على %(voice)s في قائمة الأصوات"
+
 msgid "Find Friends"
 msgstr "البحث عن أصدقاء"
 
@@ -3580,12 +3597,6 @@ msgstr "مجاني + اشتراك · Mac وiPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "مجاني + اشتراك · iPhone وiPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "نسخة تجريبية مجانية · Mac وiPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "نسخة تجريبية مجانية · iPhone وiPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "مجاني · Android وiPhone وiPad &amp; Mac"
 
@@ -3680,6 +3691,9 @@ msgstr "عرض كامل"
 
 msgid "Full-Text Search"
 msgstr "بحث في النص الكامل"
+
+msgid "Full-screen list"
+msgstr "قائمة بملء الشاشة"
 
 msgid "Full-text search across all stories"
 msgstr "بحث بالنص الكامل في جميع القصص"
@@ -4048,6 +4062,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "في نافذة جديدة"
 
+msgid "In rotation"
+msgstr "ضمن التناوب"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -4087,6 +4104,9 @@ msgstr "قصص المواقع قليلة التحديث"
 
 msgid "Infrequent stories per month"
 msgstr "حد القصص الشهري للمواقع قليلة التحديث"
+
+msgid "Inline list"
+msgstr "قائمة مضمّنة"
 
 msgid "Insta-fetch stories"
 msgstr "جلب القصص فورًا"
@@ -4169,6 +4189,9 @@ msgstr "العناوين فقط مع أقل قدر من التعليق"
 msgid "Just the headlines, no commentary"
 msgstr "العناوين فقط، بلا تعليق"
 
+msgid "Keep fades, without movement."
+msgstr "الاحتفاظ بالتلاشي دون حركة."
+
 msgid "Keep others unread"
 msgstr "إبقاء القصص الأخرى غير مقروءة"
 
@@ -4229,6 +4252,9 @@ msgstr "آخر تحديث"
 
 msgid "Last seen:"
 msgstr "آخر ظهور:"
+
+msgid "Layout"
+msgstr "التخطيط"
 
 msgid "Leave unread"
 msgstr "اتركها غير مقروءة"
@@ -4317,6 +4343,9 @@ msgstr "جارٍ تحميل الخلاصات..."
 
 msgid "Loading more briefings..."
 msgstr "جارٍ تحميل المزيد من الموجزات..."
+
+msgid "Loading the next unread story..."
+msgstr "جارٍ تحميل القصة التالية غير المقروءة..."
 
 msgid "Loading voices..."
 msgstr "جارٍ تحميل الأصوات..."
@@ -4903,6 +4932,9 @@ msgstr "الخطوة التالية "
 msgid "Next story"
 msgstr "القصة التالية"
 
+msgid "Next unread"
+msgstr "غير المقروءة التالية"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "بعد ذلك، أنشئ فلترًا يضم جميع نشراتك الإخبارية لإعادة توجيهها إلى العنوان المخصص على NewsBlur."
 
@@ -5215,6 +5247,16 @@ msgid "Old password"
 msgstr "كلمة المرور القديمة"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "أقدم من %(count)s يومًا"
+msgstr[1] "أقدم من %(count)s يوم"
+msgstr[2] "أقدم من %(count)s يومين"
+msgstr[3] "أقدم من %(count)s أيام"
+msgstr[4] "أقدم من %(count)s يومًا"
+msgstr[5] "أقدم من %(count)s يوم"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "أقدم من: %(day)s %(month)s %(year)s"
 
@@ -5244,6 +5286,9 @@ msgstr "أمر واحد باستخدام Docker"
 
 msgid "One sentence"
 msgstr "جملة واحدة"
+
+msgid "One voice per story, in this order."
+msgstr "صوت واحد لكل مقالة، بهذا الترتيب."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "اشترك بنقرة واحدة في أي موقع لديه خلاصة. استخدم رابط إضافة موقع مخصص من علامة تبويب الإضافات."
@@ -6005,6 +6050,9 @@ msgstr "تم الاسترداد"
 msgid "Reduce clutter in your river of stories"
 msgstr "قلّل الفوضى في سيل القصص لديك"
 
+msgid "Reduce motion"
+msgstr "تقليل الحركة"
+
 msgid "Refer"
 msgstr "إحالة"
 
@@ -6057,6 +6105,10 @@ msgstr "تذكّر موضع التشغيل لكل حلقة"
 
 msgid "Remove"
 msgstr "إزالة"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "إزالة %(voice)s من التناوب"
 
 msgid "Remove from Up Next"
 msgstr "إزالة من التالي"
@@ -6537,6 +6589,12 @@ msgstr "حدّد جزءًا من عنوان URL لمطابقته مع أنماط
 
 msgid "Select title phrase"
 msgstr "اختيار عبارة العنوان"
+
+msgid "Selected"
+msgstr "محدد"
+
+msgid "Selected voice"
+msgstr "الصوت المحدد"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "يؤدي تحديد قصة من قائمة عناوين القصص إلى وضع علامة «مقروءة» عليها."
@@ -7105,6 +7163,12 @@ msgstr "القصص الأقدم من %(date)s"
 msgid "Stories on %(date)s"
 msgstr "القصص في %(date)s"
 
+msgid "Stories open inside the list"
+msgstr "تُفتح القصص داخل القائمة"
+
+msgid "Stories open on their own screen"
+msgstr "تُفتح القصص على شاشة مستقلة"
+
 msgid "Stories per day"
 msgstr "القصص يوميًا"
 
@@ -7155,6 +7219,9 @@ msgstr "تنسيق القصة"
 
 msgid "Story URL"
 msgstr "رابط القصة"
+
+msgid "Story cards open on their own screen"
+msgstr "تُفتح بطاقات القصص على شاشة مستقلة"
 
 msgid "Story clustering"
 msgstr "تجميع القصص"
@@ -8206,11 +8273,18 @@ msgstr "الفوترة حسب الاستخدام مفعّلة لمصنّفات �
 msgid "Use %(language)s"
 msgstr "استخدم %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "استخدام %(voice)s فقط"
+
 msgid "Use 12-hour clock"
 msgstr "استخدام تنسيق 12 ساعة"
 
 msgid "Use 24-hour clock"
 msgstr "استخدم تنسيق 24 ساعة"
+
+msgid "Use only this voice"
+msgstr "استخدام هذا الصوت فقط"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "استخدم قوالب المطالبات لفرز البريد الوارد، والبحث في الموضوعات، ومراجعة الخلاصات"
@@ -8220,6 +8294,9 @@ msgstr "استخدم قائمة سياق المتصفح الأصلية"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "استخدم قالب عنوان URL هذا في إضافات المتصفح وقارئات الخلاصات للاشتراك في NewsBlur."
+
+msgid "Use voice"
+msgstr "استخدام الصوت"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "استخدم الأدوات المصغّرة للاطلاع على أعداد غير المقروء والقصص بنظرة سريعة"
@@ -8297,8 +8374,14 @@ msgstr "الصوت"
 msgid "Voice recording failed. Please try again."
 msgstr "فشل التسجيل الصوتي. يُرجى المحاولة مرة أخرى."
 
+msgid "Voice rotation"
+msgstr "تناوب الأصوات"
+
 msgid "Voice settings"
 msgstr "إعدادات الصوت"
+
+msgid "Voices"
+msgstr "الأصوات"
 
 msgid "Waiting for a verdict…"
 msgstr "بانتظار النتيجة…"

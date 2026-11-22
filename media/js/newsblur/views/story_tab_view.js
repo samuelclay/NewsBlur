@@ -15,7 +15,8 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
     // = Actions =
     // ===========
 
-    prepare_story: function (story, is_temporary) {
+    prepare_story: function (story, is_temporary, options) {
+        options = options || {};
         if (!story) story = NEWSBLUR.reader.active_story;
         if (!story) return;
         var feed = NEWSBLUR.assets.get_feed(story.get('story_feed_id'));
@@ -27,7 +28,12 @@ NEWSBLUR.Views.StoryTabView = Backbone.View.extend({
                 NEWSBLUR.app.taskbar_info.show_stories_error({}, gettext("Sorry, the original story<br />could not be proxied."));
             }
         } else {
-            NEWSBLUR.reader.switch_taskbar_view('story', { skip_save_type: is_temporary ? 'story' : false });
+            // story_tab_view.js: options.slide comes from Enter or a click that opens Story view by hand,
+            // so reader.js position_story_pane slides over instead of jumping.
+            NEWSBLUR.reader.switch_taskbar_view('story', {
+                skip_save_type: is_temporary ? 'story' : false,
+                slide: options.slide
+            });
         }
     },
 

@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "NewsBlur 17 ile okuma deneyimi daha canlı. Akışlar, klasör başlıkları, haber başlıkları ve makale bölümleri ekrandaki sıralarına göre animasyonla belirir. Tümü, Okunmamış, Odak ve Kaydedildi arasında geçişler hızlı ve akıcıdır.\n\nDaha az hareket mi istiyorsunuz? Tercihler > Görünüm bölümündeki yeni Hareketi azalt düğmesi, yumuşak belirme ve kaybolma efektlerini korurken kaymayı ve ölçeklemeyi kaldırır. Varsayılan olarak kapalıdır.\n\nBu sürüm ayrıca Gri modda haber yüklemeyi daha akıcı hâle getirir, iPhone’da keşif etiketlerine daha fazla alan açar ve iPhone ile iPad’de iletişim kutularını ve denetimleri iyileştirir."
+  },
+  "macos": {
+    "whats_new": "NewsBlur 17 ile okuma deneyimi daha canlı. Akışlar, klasör başlıkları, haber başlıkları ve makale bölümleri ekrandaki sıralarına göre animasyonla belirir. Tümü, Okunmamış, Odak ve Kaydedildi arasında geçişler hızlı ve akıcıdır.\n\nDaha az hareket mi istiyorsunuz? Tercihler > Görünüm bölümündeki yeni Hareketi azalt düğmesi, yumuşak belirme ve kaybolma efektlerini korurken kaymayı ve ölçeklemeyi kaldırır. Varsayılan olarak kapalıdır.\n\nBu sürüm ayrıca Mac okuyucu çerçevesini, keşif denetimlerini ve haberler arasındaki geçişleri iyileştirir."
+  },
+  "android": {
+    "release_notes": "NewsBlur 17; akışlara, klasörlere, haber başlıklarına ve makalelere canlı, sıralı animasyonlar getirir. Tümü, Okunmamış, Odak ve Kaydedildi arasında hızlı geçiş yapın. Tercihler > Görünüm’de Hareketi azalt seçeneği hareketi kaldırır, belirme ve kaybolma efektlerini korur. Varsayılan olarak kapalıdır. Telefonlarda keşif etiketlerine daha çok yer ayrılır; tabletlerde ekran döndürüldüğünde iletişim kutuları daha iyi çalışır."
+  }
+}

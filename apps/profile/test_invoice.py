@@ -1,9 +1,10 @@
 import datetime
+import re
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.db import connection
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
@@ -125,6 +126,21 @@ class Test_InvoiceDetails(TestCase):
             form.save()
         writes = [query["sql"] for query in queries if query["sql"].startswith('UPDATE "profile_profile"')]
         self.assertFalse(any('"preferences" =' in query for query in writes), writes)
+
+    def test_invoice_waits_for_licensed_fonts_before_printing_only_on_newsblur(self):
+        # test_invoice.py: invoice.xhtml prints as soon as it loads, so on NewsBlur's own domains its font
+        # stylesheet must block the print script, and a self-hosted install must not request it at all.
+        for newsblur_url, loads_fonts in (
+            ("https://www.newsblur.com", True),
+            ("https://news.example.org", False),
+        ):
+            with self.subTest(newsblur_url=newsblur_url), override_settings(NEWSBLUR_URL=newsblur_url):
+                html = self.client.get(self.url).content.decode()
+                self.assertEqual("cloud.typography.com" in html, loads_fonts)
+                font_links = [
+                    link for link in re.findall(r"<link\b[^>]*>", html) if "cloud.typography.com" in link
+                ]
+                self.assertTrue(all('rel="stylesheet"' in link for link in font_links), font_links)
 
     def test_generic_preferences_cannot_overwrite_account_invoice_details(self):
         self.save_details(invoice_text="Original")

@@ -6636,6 +6636,25 @@ a.mention, a.mention-group {
     fill: #a99cf5;
 }
 
+/* darkmode.css: Keep the voice controls readable on the dark popover surface. */
+.NB-dark .NB-listen-voice-action-label,
+.NB-dark .NB-listen-voice-add {
+    color: #a99cf5;
+}
+
+.NB-dark .NB-listen-rotation {
+    color: #d0d0d0;
+    background: rgba(150, 135, 245, 0.08);
+}
+
+.NB-dark .NB-listen-rotation-voice {
+    background: rgba(150, 135, 245, 0.12);
+}
+
+.NB-dark .NB-listen-rotation.NB-single-voice {
+    background: transparent;
+}
+
 .NB-dark .NB-listen-voice-title {
     color: #d0d0d0;
 }

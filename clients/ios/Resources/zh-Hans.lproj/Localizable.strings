@@ -108,6 +108,7 @@
 "Add" = "添加";
 "Add %1$@ feeds to “%2$@” folder" = "将 %1$@ 个订阅源添加到“%2$@”文件夹";
 "Add %@" = "添加 %@";
+"Add %@ to rotation" = "将 %@ 加入轮换";
 "Add + Discover Sites" = "添加 + 发现网站";
 "Add Site" = "添加网站";
 "Add Sites" = "添加网站";
@@ -175,6 +176,7 @@
 "Analyzing images..." = "正在分析图片…";
 "App Badge" = "应用角标";
 "App Icon" = "应用图标";
+"Appearance" = "外观";
 "Apply training across a folder" = "将训练应用于整个文件夹";
 "Apply training globally" = "全局应用训练";
 "Arctic Cyan" = "北极青";
@@ -285,6 +287,7 @@
 "Custom Search Query" = "自定义搜索查询";
 "Custom [listen delivery]" = "自定义";
 "Custom feed title" = "自定义订阅源标题";
+"Custom server" = "自定义服务器";
 "Customize auto-read by site or folder" = "按网站或文件夹自定义自动标记为已读";
 "Daily" = "每日";
 "Daily Briefing" = "每日简报";
@@ -358,6 +361,7 @@
 "Engineers writing about how large systems fail" = "工程师撰写大型系统故障分析";
 "Enter URL phrase..." = "输入网址短语…";
 "Enter a custom search query..." = "输入自定义搜索查询…";
+"Enter a valid custom server URL." = "请输入有效的自定义服务器 URL。";
 "Enter a web page URL..." = "输入网页 URL…";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "输入任意网页 URL，NewsBlur 就会使用 AI 分析页面结构、查找文章，并创建可供你订阅的自定义 RSS 订阅源。";
 "Enter author phrase..." = "输入作者短语…";
@@ -403,6 +407,7 @@
 "Film photography with notes on cameras and film stocks" = "胶片摄影，以及相机和胶卷的使用心得";
 "Filter" = "筛选";
 "Filter stories by date range" = "按日期范围筛选文章";
+"Find %@ in the voice list" = "在语音列表中查找 %@";
 "Find Friends" = "查找好友";
 "Find feeds" = "查找订阅源";
 "Find feeds about “%@”" = "查找关于“%@”的订阅源";
@@ -525,6 +530,7 @@
 "Invoice" = "发票";
 "Judging" = "正在判断";
 "Judging…" = "正在判断…";
+"Keep fades, without movement." = "保留淡入淡出，取消移动效果。";
 "Keeps the dark icon no matter how your device is set." = "无论设备设置如何，图标始终保持深色。";
 "Keeps the light icon no matter how your device is set." = "无论设备如何设置，始终显示浅色图标。";
 "Keyboard Shortcuts" = "键盘快捷键";
@@ -540,6 +546,7 @@
 "Lavender Iris" = "薰衣草鸢尾";
 "Layout" = "布局";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "留空以使用 NewsBlur，或输入自托管安装的 URL。下次打开应用时生效。";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "留空以使用 NewsBlur，或输入你自托管安装的 URL。此设置会立即应用于登录和注册。";
 "Left" = "左侧";
 "Length & Style" = "长度和样式";
 "Light" = "浅色";
@@ -770,6 +777,7 @@
 "On scroll or selection" = "滚动或选择时";
 "One" = "一列";
 "One column" = "一列";
+"One voice per story, in this order." = "按此顺序，每篇文章使用一种语音。";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "你的 %2$@ 个网站中，只有 %1$@ 个已编入发现索引。升级即可为所有网站建立索引，并获得个性化推荐。";
 "Only Title" = "仅标题";
 "Only on Selection" = "仅在选中时";
@@ -880,6 +888,7 @@
 "Reads your %@ stories" = "为你朗读 %@ 篇文章";
 "Recommended for %@" = "为 %@ 推荐";
 "Recording..." = "正在录制…";
+"Reduce motion" = "减少动态效果";
 "Refine with a hint" = "添加提示以优化";
 "Refine with this title" = "使用此标题优化";
 "Refresh NewsBlur" = "刷新 NewsBlur";
@@ -892,6 +901,7 @@
 "Related sites" = "相关网站";
 "Reload Sites" = "重新加载网站";
 "Reloading..." = "正在重新加载…";
+"Remove %@ from rotation" = "将 %@ 移出轮换";
 "Remove This List" = "移除此列表";
 "Remove from Up Next" = "从接下来播放中移除";
 "Remove from history" = "从历史记录中移除";
@@ -910,6 +920,7 @@
 "Reply" = "回复";
 "Reply to %@" = "回复 %@";
 "Replying" = "回复中";
+"Reset" = "重置";
 "Resets %@" = "重置于 %@";
 "Resize sidebar" = "调整侧边栏大小";
 "Restore" = "恢复";
@@ -971,6 +982,8 @@
 "Select a feed or folder" = "选择订阅源或文件夹";
 "Select a feed variant" = "选择订阅源版本";
 "Select feeds to add" = "选择要添加的订阅源";
+"Selected" = "已选择";
+"Selected voice" = "已选语音";
 "Send" = "发送";
 "Send This Story To..." = "将此文章发送到…";
 "Send To…" = "发送到…";
@@ -1279,9 +1292,12 @@
 "Usage billing history" = "按用量计费记录";
 "Usage-based billing is enabled for natural language classifiers." = "自然语言分类器已启用按用量计费。";
 "Use %@" = "使用 %@";
+"Use a custom server" = "使用自定义服务器";
 "Use another sign-in method" = "使用其他登录方式";
 "Use both" = "两者都用";
+"Use only this voice" = "仅使用此语音";
 "Use system size" = "使用系统尺寸";
+"Use voice" = "使用此语音";
 "User info" = "用户信息";
 "Username" = "用户名";
 "Username or Email" = "用户名或邮箱";
@@ -1295,6 +1311,7 @@
 "View mode" = "视图模式";
 "Voice" = "语音";
 "Voice and music balance" = "语音和音乐平衡";
+"Voice rotation" = "语音轮换";
 "Voice settings" = "语音设置";
 "Waiting for a verdict…" = "正在等待评估结果…";
 "Warm" = "暖色";

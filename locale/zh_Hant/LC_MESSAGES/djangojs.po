@@ -1053,6 +1053,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "新增 %(count)s 個文章標籤"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "將 %(voice)s 加入輪替"
+
 msgid "Add Folder"
 msgstr "新增資料夾"
 
@@ -1115,6 +1119,9 @@ msgstr "加入接下來播放"
 
 msgid "Add to folder"
 msgstr "加入資料夾"
+
+msgid "Add to rotation"
+msgstr "加入輪替"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1296,6 +1303,9 @@ msgstr "任何公開網頁：Twitter 個人檔案、Reddit 討論串、GitHub �
 
 msgid "Any time"
 msgstr "任何時間"
+
+msgid "Appearance"
+msgstr "外觀"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2052,6 +2062,9 @@ msgstr "創意"
 
 msgid "Credit"
 msgstr "獲得的回饋"
+
+msgid "Current voice"
+msgstr "目前語音"
 
 msgid "Cursors"
 msgstr "游標"
@@ -2923,6 +2936,10 @@ msgstr "財經"
 msgid "Find %(value_1)s Friends"
 msgstr "尋找 %(value_1)s 朋友"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "在語音清單中尋找 %(voice)s"
+
 msgid "Find Friends"
 msgstr "尋找朋友"
 
@@ -3110,12 +3127,6 @@ msgstr "免費＋訂閱 · Mac、iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "免費 + 訂閱制 · iPhone、iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "免費測試版 · Mac、iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "免費測試版 · iPhone、iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "免費 · Android、iPhone、iPad &amp; Mac"
 
@@ -3210,6 +3221,9 @@ msgstr "全寬"
 
 msgid "Full-Text Search"
 msgstr "全文搜尋"
+
+msgid "Full-screen list"
+msgstr "全螢幕清單"
 
 msgid "Full-text search across all stories"
 msgstr "搜尋所有文章的全文"
@@ -3567,6 +3581,9 @@ msgstr "在新分頁中開啟 <b>%(config_page)s</b>，搜尋 <b>%(setting)s</b>
 msgid "In a new window"
 msgstr "在新視窗中"
 
+msgid "In rotation"
+msgstr "已加入輪替"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3604,6 +3621,9 @@ msgstr "不常更新的網站文章"
 
 msgid "Infrequent stories per month"
 msgstr "不常更新網站的每月文章數"
+
+msgid "Inline list"
+msgstr "行內清單"
 
 msgid "Insta-fetch stories"
 msgstr "立即擷取文章"
@@ -3686,6 +3706,9 @@ msgstr "只有標題，幾乎沒有評論"
 msgid "Just the headlines, no commentary"
 msgstr "只有標題，沒有評論"
 
+msgid "Keep fades, without movement."
+msgstr "保留淡入淡出，取消移動效果。"
+
 msgid "Keep others unread"
 msgstr "保留其他文章為未讀"
 
@@ -3746,6 +3769,9 @@ msgstr "上次更新"
 
 msgid "Last seen:"
 msgstr "上次上線："
+
+msgid "Layout"
+msgstr "版面配置"
 
 msgid "Leave unread"
 msgstr "保留為未讀"
@@ -3832,6 +3858,9 @@ msgstr "正在載入訂閱來源…"
 
 msgid "Loading more briefings..."
 msgstr "正在載入更多簡報…"
+
+msgid "Loading the next unread story..."
+msgstr "正在載入下一篇未讀文章…"
 
 msgid "Loading voices..."
 msgstr "正在載入語音…"
@@ -4372,6 +4401,9 @@ msgstr "下一步 "
 msgid "Next story"
 msgstr "下一篇文章"
 
+msgid "Next unread"
+msgstr "下一篇未讀文章"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接著，建立一個包含所有電子報的篩選器，讓它們轉寄到 NewsBlur 上的自訂地址。"
 
@@ -4679,6 +4711,11 @@ msgid "Old password"
 msgstr "舊密碼"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "超過 %(count)s 天"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "早於：%(year)s %(month)s %(day)s"
 
@@ -4708,6 +4745,9 @@ msgstr "使用 Docker 執行一行指令"
 
 msgid "One sentence"
 msgstr "一句話"
+
+msgid "One voice per story, in this order."
+msgstr "依此順序，每篇文章使用一種語音。"
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr "只要網站有訂閱來源，即可一鍵訂閱。請使用「其他」分頁中的自訂新增網站網址。"
@@ -5413,6 +5453,9 @@ msgstr "已兌換"
 msgid "Reduce clutter in your river of stories"
 msgstr "減少新聞流中的雜訊"
 
+msgid "Reduce motion"
+msgstr "減少動態效果"
+
 msgid "Refer"
 msgstr "推薦"
 
@@ -5465,6 +5508,10 @@ msgstr "記住每集的播放位置"
 
 msgid "Remove"
 msgstr "移除"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "將 %(voice)s 移出輪替"
 
 msgid "Remove from Up Next"
 msgstr "從接下來播放中移除"
@@ -5926,6 +5973,12 @@ msgstr "選取網址的一部分，以比對區段或分類等模式。"
 
 msgid "Select title phrase"
 msgstr "選取標題詞組"
+
+msgid "Selected"
+msgstr "已選取"
+
+msgid "Selected voice"
+msgstr "已選語音"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "在文章標題列表中選取文章，即會將它標記為已讀。"
@@ -6469,6 +6522,12 @@ msgstr "早於 %(date)s 的文章"
 msgid "Stories on %(date)s"
 msgstr "%(date)s 的文章"
 
+msgid "Stories open inside the list"
+msgstr "文章會在清單內開啟"
+
+msgid "Stories open on their own screen"
+msgstr "文章會在獨立畫面中開啟"
+
 msgid "Stories per day"
 msgstr "每日文章數"
 
@@ -6519,6 +6578,9 @@ msgstr "文章字體樣式"
 
 msgid "Story URL"
 msgstr "文章網址"
+
+msgid "Story cards open on their own screen"
+msgstr "文章卡片會在獨立畫面中開啟"
 
 msgid "Story clustering"
 msgstr "文章分群"
@@ -7503,11 +7565,18 @@ msgstr "自然語言分類器已啟用依用量計費。"
 msgid "Use %(language)s"
 msgstr "使用 %(language)s"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "僅使用 %(voice)s"
+
 msgid "Use 12-hour clock"
 msgstr "使用 12 小時制"
 
 msgid "Use 24-hour clock"
 msgstr "使用 24 小時制"
+
+msgid "Use only this voice"
+msgstr "僅使用此語音"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "使用提示範本進行收件匣分類、主題研究和訂閱來源稽核"
@@ -7517,6 +7586,9 @@ msgstr "使用瀏覽器原生的內容選單"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "在瀏覽器擴充功能和 RSS 閱讀器中使用此 URL 範本，即可在 NewsBlur 訂閱。"
+
+msgid "Use voice"
+msgstr "使用此語音"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "使用小工具一覽未讀數量和文章"
@@ -7584,8 +7656,14 @@ msgstr "語音"
 msgid "Voice recording failed. Please try again."
 msgstr "語音錄製失敗。請再試一次。"
 
+msgid "Voice rotation"
+msgstr "語音輪替"
+
 msgid "Voice settings"
 msgstr "語音設定"
+
+msgid "Voices"
+msgstr "語音"
 
 msgid "Waiting for a verdict…"
 msgstr "等待判定結果…"

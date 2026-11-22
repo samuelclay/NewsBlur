@@ -102,6 +102,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.listen_loading = false;
         this.listen_loading_timer = null;
         this.listen_text_view_story_hash = null;
+        this.listen_rotation_positions = {};
         // media_player_view.js: What plays after the current story depends on the story list, so
         // a new list or stories being marked read refresh the Next story button and the
         // "Then from" stories under Up Next.
@@ -539,6 +540,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
             this.listen_status = null;
             this.media_element = new NEWSBLUR.ListenEngine(_.extend({
                 story_hash: media_item.story_hash,
+                voice_choices: this.listen_next_voice_choices(),
                 duration: media_item.duration || this.current_duration
             }, listen_options));
             this.media_element.playbackRate = this.playback_rate;
@@ -1600,6 +1602,7 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         this.stop_position_sync();
         this.stop_ui_updates();
         this.current_media = null;
+        this.listen_rotation_positions = {};
         this.listen_manifest = null;
         this.listen_status = null;
         this.listen_text_view_story_hash = null;
@@ -1766,6 +1769,37 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         return language ? voices[language] || null : null;
     },
 
+    // media_player_view.js: Only the ordered voices are saved. The last voice for each language
+    // lives in this player, so another device and a new listening session start at the beginning.
+    listen_voice_rotations: function () {
+        var saved;
+        try {
+            saved = JSON.parse(NEWSBLUR.assets.preference('listen_voice_rotations') || '{}');
+        } catch (e) { saved = {}; }
+        var rotations = {};
+        if (!saved || _.isArray(saved) || !_.isObject(saved)) return rotations;
+        _.each(saved, function (voices, language) {
+            if (!_.isArray(voices)) return;
+            var seen = {};
+            rotations[language] = _.filter(voices, function (voice) {
+                if (!voice || !_.isString(voice.voice_id) || !voice.voice_id || seen[voice.voice_id]) return false;
+                seen[voice.voice_id] = true;
+                return true;
+            });
+        });
+        return rotations;
+    },
+
+    listen_next_voice_choices: function () {
+        var choices = {};
+        _.each(this.listen_voice_rotations(), function (voices, language) {
+            if (!voices.length) return;
+            var last = _.indexOf(_.pluck(voices, 'voice_id'), this.listen_rotation_positions[language]);
+            choices[language] = voices[(last + 1) % voices.length].voice_id;
+        }, this);
+        return choices;
+    },
+
     make_listen_item: function (story) {
         // media_player_view.js: Story titles can carry markup and entities. DOMParser decodes them
         // without loading images or running scripts.
@@ -1795,6 +1829,13 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         engine.addEventListener('listen:manifest', function (e) {
             if (engine !== self.media_element) return;
             self.listen_manifest = e.detail;
+            if (!engine.rotation_recorded) {
+                var language = e.detail.language;
+                var choices = engine.voice_choices || {};
+                self.listen_rotation_positions[language] = engine.rotation_voice_id || choices[language] ||
+                    (e.detail.voice && e.detail.voice.voice_id);
+                engine.rotation_recorded = true;
+            }
             if (self.listen_status && self.listen_status.type === 'failure') self.listen_status = null;
             if (e.detail.usage) self.listen_usage = e.detail.usage;
             if (!self.current_media.media_title && e.detail.story_title) {
@@ -2019,7 +2060,10 @@ NEWSBLUR.Views.MediaPlayerView = Backbone.View.extend({
         var paragraph = manifest ? engine.current_paragraph() : engine.start_paragraph;
         var listen_options = {
             language: language,
-            voice_id: options.voice_id || this.listen_selected_voice(language)
+            voice_id: options.voice_id || engine.rotation_voice_id ||
+                (engine.voice_choices && engine.voice_choices[language]) || engine.voice_id ||
+                this.listen_selected_voice(language),
+            voice_choices: engine.voice_choices
         };
         if (_.isNumber(paragraph)) {
             listen_options.start_paragraph = paragraph;

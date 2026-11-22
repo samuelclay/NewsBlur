@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-05T01:11:18-05:00</updated>
+  <updated>2026-11-22T15:09:28-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,296 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Everything moves into place</title>
+    <link href="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/" rel="alternate" type="text/html" title="Everything moves into place" />
+    <published>2026-11-22T15:08:54-05:00</published>
+    <updated>2026-11-22T15:08:54-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/22/newsblur-17-motion</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/">
+      <![CDATA[<p>NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/motion-folder-and-story.webp" aria-label="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order">
+        <source src="/assets/motion-folder-and-story.mp4" type="video/mp4" />
+        <img src="/assets/motion-folder-and-story.webp" alt="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="one-row-after-the-next">One row after the next</h3>
+
+<p>Open a folder and its stories come in from the top, one after the next. Open a story and its site, title, byline, tags, and text arrive in order, followed by the story buttons. The list you’re leaving fades out as it looked, and menus, dialogs, and theme changes get the same treatment.</p>
+
+<p>It stays out of your way. Each row fades in quickly, scrolling finishes anything still animating, and things already on screen don’t move again.</p>
+
+<h3 id="reduce-motion">Reduce motion</h3>
+
+<p>If you’d rather have less of it, turn on <strong>Reduce motion</strong> under Appearance in Preferences, on the web, iOS, Mac, and Android. Nothing slides, but things still fade in. NewsBlur also follows your device’s own Reduce Motion setting.</p>
+
+<p><img src="/assets/reduce-motion.webp" alt="The Reduce motion setting under Appearance in Preferences on the web, on iOS, and on Android, each described as Keep fades, without movement" style="width: 90%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-new-frame-for-the-mac">A new frame for the Mac</h3>
+
+<p>The Mac app now has one translucent sidebar and toolbar around a rounded reading area, and new windows open with all three panes.</p>
+
+<p><img src="/assets/mac-17-reader-frame.webp" alt="The NewsBlur Mac app with a translucent sidebar and toolbar around the story list and the reader, showing the Cooking folder" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-few-fixes">A few fixes</h3>
+
+<ul>
+  <li>On iPhone, marking stories older than a number of days now updates the list on screen.</li>
+  <li>On iPad, the Ask AI and sharing composers stay above the keyboard in landscape.</li>
+  <li>On iPhone and Android phones, the Grid and List switch in Discover sits next to search, so the category tags get the whole row.</li>
+  <li>On iOS, stories load more smoothly in the Gray theme.</li>
+  <li>On Android, read titles are lighter so they’re easier to tell apart from unread ones, and article headlines wrap in balanced lines.</li>
+  <li>On Android, stories that arrive after you mark a folder as read no longer show up already read.</li>
+  <li>On Android tablets, settings dialogs keep what you’d chosen when you rotate the screen.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>NewsBlur 17 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> and <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. If something moves in a way that bothers you, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Reddit feeds are back on NewsBlur</title>
+    <link href="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/" rel="alternate" type="text/html" title="Reddit feeds are back on NewsBlur" />
+    <published>2026-11-21T14:18:05-05:00</published>
+    <updated>2026-11-21T14:18:05-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/">
+      <![CDATA[<p>In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It <a href="https://forum.newsblur.com/t/13890">came up on the forum</a> right away. Reddit is also retiring its RSS feeds.</p>
+
+<p>Since November 10, NewsBlur gets Reddit posts from <a href="https://redlisten.com">RedListen</a>, a service that serves Reddit’s own listings. Subreddit, user, multireddit, comment, and search feeds all update again, and you don’t need to change anything.</p>
+
+<h3 id="whats-different">What’s different</h3>
+
+<p>RedListen has a monthly limit on how many posts it returns, so NewsBlur reads Reddit a little differently than it used to:</p>
+
+<ul>
+  <li><strong>Subreddits are checked about once an hour,</strong> many at a time. Quiet subreddits get every post. The busiest ones get a share of their posts, and that share grows with the number of NewsBlur readers following them.</li>
+  <li><strong>Hot and Top feeds read the same as New.</strong></li>
+  <li><strong>Reddit’s front page, r/all, and r/popular aren’t available,</strong> and those feeds will say so.</li>
+  <li><strong>Comment thread and search feeds update at most twice a day,</strong> and less often while they’re quiet. Comment threads older than 30 days can’t be fetched anymore.</li>
+  <li><strong>Refreshing a Reddit feed yourself still fetches it right away,</strong> and so does adding a new one.</li>
+  <li><strong>Posts keep their formatting.</strong> Reddit sends post text as plain text with formatting marks, and NewsBlur turns it into paragraphs, links, emphasis, code, quotes, and lists. Images come through too.</li>
+  <li><strong>Personal Reddit RSS feeds,</strong> the ones with <code class="language-plaintext highlighter-rouge">?feed=</code> in the address, still come straight from Reddit for as long as Reddit serves them.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>It’s been live since November 10. It all happens on NewsBlur’s servers, so it works on the web and in every app without an update. If a subreddit isn’t coming through the way you’d expect, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It came up on the forum right away. Reddit is also retiring its RSS feeds.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">A rewritten mobile web version of NewsBlur, and feeds that load instantly</title>
+    <link href="https://blog.newsblur.com/2026/11/20/mobile-web-version-of-newsblur/" rel="alternate" type="text/html" title="A rewritten mobile web version of NewsBlur, and feeds that load instantly" />
+    <published>2026-11-20T03:00:00-05:00</published>
+    <updated>2026-11-20T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/20/mobile-web-version-of-newsblur</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/20/mobile-web-version-of-newsblur/">
+      <![CDATA[<p>NewsBlur has a mobile web version again. On a phone, newsblur.com used to give you the desktop reader squeezed onto a tiny screen. Now it works like the iOS and Android apps, with screens that slide over each other, swiping between stories, and going back the way you’d expect. The web reader also draws your feed list the moment the page loads, instead of waiting on the server.</p>
+
+<h3 id="the-mobile-web-version-of-newsblur">The mobile web version of NewsBlur</h3>
+
+<p>This isn’t the first time. Back in June 2011, I built a mobile web version of NewsBlur at newsblur.com/m/, using an early beta of jQuery Mobile. It was a separate site with its own code, and it was a pain to keep up. I last worked on it in early 2012.</p>
+
+<p>This one is a rewrite, and it isn’t a separate site. It’s the same reader you use on the desktop, laid out for a phone, and it does what phone browsers can now do natively, without a framework in the way. Screens slide over each other with plain CSS, every screen is a real entry in your browser’s history, and Safari’s own back swipe works the way it does on every other site. It’s much better.</p>
+
+<p>On anything 768 pixels wide or narrower, and on a phone held sideways, the web reader switches into its mobile version. Nothing to install, it’s just the website.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/web-phone-layout.webp" aria-label="NewsBlur&#39;s website in Safari on an iPhone: tapping the Cooking folder slides in its stories, tapping a story opens it, swiping moves to the next two stories, and the back button returns to the stories and then the feed list">
+        <source src="/assets/web-phone-layout.mp4" type="video/mp4" />
+        <img src="/assets/web-phone-layout.webp" alt="NewsBlur&#39;s website in Safari on an iPhone: tapping the Cooking folder slides in its stories, tapping a story opens it, swiping moves to the next two stories, and the back button returns to the stories and then the feed list" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>Your feed list is the home screen. Tap a folder or site and its stories slide in over it, tap a story and it slides in over those. To go back, tap the back button, swipe in from the left edge, or use your browser’s own back gesture. They all walk the same path.</p>
+
+<ul>
+  <li><strong>Stories.</strong> Swipe left and right to move between them. The top bar switches between Feed, Text, and Story views, and the toolbar has previous, next, save, share (with your phone’s share sheet), mark as read or unread, and <strong>Next unread</strong>, which carries on into the next site with unread stories without leaving the story screen.</li>
+  <li><strong>Layouts.</strong> Each site keeps the layout you chose on the desktop. Split and Full open each story on its own screen, List expands stories in place, and Grid and Magazine show big image cards. The layout button switches between them, and your choice carries back to the desktop.</li>
+  <li><strong>Menus.</strong> Long press a site, folder, or story for its menu, which slides up from the bottom. Share, Save, and Related Stories open the same way. Pull down on a list to refresh it.</li>
+  <li><strong>Dialogs.</strong> The trainer, preferences, Add + Discover, and every other dialog open as a full screen sheet with a close button.</li>
+  <li><strong>Listening.</strong> Listen and podcasts play in a small bar that floats above every screen. Tap it for the full player.</li>
+  <li><strong>Everything else.</strong> Light and dark themes both work, and in Arabic and Hebrew the screens slide in from the other side. Safari’s toolbar shrinks out of the way as you scroll.</li>
+</ul>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/web-phone-folder-sheet.webp" alt="Long pressing a folder on the phone website opens its menu as a sheet from the bottom of the screen, with Mark folder as read, Add a site to this folder, Folder settings, and more" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The desktop reader is exactly as it was. Narrow a browser window past 768 pixels and it switches to the mobile version on the spot, with the same feed still open, and widening it switches back.</p>
+
+<h3 id="your-feeds-show-up-right-away">Your feeds show up right away</h3>
+
+<p>The web reader used to wait for the server to send your whole feed list before it drew anything. With a few hundred sites that can take several seconds, and the iOS and Android apps never made you wait like that. Now the web keeps a copy of your feed list in your browser and draws it the moment the page loads. You can open a feed while the server’s answer is still on its way. When it arrives, NewsBlur merges it in, and only redraws if something changed since last time, like a site you added on your phone.</p>
+
+<p>Here’s a reload of my own account, with 710 sites. Before, the feed list showed up after about six and a half seconds. Now it’s there in about seven tenths of a second.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--stage">
+  <div class="mobile-release-phone__device" style="aspect-ratio: 1600 / 760">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/web-feed-list-load.webp" aria-label="Two browser windows reloading NewsBlur. The old reader shows an empty feed list for six and a half seconds, while the new one draws all 710 sites in under a second and loads the dashboard rivers">
+        <source src="/assets/web-feed-list-load.mp4" type="video/mp4" />
+        <img src="/assets/web-feed-list-load.webp" alt="Two browser windows reloading NewsBlur. The old reader shows an empty feed list for six and a half seconds, while the new one draws all 710 sites in under a second and loads the dashboard rivers" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<p>The copy lives only in your browser and only for your account. It starts with the unread counts you last saw, and fresh counts load right behind it as they always have. Signing out clears it.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The mobile web version and the faster feed list are live on the web now.</p>
+
+<p>If the mobile web version does something your phone’s apps wouldn’t, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur has a mobile web version again. On a phone, newsblur.com used to give you the desktop reader squeezed onto a tiny screen. Now it works like the iOS and Android apps, with screens that slide over each other, swiping between stories, and going back the way you’d expect. The...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Three new features in Listen: podcasts, your music, and voice rotation</title>
+    <link href="https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music/" rel="alternate" type="text/html" title="Three new features in Listen: podcasts, your music, and voice rotation" />
+    <published>2026-11-19T03:00:00-05:00</published>
+    <updated>2026-11-19T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/19/podcasts-in-listen-and-listen-over-your-music/">
+      <![CDATA[<p>When a story has a podcast episode in it, the iPhone, iPad, Mac, and Android apps used to play it with the plain audio control built into the story. It had no skip buttons and no lock screen controls, and it started from the beginning every time you came back to it. Now episodes play in the same player as <a href="/2026/10/30/listen-to-your-stories/">Listen</a>, with everything that comes with it. Listen itself can now read over your music, and take turns between voices from one story to the next.</p>
+
+<h3 id="play-play-next-play-last">Play, Play Next, Play Last</h3>
+
+<p>Each episode in a story is now a card with three buttons. <strong>Play audio</strong> starts it right away, <strong>Play Next</strong> puts it at the top of Up Next, and <strong>Play Last</strong> puts it at the end.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--galaxy-s22">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/android-podcast-card.webp" alt="An audio card in a story on Android, with Play audio, Play Next, and Play Last buttons" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>The episode plays in the mini player above the bottom bar. Tap it to open Now Playing, with the scrubber, the skip buttons, speed, and Up Next. It keeps playing with the screen off, with controls on the lock screen, in Control Center and Android’s media controls, and on your headphones. iPhone and iPad have an AirPlay button, and Android shows its output picker. The skip buttons use the same intervals you set in the web’s player.</p>
+
+<!-- SCREENSHOT: iPhone Now Playing with a real podcast episode from one of my feeds, framed in the iPhone 17 bezel -->
+
+<p>Videos and YouTube embeds still play inside the story.</p>
+
+<h3 id="pick-up-where-you-left-off-on-any-device">Pick up where you left off, on any device</h3>
+
+<p>Your place in an episode is saved to your account every few seconds while it plays, and again whenever you pause, skip, or leave the app. Start an episode on your phone and the web picks it up at the same spot, or the other way around. Finished episodes move to History, and Up Next holds podcast episodes and Listen stories in one queue. Starting an episode stops a Listen story that’s playing, and the other way around.</p>
+
+<p>This turned up a bug on the server. When you came back to an episode, the web resumed from the last place you paused or started it, not from where you’d actually gotten to while it played. Every device, the web included, now resumes from the latest position.</p>
+
+<h3 id="listen-over-your-music">Listen over your music</h3>
+
+<p>Listen used to pause whatever else was playing. On iPhone, iPad, and Android it can now read your stories over music from another app, like Apple Music or Spotify. Open Now Playing and turn on <strong>Play over other audio</strong> in the new Music section.</p>
+
+<p><img src="/assets/listen-music-balance.webp" alt="The Music section of Listen's Now Playing on iPhone, with Play over other audio and Lower music while voice speaks turned on, and a slider between Music and Voice" style="width: 60%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Lower music while voice speaks</strong> is on by default. It dips the music while a story is being read and brings it back up when you pause.</p>
+
+<p>The <strong>Music</strong> and <strong>Voice</strong> slider sets the balance between them. Neither iOS nor Android lets one app turn down another app’s music, so the slider works on the voice instead. Toward Music the voice gets quieter, and toward Voice it gets louder than it would normally play, with a limiter so it doesn’t distort.</p>
+
+<p>These settings stay on each device and don’t sync. The Music section folds away with the arrow in its header, and stays folded. Podcast episodes still pause your music like before. On the Mac, apps already play over each other, so there’s nothing to turn on.</p>
+
+<h3 id="a-different-voice-for-each-story">A different voice for each story</h3>
+
+<p>Listen can also take turns between voices, one per story. In the voice picker, the <strong>+</strong> next to a voice adds it to your rotation, and the list at the top shows the order. The first story gets the first voice, the next story gets the second, and so on. Each time you start listening, the rotation starts again from the top.</p>
+
+<p><img src="/assets/listen-voice-rotation.webp" alt="The Listen voice picker with Amelia and Jon in the voice rotation at the top, numbered 1 and 2, and a + beside each voice in the list below to add it" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>The <strong>×</strong> on a voice takes it out of the rotation, and <strong>Use only this voice</strong> goes back to a single narrator. Click a name in the rotation to find that voice in the list. Each language has its own rotation, and your list syncs between the web and the apps.</p>
+
+<h3 id="availability">Availability</h3>
+
+<p>Podcasts in Listen’s player and Listen over your music are in NewsBlur 16.2 and later for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. Voice rotation is on the web now, and comes to the iPhone, iPad, Mac, and Android apps with their next updates. Listen itself is part of <a href="https://newsblur.com/?next=premium">Premium Archive and Premium Pro</a>.</p>
+
+<p>If an episode doesn’t play the way you’d expect, or the balance between your music and Listen needs more range, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[When a story has a podcast episode in it, the iPhone, iPad, Mac, and Android apps used to play it with the plain audio control built into the story. It had no skip buttons and no lock screen controls, and it started from the beginning every time you came back...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">Type a classifier straight into the trainer</title>
@@ -1894,340 +2184,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Story clustering: automatically group duplicate stories across your feeds</title>
-    <link href="https://blog.newsblur.com/2026/03/18/story-clustering/" rel="alternate" type="text/html" title="Story clustering: automatically group duplicate stories across your feeds" />
-    <published>2026-03-18T00:00:00-04:00</published>
-    <updated>2026-03-18T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/18/story-clustering</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/18/story-clustering/">
-      <![CDATA[<p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
-
-<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
-
-<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
-<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
-
-<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
-<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="two-layers-of-detection">Two layers of detection</h3>
-
-<p>Clustering uses two complementary approaches to catch duplicates:</p>
-
-<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
-
-<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
-
-<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
-
-<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
-
-<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
-
-<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
-<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are two controls:</p>
-
-<ul>
-  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
-  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
-</ul>
-
-<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
-
-<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
-<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.</p>
-
-<p><strong>Premium Archive subscribers</strong> get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.</p>
-
-<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Mute feeds for a set amount of time</title>
-    <link href="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/" rel="alternate" type="text/html" title="Mute feeds for a set amount of time" />
-    <published>2026-03-16T00:00:00-04:00</published>
-    <updated>2026-03-16T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
-      <![CDATA[<p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
-
-<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
-
-<h3 id="two-ways-to-mute">Two ways to mute</h3>
-
-<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
-
-<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
-
-<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
-
-<h3 id="auto-unmute">Auto-unmute</h3>
-
-<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
-
-<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Web Feeds: Turn any website into an RSS feed</title>
-    <link href="https://blog.newsblur.com/2026/03/13/web-feeds/" rel="alternate" type="text/html" title="Web Feeds: Turn any website into an RSS feed" />
-    <published>2026-03-13T00:00:00-04:00</published>
-    <updated>2026-03-13T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/13/web-feeds</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/13/web-feeds/">
-      <![CDATA[<p>Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a site didn’t offer RSS, you were out of luck.</p>
-
-<p><strong>Web Feeds</strong> is a new feature that creates RSS feeds from any website. Point it at a URL, and NewsBlur analyzes the page structure, identifies the repeating content patterns, and generates extraction rules that turn the page into a live feed. It works on news sites, blogs, job boards, product pages, or really anything with a list of items that changes over time.</p>
-
-<p>This is a huge feature and has been requested for years. I’m so thrilled to finally be able to offer it in a way that I feel comfortable with. Other solutions including having you select story titles on a re-hosted version of the page, but it was clumsy and error-prone. This way, we use LLMs to figure out what the story titles are likely to be, present the variations to you, and then let you decide what’s right. So much better!</p>
-
-<!-- SCREENSHOT: Web Feed tab showing URL input, story hint field, and Analyze button -->
-<p><img src="/assets/web-feed-input.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Open the Add + Discover Sites page and click the <strong>Web Feed</strong> tab. Paste a URL and click Analyze. NewsBlur fetches the page, strips out navigation and boilerplate, and analyzes the HTML structure. Within a few seconds, you’ll see multiple extraction variants, each representing a different content pattern found on the page.</p>
-
-<p>Progress updates stream in real-time while the analysis runs. NewsBlur typically finds 3-5 different extraction patterns on a page. The first variant is usually the main content (article list, blog posts, product grid), but sometimes the page has multiple distinct sections worth subscribing to. Each variant shows a label, a description of what it captures, and a preview of 3 extracted stories so you can see exactly what you’d get.</p>
-
-<!-- SCREENSHOT: Real-time progress updates showing "Fetching page...", "Finding story patterns...", etc. -->
-<p><img src="/assets/web-feed-progress.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Select the variant that matches what you want to follow, pick a folder, and subscribe. NewsBlur will re-fetch and re-extract the page on a regular schedule, just like any other feed.</p>
-
-<h3 id="story-hints">Story hints</h3>
-
-<p>Sometimes the initial best guess isn’t what you’re looking for. Maybe the page has a blog section and a job listings section, and you want the jobs. Click the Refine button and type a hint like “I’m looking for the job postings.” NewsBlur re-analyzes the page with your hint in mind and reorders the variants to prioritize what you described.</p>
-
-<h3 id="what-gets-extracted">What gets extracted</h3>
-
-<p>For each story, NewsBlur extracts whatever it can find: title, link, content snippet, image, author, and date. Not every field will be available on every site, and that’s fine. At minimum you’ll get titles and links. The extraction uses XPath expressions, which means it’s precise and consistent across page refreshes as long as the site’s HTML structure stays the same.</p>
-
-<h3 id="when-things-change">When things change</h3>
-
-<p>Websites redesign. HTML structures shift. When NewsBlur detects that the extraction rules have stopped working (after 3 consecutive failures), the feed is flagged as needing re-analysis. You’ll see a feed exception indicator, and you can re-analyze the page with one click to generate updated extraction rules.</p>
-
-<h3 id="use-cases">Use cases</h3>
-
-<p>Some examples of sites that work well with Web Feeds:</p>
-
-<ul>
-  <li><strong>Company blogs without RSS</strong> — Many corporate blogs dropped their RSS feeds years ago. Web Feeds brings them back.</li>
-  <li><strong>Job boards</strong> — Track new postings on a company’s careers page.</li>
-  <li><strong>Government sites</strong> — Follow press releases, meeting agendas, or public notices.</li>
-  <li><strong>Changelog pages</strong> — Monitor when a tool or service ships updates.</li>
-  <li><strong>Event listings</strong> — Keep tabs on upcoming concerts, conferences, or local events.</li>
-  <li><strong>Product pages</strong> — Watch for new arrivals or restocks on stores that don’t offer feeds.</li>
-</ul>
-
-<h3 id="availability">Availability</h3>
-
-<p>Web Feeds are available to <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. The ongoing feed fetching and extraction runs on NewsBlur’s servers like any other feed.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Not every website has an RSS feed. Some never did. Some had one years ago and quietly removed it. And some sites have content that updates regularly but was never structured as a feed in the first place: job boards, product listings, event calendars, changelog pages. Until now, if a...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more</title>
-    <link href="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/" rel="alternate" type="text/html" title="NewsBlur iOS 26 and macOS Tahoe updates: Major redesign, discover related sites, new story toolbar, and much, much more" />
-    <published>2026-03-05T00:00:00-05:00</published>
-    <updated>2026-03-05T00:00:00-05:00</updated>
-    <id>https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/05/newsblur-v14-for-ios-and-mac/">
-      <![CDATA[<p>This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were previously web-only: Discover Related Sites, Ask AI, the Dashboard, and Premium Pro.</p>
-
-<p>Here’s what’s new:</p>
-
-<h3 id="ios-26-and-macos-tahoe">iOS 26 and macOS Tahoe</h3>
-
-<p>NewsBlur is built for the latest Apple platforms. The toolbar is transparent and fades as you scroll. The column layout has been simplified to “feeds beside” or “feeds over” the story detail. On iPad, a new draggable divider lets you resize the feeds and stories columns, and the sidebar auto-collapses when space gets tight. On Mac, the sidebar auto-hides and trackpad swipe gestures work throughout the app.</p>
-
-<p>The default theme is now Auto, so NewsBlur follows your system appearance out of the box. Dark mode correctly overrides the window style to stay consistent with whatever NewsBlur theme you’ve chosen.</p>
-
-<p><img src="/assets/ios-14-ipad-sepia.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="a-warmer-sepia-theme">A warmer sepia theme</h3>
-
-<p>The Sepia theme has been completely reworked with warmer tones that are easier on the eyes for long reading sessions. The theme selector itself has been rewritten across all menus, with improved contrast on the pill buttons so you can clearly see which theme is active.</p>
-
-<p><img src="/assets/ios-14-sepia-theme.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="story-titles-pill-bar">Story titles pill bar</h3>
-
-<p>The top of the story list now has a pill bar with quick access to Discover, Options, Search, and Mark Read. The search bar slides in and out instead of fading, and the mark-read button has a wider tap target with an optional confirmation step.</p>
-
-<p><img src="/assets/ios-14-pill-bar.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="discover-related-sites">Discover related sites</h3>
-
-<p>Discover Related Sites lets you find related feeds from any feed or folder. Tap the Discover button in the new story titles pill bar, browse what’s available, and try a feed before subscribing with a preview banner.</p>
-
-<p><img src="/assets/ios-14-discover-sites.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="list-and-magazine-views">List and magazine views</h3>
-
-<p>Two new story layout options join the existing Grid view. List shows compact rows for scanning headlines quickly. Magazine shows taller rows with larger thumbnails, giving you a richer preview of each story without opening it. Switch between them from the story titles pill bar.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/ios-14-ipad-magazine.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-ipad-grid.png" style="width: 48%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="dashboard">Dashboard</h3>
-
-<p>The Dashboard sits at the top of your feed list and shows stories from your favorite feeds, updated every five minutes. Add, remove, and rearrange feeds to build a personal front page that keeps you current throughout the day. It’s the first thing you see when you open the app, and it updates in the background so fresh stories are always waiting.</p>
-
-<p><img src="/assets/ios-14-ipad-dashboard.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="redesigned-login-preferences-and-upgrade">Redesigned login, preferences, and upgrade</h3>
-
-<p>The login screen now features animated Metal shader waves with a frosted glass card. Preferences have moved from the old InAppSettingsKit to a new native SwiftUI PreferencesView. The Premium upgrade screen has been redesigned to include Ask AI integration and the new Premium Pro tier.</p>
-
-<p>Share, Trainer, and Ask AI dialogs are presented as swipeable sheets on iPhone with grabber handles, replacing the old full-screen modals. The sync indicator has moved from a large HUD to a subtle top-right nav bar dot.</p>
-
-<div style="display: flex; gap: 12px; justify-content: center; margin: 24px auto;">
-<img src="/assets/ios-14-login.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-upgrade.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-<img src="/assets/ios-14-prefs.png" style="width: 30%;border: 1px solid rgba(0,0,0,0.1);" />
-</div>
-
-<h3 id="ask-ai">Ask AI</h3>
-
-<p>Ask AI brings the same AI-powered Q&amp;A from the web to your phone and Mac. Select a story, tap Ask AI, and ask questions about it. Summarize a long article in one sentence, get the backstory on a developing situation, or fact-check a claim. Pick from multiple AI models and keep the conversation going with follow-ups.</p>
-
-<p><img src="/assets/ios-14-ask-ai.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="push-notifications-with-feed-favicons">Push notifications with feed favicons</h3>
-
-<p>Push notifications now show your feed’s favicon alongside the notification using Communication Notifications. At a glance, you can tell which feed a story came from before you even open it.</p>
-
-<p><img src="/assets/ios-14-push-notifications.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="everything-else">Everything else</h3>
-
-<p>Beyond the headline features, this release includes a long list of improvements and fixes across iPhone, iPad, and Mac.</p>
-
-<h4 id="improvements">Improvements</h4>
-
-<ul>
-  <li>Pinch-to-zoom images to full-sized Quick Look preview in any story.</li>
-  <li>Mark Story Read options: mark read on scroll, on selection, after an interval, or manually.</li>
-  <li>Premium Pro tier added to the iOS upgrade dialog with higher limits.</li>
-  <li>Custom feed and folder icons now supported on iOS.</li>
-  <li>Unmute support for individual feeds.</li>
-  <li>Collapse-all and expand-all button on All Site Stories.</li>
-  <li>Modernized menu bar on Mac and iPad with keyboard shortcuts.</li>
-  <li>Icons added to context menus on Mac and iPad.</li>
-  <li>Redesigned story action buttons with modern styling.</li>
-  <li>Text, URL, and regex classifiers added to the iOS Intelligence Trainer.</li>
-  <li>Compact story title cells with equalized vertical spacing in list view.</li>
-  <li>Fetching/offline banner moved from bottom overlay to top of story titles.</li>
-  <li>Feed list search bar replaced with a compact text field.</li>
-  <li>Scroll-to-hide toolbar synced with swipe-back gestures.</li>
-  <li>Sidebar toggle buttons for showing and hiding the feed list.</li>
-  <li>Redesigned Add Site as a SwiftUI half-height sheet with autocomplete.</li>
-  <li>Story traverse bar and feed bar fade gradually as you scroll.</li>
-  <li>Mac Catalyst: dismiss modals via overlay tap or Escape key.</li>
-  <li>Mac Catalyst: trackpad swipe gesture support.</li>
-  <li>Improved theme selector pill contrast for medium and light themes.</li>
-  <li>Show toolbar when tapping status bar to scroll to top.</li>
-</ul>
-
-<h4 id="fixes">Fixes</h4>
-
-<ul>
-  <li>Fixed WebSocket disconnects from EIO4 protocol and session lifecycle issues.</li>
-  <li>Fixed story width rendering wider than viewport on first load on iPhone.</li>
-  <li>Fixed memory issues with PINCache cost limits.</li>
-  <li>Fixed offline queue priority inversion.</li>
-  <li>Fixed saved stories showing incorrect read/unread status.</li>
-  <li>Fixed YouTube Error 153 with HTTPS and inlined resources.</li>
-  <li>Fixed trainer popover showing empty content on first open.</li>
-  <li>Fixed crashes with custom feed icons in story detail.</li>
-  <li>Fixed blank statistics modal by adding missing JS globals.</li>
-  <li>Fixed white flash and navbar color mismatch when opening stories in dark themes.</li>
-  <li>Fixed sepia theme yellow tint on Mac Catalyst.</li>
-  <li>Fixed (null) username and missing avatar when sharing on Mac Catalyst.</li>
-  <li>Fixed Catalyst pill bar AppKit chrome artifacts.</li>
-  <li>Fixed Mac traverse bar layout, highlights, and previous button state.</li>
-  <li>Fixed Discover popover placement on Mac and iPad.</li>
-  <li>Fixed mark-read pill confirmation.</li>
-  <li>Fixed status bar color and liquid glass gradient boundary.</li>
-  <li>Fixed stale collapsed folder unread counts on iPad.</li>
-  <li>Fixed stale story responses when switching folders quickly on iPad.</li>
-  <li>Fixed Mac Catalyst split divider limited to grab handle area.</li>
-</ul>
-
-<p>NewsBlur for iOS 26, iPadOS 26, and macOS Tahoe is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> for iPhone, iPad, and Mac. If you have feedback or run into issues, I’d love to hear about it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="ios" />
-    
-    
-    <summary type="html">
-      <![CDATA[This is a hefty redesign and rethinking of the NewsBlur iOS and Mac app. Every screen has been rethought, from the login page to the story detail to the intelligence trainer. This release adds full support for iOS 26, iPadOS 26, and macOS Tahoe, along with several features that were...]]>
     </summary>
     
   </entry>

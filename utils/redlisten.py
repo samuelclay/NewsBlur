@@ -216,8 +216,12 @@ class RedListenBudget:
 
     def background_allowed(self):
         """Automatic fetching stays off in development unless explicitly turned on, since
-        every key on the account draws on the same production quota."""
-        return not settings.DEBUG or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
+        every key on the account draws on the same production quota. Production celery
+        turns settings.DEBUG on for the 1% of feed tasks it profiles
+        (DBProfilerMiddleware.process_celery in apps/profile/middleware.py), so the server's
+        own setting is read from ORIGINAL_DEBUG when profiling has saved it."""
+        debug = getattr(settings, "ORIGINAL_DEBUG", settings.DEBUG)
+        return not debug or getattr(settings, "REDLISTEN_BACKGROUND_IN_DEBUG", False)
 
     def reserve(self, kind, results):
         """Claim one request and up to `results` results. Returns a Reservation, which
@@ -336,6 +340,25 @@ class RedListenBudget:
         return tuple(
             today["%s_%s" % (kind, unit)] + yesterday["%s_%s" % (kind, unit)] * yesterday_share
             for unit in ("requests", "results")
+        )
+
+    def days_left(self):
+        """Days until RedListen's quotas reset at the next UTC month."""
+        return max(0.0, (month_end(self.now()) - self.now()).total_seconds() / 86400)
+
+    def projected_month(self):
+        """(requests, results) the month ends at if every kind keeps spending at its pace
+        over the last 24 hours. Charted against the plan by /monitor/redlisten."""
+        usage = self.usage()
+        days_left = self.days_left()
+        requests_per_day = results_per_day = 0.0
+        for kind in SPEND_KINDS:
+            kind_requests, kind_results = self.last_day_spend(kind)
+            requests_per_day += kind_requests
+            results_per_day += kind_results
+        return (
+            usage["requests"] + requests_per_day * days_left,
+            usage["results"] + results_per_day * days_left,
         )
 
     def reserve_minute_slot(self):

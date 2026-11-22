@@ -6,7 +6,9 @@ particularly the bug where fetching specific story hashes would trigger expensiv
 ZUNIONSTORE operations across all feeds.
 """
 
+import base64
 import datetime
+from io import BytesIO
 from unittest.mock import patch
 
 import redis
@@ -380,6 +382,17 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual([story["story_hash"] for story in content["stories"]], [story_hash])
 
+        # test_river_stories.py exercises the thumbnail and feed metadata used for an unsubscribed widget row.
+        UserSubscription.objects.filter(user=self.user, feed_id=self.test_feeds[0]).delete()
+        MStory.objects(story_hash=story_hash).update(set__image_urls=["https://example.com/thumbnail.png"])
+        with patch("urllib.request.urlopen", return_value=BytesIO(b"thumbnail")):
+            response = self.client.get(
+                reverse("load-trending-stories"), {"trending_type": "good_reads", "widget": "true"}
+            )
+        widget = json.decode(response.content)
+        self.assertEqual(base64.b64decode(widget["stories"][0]["select_thumbnail_data"]), b"thumbnail")
+        self.assertEqual(widget["feeds"][0]["id"], self.test_feeds[0])
+
     def test_trending_stories__feed_classifiers_apply_without_subscription(self):
         """Widely Read and Long Reads should apply feed-scoped classifiers to unsubscribed feeds."""
         self.client.login(username="conesus", password="test")
@@ -513,6 +526,14 @@ class Test_RiverStories(TransactionTestCase):
             # Super dislikes ship their real -2 in the API (so clients can tell
             # them apart from a -1 dislike) instead of collapsing to -1.
             self.assertEqual(returned_story["score"], -2)
+
+            widget_response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "widget": "true"},
+            )
+            widget = json.decode(widget_response.content)
+            self.assertEqual(widget["stories"], [])
+            self.assertEqual(widget["hidden_stories_removed"], 1)
 
         author_regex_classifier = next(
             classifier
@@ -2212,3 +2233,128 @@ class Test_RiverStories(TransactionTestCase):
             all(hash_.startswith(f"{dirty_feed}:") for hash_ in unread_story_hashes),
             f"Unread hashes should come from dirty feed {dirty_feed}, got {unread_story_hashes}",
         )
+
+    def _seed_paging_feed(self, count, tagged=()):
+        """Replace feed 1's stories with `count` stories a minute apart and return their hashes,
+        newest first. Story clustering is turned off so every story comes back on its own."""
+        from django.utils import timezone as django_tz
+
+        feed_id = self.test_feeds[0]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        MStory.objects(story_feed_id=feed_id).delete()
+        # setUp only clears the db=10 copies, so these story-pool keys would leak into later tests.
+        keys = [
+            f"F:{feed_id}",
+            f"zF:{feed_id}",
+            f"zU:{self.user.pk}:{feed_id}",
+            f"zUP:{self.user.pk}:{feed_id}",
+            f"RS:{self.user.pk}:{feed_id}",
+        ]
+        for feed_ids in ([feed_id], self.test_feeds):
+            keys.extend(UserSubscription.get_river_cache_keys(self.user.pk, feed_ids, ""))
+        r.delete(*keys)
+        self.addCleanup(r.delete, *keys)
+
+        preferences = json.decode(self.user.profile.preferences or "{}")
+        preferences["story_clustering"] = False
+        self.user.profile.preferences = json.encode(preferences)
+        self.user.profile.save()
+
+        base_date = django_tz.now()
+        story_hashes = []
+        for i in range(count):
+            story_date = base_date - datetime.timedelta(minutes=i)
+            story_guid = f"paging-{feed_id}-{base_date.timestamp()}-{i}"
+            story = MStory(
+                story_feed_id=feed_id,
+                story_date=story_date,
+                story_title=f"Paging story {i}",
+                story_content=f"Content {i}",
+                story_guid=story_guid,
+                story_permalink=f"http://example.com/{story_guid}",
+                story_author_name=f"Author {i}",
+                story_tags=["rare-tag"] if i in tagged else [],
+            )
+            story.save()
+            r.sadd(f"F:{feed_id}", story.story_hash)
+            r.zadd(f"zF:{feed_id}", {story.story_hash: int(story_date.timestamp())})
+            story_hashes.append(story.story_hash)
+        return story_hashes
+
+    def _load_pages(self, url, params, pages):
+        """GET pages 1 to `pages` and return each page's story hashes and has_more."""
+        page_hashes, has_more = [], []
+        for page in range(1, pages + 1):
+            response = self.client.get(url, {**params, "page": page})
+            self.assertEqual(response.status_code, 200)
+            content = json.decode(response.content)
+            page_hashes.append([story["story_hash"] for story in content["stories"]])
+            has_more.append(content.get("has_more"))
+        return page_hashes, has_more
+
+    def _river_params(self, **params):
+        return {"feeds": [self.test_feeds[0]], "read_filter": "all", "include_hidden": "true", **params}
+
+    def test_read_stories__pages_tile_in_both_orders(self):
+        """Every read story lands on exactly one page, newest first and oldest first."""
+        self.client.login(username="conesus", password="test")
+        read_hashes = self.test_story_hashes[:7]
+        r = redis.Redis(connection_pool=settings.REDIS_STORY_HASH_POOL)
+        key = f"lRS:{self.user.pk}"
+        # lRS is newest first, the way RUserStory.mark_read pushes it (apps/reader/models.py).
+        r.delete(key)
+        r.rpush(key, *read_hashes)
+        self.addCleanup(r.delete, key)
+
+        for order, expected in (("newest", read_hashes), ("oldest", read_hashes[::-1])):
+            pages, has_more = self._load_pages(
+                reverse("load-read-stories"), {"limit": 3, "order": order}, pages=3
+            )
+            self.assertEqual(pages, [expected[:3], expected[3:6], expected[6:]], order)
+            self.assertEqual(has_more, [True, True, False], order)
+
+    def test_single_feed_and_river__limit_pages_tile(self):
+        """Both endpoints page by `limit`, repeat nothing, and say has_more until the last page."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        story_hashes = self._seed_paging_feed(8)
+        single_feed_url = reverse("load-single-feed", kwargs={"feed_id": self.test_feeds[0]})
+        endpoints = (
+            (single_feed_url, {"limit": 3, "include_hidden": "true"}),
+            (reverse("load-river-stories"), self._river_params(limit=3)),
+        )
+
+        for url, params in endpoints:
+            with self.subTest(url):
+                pages, has_more = self._load_pages(url, params, pages=3)
+                self.assertEqual(pages, [story_hashes[:3], story_hashes[3:6], story_hashes[6:]])
+                self.assertEqual(has_more, [True, True, False])
+
+    def test_river_stories__free_user_has_more_is_false(self):
+        """Free users cannot open page 2, so a full first page must not advertise it."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = False
+        self.user.profile.is_archive = False
+        self.user.profile.is_pro = False
+        self.user.profile.save()
+        self._seed_paging_feed(8)
+
+        pages, has_more = self._load_pages(reverse("load-river-stories"), self._river_params(), pages=1)
+
+        self.assertEqual(len(pages[0]), 3)
+        self.assertEqual(has_more, [False])
+
+    def test_river_stories__classifier_filtered_page_still_has_more(self):
+        """has_more counts the stories scanned before the classifier filter, so a page with no
+        match still leads to the match on the next page."""
+        self.client.login(username="conesus", password="test")
+        self.user.profile.is_premium = True
+        self.user.profile.save()
+        story_hashes = self._seed_paging_feed(21, tagged=(20,))
+        params = self._river_params(limit=1, classifier_filter_type="tag", classifier_filter_value="rare-tag")
+
+        pages, has_more = self._load_pages(reverse("load-river-stories"), params, pages=2)
+
+        self.assertEqual(pages, [[], [story_hashes[20]]])
+        self.assertEqual(has_more, [True, False])

@@ -2,6 +2,15 @@ import Foundation
 import WidgetKit
 
 enum WidgetTimeline {
+    static func snapshot<Entry>(
+        cached: Entry?, isPreview: Bool,
+        placeholder: () -> Entry, load: () async -> Entry
+    ) async -> Entry {
+        if let cached { return cached }
+        if isPreview { return placeholder() }
+        return await load()
+    }
+
     static func make<Entry: TimelineEntry>(
         at date: Date = Date(),
         entry: (Date) -> Entry

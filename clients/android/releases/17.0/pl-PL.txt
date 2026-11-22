@@ -1,0 +1,1 @@
+NewsBlur 17 animuje kanały, foldery, tytuły i artykuły po kolei. Szybko przełączaj widoki Wszystkie, Nieprzeczytane, Wyróżnione i Zapisane. Ogranicz ruch w Preferencje > Wygląd usuwa ruch, zachowując płynne pojawianie się i zanikanie. Domyślnie wyłączone. Tagi przy odkrywaniu witryn mają więcej miejsca na telefonach, a dialogi na tabletach lepiej działają przy obracaniu ekranu.

@@ -23,6 +23,8 @@ NEWSBLUR.ListenEngine = function (options) {
     this.story_hash = options.story_hash;
     this.language = options.language || null;
     this.voice_id = options.voice_id || null;
+    this.voice_choices = options.voice_choices || {};
+    this.rotation_voice_id = options.voice_id || null;
     this.start_paragraph = _.isNumber(options.start_paragraph) ? options.start_paragraph : null;
     this.pending_time = options.start_time || 0;
     this.duration_hint = options.duration || 0;
@@ -269,6 +271,7 @@ _.extend(NEWSBLUR.ListenEngine.prototype, {
         var params = { story_hash: this.story_hash };
         if (this.language) params.language = this.language;
         if (this.voice_id) params.voice_id = this.voice_id;
+        if (!_.isEmpty(this.voice_choices)) params.voice_choices = JSON.stringify(this.voice_choices);
         return params;
     },
 

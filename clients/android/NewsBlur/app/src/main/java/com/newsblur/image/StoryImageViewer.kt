@@ -297,7 +297,7 @@ class StoryImageViewer(
             try {
                 val loaded = current.load(source)
                 if (closing || loader !== current) return@launch
-                image.bitmap = loaded.bitmap
+                image.showLoadedBitmap(loaded.bitmap)
                 imageData = loaded.data
                 updateActionsEnabled()
                 status.visibility = View.GONE
@@ -341,7 +341,8 @@ class StoryImageViewer(
             // The photo's new size already reset every control to fully shown, so the panels
             // start their fade from here, after that layout.
             setPanelsAlpha(0f)
-            listOf(hoverPanel, actionsPanel).forEach { it.animate().alpha(1f).setDuration(RESIZE_MS).start() }
+            val duration = if (ValueAnimator.areAnimatorsEnabled() && !com.newsblur.util.ViewUtils.isPowerSaveMode(context)) RESIZE_MS else 0L
+            listOf(hoverPanel, actionsPanel).forEach { it.animate().alpha(1f).setDuration(duration).start() }
             actionsPanel.sendAccessibilityEvent(android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED)
         }
     }
@@ -579,6 +580,20 @@ class StoryImageViewer(
         mode: Mode,
         complete: () -> Unit,
     ) {
+        val reduceMotion = com.newsblur.view.ReaderMotion.isReducedMotion(context)
+        val animationsEnabled = ValueAnimator.areAnimatorsEnabled() && !com.newsblur.util.ViewUtils.isPowerSaveMode(context)
+        if (!animationsEnabled || (reduceMotion && mode == Mode.RESIZE)) {
+            transition.visibility = View.GONE
+            if (mode != Mode.RESIZE) {
+                val alpha = if (mode == Mode.OPEN) 1f else 0f
+                backdrop.alpha = alpha
+                close.alpha = alpha
+                status.alpha = alpha
+                setPanelsAlpha(alpha)
+            }
+            complete()
+            return
+        }
         val startBackdrop = backdrop.alpha
         val startClose = close.alpha
         transition.setImageBitmap(image.bitmap)
@@ -592,26 +607,31 @@ class StoryImageViewer(
                         Mode.CLOSE -> 240
                         Mode.RESIZE -> RESIZE_MS
                     }
+                interpolator = if (mode == Mode.OPEN && !reduceMotion) android.view.animation.OvershootInterpolator(.4f) else android.view.animation.DecelerateInterpolator()
                 addUpdateListener {
                     val t = it.animatedValue as Float
-                    val rect =
+                    // StoryImageViewer.kt keeps reduced-motion photos in place throughout their opacity fade.
+                    val rect = if (reduceMotion) {
+                        if (mode == Mode.OPEN) to else from
+                    } else {
                         RectF(
                             from.left + (to.left - from.left) * t,
                             from.top + (to.top - from.top) * t,
                             from.right + (to.right - from.right) * t,
                             from.bottom + (to.bottom - from.bottom) * t,
                         )
+                    }
                     transition.layoutParams = FrameLayout.LayoutParams(maxOf(1, rect.width().toInt()), maxOf(1, rect.height().toInt()))
                     transition.x = rect.left
                     transition.y = rect.top
                     // Resizing to make room for the panels leaves the backdrop and controls alone.
                     if (mode != Mode.RESIZE) {
                         val opening = mode == Mode.OPEN
-                        backdrop.alpha = if (opening) t else startBackdrop * (1 - t)
-                        close.alpha = if (opening) t else startClose * (1 - t)
+                        backdrop.alpha = (if (opening) t else startBackdrop * (1 - t)).coerceIn(0f, 1f)
+                        close.alpha = (if (opening) t else startClose * (1 - t)).coerceIn(0f, 1f)
                         status.alpha = close.alpha
                         setPanelsAlpha(close.alpha)
-                        transition.alpha = if (opening) 1f else 1f - t
+                        transition.alpha = (if (opening) { if (reduceMotion) t else 1f } else 1f - t).coerceIn(0f, 1f)
                     }
                 }
                 addListener(

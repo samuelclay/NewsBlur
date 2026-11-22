@@ -108,6 +108,7 @@
 "Add" = "追加";
 "Add %1$@ feeds to “%2$@” folder" = "%1$@件のフィードを「%2$@」フォルダーに追加";
 "Add %@" = "%@を追加";
+"Add %@ to rotation" = "ローテーションに%@を追加";
 "Add + Discover Sites" = "サイトを追加＋見つける";
 "Add Site" = "サイトを追加";
 "Add Sites" = "サイトを追加";
@@ -175,6 +176,7 @@
 "Analyzing images..." = "画像を分析中...";
 "App Badge" = "アプリアイコンのバッジ";
 "App Icon" = "アプリアイコン";
+"Appearance" = "外観";
 "Apply training across a folder" = "フォルダー全体に学習を適用";
 "Apply training globally" = "学習内容を全体に適用";
 "Arctic Cyan" = "アークティックシアン";
@@ -285,6 +287,7 @@
 "Custom Search Query" = "カスタム検索クエリ";
 "Custom [listen delivery]" = "カスタム";
 "Custom feed title" = "カスタムフィード名";
+"Custom server" = "カスタムサーバー";
 "Customize auto-read by site or folder" = "サイトまたはフォルダーごとに自動既読をカスタマイズ";
 "Daily" = "毎日";
 "Daily Briefing" = "デイリーブリーフィング";
@@ -358,6 +361,7 @@
 "Engineers writing about how large systems fail" = "大規模システムの障害について書くエンジニア";
 "Enter URL phrase..." = "URLのフレーズを入力...";
 "Enter a custom search query..." = "カスタム検索クエリを入力...";
+"Enter a valid custom server URL." = "有効なカスタムサーバー URL を入力してください。";
 "Enter a web page URL..." = "ウェブページのURLを入力...";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "任意のウェブページのURLを入力すると、NewsBlurがAIでページ構造を分析して記事を見つけ、購読できる専用のRSSフィードを作成します。";
 "Enter author phrase..." = "著者のフレーズを入力...";
@@ -403,6 +407,7 @@
 "Film photography with notes on cameras and film stocks" = "カメラやフィルムの種類についてのメモを添えたフィルム写真";
 "Filter" = "フィルター";
 "Filter stories by date range" = "日付範囲で記事を絞り込む";
+"Find %@ in the voice list" = "音声一覧で%@を探す";
 "Find Friends" = "友達を探す";
 "Find feeds" = "フィードを探す";
 "Find feeds about “%@”" = "「%@」に関するフィードを検索";
@@ -525,6 +530,7 @@
 "Invoice" = "請求書";
 "Judging" = "判定中";
 "Judging…" = "判定中…";
+"Keep fades, without movement." = "動きをなくし、フェードは維持します。";
 "Keeps the dark icon no matter how your device is set." = "デバイスの設定にかかわらず、暗いアイコンを維持します。";
 "Keeps the light icon no matter how your device is set." = "デバイスの設定にかかわらず、ライトアイコンを表示します。";
 "Keyboard Shortcuts" = "キーボードショートカット";
@@ -540,6 +546,7 @@
 "Lavender Iris" = "ラベンダーアイリス";
 "Layout" = "レイアウト";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "NewsBlurを使う場合は空欄のままにしてください。セルフホスト版を使う場合は、そのURLを入力してください。次回アプリを開いたときに反映されます。";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "NewsBlurを使用する場合は空欄のままにしてください。セルフホスト版のインストール先 URL を入力することもできます。ログインと新規登録にすぐ反映されます。";
 "Left" = "左";
 "Length & Style" = "長さとスタイル";
 "Light" = "ライト";
@@ -770,6 +777,7 @@
 "On scroll or selection" = "スクロール時または選択時";
 "One" = "1つ";
 "One column" = "1列";
+"One voice per story, in this order." = "この順番で、記事ごとに音声を切り替えます。";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "サイト%2$@件のうち、おすすめ用にインデックスされているのは%1$@件のみです。アップグレードすると、すべてのサイトがインデックスされ、パーソナライズされたおすすめを利用できます。";
 "Only Title" = "タイトルのみ";
 "Only on Selection" = "選択した場合のみ";
@@ -880,6 +888,7 @@
 "Reads your %@ stories" = "あなたの%@件の記事を読み上げます";
 "Recommended for %@" = "%@におすすめ";
 "Recording..." = "録音中...";
+"Reduce motion" = "動きを減らす";
 "Refine with a hint" = "ヒントを加えて絞り込む";
 "Refine with this title" = "このタイトルで絞り込む";
 "Refresh NewsBlur" = "NewsBlurを更新";
@@ -892,6 +901,7 @@
 "Related sites" = "関連サイト";
 "Reload Sites" = "サイトを再読み込み";
 "Reloading..." = "再読み込み中...";
+"Remove %@ from rotation" = "ローテーションから%@を削除";
 "Remove This List" = "このリストを削除";
 "Remove from Up Next" = "次に再生から削除";
 "Remove from history" = "履歴から削除";
@@ -910,6 +920,7 @@
 "Reply" = "返信";
 "Reply to %@" = "%@に返信";
 "Replying" = "返信中";
+"Reset" = "リセット";
 "Resets %@" = "%@にリセット";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
@@ -971,6 +982,8 @@
 "Select a feed or folder" = "フィードまたはフォルダーを選択";
 "Select a feed variant" = "フィードのバリエーションを選択";
 "Select feeds to add" = "追加するフィードを選択";
+"Selected" = "選択中";
+"Selected voice" = "選択中の音声";
 "Send" = "送信";
 "Send This Story To..." = "この記事を送信…";
 "Send To…" = "送信先…";
@@ -1279,9 +1292,12 @@
 "Usage billing history" = "従量課金の履歴";
 "Usage-based billing is enabled for natural language classifiers." = "自然言語分類器の従量課金が有効になっています。";
 "Use %@" = "%@を使用";
+"Use a custom server" = "カスタムサーバーを使用";
 "Use another sign-in method" = "別のサインイン方法を使う";
 "Use both" = "両方を使用";
+"Use only this voice" = "この音声のみを使う";
 "Use system size" = "システムサイズを使用";
+"Use voice" = "この音声を使う";
 "User info" = "ユーザー情報";
 "Username" = "ユーザー名";
 "Username or Email" = "ユーザー名またはメールアドレス";
@@ -1295,6 +1311,7 @@
 "View mode" = "表示モード";
 "Voice" = "音声";
 "Voice and music balance" = "音声と音楽のバランス";
+"Voice rotation" = "音声のローテーション";
 "Voice settings" = "音声設定";
 "Waiting for a verdict…" = "判定を待っています…";
 "Warm" = "暖色";

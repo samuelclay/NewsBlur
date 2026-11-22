@@ -108,6 +108,7 @@
 "Add" = "新增";
 "Add %1$@ feeds to “%2$@” folder" = "將 %1$@ 個訂閱來源新增至「%2$@」資料夾";
 "Add %@" = "新增 %@";
+"Add %@ to rotation" = "將 %@ 加入輪替";
 "Add + Discover Sites" = "新增＋探索網站";
 "Add Site" = "新增網站";
 "Add Sites" = "新增網站";
@@ -175,6 +176,7 @@
 "Analyzing images..." = "正在分析圖片…";
 "App Badge" = "App 圖示標記";
 "App Icon" = "應用程式圖示";
+"Appearance" = "外觀";
 "Apply training across a folder" = "將訓練套用至整個資料夾";
 "Apply training globally" = "將訓練套用至所有項目";
 "Arctic Cyan" = "北極青藍";
@@ -285,6 +287,7 @@
 "Custom Search Query" = "自訂搜尋查詢";
 "Custom [listen delivery]" = "自訂";
 "Custom feed title" = "自訂訂閱來源標題";
+"Custom server" = "自訂伺服器";
 "Customize auto-read by site or folder" = "依網站或資料夾自訂自動標記為已讀";
 "Daily" = "每日";
 "Daily Briefing" = "每日簡報";
@@ -358,6 +361,7 @@
 "Engineers writing about how large systems fail" = "工程師撰文探討大型系統如何故障";
 "Enter URL phrase..." = "輸入網址詞組…";
 "Enter a custom search query..." = "輸入自訂搜尋條件…";
+"Enter a valid custom server URL." = "請輸入有效的自訂伺服器 URL。";
 "Enter a web page URL..." = "輸入網頁網址…";
 "Enter any web page URL and NewsBlur will use AI to analyze the page structure, find stories, and create a custom RSS feed that you can subscribe to." = "輸入任何網頁網址，NewsBlur 就會使用 AI 分析頁面結構、尋找文章，並建立可供你訂閱的自訂 RSS 訂閱來源。";
 "Enter author phrase..." = "輸入作者詞組…";
@@ -403,6 +407,7 @@
 "Film photography with notes on cameras and film stocks" = "底片攝影，分享相機與底片種類的筆記";
 "Filter" = "篩選";
 "Filter stories by date range" = "依日期範圍篩選文章";
+"Find %@ in the voice list" = "在語音清單中尋找 %@";
 "Find Friends" = "尋找朋友";
 "Find feeds" = "尋找訂閱來源";
 "Find feeds about “%@”" = "尋找關於「%@」的訂閱來源";
@@ -525,6 +530,7 @@
 "Invoice" = "發票";
 "Judging" = "正在判斷";
 "Judging…" = "正在判斷…";
+"Keep fades, without movement." = "保留淡入淡出，取消移動效果。";
 "Keeps the dark icon no matter how your device is set." = "無論裝置如何設定，都會維持深色圖示。";
 "Keeps the light icon no matter how your device is set." = "無論裝置設定為何，圖示都會保持淺色。";
 "Keyboard Shortcuts" = "鍵盤快速鍵";
@@ -540,6 +546,7 @@
 "Lavender Iris" = "薰衣草鳶尾";
 "Layout" = "版面配置";
 "Leave blank to use NewsBlur, or enter the URL of your self-hosted installation. Takes effect next time the app is opened." = "留空以使用 NewsBlur，或輸入自架安裝版本的網址。下次開啟應用程式時生效。";
+"Leave this blank to use NewsBlur, or enter the URL of your self-hosted installation. It takes effect immediately for login and signup." = "留白即可使用 NewsBlur，或輸入自架安裝版本的 URL。此設定會立即套用於登入和註冊。";
 "Left" = "左";
 "Length & Style" = "長度與風格";
 "Light" = "淺色";
@@ -770,6 +777,7 @@
 "On scroll or selection" = "捲動或選取時";
 "One" = "一";
 "One column" = "一欄";
+"One voice per story, in this order." = "依此順序，每篇文章使用一種語音。";
 "Only %1$@ of your %2$@ sites are indexed for discovery. Upgrade to index all your sites and get personalized recommendations." = "你的 %2$@ 個網站中，只有 %1$@ 個已編入探索索引。升級即可將所有網站編入索引，並取得個人化推薦。";
 "Only Title" = "僅標題";
 "Only on Selection" = "僅在選取時";
@@ -880,6 +888,7 @@
 "Reads your %@ stories" = "朗讀你的 %@ 篇文章";
 "Recommended for %@" = "為 %@ 推薦";
 "Recording..." = "正在錄音…";
+"Reduce motion" = "減少動態效果";
 "Refine with a hint" = "使用提示進一步篩選";
 "Refine with this title" = "以此標題篩選";
 "Refresh NewsBlur" = "重新整理 NewsBlur";
@@ -892,6 +901,7 @@
 "Related sites" = "相關網站";
 "Reload Sites" = "重新載入網站";
 "Reloading..." = "正在重新載入…";
+"Remove %@ from rotation" = "將 %@ 移出輪替";
 "Remove This List" = "移除此清單";
 "Remove from Up Next" = "從接下來播放中移除";
 "Remove from history" = "從記錄中移除";
@@ -910,6 +920,7 @@
 "Reply" = "回覆";
 "Reply to %@" = "回覆 %@";
 "Replying" = "回覆中";
+"Reset" = "重設";
 "Resets %@" = "於 %@ 重設";
 "Resize sidebar" = "調整側邊欄大小";
 "Restore" = "還原";
@@ -971,6 +982,8 @@
 "Select a feed or folder" = "選取訂閱來源或資料夾";
 "Select a feed variant" = "選擇訂閱來源版本";
 "Select feeds to add" = "選取要新增的訂閱來源";
+"Selected" = "已選取";
+"Selected voice" = "已選擇的語音";
 "Send" = "傳送";
 "Send This Story To..." = "將此篇文章傳送至⋯⋯";
 "Send To…" = "傳送至…";
@@ -1279,9 +1292,12 @@
 "Usage billing history" = "按用量計費記錄";
 "Usage-based billing is enabled for natural language classifiers." = "自然語言分類器已啟用按用量計費。";
 "Use %@" = "使用 %@";
+"Use a custom server" = "使用自訂伺服器";
 "Use another sign-in method" = "使用其他登入方式";
 "Use both" = "兩者皆用";
+"Use only this voice" = "僅使用此語音";
 "Use system size" = "使用系統大小";
+"Use voice" = "使用此語音";
 "User info" = "使用者資訊";
 "Username" = "使用者名稱";
 "Username or Email" = "使用者名稱或電子郵件";
@@ -1295,6 +1311,7 @@
 "View mode" = "檢視模式";
 "Voice" = "語音";
 "Voice and music balance" = "語音與音樂平衡";
+"Voice rotation" = "語音輪替";
 "Voice settings" = "語音設定";
 "Waiting for a verdict…" = "等待結果…";
 "Warm" = "暖色";

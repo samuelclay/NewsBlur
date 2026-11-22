@@ -911,11 +911,15 @@ import XCTest
         try await checkRealPaintedArticleSelection(replacesTextDuringMotion: false)
     }
 
+    func test_retappingPaintedStoryPreservesDocumentAndNextSelectionLoadsOnce() async throws {
+        try await checkRealPaintedArticleSelection(replacesTextDuringMotion: false, retapsSelectedStory: true)
+    }
+
     func test_fullTextArrivingDuringRealPageMotionWaitsBehindPaintedContent() async throws {
         try await checkRealPaintedArticleSelection(replacesTextDuringMotion: true)
     }
 
-    private func checkRealPaintedArticleSelection(replacesTextDuringMotion: Bool) async throws {
+    private func checkRealPaintedArticleSelection(replacesTextDuringMotion: Bool, retapsSelectedStory: Bool = false) async throws {
         let defaults = UserDefaults.standard
         let originalDirection = defaults.object(forKey: "scroll_stories_horizontally")
         defaults.set(true, forKey: "scroll_stories_horizontally")
@@ -1014,6 +1018,30 @@ import XCTest
         }
         realPages[0].webView.scrollView.contentOffset.y = 280
         let initialReadingPosition = realPages[0].webView.scrollView.contentOffset.y
+        let titleSelection = RetapPaintedStoryFeed()
+        titleSelection.appDelegate = fixture.app
+        titleSelection.storiesCollection = collection
+        titleSelection.setValue(stories.indices.map { ["type": 0, "story_location": $0] }, forKey: "visibleStoryRows")
+        var originalReloads = 0
+        var destinationLoads = 0
+        if retapsSelectedStory {
+            fixture.app.simulatedPhone = false
+            fixture.pages.simulatedPhone = false
+            (realPages[0].webView as? RealStoryLoadWebView)?.selectionLoadObserver = { _ in originalReloads += 1 }
+            (realPages[2].webView as? RealStoryLoadWebView)?.selectionLoadObserver = { html in
+                // StoryDetailLoadingTests.swift counts article documents, excluding the cleared spare page's empty HTML.
+                if html.contains("Prepared article 21") { destinationLoads += 1 }
+            }
+            fixture.pages.isAnimatedIntoPlace = true
+            fixture.pages.runsActualAppearanceCallbacks = true
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 0, section: 0))
+            fixture.pages.runsActualAppearanceCallbacks = false
+            XCTAssertTrue(fixture.pages.isAnimatedIntoPlace, "A retap must not reset the completed whole-reader entrance")
+            XCTAssertTrue(fixture.pages.currentPage === realPages[0])
+            XCTAssertEqual(realPages[0].webView.scrollView.contentOffset.y, initialReadingPosition, accuracy: 1)
+            XCTAssertEqual(originalReloads, 0)
+        }
         let started = expectation(description: "The prepared destination starts its real article scan")
         let completed = expectation(description: "Real article selection finishes its visible scan")
         fixture.pages.beforeNavigation = { _ in completed.fulfill() }
@@ -1038,13 +1066,23 @@ import XCTest
             started.fulfill()
         }
         motion.start()
-        fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
-        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
+        if retapsSelectedStory {
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 20, section: 0))
+        } else {
+            fixture.app.activeStory = stories[20] as? [AnyHashable: Any]
+            fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 20, "animated": true])
+        }
         XCTAssertFalse(realPages[1].readyForPresentation, "Selection must start a fresh paint check for the intermediate article")
         await waitForState("The intermediate article finishes its second paint check while destination parsing is held") {
             destinationParser.isHeld && realPages[1].readyForPresentation
         }
         guard destinationParser.isHeld && realPages[1].readyForPresentation else { return }
+        if retapsSelectedStory {
+            let pendingPage = fixture.pages.value(forKey: "pendingPresentationPage") as? StoryDetailViewController
+            titleSelection.perform(NSSelectorFromString("didSelectItemAtIndexPath:"), with: IndexPath(row: 20, section: 0))
+            XCTAssertTrue((fixture.pages.value(forKey: "pendingPresentationPage") as? StoryDetailViewController) === pendingPage,
+                          "Retapping the pending destination must preserve the in-flight document")
+        }
         destinationParser.release()
         await fulfillment(of: [started], timeout: SimulatorTestTiming.realWorkTimeout)
         await delay(0.12)
@@ -1085,6 +1123,12 @@ import XCTest
         motion.stop()
         XCTAssertGreaterThanOrEqual(Set(motion.positions.map { Int($0.rounded()) }).count, 5)
         XCTAssertEqual(fixture.pages.currentPage.activeStoryId, "painted-20")
+        if retapsSelectedStory {
+            XCTAssertEqual(originalReloads, 0)
+            XCTAssertEqual(destinationLoads, 1)
+            XCTAssertEqual(fixture.pages.pageChanges, [20])
+            XCTAssertTrue(fixture.pages.isAnimatedIntoPlace)
+        }
         XCTAssertEqual(realPages[0].webView.scrollView.contentOffset.y, initialReadingPosition, accuracy: 1)
         XCTAssertEqual(fixture.pages.children.count, 3)
         XCTAssertTrue(realPages.allSatisfy { $0.view.superview === fixture.pages.scrollView && $0.webView.superview === $0.view })
@@ -1816,6 +1860,83 @@ import XCTest
         XCTAssertEqual(fixture.pages.hiddenAtNavigation, [false])
         XCTAssertEqual(fixture.pages.unreadyAtNavigation, [false])
     }
+
+#if targetEnvironment(macCatalyst)
+    func test_macPreparationStaysBehindTheReaderWhenTheWindowChromeIsTransparent() async throws {
+        // StoryDetailLoadingTests.swift protects translucent chrome from the live WebView used to prepare the next story.
+        // Staging at the window origin, or returning there after a resize, exposes that document through the sidebar.
+        let fixture = makePresentationFixture(width: 500)
+        fixture.pages.regularPane = true
+        fixture.app.compactWidthOverride = false
+        let scene = try XCTUnwrap(UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first)
+        let previousKeyWindow = scene.windows.first { $0.isKeyWindow }
+        let window = trackFixtureWindow(UIWindow(windowScene: scene))
+        let root = UIViewController()
+        root.view.backgroundColor = .clear
+        window.backgroundColor = .clear
+        window.rootViewController = root
+        root.addChild(fixture.pages)
+        root.view.addSubview(fixture.pages.view)
+        fixture.pages.didMove(toParent: root)
+        window.makeKeyAndVisible()
+        fixture.pages.view.frame = CGRect(x: 550, y: 70, width: 500, height: 650)
+        fixture.pages.view.backgroundColor = .white
+        fixture.pages.scrollView.frame = fixture.pages.view.bounds
+        defer {
+            fixture.pages.cancelPendingStoryPresentation()
+            window.isHidden = true
+            window.rootViewController = nil
+            previousKeyWindow?.makeKey()
+        }
+
+        fixture.app.activeStory = fixture.stories[3] as? [AnyHashable: Any]
+        fixture.app.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": 1, "animated": false])
+        await drainMainQueue()
+        let selected = try XCTUnwrap(fixture.pages.value(forKey: "pendingPresentationPage") as? StoryLoadPage)
+        let web = try XCTUnwrap(selected.webView as? RecordedStoryLoadWebView)
+        func assertConfinedToReader(file: StaticString = #filePath, line: UInt = #line) throws {
+            let host = try XCTUnwrap(fixture.pages.value(forKey: "storyPreparationHost") as? UIView, file: file, line: line)
+            XCTAssertTrue(web.window === window, "Preparation must stay attached so WebKit can paint", file: file, line: line)
+            XCTAssertFalse(host.isHidden, file: file, line: line)
+            XCTAssertEqual(host.alpha, 1, file: file, line: line)
+            let readerRect = fixture.pages.view.convert(fixture.pages.view.bounds, to: window)
+            var stagedRect = web.convert(web.bounds, to: window)
+            var ancestor = web.superview
+            while let view = ancestor {
+                if view.clipsToBounds {
+                    stagedRect = stagedRect.intersection(view.convert(view.bounds, to: window))
+                }
+                ancestor = view.superview
+            }
+            XCTAssertFalse(stagedRect.isEmpty, "The prepared article must remain renderable", file: file, line: line)
+            XCTAssertTrue(readerRect.contains(stagedRect), "The prepared article must not occupy sidebar or toolbar space: \(stagedRect) outside \(readerRect)", file: file, line: line)
+        }
+        try assertConfinedToReader()
+        web.defersAsyncJavaScript = true
+        sendReady(to: selected, token: try tokenFromHTML(XCTUnwrap(web.loads.last).html), mainFrame: true)
+        await drainMainQueue()
+        fixture.pages.view.frame.origin.x += 30
+        fixture.pages.view.frame.size.width -= 40
+        fixture.pages.scrollView.frame = fixture.pages.view.bounds
+        root.view.layoutIfNeeded()
+        try assertConfinedToReader()
+        let completion = try XCTUnwrap(web.asyncCompletions.first)
+        web.asyncCompletions.removeFirst()
+        completion(true, nil)
+        await drainMainQueue()
+        try assertConfinedToReader()
+        XCTAssertEqual(web.bounds.size, fixture.pages.scrollView.bounds.size)
+        XCTAssertTrue(fixture.pages.currentPage === fixture.original, "The current article stays visible while the new viewport paints")
+        for _ in 0..<4 where !web.asyncCompletions.isEmpty {
+            web.asyncCompletions.removeFirst()(true, nil)
+            await drainMainQueue()
+        }
+        XCTAssertEqual(fixture.app.presentations, 1)
+        XCTAssertTrue(fixture.pages.currentPage === selected)
+        XCTAssertNil(fixture.pages.value(forKey: "storyPreparationHost"))
+        XCTAssertTrue(web.isDescendant(of: selected.view))
+    }
+#endif
 
     func test_rapidNativeSelectionsOnlyPresentLatestDocument() async throws {
         let fixture = makePresentationFixture()
@@ -3312,6 +3433,8 @@ import XCTest
 
 private class StoryGeometryAppDelegate: NewsBlurAppDelegate {
     var compactWidthOverride: Bool?
+    var simulatedPhone: Bool?
+    override var isPhone: Bool { simulatedPhone ?? super.isPhone }
     override var isCompactWidth: Bool { compactWidthOverride ?? super.isCompactWidth }
 }
 
@@ -3348,6 +3471,7 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
 }
 
 @MainActor private class StoryLoadToolbarPages: StoryPagesViewController {
+    var runsActualAppearanceCallbacks = false
     var customToolbarOverride: Bool?
     var verticalToolbarOverride: Bool?
     var runsActualScrollSizing = false
@@ -3355,8 +3479,8 @@ private final class StoryScrollStoreAppDelegate: NewsBlurAppDelegate {
     override var usesVerticalReaderToolbar: Bool { verticalToolbarOverride ?? super.usesVerticalReaderToolbar }
     override func loadView() { view = UIView(frame: CGRect(x: 0, y: 0, width: 390, height: 844)) }
     override func viewDidLoad() {}
-    override func viewWillAppear(_ animated: Bool) {}
-    override func viewDidAppear(_ animated: Bool) {}
+    override func viewWillAppear(_ animated: Bool) { if runsActualAppearanceCallbacks { super.viewWillAppear(animated) } }
+    override func viewDidAppear(_ animated: Bool) { if runsActualAppearanceCallbacks { super.viewDidAppear(animated) } }
     override func viewWillDisappear(_ animated: Bool) {}
     override func viewDidDisappear(_ animated: Bool) {}
     override func viewWillLayoutSubviews() {}
@@ -3560,6 +3684,19 @@ private final class NextButtonReadingStories: StoriesCollection {
     override func syncStory(asRead story: [AnyHashable: Any]!) {
         // StoryDetailLoadingTests.swift intercepts only server transport; local read state and counts use StoriesCollection.m.
         if let hash = story["story_hash"] as? String { syncedHashes.append(hash) }
+    }
+}
+
+@MainActor private final class RetapPaintedStoryFeed: FeedDetailViewController {
+    override func viewDidLoad() {}
+    @objc(isPhoneOrCompact) func usesCompactLayout() -> Bool { false }
+    override func markStoryReadIfNeeded(_ story: [AnyHashable: Any]!, isScrolling: Bool) -> Bool { false }
+    override func reload() {}
+    override func loadStory(atRow row: Int) {
+        // StoryDetailLoadingTests.swift isolates title selection while preserving production document preparation and presentation.
+        let index = storiesCollection.index(fromLocation: row)
+        appDelegate.activeStory = storiesCollection.activeFeedStories[index] as? [AnyHashable: Any]
+        appDelegate.perform(NSSelectorFromString("deferredChangePage:"), with: ["location": row, "animated": true])
     }
 }
 

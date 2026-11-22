@@ -11,6 +11,19 @@ import org.junit.Test
 
 /** Test_ListenPreferenceParser.kt checks the lenient reading of synced Listen and story button prefs. */
 class Test_ListenPreferenceParser {
+    // Test_ListenPreferenceParser.kt: web's nested rotation JSON must round-trip without losing order or names.
+    @Test
+    fun test_rotations_round_trip_and_ignore_invalid_entries() {
+        val input =
+            JsonPrimitive(
+                """{"en":[{"voice_id":"a","name":"Amelia"},{"voice_id":"a"},{"voice_id":"b","name":"Jon"},{"voice_id":""}],"fr":false}""",
+            )
+        val rotations = ListenPreferenceParser.rotationsValue(input)
+        assertEquals(listOf(ListenRotationVoice("a", "Amelia"), ListenRotationVoice("b", "Jon")), rotations["en"])
+        assertNull(rotations["fr"])
+        assertEquals(rotations, ListenPreferenceParser.rotationsValue(JsonPrimitive(ListenPreferenceParser.encodeRotations(rotations))))
+    }
+
     private fun json(raw: String) = JsonParser.parseString(raw).asJsonObject
 
     @Test

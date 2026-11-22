@@ -1057,6 +1057,10 @@ msgid "Add %(count)s story tag"
 msgid_plural "Add %(count)s story tags"
 msgstr[0] "%(count)s haber etiketi ekle"
 
+#, python-format
+msgid "Add %(voice)s to rotation"
+msgstr "%(voice)s sesini döngüye ekle"
+
 msgid "Add Folder"
 msgstr "Klasör Ekle"
 
@@ -1119,6 +1123,9 @@ msgstr "Sıraya ekle"
 
 msgid "Add to folder"
 msgstr "Klasöre ekle"
+
+msgid "Add to rotation"
+msgstr "Döngüye ekle"
 
 msgid ""
 "Add your company name, VAT number, address, or other text. Save to update all subscription invoices, "
@@ -1310,6 +1317,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Tüm zamanlar"
+
+msgid "Appearance"
+msgstr "Görünüm"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -2082,6 +2092,9 @@ msgstr "Yaratıcı"
 
 msgid "Credit"
 msgstr "Kredi"
+
+msgid "Current voice"
+msgstr "Geçerli ses"
 
 msgid "Cursors"
 msgstr "İmleçler"
@@ -2971,6 +2984,10 @@ msgstr "Finans"
 msgid "Find %(value_1)s Friends"
 msgstr "%(value_1)s Arkadaşlarını Bul"
 
+#, python-format
+msgid "Find %(voice)s in the voice list"
+msgstr "Ses listesinde %(voice)s sesini bul"
+
 msgid "Find Friends"
 msgstr "Arkadaş Bul"
 
@@ -3162,12 +3179,6 @@ msgstr "Ücretsiz + abonelik · Mac, iPhone &amp; iPad"
 msgid "Free + subscription · iPhone, iPad &amp; Mac"
 msgstr "Ücretsiz + abonelik · iPhone, iPad &amp; Mac"
 
-msgid "Free beta · Mac, iPhone &amp; iPad"
-msgstr "Ücretsiz beta · Mac, iPhone &amp; iPad"
-
-msgid "Free beta · iPhone, iPad &amp; Mac"
-msgstr "Ücretsiz beta · iPhone, iPad &amp; Mac"
-
 msgid "Free · Android, iPhone, iPad &amp; Mac"
 msgstr "Ücretsiz · Android, iPhone, iPad &amp; Mac"
 
@@ -3262,6 +3273,9 @@ msgstr "Tam genişlik"
 
 msgid "Full-Text Search"
 msgstr "Tam Metin Arama"
+
+msgid "Full-screen list"
+msgstr "Tam ekran liste"
 
 msgid "Full-text search across all stories"
 msgstr "Tüm haberlerde tam metin arama"
@@ -3627,6 +3641,9 @@ msgstr ""
 msgid "In a new window"
 msgstr "Yeni pencerede"
 
+msgid "In rotation"
+msgstr "Döngüde"
+
 msgid ""
 "In the Feed view, click tags and authors right in the story header to train them. Each click rotates "
 "between like, dislike, and neutral."
@@ -3666,6 +3683,9 @@ msgstr "Seyrek Güncellenen Sitelerin Haberleri"
 
 msgid "Infrequent stories per month"
 msgstr "Seyrek haber eşiği (aylık)"
+
+msgid "Inline list"
+msgstr "Satır içi liste"
 
 msgid "Insta-fetch stories"
 msgstr "Haberleri anında getir"
@@ -3750,6 +3770,9 @@ msgstr "Yalnızca başlıklar, en az yorumla"
 msgid "Just the headlines, no commentary"
 msgstr "Yalnızca başlıklar, yorum yok"
 
+msgid "Keep fades, without movement."
+msgstr "Solma geçişlerini koru, hareketi kaldır."
+
 msgid "Keep others unread"
 msgstr "Diğerlerini okunmamış bırak"
 
@@ -3810,6 +3833,9 @@ msgstr "Son güncelleme"
 
 msgid "Last seen:"
 msgstr "Son görülme:"
+
+msgid "Layout"
+msgstr "Düzen"
 
 msgid "Leave unread"
 msgstr "Okunmamış bırak"
@@ -3898,6 +3924,9 @@ msgstr "Akışlar yükleniyor..."
 
 msgid "Loading more briefings..."
 msgstr "Daha fazla özet yükleniyor..."
+
+msgid "Loading the next unread story..."
+msgstr "Sonraki okunmamış haber yükleniyor..."
 
 msgid "Loading voices..."
 msgstr "Sesler yükleniyor..."
@@ -4446,6 +4475,9 @@ msgstr "Sonraki adım "
 msgid "Next story"
 msgstr "Sonraki haber"
 
+msgid "Next unread"
+msgstr "Sonraki okunmamış"
+
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Sonra, tüm bültenlerinizin NewsBlur'daki özel adrese yönlendirilmesini sağlayacak bir filtre oluşturun."
 
@@ -4753,6 +4785,11 @@ msgid "Old password"
 msgstr "Eski şifre"
 
 #, python-format
+msgid "Older than %(count)s day"
+msgid_plural "Older than %(count)s days"
+msgstr[0] "%(count)s günden eski"
+
+#, python-format
 msgid "Older than: %(month)s %(day)s %(year)s"
 msgstr "Şu tarihten eski: %(day)s %(month)s %(year)s"
 
@@ -4784,6 +4821,9 @@ msgstr "Docker ile tek komut"
 
 msgid "One sentence"
 msgstr "Tek cümle"
+
+msgid "One voice per story, in this order."
+msgstr "Bu sırayla, her yazı için bir ses."
 
 msgid "One-click subscribe on any site with a feed. Use the custom add site URL from the Extras tab."
 msgstr ""
@@ -5507,6 +5547,9 @@ msgstr "Kullanıldı"
 msgid "Reduce clutter in your river of stories"
 msgstr "Haber akışınızdaki kalabalığı azaltın"
 
+msgid "Reduce motion"
+msgstr "Hareketi azalt"
+
 msgid "Refer"
 msgstr "Davet et"
 
@@ -5559,6 +5602,10 @@ msgstr "Her bölüm için oynatma konumunu hatırla"
 
 msgid "Remove"
 msgstr "Kaldır"
+
+#, python-format
+msgid "Remove %(voice)s from rotation"
+msgstr "%(voice)s sesini döngüden çıkar"
 
 msgid "Remove from Up Next"
 msgstr "Sıradan çıkar"
@@ -6030,6 +6077,12 @@ msgstr "Bölüm veya kategori gibi kalıpları eşleştirmek için URL'nin bir k
 
 msgid "Select title phrase"
 msgstr "Başlık ifadesi seçin"
+
+msgid "Selected"
+msgstr "Seçili"
+
+msgid "Selected voice"
+msgstr "Seçili ses"
 
 msgid "Selecting a story in the story titles marks it as read."
 msgstr "Haber başlıkları listesinden bir haber seçmek, onu okunmuş olarak işaretler."
@@ -6579,6 +6632,12 @@ msgstr "%(date)s öncesindeki haberler"
 msgid "Stories on %(date)s"
 msgstr "%(date)s tarihindeki haberler"
 
+msgid "Stories open inside the list"
+msgstr "Haberler listenin içinde açılır"
+
+msgid "Stories open on their own screen"
+msgstr "Haberler kendi ekranında açılır"
+
 msgid "Stories per day"
 msgstr "Günlük haber sayısı"
 
@@ -6629,6 +6688,9 @@ msgstr "Haber Tipografisi"
 
 msgid "Story URL"
 msgstr "Haber URL'si"
+
+msgid "Story cards open on their own screen"
+msgstr "Haber kartları kendi ekranında açılır"
 
 msgid "Story clustering"
 msgstr "Haber kümeleme"
@@ -7650,11 +7712,18 @@ msgstr "Doğal dil sınıflandırıcıları için kullanıma dayalı faturaland�
 msgid "Use %(language)s"
 msgstr "%(language)s kullan"
 
+#, python-format
+msgid "Use %(voice)s only"
+msgstr "Yalnızca %(voice)s sesini kullan"
+
 msgid "Use 12-hour clock"
 msgstr "12 saatlik saat biçimini kullan"
 
 msgid "Use 24-hour clock"
 msgstr "24 saatlik saat biçimini kullan"
+
+msgid "Use only this voice"
+msgstr "Yalnızca bu sesi kullan"
 
 msgid "Use prompt templates for inbox triage, topic research, and feed audits"
 msgstr "Gelen kutusu ayıklama, konu araştırması ve akış denetimleri için istem şablonları kullanın"
@@ -7664,6 +7733,9 @@ msgstr "Yerel tarayıcı bağlam menüsünü kullan"
 
 msgid "Use this URL template in browser extensions and feed readers to subscribe on NewsBlur."
 msgstr "NewsBlur'a abone olmak için tarayıcı uzantılarında ve akış okuyucularında bu URL şablonunu kullanın."
+
+msgid "Use voice"
+msgstr "Sesi kullan"
 
 msgid "Use widgets to see unread counts and stories at a glance"
 msgstr "Okunmamış sayılarını ve haberleri bir bakışta görmek için widget'ları kullanın"
@@ -7731,8 +7803,14 @@ msgstr "Ses"
 msgid "Voice recording failed. Please try again."
 msgstr "Ses kaydı başarısız oldu. Lütfen tekrar deneyin."
 
+msgid "Voice rotation"
+msgstr "Ses döngüsü"
+
 msgid "Voice settings"
 msgstr "Ses ayarları"
+
+msgid "Voices"
+msgstr "Sesler"
 
 msgid "Waiting for a verdict…"
 msgstr "Bir karar bekleniyor…"

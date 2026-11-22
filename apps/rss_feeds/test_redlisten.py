@@ -190,6 +190,22 @@ class Test_RedListenBudget(SimpleTestCase):
         november = self.budget.usage("202611")
         self.assertEqual((november["requests"], november["results"]), (49001, 989003))
 
+    def test_projected_month_runs_every_kind_at_its_last_day_pace(self):
+        self.r.hset(self.budget.usage_key(), mapping={"requests": 10, "results": 100})
+        self.r.hset(
+            self.budget.spend_key(),
+            mapping={
+                "poller_requests": 3,
+                "poller_results": 30,
+                "scheduled_requests": 1,
+                "one_off_results": 2,
+            },
+        )
+        days_left = (datetime.datetime(2026, 12, 1) - NOW).total_seconds() / 86400
+        requests, results = self.budget.projected_month()
+        self.assertAlmostEqual(requests, 10 + 4 * days_left)
+        self.assertAlmostEqual(results, 100 + 32 * days_left)
+
     def test_exhausted_quota_stops_everyone(self):
         self.budget.mark_exhausted("items_quota_exceeded")
         self.assertFalse(self.budget.reserve(POLLER, 1))
@@ -202,6 +218,13 @@ class Test_RedListenBudget(SimpleTestCase):
             self.assertTrue(self.budget.reserve(ONE_OFF, 1))
         with self.settings(DEBUG=True, REDLISTEN_BACKGROUND_IN_DEBUG=True):
             self.assertTrue(self.budget.reserve(POLLER, 1))
+
+    def test_a_profiled_production_task_still_spends_in_the_background(self):
+        # DBProfilerMiddleware.process_celery saves the real DEBUG and turns DEBUG on.
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=False):
+            self.assertTrue(self.budget.reserve(SCHEDULED, 1))
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=True):
+            self.assertFalse(self.budget.reserve(SCHEDULED, 1))
 
     def test_minute_window(self):
         with self.settings(REDLISTEN_REQUESTS_PER_MINUTE=2):
@@ -347,6 +370,25 @@ class FakeClient:
         return RedListenResult(status=200, payload=payload, results=count_results(payload))
 
 
+class EndlessListingClient:
+    """Answers every request with a full page of fresh posts from the requested subreddits,
+    the way a busy batch would page forever, recording each call."""
+
+    def __init__(self):
+        self.calls = []
+        self.served = 0
+
+    def get(self, path, params=None, kind=SCHEDULED, max_results=25, timeout=30):
+        self.calls.append((path, dict(params or {}), kind, max_results))
+        subreddit = path.split("/")[2].split("+")[0]
+        posts = []
+        for _ in range(params["limit"]):
+            self.served += 1
+            posts.append(post("e%d" % self.served, subreddit=subreddit, created=NOW_TS - 10 * self.served))
+        payload = listing(posts, after="t3_e%d" % self.served)
+        return RedListenResult(status=200, payload=payload, results=len(posts))
+
+
 @override_settings(**SMALL_PLAN)
 @patch("utils.redlisten_poller.time.sleep")
 class Test_RedListenPoller(SimpleTestCase):
@@ -403,6 +445,19 @@ class Test_RedListenPoller(SimpleTestCase):
         # Three posts span the 300 seconds back to the oldest of them.
         self.assertEqual((busy.posts, busy.window), (3, 300))
 
+    def test_a_first_poll_schedules_feeds_even_without_new_posts(self, _sleep):
+        """A feed still backed off from Reddit's 401s rereads the cache and clears its error
+        once its subreddit is first polled, even if nothing new was posted."""
+        quiet = target("r:quiet", feed_ids=[41])
+        batch = PollBatch(drain=True, is_user=False)
+        batch.add(quiet, 1, 1)
+        poller, _ = self.poller([listing([])])
+
+        poller.poll_batch(batch)
+
+        self.assertEqual(poller.feeds_to_schedule, {41})
+        self.assertEqual(quiet.last_polled, NOW_TS)
+
     def test_posts_already_cached_do_not_reschedule_feeds(self, _sleep):
         quiet = target("r:quiet", feed_ids=[31], last_polled=NOW_TS - 3600)
         RedditPostCache(r=self.r).add("r:quiet", [post("q1", subreddit="quiet")])
@@ -421,8 +476,9 @@ class Test_RedListenPoller(SimpleTestCase):
         }
         payload = listing([post("p1"), post("g1", subreddit="golang")])
         poller, client = self.poller([payload])
-        # The small plan's 99 requests a month is under one per hour; use Pro's.
-        with self.settings(REDLISTEN_MONTHLY_REQUESTS=50000), patch.object(
+        # The small plan's 99 requests and 990 results a month are under one request and
+        # its smallest first page per hour; use Pro's.
+        with self.settings(REDLISTEN_MONTHLY_REQUESTS=50000, REDLISTEN_MONTHLY_RESULTS=1000000), patch.object(
             RedListenPoller, "load_targets", return_value=targets
         ):
             summary = poller.poll()
@@ -463,6 +519,42 @@ class Test_RedListenPoller(SimpleTestCase):
         niche.add(target("r:niche", readers=2, last_polled=NOW_TS - 3600), 50, 1)
         self.assertEqual(sorted([niche, popular, quiet], key=PollBatch.priority), [quiet, popular, niche])
 
+    def test_a_drained_batch_stops_paging_at_the_hours_budget(self, _sleep):
+        quiet_until_now = target("r:quiet", feed_ids=[51], last_polled=NOW_TS - 3600)
+        batch = PollBatch(drain=True, is_user=False)
+        batch.add(quiet_until_now, 1, 1)
+        client = EndlessListingClient()
+        poller = RedListenPoller(budget=self.budget, client=client, r=self.r, now=NOW)
+        poller.result_budget = 50
+
+        poller.poll_batch(batch)
+
+        limits = [call[1]["limit"] for call in client.calls]
+        self.assertEqual(sum(limits), 50)
+        self.assertEqual(poller.spent_results, 50)
+        # Cut short, so the next poll reaches back for the rest.
+        self.assertEqual(quiet_until_now.last_polled, NOW_TS - 3600)
+
+    def test_a_poll_never_starts_a_batch_past_the_hours_budget(self, _sleep):
+        """A quiet-looking subreddit that turns out busy spends the hour; the capped user
+        batch after it waits for the next hour instead of running over."""
+        targets = {
+            "r:quiet": target("r:quiet", readers=10, feed_ids=[1], last_polled=NOW_TS - 3600),
+            "u:busy": target(
+                "u:busy", readers=1, feed_ids=[2], last_polled=NOW_TS - 3600, posts=1000, window=86400
+            ),
+        }
+        client = EndlessListingClient()
+        poller = RedListenPoller(budget=self.budget, client=client, r=self.r, now=NOW)
+        with patch.object(RedListenPoller, "cycle_budget", return_value=(50.0, 100.0)), patch.object(
+            RedListenPoller, "load_targets", return_value=targets
+        ):
+            summary = poller.poll()
+
+        self.assertEqual(summary["spent_results"], 50)
+        self.assertEqual((summary["batches"], summary["polled_batches"]), (2, 1))
+        self.assertTrue(all(call[0].startswith("/r/quiet/") for call in client.calls))
+
     def test_a_poll_that_outlived_its_lock_leaves_the_next_polls_lock(self, _sleep):
         poller, _ = self.poller([])
 
@@ -481,7 +573,7 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertIsNone(poller.poll())
         self.assertEqual(client.calls, [])
 
-    def test_cycle_budget_spreads_the_month_and_leaves_room_for_scheduled_feeds(self, _sleep):
+    def test_cycle_budget_spreads_the_month_and_sets_aside_feeds_and_one_offs(self, _sleep):
         self.r.hset(self.budget.usage_key(), mapping={"requests": 9, "results": 270})
         poller, _ = self.poller([])
         hours_left = (datetime.datetime(2026, 12, 1) - NOW).total_seconds() / 3600
@@ -489,6 +581,20 @@ class Test_RedListenPoller(SimpleTestCase):
         self.assertAlmostEqual(results, (990 - 270) / hours_left)
         self.assertAlmostEqual(requests, (99 - 9) / hours_left)
 
-        self.r.hset(self.budget.spend_key(), mapping={"scheduled_requests": 1, "scheduled_results": 10})
-        results, _ = poller.cycle_budget()
-        self.assertAlmostEqual(results, (990 - 270 - 10 * hours_left / 24) / hours_left)
+        # Comment/search feeds and readers' one-offs both get their 24-hour pace set aside
+        # through month end, for requests as well as results.
+        self.r.hset(
+            self.budget.spend_key(),
+            mapping={
+                "scheduled_requests": 1,
+                "scheduled_results": 10,
+                "one_off_requests": 1,
+                "one_off_results": 5,
+            },
+        )
+        days_left = hours_left / 24
+        results, requests = poller.cycle_budget()
+        self.assertAlmostEqual(results, (990 - 270 - 15 * days_left) / hours_left)
+        self.assertAlmostEqual(requests, (99 - 9 - 2 * days_left) / hours_left)
+        self.assertAlmostEqual(poller.set_aside[0], 2 * days_left)
+        self.assertAlmostEqual(poller.set_aside[1], 15 * days_left)

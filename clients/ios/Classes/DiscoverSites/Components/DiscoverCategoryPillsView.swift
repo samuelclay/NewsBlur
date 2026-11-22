@@ -13,35 +13,24 @@ struct DiscoverCategoryPillsView: View {
     let categories: [DiscoverCategory]
     @Binding var selectedCategory: DiscoverCategory?
     @Binding var selectedSubcategory: DiscoverSubcategory?
+    var viewMode: Binding<DiscoverSitesFeedViewMode>?
 
     var body: some View {
         VStack(spacing: 6) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    pillButton(label: NBLocalization.text("All"), count: nil, isActive: selectedCategory == nil) {
-                        selectedCategory = nil
-                        selectedSubcategory = nil
+            if let viewMode {
+                if #available(iOS 16.0, *) {
+                    ViewThatFits(in: .horizontal) {
+                        categoryControls(viewMode: viewMode)
+                        stackedCategoryControls(viewMode: viewMode)
                     }
-
-                    ForEach(categories) { category in
-                        pillButton(
-                            label: category.name,
-                            count: category.feedCount,
-                            isActive: selectedCategory?.id == category.id
-                        ) {
-                            if selectedCategory?.id == category.id {
-                                selectedCategory = nil
-                                selectedSubcategory = nil
-                            } else {
-                                selectedCategory = category
-                                selectedSubcategory = nil
-                            }
-                        }
-                    }
+                    .padding(.horizontal, 16)
+                } else {
+                    stackedCategoryControls(viewMode: viewMode)
+                        .padding(.horizontal, 16)
                 }
-                .padding(.horizontal, 16)
+            } else {
+                categoryRow.padding(.horizontal, 16)
             }
-            .accessibilityIdentifier("discover-category-row")
 
             if let category = selectedCategory, !category.subcategories.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -70,6 +59,51 @@ struct DiscoverCategoryPillsView: View {
             }
         }
         .padding(.vertical, 12)
+    }
+
+    private func categoryControls(viewMode: Binding<DiscoverSitesFeedViewMode>) -> some View {
+        HStack(spacing: 8) {
+            // DiscoverCategoryPillsView.swift measures the scroll viewport, not every tag, when choosing a row layout.
+            categoryRow.frame(minWidth: 88, idealWidth: 88, maxWidth: .infinity)
+            DiscoverViewModePicker(viewMode: viewMode)
+                .layoutPriority(1)
+        }
+    }
+
+    private func stackedCategoryControls(viewMode: Binding<DiscoverSitesFeedViewMode>) -> some View {
+        VStack(alignment: .trailing, spacing: 8) {
+            // DiscoverCategoryPillsView.swift keeps both controls reachable when enlarged labels cannot fit beside tags.
+            DiscoverViewModePicker(viewMode: viewMode)
+            categoryRow
+        }
+    }
+
+    private var categoryRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                pillButton(label: NBLocalization.text("All"), count: nil, isActive: selectedCategory == nil) {
+                    selectedCategory = nil
+                    selectedSubcategory = nil
+                }
+
+                ForEach(categories) { category in
+                    pillButton(
+                        label: category.name,
+                        count: category.feedCount,
+                        isActive: selectedCategory?.id == category.id
+                    ) {
+                        if selectedCategory?.id == category.id {
+                            selectedCategory = nil
+                            selectedSubcategory = nil
+                        } else {
+                            selectedCategory = category
+                            selectedSubcategory = nil
+                        }
+                    }
+                }
+            }
+        }
+        .accessibilityIdentifier("discover-category-row")
     }
 
     private func pillButton(label: String, count: Int?, isActive: Bool, action: @escaping () -> Void)

@@ -70,6 +70,16 @@
   when: jscss_updated is succeeded
   tags: always
 
+# deploy_app_group_static.yml: same fix as deploy_app_group.yml's origin/HEAD task, for ansible-core 2.22's git
+# module on staging's shallow, detached checkout.
+- name: Give shallow checkouts the origin/HEAD ref the git module expects
+  command: git symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/{{ git_branch }}
+  args:
+    chdir: /srv/newsblur
+  changed_when: false
+  when: git_depth is defined
+  tags: always
+
 - name: Pull newsblur_web github
   git:
     repo: https://github.com/samuelclay/NewsBlur.git
