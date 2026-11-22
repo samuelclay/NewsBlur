@@ -66,7 +66,9 @@ class FakeStripeInvoices:
     the cents of every invoice paid and `cancelled` the invoices deleted or voided.
     `fail_create`, `fail_item`, `fail_finalize` and `decline` fail the next invoice at that step;
     a failed finalize goes through at Stripe but its response never comes back. `fail_retrieve`
-    fails that many invoice lookups."""
+    fails that many invoice lookups. `customer_card` is the customer's default card for invoices
+    and `subscription_card` the card on a metered subscription from before AI credits;
+    `created` keeps every invoice's parameters."""
 
     def __init__(self):
         self.charged = []
@@ -78,6 +80,9 @@ class FakeStripeInvoices:
         self.fail_finalize = False
         self.fail_retrieve = 0
         self.decline = False
+        self.customer_card = "pm_default"
+        self.subscription_card = None
+        self.created = []
 
     @contextmanager
     def installed(self):
@@ -91,10 +96,36 @@ class FakeStripeInvoices:
             "stripe.Invoice.delete", side_effect=self.cancel
         ), patch(
             "stripe.Invoice.void_invoice", side_effect=self.cancel
+        ), patch(
+            "stripe.Customer.retrieve", side_effect=self.retrieve_customer
+        ), patch(
+            "stripe.Subscription.list", side_effect=self.list_subscriptions
+        ), patch(
+            "stripe.PaymentMethod.list",
+            return_value=stripe.ListObject.construct_from({"data": []}, "sk_test"),
         ):
             yield self
 
+    def retrieve_customer(self, customer_id):
+        return {"id": customer_id, "invoice_settings": {"default_payment_method": self.customer_card}}
+
+    def list_subscriptions(self, **kwargs):
+        subscriptions = []
+        if self.subscription_card:
+            subscriptions.append(
+                stripe.Subscription.construct_from(
+                    {
+                        "id": "sub_old_usage",
+                        "default_payment_method": self.subscription_card,
+                        "items": {"data": [{"id": "si_text", "price": {"id": "price_text_classifier"}}]},
+                    },
+                    "sk_test",
+                )
+            )
+        return stripe.ListObject.construct_from({"data": subscriptions}, "sk_test")
+
     def create(self, **kwargs):
+        self.created.append(kwargs)
         if self.fail_create:
             self.fail_create = False
             raise stripe.error.APIConnectionError("Stripe is down")
@@ -191,9 +222,9 @@ class Test_AICredits(TransactionTestCase):
 
     def test_filters_pause_when_the_plans_credits_run_out_until_the_1st(self):
         with at(NOV_10):
-            self.spend(4.9)
+            self.spend(980)
             self.assertEqual(self.jev_requests_for_new_stories(), 1)
-            self.spend(0.2)
+            self.spend(40)
             self.assertEqual(self.jev_requests_for_new_stories(), 0)
             state = ai_credits.state(self.profile())
             self.assertEqual(state["pause_reason"], "credits")
@@ -213,7 +244,7 @@ class Test_AICredits(TransactionTestCase):
         self.addCleanup(lambda: MClassifierPrompt.objects(user_id=free.pk).delete())
         with at(NOV_10):
             for user in (self.user, archive, pro):
-                self.spend(60, user=user)
+                self.spend(12_000, user=user)
             self.assertFalse(ai_credits.can_run(self.profile()))
             self.assertFalse(ai_credits.can_run(self.profile(archive)))
             self.assertTrue(ai_credits.can_run(self.profile(pro)))
@@ -223,21 +254,21 @@ class Test_AICredits(TransactionTestCase):
     def test_running_out_emails_the_reader_once_a_month(self):
         free = self.make_user("creditfreemail")
         with at(NOV_10):
-            self.spend(4.9)
+            self.spend(980)
             self.emailed.assert_not_called()
-            self.spend(0.2)
-            self.spend(1)
-            self.spend(3, user=free)
+            self.spend(40)
+            self.spend(200)
+            self.spend(600, user=free)
         self.assertEqual([c.args for c in self.emailed.call_args_list], [(self.user.pk, "credits")])
         with at(DEC_1):
-            self.spend(5.1)
+            self.spend(1020)
         self.assertEqual(self.emailed.call_count, 2)
 
     def test_the_paused_email_says_why_and_links_to_usage_billing(self):
         mail.outbox = []
         Profile.objects.filter(user=self.user).update(usage_billing_limit="2.00")
         with at(NOV_10):
-            self.spend(5.1)
+            self.spend(1020)
             self.profile().send_ai_credits_paused_email("credits")
             self.profile().send_ai_credits_paused_email("limit")
         self.assertEqual(len(mail.outbox), 2)
@@ -263,14 +294,14 @@ class Test_AICredits(TransactionTestCase):
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
             with at(NOV_10):
-                self.spend(5 + 150)
+                self.spend(1000 + 150_000)
                 self.assertEqual(self.jev_requests_for_new_stories(), 1)
                 ai_credits.charge_last_month(self.profile())
             self.assertEqual(invoices.charged, [])
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
                 ai_credits.charge_last_month(self.profile())
-            self.assertEqual(invoices.charged, [150], "Charged once, 150 credits at 1 cent")
+            self.assertEqual(invoices.charged, [150], "Charged once, 150,000 credits at 1 cent per 1,000")
         self.emailed.assert_not_called()
 
     def test_this_months_overage_waits_however_early_the_monthly_job_runs(self):
@@ -278,7 +309,7 @@ class Test_AICredits(TransactionTestCase):
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
             with at(datetime.datetime(2026, 12, 2, 9, 0)):
-                self.spend(5 + 150)
+                self.spend(1000 + 150_000)
             with at(datetime.datetime(2026, 12, 3, 9, 0)):
                 ai_credits.charge_last_month(self.profile())
             self.assertEqual(invoices.charged, [])
@@ -290,11 +321,11 @@ class Test_AICredits(TransactionTestCase):
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
             with at(DEC_10):
-                self.spend(5 + 60)
+                self.spend(1000 + 60_000)
             with at(JAN_1):
                 ai_credits.charge_last_month(self.profile())
                 self.assertEqual(invoices.charged, [])
-                self.spend(5 + 45)
+                self.spend(1000 + 45_000)
                 self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 1.05)
             with at(FEB_1):
                 ai_credits.charge_last_month(self.profile())
@@ -304,12 +335,12 @@ class Test_AICredits(TransactionTestCase):
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
             with at(NOV_10):
-                self.spend(5 + 999.5)
+                self.spend(1000 + 999_999.5)
                 self.assertEqual(invoices.charged, [])
                 self.spend(1)
                 self.assertEqual(invoices.charged, [1000])
                 self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0)
-                self.spend(150)
+                self.spend(150_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
         self.assertEqual(invoices.charged, [1000, 150], "What came after is charged with the month")
@@ -318,9 +349,9 @@ class Test_AICredits(TransactionTestCase):
         self.turn_on_usage_billing(limit="2.00")
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
             with at(NOV_10):
-                self.spend(5 + 150)
+                self.spend(1000 + 150_000)
                 self.assertEqual(self.jev_requests_for_new_stories(), 1)
-                self.spend(150)
+                self.spend(150_000)
                 self.assertEqual(self.jev_requests_for_new_stories(), 0)
                 self.assertEqual(ai_credits.state(self.profile())["pause_reason"], "limit")
             with at(DEC_1):
@@ -333,7 +364,7 @@ class Test_AICredits(TransactionTestCase):
         with FakeStripeInvoices().installed() as invoices:
             invoices.fail_create = True
             with at(NOV_10):
-                self.spend(5 + 120)
+                self.spend(1000 + 120_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
                 self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 1.2)
@@ -348,7 +379,7 @@ class Test_AICredits(TransactionTestCase):
         with FakeStripeInvoices().installed() as invoices:
             invoices.fail_finalize = True
             with at(NOV_10):
-                self.spend(5 + 120)
+                self.spend(1000 + 120_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
             self.assertEqual(len(invoices.cancelled), 1)
@@ -365,7 +396,7 @@ class Test_AICredits(TransactionTestCase):
             invoices.fail_item = True
             invoices.fail_retrieve = 1
             with at(NOV_10):
-                self.spend(5 + 120)
+                self.spend(1000 + 120_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
                 self.assertEqual(invoices.charged, [])
@@ -382,7 +413,7 @@ class Test_AICredits(TransactionTestCase):
             invoices.fail_item = True
             invoices.fail_retrieve = 1
             with at(NOV_10):
-                self.spend(5 + 120)
+                self.spend(1000 + 120_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
             self.assertEqual(ai_credits.unbilled_credits(self.profile()), 0)
@@ -398,7 +429,22 @@ class Test_AICredits(TransactionTestCase):
 
             with patch("apps.analyzer.ai_credits._cancel_invoice", side_effect=settle_again_meanwhile):
                 ai_credits.settle_pending_invoices(self.profile())
-        self.assertEqual(ai_credits.unbilled_credits(self.profile()), 120)
+        self.assertEqual(ai_credits.unbilled_credits(self.profile()), 120_000)
+
+    def test_a_reader_on_the_old_metered_subscription_is_charged_on_its_card(self):
+        """Readers who set up usage billing before credits keep their metered subscription, and
+        their credits are charged to its card, since the customer has no default card of its own."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices, patch("stripe.Subscription.modify") as modify:
+            invoices.customer_card = None
+            invoices.subscription_card = "pm_old_subscription"
+            with at(NOV_10):
+                self.spend(1000 + 120_000)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [120])
+        self.assertEqual(invoices.created[0]["default_payment_method"], "pm_old_subscription")
+        modify.assert_not_called()
 
     def test_a_declined_card_turns_usage_billing_off(self):
         """The open invoice is Stripe's to retry, so the credits aren't charged again, and filters
@@ -407,28 +453,29 @@ class Test_AICredits(TransactionTestCase):
         with FakeStripeInvoices().installed() as invoices:
             invoices.decline = True
             with at(NOV_10):
-                self.spend(5 + 120)
+                self.spend(1000 + 120_000)
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
                 self.assertFalse(self.profile().is_usage_billing)
                 self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 0)
-                self.spend(5.1)
+                self.spend(1020)
                 self.assertEqual(self.jev_requests_for_new_stories(), 0)
 
     def test_the_forecast_follows_the_pace_since_filters_started(self):
         """Filters that started yesterday project from yesterday, not from a whole week."""
         Profile.objects.filter(user=self.user).update(is_archive=True)
         with at(datetime.datetime(2026, 11, 20, 8, 0)):
-            self.spend(10)
+            self.spend(2000)
         with at(datetime.datetime(2026, 11, 21, 8, 0)):
-            self.spend(10)
+            self.spend(2000)
         with at(datetime.datetime(2026, 11, 21, 12, 0)):
             forecast = ai_credits.state(self.profile())["forecast"]
-        # 20 credits over a day and a half: the other 30 last until the evening of the 23rd.
+        # 4,000 credits over a day and a half: the other 6,000 last until the evening of the 23rd.
         self.assertEqual(forecast["runs_out_on"], "2026-11-23")
-        self.assertEqual(forecast["credits_per_day"], 13.33)
-        # Through Nov 30 that pace spends about 147 credits, 97 past the plan's 50.
-        self.assertEqual(forecast["overage_usd"], 0.97)
+        self.assertEqual(forecast["credits_per_day"], 2667)
+        # Through Nov 30 that pace spends about 29,333 credits, 19,333 past the plan's 10,000,
+        # which usage billing charges at 1 cent per 1,000.
+        self.assertEqual(forecast["overage_usd"], 0.19)
 
     def test_a_server_without_stripe_billing_never_counts_credits(self):
         """A self-hosted NewsBlur pays Jev itself, so filters run for everyone."""

@@ -5,7 +5,7 @@
 // Every number comes from apps/analyzer/ai_credits.py state(), which arrives in
 // templates/base.html NEWSBLUR.Globals.ai_credits and is refreshed by
 // /analyzer/ai_classifier_usage (the trainer) and /profile/usage_billing_history (the account
-// dialog). A credit is 1 cent of what the filters cost to run.
+// dialog). A credit is about one story through a text filter; 1 cent buys 1,000 of them.
 NEWSBLUR.AICredits = {
 
     state: function () {
@@ -29,15 +29,9 @@ NEWSBLUR.AICredits = {
         return document.documentElement.lang || undefined;
     },
 
-    // The count to pick a plural form with. A fractional amount of credits ("0.4 credits") takes
-    // the plural English uses for 2, not the singular a rounded-up 1 would pick.
-    plural_count: function (value) {
-        var rounded = Math.round((value || 0) * 10) / 10;
-        return rounded === Math.floor(rounded) ? rounded : 2;
-    },
-
+    // Credits are whole numbers, grouped: "12,340".
     format_credits: function (value) {
-        return Number(value || 0).toLocaleString(this.locale(), { maximumFractionDigits: 1 });
+        return Math.round(Number(value || 0)).toLocaleString(this.locale());
     },
 
     format_usd: function (value) {
@@ -146,12 +140,12 @@ NEWSBLUR.AICredits = {
             return interpolate(gettext("At this pace your credits run out around %(date)s."),
                 { date: this.format_day(forecast.runs_out_on) }, true);
         }
-        if (!state.is_paused && forecast.credits - state.used >= 0.05) {
-            var projected = Math.round(forecast.credits * 10) / 10;
+        var projected = Math.round(forecast.credits);
+        if (!state.is_paused && projected > Math.round(state.used)) {
             return interpolate(ngettext(
                 "At this pace you'll use about %(count)s credit this month.",
                 "At this pace you'll use about %(count)s credits this month.",
-                this.plural_count(projected)
+                projected
             ), { count: this.format_credits(projected) }, true);
         }
         return null;
@@ -174,9 +168,9 @@ NEWSBLUR.AICredits = {
                 description.action = 'billing';
                 description.action_label = gettext("Turn on usage billing");
                 description.action_note = this.forecast_cost_text(state) ?
-                    interpolate(gettext("1¢ per credit past your plan's, about %(cost)s this month."),
+                    interpolate(gettext("1¢ per 1,000 credits past your plan's, about %(cost)s this month."),
                         { cost: this.format_usd(state.forecast.overage_usd) }, true) :
-                    gettext("1¢ per credit past your plan's.");
+                    gettext("1¢ per 1,000 credits past your plan's.");
             }
         } else if (state.pause_reason === 'limit') {
             description.title = interpolate(
@@ -186,8 +180,8 @@ NEWSBLUR.AICredits = {
             description.action_label = gettext("Change limit");
         } else if (state.is_usage_billing) {
             description.lines.push(interpolate(ngettext(
-                "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month.",
-                "Usage billing is on. Credits past your %(count)s cost 1¢ each: %(cost)s so far this month.",
+                "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month.",
+                "Usage billing is on. Credits past your %(count)s cost 1¢ per 1,000: %(cost)s so far this month.",
                 state.included
             ), { count: this.format_credits(state.included), cost: this.format_usd(state.overage_usd) }, true));
             if (state.unbilled_usd > 0) {
@@ -212,7 +206,7 @@ NEWSBLUR.AICredits = {
                 description.action = 'billing';
                 description.action_label = gettext("Keep filters running");
                 var cost_line = this.forecast_cost_text(state);
-                description.action_note = gettext("Past your credits, filters keep running at 1¢ per credit.") +
+                description.action_note = gettext("Past your credits, filters keep running at 1¢ per 1,000 credits.") +
                     (cost_line ? ' ' + cost_line : '');
             }
         }
@@ -256,17 +250,18 @@ NEWSBLUR.AICredits = {
     // reader_classifier.js: Under each AI section, what one filter like it spends on this site.
     estimate_text: function (credits_per_month, include_images) {
         if (credits_per_month === undefined || credits_per_month === null) return null;
-        if (credits_per_month < 0.1) {
+        var rounded = Math.round(credits_per_month);
+        if (rounded < 1) {
             return include_images ?
-                gettext("An image filter on this site uses less than a tenth of a credit a month.") :
-                gettext("A text filter on this site uses less than a tenth of a credit a month.");
+                gettext("An image filter on this site uses less than one credit a month.") :
+                gettext("A text filter on this site uses less than one credit a month.");
         }
-        var count = this.format_credits(credits_per_month);
+        var count = this.format_credits(rounded);
         return interpolate(include_images ?
             ngettext("An image filter on this site uses about %(count)s credit a month.",
-                "An image filter on this site uses about %(count)s credits a month.", this.plural_count(credits_per_month)) :
+                "An image filter on this site uses about %(count)s credits a month.", rounded) :
             ngettext("A text filter on this site uses about %(count)s credit a month.",
-                "A text filter on this site uses about %(count)s credits a month.", this.plural_count(credits_per_month)),
+                "A text filter on this site uses about %(count)s credits a month.", rounded),
             { count: count }, true);
     },
 
@@ -279,7 +274,7 @@ NEWSBLUR.AICredits = {
                 { tier_link: $tier_link },
                 function (text) { return $.make('b').text(text); }
             ),
-            document.createTextNode(' ' + gettext("Premium includes 5 AI credits a month, Archive 50 and Pro 500."))
+            document.createTextNode(' ' + gettext("Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000."))
         ]);
     },
 
@@ -312,14 +307,14 @@ NEWSBLUR.AICredits = {
                 (description.title && $.make('div', { className: 'NB-ai-credits-title' }).text(description.title)),
                 (forecast_line && !state.is_usage_billing && $.make('div', { className: 'NB-ai-credits-line' }).text(forecast_line)),
                 (state.pause_reason === 'plan' && $.make('div', { className: 'NB-ai-credits-line' }, [
-                    document.createTextNode(gettext("AI filters are saved but only run on Premium. Premium includes 5 AI credits a month, Archive 50 and Pro 500.") + ' '),
+                    document.createTextNode(gettext("AI filters are saved but only run on Premium. Premium includes 1,000 AI credits a month, Archive 10,000 and Pro 100,000.") + ' '),
                     $.make('a', { href: '#', className: 'NB-account-premium-modal' }, gettext("Upgrade"))
                 ]))
             ]),
             $.make('div', { className: 'NB-preference-label' }, [
                 gettext('This month'),
                 $.make('div', { className: 'NB-preference-sublabel' },
-                    gettext("A credit is 1¢ of AI: about 700 stories through a text filter, or 100 through an image filter."))
+                    gettext("A credit is about one story through a text filter. An image filter uses about 10 credits a story."))
             ])
         ]);
 
@@ -372,7 +367,7 @@ NEWSBLUR.AICredits = {
         } else {
             $options = $.make('div', { className: 'NB-preference-options' }, [
                 $.make('div', { className: 'NB-ai-credits-line' },
-                    gettext("Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per credit.")),
+                    gettext("Past your plan's credits, filters pause until the 1st. Usage billing keeps them running at 1¢ per 1,000 credits.")),
                 $.make('ul', { className: 'NB-ai-credits-terms' }, [
                     $.make('li', gettext("You only pay for credits past your plan's.")),
                     $.make('li', gettext("Charged at the end of the month, once it reaches $1. Smaller amounts wait for a later month.")),

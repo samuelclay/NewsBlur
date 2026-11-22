@@ -480,7 +480,7 @@ class Test_TestPromptView(TransactionTestCase):
 
     def test_a_reader_out_of_credits_gets_ten_tests_a_day(self):
         self.set_plan(is_premium=True)
-        ai_credits.spend(self.user.pk, "story_classification", 5.1 * ai_credits.CREDIT_USD)
+        ai_credits.spend(self.user.pk, "story_classification", 1020 * ai_credits.CREDIT_USD)
         with fake_jev(probability=0.9), patch("apps.profile.tasks.EmailAICreditsPaused.delay"):
             results = [self.post() for _ in range(TEST_PROMPT_DAILY_LIMIT + 1)]
         self.assertEqual([r["code"] for r in results[:-1]], [0] * TEST_PROMPT_DAILY_LIMIT)

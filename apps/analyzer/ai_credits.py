@@ -1,12 +1,14 @@
 """Monthly AI credits for natural language text and image filters.
 
-ai_credits.py: A credit is one US cent of what AI filters cost NewsBlur to run: Jev's charge
-for every request (apps/analyzer/jev.py) and the one-time rewrite of each filter. Every plan
-includes credits each month, in the reader's own calendar month. Once they're used, filters
-pause until the 1st, unless the reader turned on usage billing. Usage billing charges what's
-past the included credits at cost, 1 cent per credit, to the card the reader saved on Stripe
+ai_credits.py: A credit is about what one story costs a text filter on Jev
+(apps/analyzer/jev.py): a thousandth of a cent, so 1 cent buys 1,000 credits. An image filter
+spends about 10 a story, and the one-time rewrite of each filter a handful. Every plan includes
+credits each month, in the reader's own calendar month. Once they're used, filters pause until
+the 1st, unless the reader turned on usage billing. Usage billing charges what's past the
+included credits at cost, 1 cent per 1,000 credits, to the reader's card on Stripe
 (apps/profile/views.py setup_usage_billing), and pauses filters at the reader's monthly limit
-if they set one.
+if they set one. Readers who set up usage billing before credits keep their metered
+subscription, and its card pays for their credits.
 
 Spending is counted in Redis in millionths of a dollar, as LLMCostTracker.record_usage
 (utils/llm_costs.py) records each request. Whole credits past the included ones add up as
@@ -30,23 +32,24 @@ from vendor.timezones.utilities import localtime_for_timezone
 
 # ai_credits.py: Credits included each month. Premium Pro is checked first since it
 # sets is_archive and is_premium too, then Premium Archive, then Premium.
-MONTHLY_CREDITS_PRO = 500
-MONTHLY_CREDITS_ARCHIVE = 50
-MONTHLY_CREDITS_PREMIUM = 5
+MONTHLY_CREDITS_PRO = 100_000
+MONTHLY_CREDITS_ARCHIVE = 10_000
+MONTHLY_CREDITS_PREMIUM = 1_000
 
-CREDIT_USD = 0.01
-MICRODOLLARS_PER_CREDIT = 10_000
+CREDIT_USD = 0.00001
+MICRODOLLARS_PER_CREDIT = 10
+CREDITS_PER_CENT = 1_000
 
 # ai_credits.py: The features LLMCostTracker records for AI filters. Ask AI, briefings and
 # the rest are part of their plans and never spend credits.
 CREDIT_FEATURES = ("story_classification", "vision_classification", "classifier_description")
 
 # ai_credits.py: What one story costs a filter, from Jev's charges on real readers' filters:
-# about 700 stories per credit through text filters and 100 through image filters, which
-# read up to three images (apps/analyzer/jev.py MAX_IMAGES_PER_STORY). The trainer
-# multiplies these by how many stories a site published last month to estimate a filter.
-TEXT_STORY_CREDITS = 0.0014
-IMAGE_STORY_CREDITS = 0.01
+# about $0.000014 through a text filter and $0.0001 through an image filter, which reads up to
+# three images (apps/analyzer/jev.py MAX_IMAGES_PER_STORY). The trainer multiplies these by how
+# many stories a site published last month to estimate a filter.
+TEXT_STORY_CREDITS = 1.4
+IMAGE_STORY_CREDITS = 10
 
 # ai_credits.py: The reader sees a notice once this much of the month's credits is used.
 WARNING_FRACTION = 0.8
@@ -56,11 +59,11 @@ WARNING_FRACTION = 0.8
 PACE_DAYS = 7
 
 # ai_credits.py: A charge is never under $1. Smaller amounts wait, across months if they have to.
-MINIMUM_CHARGE_CREDITS = 100
+MINIMUM_CHARGE_CREDITS = 100_000
 
 # ai_credits.py: Unbilled credits are charged as soon as they reach $10, instead of at the end
 # of the month.
-IMMEDIATE_CHARGE_CREDITS = 1000
+IMMEDIATE_CHARGE_CREDITS = 1_000_000
 
 # ai_credits.py: Marks the Stripe invoices usage billing creates, for the account dialog's list
 # of charges and the payment webhooks (apps/profile/models.py).
@@ -386,11 +389,15 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
     charge_number = r.incr(_charge_number_key(profile.user_id))
     # The same charge can't be made twice, even when a request to Stripe is retried.
     idempotency_key = "ai-credits-%s-%s" % (profile.user_id, charge_number)
-    description = "NewsBlur AI credits past your plan: %s credits at 1 cent" % credits
+    description = "NewsBlur AI credits past your plan: {:,} credits at 1 cent per 1,000".format(credits)
     metadata = {"purpose": INVOICE_PURPOSE, "newsblur_user_id": profile.user_id, "credits": credits}
     stripe.api_key = settings.STRIPE_SECRET
     invoice_id = None
     try:
+        invoice_params = {}
+        card = _card_for_invoices(profile)
+        if card:
+            invoice_params["default_payment_method"] = card
         invoice = stripe.Invoice.create(
             customer=profile.stripe_id,
             collection_method="charge_automatically",
@@ -399,12 +406,14 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
             description=description,
             metadata=metadata,
             idempotency_key=idempotency_key + "-invoice",
+            **invoice_params,
         )
         invoice_id = invoice.id
         stripe.InvoiceItem.create(
             customer=profile.stripe_id,
             invoice=invoice_id,
-            amount=int(round(credits * CREDIT_USD * 100)),
+            # Whole cents; a fraction of a cent left over is never charged.
+            amount=credits // CREDITS_PER_CENT,
             currency="usd",
             description=description,
             metadata=metadata,
@@ -434,6 +443,30 @@ def charge_unbilled(profile, minimum_credits=MINIMUM_CHARGE_CREDITS, before_mont
         return 0
     logging.user(profile.user, "~BC~SB~FBCharged %s AI credits past the plan" % credits)
     return credits
+
+
+def _card_for_invoices(profile):
+    """The card to charge when the customer has no default card for invoices, or None to let
+    Stripe use the default.
+
+    ai_credits.py: Readers who set up usage billing before AI credits did it with a metered
+    subscription, whose card is the subscription's own. They keep that subscription, and its
+    card pays for their credits.
+    """
+    import stripe
+
+    from apps.profile.models import Profile
+
+    customer = stripe.Customer.retrieve(profile.stripe_id)
+    if (customer.get("invoice_settings") or {}).get("default_payment_method") or customer.get(
+        "default_source"
+    ):
+        return None
+    for subscription in stripe.Subscription.list(customer=profile.stripe_id, status="active", limit=20).data:
+        if Profile.is_usage_billing_subscription(subscription) and subscription.get("default_payment_method"):
+            return subscription.get("default_payment_method")
+    cards = stripe.PaymentMethod.list(customer=profile.stripe_id, type="card", limit=1).data
+    return cards[0].id if cards else None
 
 
 def _cancel_invoice(invoice_id):
@@ -491,11 +524,11 @@ def _pace_microdollars_per_day(profile, local_now):
 def estimate_monthly_credits(stories_per_month, include_images):
     """About how many credits a filter on a site with this many stories a month spends."""
     per_story = IMAGE_STORY_CREDITS if include_images else TEXT_STORY_CREDITS
-    return round(stories_per_month * per_story, 2)
+    return int(round(stories_per_month * per_story))
 
 
 def _credits(microdollars):
-    return round(microdollars / MICRODOLLARS_PER_CREDIT, 2)
+    return int(round(microdollars / MICRODOLLARS_PER_CREDIT))
 
 
 def state(profile):

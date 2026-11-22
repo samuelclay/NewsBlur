@@ -204,8 +204,8 @@ class Profile(models.Model):
     def usage_billing_price_ids():
         """The per-classification metered prices usage billing used before AI credits, which
         billed through a subscription. AI credits are charged with invoices instead
-        (apps/analyzer/ai_credits.py charge_unbilled), and move_ai_billing_to_credits ends
-        those subscriptions."""
+        (apps/analyzer/ai_credits.py charge_unbilled). Readers who have one keep it, and its
+        card pays for their credits."""
         return set(
             filter(
                 None, [settings.STRIPE_PRICE_TEXT_CLASSIFICATION, settings.STRIPE_PRICE_IMAGE_CLASSIFICATION]
@@ -3262,9 +3262,13 @@ class Profile(models.Model):
             user=self.user,
             reason=reason,
             included=credits["included"],
+            included_display=localized_number(credits["included"]),
             resets_on=datetime.datetime.strptime(credits["resets_on"], "%Y-%m-%d"),
             monthly_limit="%.2f" % (credits["monthly_limit"] or 0),
             forecast_credits=int(math.ceil(forecast.get("credits") or credits["used"])),
+            forecast_credits_display=localized_number(
+                int(math.ceil(forecast.get("credits") or credits["used"]))
+            ),
             forecast_overage="%.2f" % forecast.get("overage_usd", 0),
         )
         text = render_to_string("mail/email_ai_credits_paused.txt", data)
