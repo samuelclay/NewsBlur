@@ -43,6 +43,8 @@ public class FeedFolderResponse {
     public boolean isArchive;
     public boolean isPro;
     public long premiumExpire;
+    // This month's AI credits (AiClassifierResponses.kt), null from a server without them.
+    public AiCredits aiCredits;
     public boolean isStaff;
 	public int starredCount;
     public Boolean storyClustering;
@@ -79,6 +81,9 @@ public class FeedFolderResponse {
             }
             if (profile.has("is_pro")) {
                 this.isPro = profile.get("is_pro").getAsBoolean();
+            }
+            if (profile.has("ai_credits") && profile.get("ai_credits").isJsonObject()) {
+                this.aiCredits = gson.fromJson(profile.get("ai_credits"), AiCredits.class);
             }
             if (profile.has("preferences")) {
                 JsonObject preferences = parsePreferences(profile.get("preferences"));

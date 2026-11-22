@@ -2,6 +2,7 @@ package com.newsblur.fragment
 
 import com.newsblur.network.ClassifierApi
 import com.newsblur.network.PromptTestRequest
+import com.newsblur.network.domain.AiClassifierUsageResponse
 import com.newsblur.network.domain.PromptTestResponse
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -27,6 +28,8 @@ class Test_AiPromptTester {
             requests += request
             return response.await()
         }
+
+        override suspend fun getAiClassifierUsage(feedId: String?): AiClassifierUsageResponse = AiClassifierUsageResponse()
     }
 
     private val api = DelayedClassifierApi()

@@ -3,6 +3,7 @@ package com.newsblur.network
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.newsblur.domain.ValueMultimap
+import com.newsblur.network.domain.AiClassifierUsageResponse
 import com.newsblur.network.domain.PromptTestResponse
 
 class ClassifierApiImpl(
@@ -28,6 +29,12 @@ class ClassifierApiImpl(
                 PROMPT_TEST_TIMEOUT_SECONDS,
             )
         return parse(response, PromptTestResponse())
+    }
+
+    override suspend fun getAiClassifierUsage(feedId: String?): AiClassifierUsageResponse {
+        val values = ValueMultimap().apply { put(APIConstants.PARAMETER_FEEDID, feedId ?: "0") }
+        val response = networkClient.get(APIConstants.buildUrl(APIConstants.PATH_AI_CLASSIFIER_USAGE), values)
+        return parse(response, AiClassifierUsageResponse())
     }
 
     // ClassifierApiImpl.kt: a failed or unreadable response becomes the fallback, whose code -1

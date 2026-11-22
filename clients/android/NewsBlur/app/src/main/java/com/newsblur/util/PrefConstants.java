@@ -30,6 +30,8 @@ public class PrefConstants {
 	public static final String IS_ARCHIVE = "is_archive";
     public static final String IS_PRO = "is_pro";
     public static final String IS_STAFF = "is_staff";
+    // This month's AI credits from /reader/feeds user_profile, as JSON, see util/AiCreditsStatus.kt.
+    public static final String AI_CREDITS = "ai_credits";
     // don't update key value for backward compat
 	public static final String SUBSCRIPTION_EXPIRE = "premium_expire";
 

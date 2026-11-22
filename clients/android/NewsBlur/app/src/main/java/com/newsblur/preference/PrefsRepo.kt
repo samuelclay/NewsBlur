@@ -13,6 +13,8 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.JsonParseException
 import com.newsblur.BuildConfig
 import com.newsblur.NbApplication
 import com.newsblur.activity.LoginActivity
@@ -20,6 +22,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
+import com.newsblur.network.domain.AiCredits
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.service.SyncService
 import com.newsblur.service.SyncServiceState
@@ -1078,6 +1081,21 @@ class PrefsRepo(
     }
 
     fun getIsPro() = prefs.getBoolean(PrefConstants.IS_PRO, false)
+
+    /** This month's AI credits, saved whenever /reader/feeds or an AI credit endpoint sends them. */
+    fun setAiCredits(credits: AiCredits) {
+        prefs.edit { putString(PrefConstants.AI_CREDITS, Gson().toJson(credits)) }
+    }
+
+    fun getAiCredits(): AiCredits? {
+        val json = prefs.getString(PrefConstants.AI_CREDITS, null) ?: return null
+        // PrefsRepo.kt: a value saved in a shape this build can't read counts as not synced yet.
+        return try {
+            Gson().fromJson(json, AiCredits::class.java)
+        } catch (_: JsonParseException) {
+            null
+        }
+    }
 
     fun setIsStaff(isStaff: Boolean) {
         prefs.edit {
