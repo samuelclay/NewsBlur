@@ -72,7 +72,7 @@ function popover_fixture(open_tab) {
         },
         preference: function () { return null; },
         view_setting: function () { return null; },
-        feeds: { active: function () { return []; } }
+        feeds: { active: function () { return []; }, get: function () { return undefined; } }
     };
     // Backbone.View.extend returns a constructor so `new NEWSBLUR.Views.DescribeFeedsView(...)` works;
     // each view's $el and $() go to the fake DOM.
@@ -112,7 +112,8 @@ function popover_fixture(open_tab) {
             Globals: { MEDIA_URL: '/media/', is_premium: true, is_archive: true },
             assets: assets,
             router: { navigate: function () {} },
-            utils: {}
+            // A card's folder picker; the fake DOM stands in for the markup.
+            utils: { make_folders: function () { return '<select></select>'; } }
         },
         Backbone: Backbone,
         $: dom.$,
@@ -250,4 +251,78 @@ test('a search refused for the plan shows the allowance from the refusal', funct
     describe_view.start_search('ham radio operators');
 
     assert.deepEqual(describe_view.usage, usage);
+});
+
+// A result row as /discover/describe/status stores it, without stories so the card draws no story rows.
+function result_row(feed_id, score) {
+    return {
+        feed_id: feed_id,
+        feed: { id: feed_id, feed_title: 'Feed ' + feed_id, feed_address: 'https://feed' + feed_id + '.example.com/rss' },
+        source: 'index',
+        judged: true,
+        score: score,
+        reason: 'Matches',
+        stories: []
+    };
+}
+
+test('a finished search shows the results the socket missed', function () {
+    const h = popover_fixture('describe');
+    const describe_view = show_running_search(h);
+    h.respond('/discover/describe/status', function (params, callback) {
+        callback({ code: 1, search: { id: 'running-1', status: 'complete', phase: 'complete', prompt: 'ham radio operators', results: [result_row(42, 9)] } });
+    });
+
+    describe_view.handle_event({ type: 'complete', search_id: 'running-1', result_count: 1 });
+
+    assert.deepEqual(Object.keys(describe_view.rows), ['42']);
+    assert.equal(describe_view.search.status, 'complete');
+});
+
+test('a poll that finds the same ranked results leaves the cards in place', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    // Ranked 42 then 7: not the order of their feed ids.
+    const results = [result_row(42, 9), result_row(7, 8)];
+    describe_view.show_search({ id: 'running-1', status: 'running', phase: 'judging', prompt: 'ham radio operators', results: results });
+    h.htmls.length = 0;
+
+    describe_view.apply_search_payload({ id: 'running-1', status: 'running', phase: 'judging', prompt: 'ham radio operators', results: results });
+
+    assert.ok(h.htmls.indexOf('.NB-describe-body') === -1, 'unchanged results are not drawn again');
+});
+
+test('only the last search picked from history is shown when answers arrive out of order', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    const answers = [];
+    h.respond('/discover/describe/status', function (params, callback) {
+        answers.push(function () {
+            callback({ code: 1, search: { id: params.search_id, status: 'complete', phase: 'complete', prompt: 'Search ' + params.search_id, results: [] } });
+        });
+    });
+
+    describe_view.open_search('first');
+    describe_view.open_search('second');
+    answers[1]();
+    answers[0]();
+
+    assert.equal(describe_view.search.id, 'second');
+});
+
+test('a search opened from history before New was clicked stays closed', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    const answers = [];
+    h.respond('/discover/describe/status', function (params, callback) {
+        answers.push(function () {
+            callback({ code: 1, search: { id: params.search_id, status: 'complete', phase: 'complete', prompt: 'Search ' + params.search_id, results: [] } });
+        });
+    });
+
+    describe_view.open_search('first');
+    describe_view.start_new_search();
+    answers[0]();
+
+    assert.equal(describe_view.search, null);
 });

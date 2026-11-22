@@ -61,6 +61,8 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         this.last_event_at = 0;
         this.pending_scroll_top = this.options.initial_scroll_top || null;
         this.history_loaded = false;
+        // describe_feeds_view.js: bumped by each search picked, started or cleared; see open_search.
+        this.navigation = 0;
     },
 
     close: function () {
@@ -284,6 +286,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
 
     start_new_search: function () {
         this.stop_polling();
+        this.navigation += 1;
         this.search = null;
         this.rows = {};
         this.cards = {};
@@ -361,6 +364,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             return;
         }
         $submit.addClass('NB-disabled').text(gettext('Starting…'));
+        var navigation = this.navigation += 1;
 
         var params = { prompt: prompt };
         if (search_id) params.search_id = search_id;
@@ -393,6 +397,11 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 return;
             }
             $submit.removeClass('NB-disabled').text(gettext('Find feeds'));
+            // describe_feeds_view.js: the search runs either way; a pick made while it started keeps the screen.
+            if (navigation !== self.navigation) {
+                self.update_history_entry(data.search);
+                return;
+            }
             self.stop_polling();
             self.usage = data.usage || self.usage;
             self.render_usage();
@@ -406,10 +415,14 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         var self = this;
         options = options || {};
         this.stop_polling();
+        // describe_feeds_view.js: only the last search picked (or New, or a search just started) may draw;
+        // an answer for one picked earlier that arrives later is dropped.
+        var navigation = this.navigation += 1;
         this.loading_search_id = search_id;
         this.pending_scroll_top = options.scroll_top || null;
         this.$('.NB-describe-body').html($.make('div', { className: 'NB-describe-loading' }, gettext('Loading your search…')));
         NEWSBLUR.assets.make_request('/discover/describe/status', { search_id: search_id }, function (data) {
+            if (navigation !== self.navigation) return;
             if (data.code > 0 && data.search) {
                 self.show_search(data.search);
                 self.update_history_entry(data.search);
@@ -420,6 +433,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 self.show_error(data.message || gettext('That search is no longer in your history.'));
             }
         }, function () {
+            if (navigation !== self.navigation) return;
             self.show_error(gettext('That search could not be loaded.'));
         }, { request_type: 'GET' });
     },
@@ -509,7 +523,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             search.phase !== this.search.phase ||
             search.phase_message !== this.search.phase_message ||
             (search.sub_queries || []).join('|') !== (this.search.sub_queries || []).join('|');
-        var results_changed = this.results_signature(search.results) !== this.results_signature(_.values(this.rows));
+        var results_changed = this.results_signature(search.results) !== this.results_signature(this.displayed_rows());
         if (!status_changed && !results_changed) return;
 
         _.extend(this.search, _.pick(search, 'status', 'phase', 'phase_message', 'sub_queries', 'error', 'stats', 'result_count', 'completed_date'));
@@ -520,6 +534,22 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         }
         this.render_status();
         this.update_history_entry(this.search);
+    },
+
+    // describe_feeds_view.js: the rows in the order their cards are shown (order_cards), which is the
+    // server's ranking; this.rows alone would list them by feed id.
+    displayed_rows: function () {
+        var rows = this.rows;
+        var listed = {};
+        var ordered = _.compact(_.map(this.card_order || [], function (feed_id) {
+            if (listed[feed_id]) return null;
+            listed[feed_id] = true;
+            return rows[feed_id];
+        }));
+        _.each(rows, function (row, feed_id) {
+            if (!listed[feed_id]) ordered.push(row);
+        });
+        return ordered;
     },
 
     results_signature: function (results) {
@@ -574,6 +604,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 this.stop_polling();
                 this.render_status();
                 this.update_history_entry(this.search);
+                this.load_final_results();
                 break;
             case 'error':
                 this.search.status = 'error';
@@ -581,6 +612,7 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 this.stop_polling();
                 this.render_status();
                 this.update_history_entry(this.search);
+                this.load_final_results();
                 break;
             case 'usage':
                 if (data.usage) {
@@ -593,6 +625,18 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 }
                 break;
         }
+    },
+
+    // describe_feeds_view.js: the finished search as stored. Its complete and error events carry only ids and
+    // counts, so cards whose candidates, verdicts or removal the socket missed are put right from this once.
+    load_final_results: function () {
+        var self = this;
+        var search_id = this.search.id;
+        NEWSBLUR.assets.make_request('/discover/describe/status', { search_id: search_id }, function (data) {
+            if (data.code > 0 && data.search && self.search && self.search.id === search_id) {
+                self.apply_search_payload(data.search);
+            }
+        }, null, { request_type: 'GET' });
     },
 
     add_rows: function (rows) {
