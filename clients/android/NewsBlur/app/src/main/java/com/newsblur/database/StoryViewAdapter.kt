@@ -280,6 +280,7 @@ class StoryViewAdapter(
         stories.clear()
         displayItems.clear()
         storyDisplayPositions.clear()
+        newStoriesRow = null
         notifyDataSetChanged()
     }
 
@@ -311,6 +312,7 @@ class StoryViewAdapter(
         if (position >= storyCount) return VIEW_TYPE_FOOTER
         return when (displayItems.getOrNull(position)) {
             is DisplayItem.ClusterRow -> VIEW_TYPE_CLUSTER_ROW
+            is DisplayItem.NewStoriesRow -> VIEW_TYPE_NEW_STORIES_ROW
             else ->
                 if (listStyle == StoryListStyle.LIST) {
                     VIEW_TYPE_STORY_ROW
@@ -336,12 +338,22 @@ class StoryViewAdapter(
         oldScrollState: Parcelable?,
         skipBackFillingStories: Boolean,
         onCommitted: Runnable? = null,
+        pinnedStoryHashes: Set<String> = emptySet(),
     ) {
         lastLoadId = loadId
         // StoryViewAdapter.kt keeps explicit restoration even when its batch is superseded in the queue.
         oldScrollState?.let { this.oldScrollState = it }
         val runner = diffRunner ?: newDiffRunner().also { diffRunner = it }
-        val submission = StorySubmission(stories, loadId, rv, skipBackFillingStories, diffGeneration, onCommitted)
+        val submission =
+            StorySubmission(
+                stories,
+                loadId,
+                rv,
+                skipBackFillingStories,
+                diffGeneration,
+                onCommitted,
+                pinnedStoryHashes,
+            )
         latestSubmission = submission
         runner.submit(submission)
     }
@@ -361,8 +373,8 @@ class StoryViewAdapter(
         val startedAt = if (BuildConfig.DEBUG) SystemClock.elapsedRealtime() else 0L
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "start id=${submission.loadId} rows=${submission.stories.size}")
         activeFeedIds = null
-        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill)
-        val newItems = buildDisplayItems(filtered)
+        val filtered = applySkipBackfill(submission.stories, submission.skipBackfill, submission.pinnedStoryHashes)
+        val newItems = withNewStoriesRow(buildDisplayItems(filtered), newStoriesRow)
         val oldItems = synchronized(this) { displayItems.toList() }
         val diff = DiffUtil.calculateDiff(DisplayItemDiffer(oldItems, newItems), false)
         if (BuildConfig.DEBUG) android.util.Log.d("NB.StoryDiff", "end id=${submission.loadId} rows=${newItems.size} elapsedMs=${SystemClock.elapsedRealtime() - startedAt}")
@@ -417,6 +429,7 @@ class StoryViewAdapter(
         val skipBackfill: Boolean,
         val generation: Long,
         val onCommitted: Runnable?,
+        val pinnedStoryHashes: Set<String> = emptySet(),
     )
 
     internal data class StoryDifference(
@@ -458,14 +471,18 @@ class StoryViewAdapter(
     private fun applySkipBackfill(
         incoming: List<Story>,
         skip: Boolean,
+        pinnedStoryHashes: Set<String>,
     ): List<Story> {
         if (!skip) return incoming
 
         val currentHashes = getStoryHashes(stories)
+        // StoryViewAdapter.kt measures the list's date range without the stories NewStoriesPill.kt pinned to
+        // its edge: one published days ago would otherwise hold back every page dated after it.
+        val dated = stories.filter { it.storyHash !in pinnedStoryHashes }.ifEmpty { stories }.toMutableList()
         val threshold: Long =
             when (storyOrder) {
-                StoryOrder.NEWEST -> getOldestStoryTimestamp(stories)
-                StoryOrder.OLDEST -> getNewestStoryTimestamp(stories)
+                StoryOrder.NEWEST -> getOldestStoryTimestamp(dated)
+                StoryOrder.OLDEST -> getNewestStoryTimestamp(dated)
             }
 
         return incoming.filter { s ->
@@ -516,11 +533,46 @@ class StoryViewAdapter(
             when (val item = displayItems[position]) {
                 is DisplayItem.StoryRow -> item.story
                 is DisplayItem.ClusterRow -> stories.getOrNull(item.parentStoryIndex)
+                is DisplayItem.NewStoriesRow -> null
             }
         }
 
     fun getDisplayPositionForStoryIndex(storyIndex: Int): Int =
         storyDisplayPositions.getOrNull(storyIndex) ?: storyIndex
+
+    /** The story a row shows, or the story a cluster row sits under, for NewStoriesEntrance.kt. */
+    @Synchronized
+    fun storyHashAtDisplayPosition(position: Int): String? =
+        if (position >= storyCount || position < 0) {
+            null
+        } else {
+            when (val item = displayItems[position]) {
+                is DisplayItem.StoryRow -> item.story.storyHash
+                is DisplayItem.ClusterRow -> item.parentStoryHash
+                is DisplayItem.NewStoriesRow -> null
+            }
+        }
+
+    /** The rows, cluster rows included, of the stories NewStoriesPill.kt added, top to bottom. */
+    @Synchronized
+    fun displayPositionsOfStories(storyHashes: Set<String>): List<Int> =
+        (0 until storyCount).filter { storyHashAtDisplayPosition(it) in storyHashes }
+
+    /**
+     * NewStoriesEntrance.kt animates the rows of stories NewStoriesPill.kt added, so the opening cascade must not
+     * also run on them.
+     */
+    @Synchronized
+    fun markStoriesPresented(storyHashes: Collection<String>) {
+        val added = storyHashes.toSet()
+        displayItems.forEach { item ->
+            when (item) {
+                is DisplayItem.StoryRow -> if (item.story.storyHash in added) motionSeen.add(item.story.storyHash)
+                is DisplayItem.ClusterRow -> if (item.parentStoryHash in added) motionSeen.add(item.clusterStory.storyHash)
+                is DisplayItem.NewStoriesRow -> Unit
+            }
+        }
+    }
 
     @Synchronized
     fun getDisplayPositionForStoryHash(storyHash: String?): Int {
@@ -530,6 +582,7 @@ class StoryViewAdapter(
             when (item) {
                 is DisplayItem.StoryRow -> if (item.story.storyHash == storyHash) return index
                 is DisplayItem.ClusterRow -> if (item.clusterStory.storyHash == storyHash) return index
+                is DisplayItem.NewStoriesRow -> Unit
             }
         }
 
@@ -693,18 +746,24 @@ class StoryViewAdapter(
         returnHighlight = null
     }
 
+    /**
+     * StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling, and when
+     * ItemSetFragment.java moves the list to stories NewStoriesPill.kt added: rows that come into view after either
+     * just appear.
+     */
+    fun finishOpeningEntrances(recyclerView: RecyclerView) {
+        if (motionHasScrolled) return
+        motionHasScrolled = true
+        for (index in 0 until recyclerView.childCount) {
+            val row = recyclerView.getChildAt(index)
+            val holder = recyclerView.getChildViewHolder(row)
+            if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
+        }
+    }
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        fun finishOpeningEntrances() {
-            if (motionHasScrolled) return
-            motionHasScrolled = true
-            // StoryViewAdapter.kt makes the opening cascade solid as soon as the reader starts scrolling.
-            for (index in 0 until recyclerView.childCount) {
-                val row = recyclerView.getChildAt(index)
-                val holder = recyclerView.getChildViewHolder(row)
-                if (holder is StoryViewHolder || holder is ClusterRowViewHolder) row.clearAnimation()
-            }
-        }
+        fun finishOpeningEntrances() = finishOpeningEntrances(recyclerView)
         motionScrollListener = object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(view: RecyclerView, newState: Int) {
                 if (newState != RecyclerView.SCROLL_STATE_IDLE) finishOpeningEntrances()
@@ -767,6 +826,8 @@ class StoryViewAdapter(
         } else if (viewType == VIEW_TYPE_CLUSTER_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_cluster_row, viewGroup, false)
             return ClusterRowViewHolder(v)
+        } else if (viewType == VIEW_TYPE_NEW_STORIES_ROW) {
+            return NewStoriesRowViewHolder(LayoutInflater.from(viewGroup.context).inflate(R.layout.row_new_stories, viewGroup, false))
         } else if (viewType == VIEW_TYPE_STORY_ROW) {
             val v = LayoutInflater.from(viewGroup.context).inflate(R.layout.view_story_row, viewGroup, false)
             if (useHardwareRowLayers) v.setLayerType(View.LAYER_TYPE_HARDWARE, null)
@@ -1160,7 +1221,7 @@ class StoryViewAdapter(
                     bindClusterReadState(viewHolder, item.clusterStory, animated = true)
                     return
                 }
-                null -> Unit
+                is DisplayItem.NewStoriesRow, null -> Unit
             }
         }
         onBindViewHolder(viewHolder, position)
@@ -1216,6 +1277,13 @@ class StoryViewAdapter(
             }
             is DisplayItem.ClusterRow -> {
                 bindClusterRow(viewHolder as ClusterRowViewHolder, item)
+            }
+            is DisplayItem.NewStoriesRow -> {
+                val label = (viewHolder as NewStoriesRowViewHolder).label
+                label.text = label.resources.getQuantityString(R.plurals.new_stories_pill, item.count, item.count)
+                label.contentDescription = label.text
+                com.newsblur.view.NewStoriesPill.style(label)
+                label.setOnClickListener { onNewStoriesRowClick?.run() }
             }
         }
         retainedHighlight?.afterRebind()
@@ -1570,6 +1638,61 @@ class StoryViewAdapter(
 
     }
 
+    /** The "N new stories" row standing in for NewStoriesPill.kt once it steps aside (ItemSetFragment.java). */
+    class NewStoriesRowViewHolder(
+        view: View,
+    ) : RecyclerView.ViewHolder(view) {
+        val label: android.widget.TextView = view.findViewById(R.id.new_stories_row_label)
+    }
+
+    /** The "N new stories" row's count, and whether it sits at the top (newest first) or the end of the list. */
+    data class NewStoriesRowState(
+        val count: Int,
+        val atTop: Boolean,
+    )
+
+    // StoryViewAdapter.kt reads this while diffing off the main thread.
+    @Volatile
+    private var newStoriesRow: NewStoriesRowState? = null
+
+    /** What tapping the "N new stories" row does: NewStoriesPill.kt's tap. */
+    var onNewStoriesRowClick: Runnable? = null
+
+    /**
+     * Shows, updates or removes the "N new stories" row. It isn't a story: it has no story index, so next and
+     * previous, mark-read-on-scroll, selection and the story positions all pass over it.
+     */
+    @Synchronized
+    fun setNewStoriesRow(row: NewStoriesRowState?) {
+        if (newStoriesRow == row) return
+        newStoriesRow = row
+        // StoryViewAdapter.kt must not apply a diff calculated without this row; keep the latest batch to resubmit.
+        val pending = latestSubmission
+        invalidateStoryDiffs()
+        val before = displayItems.toList()
+        rebuildDisplayItemsFromCurrentStories()
+        DiffUtil.calculateDiff(DisplayItemDiffer(before, displayItems.toList()), false).dispatchUpdatesTo(this)
+        pending?.let {
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted, it.pinnedStoryHashes)
+        }
+    }
+
+    /**
+     * ItemSetFragment.java replaced the list with its newest stories, as if it had just opened: they come in with the
+     * opening cascade.
+     */
+    @Synchronized
+    fun restartOpeningCascade() {
+        motionSeen.clear()
+        motionHasScrolled = false
+        motionAwaitingFeedCommit = true
+    }
+
+    /** Where the "N new stories" row sits, or -1 without one. */
+    @get:Synchronized
+    val newStoriesRowPosition: Int
+        get() = displayItems.indexOfFirst { it is DisplayItem.NewStoriesRow }
+
     class FooterViewHolder(
         view: View,
     ) : RecyclerView.ViewHolder(view) {
@@ -1777,7 +1900,7 @@ class StoryViewAdapter(
     private fun rebuildDisplayItemsFromCurrentStories() {
         activeFeedIds = null
         displayItems.clear()
-        displayItems.addAll(buildDisplayItems(stories))
+        displayItems.addAll(withNewStoriesRow(buildDisplayItems(stories), newStoriesRow))
         rebuildStoryDisplayPositions()
     }
 
@@ -1789,7 +1912,7 @@ class StoryViewAdapter(
         rebuildDisplayItemsFromCurrentStories()
         notifyDataSetChanged()
         pending?.let {
-            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted)
+            submitStories(it.stories, it.loadId, it.grid, null, it.skipBackfill, it.onCommitted, it.pinnedStoryHashes)
         }
     }
 
@@ -1852,6 +1975,16 @@ class StoryViewAdapter(
             override fun presentationMatches(other: DisplayItem): Boolean =
                 other is ClusterRow && content == other.content
         }
+
+        /** "N new stories": NewStoriesPill.kt's stand-in at the list's edge once the pill steps aside. */
+        data class NewStoriesRow(
+            val count: Int,
+        ) : DisplayItem {
+            override val stableId: Long = "new-stories-row".hashCode().toLong()
+            override val read = false
+
+            override fun presentationMatches(other: DisplayItem): Boolean = other is NewStoriesRow && other.count == count
+        }
     }
 
     private object ReadStatePayload
@@ -1861,6 +1994,18 @@ class StoryViewAdapter(
         const val VIEW_TYPE_STORY_ROW: Int = 2
         const val VIEW_TYPE_FOOTER: Int = 3
         const val VIEW_TYPE_CLUSTER_ROW: Int = 4
+        const val VIEW_TYPE_NEW_STORIES_ROW: Int = 6
+
+        // StoryViewAdapter.kt puts the "N new stories" row first in a newest-first list and last in an oldest-first one.
+        private fun withNewStoriesRow(
+            items: List<DisplayItem>,
+            row: NewStoriesRowState?,
+        ): List<DisplayItem> {
+            if (row == null || row.count <= 0 || items.isEmpty()) return items
+            return items.toMutableList().apply {
+                if (row.atTop) add(0, DisplayItem.NewStoriesRow(row.count)) else add(DisplayItem.NewStoriesRow(row.count))
+            }
+        }
 
         private const val DEFAULT_TEXT_SIZE_STORY_SNIP = 13f
 

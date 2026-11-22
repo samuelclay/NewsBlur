@@ -345,6 +345,13 @@ msgstr[1] "%(count)s месяца"
 msgstr[2] "%(count)s месяцев"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s рассылка"
@@ -4955,6 +4962,9 @@ msgstr "Октябрь"
 msgid "Off"
 msgstr "Выкл."
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "Официальное приложение NewsBlur для Android"
 
@@ -5079,6 +5089,9 @@ msgstr "Показывать комментарии только от друзе
 
 msgid "Only show counts on collapsed folders"
 msgstr "Показывать счётчики только у свёрнутых папок"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Обрезать только длинные статьи в Blurblog"
@@ -6513,6 +6526,9 @@ msgstr "Показать историю"
 
 msgid "Show more related stories"
 msgstr "Показать больше похожих статей"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "Показывать при загрузке"

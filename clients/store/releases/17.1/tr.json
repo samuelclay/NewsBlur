@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Telefonunuzda okuduğunuz bir haber Mac’inizde ve web’de de hemen okundu olarak işaretlenir. Kaydedilen haberler ve okunmamış haber sayıları da açık olan tüm NewsBlur uygulamalarınızda güncellenir. Okuduğunuz siteye veya klasöre yeni haberler geldiğinde bir düğme kaç haberin beklediğini gösterir. Kaldığınız yerden okumaya devam edin, hazır olduğunuzda düğmeyle yeni haberleri listeye ekleyin."
+  },
+  "macos": {
+    "whats_new": "Telefonunuzda okuduğunuz bir haber Mac’inizde ve web’de de hemen okundu olarak işaretlenir. Kaydedilen haberler ve okunmamış haber sayıları da açık olan tüm NewsBlur uygulamalarınızda güncellenir. Okuduğunuz siteye veya klasöre yeni haberler geldiğinde bir düğme kaç haberin beklediğini gösterir. Kaldığınız yerden okumaya devam edin, hazır olduğunuzda düğmeyle yeni haberleri listeye ekleyin."
+  },
+  "android": {
+    "release_notes": "Telefonunuzda okuduğunuz bir haber Mac’inizde ve web’de de hemen okundu olarak işaretlenir. Kaydedilen haberler ve okunmamış haber sayıları da açık olan tüm NewsBlur uygulamalarınızda güncellenir. Okuduğunuz siteye veya klasöre yeni haberler geldiğinde bir düğme kaç haberin beklediğini gösterir. Kaldığınız yerden okumaya devam edin, hazır olduğunuzda düğmeyle yeni haberleri listeye ekleyin."
+  }
+}

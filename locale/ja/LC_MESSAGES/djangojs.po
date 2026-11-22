@@ -286,6 +286,11 @@ msgid_plural "%(count)s months"
 msgstr[0] "%(count)sか月"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s 件のニュースレター"
@@ -4679,6 +4684,9 @@ msgstr "10月"
 msgid "Off"
 msgstr "オフ"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "公式NewsBlur Androidアプリ"
 
@@ -4783,6 +4791,9 @@ msgstr "友達のコメントのみ表示"
 
 msgid "Only show counts on collapsed folders"
 msgstr "折りたたまれたフォルダーにのみ件数を表示"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Blurblogでは長い共有記事のみ省略する"
@@ -6165,6 +6176,9 @@ msgstr "履歴を表示"
 
 msgid "Show more related stories"
 msgstr "関連する記事をもっと表示"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "読み込み時に表示"

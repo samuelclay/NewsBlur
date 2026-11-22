@@ -1,0 +1,1 @@
+Leia um artigo no celular e ele já aparece como lido no Mac ou na web. Os artigos salvos e a contagem de não lidos também ficam em dia em todos os dispositivos em que o NewsBlur está aberto. Quando chegam novos artigos ao site ou à pasta que você está lendo, um botão mostra quantos estão esperando. Continue de onde parou e adicione os novos artigos à lista quando quiser.

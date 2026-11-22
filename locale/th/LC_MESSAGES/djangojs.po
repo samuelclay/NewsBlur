@@ -286,6 +286,11 @@ msgid_plural "%(count)s months"
 msgstr[0] "%(count)s เดือน"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "จดหมายข่าว %(count)s ฉบับ"
@@ -4719,6 +4724,9 @@ msgstr "ตุลาคม"
 msgid "Off"
 msgstr "ปิด"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "แอป Android อย่างเป็นทางการของ NewsBlur"
 
@@ -4825,6 +4833,9 @@ msgstr "แสดงเฉพาะความคิดเห็นจากเ
 
 msgid "Only show counts on collapsed folders"
 msgstr "แสดงจำนวนเฉพาะโฟลเดอร์ที่ยุบอยู่"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "ตัดทอนบทความที่แชร์ซึ่งยาวเกินไปเฉพาะใน Blurblog"
@@ -6217,6 +6228,9 @@ msgstr "แสดงประวัติ"
 
 msgid "Show more related stories"
 msgstr "แสดงบทความที่เกี่ยวข้องเพิ่มเติม"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "แสดงเมื่อโหลด"

@@ -242,6 +242,16 @@ body.NB-mobile.NB-mobile-page-scroll .NB-mobile-story-screen.NB-mobile-pos-cente
     z-index: 49 !important;
 }
 
+/* The new stories pill (views/new_stories_indicator_view.js) sticks under those bars while the page
+   scrolls in the story list's place, and clear of the floating player at the bottom. */
+body.NB-mobile.NB-mobile-page-scroll .NB-new-stories-indicator-anchor.NB-top {
+    top: var(--nb-mobile-page-bars-height, 96px);
+}
+
+body.NB-mobile .NB-new-stories-indicator-anchor.NB-bottom {
+    bottom: var(--nb-mobile-player-space, 0px);
+}
+
 body.NB-mobile.NB-mobile-page-scroll .right-pane.NB-mobile-pos-center > .content-pane,
 body.NB-mobile.NB-mobile-page-scroll .left-pane.NB-mobile-pos-center > .left-center {
     flex: none;

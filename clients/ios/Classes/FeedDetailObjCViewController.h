@@ -108,6 +108,12 @@
 - (void)loadOfflineStories;
 - (void)fetchRiver;
 - (void)fetchRiverPage:(int)page withCallback:(void(^)(void))callback;
+- (NSString *)newestStoriesRequestURLForPage:(NSInteger)page;
+- (void)absorbStoryPageFeedsAndClassifiers:(NSDictionary *)results feedId:(NSString *)receivedFeedId;
+- (void)abandonPageInFlight;
+- (void)forgetFirstPageLoad;
+- (void)newStoriesRowDidChange;
+- (BOOL)isNewStoriesRowVisible;
 - (void)testForTryFeed;
 - (void)flashInfrequentStories;
 - (void)gotoFolder:(NSString *)folder feedID:(NSString *)feedID;

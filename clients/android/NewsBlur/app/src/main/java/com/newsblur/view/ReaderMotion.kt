@@ -75,6 +75,14 @@ object ReaderMotion {
         }
     }
 
+    /**
+     * Whether a view may slide or cascade into place. With system animations or NewsBlur's Reduce motion
+     * off, or in power saving, ReaderMotion.kt's plain fade stands in.
+     */
+    @JvmStatic fun canSlide(context: Context): Boolean =
+        ValueAnimator.areAnimatorsEnabled() && !isReducedMotion(context) &&
+            !com.newsblur.util.ViewUtils.isPowerSaveMode(context)
+
     @JvmStatic fun canEnter(view: View): Boolean {
         if (!view.isAttachedToWindow || !view.isShown || view.windowVisibility != View.VISIBLE ||
             !ValueAnimator.areAnimatorsEnabled() || com.newsblur.util.ViewUtils.isPowerSaveMode(view.context)) return false

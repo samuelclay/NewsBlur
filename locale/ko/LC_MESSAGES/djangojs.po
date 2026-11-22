@@ -286,6 +286,11 @@ msgid_plural "%(count)s months"
 msgstr[0] "%(count)s개월"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "뉴스레터 %(count)s개"
@@ -4687,6 +4692,9 @@ msgstr "10월"
 msgid "Off"
 msgstr "끔"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "공식 NewsBlur Android 앱"
 
@@ -4791,6 +4799,9 @@ msgstr "친구의 댓글만 표시"
 
 msgid "Only show counts on collapsed folders"
 msgstr "접힌 폴더에만 개수 표시"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Blurblog에서는 긴 공유 스토리만 줄여서 표시"
@@ -6173,6 +6184,9 @@ msgstr "기록 표시"
 
 msgid "Show more related stories"
 msgstr "관련 스토리 더 보기"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "로드 시 표시"

@@ -288,6 +288,11 @@ msgid_plural "%(count)s months"
 msgstr[0] "%(count)s ay"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] ""
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s bülten"
@@ -4753,6 +4758,9 @@ msgstr "Ekim"
 msgid "Off"
 msgstr "Kapalı"
 
+msgid "Offer them in an \"N new stories\" pill"
+msgstr ""
+
 msgid "Official NewsBlur Android App"
 msgstr "Resmî NewsBlur Android uygulaması"
 
@@ -4863,6 +4871,9 @@ msgstr "Yalnızca arkadaşlarınızın yorumlarını göster"
 
 msgid "Only show counts on collapsed folders"
 msgstr "Sayıları yalnızca daraltılmış klasörlerde göster"
+
+msgid "Only show them when the list reloads"
+msgstr ""
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Yalnızca blurblog'lardaki uzun paylaşılan haberleri kısalt"
@@ -6273,6 +6284,9 @@ msgstr "Geçmişi göster"
 
 msgid "Show more related stories"
 msgstr "Daha fazla benzer haber göster"
+
+msgid "Show new stories as they arrive"
+msgstr ""
 
 msgid "Show on Load"
 msgstr "Yüklenince göster"
