@@ -11,6 +11,8 @@ later by /reader/add_url when someone subscribes, or by
 
 import datetime
 import html
+import socket
+import threading
 import time
 from urllib.parse import urljoin
 
@@ -130,7 +132,8 @@ def read_body(url, deadline, headers=None):
 
     Streamed, so a huge or never-ending response is cut off at MAX_FEED_BYTES
     instead of being buffered whole into the worker's memory. Reading also stops
-    at `deadline` (a time.monotonic() value) with whatever has arrived.
+    at `deadline` (a time.monotonic() value) with whatever has arrived: between
+    chunks by checking the clock, and inside one by SocketDeadline.
     """
     remaining = deadline - time.monotonic()
     if remaining <= 0:
@@ -145,15 +148,81 @@ def read_body(url, deadline, headers=None):
         if response.status_code != 200:
             return None
         body = bytearray()
-        for chunk in response.iter_content(chunk_size=READ_CHUNK_BYTES):
-            body += chunk
-            if len(body) >= MAX_FEED_BYTES or time.monotonic() >= deadline:
-                break
+        with SocketDeadline(response, deadline) as socket_deadline:
+            try:
+                for chunk in response.iter_content(chunk_size=READ_CHUNK_BYTES):
+                    body += chunk
+                    if len(body) >= MAX_FEED_BYTES or time.monotonic() >= deadline:
+                        break
+            except requests.RequestException:
+                if not socket_deadline.fired:
+                    return None
         return bytes(body[:MAX_FEED_BYTES])
-    except requests.RequestException:
-        return None
     finally:
         response.close()
+
+
+class SocketDeadline:
+    """Shuts down a streamed response's socket at `deadline`, so a read waiting on it returns then.
+
+    requests' timeout only limits how long one socket read waits, and iter_content
+    keeps reading until it has a whole READ_CHUNK_BYTES, so a server that sends a
+    byte every few seconds would hold the read open until Celery's time limit. A
+    timer thread calls shutdown() on the socket at the deadline, which wakes a
+    read blocked on it at once (close() from another thread does not reliably do
+    that on Linux). The read then ends or raises a requests error, and `fired`
+    tells read_body the deadline did it. The timer reaches the socket through its
+    file descriptor, so it works the same under TLS, gzip and chunked transfer
+    encoding, and the descriptor is let go before read_body closes the response,
+    so a late timer can never shut down a socket that has reused that number.
+    """
+
+    def __init__(self, response, deadline):
+        self.fired = False
+        self.finished = False
+        self.lock = threading.Lock()
+        self.sock = response_socket(response)
+        self.timer = None
+        if self.sock is not None:
+            self.timer = threading.Timer(max(0.0, deadline - time.monotonic()), self.shut_down)
+            self.timer.daemon = True
+
+    def __enter__(self):
+        if self.timer:
+            self.timer.start()
+        return self
+
+    def __exit__(self, *exc_info):
+        with self.lock:
+            self.finished = True
+        if self.timer:
+            self.timer.cancel()
+        if self.sock is not None:
+            # apps/describe/web_preview.py: detach, not close. The response owns the descriptor.
+            self.sock.detach()
+        return False
+
+    def shut_down(self):
+        with self.lock:
+            if self.finished:
+                return
+            self.fired = True
+            try:
+                self.sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+
+
+def response_socket(response):
+    """A second handle on the socket a streamed response reads from, or None when it has none.
+
+    A response whose connection is already closed, because there was nothing
+    left to read, has no socket.
+    """
+    try:
+        return socket.socket(fileno=response.raw.fileno())
+    except (AttributeError, OSError, ValueError):
+        return None
 
 
 def clean_text(value, limit):

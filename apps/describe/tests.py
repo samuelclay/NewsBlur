@@ -3,6 +3,9 @@
 import datetime
 import ipaddress
 import re
+import socket
+import threading
+import time
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -1039,6 +1042,85 @@ class Test_DescribeFeedDiscovery(TestCase):
         self.assertEqual(len(self.started), 1)
 
 
+class Test_DescribeTricklingSite(TestCase):
+    """A real server on 127.0.0.1 that sends the start of a response, then one byte every 0.2 seconds.
+
+    Each byte arrives well inside the socket timeout and none of them completes a read, so only a
+    wall-clock deadline ends it. The server gives up after five seconds so a test never hangs.
+    """
+
+    TRICKLE_BYTES = 25
+    TRICKLE_SECONDS = 0.2
+
+    def setUp(self):
+        self.listener = socket.socket()
+        self.listener.bind(("127.0.0.1", 0))
+        self.listener.listen(1)
+        self.listener.settimeout(10)
+        self.stop = threading.Event()
+        self.server = None
+
+    def tearDown(self):
+        self.stop.set()
+        if self.server:
+            self.server.join(10)
+        self.listener.close()
+
+    def serve(self, head):
+        try:
+            connection, address = self.listener.accept()
+        except OSError:
+            return
+        with connection:
+            request = b""
+            while b"\r\n\r\n" not in request:
+                received = connection.recv(4096)
+                if not received:
+                    return
+                request += received
+            connection.sendall(head)
+            for _ in range(self.TRICKLE_BYTES):
+                if self.stop.wait(self.TRICKLE_SECONDS):
+                    return
+                try:
+                    connection.sendall(b"<")
+                except OSError:
+                    return
+
+    def fetch_trickling_feed(self, head):
+        """fetch_feed_body with one second to read, from a server that sends `head` and then trickles."""
+        from apps.describe import web_preview
+
+        self.server = threading.Thread(target=self.serve, args=(head,), daemon=True)
+        self.server.start()
+        url = f"http://127.0.0.1:{self.listener.getsockname()[1]}/feed.xml"
+        started = time.monotonic()
+        with patch("utils.url_safety.validate_public_url", side_effect=lambda url: url), patch.object(
+            web_preview, "FEED_READ_SECONDS", 1
+        ):
+            body = web_preview.fetch_feed_body(url)
+        return body, time.monotonic() - started
+
+    def test_a_feed_that_trickles_bytes_is_cut_off_at_the_deadline(self):
+        body, elapsed = self.fetch_trickling_feed(
+            b"HTTP/1.1 200 OK\r\nContent-Type: application/rss+xml\r\nContent-Length: 100000\r\n\r\n"
+        )
+        # One second to read, not the five the whole trickle takes.
+        self.assertLess(elapsed, 2)
+        # What arrived before the deadline is kept.
+        self.assertTrue(body.startswith(b"<"))
+
+    def test_a_chunked_feed_that_stalls_inside_a_chunk_keeps_the_chunks_that_arrived(self):
+        # One whole chunk, then a 16 KB chunk that trickles. Cutting that chunk off makes requests raise,
+        # and the whole chunk before it is still returned.
+        body, elapsed = self.fetch_trickling_feed(
+            b"HTTP/1.1 200 OK\r\nContent-Type: application/rss+xml\r\nTransfer-Encoding: chunked\r\n\r\n"
+            b"6\r\n<rss>\n\r\n4000\r\n"
+        )
+        self.assertLess(elapsed, 2)
+        self.assertEqual(body, b"<rss>\n")
+
+
 class Test_DescribeStuckSearches(DescribeMongoTestCase):
     """A search whose task died must not stay running forever."""
 
@@ -1152,6 +1234,31 @@ class Test_DescribeTask(DescribeMongoTestCase):
         result = DescribeFeedsSearch(user.pk, str(search.id), request_id="request-0001")
         self.assertEqual(result["code"], -1)
         pipeline_class.assert_not_called()
+
+    @patch("apps.describe.views.DescribeFeedsSearch.apply_async")
+    @patch("apps.describe.tasks.DescribeFeedSearch")
+    def test_a_crash_tells_the_reader_something_went_wrong_without_the_exception(
+        self, pipeline_class, apply_async
+    ):
+        from apps.describe.tasks import DescribeFeedsSearch
+
+        user = make_user("crash_user", premium=True)
+        self.client.login(username="crash_user", password="pw")
+        started = json.decode(
+            self.client.post("/discover/describe/start", {"prompt": "ios app reviews"}).content
+        )
+        search_id = started["search"]["id"]
+        pipeline_class.return_value.run.side_effect = RuntimeError(
+            "ServerSelectionTimeoutError: hdb-mongo-1:27017: timed out"
+        )
+        with patch("apps.describe.tasks.redis.Redis"), self.assertRaises(RuntimeError):
+            DescribeFeedsSearch(user.pk, search_id)
+
+        # The web tab, iOS and Android all show search.error from the status view as the status line.
+        status = json.decode(self.client.get("/discover/describe/status", {"search_id": search_id}).content)
+        self.assertEqual(status["search"]["status"], STATUS_ERROR)
+        self.assertTrue(status["search"]["error"])
+        self.assertNotIn("hdb-mongo-1", status["search"]["error"])
 
 
 class Test_DescribeHelpers(TestCase):
