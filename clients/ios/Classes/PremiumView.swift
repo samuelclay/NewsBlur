@@ -120,7 +120,7 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Custom RSS feeds for saved stories"), icon: "dot.radiowaves.up.forward", iconColor: .orange),
         PremiumFeature(title: NBLocalization.text("Text view conveniently extracts the story"), icon: "doc.text.fill", iconColor: .cyan),
         PremiumFeature(title: NBLocalization.text("Discover related stories and sites"), icon: "arrow.triangle.branch", iconColor: .teal),
-        PremiumFeature(title: NBLocalization.text("AI text and image filters, with 5 AI credits a month"), icon: "pencil.line", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("AI text and image filters, with 1,000 AI credits a month"), icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("You feed Lyric, NewsBlur's hungry hound, for 6 days"), icon: "fork.knife", iconColor: .brown)
     ]
 
@@ -130,7 +130,7 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Web Feeds from any website, even without RSS"), icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
         PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a week"), icon: "headphones", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
-        PremiumFeature(title: NBLocalization.text("50 AI credits a month for AI filters"), icon: "pencil.line", iconColor: .purple),
+        PremiumFeature(title: NBLocalization.text("10,000 AI credits a month for AI filters"), icon: "pencil.line", iconColor: .purple),
         PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
         PremiumFeature(title: NBLocalization.text("Apply training globally"), icon: "globe", iconColor: .indigo),
         PremiumFeature(title: NBLocalization.text("Daily briefing with your top stories and keywords"), icon: "briefing", iconColor: .orange, isCustomImage: true),
@@ -155,7 +155,7 @@ struct PremiumView: View {
             PremiumFeature(title: NBLocalization.text("Follow up to 10,000 sites"), icon: "square.stack.3d.up.fill", iconColor: .green),
             PremiumFeature(title: NBLocalization.text("All feeds fetched every 5-15 minutes"), icon: "bolt.fill", iconColor: PremiumColors.proOrange),
             PremiumFeature(title: NBLocalization.text("Train stories with regular expressions"), icon: "textformat.abc", iconColor: .yellow),
-            PremiumFeature(title: NBLocalization.text("500 AI credits a month for AI filters"), icon: "pencil.line", iconColor: .purple),
+            PremiumFeature(title: NBLocalization.text("100,000 AI credits a month for AI filters"), icon: "pencil.line", iconColor: .purple),
             PremiumFeature(title: NBLocalization.text("Listen to 10 hours of stories read aloud a week"), icon: "headphones", iconColor: .purple),
             PremiumFeature(title: NBLocalization.text("Priority support"), icon: "lifepreserver", iconColor: .yellow)
         ]
