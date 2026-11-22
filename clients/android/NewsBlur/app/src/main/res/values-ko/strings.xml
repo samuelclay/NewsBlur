@@ -614,6 +614,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">스크롤해 지나간 스토리를 자동으로 읽음으로 표시</string>
     <string name="settings_story_clustering">관련 스토리 묶기</string>
     <string name="settings_story_clustering_summary">스토리 제목 아래에 다른 피드의 중복 스토리 표시</string>
+    <string name="settings_show_new_stories">새 스토리가 도착하면 표시</string>
+    <string name="settings_show_new_stories_summary">열려 있는 사이트나 폴더에 새 스토리가 도착하면 \"새 스토리 N개\" 알약 배지를 표시합니다</string>
     <string name="settings_cluster_matches">클러스터 일치 항목</string>
     <string name="settings_cluster_matches_summary">클러스터에 중복 제목만 표시할지, 관련 스토리도 표시할지 선택하세요</string>
     <string name="settings_story_clustering_save_failed">스토리 그룹화 설정을 저장하지 못했습니다</string>
@@ -1540,4 +1542,7 @@
     <string name="describe_matched_query">“%1$s” 일치</string>
     <string name="describe_waiting_verdict">결과를 기다리는 중…</string>
     <string name="add_site_describe_row">“%1$s”에 관한 피드 찾기</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d개의 새 스토리</item>
+    </plurals>
 </resources>

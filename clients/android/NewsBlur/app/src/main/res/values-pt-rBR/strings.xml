@@ -630,6 +630,8 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Marcar artigos como lidos automaticamente ao passar por eles durante a rolagem</string>
     <string name="settings_story_clustering">Agrupar artigos relacionados</string>
     <string name="settings_story_clustering_summary">Mostrar artigos duplicados de outros feeds abaixo do título do artigo</string>
+    <string name="settings_show_new_stories">Mostrar artigos novos conforme chegam</string>
+    <string name="settings_show_new_stories_summary">Mostrar um indicador de \"N artigos novos\" quando chegarem artigos ao site ou à pasta aberta</string>
     <string name="settings_cluster_matches">Correspondências do agrupamento</string>
     <string name="settings_cluster_matches_summary">Escolha se os agrupamentos mostram apenas títulos duplicados ou também artigos relacionados</string>
     <string name="settings_story_clustering_save_failed">Não foi possível salvar a preferência de agrupamento de artigos</string>
@@ -1614,4 +1616,9 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="describe_matched_query">Corresponde a “%1$s”</string>
     <string name="describe_waiting_verdict">Aguardando um veredito…</string>
     <string name="add_site_describe_row">Encontrar feeds sobre “%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d artigos novos</item>
+        <item quantity="one">%d artigo novo</item>
+        <item quantity="other">%d artigos novos</item>
+    </plurals>
 </resources>

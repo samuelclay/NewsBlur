@@ -288,7 +288,7 @@ msgstr[0] "%(count)s เดือน"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "บทความใหม่ %(count)s รายการ"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -4725,7 +4725,7 @@ msgid "Off"
 msgstr "ปิด"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "แสดงเป็นป้าย “บทความใหม่ N รายการ”"
 
 msgid "Official NewsBlur Android App"
 msgstr "แอป Android อย่างเป็นทางการของ NewsBlur"
@@ -4835,7 +4835,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "แสดงจำนวนเฉพาะโฟลเดอร์ที่ยุบอยู่"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "แสดงบทความใหม่เมื่อโหลดรายการอีกครั้งเท่านั้น"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "ตัดทอนบทความที่แชร์ซึ่งยาวเกินไปเฉพาะใน Blurblog"
@@ -6230,7 +6230,7 @@ msgid "Show more related stories"
 msgstr "แสดงบทความที่เกี่ยวข้องเพิ่มเติม"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "แสดงบทความใหม่เมื่อมาถึง"
 
 msgid "Show on Load"
 msgstr "แสดงเมื่อโหลด"
@@ -8006,6 +8006,9 @@ msgstr "เมื่อวานนี้ %(time)s"
 
 msgid "You"
 msgstr "คุณ"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "มีการค้นหาที่กำลังดำเนินอยู่ โปรดรอให้เสร็จก่อน"
 
 #, python-format
 msgid "You are followed by %(count)s person"

@@ -638,6 +638,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Automatycznie oznaczaj artykuły jako przeczytane po przewinięciu</string>
     <string name="settings_story_clustering">Grupuj powiązane artykuły</string>
     <string name="settings_story_clustering_summary">Pokazuj duplikaty artykułów z innych kanałów pod tytułem artykułu</string>
+    <string name="settings_show_new_stories">Pokazuj nowe artykuły w miarę ich pojawiania się</string>
+    <string name="settings_show_new_stories_summary">Wyświetlaj etykietę \"N nowych artykułów\", gdy pojawią się nowe artykuły w otwartej witrynie lub folderze</string>
     <string name="settings_cluster_matches">Dopasowania w grupach</string>
     <string name="settings_cluster_matches_summary">Wybierz, czy grupy mają pokazywać tylko zduplikowane tytuły, czy także podobne artykuły</string>
     <string name="settings_story_clustering_save_failed">Nie udało się zapisać ustawienia grupowania artykułów</string>
@@ -1651,4 +1653,10 @@
     <string name="describe_matched_query">Dopasowano „%1$s”</string>
     <string name="describe_waiting_verdict">Oczekiwanie na wynik…</string>
     <string name="add_site_describe_row">Znajdź kanały o tematyce „%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d nowe artykuły</item>
+        <item quantity="many">%d nowych artykułów</item>
+        <item quantity="one">%d nowy artykuł</item>
+        <item quantity="other">%d nowych artykułów</item>
+    </plurals>
 </resources>

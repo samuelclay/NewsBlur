@@ -319,8 +319,8 @@ msgstr[1] "%(count)s mesi"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s nuovo articolo"
+msgstr[1] "%(count)s nuovi articoli"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -4860,7 +4860,7 @@ msgid "Off"
 msgstr "Disattivato"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Mostrali in un indicatore «N nuovi articoli»"
 
 msgid "Official NewsBlur Android App"
 msgstr "App Android ufficiale NewsBlur"
@@ -4983,7 +4983,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Mostra i conteggi solo nelle cartelle chiuse"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Mostrali solo quando si ricarica l'elenco"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Abbrevia solo gli articoli condivisi lunghi nei blurblog"
@@ -6412,7 +6412,7 @@ msgid "Show more related stories"
 msgstr "Mostra altri articoli correlati"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Mostra i nuovi articoli man mano che arrivano"
 
 msgid "Show on Load"
 msgstr "Mostra al caricamento"
@@ -8230,6 +8230,9 @@ msgstr "Ieri, %(time)s"
 
 msgid "You"
 msgstr "Tu"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Hai già una ricerca in corso. Attendi che finisca prima di avviarne un'altra."
 
 #, python-format
 msgid "You are followed by %(count)s person"

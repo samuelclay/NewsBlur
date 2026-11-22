@@ -630,6 +630,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">סימון אוטומטי של כתבות כנקראו בעת גלילה מעבר להן</string>
     <string name="settings_story_clustering">קבצו כתבות קשורות</string>
     <string name="settings_story_clustering_summary">הצגת כתבות כפולות מפידים אחרים מתחת לכותרת הכתבה</string>
+    <string name="settings_show_new_stories">הצגת כתבות חדשות כשהן מגיעות</string>
+    <string name="settings_show_new_stories_summary">הצגת תגית \"N כתבות חדשות\" כשכתבות מגיעות לאתר או לתיקייה הפתוחים</string>
     <string name="settings_cluster_matches">התאמות באשכולות</string>
     <string name="settings_cluster_matches_summary">בחרו אם האשכולות יציגו רק כותרות כפולות או גם כתבות קשורות</string>
     <string name="settings_story_clustering_save_failed">לא ניתן לשמור את העדפת קיבוץ הכתבות</string>
@@ -1614,4 +1616,9 @@
     <string name="describe_matched_query">התאמה ל־״%1$s״</string>
     <string name="describe_waiting_verdict">ממתין להכרעה…</string>
     <string name="add_site_describe_row">מציאת פידים בנושא ״%1$s״</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d כתבה חדשה</item>
+        <item quantity="other">%d כתבות חדשות</item>
+        <item quantity="two">%d כתבות חדשות</item>
+    </plurals>
 </resources>

@@ -354,31 +354,52 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         var self = this;
         var $submit = this.$('.NB-describe-submit');
         if ($submit.hasClass('NB-disabled')) return;
+        // describe_feeds_view.js: one search runs per reader at a time (apps/describe/views.py start_search),
+        // so a new description waits for the one still running rather than costing it its updates.
+        if (this.search && !this.is_finished(this.search)) {
+            this.show_notice(gettext('You already have a search running. Wait for it to finish first.'));
+            return;
+        }
         $submit.addClass('NB-disabled').text(gettext('Starting…'));
-        this.stop_polling();
 
         var params = { prompt: prompt };
         if (search_id) params.search_id = search_id;
 
-        NEWSBLUR.assets.make_request('/discover/describe/start', params, function (data) {
+        // describe_feeds_view.js: assetmodel.js make_request sends every response with code < 0 here, and a
+        // failed request too, which carries no code. A refusal can bring the reader's allowance and, on a
+        // plan without Describe, the upgrade offer.
+        var refused = function (data) {
             $submit.removeClass('NB-disabled').text(gettext('Find feeds'));
-            if (data.code > 0 && data.search) {
-                self.usage = data.usage || self.usage;
+            data = data && data.code < 0 ? data : {};
+            if (data.usage) {
+                self.usage = data.usage;
                 self.render_usage();
-                self.show_search(data.search);
-                self.update_history_entry(data.search);
-                self.begin_streaming();
-            } else if (data.upgrade) {
-                self.usage = data.usage || self.usage;
-                self.render_usage();
-                self.render_upgrade_state(data.message);
-            } else {
-                self.show_error(data.message || gettext('The search could not be started.'));
             }
-        }, function () {
+            if (data.upgrade) {
+                self.render_upgrade_state(data.message);
+                return;
+            }
+            var message = data.message || gettext('The search could not be started.');
+            if (self.search) {
+                self.show_notice(message);
+            } else {
+                self.show_error(message);
+            }
+        };
+
+        NEWSBLUR.assets.make_request('/discover/describe/start', params, function (data) {
+            if (!(data.code > 0 && data.search)) {
+                refused(data);
+                return;
+            }
             $submit.removeClass('NB-disabled').text(gettext('Find feeds'));
-            self.show_error(gettext('The search could not be started.'));
-        });
+            self.stop_polling();
+            self.usage = data.usage || self.usage;
+            self.render_usage();
+            self.show_search(data.search);
+            self.update_history_entry(data.search);
+            self.begin_streaming();
+        }, refused);
     },
 
     open_search: function (search_id, options) {
@@ -805,6 +826,14 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
 
     show_error: function (message) {
         this.$('.NB-describe-body').html(this.add_site_view.make_error_with_icon(message));
+    },
+
+    // describe_feeds_view.js: a search that couldn't start, said above the search on screen, which stays. The
+    // next render_status clears it.
+    show_notice: function (message) {
+        var $status = this.$('.NB-describe-status');
+        $status.find('.NB-describe-notice').remove();
+        $status.removeClass('NB-hidden').append($.make('div', { className: 'NB-describe-notice' }, this.plain(message)));
     },
 
     // ==============

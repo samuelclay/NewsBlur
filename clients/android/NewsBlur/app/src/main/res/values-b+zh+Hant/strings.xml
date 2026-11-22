@@ -614,6 +614,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">捲動瀏覽文章時自動標記為已讀</string>
     <string name="settings_story_clustering">將相關文章分群</string>
     <string name="settings_story_clustering_summary">在文章標題下方顯示其他訂閱來源中的重複文章</string>
+    <string name="settings_show_new_stories">新文章到達時立即顯示</string>
+    <string name="settings_show_new_stories_summary">當開啟的網站或資料夾有新文章時，顯示 \"N 篇新文章\" 提示標籤</string>
     <string name="settings_cluster_matches">分群比對</string>
     <string name="settings_cluster_matches_summary">選擇群組只顯示重複標題，還是也顯示相關文章</string>
     <string name="settings_story_clustering_save_failed">無法儲存文章分群偏好設定</string>
@@ -1540,4 +1542,7 @@
     <string name="describe_matched_query">符合「%1$s」</string>
     <string name="describe_waiting_verdict">正在等待判定…</string>
     <string name="add_site_describe_row">尋找關於「%1$s」的訂閱來源</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d 篇新文章</item>
+    </plurals>
 </resources>

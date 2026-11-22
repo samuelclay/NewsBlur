@@ -630,6 +630,8 @@ les gens pour parler du monde.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Marquer automatiquement les articles comme lus lorsqu’ils défilent hors de l’écran</string>
     <string name="settings_story_clustering">Regrouper les articles similaires</string>
     <string name="settings_story_clustering_summary">Afficher sous le titre d’un article les doublons provenant d’autres flux</string>
+    <string name="settings_show_new_stories">Afficher les nouveaux articles à mesure de leur arrivée</string>
+    <string name="settings_show_new_stories_summary">Afficher une pastille \"N nouveaux articles\" lorsque de nouveaux articles arrivent dans le site ou le dossier ouvert</string>
     <string name="settings_cluster_matches">Correspondances des groupes</string>
     <string name="settings_cluster_matches_summary">Choisir si les groupes affichent uniquement les titres en double ou aussi les articles similaires</string>
     <string name="settings_story_clustering_save_failed">Impossible d’enregistrer la préférence de regroupement des articles</string>
@@ -1614,4 +1616,9 @@ les gens pour parler du monde.</string>
     <string name="describe_matched_query">Correspondance avec « %1$s »</string>
     <string name="describe_waiting_verdict">En attente d’une décision…</string>
     <string name="add_site_describe_row">Trouver des flux sur « %1$s »</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d nouveaux articles</item>
+        <item quantity="one">%d nouvel article</item>
+        <item quantity="other">%d nouveaux articles</item>
+    </plurals>
 </resources>

@@ -614,6 +614,8 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Tự động đánh dấu bài viết là đã đọc khi cuộn qua</string>
     <string name="settings_story_clustering">Nhóm các bài viết liên quan</string>
     <string name="settings_story_clustering_summary">Hiển thị các bài viết trùng lặp từ nguồn cấp dữ liệu khác bên dưới tiêu đề bài viết</string>
+    <string name="settings_show_new_stories">Hiển thị bài viết mới ngay khi có</string>
+    <string name="settings_show_new_stories_summary">Hiển thị nhãn dạng viên thuốc \"N bài viết mới\" khi có bài viết mới trong trang web hoặc thư mục đang mở</string>
     <string name="settings_cluster_matches">Các bài viết trùng khớp trong nhóm</string>
     <string name="settings_cluster_matches_summary">Chọn xem các cụm chỉ hiển thị tiêu đề trùng lặp hay cả bài viết liên quan</string>
     <string name="settings_story_clustering_save_failed">Không thể lưu tùy chọn nhóm bài viết</string>
@@ -1540,4 +1542,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="describe_matched_query">Khớp với “%1$s”</string>
     <string name="describe_waiting_verdict">Đang chờ kết luận…</string>
     <string name="add_site_describe_row">Tìm nguồn cấp về “%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d bài viết mới</item>
+    </plurals>
 </resources>

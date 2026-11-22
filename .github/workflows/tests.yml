@@ -32,7 +32,7 @@ jobs:
         run: node --test node/tests/mobile*.test.js
 
       - name: Test add-feed popover hand-off to Add + Discover Sites
-        run: node --test node/tests/add_site_popover_query.test.js
+        run: node --test node/tests/add_site_describe.test.js
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -630,6 +630,8 @@ le persone per parlare del mondo.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Contrassegna automaticamente gli articoli come letti quando li superi scorrendo</string>
     <string name="settings_story_clustering">Raggruppa gli articoli correlati</string>
     <string name="settings_story_clustering_summary">Mostra gli articoli duplicati di altri feed sotto il titolo di un articolo</string>
+    <string name="settings_show_new_stories">Mostra i nuovi articoli man mano che arrivano</string>
+    <string name="settings_show_new_stories_summary">Mostra un indicatore \"N nuovi articoli\" quando arrivano articoli nel sito o nella cartella aperti</string>
     <string name="settings_cluster_matches">Corrispondenze dei gruppi</string>
     <string name="settings_cluster_matches_summary">Scegli se i gruppi devono mostrare solo i titoli duplicati oppure anche gli articoli correlati</string>
     <string name="settings_story_clustering_save_failed">Impossibile salvare la preferenza di raggruppamento degli articoli</string>
@@ -1614,4 +1616,9 @@ le persone per parlare del mondo.</string>
     <string name="describe_matched_query">Corrispondenza: “%1$s”</string>
     <string name="describe_waiting_verdict">In attesa di un responso…</string>
     <string name="add_site_describe_row">Trova feed su “%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d nuovi articoli</item>
+        <item quantity="one">%d nuovo articolo</item>
+        <item quantity="other">%d nuovi articoli</item>
+    </plurals>
 </resources>

@@ -434,12 +434,12 @@ msgstr[5] "%(count)s شهر"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "%(count)s قصة جديدة"
+msgstr[1] "%(count)s قصة جديدة"
+msgstr[2] "%(count)s قصتان جديدتان"
+msgstr[3] "%(count)s قصص جديدة"
+msgstr[4] "%(count)s قصة جديدة"
+msgstr[5] "%(count)s قصة جديدة"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -5226,7 +5226,7 @@ msgid "Off"
 msgstr "معطّل"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "عرضها في شارة «N قصة جديدة»"
 
 msgid "Official NewsBlur Android App"
 msgstr "تطبيق Android الرسمي من NewsBlur"
@@ -5371,7 +5371,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "إظهار الأعداد في المجلدات المطوية فقط"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "إظهارها فقط عند إعادة تحميل القائمة"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "اقتصر على اقتطاع القصص الطويلة المشتركة في مدونات Blurblog"
@@ -6804,7 +6804,7 @@ msgid "Show more related stories"
 msgstr "عرض المزيد من القصص ذات الصلة"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "إظهار القصص الجديدة فور ورودها"
 
 msgid "Show on Load"
 msgstr "إظهار عند التحميل"
@@ -8653,6 +8653,9 @@ msgstr "أمس، %(time)s"
 
 msgid "You"
 msgstr "أنت"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "لديك بحث جارٍ بالفعل. انتظر حتى يكتمل أولاً."
 
 #, python-format
 msgid "You are followed by %(count)s person"

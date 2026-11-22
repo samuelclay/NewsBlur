@@ -614,6 +614,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">ทำเครื่องหมายบทความว่าอ่านแล้วโดยอัตโนมัติเมื่อเลื่อนผ่าน</string>
     <string name="settings_story_clustering">จัดกลุ่มบทความที่เกี่ยวข้อง</string>
     <string name="settings_story_clustering_summary">แสดงบทความซ้ำจากฟีดอื่นใต้ชื่อเรื่อง</string>
+    <string name="settings_show_new_stories">แสดงบทความใหม่เมื่อมาถึง</string>
+    <string name="settings_show_new_stories_summary">แสดงป้าย \"บทความใหม่ N รายการ\" เมื่อมีบทความมาถึงในเว็บไซต์หรือโฟลเดอร์ที่เปิดอยู่</string>
     <string name="settings_cluster_matches">เกณฑ์การจัดกลุ่ม</string>
     <string name="settings_cluster_matches_summary">เลือกว่าจะแสดงเฉพาะชื่อเรื่องที่ซ้ำกัน หรือรวมเรื่องที่เกี่ยวข้องด้วย</string>
     <string name="settings_story_clustering_save_failed">บันทึกค่ากำหนดการจัดกลุ่มบทความไม่สำเร็จ</string>
@@ -1540,4 +1542,7 @@
     <string name="describe_matched_query">ตรงกับ “%1$s”</string>
     <string name="describe_waiting_verdict">กำลังรอผลการประเมิน…</string>
     <string name="add_site_describe_row">ค้นหาฟีดเกี่ยวกับ “%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">บทความใหม่ %d รายการ</item>
+    </plurals>
 </resources>

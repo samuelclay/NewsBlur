@@ -622,6 +622,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">स्क्रॉल करके आगे बढ़ने पर लेखों को अपने-आप पढ़ा हुआ चिह्नित करें</string>
     <string name="settings_story_clustering">संबंधित लेखों को समूहित करें</string>
     <string name="settings_story_clustering_summary">किसी लेख के शीर्षक के नीचे अन्य फ़ीड के डुप्लिकेट लेख दिखाएँ</string>
+    <string name="settings_show_new_stories">नए लेख आते ही दिखाएँ</string>
+    <string name="settings_show_new_stories_summary">खुली हुई साइट या फ़ोल्डर में नए लेख आने पर \"N नए लेख\" पिल दिखाएँ</string>
     <string name="settings_cluster_matches">क्लस्टर मिलान</string>
     <string name="settings_cluster_matches_summary">चुनें कि क्लस्टर में केवल डुप्लिकेट शीर्षक दिखें या संबंधित लेख भी</string>
     <string name="settings_story_clustering_save_failed">लेख समूहीकरण की प्राथमिकता सहेजी नहीं जा सकी</string>
@@ -1577,4 +1579,8 @@
     <string name="describe_matched_query">“%1$s” से मेल खाता है</string>
     <string name="describe_waiting_verdict">फ़ैसले का इंतज़ार हो रहा है…</string>
     <string name="add_site_describe_row">“%1$s” के बारे में फ़ीड खोजें</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d नया लेख</item>
+        <item quantity="other">%d नए लेख</item>
+    </plurals>
 </resources>

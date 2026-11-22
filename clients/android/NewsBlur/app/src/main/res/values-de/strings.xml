@@ -622,6 +622,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Artikel automatisch als gelesen markieren, sobald du daran vorbeiscrollst</string>
     <string name="settings_story_clustering">Verwandte Artikel gruppieren</string>
     <string name="settings_story_clustering_summary">Doppelte Artikel aus anderen Feeds unter einem Artikeltitel anzeigen</string>
+    <string name="settings_show_new_stories">Neue Artikel sofort anzeigen</string>
+    <string name="settings_show_new_stories_summary">Einen Hinweis \"N neue Artikel\" anzeigen, wenn Artikel im geöffneten Feed oder Ordner eintreffen</string>
     <string name="settings_cluster_matches">Cluster-Treffer</string>
     <string name="settings_cluster_matches_summary">Lege fest, ob Cluster nur doppelte Titel oder auch verwandte Artikel anzeigen</string>
     <string name="settings_story_clustering_save_failed">Einstellung zur Gruppierung von Artikeln konnte nicht gespeichert werden</string>
@@ -1577,4 +1579,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="describe_matched_query">„%1$s“ gefunden</string>
     <string name="describe_waiting_verdict">Warte auf eine Bewertung…</string>
     <string name="add_site_describe_row">Feeds zu „%1$s“ finden</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d neuer Artikel</item>
+        <item quantity="other">%d neue Artikel</item>
+    </plurals>
 </resources>

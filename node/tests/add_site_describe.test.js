@@ -6,14 +6,16 @@ const vm = require('node:vm');
 
 const repo_root = path.resolve(__dirname, '..', '..');
 
-// add_site_popover_query.test.js: the add-feed popover (reader_add_feed.js) hands its text to
-// NEWSBLUR.reader.open_add_site as initial_query. These tests run the real reader.js, add_site_view.js
-// and describe_feeds_view.js with only the DOM and the network faked, and check that the text reaches
-// the server whether or not the Add + Discover Sites view is already open.
+// add_site_describe.test.js runs the real reader.js, add_site_view.js and describe_feeds_view.js with only
+// the DOM and the network faked. It checks that text handed over by the add-feed popover (reader_add_feed.js)
+// reaches the server whether or not the Add + Discover Sites view is already open, and that a Describe search
+// the server refuses never costs the reader the search they are looking at.
 
-// A jQuery stand-in: every method chains, and val() remembers what was set per selector.
+// A jQuery stand-in: every method chains, val() remembers what was set per selector, and html() records what
+// replaced each selector's contents.
 function fake_dom() {
     const values = new Map();
+    const htmls = [];
     function collection(selector) {
         const proxy = new Proxy(function () {}, {
             get: function (target, prop) {
@@ -27,6 +29,12 @@ function fake_dom() {
                             return proxy;
                         }
                         return values.has(selector) ? values.get(selector) : '';
+                    };
+                }
+                if (prop === 'html') {
+                    return function (content) {
+                        if (arguments.length) htmls.push(selector);
+                        return proxy;
                     };
                 }
                 if (prop === 'hasClass' || prop === 'is') return function () { return false; };
@@ -47,14 +55,21 @@ function fake_dom() {
     $.make = function () { return collection('made'); };
     $.trim = function (value) { return String(value).trim(); };
     $.extend = function () { return Object.assign.apply(Object, arguments); };
-    return { $: $, collection: collection, values: values };
+    return { $: $, collection: collection, values: values, htmls: htmls };
 }
 
 function popover_fixture(open_tab) {
     const dom = fake_dom();
+    let timers = 0;
     const requests = [];
+    // A test answers a URL with respond(url, fn); fn gets (params, callback, error_callback) the way
+    // assetmodel.js make_request calls them, where any response with code < 0 goes to error_callback.
+    const responders = {};
     const assets = {
-        make_request: function (url, params) { requests.push({ url: url, params: params || {} }); },
+        make_request: function (url, params, callback, error_callback) {
+            requests.push({ url: url, params: params || {} });
+            if (responders[url]) responders[url](params || {}, callback, error_callback);
+        },
         preference: function () { return null; },
         view_setting: function () { return null; },
         feeds: { active: function () { return []; } }
@@ -106,7 +121,7 @@ function popover_fixture(open_tab) {
         interpolate: function (text) { return text; },
         window: { addEventListener: function () {}, location: { pathname: '/add/' + open_tab } },
         document: {},
-        setTimeout: function () { return 0; },
+        setTimeout: function () { timers += 1; return timers; },
         clearTimeout: function () {},
         console: { log: function () {}, warn: function () {}, error: function () {} }
     };
@@ -130,7 +145,14 @@ function popover_fixture(open_tab) {
     context.NEWSBLUR.reader = reader;
     requests.length = 0;
 
-    return { reader: reader, add_site_view: add_site_view, requests: requests, values: dom.values };
+    return {
+        reader: reader,
+        add_site_view: add_site_view,
+        requests: requests,
+        values: dom.values,
+        htmls: dom.htmls,
+        respond: function (url, fn) { responders[url] = fn; }
+    };
 }
 
 function describe_starts(requests) {
@@ -169,4 +191,63 @@ test('opening Describe again with no text starts no search', function () {
     h.reader.open_add_site({ tab: 'describe' });
 
     assert.equal(describe_starts(h.requests).length, 0);
+});
+
+// A search the view is showing and still waiting on: the server lets one search run per reader at a time.
+function show_running_search(h) {
+    const describe_view = h.add_site_view.describe_view;
+    describe_view.show_search({ id: 'running-1', status: 'running', prompt: 'ham radio operators', results: [] });
+    describe_view.begin_streaming();
+    h.requests.length = 0;
+    return describe_view;
+}
+
+test('a description from the popover leaves a Describe search that is still running alone', function () {
+    const h = popover_fixture('describe');
+    const describe_view = show_running_search(h);
+
+    h.reader.open_add_site({ tab: 'describe', initial_query: 'ham radio operation' });
+
+    assert.equal(describe_starts(h.requests).length, 0, 'the server would refuse a second search');
+    assert.equal(describe_view.search.id, 'running-1');
+    assert.ok(describe_view.poll_timer, 'the running search keeps getting its updates');
+});
+
+test('submitting another description keeps updating the search that is still running', function () {
+    const h = popover_fixture('describe');
+    const describe_view = show_running_search(h);
+
+    describe_view.start_search('bike touring trip reports');
+
+    assert.equal(describe_starts(h.requests).length, 0);
+    assert.ok(describe_view.poll_timer, 'the running search keeps getting its updates');
+});
+
+test('a refused search leaves the results on screen in place', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    describe_view.show_search({ id: 'done-1', status: 'complete', prompt: 'ham radio operators', results: [] });
+    h.respond('/discover/describe/start', function (params, callback, error_callback) {
+        error_callback({ code: -1, message: 'You already have a search running. Wait for it to finish first.' });
+    });
+    h.htmls.length = 0;
+
+    describe_view.start_search('bike touring trip reports');
+
+    assert.equal(describe_starts(h.requests).length, 1);
+    assert.equal(describe_view.search.id, 'done-1');
+    assert.ok(h.htmls.indexOf('.NB-describe-body') === -1, 'the shown results are not replaced by an error');
+});
+
+test('a search refused for the plan shows the allowance from the refusal', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    const usage = { plan: 'free', limit: 0, used: 0, remaining: 0 };
+    h.respond('/discover/describe/start', function (params, callback, error_callback) {
+        error_callback({ code: -1, upgrade: true, usage: usage, message: 'Describing feeds is a premium feature.' });
+    });
+
+    describe_view.start_search('ham radio operators');
+
+    assert.deepEqual(describe_view.usage, usage);
 });

@@ -638,6 +638,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Автоматично позначати статті як прочитані під час прокручування стрічки</string>
     <string name="settings_story_clustering">Групувати пов’язані статті</string>
     <string name="settings_story_clustering_summary">Показувати дублікати статей з інших стрічок під заголовком статті</string>
+    <string name="settings_show_new_stories">Показувати нові статті в міру надходження</string>
+    <string name="settings_show_new_stories_summary">Показувати бульбашку «N нових статей», коли нові статті з’являються у відкритому сайті або папці</string>
     <string name="settings_cluster_matches">Збіги в групах</string>
     <string name="settings_cluster_matches_summary">Виберіть, чи показувати в групах лише дублікати заголовків або також схожі статті</string>
     <string name="settings_story_clustering_save_failed">Не вдалося зберегти налаштування групування статей</string>
@@ -1651,4 +1653,10 @@
     <string name="describe_matched_query">Збіг за запитом «%1$s»</string>
     <string name="describe_waiting_verdict">Очікування на рішення…</string>
     <string name="add_site_describe_row">Знайти стрічки про «%1$s»</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d нові статті</item>
+        <item quantity="many">%d нових статей</item>
+        <item quantity="one">%d нова стаття</item>
+        <item quantity="other">%d нових статей</item>
+    </plurals>
 </resources>

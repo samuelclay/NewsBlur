@@ -48,6 +48,7 @@
 "%@ left in this preview" = "เหลือ %@ ในตัวอย่างนี้";
 "%@ left this week" = "เหลือ %@ ในสัปดาห์นี้";
 "%@ match" = "ตรงกัน %@ รายการ";
+"%@ new stories" = "บทความใหม่ %@ รายการ";
 "%@ opens" = "เปิด %@ ครั้ง";
 "%@ or search" = "%@ หรือค้นหา";
 "%@ public comments" = "%@ ความคิดเห็นสาธารณะ";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "แสดงรายการฟีด";
 "Show feeds after being read" = "แสดงฟีดหลังจากอ่านแล้ว";
 "Show hidden stories" = "แสดงบทความที่ซ่อนไว้";
+"Show new stories as they arrive" = "แสดงบทความใหม่เมื่อมาถึง";
 "Show original story" = "แสดงบทความต้นฉบับ";
 "Show original text" = "แสดงข้อความต้นฉบับ";
 "Show public comments" = "แสดงความคิดเห็นสาธารณะ";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "แสดงจำนวนที่ยังไม่อ่าน";
 "Show with feed icons" = "แสดงพร้อมไอคอนฟีด";
 "Show without icons" = "แสดงโดยไม่มีไอคอน";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "แสดงป้าย “บทความใหม่ N รายการ” เมื่อมีบทความมาถึงในฟีดหรือโฟลเดอร์ที่เปิดอยู่";
 "Shows the music settings" = "แสดงการตั้งค่าเพลง";
 "Sidebar" = "แถบด้านข้าง";
 "Sign Up" = "สมัครสมาชิก";

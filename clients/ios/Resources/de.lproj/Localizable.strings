@@ -48,6 +48,7 @@
 "%@ left in this preview" = "In dieser Vorschau noch %@";
 "%@ left this week" = "Diese Woche noch %@ übrig";
 "%@ match" = "%@ Übereinstimmung";
+"%@ new stories" = "%@ neue Artikel";
 "%@ opens" = "%@ Aufrufe";
 "%@ or search" = "%@ oder suchen";
 "%@ public comments" = "%@ öffentliche Kommentare";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Feedliste anzeigen";
 "Show feeds after being read" = "Feeds nach dem Lesen anzeigen";
 "Show hidden stories" = "Versteckte Artikel anzeigen";
+"Show new stories as they arrive" = "Neue Artikel sofort anzeigen";
 "Show original story" = "Originalartikel anzeigen";
 "Show original text" = "Originaltext anzeigen";
 "Show public comments" = "Öffentliche Kommentare anzeigen";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Anzahl ungelesener Artikel anzeigen";
 "Show with feed icons" = "Mit Feed-Symbolen anzeigen";
 "Show without icons" = "Ohne Symbole anzeigen";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Zeigt einen Hinweis „N neue Artikel“ an, wenn Artikel im geöffneten Feed oder Ordner eintreffen.";
 "Shows the music settings" = "Zeigt die Musikeinstellungen an";
 "Sidebar" = "Seitenleiste";
 "Sign Up" = "Registrieren";

@@ -614,6 +614,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">記事をスクロールして通過したら自動的に既読にする</string>
     <string name="settings_story_clustering">関連する記事をまとめる</string>
     <string name="settings_story_clustering_summary">記事タイトルの下に、他のフィードにある重複記事を表示</string>
+    <string name="settings_show_new_stories">新着記事を到着次第表示</string>
+    <string name="settings_show_new_stories_summary">開いているサイトまたはフォルダーに記事が届いたとき、「新着記事 N 件」のバッジを表示</string>
     <string name="settings_cluster_matches">一致した記事をまとめる</string>
     <string name="settings_cluster_matches_summary">クラスターに重複したタイトルのみを表示するか、関連する記事も表示するかを選択します</string>
     <string name="settings_story_clustering_save_failed">記事のクラスタリング設定を保存できませんでした</string>
@@ -1540,4 +1542,7 @@
     <string name="describe_matched_query">「%1$s」に一致</string>
     <string name="describe_waiting_verdict">判定を待っています…</string>
     <string name="add_site_describe_row">「%1$s」に関するフィードを検索</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d件の新着記事</item>
+    </plurals>
 </resources>

@@ -48,6 +48,7 @@
 "%@ left in this preview" = "Pozostało %@ w tej wersji próbnej";
 "%@ left this week" = "Pozostało %@ w tym tygodniu";
 "%@ match" = "%@ dopasowanie";
+"%@ new stories" = "%@ nowych artykułów";
 "%@ opens" = "%@ otwarć";
 "%@ or search" = "%@ lub wyszukaj";
 "%@ public comments" = "%@ komentarzy publicznych";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Pokaż listę kanałów";
 "Show feeds after being read" = "Pokazuj kanały po przeczytaniu";
 "Show hidden stories" = "Pokaż ukryte artykuły";
+"Show new stories as they arrive" = "Pokazuj nowe artykuły w miarę ich pojawiania się";
 "Show original story" = "Pokaż oryginalny artykuł";
 "Show original text" = "Pokaż oryginalny tekst";
 "Show public comments" = "Pokaż publiczne komentarze";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Pokaż liczbę nieprzeczytanych";
 "Show with feed icons" = "Pokaż ikony kanałów";
 "Show without icons" = "Pokaż bez ikon";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Wyświetla etykietę „N nowych artykułów”, gdy pojawią się nowe artykuły w otwartym kanale lub folderze.";
 "Shows the music settings" = "Pokazuje ustawienia muzyki";
 "Sidebar" = "Panel boczny";
 "Sign Up" = "Zarejestruj się";

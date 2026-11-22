@@ -45186,6 +45186,11 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     color: #555;
 }
 
+.NB-describe-notice {
+    font-size: 12px;
+    color: #9A6A0B;
+}
+
 .NB-describe-usage-message {
     font-size: 12px;
     color: #777;

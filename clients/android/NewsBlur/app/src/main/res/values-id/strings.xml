@@ -614,6 +614,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Tandai artikel sebagai telah dibaca secara otomatis saat digulir melewatinya</string>
     <string name="settings_story_clustering">Kelompokkan artikel terkait</string>
     <string name="settings_story_clustering_summary">Tampilkan artikel duplikat dari feed lain di bawah judul artikel</string>
+    <string name="settings_show_new_stories">Tampilkan artikel baru saat tiba</string>
+    <string name="settings_show_new_stories_summary">Tampilkan lencana \"N artikel baru\" saat artikel tiba di situs atau folder yang terbuka</string>
     <string name="settings_cluster_matches">Kecocokan klaster</string>
     <string name="settings_cluster_matches_summary">Pilih apakah klaster hanya menampilkan judul duplikat atau juga artikel terkait</string>
     <string name="settings_story_clustering_save_failed">Tidak dapat menyimpan preferensi pengelompokan artikel</string>
@@ -1540,4 +1542,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="describe_matched_query">Cocok dengan “%1$s”</string>
     <string name="describe_waiting_verdict">Menunggu keputusan…</string>
     <string name="add_site_describe_row">Temukan feed tentang “%1$s”</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d artikel baru</item>
+    </plurals>
 </resources>

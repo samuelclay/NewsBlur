@@ -48,6 +48,7 @@
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
 "%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
+"%@ new stories" = "%@ artikel baru";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
 "%@ public comments" = "%@ komentar publik";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Tampilkan daftar feed";
 "Show feeds after being read" = "Tampilkan feed setelah dibaca";
 "Show hidden stories" = "Tampilkan artikel tersembunyi";
+"Show new stories as they arrive" = "Tampilkan artikel baru saat tiba";
 "Show original story" = "Tampilkan artikel asli";
 "Show original text" = "Tampilkan teks asli";
 "Show public comments" = "Tampilkan komentar publik";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Tampilkan jumlah belum dibaca";
 "Show with feed icons" = "Tampilkan dengan ikon feed";
 "Show without icons" = "Tampilkan tanpa ikon";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Menampilkan lencana \"N artikel baru\" saat artikel tiba di feed atau folder yang terbuka.";
 "Shows the music settings" = "Menampilkan pengaturan musik";
 "Sidebar" = "Bilah sisi";
 "Sign Up" = "Daftar";

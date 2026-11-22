@@ -48,6 +48,7 @@
 "%@ left in this preview" = "Còn %@ trong bản xem trước này";
 "%@ left this week" = "Còn %@ trong tuần này";
 "%@ match" = "%@ kết quả phù hợp";
+"%@ new stories" = "%@ bài viết mới";
 "%@ opens" = "%@ lượt mở";
 "%@ or search" = "%@ hoặc tìm kiếm";
 "%@ public comments" = "%@ bình luận công khai";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Hiển thị danh sách nguồn cấp";
 "Show feeds after being read" = "Hiển thị các nguồn cấp sau khi đã đọc";
 "Show hidden stories" = "Hiện các bài viết đã bị ẩn";
+"Show new stories as they arrive" = "Hiển thị bài viết mới ngay khi có";
 "Show original story" = "Hiển thị bài viết gốc";
 "Show original text" = "Hiển thị văn bản gốc";
 "Show public comments" = "Hiển thị bình luận công khai";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Hiển thị số bài chưa đọc";
 "Show with feed icons" = "Hiển thị cùng biểu tượng nguồn cấp dữ liệu";
 "Show without icons" = "Hiển thị không có biểu tượng";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Hiển thị nhãn dạng viên thuốc “N bài viết mới” khi có bài viết mới trong nguồn cấp hoặc thư mục đang mở.";
 "Shows the music settings" = "Hiện cài đặt nhạc";
 "Sidebar" = "Thanh bên";
 "Sign Up" = "Đăng ký";

@@ -638,6 +638,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Автоматически помечать статьи как прочитанные при прокрутке</string>
     <string name="settings_story_clustering">Группировать похожие статьи</string>
     <string name="settings_story_clustering_summary">Показывать дубликаты статей из других лент под заголовком статьи</string>
+    <string name="settings_show_new_stories">Показывать новые статьи по мере их поступления</string>
+    <string name="settings_show_new_stories_summary">Показывать индикатор «N новых статей», когда в открытом сайте или папке появляются новые статьи</string>
     <string name="settings_cluster_matches">Совпадения в группах</string>
     <string name="settings_cluster_matches_summary">Выберите, показывать ли в группах только дубликаты заголовков или также похожие статьи</string>
     <string name="settings_story_clustering_save_failed">Не удалось сохранить настройку группировки статей</string>
@@ -1651,4 +1653,10 @@
     <string name="describe_matched_query">Совпадение: «%1$s»</string>
     <string name="describe_waiting_verdict">Ожидаем результат…</string>
     <string name="add_site_describe_row">Найти ленты по запросу «%1$s»</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d новые статьи</item>
+        <item quantity="many">%d новых статей</item>
+        <item quantity="one">%d новая статья</item>
+        <item quantity="other">%d новых статей</item>
+    </plurals>
 </resources>

@@ -654,6 +654,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">وضع علامة «مقروءة» على القصص تلقائيًا عند تجاوزها بالتمرير</string>
     <string name="settings_story_clustering">تجميع القصص ذات الصلة</string>
     <string name="settings_story_clustering_summary">عرض القصص المكررة من خلاصات أخرى أسفل عنوان القصة</string>
+    <string name="settings_show_new_stories">إظهار القصص الجديدة فور ورودها</string>
+    <string name="settings_show_new_stories_summary">إظهار شارة \"N قصة جديدة\" عند ورود قصص في الموقع أو المجلد المفتوح</string>
     <string name="settings_cluster_matches">مطابقات التجميع</string>
     <string name="settings_cluster_matches_summary">اختر ما إذا كانت المجموعات تعرض العناوين المكررة فقط أم القصص ذات الصلة أيضًا</string>
     <string name="settings_story_clustering_save_failed">تعذّر حفظ تفضيل تجميع القصص</string>
@@ -1725,4 +1727,12 @@
     <string name="describe_matched_query">تطابق مع «%1$s»</string>
     <string name="describe_waiting_verdict">بانتظار النتيجة…</string>
     <string name="add_site_describe_row">العثور على خلاصات عن «%1$s»</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d قصص جديدة</item>
+        <item quantity="many">%d قصة جديدة</item>
+        <item quantity="one">%d قصة جديدة</item>
+        <item quantity="other">%d قصة جديدة</item>
+        <item quantity="two">%d قصتان جديدتان</item>
+        <item quantity="zero">%d قصة جديدة</item>
+    </plurals>
 </resources>

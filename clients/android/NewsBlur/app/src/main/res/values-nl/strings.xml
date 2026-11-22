@@ -622,6 +622,8 @@ om over de wereld te praten.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Artikelen automatisch als gelezen markeren zodra je er voorbij scrolt</string>
     <string name="settings_story_clustering">Gerelateerde artikelen groeperen</string>
     <string name="settings_story_clustering_summary">Toon dubbele artikelen van andere feeds onder een artikeltitel</string>
+    <string name="settings_show_new_stories">Nieuwe artikelen tonen zodra ze binnenkomen</string>
+    <string name="settings_show_new_stories_summary">Toon een melding met \"N nieuwe artikelen\" wanneer er artikelen binnenkomen in de geopende site of map</string>
     <string name="settings_cluster_matches">Overeenkomsten clusteren</string>
     <string name="settings_cluster_matches_summary">Kies of clusters alleen dubbele titels of ook verwante artikelen tonen</string>
     <string name="settings_story_clustering_save_failed">Voorkeur voor het groeperen van artikelen kon niet worden opgeslagen</string>
@@ -1577,4 +1579,8 @@ om over de wereld te praten.</string>
     <string name="describe_matched_query">Komt overeen met “%1$s”</string>
     <string name="describe_waiting_verdict">Wachten op een oordeel…</string>
     <string name="add_site_describe_row">Feeds over ‘%1$s’ zoeken</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d nieuw artikel</item>
+        <item quantity="other">%d nieuwe artikelen</item>
+    </plurals>
 </resources>

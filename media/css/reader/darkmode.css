@@ -6879,6 +6879,10 @@ a.mention, a.mention-group {
     color: #5A6265;
 }
 
+.NB-dark .NB-describe-notice {
+    color: #F0C56B;
+}
+
 .NB-dark .NB-describe-match {
     color: #909090;
 }

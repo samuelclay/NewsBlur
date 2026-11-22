@@ -48,6 +48,7 @@
 "%@ left in this preview" = "Bu önizlemede %@ kaldı";
 "%@ left this week" = "Bu hafta %@ kaldı";
 "%@ match" = "%@ eşleşme";
+"%@ new stories" = "%@ yeni haber";
 "%@ opens" = "%@ açılma";
 "%@ or search" = "%@ veya ara";
 "%@ public comments" = "%@ herkese açık yorum";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Akış listesini göster";
 "Show feeds after being read" = "Okunduktan sonra akışları göster";
 "Show hidden stories" = "Gizli haberleri göster";
+"Show new stories as they arrive" = "Yeni haberleri geldikçe göster";
 "Show original story" = "Orijinal haberi göster";
 "Show original text" = "Orijinal metni göster";
 "Show public comments" = "Herkese açık yorumları göster";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Okunmamış sayısını göster";
 "Show with feed icons" = "Akış simgeleriyle göster";
 "Show without icons" = "Simgeler olmadan göster";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Açık akışa veya klasöre yeni haberler geldiğinde “N yeni haber” rozeti gösterir.";
 "Shows the music settings" = "Müzik ayarlarını gösterir";
 "Sidebar" = "Kenar çubuğu";
 "Sign Up" = "Kaydol";

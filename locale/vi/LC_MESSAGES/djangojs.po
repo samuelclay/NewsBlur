@@ -288,7 +288,7 @@ msgstr[0] "%(count)s tháng"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s bài viết mới"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -4752,7 +4752,7 @@ msgid "Off"
 msgstr "Tắt"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Hiển thị chúng trong một nhãn dạng viên thuốc “N bài viết mới”"
 
 msgid "Official NewsBlur Android App"
 msgstr "Ứng dụng Android chính thức của NewsBlur"
@@ -4866,7 +4866,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Chỉ hiển thị số lượng trong các thư mục đã thu gọn"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Chỉ hiển thị khi tải lại danh sách"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Chỉ cắt ngắn các bài viết được chia sẻ dài trong blurblog"
@@ -6271,7 +6271,7 @@ msgid "Show more related stories"
 msgstr "Hiển thị thêm bài viết liên quan"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Hiển thị bài viết mới ngay khi có"
 
 msgid "Show on Load"
 msgstr "Hiển thị khi tải"
@@ -8071,6 +8071,9 @@ msgstr "Hôm qua, %(time)s"
 
 msgid "You"
 msgstr "Bạn"
+
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Bạn đang có một lượt tìm kiếm. Hãy đợi lượt tìm kiếm đó hoàn tất trước."
 
 #, python-format
 msgid "You are followed by %(count)s person"

@@ -48,6 +48,7 @@
 "%@ left in this preview" = "このプレビューの残り%@";
 "%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
+"%@ new stories" = "%@件の新着記事";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
 "%@ public comments" = "公開コメント%@件";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "フィード一覧を表示";
 "Show feeds after being read" = "既読後もフィードを表示";
 "Show hidden stories" = "非表示の記事を表示";
+"Show new stories as they arrive" = "新着記事を到着次第表示";
 "Show original story" = "元の記事を表示";
 "Show original text" = "元のテキストを表示";
 "Show public comments" = "公開コメントを表示";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "未読数を表示";
 "Show with feed icons" = "フィードアイコンと一緒に表示";
 "Show without icons" = "アイコンなしで表示";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "開いているフィードまたはフォルダーに記事が届いたとき、「新着記事 N 件」のバッジを表示します。";
 "Shows the music settings" = "音楽の設定を表示";
 "Sidebar" = "サイドバー";
 "Sign Up" = "登録";

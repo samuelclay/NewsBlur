@@ -48,6 +48,7 @@
 "%@ left in this preview" = "%@ restant dans cet aperçu";
 "%@ left this week" = "%@ restant cette semaine";
 "%@ match" = "Correspondance %@";
+"%@ new stories" = "%@ nouveaux articles";
 "%@ opens" = "%@ ouvertures";
 "%@ or search" = "%@ ou rechercher";
 "%@ public comments" = "%@ commentaires publics";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Afficher la liste des flux";
 "Show feeds after being read" = "Afficher les flux après leur lecture";
 "Show hidden stories" = "Afficher les articles masqués";
+"Show new stories as they arrive" = "Afficher les nouveaux articles à mesure de leur arrivée";
 "Show original story" = "Afficher l’article d’origine";
 "Show original text" = "Afficher le texte original";
 "Show public comments" = "Afficher les commentaires publics";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Afficher le nombre d’articles non lus";
 "Show with feed icons" = "Afficher avec les icônes des flux";
 "Show without icons" = "Afficher sans icônes";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Affiche une pastille « N nouveaux articles » lorsque de nouveaux articles arrivent dans le flux ou le dossier ouvert.";
 "Shows the music settings" = "Affiche les paramètres de musique";
 "Sidebar" = "Barre latérale";
 "Sign Up" = "S’inscrire";

@@ -614,6 +614,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">滚动浏览时自动将看过的文章标记为已读</string>
     <string name="settings_story_clustering">聚类相关文章</string>
     <string name="settings_story_clustering_summary">在文章标题下方显示其他订阅源中的重复文章</string>
+    <string name="settings_show_new_stories">有新文章时立即显示</string>
+    <string name="settings_show_new_stories_summary">打开的网站或文件夹中有新文章时，显示“有 N 篇新文章”提示标记</string>
     <string name="settings_cluster_matches">聚类匹配</string>
     <string name="settings_cluster_matches_summary">选择聚类中仅显示重复标题，还是同时显示相关文章</string>
     <string name="settings_story_clustering_save_failed">无法保存文章聚类偏好设置</string>
@@ -1540,4 +1542,7 @@
     <string name="describe_matched_query">匹配“%1$s”</string>
     <string name="describe_waiting_verdict">等待判定…</string>
     <string name="add_site_describe_row">查找关于“%1$s”的订阅源</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d 篇新文章</item>
+    </plurals>
 </resources>

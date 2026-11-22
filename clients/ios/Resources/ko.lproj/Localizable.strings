@@ -48,6 +48,7 @@
 "%@ left in this preview" = "미리 보기에서 %@ 남음";
 "%@ left this week" = "이번 주에 %@ 남음";
 "%@ match" = "%@개 일치";
+"%@ new stories" = "%@개의 새 스토리";
 "%@ opens" = "%@회 열림";
 "%@ or search" = "%@ 또는 검색";
 "%@ public comments" = "공개 댓글 %@개";
@@ -1032,6 +1033,7 @@
 "Show feed list" = "피드 목록 표시";
 "Show feeds after being read" = "읽은 후에도 피드 표시";
 "Show hidden stories" = "숨긴 스토리 표시";
+"Show new stories as they arrive" = "새 스토리가 도착하면 표시";
 "Show original story" = "원문 보기";
 "Show original text" = "원문 표시";
 "Show public comments" = "공개 댓글 표시";
@@ -1040,6 +1042,7 @@
 "Show unread count" = "읽지 않은 항목 수 표시";
 "Show with feed icons" = "피드 아이콘과 함께 표시";
 "Show without icons" = "아이콘 없이 표시";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "열려 있는 피드나 폴더에 새 스토리가 도착하면 “새 스토리 N개” 알약 배지를 표시합니다.";
 "Shows the music settings" = "음악 설정 표시";
 "Sidebar" = "사이드바";
 "Sign Up" = "가입하기";

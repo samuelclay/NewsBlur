@@ -48,6 +48,7 @@
 "%@ left in this preview" = "У попередньому прослуховуванні залишилося %@";
 "%@ left this week" = "Цього тижня залишилося %@";
 "%@ match" = "%@ збіг";
+"%@ new stories" = "%@ нових статей";
 "%@ opens" = "%@ відкриттів";
 "%@ or search" = "%@ або пошук";
 "%@ public comments" = "%@ публічних коментарів";
@@ -1033,6 +1034,7 @@
 "Show feed list" = "Показати список стрічок";
 "Show feeds after being read" = "Показувати стрічки після прочитання";
 "Show hidden stories" = "Показати приховані статті";
+"Show new stories as they arrive" = "Показувати нові статті в міру надходження";
 "Show original story" = "Показати оригінал статті";
 "Show original text" = "Показати оригінальний текст";
 "Show public comments" = "Показувати публічні коментарі";
@@ -1041,6 +1043,7 @@
 "Show unread count" = "Показувати кількість непрочитаних";
 "Show with feed icons" = "Показувати зі значками стрічок";
 "Show without icons" = "Показувати без значків";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Показує бульбашку «N нових статей», коли в новій стрічці або папці з’являються статті.";
 "Shows the music settings" = "Показує налаштування музики";
 "Sidebar" = "Бічна панель";
 "Sign Up" = "Зареєструватися";
