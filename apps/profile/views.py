@@ -1179,7 +1179,7 @@ def stripe_checkout(request):
 
 
 # views.py: Usage billing lets AI filters keep running past the AI credits a reader's plan
-# includes each month, charged at cost, 1 cent per credit, to a card the reader saves on
+# includes each month, charged at cost, 1 cent per 1,000 credits, to a card the reader saves on
 # Stripe Checkout (apps/analyzer/ai_credits.py).
 # The iOS and Android apps post a platform to setup_usage_billing and manage_usage_billing
 # and get JSON with the Stripe URL back, since they open it in an in-app browser

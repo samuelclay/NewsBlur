@@ -28,8 +28,8 @@ enum class UsageBillingReturn(
 }
 
 /**
- * Usage billing keeps AI filters running past the plan's monthly AI credits, at 1 cent per credit,
- * billed by Stripe (apps/analyzer/ai_credits.py). Setting it up and managing it open Stripe in a
+ * Usage billing keeps AI filters running past the plan's monthly AI credits, at 1 cent per 1,000
+ * credits, charged by Stripe (apps/analyzer/ai_credits.py). Setting it up and managing it open Stripe in a
  * Custom Tab that returns to activity/AiCreditsActivity.kt.
  */
 object UsageBilling {

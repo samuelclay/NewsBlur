@@ -449,22 +449,24 @@ def _card_for_invoices(profile):
     """The card to charge when the customer has no default card for invoices, or None to let
     Stripe use the default.
 
-    ai_credits.py: Readers who set up usage billing before AI credits did it with a metered
-    subscription, whose card is the subscription's own. They keep that subscription, and its
-    card pays for their credits.
+    ai_credits.py: The card saved when the reader set up usage billing for credits is the
+    customer's default for invoices, so Stripe uses it. Readers who set up usage billing before
+    credits did it with a metered subscription, whose card is the subscription's own and can
+    differ from the one their premium plan bills. They keep that subscription, and its card pays
+    for their credits ahead of the customer's default source.
     """
     import stripe
 
     from apps.profile.models import Profile
 
     customer = stripe.Customer.retrieve(profile.stripe_id)
-    if (customer.get("invoice_settings") or {}).get("default_payment_method") or customer.get(
-        "default_source"
-    ):
+    if (customer.get("invoice_settings") or {}).get("default_payment_method"):
         return None
     for subscription in stripe.Subscription.list(customer=profile.stripe_id, status="active", limit=20).data:
         if Profile.is_usage_billing_subscription(subscription) and subscription.get("default_payment_method"):
             return subscription.get("default_payment_method")
+    if customer.get("default_source"):
+        return None
     cards = stripe.PaymentMethod.list(customer=profile.stripe_id, type="card", limit=1).data
     return cards[0].id if cards else None
 

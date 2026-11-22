@@ -81,6 +81,7 @@ class FakeStripeInvoices:
         self.fail_retrieve = 0
         self.decline = False
         self.customer_card = "pm_default"
+        self.customer_source = None
         self.subscription_card = None
         self.created = []
 
@@ -107,7 +108,11 @@ class FakeStripeInvoices:
             yield self
 
     def retrieve_customer(self, customer_id):
-        return {"id": customer_id, "invoice_settings": {"default_payment_method": self.customer_card}}
+        return {
+            "id": customer_id,
+            "invoice_settings": {"default_payment_method": self.customer_card},
+            "default_source": self.customer_source,
+        }
 
     def list_subscriptions(self, **kwargs):
         subscriptions = []
@@ -433,10 +438,12 @@ class Test_AICredits(TransactionTestCase):
 
     def test_a_reader_on_the_old_metered_subscription_is_charged_on_its_card(self):
         """Readers who set up usage billing before credits keep their metered subscription, and
-        their credits are charged to its card, since the customer has no default card of its own."""
+        their credits are charged to its card, not the card their premium plan bills."""
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, patch("stripe.Subscription.modify") as modify:
+            # The premium plan bills an older card, the customer's default source.
             invoices.customer_card = None
+            invoices.customer_source = "card_premium_plan"
             invoices.subscription_card = "pm_old_subscription"
             with at(NOV_10):
                 self.spend(1000 + 120_000)
