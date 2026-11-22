@@ -419,7 +419,12 @@ class AiCreditsActivity : NbActivity() {
         binding.billingForecast.text = forecast
         binding.billingForecast.isVisible = forecast != null
 
-        val detail = if (on) text.unbilled(credits) else getString(R.string.usage_billing_terms, text.dollars(credits.minimumChargeUsd))
+        val detail =
+            if (on) {
+                text.unbilled(credits)
+            } else {
+                getString(R.string.usage_billing_terms, text.dollars(credits.minimumChargeUsd), text.dollars(credits.immediateChargeUsd))
+            }
         binding.billingDetail.text = detail
         binding.billingDetail.isVisible = detail != null
 
