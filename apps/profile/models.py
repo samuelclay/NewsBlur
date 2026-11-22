@@ -213,6 +213,25 @@ class Profile(models.Model):
         )
 
     @staticmethod
+    def latest_subscription_charges(stripe_customer_id):
+        """The customer's latest Stripe charge that isn't for AI credits, as a list of at most
+        one, for the refunds that refund the latest payment. Usage billing charges AI credits
+        on the same customer (apps/analyzer/ai_credits.py), and those aren't the plan's payment."""
+        charges = stripe.Charge.list(customer=stripe_customer_id, limit=10, expand=["data.invoice"]).data
+        return [charge for charge in charges if not Profile.is_ai_credits_charge(charge)][:1]
+
+    @staticmethod
+    def is_ai_credits_charge(payment):
+        """True for a Stripe charge that paid an AI credits invoice (apps/analyzer/ai_credits.py
+        charge_unbilled), given a charge listed with its invoice expanded."""
+        from apps.analyzer import ai_credits
+
+        invoice = payment.get("invoice")
+        if not invoice or isinstance(invoice, str):
+            return False
+        return (invoice.get("metadata") or {}).get("purpose") == ai_credits.INVOICE_PURPOSE
+
+    @staticmethod
     def is_usage_billing_subscription(subscription):
         """True for a metered sub from usage billing before AI credits.
 
@@ -1663,7 +1682,10 @@ class Profile(models.Model):
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
-                stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
+                # Each charge's invoice comes along, to leave out AI credit charges below.
+                stripe_payments = stripe.Charge.list(
+                    customer=stripe_customer.id, expand=["data.invoice"]
+                ).data
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
 
                 for subscription in stripe_subscriptions:
@@ -1690,6 +1712,10 @@ class Profile(models.Model):
                 for payment in stripe_payments:
                     created = datetime.datetime.fromtimestamp(payment.created)
                     if payment.status == "failed":
+                        continue
+                    if Profile.is_ai_credits_charge(payment):
+                        # Usage billing for AI credits isn't a subscription payment, so it
+                        # never adds premium time (apps/analyzer/ai_credits.py).
                         continue
                     if created.date() in seen_payments:
                         continue
@@ -2065,7 +2091,7 @@ class Profile(models.Model):
         if not stripe_customer:
             return False
 
-        stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+        stripe_payments = Profile.latest_subscription_charges(stripe_customer.id)
         if not stripe_payments:
             return False
 
@@ -2188,7 +2214,7 @@ class Profile(models.Model):
             return None
 
         try:
-            stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+            stripe_payments = Profile.latest_subscription_charges(stripe_customer.id)
         except stripe.error.InvalidRequestError as e:
             logging.user(self.user, "~FRFailed to retrieve Stripe charges for prorated refund: ~SB%s" % e)
             return None
@@ -2341,7 +2367,7 @@ class Profile(models.Model):
             logging.user(self.user, "~FRNo Stripe customer to refund prorated App Store payment against")
             return None
         try:
-            stripe_payments = stripe.Charge.list(customer=stripe_customer.id, limit=1).data
+            stripe_payments = Profile.latest_subscription_charges(stripe_customer.id)
         except stripe.error.InvalidRequestError as e:
             logging.user(
                 self.user, "~FRFailed to retrieve Stripe charges for prorated App Store refund: ~SB%s" % e

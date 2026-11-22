@@ -1332,11 +1332,24 @@ def manage_usage_billing(request):
 @json.json_view
 def cancel_usage_billing(request):
     """Turn usage billing off. Credits already past the plan's are charged now if they come to
-    the $1 minimum, and filters pause once the plan's credits are used
-    (apps/analyzer/ai_credits.py)."""
+    the $1 minimum, the way every charge is, and anything under $1 is never charged. Filters
+    pause once the plan's credits are used (apps/analyzer/ai_credits.py). If Stripe can't take
+    a charge that's due, usage billing stays on so the monthly charge still collects it.
+    """
     profile = request.user.profile
     if profile.is_usage_billing:
         ai_credits.charge_unbilled(profile, ai_credits.MINIMUM_CHARGE_CREDITS)
+        profile.refresh_from_db()
+        if (
+            profile.is_usage_billing
+            and ai_credits.unbilled_credits(profile) >= ai_credits.MINIMUM_CHARGE_CREDITS
+        ):
+            logging.user(request, "~BR~FRCouldn't charge AI credits before turning off usage billing")
+            return {
+                "code": -1,
+                "message": gettext("Couldn't reach Stripe to charge what's due. Please try again."),
+                "ai_credits": ai_credits.state(profile),
+            }
         profile.is_usage_billing = False
         profile.save()
         logging.user(request, "~BC~FBTurned off usage billing for AI credits")

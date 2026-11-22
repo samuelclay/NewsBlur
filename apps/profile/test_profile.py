@@ -510,6 +510,66 @@ class Test_SetupPremiumHistoryStripe(TestCase):
             sub.get.return_value = None
         return sub
 
+    def _charge(self, charge_id, amount, invoice_purpose=None, days_ago=0):
+        created = datetime.datetime.now() - datetime.timedelta(days=days_ago)
+        invoice = {
+            "id": "in_" + charge_id,
+            "metadata": {"purpose": invoice_purpose} if invoice_purpose else {},
+        }
+        return stripe.Charge.construct_from(
+            {
+                "id": charge_id,
+                "object": "charge",
+                "amount": amount,
+                "created": int(created.timestamp()),
+                "status": "succeeded",
+                "refunded": False,
+                "invoice": invoice,
+            },
+            "sk_test",
+        )
+
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Charge.list")
+    @patch("stripe.Customer.retrieve")
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    def test_an_ai_credits_charge_is_not_a_premium_payment(
+        self, mock_paypal_ids, mock_stripe_ids, mock_customer, mock_charges, mock_subs
+    ):
+        """Usage billing charges AI credits on the same Stripe customer (apps/analyzer/ai_credits.py).
+        A $1.50 charge must not give a free reader premium time."""
+        from apps.profile.models import StripeIds
+
+        Profile.objects.filter(pk=self.profile.pk).update(is_premium=False, premium_expire=None)
+        StripeIds.objects.create(user=self.user, stripe_id="cus_test123")
+        mock_customer.return_value = MagicMock(id="cus_test123")
+        mock_subs.return_value = MagicMock(data=[])
+        mock_charges.return_value = MagicMock(data=[self._charge("ch_credits", 150, "ai_credits")])
+
+        self.profile.setup_premium_history()
+
+        self.assertFalse(PaymentHistory.objects.filter(user=self.user).exists())
+        self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_premium)
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_refunding_the_latest_payment_skips_ai_credit_charges(
+        self, mock_customer, mock_charges, mock_refund
+    ):
+        mock_customer.return_value = MagicMock(id="cus_test123")
+        mock_charges.return_value = MagicMock(
+            data=[
+                self._charge("ch_credits", 150, "ai_credits"),
+                self._charge("ch_premium", 3600, days_ago=40),
+            ]
+        )
+
+        self.profile.refund_latest_stripe_payment()
+
+        self.assertEqual(mock_refund.call_args.kwargs["charge"], "ch_premium")
+
     @patch("stripe.Subscription.list")
     @patch("stripe.Charge.list")
     @patch("stripe.Customer.retrieve")
@@ -2523,16 +2583,35 @@ class Test_UsageBillingWebhooks(TestCase):
         from apps.analyzer.test_ai_credits import FakeStripeInvoices, isolate_ai_credits
 
         isolate_ai_credits(self)
-        for overage, charged in ((60, []), (150, [150])):
-            Profile.objects.filter(pk=self.profile.pk).update(
-                is_premium=True, is_usage_billing=True, stripe_id="cus_hooks"
-            )
-            ai_credits._redis().set(ai_credits._unbilled_key(self.user.pk), overage)
+        Profile.objects.filter(pk=self.profile.pk).update(is_premium=True, is_archive=False, is_pro=False)
+        # Premium's 5 credits, then 60 past them, then 90 more.
+        for credits, charged in ((5 + 60, []), (90, [150])):
+            Profile.objects.filter(pk=self.profile.pk).update(is_usage_billing=True, stripe_id="cus_hooks")
+            ai_credits.spend(self.user.pk, "story_classification", credits * ai_credits.CREDIT_USD)
             with FakeStripeInvoices().installed() as invoices:
                 response = json.decode(self.client.post(reverse("cancel-usage-billing")).content)
-            self.assertEqual(invoices.charged, charged, overage)
+            self.assertEqual(invoices.charged, charged, credits)
             self.assertFalse(response["ai_credits"]["is_usage_billing"])
             self.assertFalse(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
+
+    def test_usage_billing_stays_on_when_stripe_cant_charge_what_is_due(self):
+        """Otherwise the credits due would never be charged: the monthly charge only looks at
+        readers with usage billing on."""
+        from apps.analyzer import ai_credits
+        from apps.analyzer.test_ai_credits import FakeStripeInvoices, isolate_ai_credits
+
+        isolate_ai_credits(self)
+        Profile.objects.filter(pk=self.profile.pk).update(
+            is_premium=True, is_archive=False, is_pro=False, is_usage_billing=True, stripe_id="cus_hooks"
+        )
+        ai_credits.spend(self.user.pk, "story_classification", (5 + 150) * ai_credits.CREDIT_USD)
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.fail_create = True
+            response = json.decode(self.client.post(reverse("cancel-usage-billing")).content)
+
+        self.assertEqual(response["code"], -1)
+        self.assertTrue(Profile.objects.get(pk=self.profile.pk).is_usage_billing)
+        self.assertEqual(response["ai_credits"]["unbilled_usd"], 1.5)
 
     def test_a_monthly_limit_has_to_be_a_positive_amount(self):
         for value in ("-5", "0", "NaN", "Infinity", "five", "20000"):

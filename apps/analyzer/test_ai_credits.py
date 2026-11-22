@@ -63,34 +63,63 @@ FEB_1 = datetime.datetime(2027, 2, 1, 0, 5)
 
 class FakeStripeInvoices:
     """Stands in for the Stripe invoice calls ai_credits.charge_unbilled makes. `charged` holds
-    the cents of every invoice paid; `fail_create` and `decline` fail the next one."""
+    the cents of every invoice paid and `cancelled` the invoices deleted or voided.
+    `fail_create`, `fail_finalize` and `decline` fail the next invoice at that step; a failed
+    finalize goes through at Stripe but its response never comes back."""
 
     def __init__(self):
         self.charged = []
+        self.cancelled = []
         self.items = {}
+        self.status = {}
         self.fail_create = False
+        self.fail_finalize = False
         self.decline = False
 
     @contextmanager
     def installed(self):
         with patch("stripe.Invoice.create", side_effect=self.create), patch(
             "stripe.InvoiceItem.create", side_effect=self.create_item
-        ), patch("stripe.Invoice.finalize_invoice"), patch("stripe.Invoice.pay", side_effect=self.pay):
+        ), patch("stripe.Invoice.finalize_invoice", side_effect=self.finalize), patch(
+            "stripe.Invoice.pay", side_effect=self.pay
+        ), patch(
+            "stripe.Invoice.retrieve", side_effect=self.retrieve
+        ), patch(
+            "stripe.Invoice.delete", side_effect=self.cancel
+        ), patch(
+            "stripe.Invoice.void_invoice", side_effect=self.cancel
+        ):
             yield self
 
     def create(self, **kwargs):
         if self.fail_create:
             self.fail_create = False
             raise stripe.error.APIConnectionError("Stripe is down")
-        return stripe.Invoice.construct_from({"id": "in_%s" % uuid.uuid4().hex[:8]}, "sk_test")
+        invoice_id = "in_%s" % uuid.uuid4().hex[:8]
+        self.status[invoice_id] = "draft"
+        return stripe.Invoice.construct_from({"id": invoice_id}, "sk_test")
 
     def create_item(self, invoice=None, amount=None, **kwargs):
         self.items[invoice] = amount
+
+    def finalize(self, invoice_id, **kwargs):
+        self.status[invoice_id] = "open"
+        if self.fail_finalize:
+            self.fail_finalize = False
+            raise stripe.error.APIConnectionError("The response never came back")
+
+    def retrieve(self, invoice_id):
+        return stripe.Invoice.construct_from({"id": invoice_id, "status": self.status[invoice_id]}, "sk_test")
+
+    def cancel(self, invoice_id):
+        self.cancelled.append(invoice_id)
+        self.status[invoice_id] = "void"
 
     def pay(self, invoice_id):
         if self.decline:
             self.decline = False
             raise stripe.error.CardError("Your card was declined.", None, "card_declined")
+        self.status[invoice_id] = "paid"
         self.charged.append(self.items[invoice_id])
 
 
@@ -235,6 +264,19 @@ class Test_AICredits(TransactionTestCase):
             self.assertEqual(invoices.charged, [150], "Charged once, 150 credits at 1 cent")
         self.emailed.assert_not_called()
 
+    def test_this_months_overage_waits_however_early_the_monthly_job_runs(self):
+        """The job runs daily, so on Dec 3 it must still leave December's overage alone."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
+            with at(datetime.datetime(2026, 12, 2, 9, 0)):
+                self.spend(5 + 150)
+            with at(datetime.datetime(2026, 12, 3, 9, 0)):
+                ai_credits.charge_last_month(self.profile())
+            self.assertEqual(invoices.charged, [])
+            with at(JAN_1):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [150])
+
     def test_overage_under_a_dollar_waits_for_a_later_month(self):
         self.turn_on_usage_billing()
         with FakeStripeInvoices().installed() as invoices, self.run_immediate_charges():
@@ -286,6 +328,22 @@ class Test_AICredits(TransactionTestCase):
             with at(DEC_1):
                 ai_credits.charge_last_month(self.profile())
                 self.assertEqual(ai_credits.state(self.profile())["unbilled_usd"], 1.2)
+            with at(DEC_1 + datetime.timedelta(days=1)):
+                ai_credits.charge_last_month(self.profile())
+        self.assertEqual(invoices.charged, [120])
+
+    def test_an_invoice_left_half_made_is_voided_before_the_credits_are_charged_again(self):
+        """Finalizing can go through at Stripe with the response lost. That invoice is voided
+        before the credits go back, so it can't collect them alongside the next charge."""
+        self.turn_on_usage_billing()
+        with FakeStripeInvoices().installed() as invoices:
+            invoices.fail_finalize = True
+            with at(NOV_10):
+                self.spend(5 + 120)
+            with at(DEC_1):
+                ai_credits.charge_last_month(self.profile())
+            self.assertEqual(len(invoices.cancelled), 1)
+            self.assertEqual(invoices.charged, [])
             with at(DEC_1 + datetime.timedelta(days=1)):
                 ai_credits.charge_last_month(self.profile())
         self.assertEqual(invoices.charged, [120])
