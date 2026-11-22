@@ -1,0 +1,63 @@
+<en-US>
+Read a story on your phone and it’s already marked as read on your Mac or the web. Saved stories and unread counts update across your open NewsBlur apps, too. When new stories arrive in the site or folder you’re reading, a button shows how many are waiting. Keep your place and bring them in when you’re ready.
+</en-US>
+<es-ES>
+Lees un artículo en el teléfono y ya aparece como leído en tu Mac o en la web. Los artículos guardados y el número de artículos sin leer también se actualizan en todos los dispositivos donde tienes NewsBlur abierto. Si llegan artículos al sitio o a la carpeta que estás leyendo, un botón te indica cuántos hay. Sigue donde estabas y añádelos a la lista cuando quieras.
+</es-ES>
+<fr-FR>
+Lisez un article sur votre téléphone et il apparaît déjà comme lu sur votre Mac ou sur le web. Vos articles enregistrés et le nombre d’articles non lus se mettent aussi à jour partout où NewsBlur est ouvert. Quand de nouveaux articles arrivent sur le site ou dans le dossier que vous consultez, un bouton indique combien vous attendent. Gardez le fil de votre lecture et affichez-les quand vous voulez.
+</fr-FR>
+<de-DE>
+Liest du einen Artikel auf dem Handy, ist er auf deinem Mac oder im Web schon als gelesen markiert. Auch deine gespeicherten Artikel und die Anzahl ungelesener Artikel sind überall aktuell, wo NewsBlur geöffnet ist. Treffen neue Artikel für die Website oder den Ordner ein, in dem du gerade liest, zeigt eine Schaltfläche, wie viele auf dich warten. Lies in Ruhe weiter und blende sie ein, wenn es dir passt.
+</de-DE>
+<pt-BR>
+Leia um artigo no celular e ele já aparece como lido no Mac ou na web. Os artigos salvos e a contagem de não lidos também ficam em dia em todos os dispositivos em que o NewsBlur está aberto. Quando chegam novos artigos ao site ou à pasta que você está lendo, um botão mostra quantos estão esperando. Continue de onde parou e adicione os novos artigos à lista quando quiser.
+</pt-BR>
+<it-IT>
+Leggi un articolo sul telefono e lo trovi già segnato come letto sul Mac o sul web. Anche gli articoli salvati e il numero di quelli non letti si aggiornano ovunque NewsBlur sia aperto. Quando arrivano nuovi articoli sul sito o nella cartella che stai consultando, un pulsante ti mostra quanti ti aspettano. Continua a leggere senza perdere il segno e aggiungili all’elenco quando vuoi.
+</it-IT>
+<nl-NL>
+Lees je een artikel op je telefoon, dan staat het op je Mac of op het web al als gelezen gemarkeerd. Ook je opgeslagen artikelen en het aantal ongelezen artikelen worden bijgewerkt op elk apparaat waarop NewsBlur openstaat. Komen er nieuwe artikelen binnen voor de site of de map die je leest, dan laat een knop zien hoeveel er klaarstaan. Je kunt rustig verder lezen en ze aan de lijst toevoegen wanneer je wilt.
+</nl-NL>
+<pl-PL>
+Czytasz artykuł na telefonie, a na Macu lub w przeglądarce jest już oznaczony jako przeczytany. Zapisane artykuły i liczba nieprzeczytanych też aktualizują się na każdym urządzeniu, na którym masz otwarty NewsBlur. Gdy w przeglądanej witrynie lub folderze pojawią się nowe artykuły, przycisk pokaże, ile ich czeka. Możesz spokojnie czytać dalej i dodać je do listy w dogodnej chwili.
+</pl-PL>
+<tr-TR>
+Telefonunuzda okuduğunuz bir haber Mac’inizde ve web’de de hemen okundu olarak işaretlenir. Kaydedilen haberler ve okunmamış haber sayıları da açık olan tüm NewsBlur uygulamalarınızda güncellenir. Okuduğunuz siteye veya klasöre yeni haberler geldiğinde bir düğme kaç haberin beklediğini gösterir. Kaldığınız yerden okumaya devam edin, hazır olduğunuzda düğmeyle yeni haberleri listeye ekleyin.
+</tr-TR>
+<ru-RU>
+Прочитайте статью на телефоне, и на Mac и в веб-версии она сразу будет отмечена как прочитанная. Сохранённые статьи и счётчики непрочитанных тоже обновляются на всех устройствах, где открыт NewsBlur. Если на сайте или в папке, которые вы читаете, появляются новые статьи, на кнопке видно, сколько их. Продолжайте читать с того же места и добавьте новые статьи в список, когда вам удобно.
+</ru-RU>
+<uk>
+Прочитайте статтю на телефоні, і на Mac та у вебверсії вона одразу матиме позначку «прочитано». Збережені статті й лічильники непрочитаних теж оновлюються на всіх пристроях, де відкрито NewsBlur. Коли на сайті чи в папці, які ви читаєте, з’являються нові статті, кнопка показує їхню кількість. Продовжуйте читати з того ж місця, а нові статті додайте до списку, коли буде зручно.
+</uk>
+<ar>
+عندما تقرأ قصة على هاتفك، تظهر فورًا كمقروءة على جهاز Mac وعلى الويب. وتُحدَّث القصص المحفوظة وأعداد القصص غير المقروءة أيضًا على كل جهاز تفتح فيه NewsBlur. وعندما تصل قصص جديدة إلى الموقع أو المجلد الذي تقرؤه، يظهر زر يبيّن عددها. تابع القراءة من حيث أنت، واضغط على الزر لإضافتها إلى القائمة متى شئت.
+</ar>
+<iw-IL>
+קראתם כתבה בטלפון? היא כבר מסומנת ככתבה שנקראה גם ב‑Mac ובדפדפן. גם הכתבות שנשמרו ומספר הכתבות שטרם נקראו מתעדכנים בכל מכשיר שבו NewsBlur פתוח. כשמגיעות כתבות חדשות לאתר או לתיקייה הפתוחים אצלכם, מופיע כפתור שמראה כמה כתבות מחכות. אפשר להמשיך לקרוא מאותו מקום ולהוסיף את הכתבות לרשימה בלחיצה כשנוח לכם.
+</iw-IL>
+<hi-IN>
+फ़ोन पर कोई लेख पढ़ते ही आपके Mac और वेब पर भी वह पढ़ा हुआ दिखता है। जिन डिवाइस पर NewsBlur खुला है, उन सभी पर सहेजे गए लेख और अपठित लेखों की संख्या भी अपडेट होती है। आप जिस साइट या फ़ोल्डर को पढ़ रहे हैं, उसमें नए लेख आने पर एक बटन दिखाता है कि कितने नए लेख आए हैं। जहाँ हैं वहीं से पढ़ते रहें और जब चाहें, बटन दबाकर नए लेख सूची में जोड़ें।
+</hi-IN>
+<id>
+Artikel yang Anda baca di ponsel langsung ditandai sudah dibaca di Mac dan web. Artikel tersimpan dan jumlah artikel yang belum dibaca juga diperbarui di semua perangkat yang sedang membuka NewsBlur. Saat ada artikel baru di situs atau folder yang sedang Anda baca, jumlahnya muncul pada tombol. Anda bisa terus membaca, lalu menekan tombol itu untuk menambahkan artikel baru ke daftar saat Anda siap.
+</id>
+<vi>
+Bài viết bạn đọc trên điện thoại sẽ được đánh dấu là đã đọc ngay trên Mac và bản web. Bài viết đã lưu và số bài chưa đọc cũng được cập nhật trên các thiết bị đang mở NewsBlur. Khi trang hoặc thư mục bạn đang đọc có bài mới, một nút sẽ cho biết có bao nhiêu bài. Bạn có thể tiếp tục đọc ở chỗ hiện tại rồi nhấn nút để thêm bài mới vào danh sách khi muốn.
+</vi>
+<th>
+เมื่ออ่านบทความบนโทรศัพท์ บทความนั้นจะขึ้นว่าอ่านแล้วบน Mac และเว็บทันที บทความที่บันทึกไว้และจำนวนบทความที่ยังไม่อ่านก็จะอัปเดตด้วยในทุกเครื่องที่เปิด NewsBlur อยู่ เมื่อเว็บไซต์หรือโฟลเดอร์ที่กำลังอ่านมีบทความใหม่ ปุ่มจะแสดงจำนวนบทความที่รออยู่ อ่านต่อจากจุดเดิมได้เลย แล้วค่อยกดปุ่มเพื่อเพิ่มบทความใหม่ลงในรายการเมื่อพร้อม
+</th>
+<ja-JP>
+スマートフォンで読んだ記事は、Macやウェブ版でもすぐに既読になります。保存した記事や未読件数も、開いているNewsBlurアプリに反映されます。読んでいるサイトやフォルダーに新しい記事が届くと、ボタンに件数が表示されます。そのまま読み続けて、好きなタイミングでボタンを押せば、新しい記事が一覧に加わります。
+</ja-JP>
+<ko-KR>
+휴대폰에서 읽은 스토리는 Mac이나 웹에서도 바로 읽음으로 표시됩니다. 열어 둔 NewsBlur 앱마다 저장한 스토리와 읽지 않은 스토리 수도 함께 업데이트됩니다. 보고 있는 사이트나 폴더에 새 스토리가 들어오면 버튼에 개수가 표시됩니다. 지금 읽던 곳에서 계속 읽다가 원할 때 버튼을 눌러 목록에 새 스토리를 추가하세요.
+</ko-KR>
+<zh-CN>
+在手机上读过一篇文章，Mac 和网页版就会把它标为已读。你打开的各个 NewsBlur 应用也会同步已保存的文章和未读数。正在浏览的网站或文件夹有了新文章，按钮上就会显示有几篇。你可以留在原处继续读，想看时再按一下按钮，把新文章加入列表。
+</zh-CN>
+<zh-TW>
+在手機上讀過一篇文章，Mac 和網頁版也會立刻將它標為已讀。你開啟的各個 NewsBlur App 也會同步已儲存的文章和未讀篇數。正在瀏覽的網站或資料夾有了新文章，按鈕上就會顯示有幾篇。你可以留在原處繼續讀，想看時再按一下按鈕，將新文章加入列表。
+</zh-TW>

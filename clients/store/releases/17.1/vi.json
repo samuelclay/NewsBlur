@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Bài viết bạn đọc trên điện thoại sẽ được đánh dấu là đã đọc ngay trên Mac và bản web. Bài viết đã lưu và số bài chưa đọc cũng được cập nhật trên các thiết bị đang mở NewsBlur. Khi trang hoặc thư mục bạn đang đọc có bài mới, một nút sẽ cho biết có bao nhiêu bài. Bạn có thể tiếp tục đọc ở chỗ hiện tại rồi nhấn nút để thêm bài mới vào danh sách khi muốn."
+  },
+  "macos": {
+    "whats_new": "Bài viết bạn đọc trên điện thoại sẽ được đánh dấu là đã đọc ngay trên Mac và bản web. Bài viết đã lưu và số bài chưa đọc cũng được cập nhật trên các thiết bị đang mở NewsBlur. Khi trang hoặc thư mục bạn đang đọc có bài mới, một nút sẽ cho biết có bao nhiêu bài. Bạn có thể tiếp tục đọc ở chỗ hiện tại rồi nhấn nút để thêm bài mới vào danh sách khi muốn."
+  },
+  "android": {
+    "release_notes": "Bài viết bạn đọc trên điện thoại sẽ được đánh dấu là đã đọc ngay trên Mac và bản web. Bài viết đã lưu và số bài chưa đọc cũng được cập nhật trên các thiết bị đang mở NewsBlur. Khi trang hoặc thư mục bạn đang đọc có bài mới, một nút sẽ cho biết có bao nhiêu bài. Bạn có thể tiếp tục đọc ở chỗ hiện tại rồi nhấn nút để thêm bài mới vào danh sách khi muốn."
+  }
+}
