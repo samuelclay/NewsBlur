@@ -4101,8 +4101,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     // add_site_view.js: the one feed card every Add Site grid draws (and Describe in both layouts). The top
     // holds the feed, the middle is the site's own story title rows (render_card_stories), and the actions
     // sit on one line: along the bottom in a grid, beside the title in a list. Describe passes extras in
-    // options: strip (a bar across the top), title_accessories (after the title), title_aside (the right
-    // end of the title row) and lead (above the tagline).
+    // options: title_accessories (after the title), freshness_aside (after the freshness date, past a middot)
+    // and lead (above the tagline).
     render_feed_card: function (feed, stories, options) {
         options = options || {};
         stories = stories || [];
@@ -4126,6 +4126,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             meta_parts.push(interpolate(ngettext('%(count)s story/month', '%(count)s stories/month', stories_count), {count: stories_count.toLocaleString()}, true));
         }
         var $freshness = this.make_freshness_indicator(feed.last_story_date, { show_empty: true });
+        if (options.freshness_aside) {
+            $freshness = ($freshness || $.make('div', { className: 'NB-add-site-card-freshness' })).append([
+                $freshness ? $.make('span', { className: 'NB-middot' }, '\u00b7') : null,
+                options.freshness_aside
+            ]);
+        }
 
         var $description = null;
         if (feed.tagline) {
@@ -4145,7 +4151,6 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             className: 'NB-add-site-card' + (subscribed ? ' NB-add-site-card-subscribed' : ''),
             'data-feed-id': feed_id
         }, [
-            options.strip,
             $.make('div', { className: 'NB-add-site-card-top' }, [
                 $.make('div', { className: 'NB-add-site-card-header' }, [
                     $.make('img', {
@@ -4157,7 +4162,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                         $.make('div', { className: 'NB-add-site-card-title-row' }, [
                             $.make('div', { className: 'NB-add-site-card-title', dir: 'auto' },
                                 feed.feed_title || feed.title || gettext('Unknown Feed'))
-                        ].concat(options.title_accessories || [], [options.title_aside]).filter(Boolean)),
+                        ].concat(options.title_accessories || [])),
                         meta_parts.length && $.make('div', { className: 'NB-add-site-card-meta' }, meta_parts.join(' • ')),
                         $freshness
                     ].filter(Boolean)),

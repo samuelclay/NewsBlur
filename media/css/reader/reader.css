@@ -45084,60 +45084,16 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     transform: scale(0.97);
 }
 
-/* Describe result cards (describe_feeds_view.js make_card): a strip across the top and a word in the title
-   row say how well the feed matches; the judge's reason leads, then the feed's own tagline, smaller. */
-.NB-describe-strip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    z-index: 1;
-}
-
-.NB-describe-strip-strong {
-    background: #6AA84F;
-}
-
-.NB-describe-strip-good {
-    background: #E3A93B;
-}
-
-.NB-describe-strip-weak {
-    background: #C9CCCF;
-}
-
-.NB-describe-strip-pending {
-    background: linear-gradient(90deg, #E4E7EB 0%, #B9CBE6 50%, #E4E7EB 100%);
-    background-size: 200% 100%;
-    animation: NB-describe-shimmer 1.4s linear infinite;
-}
-
-@keyframes NB-describe-shimmer {
-    from { background-position: 200% 0; }
-    to { background-position: 0 0; }
+/* Describe result cards (describe_feeds_view.js make_card): how well a feed matches follows its freshness
+   date, past a middot; the judge's reason leads, then the feed's own tagline, smaller. */
+.NB-add-site-card-freshness .NB-middot {
+    color: #BBB;
 }
 
 .NB-describe-match {
-    margin-left: auto;
-    margin-top: 3px;
-    padding-left: 8px;
-    flex-shrink: 0;
-    font-size: 11px;
+    color: #888;
     font-weight: 600;
     white-space: nowrap;
-}
-
-.NB-describe-match-strong {
-    color: #3F7F24;
-}
-
-.NB-describe-match-good {
-    color: #9A6A0B;
-}
-
-.NB-describe-match-weak {
-    color: #8A8F94;
 }
 
 .NB-describe-match-pending {

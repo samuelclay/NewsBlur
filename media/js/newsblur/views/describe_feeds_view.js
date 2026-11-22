@@ -599,7 +599,6 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             row.judged = true;
             var $card = this.cards[verdict.feed_id];
             if ($card) {
-                $card.find('.NB-describe-strip').replaceWith(this.make_match_strip(row));
                 $card.find('.NB-describe-match').replaceWith(this.make_match_label(row));
                 $card.find('.NB-describe-reason').replaceWith(this.make_reason(row));
                 $card.addClass('NB-describe-card-judged');
@@ -643,9 +642,8 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
             feed.last_story_date = _.compact(_.pluck(stories, 'story_date')).sort().pop();
         }
         var $card = this.add_site_view.render_feed_card(feed, stories, {
-            strip: this.make_match_strip(row),
             title_accessories: row.source === 'web' ? [this.make_web_icon()] : [],
-            title_aside: this.make_match_label(row),
+            freshness_aside: this.make_match_label(row),
             lead: this.make_reason(row)
         });
         $card.addClass('NB-describe-card' + (row.judged ? ' NB-describe-card-judged' : ''));
@@ -683,17 +681,13 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         return _.escape(value === null || value === undefined ? '' : String(value));
     },
 
-    // describe_feeds_view.js: how well a feed matches, in words. The number is in the label's tooltip; the
-    // colored strip across the top of the card says the same thing at a glance.
+    // describe_feeds_view.js: how well a feed matches, in words, after the card's freshness date. The number
+    // is in the label's tooltip.
     match_level: function (row) {
         if (!row.judged || row.score === null || row.score === undefined) return 'pending';
         if (row.score >= 8) return 'strong';
         if (row.score >= 5) return 'good';
         return 'weak';
-    },
-
-    make_match_strip: function (row) {
-        return $.make('div', { className: 'NB-describe-strip NB-describe-strip-' + this.match_level(row) });
     },
 
     make_match_label: function (row) {
@@ -708,15 +702,22 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
         if (level !== 'pending') {
             attrs.title = interpolate(gettext('Scored %(score)s out of 10 for your description'), {score: row.score}, true);
         }
-        return $.make('div', attrs, labels[level]);
+        var $label = $.make('span', attrs, labels[level]);
+        if (attrs.title) {
+            $label.tipsy({ gravity: 's', delayIn: 0, opacity: 1 });
+        }
+        return $label;
     },
 
+    // describe_feeds_view.js: the globe explains itself with the site's own hover tooltip (tipsy), shown at once.
     make_web_icon: function () {
-        return $.make('img', {
+        var $icon = $.make('img', {
             src: '/media/img/icons/lucide/globe.svg',
             className: 'NB-describe-web-icon',
             title: gettext('Found on the web by this search. NewsBlur adds it when you try or subscribe.')
         });
+        $icon.tipsy({ gravity: 's', delayIn: 0, opacity: 1 });
+        return $icon;
     },
 
     make_reason: function (row) {

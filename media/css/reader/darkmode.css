@@ -6865,33 +6865,12 @@ a.mention, a.mention-group {
     color: #777;
 }
 
-.NB-dark .NB-describe-strip-strong {
-    background: #5E9A45;
+.NB-dark .NB-add-site-card-freshness .NB-middot {
+    color: #5A6265;
 }
 
-.NB-dark .NB-describe-strip-good {
-    background: #C9932E;
-}
-
-.NB-dark .NB-describe-strip-weak {
-    background: #4A5255;
-}
-
-.NB-dark .NB-describe-strip-pending {
-    background: linear-gradient(90deg, #30383C 0%, #3F5370 50%, #30383C 100%);
-    background-size: 200% 100%;
-}
-
-.NB-dark .NB-describe-match-strong {
-    color: #9FD67F;
-}
-
-.NB-dark .NB-describe-match-good {
-    color: #F0C56B;
-}
-
-.NB-dark .NB-describe-match-weak {
-    color: #8A9094;
+.NB-dark .NB-describe-match {
+    color: #909090;
 }
 
 .NB-dark .NB-describe-match-pending {
