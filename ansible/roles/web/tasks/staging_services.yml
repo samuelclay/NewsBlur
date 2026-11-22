@@ -1,0 +1,46 @@
+---
+# staging_services.yml: what a staging deploy needs beyond the web container. deploy_app_group.yml and
+# deploy_app_group_static.yml include it for hosts in the staging group only, after pulling the branch.
+#
+# hstaging shares production's databases and Celery broker but runs no worker, so anything it enqueues on the
+# usual queues is run by production workers on main, which don't have the branch's tasks. Describe searches
+# (apps/describe) go to a queue only staging's own worker reads instead.
+
+- name: Send staging's Describe searches to staging's own queue
+  blockinfile:
+    path: /srv/newsblur/newsblur_web/local_settings.py
+    marker: "# {mark} STAGING DESCRIBE QUEUE"
+    block: |
+      # ansible/roles/web/tasks/staging_services.yml: read by the task-staging worker below.
+      DESCRIBE_SEARCH_QUEUE = "staging_describe"
+
+- name: Restart staging's Describe worker (task-staging)
+  become: yes
+  docker_container:
+    name: task-staging
+    image: newsblur/newsblur_python3
+    container_default_behavior: no_defaults
+    pull: yes
+    env:
+      DOCKERBUILD: ""
+    state: started
+    restart: yes
+    command: celery worker -A newsblur_web --loglevel=INFO --concurrency=2 -Q staging_describe
+    hostname: "{{ inventory_hostname }}"
+    log_driver: json-file
+    log_options:
+      max-size: 100m
+    networks_cli_compatible: yes
+    network_mode: default
+    networks:
+      - name: newsblurnet
+    restart_policy: unless-stopped
+    user: 1000:1001
+    volumes:
+      - /srv/newsblur:/srv/newsblur
+
+# The node container bind mounts /srv/newsblur/node, so a restart loads the branch's relays (node/*.js).
+# deploy_node.yml can't do this for staging: it checks out main.
+- name: Restart staging's node so it loads this checkout
+  become: yes
+  command: docker restart node

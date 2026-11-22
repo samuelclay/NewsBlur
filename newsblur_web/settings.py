@@ -586,6 +586,11 @@ CELERY_TASK_QUEUES = {
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
+# settings.py: the queue apps/describe/views.py sends Describe searches to. Staging runs no Celery worker of
+# its own and shares production's broker, so its deploy (ansible/roles/web/tasks/staging_services.yml) sets
+# this to a queue only staging's task-staging worker reads; production workers don't have unmerged tasks.
+DESCRIBE_SEARCH_QUEUE = "work_queue"
+
 # Worktree queue isolation: prefix all queue names so worktree celery workers
 # only process tasks from their own worktree, not from main or other worktrees.
 NEWSBLUR_WORKTREE = os.environ.get("NEWSBLUR_WORKTREE", "")

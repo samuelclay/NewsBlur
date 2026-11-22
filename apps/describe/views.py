@@ -12,6 +12,7 @@ tab, the iOS app and the Android app all use these four endpoints:
 import re
 import uuid
 
+from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
@@ -99,7 +100,7 @@ def start_search_locked(request, prompt, search_id, request_id, already_running)
     search.charge(tracker.record_usage(search_id=search.id, request_id=request_id))
     DescribeFeedsSearch.apply_async(
         kwargs={"user_id": request.user.pk, "search_id": str(search.id), "request_id": request_id},
-        queue="work_queue",
+        queue=settings.DESCRIBE_SEARCH_QUEUE,
     )
     logging.user(request, f"~FBDescribe: ~SB{'re-running' if search_id else 'starting'}~SN {prompt[:80]!r}")
 

@@ -93,6 +93,9 @@
     refspec: "{{ git_refspec | default(omit) }}"
   register: pulled
 
+- include_tasks: ../roles/web/tasks/staging_services.yml
+  when: "'staging' in group_names"
+
 - include_tasks: ../roles/web/tasks/container.yml
   vars:
     container_restart: true
