@@ -326,3 +326,21 @@ test('a search opened from history before New was clicked stays closed', functio
 
     assert.equal(describe_view.search, null);
 });
+
+test('a search that starts after another was picked still counts against the allowance', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    const usage = { tier: 'archive', limit: 30, used: 3, remaining: 27 };
+    const answers = [];
+    h.respond('/discover/describe/start', function (params, callback) {
+        answers.push(function () {
+            callback({ code: 1, usage: usage, search: { id: 'started-1', status: 'queued', prompt: params.prompt, results: [] } });
+        });
+    });
+
+    describe_view.start_search('ham radio operators');
+    describe_view.open_search('earlier-1');
+    answers[0]();
+
+    assert.deepEqual(describe_view.usage, usage);
+});

@@ -397,14 +397,15 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
                 return;
             }
             $submit.removeClass('NB-disabled').text(gettext('Find feeds'));
-            // describe_feeds_view.js: the search runs either way; a pick made while it started keeps the screen.
+            // describe_feeds_view.js: the search runs and counts either way; a pick made while it started keeps
+            // the screen.
+            self.usage = data.usage || self.usage;
+            self.render_usage();
             if (navigation !== self.navigation) {
                 self.update_history_entry(data.search);
                 return;
             }
             self.stop_polling();
-            self.usage = data.usage || self.usage;
-            self.render_usage();
             self.show_search(data.search);
             self.update_history_entry(data.search);
             self.begin_streaming();
