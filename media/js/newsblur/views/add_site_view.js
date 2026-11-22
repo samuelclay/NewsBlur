@@ -5797,10 +5797,29 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
         }
 
+        // add_site_view.js: text handed over by the add-feed popover (reader_add_feed.js) while this view
+        // is open runs its search here, the way initialize does on a fresh open. A Web Feed analysis that
+        // is still running keeps its URL, because its variants and Subscribe button belong to that URL.
+        var handoff_url = target_tab === 'web-feed' && !this.webfeed_state.is_analyzing ? options.initial_url : null;
+        if (target_tab === 'search' && options.initial_query) {
+            this.search_query = options.initial_query;
+        }
+        if (handoff_url) {
+            this.webfeed_state.url = handoff_url;
+        }
+
         this.render_active_tab();
         if (target_tab === 'describe' && options.search_id && this.describe_view &&
             this.describe_view.loading_search_id !== options.search_id) {
             this.describe_view.open_search(options.search_id, { scroll_top: options.scroll_top });
+        } else if (target_tab === 'describe' && options.initial_query && this.describe_view) {
+            this.describe_view.search_for_prompt(options.initial_query);
+        }
+        if (target_tab === 'search' && options.initial_query) {
+            this.perform_search();
+        }
+        if (handoff_url) {
+            this.perform_webfeed_analyze();
         }
         this.bind_scroll_handler();
         this.update_tab_overflow();

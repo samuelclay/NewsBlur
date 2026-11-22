@@ -3552,9 +3552,13 @@
             // Already in add site view — handle navigation between sub-states
             if (this.flags['add_site_view'] && this.add_site_view) {
                 if (options.tab) {
+                    // reader.js: text handed over by the add-feed popover (reader_add_feed.js) goes along too,
+                    // so the open view runs that search instead of only switching tabs.
                     this.add_site_view.navigate_to_state(options.tab, options.category, options.subcategory, {
                         search_id: options.search_id,
-                        scroll_top: options.scroll_top
+                        scroll_top: options.scroll_top,
+                        initial_query: options.initial_query,
+                        initial_url: options.initial_url
                     });
                 }
                 return;

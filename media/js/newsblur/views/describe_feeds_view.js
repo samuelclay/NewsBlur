@@ -317,7 +317,12 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
     },
 
     use_example: function (e) {
-        var prompt = $(e.currentTarget).data('prompt');
+        this.search_for_prompt($(e.currentTarget).data('prompt'));
+    },
+
+    // describe_feeds_view.js: fill the composer with a prompt from outside it (an example, or text handed
+    // over by the add-feed popover through add_site_view.js navigate_to_state) and start that search.
+    search_for_prompt: function (prompt) {
         this.$('.NB-describe-input').val(prompt);
         this.autosize_input();
         this.start_search(prompt);
