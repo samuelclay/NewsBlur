@@ -250,17 +250,16 @@ struct TrainerView: View {
                     header(story: "Story URL", feed: "URLs")
                 })
 
-                ForEach(PromptClassifierKind.allCases, id: \.self) { kind in
-                    Section(content: {
-                        TrainerAIPromptSection(kind: kind, model: interaction.aiPrompts, feed: feed,
-                                               story: interaction.isStoryTrainer ? cache.selected : nil,
-                                               isPremiumArchive: isArchive, currentFolderName: currentFolderName,
-                                               fontBuilder: font)
-                            .listRowBackground(rowBackground)
-                    }, header: {
-                        TrainerAIPromptHeader(kind: kind, font: font(named: "WhitneySSm-Medium", size: 16), color: textColor)
-                    })
-                }
+                Section(content: {
+                    TrainerAIFilterCard(model: interaction.aiPrompts, feed: feed,
+                                        story: interaction.isStoryTrainer ? cache.selected : nil,
+                                        isPremiumArchive: isArchive, currentFolderName: currentFolderName,
+                                        fontBuilder: font)
+                        .listRowBackground(rowBackground)
+                }, header: {
+                    TrainerAIFilterHeader(model: interaction.aiPrompts, font: font(named: "WhitneySSm-Medium", size: 16),
+                                          color: textColor, fontBuilder: font)
+                })
 
                 Section(content: {
                     HStack {

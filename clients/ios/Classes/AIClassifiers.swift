@@ -300,6 +300,12 @@ struct AICredits: Equatable {
         return min(1, max(0, overageUSD / monthlyLimit))
     }
 
+    /// With usage billing on, running low means nearing the monthly limit. The server's is_warning also counts the
+    /// plan's credits, which usage billing keeps going past, so it would keep the meter amber all month.
+    var isNearLimit: Bool {
+        (limitFraction ?? 0) >= 0.8
+    }
+
     // MARK: Wording
 
     /// "12,340 of 10,000 AI credits used", or nil for usage billing without included credits.
@@ -315,13 +321,6 @@ struct AICredits: Equatable {
         return NBLocalization.plural("%2$@ AI credits used, %3$@ past your plan's %4$@", count: included,
                                      arguments: [AICreditsFormat.credits(used),
                                                  AICreditsFormat.credits(shownUsed - Double(included)), plan])
-    }
-
-    /// Usage billing past the plan's credits draws the meter as the plan's share of what was used, then the part past
-    /// it, like the web. Nil while the plan's credits last, or without usage billing.
-    var planShareOfUsage: Double? {
-        guard isUsageBilling, included > 0, used > Double(included) else { return nil }
-        return Double(included) / used
     }
 
     var resetText: String? {
@@ -506,12 +505,11 @@ struct AICreditsNotice: Equatable {
         case openCredits
     }
 
+    /// The month's meter: the share of the plan's credits used (full past them) and its summary. The AI credits
+    /// screen it opens says when credits reset.
     struct Meter: Equatable {
         let fraction: Double
         let usedText: String
-        let resetText: String?
-        /// AICredits.planShareOfUsage: where the plan's credits end on a meter that runs past them.
-        var planShare: Double?
     }
 
     struct ActionButton: Equatable {
@@ -531,9 +529,7 @@ struct AICreditsNotice: Equatable {
     /// billing on elsewhere sees what it has cost and their limit.
     static func make(_ credits: AICredits, offersBilling: Bool) -> AICreditsNotice? {
         let offersSetup = offersBilling && credits.isBillingAvailable && !credits.isUsageBilling
-        let meter = credits.usedText.map {
-            Meter(fraction: credits.usedFraction, usedText: $0, resetText: credits.resetText, planShare: credits.planShareOfUsage)
-        }
+        let meter = credits.usedText.map { Meter(fraction: credits.usedFraction, usedText: $0) }
         switch credits.status {
         case .unlimited:
             return nil
@@ -558,7 +554,7 @@ struct AICreditsNotice: Equatable {
         case .usageBilling:
             let messages = credits.billingText + (offersBilling ? [] : [credits.limitSummaryText].compactMap { $0 })
             let button = offersBilling ? ActionButton(title: NBLocalization.text("Manage billing"), detail: nil, action: .manageBilling) : nil
-            return AICreditsNotice(tone: credits.isWarning ? .warning : .normal, meter: meter, messages: messages,
+            return AICreditsNotice(tone: credits.isNearLimit ? .warning : .normal, meter: meter, messages: messages,
                                    button: button, footnote: nil)
         case .pausedAtLimit:
             let button = offersBilling ? ActionButton(title: NBLocalization.text("Change limit"), detail: nil, action: .manageBilling) : nil

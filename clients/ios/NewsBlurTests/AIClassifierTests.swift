@@ -569,32 +569,32 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         XCTAssertEqual(model.draft(.image), "")
     }
 
-    /// Rule: a plan without credits is told so, with a way to upgrade, in each section whose filters won't score
-    /// stories: one with a filter saved or being written. A paid plan never sees that notice.
-    func test_aPlanWithoutCreditsIsToldWhereItsFiltersWontRun() throws {
-        let saved = [PromptClassifier(prompt: "Apple", kind: .content, score: 1, scope: .feed, folderName: "")]
-        let removed = [PromptClassifier(prompt: "Apple", kind: .content, score: 0, scope: .feed, folderName: "")]
+    /// Rule: a plan without credits is told so, with a way to upgrade, once it has an AI filter of either kind saved
+    /// or is writing one, whichever mode the card shows. A paid plan never sees that notice, and a plan without
+    /// credits has no credits row.
+    func test_aPlanWithoutCreditsIsToldOnceItHasAnAIFilter() throws {
+        let saved = [PromptClassifier(prompt: "Charts", kind: .image, score: 1, scope: .feed, folderName: "")]
+        let removed = [PromptClassifier(prompt: "Charts", kind: .image, score: 0, scope: .feed, folderName: "")]
         var upgrades = 0
 
         let free = makeModel(transport: RecordingAITransport(), profile: Self.freeProfile, openUpgrade: { upgrades += 1 })
-        let notice = try XCTUnwrap(free.creditsNotice(.content, saved: saved))
+        let notice = try XCTUnwrap(free.freeNotice(saved: saved), "A saved image filter counts while the card shows Text")
         XCTAssertEqual(notice.tone, .upgrade)
-        XCTAssertNil(notice.meter, "A plan without credits has no meter")
-        XCTAssertNil(free.creditsNotice(.image, saved: []), "A section without filters has nothing to warn about")
-        XCTAssertNil(free.creditsNotice(.content, saved: removed), "A removed filter the trainer still lists doesn't count")
+        XCTAssertNil(free.creditsNotice)
+        XCTAssertNil(free.freeNotice(saved: []), "Without filters there's nothing to warn about")
+        XCTAssertNil(free.freeNotice(saved: removed), "A removed filter the trainer still lists doesn't count")
         free.setDraft("Charts", for: .image)
-        XCTAssertNotNil(free.creditsNotice(.image, saved: []), "Writing a filter shows it before it's saved")
+        XCTAssertNotNil(free.freeNotice(saved: []), "Writing a filter shows it before it's saved")
         free.perform(try XCTUnwrap(notice.button).action)
         XCTAssertEqual(upgrades, 1, "Upgrade opens the Premium screen")
 
         let archive = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
-        XCTAssertNotEqual(archive.creditsNotice(.content, saved: saved)?.tone, .upgrade)
+        XCTAssertNil(archive.freeNotice(saved: saved))
     }
 
-    /// Rule: the month's meter, running low and paused are about every AI filter, so they show once, in the first AI
-    /// section, whatever that section holds. Each section estimates its own kind of filter on this site, but only
-    /// while filters run.
-    func test_theMonthsCreditsShowOnceAndEachSectionEstimatesItsOwnKind() throws {
+    /// Rule: the card's credits row shows the month for every plan with credits, before any filter exists, and opens
+    /// the AI credits screen; the estimate line names the kind of filter being written, but only while filters run.
+    func test_theCreditsRowShowsTheMonthAndEachModeEstimatesItsKind() throws {
         try withEnglishInterface {
             let transport = RecordingAITransport()
             transport.responses["/analyzer/ai_classifier_usage"] = [
@@ -604,31 +604,48 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             let model = makeModel(transport: transport, profile: Self.archiveProfile, openCredits: { opened.append($0) })
             model.prepare(feedId: "42", storyHash: nil)
 
-            let notice = try XCTUnwrap(model.creditsNotice(.content, saved: []), "The meter shows before any filter exists")
+            let notice = try XCTUnwrap(model.creditsNotice)
             XCTAssertEqual(notice.tone, .normal)
             XCTAssertEqual(notice.meter?.usedText, "2,340 of 10,000 AI credits used")
-            XCTAssertEqual(notice.meter?.resetText, "Resets Dec 1")
             XCTAssertEqual(try XCTUnwrap(notice.meter?.fraction), 0.234, accuracy: 0.0001)
-            XCTAssertNil(model.creditsNotice(.image, saved: [PromptClassifier(prompt: "Charts", kind: .image, score: 1,
-                                                                              scope: .feed, folderName: "")]))
             XCTAssertEqual(model.estimateText(.content), "A text filter on this site uses about 1,428 credits a month")
             XCTAssertEqual(model.estimateText(.image), "An image filter on this site uses less than one credit a month",
                            "A site that published nothing last month still says what a filter would cost")
             model.perform(.openCredits)
-            XCTAssertEqual(opened, [false], "The meter opens the AI credits screen")
+            XCTAssertEqual(opened, [false], "The credits row opens the AI credits screen")
 
             transport.responses["/analyzer/ai_classifier_usage"] = [
                 "code": 0, "ai_credits": creditsJSON(pausedCredits), "text_credits_per_month": 420, "image_credits_per_month": 3_000,
             ]
             model.prepare(feedId: "42", storyHash: nil)
-            XCTAssertEqual(model.creditsNotice(.content, saved: [])?.tone, .paused)
+            XCTAssertEqual(model.creditsNotice?.tone, .paused)
             XCTAssertNil(model.estimateText(.content), "Paused filters spend nothing, so there's no estimate to give")
         }
     }
 
-    /// Rule: running low warns with the day credits run out at this pace. While the app may open Stripe it offers to
-    /// keep filters running and says what that would cost this month, leaving the cost out when the pace costs
-    /// nothing; with UsageBillingFeature.swift off it offers nothing to pay.
+    /// Rule: the Text / Images switch keeps a draft for each mode, so a filter saves as the kind it was typed in,
+    /// whichever mode is showing when it's added; another site or story starts in Text.
+    func test_eachModeKeepsItsDraftAndSavesAsTheKindItWasTypedIn() {
+        var saves: [(String, PromptClassifierKind)] = []
+        let model = makeModel(transport: RecordingAITransport(), profile: Self.archiveProfile)
+        model.savePrompt = { prompt, kind, _, _, _, _ in saves.append((prompt, kind)) }
+        model.prepare(feedId: "42", storyHash: "42:abc")
+
+        model.setDraft("Apple earnings", for: model.mode)
+        model.mode = .image
+        model.setDraft("Charts", for: model.mode)
+        model.mode = .content
+        XCTAssertEqual(model.draft(.content), "Apple earnings", "Switching modes doesn't move or clear a draft")
+        model.addDraft(.image, feedId: "42")
+        model.addDraft(.content, feedId: "42")
+        XCTAssertEqual(saves.map(\.0), ["Charts", "Apple earnings"])
+        XCTAssertEqual(saves.map(\.1), [.image, .content])
+
+        model.mode = .image
+        model.prepare(feedId: "42", storyHash: "42:def")
+        XCTAssertEqual(model.mode, .content)
+    }
+
     /// Rule: every credit number shows as a whole credit rounded to the nearest, even from a server that still sends
     /// decimals, and the amount past the plan compares the rounded numbers.
     func test_creditNumbersRoundToTheNearestWholeCredit() {
@@ -647,6 +664,9 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         }
     }
 
+    /// Rule: running low warns with the day credits run out at this pace. While the app may open Stripe it offers to
+    /// keep filters running and says what that would cost this month, leaving the cost out when the pace costs
+    /// nothing; with UsageBillingFeature.swift off it offers nothing to pay.
     func test_runningLowWarnsWhenCreditsRunOutAndOffersBillingWithTheMonthsCost() throws {
         try withEnglishInterface {
             UsageBillingFeature.isEnabled = true
@@ -673,7 +693,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             var opened: [Bool] = []
             let model = makeModel(transport: RecordingAITransport(), profile: ["ai_credits": creditsJSON(warningCredits)],
                                   openCredits: { opened.append($0) })
-            model.perform(try XCTUnwrap(model.creditsNotice(.content, saved: [])?.button).action)
+            model.perform(try XCTUnwrap(model.creditsNotice?.button).action)
             XCTAssertEqual(opened, [true], "Keep filters running goes straight on to setting up usage billing")
         }
     }
@@ -692,7 +712,6 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
             let pastPlan = try XCTUnwrap(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter)
             XCTAssertEqual(pastPlan.usedText, "10,012 AI credits used, 12 past your plan's 10,000",
                            "The last request can run a little past the plan's credits")
-            XCTAssertNil(pastPlan.planShare, "Without usage billing nothing past the plan is billed, so the bar stays whole")
             overshot["used"] = 10_000.4
             XCTAssertEqual(AICreditsNotice.make(credits(overshot), offersBilling: true)?.meter?.usedText,
                            "10,000 of 10,000 AI credits used", "Never \"0 past your plan's 10,000\"")
@@ -704,15 +723,18 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         }
     }
 
-    /// Rule: with usage billing on, the meter says how many credits went past the plan's and splits the bar where they
-    /// do, the trainer shows what that has cost this month and what's waiting to be charged, and a reached limit names
-    /// the limit and the day filters run again. Managing either opens the AI credits screen.
+    /// Rule: with usage billing on, the meter says how many credits went past the plan's and stays calm (only nearing
+    /// the monthly limit warns), the trainer shows what that has cost this month and what's waiting to be charged,
+    /// and a reached limit names the limit and the day filters run again. Managing either opens the AI credits screen.
     func test_usageBillingShowsTheMonthsCostAndAReachedLimit() throws {
         try withEnglishInterface {
             let billing = try XCTUnwrap(AICreditsNotice.make(credits(billingCredits), offersBilling: true))
             XCTAssertEqual(billing.meter?.usedText, "47,000 AI credits used, 37,000 past your plan's 10,000")
-            XCTAssertEqual(try XCTUnwrap(billing.meter?.planShare), 10_000.0 / 47_000, accuracy: 0.0001,
-                           "The meter shows where the plan's credits end and billing begins")
+            XCTAssertEqual(billing.tone, .normal, "Going past the plan is what usage billing is for, so nothing warns")
+            var nearLimit = billingCredits
+            nearLimit["monthly_limit"] = 0.4
+            XCTAssertEqual(AICreditsNotice.make(credits(nearLimit), offersBilling: true)?.tone, .warning,
+                           "$0.37 of a $0.40 limit is running low")
             XCTAssertEqual(billing.messages, [
                 "Usage billing is on. Credits past your 10,000 cost 1¢ per 1,000: $0.37 so far this month.",
                 "$0.37 is waiting to be charged: at the start of next month if it's at least $1, or right away at $10.",
@@ -742,7 +764,8 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let model = makeModel(transport: transport, profile: ["ai_credits": creditsJSON(["is_unlimited": true])])
         model.prepare(feedId: "42", storyHash: nil)
         XCTAssertTrue(transport.requests.isEmpty)
-        XCTAssertNil(model.creditsNotice(.content, saved: []))
+        XCTAssertNil(model.creditsNotice)
+        XCTAssertNil(model.freeNotice(saved: []))
         XCTAssertNil(model.estimateText(.content))
     }
 
@@ -2254,7 +2277,7 @@ private final class RefreshingClassifierSaveAppDelegate: NewsBlurAppDelegate {
         let profile: [AnyHashable: Any] = ["ai_credits": creditsJSON(state)]
         let model = TrainerAIPromptModel(api: AIClassifierAPI(transport: RecordingAITransport()), userProfile: { profile })
         model.setDraft(draft, for: kind)
-        return model.creditsNotice(kind, saved: [])
+        return model.freeNotice(saved: []) ?? model.creditsNotice
     }
 
     /// The titles FeedsObjCViewController.m puts in the feed list's settings menu for an account with these credits.

@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// TrainerAIPromptSection.swift keeps the trainer's natural language classifier state: the prompt being written,
-/// prompt tests, and the reader's AI credits with estimates for this site. TrainerViewController.swift owns one model
+/// prompt tests, which kind of filter the AI filter card writes, and the reader's AI credits with estimates for this site. TrainerViewController.swift owns one model
 /// so the state survives the TrainerView reload that follows every classifier save.
 @MainActor final class TrainerAIPromptModel: ObservableObject {
     enum TestState: Equatable {
@@ -22,6 +22,8 @@ import SwiftUI
     @Published private(set) var draftScores: [PromptClassifierKind: Int] = [:]
     @Published private(set) var tests: [PromptClassifierKind: TestState] = [:]
     @Published var scopeOverrides: [String: ClassifierScope] = [:]
+    /// What the AI filter card's input reads: text or images (TrainerAIFilterHeader's switch).
+    @Published var mode: PromptClassifierKind = .content
     /// /analyzer/ai_classifier_usage for the site being trained, loaded every time the trainer opens.
     @Published private(set) var usage: AIClassifierUsage?
 
@@ -119,6 +121,7 @@ import SwiftUI
         tests = [:]
         scopeOverrides = [:]
         usage = nil
+        mode = .content
     }
 
     private func fetchUsage(feedId: String?) {
@@ -304,17 +307,19 @@ import SwiftUI
         usage?.credits ?? AICredits(profile: userProfile())
     }
 
-    /// The credit notice under an AI section. The month's meter, running low, paused and usage billing are about every
-    /// AI filter, so only the first section shows them. A plan without credits is told so in each section that has a
-    /// filter saved or being written, since only those won't score stories. Every account can still write, save and
-    /// test filters.
-    func creditsNotice(_ kind: PromptClassifierKind, saved: [PromptClassifier]) -> AICreditsNotice? {
-        guard let credits else { return nil }
-        if credits.status == .free {
-            guard saved.contains(where: { $0.score != 0 }) || !trimmedDraft(kind).isEmpty else { return nil }
-        } else if kind != PromptClassifierKind.allCases.first {
-            return nil
-        }
+    /// The credits row at the bottom of the AI filter card: the month's meter and what it means, for plans with credits.
+    /// A server that counts no credits shows nothing.
+    var creditsNotice: AICreditsNotice? {
+        guard let credits, credits.status != .free else { return nil }
+        return AICreditsNotice.make(credits, offersBilling: UsageBillingFeature.isEnabled)
+    }
+
+    /// A plan without credits is told so, with a way to upgrade, once it has an AI filter saved or is writing one,
+    /// since those won't score stories. Every account can still write, save and test filters.
+    func freeNotice(saved: [PromptClassifier]) -> AICreditsNotice? {
+        guard let credits, credits.status == .free else { return nil }
+        let hasFilter = saved.contains { $0.score != 0 } || PromptClassifierKind.allCases.contains { !trimmedDraft($0).isEmpty }
+        guard hasFilter else { return nil }
         return AICreditsNotice.make(credits, offersBilling: UsageBillingFeature.isEnabled)
     }
 
@@ -335,12 +340,12 @@ import SwiftUI
     }
 }
 
-// MARK: - Section view
+// MARK: - AI filter card
 
-/// TrainerAIPromptSection.swift draws the web's "Natural Language Text Classifier" and "Natural Language Image
-/// Classifier" trainer sections (make_content_filter_section and make_image_filter_section in reader_classifier.js).
-struct TrainerAIPromptSection: View {
-    let kind: PromptClassifierKind
+/// TrainerAIPromptSection.swift draws the trainer's one AI filter card: the filter being written, read as text or as
+/// images by the header's switch (TrainerAIFilterHeader), every AI filter saved on the site whatever the switch
+/// says, and the month's credits. It replaced separate text and image classifier sections.
+struct TrainerAIFilterCard: View {
     @ObservedObject var model: TrainerAIPromptModel
     let feed: Feed?
     /// The story being trained, or nil in the site trainer, which has no prompt tests.
@@ -351,28 +356,12 @@ struct TrainerAIPromptSection: View {
 
     @FocusState private var isFieldFocused: Bool
 
+    /// What the filter being written reads. Each mode keeps its own draft, so a filter saves as the kind it was
+    /// typed in.
+    var kind: PromptClassifierKind { model.mode }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(explainer)
-                .font(fontBuilder("WhitneySSm-Medium", 12))
-                .foregroundColor(TrainerAIPalette.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 8)
-
-            if let estimate = model.estimateText(kind) {
-                HStack(alignment: .firstTextBaseline, spacing: 5) {
-                    Image(systemName: "gauge.with.needle")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundColor(TrainerAIPalette.accent)
-                    Text(estimate)
-                        .font(fontBuilder("WhitneySSm-Medium", 11))
-                        .foregroundColor(TrainerAIPalette.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("trainer-ai-estimate-\(kind.rawValue)")
-            }
-
             if kind == .image, !imageURLs.isEmpty {
                 imageGrid
             }
@@ -383,7 +372,19 @@ struct TrainerAIPromptSection: View {
                 statusBadge(status.text, isMatch: status.isMatch, isError: status.isError)
             }
 
-            draftCapsule
+            if !model.trimmedDraft(kind).isEmpty {
+                draftCapsule
+            }
+
+            if let free = model.freeNotice(saved: savedPrompts) {
+                TrainerAIFreeBanner(notice: free, fontBuilder: fontBuilder, perform: model.perform)
+            } else if let estimate = model.estimateText(kind) {
+                Text(estimate)
+                    .font(fontBuilder("WhitneySSm-Medium", 11))
+                    .foregroundColor(TrainerAIPalette.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("trainer-ai-estimate")
+            }
 
             if !savedPrompts.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
@@ -391,20 +392,27 @@ struct TrainerAIPromptSection: View {
                         savedCapsule(prompt)
                     }
                 }
+                .padding(.top, 2)
             }
 
-            if let notice = model.creditsNotice(kind, saved: savedPrompts) {
-                TrainerAICreditsNoticeView(notice: notice, fontBuilder: fontBuilder, perform: model.perform)
+            if let notice = model.creditsNotice {
+                Rectangle()
+                    .fill(TrainerAIPalette.fieldBorder.opacity(0.5))
+                    .frame(height: 1)
+                    .padding(.top, 2)
+                TrainerAICreditsRow(notice: notice, fontBuilder: fontBuilder, perform: model.perform)
             }
 
-            Spacer().frame(height: 4)
+            Spacer().frame(height: 2)
         }
+        .padding(.top, 8)
     }
 
     // MARK: Data
 
+    /// Every AI filter on the site, text first, each with its kind tag.
     var savedPrompts: [PromptClassifier] {
-        PromptClassifier.saved(in: feed?.classifiers, kind: kind)
+        PromptClassifierKind.allCases.flatMap { PromptClassifier.saved(in: feed?.classifiers, kind: $0) }
     }
 
     var imageURLs: [URL] {
@@ -415,12 +423,6 @@ struct TrainerAIPromptSection: View {
             let resolved = address.hasPrefix("http://") ? (secure[address] ?? address) : address
             return URL(string: resolved)
         }
-    }
-
-    var explainer: String {
-        kind == .image
-            ? NBLocalization.text("Describe what to look for and AI will analyze each story’s images against your prompt.")
-            : NBLocalization.text("Describe a topic and AI will score each story against your prompt to focus or hide matches.")
     }
 
     var placeholder: String {
@@ -485,6 +487,7 @@ struct TrainerAIPromptSection: View {
                 .submitLabel(.done)
                 .focused($isFieldFocused)
                 .onSubmit { model.addDraft(kind, feedId: feed?.id) }
+                .accessibilityIdentifier("trainer-ai-input-\(kind.rawValue)")
 
             if hasTestButton {
                 Button {
@@ -538,31 +541,24 @@ struct TrainerAIPromptSection: View {
 
     // MARK: Capsules
 
-    /// The live preview: tap it to add the prompt, or flip it between focus and hide first.
-    @ViewBuilder
+    /// The live preview of what's typed: tap it to add the filter, or flip it between focus and hide first.
     var draftCapsule: some View {
-        let text = model.trimmedDraft(kind)
-        if text.isEmpty {
-            TrainerPromptCapsule(kind: kind, text: NBLocalization.text("Describe what to focus or hide"), score: 0,
-                                 isPlaceholder: true)
-        } else {
-            Button {
-                isFieldFocused = false
-                model.addDraft(kind, feedId: feed?.id)
-            } label: {
-                TrainerPromptCapsule(kind: kind, text: text, score: model.draftScore(kind), isDraft: true,
-                                     onDislike: { model.toggleDraftDirection(kind) })
-            }
-            .buttonStyle(BorderlessButtonStyle())
-            .accessibilityIdentifier("trainer-ai-draft-\(kind.rawValue)")
+        Button {
+            isFieldFocused = false
+            model.addDraft(kind, feedId: feed?.id)
+        } label: {
+            TrainerPromptCapsule(kind: kind, text: model.trimmedDraft(kind), score: model.draftScore(kind), isDraft: true,
+                                 onDislike: { model.toggleDraftDirection(kind) })
         }
+        .buttonStyle(BorderlessButtonStyle())
+        .accessibilityIdentifier("trainer-ai-draft-\(kind.rawValue)")
     }
 
     func savedCapsule(_ prompt: PromptClassifier) -> some View {
         Button {
             model.tap(prompt, feedId: feed?.id, currentFolderName: currentFolderName)
         } label: {
-            TrainerPromptCapsule(kind: kind, text: prompt.prompt, score: prompt.score, showsScope: true,
+            TrainerPromptCapsule(kind: prompt.kind, text: prompt.prompt, score: prompt.score, showsScope: true,
                                  scope: model.scopeBinding(for: prompt, currentFolderName: currentFolderName),
                                  isPremiumArchive: isPremiumArchive,
                                  isFolderAvailable: TrainerAIPromptModel.hasDestination(.folder, folderName: currentFolderName),
@@ -575,33 +571,99 @@ struct TrainerAIPromptSection: View {
     }
 }
 
-// MARK: - Credit notice
+// MARK: - Header
 
-/// TrainerAIPromptSection.swift's AI credits card (AIClassifiers.swift AICreditsNotice): the month's meter, which opens
-/// the AI credits screen, then why filters are paused or running low, and what the reader can do about it.
-struct TrainerAICreditsNoticeView: View {
+/// TrainerAIPromptSection.swift's card title, with the Text / Images switch that picks what the filter being written
+/// reads.
+struct TrainerAIFilterHeader: View {
+    @ObservedObject var model: TrainerAIPromptModel
+    let font: Font
+    let color: Color
+    let fontBuilder: (String, CGFloat) -> Font
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(TrainerAIPalette.accent)
+            Text(NBLocalization.text("AI filters"))
+                .font(font)
+                .foregroundColor(color)
+            Spacer(minLength: 8)
+            HStack(spacing: 0) {
+                segment(.content, title: NBLocalization.text("Text"))
+                segment(.image, title: NBLocalization.text("Images"))
+            }
+            .padding(2)
+            .background(TrainerAIPalette.switchTrack)
+            .cornerRadius(6)
+        }
+        .textCase(nil)
+    }
+
+    func segment(_ kind: PromptClassifierKind, title: String) -> some View {
+        let isSelected = model.mode == kind
+        return Button { model.mode = kind } label: {
+            Text(title)
+                .font(fontBuilder("WhitneySSm-Medium", 12))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 4)
+                .foregroundColor(isSelected ? .white : TrainerAIPalette.secondaryText)
+                .background(isSelected ? TrainerAIPalette.accent : Color.clear)
+                .cornerRadius(4)
+        }
+        .buttonStyle(BorderlessButtonStyle())
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier("trainer-ai-mode-\(kind.rawValue)")
+    }
+}
+
+// MARK: - Credits
+
+/// TrainerAIPromptSection.swift's credits row at the bottom of the AI filter card (AIClassifiers.swift
+/// AICreditsNotice): the month's summary with a chevron to the AI credits screen, a thin meter, and at most one short
+/// state line in the meter's color, with its action under it while UsageBillingFeature.swift offers one.
+struct TrainerAICreditsRow: View {
     let notice: AICreditsNotice
     let fontBuilder: (String, CGFloat) -> Font
     let perform: (AICreditsNotice.Action) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if let meter = notice.meter {
-                Button { perform(.openCredits) } label: { meterRow(meter) }
-                    .buttonStyle(BorderlessButtonStyle())
-                    .accessibilityIdentifier("trainer-ai-credits-meter")
+        VStack(alignment: .leading, spacing: 6) {
+            Button { perform(.openCredits) } label: {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(notice.meter?.usedText ?? NBLocalization.text("AI Credits"))
+                            .font(fontBuilder("WhitneySSm-Medium", 12))
+                            .foregroundColor(TrainerAIPalette.text)
+                            // A button label centers wrapped lines; the summary reads from the leading edge.
+                            .multilineTextAlignment(.leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        Image(systemName: "chevron.forward")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(TrainerAIPalette.secondaryText)
+                    }
+                    if let meter = notice.meter {
+                        AICreditsMeter(fraction: meter.fraction, fill: meterFill, height: 4)
+                    }
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(BorderlessButtonStyle())
+            .accessibilityIdentifier("trainer-ai-credits-meter")
 
-            ForEach(Array(notice.messages.enumerated()), id: \.offset) { index, message in
+            ForEach(Array(notice.messages.enumerated()), id: \.offset) { _, message in
                 Text(message)
-                    .font(fontBuilder(index == 0 && notice.tone != .normal ? "WhitneySSm-Semibold" : "WhitneySSm-Medium", 12))
-                    .foregroundColor(textColor)
+                    .font(fontBuilder("WhitneySSm-Medium", 11))
+                    .foregroundColor(stateColor)
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if let button = notice.button {
-                actionButton(button)
+                TrainerAIActionButton(button: button, fontBuilder: fontBuilder, perform: perform)
+                    .padding(.top, 2)
             }
 
             if let footnote = notice.footnote {
@@ -610,49 +672,70 @@ struct TrainerAICreditsNoticeView: View {
                     .foregroundColor(TrainerAIPalette.secondaryText)
             }
         }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 8).fill(background))
-        .overlay(RoundedRectangle(cornerRadius: 8).stroke(border, lineWidth: 1))
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("trainer-ai-credits")
     }
 
-    func meterRow(_ meter: AICreditsNotice.Meter) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Image(systemName: "sparkles")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(meterFill)
-                (Text(meter.usedText).foregroundColor(TrainerAIPalette.text)
-                    + Text(meter.resetText.map { " \u{00B7} \($0)" } ?? "").foregroundColor(TrainerAIPalette.secondaryText))
-                    .font(fontBuilder("WhitneySSm-Medium", 12))
-                    // A button label centers wrapped lines; the summary reads from the leading edge like the rest.
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "chevron.forward")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(TrainerAIPalette.secondaryText)
-            }
-            AICreditsMeter(fraction: meter.fraction, fill: meter.planShare == nil ? meterFill : AICreditsPalette.green,
-                           height: 6, planShare: meter.planShare,
-                           overflowFill: notice.tone == .paused ? AICreditsPalette.red : AICreditsPalette.accent)
+    /// Green while credits last, amber running low, red paused, over the meter's gray track.
+    var meterFill: Color {
+        switch notice.tone {
+        case .paused: return AICreditsPalette.red
+        case .warning: return AICreditsPalette.amber
+        case .normal, .upgrade: return AICreditsPalette.green
         }
-        .contentShape(Rectangle())
     }
 
-    /// A button for the notice's action. One with a description is a full-width card so the cost reads before the
-    /// tap; a plain one, like Upgrade, sits at the start of the line.
-    @ViewBuilder
-    func actionButton(_ button: AICreditsNotice.ActionButton) -> some View {
+    var stateColor: Color {
+        switch notice.tone {
+        case .paused: return TrainerAIPalette.pausedText
+        case .warning: return AICreditsPalette.warningText
+        case .normal, .upgrade: return TrainerAIPalette.secondaryText
+        }
+    }
+}
+
+/// TrainerAIPromptSection.swift's notice for a plan without credits, shown in place of the estimate.
+struct TrainerAIFreeBanner: View {
+    let notice: AICreditsNotice
+    let fontBuilder: (String, CGFloat) -> Font
+    let perform: (AICreditsNotice.Action) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(Array(notice.messages.enumerated()), id: \.offset) { _, message in
+                Text(message)
+                    .font(fontBuilder("WhitneySSm-Medium", 12))
+                    .foregroundColor(TrainerAIPalette.bannerText)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if let button = notice.button {
+                TrainerAIActionButton(button: button, fontBuilder: fontBuilder, perform: perform)
+            }
+        }
+        .padding(10)
+        .background(RoundedRectangle(cornerRadius: 8).fill(TrainerAIPalette.bannerBackground))
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("trainer-ai-free")
+    }
+}
+
+/// A small button for a credit notice's action. With a description, such as what usage billing would cost, it spans
+/// the card so the cost reads before the tap.
+struct TrainerAIActionButton: View {
+    let button: AICreditsNotice.ActionButton
+    let fontBuilder: (String, CGFloat) -> Font
+    let perform: (AICreditsNotice.Action) -> Void
+
+    var body: some View {
         let isPrimary = button.action == .upgrade || button.action == .setUpBilling
         Button { perform(button.action) } label: {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 5) {
                     Text(button.title)
-                        .font(fontBuilder("WhitneySSm-Semibold", 13))
+                        .font(fontBuilder("WhitneySSm-Semibold", 12))
                     Image(systemName: "chevron.forward")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 9, weight: .bold))
                 }
                 if let detail = button.detail {
                     Text(detail)
@@ -663,65 +746,14 @@ struct TrainerAICreditsNoticeView: View {
                 }
             }
             .foregroundColor(isPrimary ? .white : TrainerAIPalette.link)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
             .frame(maxWidth: button.detail == nil ? nil : .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 7).fill(isPrimary ? TrainerAIPalette.green : TrainerAIPalette.fieldBackground))
-            .overlay(RoundedRectangle(cornerRadius: 7).stroke(isPrimary ? Color.clear : TrainerAIPalette.fieldBorder, lineWidth: 1))
+            .background(RoundedRectangle(cornerRadius: 6).fill(isPrimary ? TrainerAIPalette.green : TrainerAIPalette.fieldBackground))
+            .overlay(RoundedRectangle(cornerRadius: 6).stroke(isPrimary ? Color.clear : TrainerAIPalette.fieldBorder, lineWidth: 1))
         }
         .buttonStyle(BorderlessButtonStyle())
         .accessibilityIdentifier("trainer-ai-credits-action")
-    }
-
-    var meterFill: Color {
-        switch notice.tone {
-        case .paused: return AICreditsPalette.red
-        case .warning: return AICreditsPalette.amber
-        case .normal, .upgrade: return notice.meter?.planShare == nil ? AICreditsPalette.green : AICreditsPalette.accent
-        }
-    }
-
-    var textColor: Color {
-        switch notice.tone {
-        case .paused: return TrainerAIPalette.pausedText
-        case .warning, .upgrade: return TrainerAIPalette.bannerText
-        case .normal: return TrainerAIPalette.text
-        }
-    }
-
-    var background: Color {
-        switch notice.tone {
-        case .paused: return TrainerAIPalette.pausedBackground
-        case .warning, .upgrade: return TrainerAIPalette.bannerBackground
-        case .normal: return TrainerAIPalette.subtleBackground
-        }
-    }
-
-    var border: Color {
-        switch notice.tone {
-        case .paused: return TrainerAIPalette.pausedBorder
-        case .warning, .upgrade: return TrainerAIPalette.bannerBorder
-        case .normal: return Color.clear
-        }
-    }
-}
-
-/// TrainerAIPromptSection.swift's section header, with the web's AI and vision icons.
-struct TrainerAIPromptHeader: View {
-    let kind: PromptClassifierKind
-    let font: Font
-    let color: Color
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: kind == .image ? "eye" : "text.bubble")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(TrainerAIPalette.accent)
-            Text(kind == .image ? NBLocalization.text("Natural Language Image Classifier")
-                                : NBLocalization.text("Natural Language Text Classifier"))
-                .font(font)
-                .foregroundColor(color)
-        }
     }
 }
 
@@ -733,7 +765,6 @@ struct TrainerPromptCapsule: View {
     let kind: PromptClassifierKind
     let text: String
     let score: Int
-    var isPlaceholder = false
     var isDraft = false
     var showsScope = false
     @Binding var scope: ClassifierScope
@@ -742,14 +773,13 @@ struct TrainerPromptCapsule: View {
     var onScopeChanged: ((ClassifierScope) -> Void)?
     var onDislike: (() -> Void)?
 
-    init(kind: PromptClassifierKind, text: String, score: Int, isPlaceholder: Bool = false, isDraft: Bool = false,
+    init(kind: PromptClassifierKind, text: String, score: Int, isDraft: Bool = false,
          showsScope: Bool = false, scope: Binding<ClassifierScope> = .constant(.feed), isPremiumArchive: Bool = false,
          isFolderAvailable: Bool = true, onScopeChanged: ((ClassifierScope) -> Void)? = nil,
          onDislike: (() -> Void)? = nil) {
         self.kind = kind
         self.text = text
         self.score = score
-        self.isPlaceholder = isPlaceholder
         self.isDraft = isDraft
         self.showsScope = showsScope
         self._scope = scope
@@ -789,8 +819,7 @@ struct TrainerPromptCapsule: View {
 
                 Text(text)
                     .font(.system(size: 13))
-                    .italic(isPlaceholder)
-                    .foregroundColor(isActive ? .white : isPlaceholder ? TrainerAIPalette.secondaryText : TrainerAIPalette.text)
+                    .foregroundColor(isActive ? .white : TrainerAIPalette.text)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -815,7 +844,7 @@ struct TrainerPromptCapsule: View {
         }
         .background(RoundedRectangle(cornerRadius: 15).fill(background))
         .overlay {
-            if isDraft || isPlaceholder {
+            if isDraft {
                 RoundedRectangle(cornerRadius: 15)
                     .strokeBorder(style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
                     .foregroundColor(isActive ? Color.white.opacity(0.6) : TrainerAIPalette.accent.opacity(0.6))
@@ -854,9 +883,7 @@ enum TrainerAIPalette {
     static var errorBackground: Color { Color.themed([0xFFEBEE, 0xF8E1DA, 0x512D31, 0x3E2226]) }
     static var bannerText: Color { Color.themed([0x5D4A1F, 0x5D4A1F, 0xF0DDA8, 0xF0DDA8]) }
     static var bannerBackground: Color { Color.themed([0xFFF4D6, 0xF7E6C4, 0x4A3F22, 0x3A3119]) }
-    static var bannerBorder: Color { Color.themed([0xF0DFA8, 0xE6CFA0, 0x5E5230, 0x4C4124]) }
     static var pausedText: Color { Color.themed([0x8A1F1F, 0x8A1F1F, 0xFFC2C2, 0xFFC2C2]) }
-    static var pausedBackground: Color { Color.themed([0xFDE7E7, 0xF6DCD3, 0x4F2A2A, 0x3D2020]) }
-    static var pausedBorder: Color { Color.themed([0xF5C6C6, 0xE9C3B6, 0x6A3838, 0x552B2B]) }
     static var link: Color { Color.themed([0x2F6FB3, 0x8A5A1E, 0x8CC4FF, 0x8CC4FF]) }
+    static var switchTrack: Color { Color.themed([0xE8E8E8, 0xE0D8C8, 0x2C2C2E, 0x2C2C2E]) }
 }
