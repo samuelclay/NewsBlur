@@ -2,6 +2,34 @@
 import Foundation
 import CryptoKit
 
+enum WidgetLink {
+    case background
+    case story(feedID: String, hash: String, site: [String: String]?)
+    case status(String)
+
+    func url(source: String) -> URL {
+        var link = URLComponents(string: "newsblurwidget://")!
+        var items = [URLQueryItem(name: "source", value: source)]
+        switch self {
+        case .background:
+            link.host = "open"
+        case let .status(error):
+            items.append(URLQueryItem(name: "error", value: error))
+        case let .story(feedID, hash, site):
+            items.append(URLQueryItem(name: "feedId", value: feedID))
+            items.append(URLQueryItem(name: "storyHash", value: hash))
+            if let title = site?["feed_title"] {
+                items.append(URLQueryItem(name: "siteTitle", value: title))
+            }
+            if let address = site?["feed_address"] {
+                items.append(URLQueryItem(name: "siteAddress", value: address))
+            }
+        }
+        link.queryItems = items
+        return link.url!
+    }
+}
+
 enum WidgetStorySource: String, CaseIterable {
     case infrequent
     case widelyRead = "trending:well_read"

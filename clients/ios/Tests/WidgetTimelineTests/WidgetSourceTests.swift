@@ -3,6 +3,31 @@ import XCTest
 @testable import WidgetTimeline
 
 final class Test_WidgetSource: XCTestCase {
+    func test_tapsRoundTripTheConfiguredSourceAndUnsubscribedStoryDetails() throws {
+        func query(_ link: WidgetLink, source: String) throws -> [String: String] {
+            let url = link.url(source: source)
+            XCTAssertEqual(url.scheme, "newsblurwidget")
+            let items = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false)).queryItems ?? []
+            return Dictionary(uniqueKeysWithValues: items.compactMap { item in
+                item.value.map { (item.name, $0) }
+            })
+        }
+
+        let title = "Arts & Culture"
+        let address = "https://example.com/feed?a=1&b=2"
+        let story = WidgetLink.story(feedID: "42", hash: "42:abc", site: ["feed_title": title, "feed_address": address])
+        let sources = ["all", "folder:Science & Art - 宇宙#1", "feed:42"] + WidgetStorySource.allCases.map(\.rawValue)
+        for source in sources {
+            XCTAssertEqual(try query(.background, source: source), ["source": source])
+            XCTAssertEqual(try query(story, source: source), [
+                "source": source, "feedId": "42", "storyHash": "42:abc",
+                "siteTitle": title, "siteAddress": address
+            ])
+        }
+        XCTAssertEqual(try query(.status("noStories"), source: "infrequent"),
+                       ["source": "infrequent", "error": "noStories"])
+    }
+
     func test_largePickerListsStayLightweightAndMatchingSitesKeepTheirIcons() {
         let icon = Data(repeating: 123, count: 8_192)
         let encoded = icon.base64EncodedString()

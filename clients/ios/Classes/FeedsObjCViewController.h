@@ -125,6 +125,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)selectWidgetStories;
 
 - (void)selectFolder:(NSString *)folder;
+- (void)expandFolderIfNecessary:(NSString *)folderName;
 - (void)selectFeed:(NSString *)feedId inFolder:(NSString *)folder;
 
 

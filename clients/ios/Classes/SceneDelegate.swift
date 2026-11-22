@@ -95,7 +95,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // SceneDelegate.swift replays a response received while Command-W left the process without a reader window.
         // A connection response already navigates through the same handler, so it must not be replayed twice.
         if connectionOptions.notificationResponse == nil,
-           appDelegate.pendingNotificationStory != nil || appDelegate.pendingDailyBriefingStoryHash != nil {
+           appDelegate.pendingNotificationStory != nil || appDelegate.pendingDailyBriefingStoryHash != nil ||
+            appDelegate.pendingWidgetNavigation != nil {
             appDelegate.backgroundLoadNotificationStory()
         }
 #endif

@@ -2759,10 +2759,12 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 - (void)beginNotificationStoryLookupIfNeeded {
     NSString *hash = storiesCollection.notificationStoryHash;
     if (!hash.length || self.notificationStoryLookupHash || !appDelegate.inFindingStoryMode ||
-        ![appDelegate.tryFeedStoryId isEqualToString:hash] || storiesCollection.isRiverOrSocial) return;
-    self.notificationStoryLookupHash = hash;
+        ![appDelegate.tryFeedStoryId isEqualToString:hash]) return;
     StoriesCollection *collection = storiesCollection;
-    NSString *feedId = collection.activeFeedIdStr;
+    NSString *river = collection.isRiverView ? collection.activeFolder : nil;
+    NSString *feedId = river ? appDelegate.tryFeedFeedId : collection.activeFeedIdStr;
+    if (!feedId.length) return;
+    self.notificationStoryLookupHash = hash;
     NSString *account = [appDelegate.activeUsername copy];
     NSString *host = [appDelegate.url copy];
     NSUInteger generation = self.fetchRequestId;
@@ -2775,7 +2777,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
         return controller && controller.fetchRequestId == generation && controller.storiesCollection == collection &&
             [controller.appDelegate.activeUsername isEqualToString:account] &&
             [controller.appDelegate.url isEqualToString:host] &&
-            [collection.activeFeedIdStr isEqualToString:feedId] &&
+            (river ? [collection.activeFolder isEqualToString:river] : [collection.activeFeedIdStr isEqualToString:feedId]) &&
             [collection.notificationStoryHash isEqualToString:hash] &&
             [controller.notificationStoryLookupHash isEqualToString:hash];
     };
@@ -2957,11 +2959,11 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)finishFirstPageResponse:(NSDictionary *)response feedPage:(NSInteger)page feedId:(NSString *)feedId load:(StoryFirstPageLoad *)load {
-    if (storiesCollection.notificationStory && !storiesCollection.isRiverOrSocial) {
+    if (storiesCollection.notificationStory) {
         NSDictionary *updated = response;
         if (load && page == 1) {
             if (![self isCurrentFirstPageLoad:load]) return;
-            if (![[NSString stringWithFormat:@"%@", response[@"feed_id"]] isEqualToString:feedId]) {
+            if (!storiesCollection.isRiverView && ![[NSString stringWithFormat:@"%@", response[@"feed_id"]] isEqualToString:feedId]) {
                 load.pending = NO;
                 self.pageFetching = NO;
                 return;
@@ -3320,6 +3322,7 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
     }
 
     NSString *theFeedDetailURL = [self riverRequestURLForPage:page];
+    if (page == 1) [self beginNotificationStoryLookupIfNeeded];
 
     NSUInteger requestId = self.fetchRequestId;
     NSInteger feedPage = page;

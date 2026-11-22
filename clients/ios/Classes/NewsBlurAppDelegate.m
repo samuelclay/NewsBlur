@@ -139,6 +139,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @property (nonatomic) NSUInteger faviconWriteGeneration;
 @property (nonatomic, strong) FeedIconRenderer *feedIconRenderer;
 @property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *pendingWidgetNavigation;
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *openingWidgetNavigation;
 @property (nonatomic, strong, readwrite) StoryScoreRefresher *storyScoreRefresher;
 
 - (void)presentFeedDetailAfterFeedSelection;
@@ -684,6 +686,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
             }];
         } else if ([action isEqualToString:@"VIEW_STORY_IDENTIFIER"] ||
                    [action isEqualToString:@"com.apple.UNNotificationDefaultActionIdentifier"]) {
+            self.pendingWidgetNavigation = nil;
             BOOL isDailyBriefing = [[content objectForKey:@"is_daily_briefing"] boolValue];
 #if TARGET_OS_MACCATALYST
             if (!self.window) {
@@ -759,7 +762,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (BOOL)openURL:(NSURL *)url {
     if ([self handleFeedSubscriptionURL:url]) return YES;
-    if (self.activeUsername && [url.scheme isEqualToString:@"newsblurwidget"]) {
+    if ([url.scheme isEqualToString:@"newsblurwidget"]) {
         NSMutableDictionary *query = [NSMutableDictionary dictionary];
         
         for (NSURLQueryItem *item in [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO].queryItems) {
@@ -770,39 +773,75 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         NSString *storyHash = query[@"storyHash"];
         NSString *error = query[@"error"];
         
-        if (error.length) {
-            [self popToRootWithCompletion:^{
-                [self showWidgetSites];
-            }];
-            
+        BOOL opensConfiguredSource = [query[@"source"] length] &&
+            ([error isEqualToString:@"noStories"] || [error isEqualToString:@"loading"]);
+        if (error.length && !opensConfiguredSource) {
+            if (self.activeUsername.length && ![error isEqualToString:@"notLoggedIn"]) {
+                [self popToRootWithCompletion:^{ [self showWidgetSites]; }];
+            }
             return YES;
         }
         
-        if (!feedId.length || !storyHash.length) {
-            return NO;
-        }
-        
-        // NewsBlurAppDelegate.m opens the story's actual feed independently of other widget selections.
-        if (![self getFeed:feedId] && [query[@"siteTitle"] length]) {
-            // DiscoverFeedsViewController.swift uses the same exact-story lookup when previewing an unsubscribed site.
-            NSDictionary *site = @{@"id": feedId, @"feed_title": query[@"siteTitle"],
-                                   @"feed_address": query[@"siteAddress"] ?: @""};
-            [self cleanUpTryFeed];
-            self.inFindingStoryMode = YES;
-            self.findingStoryStartDate = [NSDate date];
-            self.findingStoryDictionary = nil;
-            self.storiesCollection.readFilterOverride = @"all";
-            self.storiesCollection.notificationStoryHash = storyHash;
-            self.storiesCollection.notificationStory = nil;
-            [self loadTryFeedDetailView:feedId withStory:storyHash isSocial:NO withUser:site showFindingStory:YES];
-            return YES;
-        }
-        [self loadFeed:feedId withStory:storyHash animated:NO];
+        if ((![query[@"source"] length] && !feedId.length) || (feedId.length > 0) != (storyHash.length > 0)) return NO;
 
+        self.pendingNotificationStory = nil;
+        self.pendingDailyBriefingStoryHash = nil;
+        self.pendingFolder = nil;
+        self.pendingWidgetNavigation = query;
+        [self openPendingWidgetNavigation];
         return YES;
     }
-    
+
     return NO;
+}
+
+- (void)openPendingWidgetNavigation {
+    NSDictionary *query = self.pendingWidgetNavigation;
+    // SceneDelegate.swift may deliver the URL before the account and its folder paths are available.
+    if (!query || !self.activeUsername.length || !self.feedsViewController || !self.dictFoldersArray.count) return;
+#if TARGET_OS_MACCATALYST
+    if (!self.window) return;
+#endif
+    self.pendingWidgetNavigation = nil;
+    self.pendingFolder = nil;
+    NSString *feedId = query[@"feedId"];
+    NSString *source = query[@"source"];
+    NSString *siteSource = feedId.length ? [@"feed:" stringByAppendingString:feedId] : nil;
+    [self cleanUpTryFeed];
+    self.openingWidgetNavigation = query;
+    BOOL selected = [self.feedsViewController selectWidgetSource:source ?: siteSource];
+    if (!selected && siteSource && ![source isEqualToString:siteSource]) {
+        // NewsBlurAppDelegate.m can still open a story after its widget folder was renamed or deleted.
+        selected = [self.feedsViewController selectWidgetSource:siteSource];
+    }
+    if (!selected && feedId.length) {
+        if (![self getFeed:feedId] && [query[@"siteTitle"] length]) {
+            NSDictionary *site = @{@"id": feedId, @"feed_title": query[@"siteTitle"],
+                                   @"feed_address": query[@"siteAddress"] ?: @""};
+            [self.storiesCollection reset];
+            [self prepareWidgetStoryLookup];
+            [self loadTryFeedDetailView:feedId withStory:query[@"storyHash"] isSocial:NO withUser:site showFindingStory:YES];
+        } else {
+            [self loadFeed:feedId withStory:query[@"storyHash"] animated:NO];
+        }
+    }
+    self.openingWidgetNavigation = nil;
+}
+
+- (void)prepareWidgetStoryLookup {
+    NSDictionary *query = self.openingWidgetNavigation;
+    if (!query) return;
+    NSString *hash = query[@"storyHash"];
+    self.tryFeedFeedId = query[@"feedId"];
+    self.tryFeedStoryId = hash;
+    self.tryFeedStoryTitle = nil;
+    self.inFindingStoryMode = hash.length > 0;
+    self.findingStoryStartDate = hash.length ? [NSDate date] : nil;
+    self.findingStoryDictionary = nil;
+    if (hash.length) {
+        self.storiesCollection.notificationStoryHash = hash;
+        self.storiesCollection.readFilterOverride = @"all";
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -2289,6 +2328,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     
     [storiesCollection setActiveFeed:feed];
     [storiesCollection setActiveFolder:folder];
+    if (self.openingWidgetNavigation) {
+        [self prepareWidgetStoryLookup];
+        self.skipTryFeedCleanup = YES;
+    }
     readStories = [NSMutableArray array];
     if (folder != nil) {
         [folderCountCache removeObjectForKey:folder];
@@ -2311,6 +2354,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.pendingFolder = nil;
     self.pendingDailyBriefingStoryHash = nil;
     self.pendingNotificationStory = nil;
+    self.pendingWidgetNavigation = nil;
     self.tryFeedFeedId = nil;
     self.tryFeedStoryId = nil;
     self.tryFeedStoryTitle = nil;
@@ -2477,6 +2521,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     self.tryFeedStoryTitle = storyTitle;
     
     [self.storiesCollection reset];
+    [self prepareWidgetStoryLookup];
     if (openingNotification) {
         self.storiesCollection.readFilterOverride = @"all";
         self.storiesCollection.notificationStoryHash = contentId;
@@ -2693,6 +2738,10 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     // NewsBlurAppDelegate.m preserves pending navigation when a late feed refresh finishes after the window closes.
     if (!self.window) return;
 #endif
+    if (self.pendingWidgetNavigation) {
+        [self openPendingWidgetNavigation];
+        return;
+    }
     NSString *startupFolder = [DailyBriefingStartupDecision startupFolderWithPendingStoryHash:self.pendingDailyBriefingStoryHash
                                                                                 pendingFolder:self.pendingFolder];
 
@@ -2705,8 +2754,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
         [self loadFeed:self.pendingNotificationStory[@"feedId"]
             withStory:self.pendingNotificationStory[@"storyHash"] animated:NO];
     } else if (self.inFindingStoryMode) {
-        if (storiesCollection.readFilterOverride && !storiesCollection.isRiverOrSocial &&
-            [storiesCollection.activeFeedIdStr isEqualToString:self.tryFeedFeedId]) {
+        if (storiesCollection.readFilterOverride &&
+            ([storiesCollection.notificationStoryHash isEqualToString:self.tryFeedStoryId] ||
+             (!storiesCollection.isRiverOrSocial && [storiesCollection.activeFeedIdStr isEqualToString:self.tryFeedFeedId]))) {
             // NewsBlurAppDelegate.m leaves an active notification lookup on its current page while feeds refresh.
             self.pendingFolder = nil;
             return;
@@ -3002,7 +3052,8 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     }
     
     [feedDetailView.storiesCollection reset];
-    
+    [self prepareWidgetStoryLookup];
+
     if ([folder isEqualToString:@"river_global"]) {
         feedDetailView.storiesCollection.isSocialRiverView = YES;
         feedDetailView.storiesCollection.isRiverView = YES;

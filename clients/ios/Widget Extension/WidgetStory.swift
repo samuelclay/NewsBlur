@@ -21,17 +21,6 @@ struct Story: Codable, Identifiable {
     /// WidgetStory.swift keeps the display and subscription details for trending sites outside the catalog.
     let site: [String: String]?
 
-    var openURL: URL {
-        var link = URLComponents(string: "newsblurwidget://")!
-        var items = [URLQueryItem(name: "feedId", value: feed), URLQueryItem(name: "storyHash", value: id)]
-        if let site {
-            items.append(URLQueryItem(name: "siteTitle", value: site["feed_title"]))
-            items.append(URLQueryItem(name: "siteAddress", value: site["feed_address"]))
-        }
-        link.queryItems = items
-        return link.url!
-    }
-    
     /// The date and/or time as a string.
     let date: String
     

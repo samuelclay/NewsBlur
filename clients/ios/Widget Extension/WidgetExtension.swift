@@ -74,7 +74,7 @@ struct WidgetEntryView : View {
 //            }
             
             if let error = entry.cache.error {
-                Link(destination: URL(string: "newsblurwidget://?error=\(error)")!) {
+                Link(destination: WidgetLink.status(error.rawValue).url(source: entry.cache.source)) {
                         Text(message(for: error))
                         .font(.headline)
                         .foregroundStyle(.secondary)
@@ -85,7 +85,8 @@ struct WidgetEntryView : View {
                     let stories = entry.cache.stories(count: isCompact ? 3 : 6)
                     
                     ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
-                        Link(destination: entry.isPlaceholder ? URL(string: "newsblurwidget://open")! : story.openURL) {
+                        let link: WidgetLink = entry.isPlaceholder ? .background : .story(feedID: story.feed, hash: story.id, site: story.site)
+                        Link(destination: link.url(source: entry.cache.source)) {
                             WidgetStoryView(cache: entry.cache, story: story)
                         }
                         if index < stories.count - 1 {
@@ -98,9 +99,9 @@ struct WidgetEntryView : View {
                 .containerBackground(for: .widget) {
                     Color("WidgetBackground")
                 }
-                .widgetURL(URL(string: "newsblurwidget://open"))
             }
         }
+        .widgetURL(WidgetLink.background.url(source: entry.cache.source))
 //        .environment(\.colorScheme, colorScheme)
         .containerBackground(for: .widget) {
             Color("WidgetBackground")
