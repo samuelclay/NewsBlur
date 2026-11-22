@@ -17,6 +17,7 @@ Keys expire after 60 days.
 """
 
 import datetime
+import uuid
 
 import redis
 from django.conf import settings
@@ -132,19 +133,15 @@ class RLLMCosts:
         # Register model name for fast lookup (avoids scan_iter on 150K+ keys)
         pipe.sadd(f"{cls.KEY_PREFIX}:known_models", model_safe)
 
-        # rllm_costs.py: AI filters are unlimited on Premium Archive, so each reader's
-        # filter usage is kept to spot the heaviest ones in Grafana.
+        # rllm_costs.py: Each reader's AI filter spending, in sorted sets by day, so Grafana
+        # can list the heaviest readers without reading a key per reader.
         if user_id and feature in cls.CLASSIFIER_FEATURES:
-            users_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users"
-            pipe.sadd(users_key, user_id)
-            pipe.expireat(users_key, expiry)
-            user_prefix = f"{cls.KEY_PREFIX}:{date_key}:classifier_user:{user_id}:{feature}"
-            pipe.incrby(f"{user_prefix}:tokens", total_tokens)
-            pipe.incrby(f"{user_prefix}:cost", cost_micro)
-            pipe.incr(f"{user_prefix}:requests")
-            pipe.expireat(f"{user_prefix}:tokens", expiry)
-            pipe.expireat(f"{user_prefix}:cost", expiry)
-            pipe.expireat(f"{user_prefix}:requests", expiry)
+            cost_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users:cost"
+            requests_key = f"{cls.KEY_PREFIX}:{date_key}:classifier_users:{cls.CLASSIFIER_FEATURES[feature]}"
+            pipe.zincrby(cost_key, cost_micro, user_id)
+            pipe.zincrby(requests_key, 1, user_id)
+            pipe.expireat(cost_key, expiry)
+            pipe.expireat(requests_key, expiry)
 
         pipe.execute()
 
@@ -174,7 +171,8 @@ class RLLMCosts:
         "global_shared",
         "listen",
     ]
-    CLASSIFIER_FEATURES = ["story_classification", "vision_classification"]
+    # rllm_costs.py: AI filter features, and the request count each one adds to.
+    CLASSIFIER_FEATURES = {"story_classification": "text_requests", "vision_classification": "image_requests"}
     METRICS = ["tokens", "cost", "requests"]
 
     @classmethod
@@ -472,43 +470,40 @@ class RLLMCosts:
         }
 
     @classmethod
-    def get_classifier_user_stats(cls, days=30):
-        """Each reader's AI filter usage over the last `days` days.
+    def get_classifier_user_stats(cls, days=30, limit=50):
+        """The `limit` readers whose AI filters cost the most over the last `days` days.
 
-        Returns {user_id: {feature: {"tokens": N, "cost_usd": N, "requests": N}}}.
+        Returns {user_id: {"cost_usd": N, "text_requests": N, "image_requests": N}}.
         """
         r = cls._get_redis()
         today = datetime.date.today()
         dates = [cls._date_key(today - datetime.timedelta(days=offset)) for offset in range(days)]
+        totals_key = f"{cls.KEY_PREFIX}:classifier_users:totals:{uuid.uuid4().hex}"
+        metrics = ["cost"] + sorted(set(cls.CLASSIFIER_FEATURES.values()))
         try:
-            user_ids = r.sunion(*[f"{cls.KEY_PREFIX}:{date_key}:classifier_users" for date_key in dates])
+            pipe = r.pipeline()
+            for metric in metrics:
+                day_keys = [f"{cls.KEY_PREFIX}:{date_key}:classifier_users:{metric}" for date_key in dates]
+                pipe.zunionstore(f"{totals_key}:{metric}", day_keys)
+                pipe.expire(f"{totals_key}:{metric}", 60)
+            pipe.execute()
+            top = r.zrevrange(f"{totals_key}:cost", 0, limit - 1, withscores=True)
+            pipe = r.pipeline()
+            for user_id, _ in top:
+                for metric in metrics[1:]:
+                    pipe.zscore(f"{totals_key}:{metric}", user_id)
+            request_counts = pipe.execute()
+            r.delete(*[f"{totals_key}:{metric}" for metric in metrics])
         except redis.RedisError:
             return {}
-        if not user_ids:
-            return {}
 
-        keys, key_metadata = [], []
-        for user_id in (int(u) for u in user_ids):
-            for date_key in dates:
-                for feature in cls.CLASSIFIER_FEATURES:
-                    for metric in cls.METRICS:
-                        keys.append(
-                            f"{cls.KEY_PREFIX}:{date_key}:classifier_user:{user_id}:{feature}:{metric}"
-                        )
-                        key_metadata.append((user_id, feature, metric))
-
-        user_stats = {}
-        for (user_id, feature, metric), value in zip(key_metadata, r.mget(keys)):
-            if value is None:
-                continue
-            stats = user_stats.setdefault(user_id, {}).setdefault(
-                feature, {"tokens": 0, "cost_usd": 0.0, "requests": 0}
-            )
-            if metric == "cost":
-                stats["cost_usd"] += int(value) / 1_000_000
-            else:
-                stats[metric] += int(value)
-        return user_stats
+        stats = {}
+        counts = iter(request_counts)
+        for user_id, cost_micro in top:
+            stats[int(user_id)] = {"cost_usd": cost_micro / 1_000_000}
+            for metric in metrics[1:]:
+                stats[int(user_id)][metric] = int(next(counts) or 0)
+        return stats
 
     @classmethod
     def get_unique_users_for_period(cls, days=1):

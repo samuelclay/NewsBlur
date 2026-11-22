@@ -14148,12 +14148,12 @@
      "refId": "C"
     }
    ],
-   "title": "AI Filter Usage by User (30 days)",
+   "title": "Top 50 AI Filter Users (30 days)",
    "transformations": [
     {
      "id": "joinByField",
      "options": {
-      "byField": "username",
+      "byField": "user_id",
       "mode": "outer"
      }
     },
@@ -14188,7 +14188,7 @@
       },
       "indexByName": {},
       "renameByName": {
-       "username": "User",
+       "user_id": "User ID",
        "Value #A": "Cost",
        "Value #B": "Text requests",
        "Value #C": "Image requests"

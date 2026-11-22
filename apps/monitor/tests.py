@@ -97,6 +97,10 @@ class Test_LLMCostsMonitor(TestCase):
         prefix_patch.start()
         self.addCleanup(prefix_patch.stop)
         self.addCleanup(self._delete_keys)
+        # tests.py: Recording AI filter usage spends AI credits too, under keys of the test's own.
+        from apps.analyzer.test_ai_credits import isolate_ai_credits
+
+        isolate_ai_credits(self)
         self.user = User.objects.create_user(
             username="jevreader", password="x", email="jevreader@example.com"
         )
@@ -107,8 +111,8 @@ class Test_LLMCostsMonitor(TestCase):
             r.delete(key)
 
     def test_ai_filter_usage_is_exported_by_provider_and_reader(self):
-        """AI filters are unlimited on Premium Archive, so Grafana has to see Jev's spend
-        and which readers drive it."""
+        """Grafana sees Jev's spend and which readers drive it, by user id: the endpoint is
+        scraped without a login, so it never carries usernames."""
         from utils.llm_costs import LLMCostTracker
         from utils.llm_models import JEV_MODEL
 
@@ -125,9 +129,27 @@ class Test_LLMCostsMonitor(TestCase):
         body = self.client.get("/monitor/llm-costs").content.decode("utf-8")
 
         self.assertIn('llm_costs{metric="requests",provider="openrouter",period="daily"} 2', body)
-        self.assertIn('llm_costs{metric="cost_usd",classifier="user",username="jevreader"} 0.000294', body)
-        self.assertIn('llm_costs{metric="text_requests",classifier="user",username="jevreader"} 1', body)
-        self.assertIn('llm_costs{metric="image_requests",classifier="user",username="jevreader"} 1', body)
+        label = 'classifier="user",user_id="%s"' % self.user.pk
+        self.assertIn('llm_costs{metric="cost_usd",%s} 0.000294' % label, body)
+        self.assertIn('llm_costs{metric="text_requests",%s} 1' % label, body)
+        self.assertIn('llm_costs{metric="image_requests",%s} 1' % label, body)
+        self.assertNotIn("jevreader", body)
+
+    def test_only_the_heaviest_readers_are_listed(self):
+        """The table lists the readers who cost the most, so a scrape doesn't grow with every
+        reader who has an AI filter."""
+        for user_id, cost in ((101, 0.002), (102, 0.009), (103, 0.004)):
+            RLLMCosts.record(
+                provider="openrouter",
+                model="typesafe/jev-1.14",
+                feature="story_classification",
+                input_tokens=1000,
+                output_tokens=0,
+                cost_usd=cost,
+                user_id=user_id,
+            )
+
+        self.assertEqual(list(RLLMCosts.get_classifier_user_stats(days=30, limit=2)), [102, 103])
 
 
 class Test_LLMCostPricing(TestCase):
