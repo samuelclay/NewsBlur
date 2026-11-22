@@ -35,6 +35,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         this.fetch_connected_accounts();
 
         this.fetch_payment_history();
+        this.fetch_ai_credits();
         this.render_dates();
         this.fetch_classifiers_count();
         this.handle_classifier_pill_change();
@@ -52,6 +53,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, gettext('Account')),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, gettext('Payments')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-aicredits' }, gettext('AI credits')),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, gettext('Emails')),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-custom' }, gettext('Custom CSS/JavaScript'))
             ]),
@@ -274,6 +276,9 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                             gettext('Premium renewal')
                         ])
                     ]))
+                ]),
+                $.make('div', { className: 'NB-tab NB-tab-aicredits' }, [
+                    NEWSBLUR.AICredits.make_settings_panel(NEWSBLUR.AICredits.state())
                 ]),
                 $.make('div', { className: 'NB-tab NB-tab-emails' }, [
                     $.make('div', { className: 'NB-preferences-unsubscribed' }, [
@@ -885,6 +890,33 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
         ]);
     },
 
+    // reader_account.js: The AI credits tab, from /profile/usage_billing_history. Stripe sends the
+    // reader back here with ?usage_billing=setup_complete as soon as checkout finishes, which
+    // can be a moment before its webhook turns usage billing on, so this asks again until it is.
+    fetch_ai_credits: function (attempt) {
+        var self = this;
+        attempt = attempt || 0;
+        this.model.fetch_usage_billing_history(function (data) {
+            if (!data || data.code !== 0 || !self.$modal) return;
+            NEWSBLUR.AICredits.update(data.ai_credits);
+            self.ai_credits_history = data;
+            var waiting = $.getQueryString('usage_billing') === 'setup_complete' && !data.ai_credits.is_usage_billing;
+            self.render_ai_credits(waiting && attempt < 10);
+            if (waiting && attempt < 10) {
+                _.delay(function () { self.fetch_ai_credits(attempt + 1); }, 2000);
+            }
+        });
+    },
+
+    render_ai_credits: function (waiting_for_stripe) {
+        var $tab = $('.NB-tab-aicredits', this.$modal);
+        $tab.html(NEWSBLUR.AICredits.make_settings_panel(NEWSBLUR.AICredits.state(), this.ai_credits_history));
+        if (waiting_for_stripe) {
+            $tab.prepend($.make('div', { className: 'NB-ai-credits-setup-pending', role: 'status' },
+                gettext("Stripe has your card. Usage billing turns on in a moment.")));
+        }
+    },
+
     // reader_account.js: Billing dates follow the interface language instead of English month names.
     format_billing_date: function (date, options) {
         return date.toLocaleDateString(document.documentElement.lang || undefined, options);
@@ -948,6 +980,31 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     handle_click: function (elem, e) {
         var self = this;
 
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-setup' }, function ($t) {
+            e.preventDefault();
+            NEWSBLUR.AICredits.setup_usage_billing($('.NB-tab-aicredits', self.$modal));
+        });
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-manage' }, function ($t) {
+            e.preventDefault();
+            NEWSBLUR.AICredits.manage_usage_billing();
+        });
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-cancel' }, function ($t) {
+            e.preventDefault();
+            NEWSBLUR.AICredits.cancel_usage_billing($('.NB-tab-aicredits', self.$modal), function () {
+                self.render_ai_credits();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-limit-save' }, function ($t) {
+            e.preventDefault();
+            NEWSBLUR.AICredits.save_limit($('.NB-tab-aicredits', self.$modal), function () {
+                self.render_ai_credits();
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-open-settings' }, function ($t) {
+            e.preventDefault();
+            self.switch_tab('aicredits');
+        });
+
         $.targetIs(e, { tagSelector: '.NB-account-connect-provider' }, function ($t) {
             e.preventDefault();
             self.connect_provider($t.attr('data-provider'));
@@ -963,6 +1020,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 newtab = 'account';
             } else if ($t.hasClass('NB-modal-tab-premium')) {
                 newtab = 'premium';
+            } else if ($t.hasClass('NB-modal-tab-aicredits')) {
+                newtab = 'aicredits';
             } else if ($t.hasClass('NB-modal-tab-emails')) {
                 newtab = 'emails';
             } else if ($t.hasClass('NB-modal-tab-custom')) {

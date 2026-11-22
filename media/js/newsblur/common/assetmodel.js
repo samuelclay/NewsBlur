@@ -1696,6 +1696,16 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         return true;
     },
 
+    // assetmodel.js: This month's AI credits and what AI filters on a site spend a month
+    // (apps/analyzer/views.py get_ai_classifier_usage).
+    get_ai_classifier_usage: function (data, callback) {
+        if (NEWSBLUR.Globals.is_authenticated) {
+            this.make_request('/classifier/ai_classifier_usage', data, callback, null, { request_type: 'GET' });
+        } else {
+            if ($.isFunction(callback)) callback({});
+        }
+    },
+
     save_prompt_classifier: function (data, callback) {
         if (NEWSBLUR.Globals.is_authenticated) {
             this.make_request('/classifier/save_prompt', data, callback);
@@ -2685,6 +2695,18 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/profile/payment_history', {
             user_id: user_id
         }, callback, null, { request_type: 'GET' });
+    },
+
+    fetch_usage_billing_history: function (callback) {
+        this.make_request('/profile/usage_billing_history', {}, callback, null, { request_type: 'GET' });
+    },
+
+    save_usage_billing_limit: function (limit, callback) {
+        this.make_request('/profile/save_usage_billing_limit', { limit: limit }, callback);
+    },
+
+    cancel_usage_billing: function (callback) {
+        this.make_request('/profile/cancel_usage_billing', {}, callback);
     },
 
     upgrade_premium: function (user_id, callback, error_callback) {

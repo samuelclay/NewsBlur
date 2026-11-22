@@ -69,19 +69,6 @@ NEWSBLUR.ClassifierConstants = {
         });
     },
 
-    // reader_classifier.js: Banner shown under the AI filter sections when the
-    // reader has AI filters but isn't on Premium Archive, which runs them. Anyone
-    // can write and test AI filters; the tier name opens the upgrade modal.
-    make_ai_archive_banner: function () {
-        var $tier_link = $.make('a', { href: '#', className: 'NB-classifier-premium-link' }, gettext('Premium Archive'));
-        return $.make('div', { className: 'NB-ai-filter-upgrade-banner-inner' },
-            NEWSBLUR.utils.interpolate_nodes(
-                gettext("AI filters are saved but only run on %(tier_link)s."),
-                { tier_link: $tier_link },
-                function (text) { return $.make('b').text(text); }
-            ));
-    },
-
     // reader_classifier.js: The test result under an AI filter's input, plus how the
     // filter was understood ("sports" for "Hide anything about sports") when that
     // differs from what was typed, so the reader can tell whether the wording works.
@@ -817,6 +804,8 @@ var classifier_prototype = {
                         this.make_content_filter_section(),
                         // Section 5: AI Image Filter (VLM prompt classifier)
                         this.make_image_filter_section(),
+                        // This month's AI credits, shared by both AI sections (reader_ai_credits.js)
+                        $.make('div', { className: 'NB-ai-credits-trainer' }),
                         // Section 6: Combined Authors (story author + feed authors)
                         this.make_combined_authors_section(story),
                         // Section 7: Combined Tags (story tags + feed tags)
@@ -1260,7 +1249,6 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
         var ai_svg = NEWSBLUR.ClassifierConstants.AI_FILTER_ICON;
 
@@ -1315,9 +1303,7 @@ var classifier_prototype = {
                     self.change_classifier($pill_classifier, 'like');
                 }
                 $btn.removeClass('NB-disabled');
-                if (!can_use_ai) {
-                    $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
-                }
+                self.show_ai_banner($section);
             } else {
                 $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
                 $placeholder.css('font-style', 'italic');
@@ -1326,6 +1312,7 @@ var classifier_prototype = {
                 // Only hide banner if no saved classifiers
                 var has_saved = $('.NB-content-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.render_ai_credits_strip();
             }
             $('.NB-content-filter-test-status', $section).empty();
         };
@@ -1400,17 +1387,81 @@ var classifier_prototype = {
             var $btn = $('.NB-content-filter-test-button', $section);
             $btn.addClass('NB-disabled');
 
-            // AI filters only run on Premium Archive
-            if (!can_use_ai) {
-                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-                $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
-            }
+            self.show_ai_banner($section);
         });
 
         return $section;
     },
 
+    // reader_classifier.js: Under an AI section that has a filter in it, typed or saved: for a
+    // free account, that AI filters only run on Premium; otherwise about how many credits a
+    // filter like it spends on this site a month (reader_ai_credits.js).
+    show_ai_banner: function ($section) {
+        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
+        var state = NEWSBLUR.AICredits.state();
+        var include_images = $section.is('.NB-classifier-image-filter-section');
+        var $content = null;
+        if (state && state.pause_reason === 'plan') {
+            $content = NEWSBLUR.AICredits.make_plan_banner();
+        } else if (NEWSBLUR.AICredits.is_counted(state) && this.ai_usage) {
+            var estimate = NEWSBLUR.AICredits.estimate_text(include_images ?
+                this.ai_usage.image_credits_per_month : this.ai_usage.text_credits_per_month, include_images);
+            $content = estimate && $.make('div', { className: 'NB-ai-filter-estimate' }).text(estimate);
+        }
+        if ($content) {
+            $banner.html($content).show();
+        } else {
+            $banner.empty().hide();
+        }
+        this.render_ai_credits_strip();
+    },
+
+    ai_section_has_filter: function ($section) {
+        return $section.find('.NB-content-filter-saved-list .NB-classifier-container, ' +
+            '.NB-image-filter-saved-list .NB-classifier-container').length > 0 ||
+            !!$.trim($section.find('.NB-classifier-content-prompt-input, .NB-classifier-prompt-input').val() || '');
+    },
+
+    // reader_classifier.js: The month's credits under both AI sections, once there's an AI
+    // filter in either of them, or always while credits are low or filters are paused.
+    render_ai_credits_strip: function () {
+        if (!this.$modal) return;
+        var $container = this.$modal.find('.NB-ai-credits-trainer');
+        if (!$container.length) return;
+        var self = this;
+        var state = NEWSBLUR.AICredits.state();
+        var has_filter = _.any(this.$modal.find('.NB-classifier-content-filter-section, .NB-classifier-image-filter-section'), function (section) {
+            return self.ai_section_has_filter($(section));
+        });
+        var $strip = state && (has_filter || state.is_paused || state.is_warning) &&
+            NEWSBLUR.AICredits.make_trainer_strip(state);
+        if ($strip) {
+            $container.html($strip).show();
+        } else {
+            $container.empty().hide();
+        }
+    },
+
+    // reader_classifier.js: Fresh credits, and what filters on this site spend, each time the
+    // trainer opens, since filters may have run since the page loaded.
+    refresh_ai_credits: function () {
+        var self = this;
+        if (this.ai_usage_requested || !NEWSBLUR.Globals.is_authenticated) return;
+        this.ai_usage_requested = true;
+        NEWSBLUR.assets.get_ai_classifier_usage({ feed_id: this.feed_id }, function (data) {
+            if (!data || data.code !== 0 || !self.$modal) return;
+            self.ai_usage = data;
+            NEWSBLUR.AICredits.update(data.ai_credits);
+            self.$modal.find('.NB-classifier-content-filter-section, .NB-classifier-image-filter-section').each(function () {
+                var $section = $(this);
+                if (self.ai_section_has_filter($section)) self.show_ai_banner($section);
+            });
+            self.render_ai_credits_strip();
+        });
+    },
+
     load_prompt_classifiers: function () {
+        this.refresh_ai_credits();
         if (!this.user_classifiers) return;
         var prompts = this.user_classifiers.prompts || {};
         var image_prompts = this.user_classifiers.image_prompts || {};
@@ -1433,12 +1484,11 @@ var classifier_prototype = {
 
         var prompt_keys = _.keys(prompts || {});
 
-        // Show/hide upgrade banner
-        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
-            $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
+        if (prompt_keys.length) {
+            this.show_ai_banner($section);
         } else {
-            $banner.empty().hide();
+            $('.NB-ai-filter-upgrade-banner', $section).empty().hide();
+            this.render_ai_credits_strip();
         }
 
         if (!prompt_keys.length) return;
@@ -1464,7 +1514,6 @@ var classifier_prototype = {
         var self = this;
         var feed_id = this.feed_id;
         var story = this.story;
-        var can_use_ai = NEWSBLUR.Globals.can_use_ai_classifiers;
 
         // SVG icon for the header
         var vision_svg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1537,9 +1586,7 @@ var classifier_prototype = {
                     self.change_classifier($pill_classifier, 'like');
                 }
                 $btn.removeClass('NB-disabled');
-                if (!can_use_ai) {
-                    $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
-                }
+                self.show_ai_banner($section);
             } else {
                 $placeholder.text(NEWSBLUR.ClassifierConstants.PLACEHOLDER_LABELS.prompt);
                 $placeholder.css('font-style', 'italic');
@@ -1547,6 +1594,7 @@ var classifier_prototype = {
                 $btn.addClass('NB-disabled');
                 var has_saved = $('.NB-image-filter-saved-list .NB-classifier-container', $section).length > 0;
                 if (!has_saved) $banner.empty().hide();
+                self.render_ai_credits_strip();
             }
             // Clear previous test results when prompt changes
             self.clear_image_test_results($section);
@@ -1653,11 +1701,7 @@ var classifier_prototype = {
             var $btn = $('.NB-image-filter-test-button', $section);
             $btn.addClass('NB-disabled');
 
-            // Show upgrade banner for non-billing users
-            if (!can_use_ai) {
-                var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-                $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
-            }
+            self.show_ai_banner($section);
 
         });
 
@@ -1794,12 +1838,11 @@ var classifier_prototype = {
 
         var prompt_keys = _.keys(image_prompts || {});
 
-        // Show/hide upgrade banner
-        var $banner = $('.NB-ai-filter-upgrade-banner', $section);
-        if (prompt_keys.length && !NEWSBLUR.Globals.can_use_ai_classifiers) {
-            $banner.html(NEWSBLUR.ClassifierConstants.make_ai_archive_banner()).show();
+        if (prompt_keys.length) {
+            this.show_ai_banner($section);
         } else {
-            $banner.empty().hide();
+            $('.NB-ai-filter-upgrade-banner', $section).empty().hide();
+            this.render_ai_credits_strip();
         }
 
         if (!prompt_keys.length) return;
@@ -3600,6 +3643,13 @@ var classifier_prototype = {
             }
             self.close(function () {
                 NEWSBLUR.reader.open_premium_upgrade_modal({ highlight_feature: highlight_feature });
+            });
+        });
+
+        $.targetIs(e, { tagSelector: '.NB-ai-credits-open-settings' }, function ($t, $p) {
+            e.preventDefault();
+            self.close(function () {
+                NEWSBLUR.reader.open_account_modal({ tab: 'aicredits' });
             });
         });
 

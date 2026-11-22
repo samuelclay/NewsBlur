@@ -25803,6 +25803,13 @@ h5.NB-classifier-section-header {
     /* indigo */
 }
 
+/* reader.css: AI text and image filters, the same icon as the Archive and Pro credit lines */
+.NB-premium-tier-premium .NB-premium-tier-features li.NB-10 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
+}
+
 /* Archive tier icons with individual vivid colors */
 .NB-premium-tier-features-archive li.NB-1 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/icons8/icons8-bursts-100.png');
@@ -25954,6 +25961,12 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/nouns/listen.svg');
     filter: invert(40%) sepia(80%) saturate(1800%) hue-rotate(80deg) brightness(90%) contrast(100%);
     /* green */
+}
+
+.NB-premium-tier-features-pro li.NB-7 .NB-premium-bullet-image {
+    background-image: url('/media/embed/icons/nouns/writing.svg');
+    filter: invert(37%) sepia(93%) saturate(2000%) hue-rotate(200deg) brightness(95%) contrast(100%);
+    /* blue */
 }
 
 .NB-premium-tier-features-pro li.NB-6 .NB-premium-bullet-image {
