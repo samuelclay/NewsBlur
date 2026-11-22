@@ -65,8 +65,11 @@ def DescribeFeedsSearch(user_id, search_id, request_id=None):
             logging.user(user, f"~FBDescribe: ~FRout of time~SN on search ~SB{search.id}~SN, finishing early")
             pipeline.finish(note=gettext("The search ran out of time, so this is what was found so far."))
         except Exception as e:
-            search.mark_error(str(e)[:300])
-            publish("error", {"error": gettext("Something went wrong while searching. Please try again.")})
+            # apps/describe/tasks.py: search.error is what the status view sends and every client shows as
+            # the status line, so it gets the plain message. The exception itself only goes to the log.
+            message = gettext("Something went wrong while searching. Please try again.")
+            search.mark_error(message)
+            publish("error", {"error": message})
             logging.user(user, f"~FBDescribe: ~FR~SBError~SN on search ~SB{search.id}~SN: {e}")
             raise
 

@@ -147,7 +147,8 @@ class DescribeFeedSearch:
         except Exception as e:
             # apps/describe/pipeline.py: the hunt is a bonus on top of the index results, which are
             # already judged and stored. Whatever goes wrong out on the web, those still get delivered.
-            self.stats["hunt_error"] = str(e)[:200]
+            # stats reach the client in the status payload, so the exception's text stays in the log.
+            self.stats["hunt_failed"] = True
             logging.user(self.user, f"~FBDescribe: ~FR~SBweb hunt failed~SN, keeping index results: {e}")
         self.finish()
         return self.search
