@@ -426,10 +426,15 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     return -collection.indexOf(view.model);
                 });
                 _.each(placing, function (view) {
-                    var next = collection.at(collection.indexOf(view.model) + 1);
-                    var next_el = next && next.story_title_view && next.story_title_view.el;
-                    if (next_el && next_el.parentNode) {
-                        next_el.parentNode.insertBefore(view.el, next_el);
+                    // story_titles_view.js: before the next story whose row is in this list, skipping any whose
+                    // title view lives elsewhere.
+                    var next_el = null;
+                    for (var i = collection.indexOf(view.model) + 1; i < collection.length && !next_el; i++) {
+                        var next_view = collection.at(i).story_title_view;
+                        if (next_view && next_view.el.parentNode === this.el) next_el = next_view.el;
+                    }
+                    if (next_el) {
+                        this.el.insertBefore(view.el, next_el);
                     } else {
                         this.$el.append(view.el);
                     }

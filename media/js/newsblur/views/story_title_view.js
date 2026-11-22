@@ -23,7 +23,9 @@ NEWSBLUR.Views.StoryTitleView = Backbone.View.extend({
         this.model.bind('change:starred', this.toggle_starred, this);
         this.model.bind('change:intelligence', this.toggle_intelligence, this);
         this.collection.bind('render:intelligence', this.render_intelligence, this);
-        this.model.story_title_view = this;
+        // story_title_view.js: an open story's cluster section (story_detail_view.js) draws stories the list
+        // already shows, and their rows in the list stay the ones the reader and the new stories pill act on.
+        if (!(this.options.is_cluster_detail && this.model.story_title_view)) this.model.story_title_view = this;
 
         // Listen for feed title changes to update grid/list/magazine views in real time
         this.story_feed = NEWSBLUR.assets.get_feed(this.model.get('story_feed_id'));
