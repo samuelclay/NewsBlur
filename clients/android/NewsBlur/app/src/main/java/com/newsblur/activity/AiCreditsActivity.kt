@@ -554,7 +554,6 @@ class AiCreditsActivity : NbActivity() {
             it.background = rounded(colors.cardBackground, colors.cardBorder, radiusDp = 10)
         }
         listOf(
-            binding.creditsTitle,
             binding.creditsUsed,
             binding.creditsMessage,
             binding.billingTitle,

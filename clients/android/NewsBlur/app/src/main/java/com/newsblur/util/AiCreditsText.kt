@@ -214,7 +214,7 @@ class AiCreditsText(
                 AiCreditsNotice(
                     AiCreditsNoticeStyle.BILLING,
                     message = billingOn(credits),
-                    detail = listOfNotNull(unbilled(credits), limit(credits)).joinToString(" "),
+                    detail = listOfNotNull(unbilled(credits), limit(credits)).joinToString("\n"),
                     action = action,
                     actionLabel = context.getString(R.string.ai_credits_manage_billing).takeIf { action != null },
                 )

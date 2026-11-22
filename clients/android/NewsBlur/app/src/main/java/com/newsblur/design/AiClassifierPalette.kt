@@ -158,7 +158,8 @@ object AiClassifierPalette {
             billingBackground = 0xFF1A2433.toInt(),
             billingBorder = 0xFF2E4366.toInt(),
             billingText = 0xFFA9C4EC.toInt(),
-            meterTrack = 0xFF3A3A3C.toInt(),
+            // Lighter than the trainer's and the credits screen's cards, so the empty part of the meter shows.
+            meterTrack = 0xFF56565A.toInt(),
             meterFill = 0xFF7ECE72.toInt(),
             meterWarning = 0xFFE6A040.toInt(),
             meterPaused = 0xFFEF5350.toInt(),
@@ -190,7 +191,7 @@ object AiClassifierPalette {
             pausedBackground = 0xFF221313.toInt(),
             billingBackground = 0xFF121A26.toInt(),
             billingBorder = 0xFF26385A.toInt(),
-            meterTrack = 0xFF2A2A2A.toInt(),
+            meterTrack = 0xFF3A3A3C.toInt(),
         )
 
     @JvmStatic

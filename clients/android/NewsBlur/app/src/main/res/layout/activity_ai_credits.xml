@@ -36,18 +36,9 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/credits_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ai_credits_title"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
                         android:id="@+id/credits_message"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:text="@string/loading"
                         android:textSize="14sp"
                         android:visibility="gone" />
@@ -56,7 +47,6 @@
                         android:id="@+id/credits_meter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
                         android:orientation="vertical"
                         android:visibility="gone">
 
