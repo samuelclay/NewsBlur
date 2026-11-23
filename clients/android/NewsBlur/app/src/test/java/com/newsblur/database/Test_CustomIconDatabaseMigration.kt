@@ -135,6 +135,39 @@ class Test_CustomIconDatabaseMigration {
         database.execSQL("INSERT INTO story_cluster_read_state VALUES ('2:child', 0, 150)")
         database.execSQL("DROP TABLE story_cluster_members")
 
+        repairClusterTables()
+
+        assertEquals("1:cached/2/100/1", value("SELECT parent_hash || '/' || feed_id || '/' || child_timestamp || '/' || child_read " +
+            "FROM story_cluster_members WHERE child_hash = '2:child'"))
+        assertEquals("0/150", value("SELECT read || '/' || updated_at FROM story_cluster_read_state WHERE story_hash = '2:child'"))
+    }
+
+    @Test
+    fun test_missing_read_receipts_leave_the_surviving_membership_index_intact() {
+        database.execSQL("DROP TABLE story_cluster_read_state")
+        database.execSQL("INSERT INTO story_cluster_members VALUES ('1:cached', '2:child', 1, 100, '2')")
+        val cached = """[{"story_hash":"2:child","story_feed_id":"2","story_timestamp":100,"read_status":false}]"""
+        database.execSQL("UPDATE stories SET cluster_stories = '$cached' WHERE story_hash = '1:cached'")
+
+        repairClusterTables()
+
+        assertEquals("1", value("SELECT child_read FROM story_cluster_members WHERE child_hash = '2:child'"))
+        assertEquals("0", value("SELECT count(*) FROM story_cluster_read_state"))
+    }
+
+    @Test
+    fun test_version_eleven_with_missing_feeds_can_upgrade_without_losing_queued_actions() {
+        database.execSQL("ALTER TABLE stories DROP COLUMN prompt_classifiers")
+        database.execSQL("DROP TABLE feeds")
+
+        helper.onUpgrade(database, 11, BlurDatabase.VERSION)
+
+        database.execSQL("UPDATE stories SET prompt_classifiers = '[]' WHERE story_hash = '1:cached'")
+        assertEquals("0", value("SELECT count(*) FROM feeds WHERE stories_last_month IS NULL"))
+        assertOfflineStatePreserved()
+    }
+
+    private fun repairClusterTables() {
         // Bridge the Android ContentValues used by ClusterReadStore.kt to this test's real SQLite connection.
         mockkConstructor(ContentValues::class)
         try {
@@ -161,35 +194,6 @@ class Test_CustomIconDatabaseMigration {
         } finally {
             unmockkConstructor(ContentValues::class)
         }
-
-        assertEquals("1:cached/2/100/1", value("SELECT parent_hash || '/' || feed_id || '/' || child_timestamp || '/' || child_read " +
-            "FROM story_cluster_members WHERE child_hash = '2:child'"))
-        assertEquals("0/150", value("SELECT read || '/' || updated_at FROM story_cluster_read_state WHERE story_hash = '2:child'"))
-    }
-
-    @Test
-    fun test_missing_read_receipts_leave_the_surviving_membership_index_intact() {
-        database.execSQL("DROP TABLE story_cluster_read_state")
-        database.execSQL("INSERT INTO story_cluster_members VALUES ('1:cached', '2:child', 1, 100, '2')")
-        val cached = """[{"story_hash":"2:child","story_feed_id":"2","story_timestamp":100,"read_status":false}]"""
-        database.execSQL("UPDATE stories SET cluster_stories = '$cached' WHERE story_hash = '1:cached'")
-
-        helper.onUpgrade(database, 12, BlurDatabase.VERSION)
-
-        assertEquals("1", value("SELECT child_read FROM story_cluster_members WHERE child_hash = '2:child'"))
-        assertEquals("0", value("SELECT count(*) FROM story_cluster_read_state"))
-    }
-
-    @Test
-    fun test_version_eleven_with_missing_feeds_can_upgrade_without_losing_queued_actions() {
-        database.execSQL("ALTER TABLE stories DROP COLUMN prompt_classifiers")
-        database.execSQL("DROP TABLE feeds")
-
-        helper.onUpgrade(database, 11, BlurDatabase.VERSION)
-
-        database.execSQL("UPDATE stories SET prompt_classifiers = '[]' WHERE story_hash = '1:cached'")
-        assertEquals("0", value("SELECT count(*) FROM feeds WHERE stories_last_month IS NULL"))
-        assertOfflineStatePreserved()
     }
 
     private fun verifyMissingIcons(previousVersion: Int) {
