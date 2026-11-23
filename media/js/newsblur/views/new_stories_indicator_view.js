@@ -28,6 +28,7 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
         this.reset_scrolling();
         this.last_scroll_at = 0;
         this.last_scroll_top = null;
+        this.own_scroll_top = null;
         this.note_scroll = _.bind(this.note_scroll, this);
         // new_stories_indicator_view.js: a phone list scrolls the page itself while at rest (mobile.css
         // NB-mobile-page-scroll), so both scrollers count.
@@ -112,6 +113,10 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
             // new_stories_indicator_view.js: browsers without scroll anchoring would otherwise move the stories.
             NEWSBLUR.reader.$s.$story_titles.scrollTop(NEWSBLUR.reader.$s.$story_titles.scrollTop() + shift);
         }
+        // new_stories_indicator_view.js: the scroll this shift makes, or the browser's scroll anchoring makes for it,
+        // isn't the reader scrolling, so note_scroll lets it pass.
+        var settled_top = NEWSBLUR.reader.$s.$story_titles.scrollTop();
+        this.own_scroll_top = settled_top != scroll_top ? settled_top : null;
     },
 
     slide_in: function () {
@@ -160,6 +165,13 @@ NEWSBLUR.Views.NewStoriesIndicatorView = Backbone.View.extend({
     // scroll restarts the idle wait of a pill that scrolling hid.
     note_scroll: function () {
         var scroll_top = NEWSBLUR.reader.$s.$story_titles.scrollTop();
+        var own_scroll = this.own_scroll_top !== null && scroll_top == this.own_scroll_top;
+        this.own_scroll_top = null;
+        if (own_scroll) {
+            // new_stories_indicator_view.js: place_row's shift starts no countdown and doesn't restart the idle wait.
+            this.last_scroll_top = scroll_top;
+            return;
+        }
         var previous_top = this.last_scroll_top;
         this.last_scroll_top = scroll_top;
         this.last_scroll_at = Date.now();
