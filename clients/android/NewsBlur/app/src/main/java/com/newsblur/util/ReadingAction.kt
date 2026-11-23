@@ -233,6 +233,7 @@ sealed interface ReadingAction : Serializable {
                 RuntimeTypeAdapterFactory
                     .of(ReadingAction::class.java, "type")
                     .registerSubtype(MarkStoryRead::class.java, "MARK_READ_STORY")
+                    .registerSubtype(ReportStoryReadTimes::class.java, "REPORT_STORY_READ_TIMES")
                     .registerSubtype(MarkStoryUnread::class.java, "MARK_UNREAD_STORY")
                     .registerSubtype(MarkFeedRead::class.java, "MARK_READ_FEED")
                     .registerSubtype(SaveStory::class.java, "SAVE_STORY")
