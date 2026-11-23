@@ -236,12 +236,12 @@ class ClusterReadStore(private val db: SQLiteDatabase) : ClusterReadRepository.B
         const val READ_STATE = "story_cluster_read_state"
 
         @JvmStatic fun createTables(db: SQLiteDatabase) {
-            db.execSQL("CREATE TABLE $MEMBERS (parent_hash TEXT NOT NULL, child_hash TEXT NOT NULL, " +
+            db.execSQL("CREATE TABLE IF NOT EXISTS $MEMBERS (parent_hash TEXT NOT NULL, child_hash TEXT NOT NULL, " +
                 "child_read INTEGER, child_timestamp INTEGER, feed_id TEXT, PRIMARY KEY(parent_hash, child_hash))")
-            db.execSQL("CREATE INDEX story_cluster_child ON $MEMBERS(child_hash)")
-            db.execSQL("CREATE TABLE $READ_STATE (story_hash TEXT PRIMARY KEY NOT NULL, read INTEGER NOT NULL, updated_at INTEGER NOT NULL)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS story_cluster_child ON $MEMBERS(child_hash)")
+            db.execSQL("CREATE TABLE IF NOT EXISTS $READ_STATE (story_hash TEXT PRIMARY KEY NOT NULL, read INTEGER NOT NULL, updated_at INTEGER NOT NULL)")
             // BlurDatabaseHelper.java deletes cached stories through several paths; the trigger covers all of them.
-            db.execSQL("CREATE TRIGGER story_cluster_cleanup AFTER DELETE ON ${DatabaseConstants.STORY_TABLE} BEGIN " +
+            db.execSQL("CREATE TRIGGER IF NOT EXISTS story_cluster_cleanup AFTER DELETE ON ${DatabaseConstants.STORY_TABLE} BEGIN " +
                 "DELETE FROM $MEMBERS WHERE parent_hash = OLD.story_hash; END")
         }
 

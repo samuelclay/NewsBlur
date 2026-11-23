@@ -1,13 +1,17 @@
 package com.newsblur.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class BlurDatabase extends SQLiteOpenHelper {
 
 	public final static String DB_NAME = "blur.db";
-	static final int VERSION = 12;
+	static final int VERSION = 13;
 
 	public BlurDatabase(Context context) {
 		this(context, DB_NAME);
@@ -19,6 +23,10 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		createTables(db);
+	}
+
+	private static void createTables(SQLiteDatabase db) {
 		db.execSQL(DatabaseConstants.FEED_SQL);
 		db.execSQL(DatabaseConstants.SOCIAL_FEED_SQL);
 		db.execSQL(DatabaseConstants.FOLDER_SQL);
@@ -49,7 +57,14 @@ public class BlurDatabase extends SQLiteOpenHelper {
 
 	void dropAndRecreateTables() {
 		SQLiteDatabase db = getWritableDatabase();
-		dropAndRecreateTables(db);
+		// BlurDatabaseHelper.java also serves readers outside RW_MUTEX. Publish the reset as one SQLite commit.
+		db.beginTransaction();
+		try {
+			dropAndRecreateTables(db);
+			db.setTransactionSuccessful();
+		} finally {
+			db.endTransaction();
+		}
 	}
 
 	private void dropAndRecreateTables(SQLiteDatabase db) {
@@ -85,15 +100,27 @@ public class BlurDatabase extends SQLiteOpenHelper {
             dropAndRecreateTables(db);
             return;
         }
+        // Older BlurDatabase.java resets committed each DROP/CREATE independently, leaving the
+        // user_version intact after an interruption. Recreate only missing schema objects. Tables
+        // created here already have the latest columns, so only migrate tables that existed before.
+        Set<String> existing = new HashSet<>();
+        try (Cursor rows = db.query("sqlite_master", new String[]{"name"}, "type = 'table'",
+                null, null, null, null)) {
+            while (rows.moveToNext()) existing.add(rows.getString(0));
+        }
+        boolean repairMissingSchema = previousVersion < 13 && nextVersion >= 13;
+        if (repairMissingSchema) {
+            createTables(db);
+        }
         // Each step runs only when the upgrade crosses its version, so an upgrade from any
         // version 6 or later chains through every later step and keeps cached stories,
         // queued offline actions, and cluster receipts.
-        if (previousVersion < 9) {
+        if (previousVersion < 9 && existing.contains(DatabaseConstants.FOLDER_TABLE)) {
             // Folder.java reconstructs segment keys from the cached parent list. Display
             // paths can collide when a folder title contains the hierarchy separator.
             db.execSQL("ALTER TABLE " + DatabaseConstants.FOLDER_TABLE + " RENAME TO folders_legacy");
             db.execSQL(DatabaseConstants.FOLDER_SQL);
-            try (android.database.Cursor cursor = db.query("folders_legacy", null, null, null, null, null, null)) {
+            try (Cursor cursor = db.query("folders_legacy", null, null, null, null, null, null)) {
                 while (cursor.moveToNext()) {
                     db.insertOrThrow(DatabaseConstants.FOLDER_TABLE, null,
                             com.newsblur.domain.Folder.fromCursor(cursor).getValues());
@@ -105,9 +132,13 @@ public class BlurDatabase extends SQLiteOpenHelper {
             // ClusterReadStore.kt upgrades membership without replacing cached stories, actions, or receipts.
             if (previousVersion < 8) {
                 ClusterReadStore.createTables(db);
-            } else {
+            } else if (existing.contains(ClusterReadStore.MEMBERS)) {
                 ClusterReadStore.addMemberMetadata(db);
             }
+        }
+        // ClusterReadStore.kt can recover memberships from the parent story JSON. Local read receipts
+        // are independent and take precedence over that snapshot; backfill never rewrites them.
+        if (previousVersion < 10 || (repairMissingSchema && !existing.contains(ClusterReadStore.MEMBERS))) {
             ClusterReadStore.backfill(db);
         }
         if (previousVersion < 11) {
@@ -118,10 +149,14 @@ public class BlurDatabase extends SQLiteOpenHelper {
         if (previousVersion < 12 && nextVersion >= 12) {
             // Story.java keeps matched AI prompt classifiers for the reading header, and Feed.java
             // keeps stories_last_month for the trainer's AI cost estimates.
-            db.execSQL("ALTER TABLE " + DatabaseConstants.STORY_TABLE + " ADD COLUMN " +
-                    DatabaseConstants.STORY_PROMPT_CLASSIFIERS + " TEXT");
-            db.execSQL("ALTER TABLE " + DatabaseConstants.FEED_TABLE + " ADD COLUMN " +
-                    DatabaseConstants.FEED_STORIES_LAST_MONTH + " INTEGER");
+            if (existing.contains(DatabaseConstants.STORY_TABLE)) {
+                db.execSQL("ALTER TABLE " + DatabaseConstants.STORY_TABLE + " ADD COLUMN " +
+                        DatabaseConstants.STORY_PROMPT_CLASSIFIERS + " TEXT");
+            }
+            if (existing.contains(DatabaseConstants.FEED_TABLE)) {
+                db.execSQL("ALTER TABLE " + DatabaseConstants.FEED_TABLE + " ADD COLUMN " +
+                        DatabaseConstants.FEED_STORIES_LAST_MONTH + " INTEGER");
+            }
         }
     }
 
