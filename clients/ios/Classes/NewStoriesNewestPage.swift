@@ -7,9 +7,10 @@
 
 import UIKit
 
-/// NewStoriesNewestPage.swift: tapping the new stories pill when more stories wait than it fetches ahead
+/// NewStoriesNewestPage.swift: tapping the new stories pill when more stories wait than it keeps fetched
 /// (`RealtimeNewStories.prefetchCap`) shows a newest-first list as if it had just opened. The newest-dated waiting
-/// stories top the list, the stories loaded before are dropped, and the list pages on from its first page.
+/// stories, already fetched (RealtimeNewStoryBuffer), top the list at once, the stories loaded before are dropped, and
+/// the list's first page joins below them when it answers.
 enum NewStoriesNewestPage {
     /// The list after the tap: the newest waiting stories, then the open list's first page without them. The list's
     /// own paging skips stories already listed from its second page on (FeedDetailObjCViewController.m).
@@ -34,6 +35,8 @@ enum NewStoriesNewestPage {
     var details: [[String: Any]]?
     var firstPageDone = false
     var firstPage: [String: Any]?
+    /// The newest stories already replaced the list while the first page was still on its way.
+    var showedNewest = false
 
     init(fetched: [[String: Any]], needsDetails: Bool, readOverrides: [String: Bool] = [:], profiles: [Any],
          list: RealtimeStoryList) {
@@ -145,12 +148,43 @@ extension FeedDetailViewController {
         pageFetching = false
     }
 
-    /// Replaces the list once both requests have answered, if the list is still the one the reader tapped in.
+    /// Replaces the list with the newest stories as soon as all of them are here, and adds the first page below them
+    /// once it answers, if the list is still the one the reader tapped in.
     func completeNewestStories(_ load: NewestStoriesLoad) {
-        guard newestStoriesLoad === load, load.isComplete, let details = load.details else { return }
+        guard newestStoriesLoad === load, let details = load.details else { return }
+        guard load.firstPageDone else {
+            // NewStoriesNewestPage.swift: the stories the tap shows don't wait on the list's first page, and the list's
+            // own paging waits for that page.
+            guard !load.showedNewest else { return }
+            load.showedNewest = true
+            replaceWithNewestStories(RealtimeNewStories.insertable(load.fetched + details, list: load.list, knownHashes: []),
+                                     firstPage: nil, profiles: load.profiles)
+            pageFetching = true
+            return
+        }
         newestStoriesLoad = nil
+        guard !load.showedNewest else {
+            appendFirstPageBelowNewestStories(load.firstPage)
+            return
+        }
         let newest = RealtimeNewStories.insertable(load.fetched + details, list: load.list, knownHashes: [])
         replaceWithNewestStories(newest, firstPage: load.firstPage, profiles: load.profiles)
+    }
+
+    /// The first page answered after the newest stories showed: its stories not shown yet join below them, and the list
+    /// pages on from its second page. Without it, the list's paging starts again at its first page.
+    func appendFirstPageBelowNewestStories(_ firstPage: [String: Any]?) {
+        pageFetching = false
+        guard let firstPage else { return }
+        let openStoryHash = appDelegate.storyPagesViewController?.currentPage?.activeStoryId
+        absorbStoryPageFeedsAndClassifiers(firstPage, feedId: "\(firstPage["feed_id"] ?? "")")
+        addNewestStoriesUserProfiles((firstPage["user_profiles"] as? [Any] ?? []).compactMap { $0 as? [String: Any] })
+        let listed = storiesCollection.activeFeedStories as? [[String: Any]] ?? []
+        let pageStories = firstPage["stories"] as? [[String: Any]] ?? []
+        storiesCollection.replaceStoriesKeepingReadState(NewStoriesNewestPage.stories(newest: listed, firstPage: pageStories))
+        storiesCollection.feedPage = 1
+        pageFinished = pageStories.isEmpty
+        reloadKeepingOpenStory(openStoryHash)
     }
 
     /// Shows `newest` as the whole list, then the first page of the list without them, and pages on from there.

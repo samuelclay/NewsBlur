@@ -155,10 +155,10 @@ enum RealtimeNewStories {
     /// The web ignores stories dated more than an hour ahead (media/js/newsblur/views/dashboard_river_view.js).
     static let futureTolerance: TimeInterval = 60 * 60
 
-    /// How many announced stories the list fetches ahead for the pill, and the most a tap puts into the list. Past
-    /// this, announcements are only counted with their dates, and a tap shows the newest-dated of them
-    /// (NewStoriesNewestPage.swift). A list left open overnight would otherwise fetch every story announced since.
-    /// The web and Android use the same number.
+    /// How many announced stories the list keeps fetched for the pill, and the most a tap puts into the list: the
+    /// newest-dated waiting stories, or the oldest-dated in an oldest-first list (RealtimeNewStoryBuffer). The rest are
+    /// only counted with their dates, so a list left open overnight doesn't fetch every story announced since, and a
+    /// tap shows the 20 at once (NewStoriesNewestPage.swift). The web and Android use the same number.
     static let prefetchCap = 20
 
     /// The per-device setting "Show new stories as they arrive" (PreferencesView.swift). Off, the open list gains new
@@ -250,24 +250,35 @@ enum RealtimeNewStories {
     }
 }
 
-/// The open list's announced stories, waiting for the pill: those about to be fetched, those fetched, and those
-/// announced past `RealtimeNewStories.prefetchCap`, which are only counted.
+/// The open list's announced stories, waiting for the pill: those about to be fetched, those fetched, and those only
+/// counted. The pill keeps the stories a tap would show fetched: the newest-dated waiting stories, or the oldest-dated
+/// in an oldest-first list, at most `RealtimeNewStories.prefetchCap` of them, so a tap never waits on the network. A
+/// story that ranks among them is fetched as soon as it's announced and, once it lands, pushes the last of them down to
+/// a count; one that doesn't is only counted. The web (media/js/newsblur/reader/reader.js) and Android
+/// (RealtimeUpdates.kt) keep the same 20.
 struct RealtimeNewStoryBuffer {
     /// Announced stories waiting for the next batched fetch.
     private(set) var pendingHashes: [String] = []
     /// Fetched stories that belong in the list, in its order.
     private(set) var stories: [[String: Any]] = []
-    /// Announced stories the list didn't fetch because the pill already holds as many as it fetches ahead.
+    /// Announced stories only counted: they rank below the stories a tap would show, or their fetch failed.
     private(set) var unfetchedHashes: [String] = []
     /// When each story not fetched yet was published, as its announcement said.
     private var announcedTimestamps: [String: TimeInterval] = [:]
+    /// The order stories were announced in, so a story dated the same as one the pill holds doesn't push it out.
+    private var arrivals: [String: Int] = [:]
+    private var nextArrival = 0
     /// Announced stories being fetched now.
     private(set) var inFlightHashes: Set<String> = []
+    /// Counted stories being fetched again to fill the pill's 20; the pill still counts them until they land.
+    private var refillingHashes: Set<String> = []
     /// Read and unread from other devices for stories not fetched yet. /reader/river_stories?h= answers with a
     /// placeholder unread state, so these apply when the stories land.
     private var readOverrides: [String: Bool] = [:]
     /// The user profiles that came with the fetched stories.
     private(set) var userProfiles: [Any] = []
+    /// Whether the list reads oldest first, where a tap shows the oldest-dated waiting stories.
+    private var oldestFirst = false
 
     var isEmpty: Bool { pendingHashes.isEmpty && stories.isEmpty && unfetchedHashes.isEmpty }
 
@@ -277,16 +288,18 @@ struct RealtimeNewStoryBuffer {
             .union(stories.compactMap { $0["story_hash"] as? String })
     }
 
-    /// Takes an announcement `RealtimeNewStories.shouldFetch` accepted. Returns whether it should be fetched; past the
-    /// cap it's only counted.
+    /// Takes an announcement `RealtimeNewStories.shouldFetch` accepted. Returns whether it should be fetched: it ranks
+    /// among the stories a tap would show. Otherwise it's only counted.
     mutating func announce(_ storyHash: String, timestamp: TimeInterval = 0, list: RealtimeStoryList) -> Bool {
+        oldestFirst = list.oldestFirst
         announcedTimestamps[storyHash] = timestamp
-        if RealtimeNewStories.visibleCount(stories, list: list) + pendingHashes.count < RealtimeNewStories.prefetchCap {
-            pendingHashes.append(storyHash)
-            return true
+        if arrivals[storyHash] == nil {
+            arrivals[storyHash] = nextArrival
+            nextArrival += 1
         }
-        unfetchedHashes.append(storyHash)
-        return false
+        pendingHashes.append(storyHash)
+        countPendingPastTheCap()
+        return pendingHashes.contains(storyHash)
     }
 
     /// The pending announcements for one request, at most `limit` of them.
@@ -297,12 +310,12 @@ struct RealtimeNewStoryBuffer {
         return taken
     }
 
-    /// A fetch failed; its announcements are dropped, as the stories load with the list's next refresh.
+    /// A fetch failed. Its stories wait as counts, and a tap past the cap fetches them again.
     mutating func fetchFailed(_ hashes: [String]) {
-        for hash in hashes {
+        for hash in hashes where inFlightHashes.contains(hash) {
             inFlightHashes.remove(hash)
-            readOverrides[hash] = nil
-            announcedTimestamps[hash] = nil
+            refillingHashes.remove(hash)
+            unfetchedHashes.append(hash)
         }
     }
 
@@ -317,23 +330,24 @@ struct RealtimeNewStoryBuffer {
         for hash in pendingHashes + Array(inFlightHashes) + unfetchedHashes where !fetchedHashes.contains(hash) {
             candidates.append((hash, announcedTimestamps[hash] ?? 0, nil))
         }
-        let picked = candidates.sorted { first, second in
-            guard first.timestamp != second.timestamp else { return first.hash < second.hash }
-            return oldestFirst ? first.timestamp < second.timestamp : first.timestamp > second.timestamp
+        let picked = candidates.sorted {
+            ranksAhead(($0.hash, $0.timestamp), of: ($1.hash, $1.timestamp), oldestFirst: oldestFirst)
         }.prefix(limit)
         return (picked.compactMap(\.story), picked.filter { $0.story == nil }.map(\.hash))
     }
 
-    /// Takes stories a tap put into the list out of the pill.
+    /// Takes stories a tap put into the list out of the pill, and fills the pill's 20 again from what still waits.
     mutating func remove(_ hashes: Set<String>) {
         stories.removeAll { hashes.contains($0["story_hash"] as? String ?? "") }
         pendingHashes.removeAll { hashes.contains($0) }
         unfetchedHashes.removeAll { hashes.contains($0) }
         inFlightHashes.subtract(hashes)
+        refillingHashes.subtract(hashes)
         for hash in hashes {
             announcedTimestamps[hash] = nil
             readOverrides[hash] = nil
         }
+        refillFromCounted()
     }
 
     /// Fetched stories with any read state from other devices that arrived while they waited to be fetched.
@@ -347,24 +361,31 @@ struct RealtimeNewStoryBuffer {
     }
 
     /// Adds fetched stories, keeping only those that belong in the list, with any read state that arrived while they
-    /// were on their way. Returns how many it kept.
+    /// were on their way. Past the cap the last of the fetched stories drop to counts, and a story that turned out
+    /// hidden or read leaves room the counted ones fill. Returns how many it kept.
     mutating func addFetched(_ fetched: [[String: Any]], userProfiles profiles: [Any], list: RealtimeStoryList,
                              listedHashes: Set<String>, requested: [String] = []) -> Int {
+        oldestFirst = list.oldestFirst
         let fetched = applyingReadOverrides(fetched)
         for hash in requested + fetched.compactMap({ $0["story_hash"] as? String }) {
             inFlightHashes.remove(hash)
+            refillingHashes.remove(hash)
             readOverrides[hash] = nil
             announcedTimestamps[hash] = nil
         }
         let accepted = RealtimeNewStories.insertable(fetched, list: list, knownHashes: listedHashes.union(
             stories.compactMap { $0["story_hash"] as? String }))
-        guard !accepted.isEmpty else { return 0 }
-        stories = RealtimeNewStories.insertable(stories + accepted, list: list, knownHashes: [])
-        userProfiles += profiles
+        if !accepted.isEmpty {
+            stories = RealtimeNewStories.insertable(stories + accepted, list: list, knownHashes: [])
+            userProfiles += profiles
+            countFetchedPastTheCap()
+        }
+        refillFromCounted()
         return accepted.count
     }
 
-    /// Another device read or unread a story. An unread list drops a waiting story once it's read.
+    /// Another device read or unread a story. An unread list drops a waiting story once it's read, and fills the
+    /// pill's 20 again from the counted stories.
     mutating func setReadState(storyHash: String, read: Bool, list: RealtimeStoryList?) {
         if pendingHashes.contains(storyHash) || inFlightHashes.contains(storyHash) || unfetchedHashes.contains(storyHash) {
             readOverrides[storyHash] = read
@@ -377,16 +398,85 @@ struct RealtimeNewStoryBuffer {
             unfetchedHashes.removeAll { $0 == storyHash }
             announcedTimestamps[storyHash] = nil
         }
+        if let list {
+            oldestFirst = list.oldestFirst
+            refillFromCounted()
+        }
     }
 
-    /// The number the pill shows: fetched stories the list would show, plus every unfetched announcement.
+    /// The number the pill shows: fetched stories the list would show, every counted announcement, and the counted
+    /// ones being fetched again.
     func pillCount(list: RealtimeStoryList) -> Int {
-        RealtimeNewStories.visibleCount(stories, list: list) + unfetchedHashes.count
+        RealtimeNewStories.visibleCount(stories, list: list) + unfetchedHashes.count + refillingHashes.count
     }
+
+    /// Announced stories waiting for their first fetch, which the pill doesn't count yet.
+    var announcedPendingCount: Int { pendingHashes.filter { !refillingHashes.contains($0) }.count }
 
     /// Whether tapping the pill shows the newest-dated waiting stories instead of inserting the fetched ones.
     func needsNewestPage(list: RealtimeStoryList) -> Bool {
-        !unfetchedHashes.isEmpty || RealtimeNewStories.visibleCount(stories, list: list) > RealtimeNewStories.prefetchCap
+        !unfetchedHashes.isEmpty || !refillingHashes.isEmpty ||
+            RealtimeNewStories.visibleCount(stories, list: list) > RealtimeNewStories.prefetchCap
+    }
+
+    /// Whether `first` comes before `second` among the stories a tap shows: the newer one, or the older one in an
+    /// oldest-first list, and between stories of one date, the one announced first.
+    private func ranksAhead(_ first: (hash: String, timestamp: TimeInterval),
+                            of second: (hash: String, timestamp: TimeInterval), oldestFirst: Bool) -> Bool {
+        if first.timestamp != second.timestamp {
+            return oldestFirst ? first.timestamp < second.timestamp : first.timestamp > second.timestamp
+        }
+        let firstArrival = arrivals[first.hash] ?? Int.max, secondArrival = arrivals[second.hash] ?? Int.max
+        if firstArrival != secondArrival { return firstArrival < secondArrival }
+        return first.hash < second.hash
+    }
+
+    /// Pending announcements that rank past the cap among everything the pill holds, fetched or on its way, are only
+    /// counted instead of fetched.
+    private mutating func countPendingPastTheCap() {
+        let cap = RealtimeNewStories.prefetchCap
+        let pending = Set(pendingHashes)
+        var held: [(hash: String, timestamp: TimeInterval)] = stories.compactMap { story in
+            guard let hash = story["story_hash"] as? String else { return nil }
+            return (hash, RealtimeNewStories.timestamp(of: story))
+        }
+        held += (Array(inFlightHashes) + pendingHashes).map { ($0, announcedTimestamps[$0] ?? 0) }
+        guard held.count > cap else { return }
+        let oldestFirst = self.oldestFirst
+        let pastCap = held.sorted { ranksAhead($0, of: $1, oldestFirst: oldestFirst) }.dropFirst(cap)
+            .map(\.hash).filter { pending.contains($0) && !refillingHashes.contains($0) }
+        guard !pastCap.isEmpty else { return }
+        pendingHashes.removeAll { pastCap.contains($0) }
+        unfetchedHashes += pastCap
+    }
+
+    /// Once more than the cap is fetched, the last of them drop to counts, keeping their dates.
+    private mutating func countFetchedPastTheCap() {
+        let cap = RealtimeNewStories.prefetchCap
+        guard stories.count > cap else { return }
+        let oldestFirst = self.oldestFirst
+        let dropped = stories.compactMap { story -> (hash: String, timestamp: TimeInterval)? in
+            guard let hash = story["story_hash"] as? String else { return nil }
+            return (hash, RealtimeNewStories.timestamp(of: story))
+        }.sorted { ranksAhead($0, of: $1, oldestFirst: oldestFirst) }.dropFirst(cap)
+        let droppedHashes = Set(dropped.map(\.hash))
+        stories.removeAll { droppedHashes.contains($0["story_hash"] as? String ?? "") }
+        for story in dropped {
+            announcedTimestamps[story.hash] = story.timestamp
+            unfetchedHashes.append(story.hash)
+        }
+    }
+
+    /// With fewer than the cap fetched or on their way, the best-ranked counted stories are fetched to fill the 20.
+    private mutating func refillFromCounted() {
+        let room = RealtimeNewStories.prefetchCap - (stories.count + pendingHashes.count + inFlightHashes.count)
+        guard room > 0, !unfetchedHashes.isEmpty else { return }
+        let oldestFirst = self.oldestFirst
+        let refill = unfetchedHashes.map { ($0, announcedTimestamps[$0] ?? 0) }
+            .sorted { ranksAhead($0, of: $1, oldestFirst: oldestFirst) }.prefix(room).map(\.0)
+        unfetchedHashes.removeAll { refill.contains($0) }
+        pendingHashes += refill
+        refillingHashes.formUnion(refill)
     }
 }
 
@@ -854,7 +944,12 @@ struct RealtimeNewStoryBuffer {
 
         let subscribers = appDelegate.map { Self.subscriberCount(feedId: feedId, appDelegate: $0) } ?? 0
         let spread = min(Self.maximumNewStoryDelay, Double(subscribers) * Self.secondsPerSubscriberForNewStories)
-        let fetchDate = Date().addingTimeInterval(Self.newStoryBatchDelay + Double.random(in: 0...max(spread, 0)))
+        scheduleNewStoryFetch(after: Self.newStoryBatchDelay + Double.random(in: 0...max(spread, 0)))
+    }
+
+    /// Fetches the pending announcements in one batch after `delay`, unless a batch is due sooner.
+    private func scheduleNewStoryFetch(after delay: TimeInterval) {
+        let fetchDate = Date().addingTimeInterval(delay)
         if let newStoryFetchDate, newStoryFetchDate <= fetchDate { return }
         newStoryFetchWork?.cancel()
         newStoryFetchDate = fetchDate
@@ -862,7 +957,14 @@ struct RealtimeNewStoryBuffer {
             MainActor.assumeIsolated { self?.fetchNewStories() }
         }
         newStoryFetchWork = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + max(0, fetchDate.timeIntervalSinceNow), execute: work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + max(0, delay), execute: work)
+    }
+
+    /// RealtimeUpdates.swift: the pill took counted stories back to keep the 20 a tap shows fetched (a story it held was
+    /// read elsewhere, turned out hidden, or joined the list); they go with the next batch.
+    private func fetchRefilledStories() {
+        guard !newStories.pendingHashes.isEmpty else { return }
+        scheduleNewStoryFetch(after: Self.newStoryBatchDelay)
     }
 
     private func fetchNewStories() {
@@ -881,10 +983,11 @@ struct RealtimeNewStoryBuffer {
                 self.bufferFetchedStories(results, requested: hashes)
             }
         }, failure: { [weak self] _, _ in
-            // A failed fetch drops these announcements. The stories still load with the list's next refresh.
+            // A failed fetch leaves these stories counted; a tap past the cap fetches them again.
             MainActor.assumeIsolated {
                 guard let self, generation == self.newStoryFetchGeneration else { return }
                 self.newStories.fetchFailed(hashes)
+                if let list = self.openStoryList(), list.key == self.newStoryListKey { self.showNewStoriesPill(list: list) }
             }
         })
     }
@@ -899,7 +1002,7 @@ struct RealtimeNewStoryBuffer {
                                          userProfiles: results["user_profiles"] as? [Any] ?? [], list: list,
                                          listedHashes: listedHashes, requested: requested)
         Self.log("fetched \((results["stories"] as? [Any])?.count ?? 0) new stories, \(kept) belong in the list")
-        guard kept > 0 else { return }
+        fetchRefilledStories()
         showNewStoriesPill(list: list)
     }
 
@@ -907,7 +1010,10 @@ struct RealtimeNewStoryBuffer {
         let list = openStoryList()
         guard newStories.knownHashes.contains(storyHash) else { return }
         newStories.setReadState(storyHash: storyHash, read: read, list: list?.key == newStoryListKey ? list : nil)
-        if let list, list.key == newStoryListKey { showNewStoriesPill(list: list) }
+        if let list, list.key == newStoryListKey {
+            fetchRefilledStories()
+            showNewStoriesPill(list: list)
+        }
     }
 
     private func showNewStoriesPill(list: RealtimeStoryList) {
@@ -951,8 +1057,10 @@ struct RealtimeNewStoryBuffer {
                                          profiles: profiles, list: list)
             return
         }
-        // An oldest-first list isn't reloaded: the oldest waiting stories join its end, the rest wait for the next tap.
+        // An oldest-first list isn't reloaded: the oldest waiting stories join its end, the rest wait for the next tap,
+        // the next of them fetched.
         newStories.remove(Set(pick.fetched.compactMap { $0["story_hash"] as? String } + pick.unfetchedHashes))
+        fetchRefilledStories()
         showNewStoriesPill(list: list)
         guard !pick.unfetchedHashes.isEmpty, let host = appDelegate.url else {
             insertPinned(RealtimeNewStories.insertable(fetched, list: list, knownHashes: []), profiles: profiles,
@@ -1008,7 +1116,7 @@ struct RealtimeNewStoryBuffer {
 
     /// Stories held for the pill, fetched, waiting to be fetched or only counted.
     func newStoriesWaiting(for list: RealtimeStoryList) -> Int {
-        newStories.pillCount(list: list) + newStories.pendingHashes.count
+        newStories.pillCount(list: list) + newStories.announcedPendingCount
     }
 
     /// Whether a batch of announced stories is waiting to be fetched.

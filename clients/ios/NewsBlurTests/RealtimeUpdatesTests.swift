@@ -275,6 +275,114 @@ import XCTest
         XCTAssertFalse(hashes(oldest.fetched).contains("12:f\(cap - 1)"))
     }
 
+    /// Announces a story and, when the buffer fetches it, lands it at once, as a fetch that answers immediately would.
+    private func announceAndLand(_ buffer: inout RealtimeNewStoryBuffer, _ hash: String, _ timestamp: Int,
+                                 list: RealtimeStoryList) -> Bool {
+        let fetches = buffer.announce(hash, timestamp: TimeInterval(timestamp), list: list)
+        landPending(&buffer, list: list, timestamps: [hash: timestamp])
+        return fetches
+    }
+
+    private func landPending(_ buffer: inout RealtimeNewStoryBuffer, list: RealtimeStoryList, timestamps: [String: Int]) {
+        let requested = buffer.takePending(limit: 100)
+        guard !requested.isEmpty else { return }
+        _ = buffer.addFetched(requested.map { story($0, timestamps[$0] ?? 0) }, userProfiles: [], list: list,
+                              listedHashes: [], requested: requested)
+    }
+
+    // Sam: past the cap the pill always holds the 20 a tap shows, loaded, so the tap doesn't wait on the network. A list
+    // left open hears 25 stories, each newer than the last: the 20 newest end up loaded and the 5 oldest only counted.
+    func test_pastTheCapTheNewestStoriesStayLoadedAndOlderOnesAreCounted() {
+        let list = storyList(unreadOnly: true)
+        let cap = RealtimeNewStories.prefetchCap
+        var buffer = RealtimeNewStoryBuffer()
+        for index in 0..<(cap + 5) { _ = announceAndLand(&buffer, "12:s\(index)", 1_000 + index, list: list) }
+
+        XCTAssertEqual(Set(hashes(buffer.stories)), Set((5..<(cap + 5)).map { "12:s\($0)" }))
+        XCTAssertEqual(Set(buffer.unfetchedHashes), Set((0..<5).map { "12:s\($0)" }))
+        XCTAssertEqual(buffer.pillCount(list: list), cap + 5)
+        XCTAssertTrue(buffer.needsNewestPage(list: list))
+        XCTAssertEqual(buffer.newestWaiting(limit: cap, oldestFirst: false).unfetchedHashes, [],
+                       "the tap shows the loaded 20 without fetching a story")
+    }
+
+    // A story newer than the 20 held is fetched right away, and once it lands the oldest of them drops to a count.
+    func test_newerArrivalPastTheCapIsFetchedAndEvictsTheOldest() {
+        let list = storyList(unreadOnly: true)
+        let cap = RealtimeNewStories.prefetchCap
+        var buffer = RealtimeNewStoryBuffer()
+        for index in 0..<cap { _ = announceAndLand(&buffer, "12:s\(index)", 1_000 + index, list: list) }
+
+        XCTAssertTrue(buffer.announce("12:newer", timestamp: 2_000, list: list), "the newer story is fetched")
+        XCTAssertEqual(buffer.stories.count, cap, "the oldest stays loaded until the newer one lands")
+        landPending(&buffer, list: list, timestamps: ["12:newer": 2_000])
+
+        XCTAssertTrue(hashes(buffer.stories).contains("12:newer"))
+        XCTAssertFalse(hashes(buffer.stories).contains("12:s0"))
+        XCTAssertEqual(buffer.stories.count, cap)
+        XCTAssertEqual(buffer.unfetchedHashes, ["12:s0"])
+        XCTAssertEqual(buffer.pillCount(list: list), cap + 1)
+        XCTAssertEqual(buffer.newestWaiting(limit: cap, oldestFirst: false).unfetchedHashes, [])
+    }
+
+    // A story older than the 20 held isn't fetched, only counted.
+    func test_olderArrivalPastTheCapIsOnlyCounted() {
+        let list = storyList(unreadOnly: true)
+        let cap = RealtimeNewStories.prefetchCap
+        var buffer = RealtimeNewStoryBuffer()
+        for index in 0..<cap { _ = announceAndLand(&buffer, "12:s\(index)", 1_000 + index, list: list) }
+
+        XCTAssertFalse(buffer.announce("12:older", timestamp: 500, list: list))
+        XCTAssertTrue(buffer.pendingHashes.isEmpty)
+        XCTAssertEqual(Set(hashes(buffer.stories)), Set((0..<cap).map { "12:s\($0)" }))
+        XCTAssertEqual(buffer.unfetchedHashes, ["12:older"])
+        XCTAssertEqual(buffer.pillCount(list: list), cap + 1)
+    }
+
+    // A loaded story read on another device leaves an unread list's pill, and the newest of the counted stories is
+    // fetched in its place so the tap still needs no fetch.
+    func test_aLoadedStoryReadElsewhereIsRefilledFromTheCountedOnes() {
+        let list = storyList(unreadOnly: true)
+        let cap = RealtimeNewStories.prefetchCap
+        var buffer = RealtimeNewStoryBuffer()
+        for index in 0..<cap { _ = announceAndLand(&buffer, "12:s\(index)", 1_000 + index, list: list) }
+        _ = buffer.announce("12:o600", timestamp: 600, list: list)
+        _ = buffer.announce("12:o700", timestamp: 700, list: list)
+
+        buffer.setReadState(storyHash: "12:s19", read: true, list: list)
+
+        XCTAssertEqual(buffer.pendingHashes, ["12:o700"], "the newest counted story is fetched to refill")
+        landPending(&buffer, list: list, timestamps: ["12:o700": 700])
+        XCTAssertEqual(buffer.stories.count, cap)
+        XCTAssertTrue(hashes(buffer.stories).contains("12:o700"))
+        XCTAssertEqual(buffer.unfetchedHashes, ["12:o600"])
+        XCTAssertEqual(buffer.newestWaiting(limit: cap, oldestFirst: false).unfetchedHashes, [])
+    }
+
+    // The tap shows the loaded newest stories at once, before the list's first page answers, and the first page joins
+    // below them when it does.
+    func test_tapPastTheCapShowsLoadedStoriesBeforeTheFirstPageAnswers() {
+        let (controller, collection) = makeStreamController(stories: (0..<30).map { story("12:old\($0)", 100 - $0) })
+        collection.feedPage = 4
+        let newest = (0..<RealtimeNewStories.prefetchCap).map { story("12:new\($0)", 1_000 - $0) }
+        let load = NewestStoriesLoad(fetched: newest, needsDetails: false, profiles: [], list: storyList())
+        controller.newestStoriesLoad = load
+
+        controller.completeNewestStories(load)
+        XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []), hashes(newest),
+                       "the newest stories show without waiting for the first page")
+        XCTAssertTrue(controller.pageFetching, "the list's paging waits for the first page")
+
+        load.firstPage = ["stories": [story("12:new0", 1_000), story("12:old0", 100), story("12:page", 99)]]
+        load.firstPageDone = true
+        controller.completeNewestStories(load)
+        XCTAssertEqual(hashes(collection.activeFeedStories as? [[String: Any]] ?? []),
+                       hashes(newest) + ["12:old0", "12:page"])
+        XCTAssertEqual(collection.feedPage, 1)
+        XCTAssertFalse(controller.pageFetching)
+        XCTAssertNil(controller.newestStoriesLoad)
+    }
+
     // A story announced again, as the server does when a feed refetches, must count once.
     func test_repeatedAnnouncementsCountOnce() {
         let list = storyList()
