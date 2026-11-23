@@ -7875,10 +7875,14 @@
             this.realtime_new_stories = {
                 key: key || null,
                 pending: [],
+                // reader.js: every story being fetched, queued or in flight: story hash to story timestamp.
+                pending_at: {},
                 buffered: {},
-                // Announced stories past REALTIME_NEW_STORY_CAP, counted but not fetched until the pill is
-                // clicked: story hash to story timestamp, so the click can pick the newest.
+                // Announced stories that don't belong among the REALTIME_NEW_STORY_CAP the tap shows, counted but
+                // not fetched: story hash to story timestamp, so they can be ranked against the fetched ones.
                 overflow: {},
+                // reader.js: counted stories being fetched to fill a place a fetched one left, still counted.
+                refilling: {},
                 // Reads and unreads on other devices of announced stories not yet fetched: river_stories?h= answers
                 // with a placeholder read state, so these settle it when the fetch lands.
                 read_elsewhere: {},
@@ -7901,7 +7905,7 @@
             if (this.realtime_new_stories.key != list.key) this.clear_realtime_new_stories(list.key);
 
             var state = this.realtime_new_stories;
-            if (this.model.stories.get_by_story_hash(story_hash) || _.contains(state.pending, story_hash) ||
+            if (this.model.stories.get_by_story_hash(story_hash) || _.has(state.pending_at, story_hash) ||
                 state.buffered[story_hash] || state.overflow[story_hash]) return;
             timestamp = parseInt(timestamp, 10);
             if (timestamp > Date.now() / 1000 + this.constants.REALTIME_NEW_STORY_FUTURE_TOLERANCE) return;
@@ -7915,19 +7919,75 @@
                 });
                 if (oldest && oldest !== Infinity && timestamp < parseInt(oldest.get('story_timestamp'), 10)) return;
             }
-            // reader.js: a list left open for hours would otherwise fetch every story its feeds publish. Past the
-            // cap the pill only counts the announcements.
             if (state.read_elsewhere[story_hash] && list.unread_only) return;
-            if (this.realtime_visible_new_story_count() + state.pending.length >= this.constants.REALTIME_NEW_STORY_CAP) {
+            // reader.js: the page keeps the REALTIME_NEW_STORY_CAP stories the pill's tap shows loaded, so a list
+            // left open for hours doesn't fetch every story its feeds publish and the tap still shows at once. A story
+            // that belongs among them is fetched now; one that doesn't is only counted.
+            var places = this.realtime_new_story_places(list);
+            var cap = this.constants.REALTIME_NEW_STORY_CAP;
+            if (places.length >= cap &&
+                !this.realtime_new_story_ranks_ahead(timestamp, places[cap - 1].timestamp, list.oldest_first)) {
                 state.overflow[story_hash] = timestamp;
                 this.show_realtime_new_stories_pill();
                 return;
             }
+            this.queue_realtime_new_story_fetch(story_hash, timestamp);
+        },
+
+        // reader.js: Whether a waiting story's date puts it ahead of another's in the list's order.
+        realtime_new_story_ranks_ahead: function (timestamp, other_timestamp, oldest_first) {
+            return oldest_first ? timestamp < other_timestamp : timestamp > other_timestamp;
+        },
+
+        // reader.js: Waiting stories in the order the list shows them: newest first, or oldest first.
+        rank_realtime_new_stories: function (entries, oldest_first) {
+            var ranked = _.sortBy(entries, function (entry) { return entry.timestamp; });
+            return oldest_first ? ranked : ranked.reverse();
+        },
+
+        // reader.js: The stories taking the places the pill's tap shows, best ranked first: the fetched ones the list
+        // would show and the ones being fetched. Hidden stories never take a place.
+        realtime_new_story_places: function (list) {
+            var places = _.map(this.realtime_offered_new_stories(), function (attributes) {
+                return { story_hash: attributes.story_hash, timestamp: parseInt(attributes.story_timestamp, 10) };
+            }).concat(_.map(this.realtime_new_stories.pending_at, function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }));
+            return this.rank_realtime_new_stories(places, list.oldest_first);
+        },
+
+        // reader.js: Past the cap, a fetched story that falls out of the places goes back to being counted, and a free
+        // place is filled by fetching the best ranked counted story, so the tap never waits on a fetch.
+        keep_realtime_new_story_places: function (list) {
+            var state = this.realtime_new_stories;
+            var cap = this.constants.REALTIME_NEW_STORY_CAP;
+            var offered = this.rank_realtime_new_stories(_.map(this.realtime_offered_new_stories(), function (attributes) {
+                return { story_hash: attributes.story_hash, timestamp: parseInt(attributes.story_timestamp, 10) };
+            }), list.oldest_first);
+            _.each(offered.slice(cap), function (entry) {
+                state.overflow[entry.story_hash] = entry.timestamp;
+                delete state.buffered[entry.story_hash];
+            });
+            var free = cap - Math.min(offered.length, cap) - _.size(state.pending_at);
+            if (free <= 0 || _.isEmpty(state.overflow)) return;
+            var counted = this.rank_realtime_new_stories(_.map(state.overflow, function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }), list.oldest_first);
+            _.each(counted.slice(0, free), function (entry) {
+                delete state.overflow[entry.story_hash];
+                state.refilling[entry.story_hash] = true;
+                this.queue_realtime_new_story_fetch(entry.story_hash, entry.timestamp);
+            }, this);
+        },
+
+        queue_realtime_new_story_fetch: function (story_hash, timestamp) {
+            var state = this.realtime_new_stories;
             state.pending.push(story_hash);
+            state.pending_at[story_hash] = timestamp;
 
             // reader.js: every subscriber hears of a new story at once, so busy feeds spread their fetches out,
             // as dashboard_river_view.js new_story does.
-            var feed = NEWSBLUR.assets.get_feed(feed_id);
+            var feed = NEWSBLUR.assets.get_feed(story_hash.split(':')[0]);
             var subscribers = (feed && feed.get('num_subscribers')) || 0;
             var jitter = Math.random() * Math.min(this.constants.REALTIME_NEW_STORY_MAX_JITTER,
                 subscribers * this.constants.REALTIME_NEW_STORY_MS_PER_SUBSCRIBER);
@@ -7944,23 +8004,40 @@
             state.fetch_timer = null;
             state.fetch_at = null;
             var list = this.realtime_new_story_list();
-            if (!list || list.key != state.key || !state.pending.length) {
+            if (!list || list.key != state.key) {
                 state.pending = [];
+                state.pending_at = {};
+                state.refilling = {};
                 return;
             }
+            if (!state.pending.length) return;
             var hashes = state.pending.splice(0, this.constants.REALTIME_NEW_STORY_MAX_HASHES);
             var generation = state.generation;
             // reader.js: the rapid group never aborts a page of the list that is still loading.
             this.model.make_request('/reader/river_stories', { h: hashes, include_hidden: true }, _.bind(function (data) {
                 if (generation != this.realtime_new_stories.generation) return;
-                this.buffer_realtime_new_stories(data);
-            }, this), $.noop, { 'ajax_group': 'rapid', 'request_type': 'GET' });
+                this.buffer_realtime_new_stories(data, hashes);
+            }, this), _.bind(function () {
+                // reader.js: stories that failed to load stay counted, for the tap to fetch.
+                if (generation != this.realtime_new_stories.generation) return;
+                var failed = this.realtime_new_stories;
+                _.each(hashes, function (story_hash) {
+                    if (_.has(failed.pending_at, story_hash)) failed.overflow[story_hash] = failed.pending_at[story_hash];
+                    delete failed.pending_at[story_hash];
+                    delete failed.refilling[story_hash];
+                });
+                this.show_realtime_new_stories_pill();
+            }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
         },
 
-        buffer_realtime_new_stories: function (data) {
+        buffer_realtime_new_stories: function (data, requested) {
             var list = this.realtime_new_story_list();
             var state = this.realtime_new_stories;
             if (!list || list.key != state.key) return this.clear_realtime_new_stories();
+            _.each(requested, function (story_hash) {
+                delete state.pending_at[story_hash];
+                delete state.refilling[story_hash];
+            });
             _.each(data && data.stories, function (attributes) {
                 var story_hash = attributes.story_hash;
                 if (!list.feed_ids[String(attributes.story_feed_id)]) return;
@@ -7972,6 +8049,7 @@
             if (data && data.user_profiles) {
                 state.user_profiles = state.user_profiles.concat(data.user_profiles);
             }
+            this.keep_realtime_new_story_places(list);
             this.show_realtime_new_stories_pill();
         },
 
@@ -7990,14 +8068,16 @@
         },
 
         // reader.js: The pill counts the fetched stories the list would show, plus the announced ones past the cap,
-        // which can include a few that Focus or a read elsewhere would hide.
+        // which can include a few that Focus or a read elsewhere would hide. Counted stories being fetched to fill a
+        // place stay counted.
         show_realtime_new_stories_pill: function () {
             var indicator = NEWSBLUR.app.new_stories_indicator;
             var state = this.realtime_new_stories;
             var list = this.realtime_new_story_list();
             if (!indicator || !state) return;
             if (!list || list.key != state.key) return indicator.hide();
-            indicator.show(this.realtime_visible_new_story_count() + _.size(state.overflow), list.oldest_first);
+            indicator.show(this.realtime_visible_new_story_count() + _.size(state.overflow) + _.size(state.refilling),
+                list.oldest_first);
         },
 
         update_realtime_new_story_read_state: function (story_hash, read) {
@@ -8011,7 +8091,11 @@
                 if (read && unread_only) delete state.overflow[story_hash];
             } else if (state.buffered[story_hash]) {
                 state.buffered[story_hash].read_status = read ? 1 : 0;
-                if (read && unread_only) delete state.buffered[story_hash];
+                if (read && unread_only) {
+                    delete state.buffered[story_hash];
+                    // reader.js: the place it leaves is filled from the counted stories.
+                    this.keep_realtime_new_story_places(list);
+                }
             } else {
                 // reader.js: a story announced but not fetched yet, or announced later, keeps this read state. A
                 // list that hasn't heard an announcement yet takes its key now, so its first one doesn't reset this.
@@ -8049,7 +8133,7 @@
         },
 
         // reader.js: The pill was clicked with more stories waiting than REALTIME_NEW_STORY_CAP. It shows the 20
-        // newest-dated waiting stories as if the list had just opened: it fetches the ones it only counted, replaces
+        // newest-dated waiting stories as if the list had just opened: they're loaded already, so it replaces
         // the list with them and lets go of everything else, and the list pages in afresh below them as the reader
         // scrolls (a page bringing one of them again merges into it rather than listing it twice). An oldest-first
         // list instead gains its 20 oldest waiting stories at its end and keeps the rest waiting. The iOS and
@@ -8067,13 +8151,16 @@
                     this.show_newest_realtime_new_stories(list, state, announced_feed_ids, generation);
                 }, this), 250);
             }
-            var waiting = _.map(state.buffered, function (attributes, story_hash) {
+            // reader.js: keep_realtime_new_story_places has the first REALTIME_NEW_STORY_CAP loaded already, so only
+            // stories still being fetched when the pill was clicked are fetched here.
+            var view_score = Math.max(this.get_unread_view_score(), 0);
+            var waiting = _.compact(_.map(state.buffered, function (attributes, story_hash) {
+                if (new NEWSBLUR.Models.Story(attributes).score() < view_score) return;
                 return { story_hash: story_hash, timestamp: parseInt(attributes.story_timestamp, 10), attributes: attributes };
-            }).concat(_.map(state.overflow, function (timestamp, story_hash) {
+            })).concat(_.map(_.extend({}, state.overflow, state.pending_at), function (timestamp, story_hash) {
                 return { story_hash: story_hash, timestamp: timestamp };
             }));
-            waiting = _.sortBy(waiting, function (entry) { return entry.timestamp; });
-            if (!list.oldest_first) waiting.reverse();
+            waiting = this.rank_realtime_new_stories(waiting, list.oldest_first);
             var chosen = waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP);
             var missing = _.pluck(_.reject(chosen, function (entry) { return entry.attributes; }), 'story_hash');
             var show = _.bind(function (fetched) {
@@ -8174,6 +8261,8 @@
             this.requeue_realtime_new_stories(list, state, _.reject(waiting, function (entry) {
                 return shown[entry.story_hash] || collection.get_by_story_hash(entry.story_hash);
             }));
+            // reader.js: the next tap shows the next oldest at once too.
+            this.keep_realtime_new_story_places(list);
             this.show_realtime_new_stories_pill();
             var first = stories.length && collection.get_by_story_hash(_.min(stories, function (attributes) {
                 return parseInt(attributes.story_timestamp, 10);
@@ -8194,9 +8283,9 @@
             var state = this.realtime_new_stories;
             var stories = this.realtime_offered_new_stories();
             var user_profiles = state.user_profiles;
-            var overflowing = _.size(state.overflow) > 0 ||
+            var overflowing = _.size(state.overflow) + _.size(state.refilling) > 0 ||
                 this.realtime_visible_new_story_count() > this.constants.REALTIME_NEW_STORY_CAP;
-            var announced_feed_ids = _.uniq(_.map(_.keys(state.buffered).concat(_.keys(state.overflow), state.pending),
+            var announced_feed_ids = _.uniq(_.map(_.keys(state.buffered).concat(_.keys(state.overflow), _.keys(state.pending_at)),
                 function (story_hash) { return parseInt(story_hash.split(':')[0], 10); }));
             this.clear_realtime_new_stories(list && list.key);
             if (!list || list.key != state.key) return;
