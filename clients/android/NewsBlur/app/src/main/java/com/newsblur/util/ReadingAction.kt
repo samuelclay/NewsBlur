@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Classifier
@@ -34,7 +35,7 @@ sealed interface ReadingAction : Serializable {
     ) : ReadingAction
 
     data class ReportStoryReadTimes(
-        val readTimesJson: String,
+        @SerializedName("readTimesJson") val readTimesJson: String,
         override val time: Long = System.currentTimeMillis(),
         override val tried: Int = 0,
     ) : ReadingAction
