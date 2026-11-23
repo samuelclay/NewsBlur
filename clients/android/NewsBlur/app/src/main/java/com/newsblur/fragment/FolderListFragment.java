@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
@@ -590,6 +591,7 @@ public void checkOpenFolderPreferences() {
         if (feedMenuPopup != null) feedMenuPopup.dismiss();
         feedMenuPopup = null;
         lastMenuFeed = null;
+        searchHeaderBinding = null;
         super.onDestroyView();
     }
 
@@ -653,7 +655,7 @@ public void checkOpenFolderPreferences() {
             syncSearchField(normalizedQuery);
         }
         if (shouldRestoreFocus) {
-            restoreSearchFieldFocus(normalizedQuery, selectionEnd);
+            restoreSearchFieldFocus(selectionEnd);
         }
     }
 
@@ -692,23 +694,23 @@ public void checkOpenFolderPreferences() {
         searchHeaderBinding.clearSearchQuery.setVisibility(hasQuery ? View.VISIBLE : View.GONE);
     }
 
-    private void restoreSearchFieldFocus(@Nullable String query, int selectionEnd) {
-        if (searchHeaderBinding == null) {
-            return;
-        }
+    private void restoreSearchFieldFocus(int selectionEnd) {
+        ViewFeedListSearchHeaderBinding header = searchHeaderBinding;
+        if (header == null) return;
 
-        String displayQuery = (query == null) ? "" : query;
-        int safeSelectionEnd = Math.max(0, Math.min(selectionEnd, displayQuery.length()));
-        searchHeaderBinding.inputSearchQuery.post(() -> {
-            if (searchHeaderBinding == null) {
+        EditText input = header.inputSearchQuery;
+        String text = input.getText().toString();
+        input.post(() -> {
+            // FolderListFragment.java may receive another edit or recreate the header before the list restores focus.
+            if (searchHeaderBinding != header || !text.contentEquals(input.getText())) {
                 return;
             }
-            searchHeaderBinding.inputSearchQuery.requestFocus();
-            searchHeaderBinding.inputSearchQuery.setSelection(safeSelectionEnd);
+            input.requestFocus();
+            input.setSelection(Math.max(0, Math.min(selectionEnd, input.length())));
             InputMethodManager inputMethodManager =
-                    (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    (InputMethodManager) input.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             if (inputMethodManager != null) {
-                inputMethodManager.showSoftInput(searchHeaderBinding.inputSearchQuery, InputMethodManager.SHOW_IMPLICIT);
+                inputMethodManager.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
             }
         });
     }
