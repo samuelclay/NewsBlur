@@ -79,12 +79,47 @@ class Test_TryFeedSessionQuery {
         }
     }
 
-    private fun query(feedSet: FeedSet): String {
+    @Test fun test_saved_reader_keeps_the_open_article_after_it_is_unsaved() {
+        DriverManager.getConnection("jdbc:sqlite::memory:").use { db ->
+            db.createStatement().use { sql ->
+                sql.execute(DatabaseConstants.FEED_SQL)
+                sql.execute(DatabaseConstants.STORY_SQL)
+                sql.execute(DatabaseConstants.READING_SESSION_SQL)
+                sql.execute("INSERT INTO feeds (_id) VALUES (1)")
+                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date, read) VALUES ('1:next',1,1,100,1), ('1:open',1,1,200,1)")
+                sql.execute("INSERT INTO reading_session VALUES ('1:next')")
+                val feedSet = FeedSet.allSaved()
+                val sessionCursor = mockk<Cursor>(relaxed = true)
+                every { sessionCursor.moveToFirst() } returns true
+                every { sessionCursor.getString(0) } returns feedSet.toCompactSerial()
+                every { database.query(DatabaseConstants.SYNC_METADATA_TABLE, null, any(), any(), null, null, null, null) } returns sessionCursor
+                every { database.execSQL(any(), any()) } answers {
+                    db.prepareStatement(firstArg<String>()).use { statement ->
+                        secondArg<Array<*>>().forEachIndexed { i, value -> statement.setObject(i + 1, value) }
+                        statement.executeUpdate()
+                    }
+                    Unit
+                }
+                // The tapped story arrived after the list session started. It must open from cache.
+                sql.executeQuery(query(feedSet, reader = true, target = "1:open")).use { rows ->
+                    assertTrue(rows.next())
+                    assertEquals("1:open", rows.getString("story_hash"))
+                }
+                sql.execute("UPDATE stories SET starred=0 WHERE story_hash='1:open'")
+                sql.executeQuery(query(FeedSet.allSaved(), reader = true)).use { rows ->
+                    assertEquals(listOf("1:open", "1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
+                }
+            }
+        }
+    }
+
+    private fun query(feedSet: FeedSet, reader: Boolean = false, target: String? = null): String {
         val sql = slot<String>()
         val cursor = mockk<Cursor>(relaxed = true)
         every { cursor.moveToFirst() } returns true
         every { database.rawQuery(capture(sql), any(), any<CancellationSignal>()) } returns cursor
-        helper.getActiveStoriesCursor(feedSet, filters, mockk()).close()
+        if (reader) helper.getReadingStoriesCursor(feedSet, filters, mockk(), target).close()
+        else helper.getStoryListCursor(feedSet, filters, mockk()).close()
         return sql.captured
     }
 }

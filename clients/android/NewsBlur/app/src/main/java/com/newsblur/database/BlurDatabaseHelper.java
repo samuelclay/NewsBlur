@@ -852,7 +852,7 @@ public class BlurDatabaseHelper {
     public void markStoryStarredFromRealtime(@NonNull String hash, boolean starred, long observedAt) {
         ContentValues values = new ContentValues();
         values.put(DatabaseConstants.STORY_STARRED, starred);
-        values.put(DatabaseConstants.STORY_STARRED_DATE, starred ? observedAt : 0L);
+        if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, observedAt);
         String selection = DatabaseConstants.STORY_HASH + " = ?";
         if (starred) {
             // RealtimeUpdates.kt can echo a local save or repeat an event after the server supplied its date.
@@ -1243,7 +1243,7 @@ public class BlurDatabaseHelper {
                 // fix the state
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_STARRED, starred);
-                values.put(DatabaseConstants.STORY_STARRED_DATE, starred ? actionTime : 0L);
+                if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, actionTime);
                 values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
                 values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
@@ -1458,8 +1458,44 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
+    private static boolean isUnfilteredSavedList(FeedSet fs) {
+        return fs.isAllSaved() && (fs.getSearchQuery() == null || fs.getSearchQuery().isEmpty());
+    }
+
     @NonNull
-    public Cursor getActiveStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+    public Cursor getStoryListCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+        if (isUnfilteredSavedList(fs)) {
+            // An open Saved Stories list follows saves and removals made after reading_session was populated.
+            String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
+                    + DatabaseConstants.getSavedStoriesSortOrder(cursorFilters.getStoryOrder());
+            return rawQuery(sql, null, cancellationSignal);
+        }
+
+        return getSessionStoriesCursor(fs, cursorFilters, cancellationSignal);
+    }
+
+    @NonNull
+    public Cursor getReadingStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters,
+                                         @NonNull CancellationSignal cancellationSignal, @Nullable String targetHash) {
+        // A save can reach StoriesViewModel.kt after its session was prepared. Keep the tapped story
+        // in that session so Reading.kt can continue displaying it even after an offline unsave.
+        if (targetHash != null && isUnfilteredSavedList(fs)) {
+            synchronized (RW_MUTEX) {
+                if (isFeedSetReady(fs)) {
+                    dbRW.execSQL("INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE
+                            + " (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") SELECT " + DatabaseConstants.STORY_HASH
+                            + " FROM " + DatabaseConstants.STORY_TABLE + " WHERE " + DatabaseConstants.STORY_HASH + " = ?"
+                            + " AND " + DatabaseConstants.STORY_STARRED + " = 1 AND NOT EXISTS (SELECT 1 FROM "
+                            + DatabaseConstants.READING_SESSION_TABLE + " WHERE " + DatabaseConstants.READING_SESSION_STORY_HASH + " = ?)",
+                            new String[]{targetHash, targetHash});
+                }
+            }
+        }
+        return getSessionStoriesCursor(fs, cursorFilters, cancellationSignal);
+    }
+
+    @NonNull
+    private Cursor getSessionStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
@@ -1480,13 +1516,6 @@ public class BlurDatabaseHelper {
         // those hashes are used to pull story data from the story table
         if (fs.isDailyBriefing() || fs.isTrending()) {
             return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
-        }
-
-        if (fs.isAllSaved() && (fs.getSearchQuery() == null || fs.getSearchQuery().isEmpty())) {
-            // An open Saved Stories list follows saves and removals made after reading_session was populated.
-            String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
-                    + DatabaseConstants.getSavedStoriesSortOrder(order);
-            return rawQuery(sql, null, cancellationSignal);
         }
 
         StringBuilder q = new StringBuilder(fs.getSingleFeed() != null

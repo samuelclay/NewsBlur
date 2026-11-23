@@ -47,7 +47,7 @@ class Test_ReadingRefresh {
         val reader = ReadingViewModel(db, main.dispatcher)
         try {
             every { anyConstructed<CancellationSignal>().cancel() } returns Unit
-            every { db.getActiveStoriesCursor(any(), any(), any()) } answers {
+            every { db.getReadingStoriesCursor(any(), any(), any(), null) } answers {
                 val feedId = firstArg<FeedSet>().singleFeed
                 queried.add(feedId)
                 var position = 0

@@ -698,10 +698,11 @@ class Test_RealtimeUpdates {
                         }
                     }
                 }
-                fun savedHashes(): List<String> =
+                fun hashesInSavedOrder(savedOnly: Boolean = true): List<String> =
                     db.createStatement().use { query ->
                         val order = DatabaseConstants.getSavedStoriesSortOrder(StoryOrder.NEWEST)
-                        query.executeQuery("SELECT story_hash FROM stories WHERE starred=1 ORDER BY $order").use { rows ->
+                        val filter = if (savedOnly) " WHERE starred=1" else ""
+                        query.executeQuery("SELECT story_hash FROM stories$filter ORDER BY $order").use { rows ->
                             buildList { while (rows.next()) add(rows.getString(1)) }
                         }
                     }
@@ -709,19 +710,22 @@ class Test_RealtimeUpdates {
                 val realtime = realtime(dbHelper = helper)
                 val localSave = ReadingAction.SaveStory("1:local", emptyList(), emptyList(), time = EPOCH - 1_000)
                 localSave.doLocal(helper, prefs)
-                assertEquals(listOf("1:local", "1:old"), savedHashes())
+                assertEquals(listOf("1:local", "1:old"), hashesInSavedOrder())
                 realtime.send("user:update", "sam", "story:starred:1:remote")
-                assertEquals(listOf("1:remote", "1:local", "1:old"), savedHashes())
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder())
 
                 // A sync replay and socket echo of the first save must keep its original place.
                 localSave.doLocal(helper, prefs, isFollowup = true)
                 realtime.send("user:update", "sam", "story:starred:1:local")
-                assertEquals(listOf("1:remote", "1:local", "1:old"), savedHashes())
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder())
 
                 ReadingAction.UnsaveStory("1:local").doLocal(helper, prefs)
-                assertEquals(listOf("1:remote", "1:old"), savedHashes())
+                assertEquals(listOf("1:remote", "1:old"), hashesInSavedOrder())
+                realtime.send("user:update", "sam", "story:unstarred:1:local")
+                // The reader's existing session still has this article; its neighbours must keep their positions.
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder(savedOnly = false))
                 ReadingAction.SaveStory("1:local", emptyList(), emptyList(), time = EPOCH + 1_000).doLocal(helper, prefs)
-                assertEquals(listOf("1:local", "1:remote", "1:old"), savedHashes())
+                assertEquals(listOf("1:local", "1:remote", "1:old"), hashesInSavedOrder())
             }
         }
     }

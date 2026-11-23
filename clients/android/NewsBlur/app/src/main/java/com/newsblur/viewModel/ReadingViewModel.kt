@@ -39,7 +39,7 @@ class ReadingViewModel
                 load = ::readStories,
                 cancel = { request: LoadRequest -> request.signal.cancel() },
                 publish = { batch: StoryBatch -> _activeStories.value = batch },
-                sameQuery = { first, second -> first.feedSet == second.feedSet && first.filters == second.filters },
+                sameQuery = { first, second -> first.feedSet == second.feedSet && first.filters == second.filters && first.targetHash == second.targetHash },
                 onError = { error -> Log.e(javaClass.name, "Caught ${error.javaClass.name} in loadActiveStories.", error) },
             )
 
@@ -47,11 +47,13 @@ class ReadingViewModel
         fun loadStories(
             fs: FeedSet,
             cursorFilters: CursorFilters,
+            targetHash: String? = null,
         ) {
             loader.submit(
                 LoadRequest(
                     feedSet = FeedSet.fromCompactSerial(fs.toCompactSerial()),
                     filters = cursorFilters,
+                    targetHash = targetHash,
                     signal = CancellationSignal(),
                     loadId = ++loadSeq,
                 ),
@@ -63,7 +65,7 @@ class ReadingViewModel
             val stories = mutableListOf<Story>()
             val feedIds = mutableSetOf<String>()
             var indexOfLastUnread = -1
-            dbHelper.getActiveStoriesCursor(request.feedSet, request.filters, request.signal).use { cursor ->
+            dbHelper.getReadingStoriesCursor(request.feedSet, request.filters, request.signal, request.targetHash).use { cursor ->
                 if (cursor.moveToFirst()) {
                     do {
                         context.ensureActive()
@@ -90,6 +92,7 @@ class ReadingViewModel
         private data class LoadRequest(
             val feedSet: FeedSet,
             val filters: CursorFilters,
+            val targetHash: String?,
             val signal: CancellationSignal,
             val loadId: Long,
         )

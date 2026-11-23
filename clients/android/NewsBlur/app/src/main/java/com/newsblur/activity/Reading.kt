@@ -897,7 +897,7 @@ abstract class Reading :
     private fun loadActiveStories(finishOnInvalidFs: Boolean = false) {
         fs?.let {
             val cursorFilters = CursorFilters(prefsRepo, it)
-            readingViewModel.loadStories(it, cursorFilters)
+            readingViewModel.loadStories(it, cursorFilters, storyHash?.takeUnless { hash -> hash == FIND_FIRST_UNREAD })
         } ?: run {
             if (finishOnInvalidFs) {
                 Log.e(this.javaClass.name, "can't create activity, no feedset ready")
