@@ -14,6 +14,7 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.slot
 import io.mockk.unmockkConstructor
+import java.sql.DriverManager
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -54,6 +55,28 @@ class Test_TryFeedSessionQuery {
             DatabaseConstants.SESSION_STORY_QUERY_BASE + " ORDER BY " + DatabaseConstants.READ_STORY_ORDER,
             query(FeedSet.allRead()),
         )
+    }
+
+    @Test fun test_open_saved_list_reflects_saves_and_removals_during_the_session() {
+        DriverManager.getConnection("jdbc:sqlite::memory:").use { db ->
+            db.createStatement().use { sql ->
+                sql.execute(DatabaseConstants.FEED_SQL)
+                sql.execute(DatabaseConstants.STORY_SQL)
+                sql.execute(DatabaseConstants.READING_SESSION_SQL)
+                sql.execute("INSERT INTO feeds (_id) VALUES (1)")
+                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date) VALUES ('1:old',1,1,100), ('1:recent',1,1,200), ('1:removed',1,0,0)")
+                sql.execute("INSERT INTO reading_session VALUES ('1:old'), ('1:removed')")
+
+                fun hashes(feedSet: FeedSet) = sql.executeQuery(query(feedSet)).use { rows ->
+                    buildList { while (rows.next()) add(rows.getString("story_hash")) }
+                }
+                assertEquals(listOf("1:recent", "1:old"), hashes(FeedSet.allSaved()))
+                // A saved search still restricts membership to its matching rows.
+                sql.execute("DELETE FROM reading_session WHERE session_story_hash='1:removed'")
+                val search = FeedSet.allSaved().apply { searchQuery = "economics" }
+                assertEquals(listOf("1:old"), hashes(search))
+            }
+        }
     }
 
     private fun query(feedSet: FeedSet): String {

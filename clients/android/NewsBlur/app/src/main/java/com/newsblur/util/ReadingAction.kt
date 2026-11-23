@@ -441,12 +441,12 @@ fun ReadingAction.doLocal(
         }
 
         is ReadingAction.SaveStory -> {
-            dbHelper.setStoryStarred(storyHash, highlights, userTags, true)
+            dbHelper.setStoryStarred(storyHash, highlights, userTags, true, time)
             plus(UPDATE_METADATA)
         }
 
         is ReadingAction.UnsaveStory -> {
-            dbHelper.setStoryStarred(storyHash, emptyList(), emptyList(), false)
+            dbHelper.setStoryStarred(storyHash, emptyList(), emptyList(), false, time)
             plus(UPDATE_METADATA)
         }
 

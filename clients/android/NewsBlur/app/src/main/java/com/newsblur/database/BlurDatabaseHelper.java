@@ -849,6 +849,21 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void markStoryStarredFromRealtime(@NonNull String hash, boolean starred, long observedAt) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_STARRED, starred);
+        values.put(DatabaseConstants.STORY_STARRED_DATE, starred ? observedAt : 0L);
+        String selection = DatabaseConstants.STORY_HASH + " = ?";
+        if (starred) {
+            // RealtimeUpdates.kt can echo a local save or repeat an event after the server supplied its date.
+            selection += " AND (" + DatabaseConstants.STORY_STARRED + " IS NOT 1 OR COALESCE("
+                    + DatabaseConstants.STORY_STARRED_DATE + ", 0) = 0)";
+        }
+        synchronized (RW_MUTEX) {
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, new String[]{hash});
+        }
+    }
+
     public void setFeedsActive(@NonNull Set<String> feedIds, boolean active) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
@@ -1193,7 +1208,8 @@ public class BlurDatabaseHelper {
             String hash,
             @NonNull List<String> highlights,
             @NonNull List<String> userTags,
-            boolean starred
+            boolean starred,
+            long actionTime
     ) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
@@ -1227,6 +1243,7 @@ public class BlurDatabaseHelper {
                 // fix the state
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_STARRED, starred);
+                values.put(DatabaseConstants.STORY_STARRED_DATE, starred ? actionTime : 0L);
                 values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
                 values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
@@ -1463,6 +1480,13 @@ public class BlurDatabaseHelper {
         // those hashes are used to pull story data from the story table
         if (fs.isDailyBriefing() || fs.isTrending()) {
             return rawQuery(DatabaseConstants.DAILY_BRIEFING_SESSION_STORY_QUERY, null, cancellationSignal);
+        }
+
+        if (fs.isAllSaved() && (fs.getSearchQuery() == null || fs.getSearchQuery().isEmpty())) {
+            // An open Saved Stories list follows saves and removals made after reading_session was populated.
+            String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
+                    + DatabaseConstants.getSavedStoriesSortOrder(order);
+            return rawQuery(sql, null, cancellationSignal);
         }
 
         StringBuilder q = new StringBuilder(fs.getSingleFeed() != null

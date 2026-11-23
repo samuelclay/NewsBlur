@@ -881,7 +881,7 @@ class RealtimeUpdates internal constructor(
     // ===== Saved stories and feed list =====
 
     private fun onStarredChanged(message: RealtimeMessage.StarredChanged) {
-        message.storyHash?.let { dbHelper.markStoryHashesStarred(listOf(it), message.starred) }
+        message.storyHash?.let { dbHelper.markStoryStarredFromRealtime(it, message.starred, clock()) }
         synchronized(lock) {
             starredJob?.cancel()
             starredJob =
