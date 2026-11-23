@@ -86,39 +86,52 @@ class Test_TryFeedSessionQuery {
                 sql.execute(DatabaseConstants.STORY_SQL)
                 sql.execute(DatabaseConstants.READING_SESSION_SQL)
                 sql.execute("INSERT INTO feeds (_id) VALUES (1)")
-                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date, read) VALUES ('1:next',1,1,100,1), ('1:open',1,1,200,1)")
+                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date, read) VALUES ('1:next',1,1,100,1), ('1:between',1,1,150,1), ('1:open',1,1,200,1), ('1:removed',1,0,175,1)")
                 sql.execute("INSERT INTO reading_session VALUES ('1:next')")
                 val feedSet = FeedSet.allSaved()
                 val sessionCursor = mockk<Cursor>(relaxed = true)
                 every { sessionCursor.moveToFirst() } returns true
-                every { sessionCursor.getString(0) } returns feedSet.toCompactSerial()
+                val search = FeedSet.allSaved().apply { searchQuery = "economics" }
+                every { sessionCursor.getString(0) } returns search.toCompactSerial()
                 every { database.query(DatabaseConstants.SYNC_METADATA_TABLE, null, any(), any(), null, null, null, null) } returns sessionCursor
-                every { database.execSQL(any(), any()) } answers {
-                    db.prepareStatement(firstArg<String>()).use { statement ->
-                        secondArg<Array<*>>().forEachIndexed { i, value -> statement.setObject(i + 1, value) }
-                        statement.executeUpdate()
-                    }
-                    Unit
+                every { database.execSQL(any()) } answers { sql.executeUpdate(firstArg<String>()); Unit }
+                helper.prepareSavedReadingSession(search, -1L, false)
+                sql.executeQuery(query(search, reader = true)).use { rows ->
+                    assertEquals(listOf("1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
                 }
-                // The tapped story arrived after the list session started. It must open from cache.
-                sql.executeQuery(query(feedSet, reader = true, target = "1:open")).use { rows ->
+                sql.execute("INSERT INTO reading_session VALUES ('1:removed')")
+                every { sessionCursor.getString(0) } returns feedSet.toCompactSerial()
+                // Both saves arrived after the session started. The article next to the tapped one must also be swipeable.
+                val version = helper.prepareSavedReadingSession(feedSet, -1L, false)
+                helper.prepareSavedReadingSession(feedSet, version, false)
+                sql.executeQuery(query(feedSet, reader = true)).use { rows ->
                     assertTrue(rows.next())
                     assertEquals("1:open", rows.getString("story_hash"))
+                    assertTrue(rows.next())
+                    assertEquals("1:between", rows.getString("story_hash"))
+                }
+                // Opening another reader against the same session must not duplicate the previous snapshot.
+                helper.prepareSavedReadingSession(feedSet, -1L, false)
+                sql.executeQuery("SELECT COUNT(*) FROM reading_session").use { count ->
+                    assertTrue(count.next())
+                    assertEquals(3, count.getInt(1))
                 }
                 sql.execute("UPDATE stories SET starred=0 WHERE story_hash='1:open'")
+                helper.prepareSavedReadingSession(feedSet, version, false)
+                helper.prepareSavedReadingSession(feedSet, -1L, true)
                 sql.executeQuery(query(FeedSet.allSaved(), reader = true)).use { rows ->
-                    assertEquals(listOf("1:open", "1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
+                    assertEquals(listOf("1:open", "1:between", "1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
                 }
             }
         }
     }
 
-    private fun query(feedSet: FeedSet, reader: Boolean = false, target: String? = null): String {
+    private fun query(feedSet: FeedSet, reader: Boolean = false): String {
         val sql = slot<String>()
         val cursor = mockk<Cursor>(relaxed = true)
         every { cursor.moveToFirst() } returns true
         every { database.rawQuery(capture(sql), any(), any<CancellationSignal>()) } returns cursor
-        if (reader) helper.getReadingStoriesCursor(feedSet, filters, mockk(), target).close()
+        if (reader) helper.getReadingStoriesCursor(feedSet, filters, mockk()).close()
         else helper.getStoryListCursor(feedSet, filters, mockk()).close()
         return sql.captured
     }

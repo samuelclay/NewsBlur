@@ -1458,44 +1458,46 @@ public class BlurDatabaseHelper {
         return feedIds;
     }
 
-    private static boolean isUnfilteredSavedList(FeedSet fs) {
-        return fs.isAllSaved() && (fs.getSearchQuery() == null || fs.getSearchQuery().isEmpty());
-    }
-
     @NonNull
     public Cursor getStoryListCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
-        if (isUnfilteredSavedList(fs)) {
+        if (fs.isUnfilteredSavedList()) {
             // An open Saved Stories list follows saves and removals made after reading_session was populated.
             String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
                     + DatabaseConstants.getSavedStoriesSortOrder(cursorFilters.getStoryOrder());
             return rawQuery(sql, null, cancellationSignal);
         }
 
-        return getSessionStoriesCursor(fs, cursorFilters, cancellationSignal);
+        return getReadingStoriesCursor(fs, cursorFilters, cancellationSignal);
     }
 
-    @NonNull
-    public Cursor getReadingStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters,
-                                         @NonNull CancellationSignal cancellationSignal, @Nullable String targetHash) {
-        // A save can reach StoriesViewModel.kt after its session was prepared. Keep the tapped story
-        // in that session so Reading.kt can continue displaying it even after an offline unsave.
-        if (targetHash != null && isUnfilteredSavedList(fs)) {
-            synchronized (RW_MUTEX) {
-                if (isFeedSetReady(fs)) {
-                    dbRW.execSQL("INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE
-                            + " (" + DatabaseConstants.READING_SESSION_STORY_HASH + ") SELECT " + DatabaseConstants.STORY_HASH
-                            + " FROM " + DatabaseConstants.STORY_TABLE + " WHERE " + DatabaseConstants.STORY_HASH + " = ?"
-                            + " AND " + DatabaseConstants.STORY_STARRED + " = 1 AND NOT EXISTS (SELECT 1 FROM "
-                            + DatabaseConstants.READING_SESSION_TABLE + " WHERE " + DatabaseConstants.READING_SESSION_STORY_HASH + " = ?)",
-                            new String[]{targetHash, targetHash});
+    public long prepareSavedReadingSession(@NonNull FeedSet fs, long previousVersion, boolean restoringReader) {
+        if (!fs.isUnfilteredSavedList()) return previousVersion;
+        synchronized (RW_MUTEX) {
+            long version = readingSessionVersion.get();
+            if (previousVersion == version || !isFeedSetReady(fs)) return previousVersion;
+            String insert = "INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE + " (" + DatabaseConstants.READING_SESSION_STORY_HASH + ")"
+                    + " SELECT " + DatabaseConstants.STORY_HASH + " FROM " + DatabaseConstants.STORY_TABLE
+                    + " WHERE " + DatabaseConstants.STORY_STARRED + " = 1";
+            dbRW.beginTransaction();
+            try {
+                if (previousVersion < 0 && !restoringReader) {
+                    // A new reader starts with the list as it is now, including saves and removals since it opened.
+                    dbRW.execSQL("DELETE FROM " + DatabaseConstants.READING_SESSION_TABLE);
+                } else {
+                    // Reading.kt can restore a pager whose open article the reader has since unsaved.
+                    insert += " EXCEPT SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE;
                 }
+                dbRW.execSQL(insert);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
             }
+            return version;
         }
-        return getSessionStoriesCursor(fs, cursorFilters, cancellationSignal);
     }
 
     @NonNull
-    private Cursor getSessionStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+    public Cursor getReadingStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we

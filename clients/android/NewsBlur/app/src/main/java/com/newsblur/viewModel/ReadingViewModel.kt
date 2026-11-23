@@ -32,6 +32,7 @@ class ReadingViewModel
         val activeStories: LiveData<StoryBatch> = _activeStories
 
         private var loadSeq = 0L
+        private var preparedSavedSession = -1L
         private val loader =
             LatestStoryLoadRunner(
                 scope = viewModelScope,
@@ -39,7 +40,7 @@ class ReadingViewModel
                 load = ::readStories,
                 cancel = { request: LoadRequest -> request.signal.cancel() },
                 publish = { batch: StoryBatch -> _activeStories.value = batch },
-                sameQuery = { first, second -> first.feedSet == second.feedSet && first.filters == second.filters && first.targetHash == second.targetHash },
+                sameQuery = { first, second -> first.feedSet == second.feedSet && first.filters == second.filters },
                 onError = { error -> Log.e(javaClass.name, "Caught ${error.javaClass.name} in loadActiveStories.", error) },
             )
 
@@ -47,13 +48,13 @@ class ReadingViewModel
         fun loadStories(
             fs: FeedSet,
             cursorFilters: CursorFilters,
-            targetHash: String? = null,
+            restoringReader: Boolean = false,
         ) {
             loader.submit(
                 LoadRequest(
                     feedSet = FeedSet.fromCompactSerial(fs.toCompactSerial()),
                     filters = cursorFilters,
-                    targetHash = targetHash,
+                    restoringReader = restoringReader,
                     signal = CancellationSignal(),
                     loadId = ++loadSeq,
                 ),
@@ -65,7 +66,8 @@ class ReadingViewModel
             val stories = mutableListOf<Story>()
             val feedIds = mutableSetOf<String>()
             var indexOfLastUnread = -1
-            dbHelper.getReadingStoriesCursor(request.feedSet, request.filters, request.signal, request.targetHash).use { cursor ->
+            preparedSavedSession = dbHelper.prepareSavedReadingSession(request.feedSet, preparedSavedSession, request.restoringReader)
+            dbHelper.getReadingStoriesCursor(request.feedSet, request.filters, request.signal).use { cursor ->
                 if (cursor.moveToFirst()) {
                     do {
                         context.ensureActive()
@@ -92,7 +94,7 @@ class ReadingViewModel
         private data class LoadRequest(
             val feedSet: FeedSet,
             val filters: CursorFilters,
-            val targetHash: String?,
+            val restoringReader: Boolean,
             val signal: CancellationSignal,
             val loadId: Long,
         )
