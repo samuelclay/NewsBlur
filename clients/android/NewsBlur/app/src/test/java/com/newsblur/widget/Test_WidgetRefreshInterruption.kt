@@ -1,14 +1,24 @@
 package com.newsblur.widget
 
+import android.content.Context
+import android.content.Intent
+import android.database.Cursor
+import android.os.CancellationSignal
+import android.os.OperationCanceledException
+import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.Story
 import com.newsblur.network.StoryApi
+import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.Log
+import dagger.hilt.android.EntryPointAccessors
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import io.mockk.verify
 import kotlinx.coroutines.awaitCancellation
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -72,6 +82,43 @@ class Test_WidgetRefreshInterruption {
             worker.interrupt()
             worker.join(5000)
         }
+    }
+
+    @Test
+    fun test_cancelled_feed_query_preserves_previous_widget_rows() {
+        mockkStatic(Log::class)
+        every { Log.d(any<Any>(), any()) } returns Unit
+        val prefs = mockk<PrefsRepo>(relaxed = true)
+        every { prefs.getUniqueLoginKey() } returns "widget-test"
+        every { prefs.getWidgetFeedIds() } returns null
+        val api = mockk<StoryApi>()
+        val previous = Story().apply { storyHash = "1:old" }
+        val next = Story().apply { storyHash = "1:new" }
+        coEvery { api.getStories(any(), any(), any(), any(), any()) } returnsMany listOf(
+            StoriesResponse().apply { stories = arrayOf(previous) },
+            StoriesResponse().apply { stories = arrayOf(next) },
+        )
+        val db = mockk<BlurDatabaseHelper>(relaxed = true)
+        mockkConstructor(CancellationSignal::class)
+        mockkStatic(EntryPointAccessors::class)
+        val context = mockk<Context>()
+        every { context.applicationContext } returns context
+        val dependencies = mockk<WidgetRemoteViewsFactoryEntryPoint>(relaxed = true)
+        every { dependencies.storyApi() } returns api
+        every { dependencies.dbHelper() } returns db
+        every { dependencies.prefRepository() } returns prefs
+        every { EntryPointAccessors.fromApplication(context, WidgetRemoteViewsFactoryEntryPoint::class.java) } returns dependencies
+        val factory = WidgetRemoteViewsFactory(context, mockk<Intent>(relaxed = true))
+        val cursor = mockk<Cursor>(relaxed = true)
+        every { db.getFeedsCursor(any()) } returns cursor
+        factory.onDataSetChanged()
+
+        every { anyConstructed<CancellationSignal>().isCanceled } returns true
+        every { db.getFeedsCursor(any()) } throws OperationCanceledException("Widget factory destroyed")
+        factory.onDataSetChanged()
+
+        assertEquals(previous.hashCode().toLong(), factory.getItemId(0))
+        verify(exactly = 1) { db.insertStories(any(), any(), any()) }
     }
 
     private fun setField(factory: WidgetRemoteViewsFactory, name: String, value: Any) {
