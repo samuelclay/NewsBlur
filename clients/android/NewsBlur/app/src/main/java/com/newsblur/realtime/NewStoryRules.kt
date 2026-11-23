@@ -38,6 +38,22 @@ internal object NewStoryRules {
     }
 
     /**
+     * Whether a story dated [seconds] belongs among the [cap] stories RealtimeUpdates.kt keeps loaded for the tap: always
+     * while there's room, and past it only when it's newer than the oldest of the [held] dates (older than the newest,
+     * for an oldest-first list). A same-dated story is only counted, so arrivals never displace each other back and forth.
+     */
+    fun belongsAmongLoaded(
+        seconds: Long,
+        held: Collection<Long>,
+        cap: Int,
+        newestFirst: Boolean,
+    ): Boolean {
+        if (held.size < cap) return true
+        val edge = (if (newestFirst) held.sortedDescending() else held.sorted())[cap - 1]
+        return if (newestFirst) seconds > edge else seconds < edge
+    }
+
+    /**
      * Newest-first lists show the pill at the top. Oldest-first lists only show it once their last page
      * has loaded: until then pagination brings the new stories in at the end on its own.
      */

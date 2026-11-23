@@ -1,6 +1,8 @@
 package com.newsblur.realtime
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class Test_NewStoryRulesPickForTap {
@@ -18,6 +20,18 @@ class Test_NewStoryRulesPickForTap {
         assertEquals(20, picked.size)
         assertEquals("1:newer", picked.first())
         assertEquals((20 downTo 2).map { "1:kept$it" }, picked.drop(1))
+    }
+
+    // An oldest-first list keeps its 20 oldest loaded: past the cap only an arrival older than the newest of them gets
+    // loaded, and a same-dated one is only counted, in either order.
+    @Test
+    fun test_oldestFirstLoadsOnlyOlderArrivalsPastTheCapAndTiesAreCounted() {
+        val held = listOf(100L, 200L, 300L)
+
+        assertTrue(NewStoryRules.belongsAmongLoaded(250L, held, 3, newestFirst = false))
+        assertFalse(NewStoryRules.belongsAmongLoaded(400L, held, 3, newestFirst = false))
+        assertFalse(NewStoryRules.belongsAmongLoaded(300L, held, 3, newestFirst = false))
+        assertFalse(NewStoryRules.belongsAmongLoaded(100L, held, 3, newestFirst = true))
     }
 
     // An oldest-first list gains the oldest-dated waiting stories at its end, in its own order.

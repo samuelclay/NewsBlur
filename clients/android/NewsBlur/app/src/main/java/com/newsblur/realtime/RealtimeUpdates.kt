@@ -21,6 +21,7 @@ import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
 import com.newsblur.util.ReadFilter
+import com.newsblur.util.StoryOrder
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -110,7 +111,7 @@ class RealtimeUpdates internal constructor(
         val feedSet: FeedSet?,
         val storyHashes: List<String>,
         val placement: Placement,
-        // Announced stories past the cap, counted without fetching them.
+        // Waiting stories outside the NEW_STORIES_CAP a tap would show, counted without loading them.
         val unfetchedCount: Int = 0,
     ) {
         enum class Placement { TOP, BOTTOM }
@@ -160,8 +161,8 @@ class RealtimeUpdates internal constructor(
     private var reloadJob: Job? = null
 
     private val pendingNewStories = LinkedHashMap<String, Long>()
-    // Announced stories that passed the open list's checks after the pill reached its cap.
-    // Each one's announced date in seconds, so a tap past the cap can pick the newest without fetching them all.
+    // Announced stories that passed the open list's checks but aren't among the NEW_STORIES_CAP a tap would show, each
+    // with its date in seconds. A refill (refillLocked) fetches some while they stay counted here until they land.
     private val unfetchedNewStories = LinkedHashMap<String, Long>()
     private val newStoryTimestamps = HashMap<String, Long>()
     private var newStoryFetchJob: Job? = null
@@ -549,9 +550,9 @@ class RealtimeUpdates internal constructor(
 
     /**
      * NewStoriesPill.kt's tap. Up to the cap it adds the fetched stories. Past it, it picks the newest
-     * [NEW_STORIES_CAP] waiting (the oldest, for an oldest-first list), fetching those it only counted in one
-     * request; a newest-first list then shows just those, and an oldest-first one adds them and keeps the rest
-     * waiting.
+     * [NEW_STORIES_CAP] waiting (the oldest, for an oldest-first list), which are already loaded, so it shows them
+     * without a fetch; only one still on its way or whose fetch failed is fetched here. A newest-first list then shows
+     * just those, and an oldest-first one adds them and keeps the rest waiting, loading the next 20 for its next tap.
      */
     suspend fun takeNewStoriesForTap(fs: FeedSet): TapResult {
         val account = currentAccount()
@@ -585,6 +586,7 @@ class RealtimeUpdates internal constructor(
                     } else {
                         current.copy(storyHashes = remaining, unfetchedCount = unfetchedNewStories.size)
                     }
+                if (_newStories.value.feedSet == fs) refillLocked(fs, newestFirst = false)
             }
         }
         val fetched = if (toFetch.isEmpty()) emptySet() else fetchShowable(fs, toFetch, account) ?: return TapResult.None
@@ -686,8 +688,31 @@ class RealtimeUpdates internal constructor(
         _newStories.value = NewStories.NONE
     }
 
-    private fun bufferedNewStoryCountLocked(fs: FeedSet): Int =
-        _newStories.value.takeIf { it.feedSet == fs }?.storyHashes?.size ?: 0
+    /** The loaded stories waiting for the open list, each with its date in seconds. */
+    private fun loadedSecondsLocked(fs: FeedSet): Map<String, Long> =
+        _newStories.value.takeIf { it.feedSet == fs }?.storyHashes?.associateWith { (newStoryTimestamps[it] ?: 0L) / 1000 } ?: emptyMap()
+
+    /**
+     * A loaded story read elsewhere, or one that turned out not to show, leaves a slot among the 20 a tap would show;
+     * the newest counted stories fill it (the oldest, for an oldest-first list), so the tap still has them all loaded.
+     * They stay counted until they land.
+     */
+    private fun refillLocked(
+        fs: FeedSet,
+        newestFirst: Boolean,
+    ) {
+        val room = NEW_STORIES_CAP - loadedSecondsLocked(fs).size - pendingNewStories.size
+        if (room <= 0) return
+        val counted = unfetchedNewStories.filterKeys { it !in pendingNewStories }
+        if (counted.isEmpty()) return
+        NewStoryRules.pickForTap(counted, room, newestFirst).forEach { pendingNewStories[it] = counted.getValue(it) }
+        if (newStoryFetchJob?.isActive == true) return
+        newStoryFetchJob =
+            scope.launch {
+                delay(NEW_STORY_THROTTLE_MILLIS)
+                fetchNewStories(fs)
+            }
+    }
 
     private fun publishUnfetchedLocked(fs: FeedSet) {
         val current = _newStories.value
@@ -723,8 +748,10 @@ class RealtimeUpdates internal constructor(
             ) {
                 return
             }
-            if (bufferedNewStoryCountLocked(fs) >= NEW_STORIES_CAP) {
-                // A list left open overnight would otherwise fetch every story published since.
+            // RealtimeUpdates.kt keeps the 20 stories a tap would show loaded. A story that isn't among them, by date in
+            // the list's order, is only counted, so a list left open overnight never holds more than 20.
+            val held = loadedSecondsLocked(fs).values + pendingNewStories.values
+            if (!NewStoryRules.belongsAmongLoaded(message.timestampSeconds, held, NEW_STORIES_CAP, order == StoryOrder.NEWEST)) {
                 unfetchedNewStories[message.storyHash] = message.timestampSeconds
                 publishUnfetchedLocked(fs)
                 return
@@ -742,7 +769,7 @@ class RealtimeUpdates internal constructor(
     private suspend fun fetchNewStories(fs: FeedSet) {
         // Taken before [lock], never inside it: a write holding accountLock must not keep the main thread waiting.
         val account = currentAccount()
-        val hashes =
+        val requested =
             synchronized(lock) {
                 newStoryFetchJob = null
                 if (openList != fs) return
@@ -750,22 +777,35 @@ class RealtimeUpdates internal constructor(
                     clearNewStoriesLocked()
                     return
                 }
-                // Fetch only as many as the pill can still hold; the rest are counted, not fetched.
-                val room = NEW_STORIES_CAP - bufferedNewStoryCountLocked(fs)
-                if (room <= 0) {
-                    pendingNewStories.forEach { (hash, seconds) -> unfetchedNewStories.putIfAbsent(hash, seconds) }
-                    pendingNewStories.clear()
+                // Load only those among the 20 a tap would show, with what's loaded already; newer arrivals since may
+                // have pushed some waiting stories out of them, and those are counted instead.
+                val newestFirst = CursorFilters(prefsRepo, fs).storyOrder == StoryOrder.NEWEST
+                val kept = NewStoryRules.pickForTap(loadedSecondsLocked(fs) + pendingNewStories, NEW_STORIES_CAP, newestFirst).toSet()
+                val outside = pendingNewStories.filterKeys { it !in kept }
+                if (outside.isNotEmpty()) {
+                    outside.forEach { (hash, seconds) ->
+                        unfetchedNewStories.putIfAbsent(hash, seconds)
+                        pendingNewStories.remove(hash)
+                    }
                     publishUnfetchedLocked(fs)
-                    return
                 }
-                pendingNewStories.keys.take(minOf(room, MAX_HASHES_PER_FETCH)).onEach(pendingNewStories::remove)
+                pendingNewStories.entries.take(MAX_HASHES_PER_FETCH).associate { it.key to it.value }.also {
+                    it.keys.forEach(pendingNewStories::remove)
+                }
             }
-        if (hashes.isEmpty()) return
+        if (requested.isEmpty()) return
+        val hashes = requested.keys.toList()
         if (BuildConfig.DEBUG) android.util.Log.d(LOG_TAG, "fetching new stories $hashes")
         val response = storyApi.getStoriesByHash(hashes)
         val stories = response?.stories
         if (response == null || response.isError || stories == null) {
             Log.w(this, "couldn't fetch ${hashes.size} new stories")
+            // They keep waiting, counted, so a tap can fetch the ones it shows.
+            synchronized(lock) {
+                if (openList != fs) return
+                requested.forEach { (hash, seconds) -> unfetchedNewStories.putIfAbsent(hash, seconds) }
+                publishUnfetchedLocked(fs)
+            }
             return
         }
         val filters = CursorFilters(prefsRepo, fs)
@@ -784,19 +824,27 @@ class RealtimeUpdates internal constructor(
         }
         synchronized(lock) {
             if (openList != fs) return
+            // Each one fetched leaves the count: it's loaded now, or it never counted (hidden, read, or not in the list).
+            hashes.forEach(unfetchedNewStories::remove)
             accepted.forEach { newStoryTimestamps[it.storyHash] = it.timestamp }
             val shown = _newStories.value
             val current = if (shown.feedSet == fs) shown.storyHashes else emptyList()
             val merged = (current + accepted.map { it.storyHash }).distinct()
-            val ordered =
-                if (placement == NewStories.Placement.TOP) {
-                    merged.sortedByDescending { newStoryTimestamps[it] ?: 0L }
-                } else {
-                    merged.sortedBy { newStoryTimestamps[it] ?: 0L }
-                }
+            val newestFirst = placement == NewStories.Placement.TOP
+            // RealtimeUpdates.kt keeps the 20 a tap would show, in the list's order; a newer arrival pushes the oldest
+            // of them back to the count, its date kept.
+            val dates = merged.associateWith { (newStoryTimestamps[it] ?: 0L) / 1000 }
+            val ordered = NewStoryRules.pickForTap(dates, NEW_STORIES_CAP, newestFirst)
+            (merged - ordered.toSet()).forEach {
+                unfetchedNewStories[it] = dates.getValue(it)
+                newStoryTimestamps.remove(it)
+            }
             if (ordered.isNotEmpty() || unfetchedNewStories.isNotEmpty()) {
                 _newStories.value = NewStories(fs, ordered, placement, unfetchedNewStories.size)
+            } else if (shown.feedSet == fs) {
+                _newStories.value = NewStories.NONE
             }
+            refillLocked(fs, newestFirst)
             if (pendingNewStories.isNotEmpty() && newStoryFetchJob?.isActive != true) {
                 newStoryFetchJob =
                     scope.launch {
@@ -826,6 +874,7 @@ class RealtimeUpdates internal constructor(
                 } else {
                     current.copy(storyHashes = remaining, unfetchedCount = unfetchedNewStories.size)
                 }
+            if (_newStories.value.feedSet == fs) refillLocked(fs, current.placement == NewStories.Placement.TOP)
         }
     }
 
@@ -897,7 +946,8 @@ class RealtimeUpdates internal constructor(
         internal const val FUTURE_STORY_SECONDS = 60L * 60L
         internal const val MAX_HASHES_PER_FETCH = 100
 
-        // The most stories the pill fetches and holds; past it, announcements are only counted.
+        // How many waiting stories the pill keeps loaded: the newest (oldest, for an oldest-first list), the ones a tap
+        // past the cap shows. The rest are only counted.
         const val NEW_STORIES_CAP = 20
         private const val STARRED_DEBOUNCE_MILLIS = 1_000L
         private const val RELOAD_DEBOUNCE_MILLIS = 2_000L
