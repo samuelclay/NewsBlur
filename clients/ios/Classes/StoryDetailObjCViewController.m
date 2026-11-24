@@ -121,8 +121,10 @@
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-    [audioSession setCategory:AVAudioSessionCategoryPlayback
-                        error:nil];
+    // Embedded videos need playback in silent mode. Preserve ListenPlayer.swift's mixing settings if it owns playback.
+    if (![audioSession.category isEqualToString:AVAudioSessionCategoryPlayback]) {
+        [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+    }
     
     WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
     NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
