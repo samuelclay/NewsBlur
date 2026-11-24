@@ -806,6 +806,7 @@ class Test_DescribeWebPreview(TestCase):
 
         class Response:
             closed = False
+            is_redirect = False
 
             def iter_content(self, chunk_size):
                 for start in range(0, len(body), chunk_size):
@@ -855,6 +856,7 @@ class Test_DescribeWebPreview(TestCase):
         class Endless:
             status_code = 200
             closed = False
+            is_redirect = False
 
             def iter_content(self, chunk_size):
                 while True:
@@ -950,17 +952,19 @@ class Test_DescribeWebPreview(TestCase):
 class FakeBody:
     """A response body requests streams in chunks. `filler` spaces follow `head` without being held in memory."""
 
-    def __init__(self, head, filler, web):
+    def __init__(self, head, filler, web, url):
         self.head = head
         self.size = len(head) + filler
         self.offset = 0
         self.web = web
+        self.url = url
 
     def read(self, amount):
         amount = min(amount, self.size - self.offset)
         chunk = self.head[self.offset : self.offset + amount].ljust(amount, b" ")
         self.offset += amount
         self.web.bytes_served += amount
+        self.web.bytes_by_url[self.url] = self.web.bytes_by_url.get(self.url, 0) + amount
         self.web.clock += self.web.seconds_per_chunk
         return chunk
 
@@ -973,25 +977,54 @@ class Test_DescribeFeedDiscovery(TestCase):
 
     Only DNS and requests.request are faked, so utils/url_safety.py and discovery itself run for real.
     Each request moves a fake clock forward by `seconds_per_request`, each chunk read by `seconds_per_chunk`.
+    A page is served 200 unless `statuses` says otherwise, and with `refuse_user_agent` every request that
+    sends a User-Agent gets the short 403 nu.nl gives "NewsBlur Feed Finder". With `empty_for_user_agent`
+    those requests get a 200 with an empty body instead. An address with no page is an empty 404.
     """
+
+    LINKED_PAGE = (
+        b'<html><head><link rel="alternate" type="application/rss+xml" href="/feed.xml"></head>'
+        b"<body>Hello</body></html>"
+    )
 
     def setUp(self):
         self.pages = {}
+        self.statuses = {}
+        self.content_types = {}
+        self.redirects = {}
+        self.refuse_user_agent = False
+        self.empty_for_user_agent = False
         self.started = []
+        self.requested = []
         self.bytes_served = 0
+        self.bytes_by_url = {}
         self.clock = 0.0
         self.seconds_per_request = 0
         self.seconds_per_chunk = 0
 
     def serve(self, method, url, **kwargs):
         self.started.append(self.clock)
+        self.requested.append(url)
         self.clock += self.seconds_per_request
-        head, filler = self.pages.get(url, (None, 0))
         response = requests.Response()
         response.url = url
         response.encoding = "utf-8"
-        response.status_code = 404 if head is None else 200
-        response.raw = FakeBody(head or b"", filler, self)
+        head, filler = self.pages.get(url, (None, 0))
+        if url in self.redirects:
+            response.status_code = 302
+            response.headers["Location"] = self.redirects[url]
+            head, filler = b"", 0
+        elif self.refuse_user_agent and (kwargs.get("headers") or {}).get("User-Agent"):
+            response.status_code = 403
+            head, filler = b"<html><body>Forbidden</body></html>", 0
+        elif self.empty_for_user_agent and (kwargs.get("headers") or {}).get("User-Agent"):
+            response.status_code = 200
+            head, filler = b"", 0
+        else:
+            response.status_code = self.statuses.get(url, 404 if head is None else 200)
+        if url in self.content_types:
+            response.headers["Content-Type"] = self.content_types[url]
+        response.raw = FakeBody(head or b"", filler, self, url)
         return response
 
     def preview(self, url):
@@ -1004,11 +1037,7 @@ class Test_DescribeFeedDiscovery(TestCase):
             return web_preview.preview_site(url)
 
     def test_a_page_that_links_its_feed_is_previewed_through_that_feed(self):
-        self.pages["https://brandnew.example.com/"] = (
-            b'<html><head><link rel="alternate" type="application/rss+xml" href="/feed.xml"></head>'
-            b"<body>Hello</body></html>",
-            0,
-        )
+        self.pages["https://brandnew.example.com/"] = (self.LINKED_PAGE, 0)
         self.pages["https://brandnew.example.com/feed.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
         preview = self.preview("https://brandnew.example.com/")
         self.assertEqual(preview["feed_address"], "https://brandnew.example.com/feed.xml")
@@ -1040,6 +1069,162 @@ class Test_DescribeFeedDiscovery(TestCase):
         self.assertIsNone(self.preview("https://trickle.example.com/"))
         self.assertLessEqual(self.clock, web_preview.DISCOVERY_SECONDS + self.seconds_per_chunk)
         self.assertEqual(len(self.started), 1)
+
+    def test_a_page_answered_with_an_error_status_is_still_searched_for_its_feed(self):
+        # smbc-comics.com answers its homepage with a 500 and kalzumeus.com with a 206, each with the whole page.
+        for status in (500, 206):
+            with self.subTest(status=status):
+                self.pages["https://comic.example.com/"] = (self.LINKED_PAGE, 0)
+                self.statuses["https://comic.example.com/"] = status
+                self.pages["https://comic.example.com/feed.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+                preview = self.preview("https://comic.example.com/") or {}
+                self.assertEqual(preview.get("feed_address"), "https://comic.example.com/feed.xml")
+
+    def test_a_site_that_refuses_the_finders_user_agent_is_asked_again_without_one(self):
+        from apps.describe import web_preview
+
+        self.refuse_user_agent = True
+        self.pages["https://news.example.com/"] = (self.LINKED_PAGE, 0)
+        self.pages["https://news.example.com/feed.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://news.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://news.example.com/feed.xml")
+
+        # A retry is a request: a site that refuses every one costs no more than DISCOVERY_REQUESTS.
+        self.started = []
+        links = "".join(f'<link type="application/rss+xml" href="/feed{index}.xml">' for index in range(12))
+        self.pages["https://blocked.example.com/"] = (f"<html><head>{links}</head></html>".encode(), 0)
+        self.assertIsNone(self.preview("https://blocked.example.com/"))
+        self.assertLessEqual(len(self.started), web_preview.DISCOVERY_REQUESTS)
+
+    def test_no_redirect_or_retry_starts_after_the_deadline(self):
+        # Every request takes longer than discovery's whole budget.
+        self.seconds_per_request = 11
+        self.redirects["https://moved.example.com/"] = "https://moved.example.com/home"
+        self.pages["https://moved.example.com/home"] = (self.LINKED_PAGE, 0)
+        self.assertIsNone(self.preview("https://moved.example.com/"))
+        self.assertEqual(self.started, [0])
+
+        self.started, self.clock = [], 0.0
+        self.refuse_user_agent = True
+        self.pages["https://refusing.example.com/"] = (self.LINKED_PAGE, 0)
+        self.assertIsNone(self.preview("https://refusing.example.com/"))
+        self.assertEqual(self.started, [0])
+
+    def test_candidates_that_cannot_be_feeds_are_not_read_in_full(self):
+        from apps.describe import web_preview
+
+        # Blogger image URLs hold random base64 that is_feedlike_url can mistake for "rss". The links sit a
+        # megabyte into the page, which discovery must still read far enough to see.
+        image = "https://images.example.com/img/b/R29vZ2xlrssXyz/s1600/photo.jpg"
+        archive = "https://blog.example.com/feeds/archive.html"
+        export = "https://blog.example.com/export.json"
+        page = b"<html><body>" + b" " * (1024 * 1024)
+        page += f'<a href="{image}">photo</a><a href="{archive}">archive</a><a href="{export}">all posts</a>'.encode()
+        self.pages["https://blog.example.com/"] = (page, 0)
+        self.pages[image] = (b"\xff\xd8\xff\xe0", 1024 * 1024)
+        self.content_types[image] = "image/jpeg"
+        self.pages[archive] = (b"<html><body>", 2 * 1024 * 1024)
+        self.pages[export] = (Test_DescribeWebPreview.FEED_XML, 0)
+
+        preview = self.preview("https://blog.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), export)
+        self.assertEqual(self.bytes_by_url.get(image, 0), 0)
+        self.assertLessEqual(self.bytes_by_url[archive], web_preview.DISCOVERY_CANDIDATE_BYTES + 64 * 1024)
+
+    def test_a_candidate_is_read_in_the_charset_it_declares(self):
+        # Read as UTF-8, a UTF-16 feed shows none of the markers is_feed_data looks for.
+        feed = Test_DescribeWebPreview.FEED_XML.decode().replace(
+            '<?xml version="1.0"?>', '<?xml version="1.0" encoding="utf-16"?>'
+        )
+        self.pages["https://intl.example.com/"] = (self.LINKED_PAGE, 0)
+        self.pages["https://intl.example.com/feed.xml"] = (feed.encode("utf-16"), 0)
+        self.content_types["https://intl.example.com/feed.xml"] = "application/rss+xml; charset=UTF-16"
+        preview = self.preview("https://intl.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://intl.example.com/feed.xml")
+        self.assertEqual(preview.get("feed_title"), "Brand New Blog")
+
+    def test_a_wordpress_feed_the_page_never_mentions_is_found_at_feed(self):
+        # 99percentinvisible.org, stratechery.com and arstechnica.com serve /feed/ without linking it.
+        self.pages["https://wp.example.com/"] = (b"<html><head></head><body>Hello</body></html>", 0)
+        self.pages["https://wp.example.com/feed/"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://wp.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://wp.example.com/feed/")
+
+    def test_a_common_path_that_is_not_a_feed_falls_through_to_the_next_guess(self):
+        self.pages["https://guess.example.com/"] = (b"<html><head></head><body>Hello</body></html>", 0)
+        self.pages["https://guess.example.com/feed/"] = (b"<html><body>Our feeds page</body></html>", 0)
+        self.pages["https://guess.example.com/feed"] = (b"<html><body>Not found</body></html>", 0)
+        self.statuses["https://guess.example.com/feed"] = 404
+        self.pages["https://guess.example.com/rss"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://guess.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://guess.example.com/rss")
+        # feed/, feed and rss come before the older guesses such as atom.xml.
+        self.assertEqual(
+            self.requested[:4],
+            [
+                "https://guess.example.com/",
+                "https://guess.example.com/feed/",
+                "https://guess.example.com/feed",
+                "https://guess.example.com/rss",
+            ],
+        )
+
+    def test_a_site_that_refuses_the_finder_is_read_without_one_from_then_on(self):
+        from apps.describe import web_preview
+
+        # Once the page only answered without a User-Agent, every later address is asked that way at once,
+        # one request each, so a refusing site with no feed links still gets most of the guesses.
+        self.refuse_user_agent = True
+        self.pages["https://refusing.example.com/"] = (b"<html><head></head><body>Hello</body></html>", 0)
+        self.assertIsNone(self.preview("https://refusing.example.com/"))
+        guesses = {url for url in self.requested if url != "https://refusing.example.com/"}
+        self.assertGreaterEqual(len(guesses), 8)
+        self.assertLessEqual(len(self.requested), web_preview.DISCOVERY_REQUESTS)
+
+    def test_a_site_that_refuses_the_finder_still_finds_a_feed_at_its_sixth_guess(self):
+        # index.xml is the sixth guess. Paying two requests per address, discovery would stop after the fourth.
+        self.refuse_user_agent = True
+        self.pages["https://hugo.example.com/"] = (b"<html><head></head><body>Hello</body></html>", 0)
+        self.pages["https://hugo.example.com/index.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://hugo.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://hugo.example.com/index.xml")
+
+    def test_an_empty_404_is_asked_once_before_the_next_guess(self):
+        # Asking a missing address again without a User-Agent never turns up a feed, and paying two requests
+        # per miss let the budget run out before the later guesses.
+        self.pages["https://wp.example.com/"] = (b"<html><head></head><body>Hello</body></html>", 0)
+        self.pages["https://wp.example.com/feed"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://wp.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://wp.example.com/feed")
+        self.assertEqual(self.requested.count("https://wp.example.com/feed/"), 1)
+
+    def test_an_empty_200_is_still_asked_again_without_a_user_agent(self):
+        # A server that answers the finder's User-Agent with an empty page is what the old retry was for.
+        self.empty_for_user_agent = True
+        self.pages["https://quiet.example.com/"] = (self.LINKED_PAGE, 0)
+        self.pages["https://quiet.example.com/feed.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://quiet.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://quiet.example.com/feed.xml")
+        self.assertEqual(self.requested.count("https://quiet.example.com/"), 2)
+
+    def test_guesses_resolve_against_where_a_redirected_page_landed(self):
+        # blog.unity.com redirects to unity.com/blog, whose feed is unity.com/blog/rss.
+        self.redirects["https://blog.example.com/"] = "https://example.com/blog"
+        self.pages["https://example.com/blog"] = (b"<html><head></head><body>Blog</body></html>", 0)
+        self.pages["https://example.com/blog/rss"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://blog.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://example.com/blog/rss")
+
+    def test_links_on_a_redirected_page_resolve_against_where_it_landed(self):
+        # A browser resolves a relative <link href> against the page it ended up on, not the address typed.
+        self.redirects["https://blog.example.com/"] = "https://example.com/blog"
+        self.pages["https://example.com/blog"] = (
+            b'<html><head><link rel="alternate" type="application/rss+xml" href="/blog/posts.xml"></head></html>',
+            0,
+        )
+        self.pages["https://example.com/blog/posts.xml"] = (Test_DescribeWebPreview.FEED_XML, 0)
+        preview = self.preview("https://blog.example.com/") or {}
+        self.assertEqual(preview.get("feed_address"), "https://example.com/blog/posts.xml")
 
 
 class Test_DescribeTricklingSite(TestCase):
