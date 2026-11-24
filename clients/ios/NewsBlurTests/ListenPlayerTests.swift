@@ -1,3 +1,4 @@
+import AVFoundation
 import XCTest
 
 @testable import NewsBlur
@@ -65,6 +66,9 @@ final class Test_ListenPlayerUpNext: XCTestCase {
 final class Test_ListenNarratorHandoff: XCTestCase {
     // ListenPlayerTests.swift: resolve the narrator from the actual manifest request, without downloading speech.
     private final class Server: AFHTTPSessionManager {
+        var segmentFile: URL?
+        var deliverLastSegment: (() -> Void)?
+
         override func post(_ url: String, parameters: Any?, progress: ((Progress) -> Void)?,
                            success: ((URLSessionDataTask, Any?) -> Void)?,
                            failure: ((URLSessionDataTask?, Error) -> Void)?) -> URLSessionDataTask? {
@@ -74,7 +78,17 @@ final class Test_ListenNarratorHandoff: XCTestCase {
                 let choices = (parameters as? [String: String])?["voice_choices"] ?? "{}"
                 let voices = (try? JSONDecoder().decode([String: String].self, from: Data(choices.utf8))) ?? [:]
                 reply["manifest_id"] = "test"
+                if segmentFile != nil {
+                    reply["segments"] = (0..<3).map { ["index": $0, "duration": 2] }
+                }
                 reply["voice"] = ["voice_id": voices["en"] ?? "default"]
+            }
+            if url.hasSuffix("/listen/segment"), let segmentFile {
+                reply["url"] = segmentFile.absoluteString
+                if (parameters as? [String: String])?["index"] == "2" {
+                    deliverLastSegment = { success?(task, reply) }
+                    return task
+                }
             }
             success?(task, reply)
             return task
@@ -87,6 +101,51 @@ final class Test_ListenNarratorHandoff: XCTestCase {
             DispatchQueue.main.async { success?(task, ["playback_state": [:]]) }
             return task
         }
+    }
+
+    func test_continuous_narration_activates_the_audio_session_once_across_segments() throws {
+        let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
+        var activations = 0
+        let player = ListenPlayer { session in
+            try session.setActive(true)
+            activations += 1
+        }
+        let server = Server()
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".wav")
+        let format = try XCTUnwrap(AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1))
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: format, frameCapacity: 88200))
+        buffer.frameLength = buffer.frameCapacity
+        try AVAudioFile(forWriting: url, settings: format.settings).write(from: buffer)
+        server.segmentFile = url
+        let oldManager = app.networkManager
+        app.networkManager = server
+        let key = ListenAudioMix.playOverOtherAudioKey
+        let oldMix = UserDefaults.standard.object(forKey: key)
+        ListenAudioMix.playsOverOtherAudio = true
+        defer {
+            player.stop(saving: false)
+            app.networkManager = oldManager
+            UserDefaults.standard.set(oldMix, forKey: key)
+            try? FileManager.default.removeItem(at: url)
+        }
+
+        player.start(story: ["story_hash": "1:listen-session", "story_feed_id": 1])
+        // ListenPlayerTests.swift holds the last response until the first two clips have played through.
+        let waitingForDownload = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            player.segmentIndex == 2 && player.status == .buffering && server.deliverLastSegment != nil
+        }, object: nil)
+        wait(for: [waitingForDownload], timeout: SimulatorTestTiming.realWorkTimeout)
+        let lastClipStarted = expectation(forNotification: ListenPlayer.stateDidChange, object: player) { _ in
+            player.status == .playing && player.segmentIndex == 2
+        }
+        try XCTUnwrap(server.deliverLastSegment)()
+        server.deliverLastSegment = nil
+        wait(for: [lastClipStarted], timeout: SimulatorTestTiming.realWorkTimeout)
+        XCTAssertEqual(activations, 1, "Queued and late-arriving paragraphs must leave the active mixer alone")
+
+        player.pause()
+        player.play()
+        XCTAssertEqual(activations, 2, "Resuming after a pause must reacquire the audio session")
     }
 
     func test_podcast_handoff_continues_the_rotation_and_closing_either_player_restarts_it() throws {
