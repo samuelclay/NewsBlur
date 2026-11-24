@@ -13,6 +13,8 @@ import Combine
 @objc class DiscoverSitesViewController: BaseViewController, UIGestureRecognizerDelegate {
     static var viewModelFactory: (() -> DiscoverSitesViewModel)?
     var initialTab: DiscoverTab = .search
+    // DiscoverSitesViewController.swift starts a Describe search handed over from the add-site sheet (AddSiteView.swift).
+    var initialDescribePrompt: String?
     private var subscriptions = Set<AnyCancellable>()
     private var hostingController: UIHostingController<DiscoverSitesView>?
     private(set) var sourcePager: DiscoverSourcesPagerController?
@@ -30,6 +32,10 @@ import Combine
         let vm = Self.viewModelFactory?() ?? DiscoverSitesViewModel()
         vm.activeTab = initialTab
         self.viewModel = vm
+        if let prompt = initialDescribePrompt?.trimmingCharacters(in: .whitespacesAndNewlines), !prompt.isEmpty {
+            vm.activeTab = .describe
+            vm.startDescribeSearch(prompt: prompt)
+        }
         vm.$addedSuccess.filter { $0 }.sink { [weak self] _ in
             self?.appDelegate?.reloadFeedsView(false)
         }.store(in: &subscriptions)

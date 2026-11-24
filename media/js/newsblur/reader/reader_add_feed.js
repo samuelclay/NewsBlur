@@ -72,7 +72,7 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                         ])
                     ]),
                     $.make('div', { className: 'NB-add-input-row' }, [
-                        $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url, placeholder: gettext('Site URL or search by name...') }),
+                        $.make('input', { type: 'text', id: 'NB-add-url', className: 'NB-add-url', name: 'url', value: self.options.url, placeholder: gettext('Site URL, name, or describe what you want to read') }),
                         $.make('div', { className: 'NB-loading' }),
                         $.make('div', { className: 'NB-add-url-submit' }, gettext('Add site'))
                     ]),
@@ -175,13 +175,19 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             minLength: 1,
             appendTo: ".NB-add-form",
             source: function (request, response) {
+                // reader_add_feed.js: a term with a space still autocompletes site names, and also offers
+                // the Describe search as the row nearest the input (items are prepended, so index 0 sits lowest).
+                var describe_item = self.make_describe_item(request.term);
+                var with_describe = function (items) {
+                    return describe_item ? [describe_item].concat(items) : items;
+                };
                 $add.addClass('NB-autocomplete-loading');
                 $.getJSON('/discover/autocomplete', { term: request.term })
                     .done(function (data) {
-                        response(data.slice(0, 10));
+                        response(with_describe(data.slice(0, 10)));
                     })
                     .fail(function () {
-                        response([]);
+                        response(with_describe([]));
                     })
                     .always(function () {
                         $add.removeClass('NB-autocomplete-loading');
@@ -193,6 +199,10 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
                 collision: "none"
             },
             select: function (e, ui) {
+                if (ui.item.describe) {
+                    self.open_describe(ui.item.term);
+                    return false;
+                }
                 $add.val(ui.item.value);
                 return false;
             },
@@ -210,6 +220,21 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             change: function (e, ui) {
             }
         }).data("ui-autocomplete")._renderItem = function (ul, item) {
+            if (item.describe) {
+                return $.make('li', [
+                    $.make('a', { className: 'NB-autocomplete-item NB-autocomplete-describe' }, [
+                        $.make('img', { className: 'NB-add-autocomplete-favicon NB-autocomplete-describe-icon', src: NEWSBLUR.Globals['MEDIA_URL'] + 'img/icons/lucide/sparkles.svg' }),
+                        $.make('div', { className: 'NB-autocomplete-content' }, [
+                            $.make('div', { className: 'NB-autocomplete-top-row' }, [
+                                $.make('div', { className: 'NB-add-autocomplete-title' }, interpolate(gettext('Find feeds about \u201c%(term)s\u201d'), {term: _.escape(item.term)}, true))
+                            ]),
+                            $.make('div', { className: 'NB-autocomplete-bottom-row' }, [
+                                $.make('div', { className: 'NB-add-autocomplete-address' }, gettext('Describe what you want to read and let NewsBlur find matching feeds'))
+                            ])
+                        ])
+                    ])
+                ]).data("ui-autocomplete-item", item).prependTo(ul);
+            }
             var feed = new NEWSBLUR.Models.Feed(item);
             var freshness = self.make_freshness_indicator(item.last_story_date);
             var num_subscribers = Math.max(0, item.num_subscribers);
@@ -238,6 +263,27 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
             var ul = this.menu.element;
             ul.outerWidth(self.$('.NB-add-url').outerWidth());
         };
+    },
+
+    // reader_add_feed.js: a term with whitespace that isn't a URL reads as a description of feeds to find.
+    is_describable: function (term) {
+        term = (term || '').trim();
+        if (term.length < 3) return false;
+        if (!/\s/.test(term)) return false;
+        if (/^https?:\/\//i.test(term) || term.indexOf('://') !== -1) return false;
+        return true;
+    },
+
+    make_describe_item: function (term) {
+        if (!this.is_describable(term)) return null;
+        term = term.trim();
+        return { describe: true, term: term, label: term, value: term };
+    },
+
+    open_describe: function (term) {
+        this.close(function () {
+            NEWSBLUR.reader.open_add_site({ tab: 'describe', initial_query: term });
+        });
     },
 
     handle_focus_add_site: function () {
@@ -418,6 +464,11 @@ NEWSBLUR.ReaderAddFeed = NEWSBLUR.ReaderPopover.extend({
 
         var url = this.$('.NB-add-url').val();
         var folder = this.$('.NB-folders').val();
+
+        if (this.is_describable(url)) {
+            this.open_describe(url);
+            return;
+        }
 
         // Check feed limit before adding
         var add_limit = NEWSBLUR.Globals.add_feed_limit;

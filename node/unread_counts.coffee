@@ -4,6 +4,7 @@ log    = require './log.js'
 ask_ai = require './ask_ai.js'
 archive_assistant = require './archive_assistant.js'
 webfeed = require './webfeed.js'
+describe = require './describe.js'
 briefing = require './briefing.js'
 
 unread_counts = (server) =>
@@ -197,6 +198,12 @@ unread_counts = (server) =>
                 # Route webfeed messages to dedicated handler
                 if message.startsWith?('webfeed:')
                     handled = webfeed.handle_webfeed_message(socket, channel, message)
+                    if handled
+                        return
+
+                # Route Describe feed search messages to dedicated handler (node/describe.coffee)
+                if message.startsWith?('describe:')
+                    handled = describe.handle_describe_message(socket, channel, message)
                     if handled
                         return
 

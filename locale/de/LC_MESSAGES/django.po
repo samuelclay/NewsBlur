@@ -129,6 +129,18 @@ msgstr[0] "%(count)s Tag"
 msgstr[1] "%(count)s Tage"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s Stunde"
+msgstr[1] "%(count)s Stunden"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s Minute"
+msgstr[1] "%(count)s Minuten"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s Monat"
@@ -1336,6 +1348,10 @@ msgstr "Günstigster kostenpflichtiger Tarif"
 msgid "Check the FAQ"
 msgstr "Sieh in den FAQ nach"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "%(site)s wird auf einen Feed überprüft"
+
 msgid "Chief Morale Officer"
 msgstr "Chief Morale Officer"
 
@@ -1709,8 +1725,18 @@ msgstr "Standard"
 msgid "Delete"
 msgstr "Löschen"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Beschreibe in wenigen Worten, was du lesen möchtest."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Die gewünschten Feeds zu beschreiben, ist eine Premium-Funktion. Upgrade, um per Beschreibung zu suchen."
+
 msgid "Description"
 msgstr "Beschreibung"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Beschreibungen dürfen höchstens %(limit)d Zeichen lang sein"
 
 msgid "Developer"
 msgstr "Entwickler"
@@ -3185,6 +3211,10 @@ msgstr[1] ""
 "haben gerade eine umfassende Neugestaltung veröffentlicht – mit geteilten Artikeln (Blurblogs) und nativen "
 "iOS- und Android-Apps. Wenn du die alten Funktionen von Google Reader vermisst, wirst du das neue NewsBlur "
 "lieben."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "%(count)s Feeds werden mit deiner Beschreibung abgeglichen"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4935,6 +4965,9 @@ msgstr "Nachrichten lesen macht mit Freunden mehr Spaß. Teile Artikel in deinem
 msgid "Reading stories across folders with River of News"
 msgstr "Artikel über mehrere Ordner hinweg im Nachrichtenstrom lesen"
 
+msgid "Reading your description"
+msgstr "Liest deine Beschreibung"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5317,6 +5350,12 @@ msgstr "Dein Lesearchiv aus dem Browser durchsuchen"
 msgid "Search your entire archive with full-text search"
 msgstr "Durchsuche dein gesamtes Archiv mit der Volltextsuche"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "Feeds von NewsBlur werden durchsucht"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Im Web nach Feeds suchen, die NewsBlur noch nicht kennt"
+
 msgid "Searching your sites and saved stories"
 msgstr "Deine Websites und gespeicherten Artikel durchsuchen"
 
@@ -5594,6 +5633,9 @@ msgstr "Diese E-Mail-Adresse wird bereits verwendet."
 
 msgid "Someone is already using that username."
 msgstr "Dieser Benutzername wird bereits verwendet."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Bei der Suche ist ein Fehler aufgetreten. Bitte versuche es erneut."
 
 msgid "Something went wrong..."
 msgstr "Etwas ist schiefgelaufen …"
@@ -5938,6 +5980,12 @@ msgstr "Dieser Eintrag wird nicht abgespielt"
 msgid "That part of the story doesn't exist."
 msgstr "Dieser Teil des Artikels ist nicht vorhanden."
 
+msgid "That search is no longer in your history."
+msgstr "Diese Suche ist nicht mehr in deinem Verlauf."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Diese Suche läuft noch. Warte erst, bis sie abgeschlossen ist."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Dieser Artikel wurde aus dem Feed entfernt. Du musst ihn nicht als ungelesen markieren."
 
@@ -6088,6 +6136,12 @@ msgstr "Der Originalartikel aus gekürzten RSS-Feeds wird nahtlos erweitert"
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Wie bei regulären Feeds. Premium- und Pro-Nutzer erhalten häufigere Aktualisierungen."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Die Suche konnte die benötigten Dienste nicht erreichen. Bitte versuche es erneut."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Die Suche hat das Zeitlimit überschritten. Das wurde bisher gefunden:"
+
 msgid "The shared comment cannot be found."
 msgstr "Der geteilte Kommentar kann nicht gefunden werden."
 
@@ -6208,6 +6262,9 @@ msgstr "Dies ist bereits ein RSS-Feed. Er wird direkt abonniert."
 
 msgid "This payment has been refunded."
 msgstr "Diese Zahlung wurde zurückerstattet."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Diese Suche wurde vorzeitig abgebrochen. Suche erneut, um es noch einmal zu versuchen."
 
 msgid "This story has no text to read aloud."
 msgstr "Dieser Artikel enthält keinen Text zum Vorlesen."
@@ -7056,6 +7113,9 @@ msgstr "Gestern, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "Gestern, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Du hast bereits eine Suche gestartet. Warte zuerst, bis sie abgeschlossen ist."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7181,6 +7241,12 @@ msgid ""
 msgstr ""
 "Du folgst jetzt <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Du hast heute noch %(count)s Beschreibungs-Suche übrig (wird in %(time)s zurückgesetzt)."
+msgstr[1] "Du hast heute noch %(count)s Beschreibungs-Suchen übrig (werden in %(time)s zurückgesetzt)."
 
 msgid "You have a follow request:"
 msgstr "Du hast eine Anfrage zum Folgen:"
@@ -7471,6 +7537,12 @@ msgid ""
 msgstr ""
 "Du warst vor Kurzem bei NewsBlur, vielleicht wolltest du also gar nicht zum kostenlosen Konto wechseln. "
 "Vielleicht musst du nur dein Premium-Abo verlängern. Wir helfen dir dabei."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr ""
+"Du hast heute alle %(limit)s Suchanfragen mit Beschreibung aufgebraucht. Dein Limit wird in %(time)s "
+"zurückgesetzt."
 
 msgid "YouTube search request failed."
 msgstr "Die YouTube-Suchanfrage ist fehlgeschlagen."

@@ -91,6 +91,14 @@
   register: pulled
   tags: always
 
+# deploy_app_group_static.yml: runs under --tags static, so the included tasks take the always tag too.
+- include_tasks:
+    file: ../roles/web/tasks/staging_services.yml
+    apply:
+      tags: always
+  when: "'staging' in group_names"
+  tags: always
+
 - name: Restart newsblur_web container
   docker_container:
     name: newsblur_web

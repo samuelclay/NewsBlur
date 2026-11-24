@@ -5296,21 +5296,26 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-add-site-card {
-    background: #2A2A2A;
-    border-color: #444;
+    background: #252D30;
+    border-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card:hover {
-    border-color: #5C89C9;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-color: #4A5255;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-card-top {
+    background: linear-gradient(180deg, #303739 0%, #282D30 100%);
+    border-bottom-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-title {
-    color: #E8E8E8;
+    color: #E0E0E0;
 }
 
 .NB-dark .NB-add-site-card-meta {
-    color: #888;
+    color: #808080;
 }
 
 .NB-dark .NB-freshness-active .NB-freshness-label {
@@ -5326,7 +5331,7 @@ a.mention, a.mention-group {
 }
 
 .NB-dark .NB-add-site-card-desc {
-    color: #AAA;
+    color: #909090;
 }
 
 .NB-dark .NB-add-site-card-url {
@@ -5342,7 +5347,7 @@ a.mention, a.mention-group {
 
 
 .NB-dark .NB-add-site-card-actions {
-    border-top-color: #333;
+    border-top-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-add-group,
@@ -5353,18 +5358,6 @@ a.mention, a.mention-group {
 .NB-dark .NB-add-site-card-add-group .NB-add-site-folder-select,
 .NB-dark .NB-badge-folder-add-group .NB-add-site-folder-select {
     color: #DDD;
-}
-
-.NB-dark .NB-add-site-card-story {
-    border-bottom-color: #3a3a3a;
-}
-
-.NB-dark .NB-add-site-card-story-title {
-    color: #CCC;
-}
-
-.NB-dark .NB-add-site-card-story-preview {
-    color: #777;
 }
 
 .NB-dark .NB-trending-feed-card {
@@ -6782,6 +6775,165 @@ a.mention, a.mention-group {
     color: #303030;
     background-color: rgba(230, 230, 230, 0.95);
 }
+
+/* Describe tab (describe_feeds_view.js) */
+.NB-dark .NB-describe-rail-title,
+.NB-dark .NB-describe-empty-title {
+    color: #777;
+}
+
+.NB-dark .NB-describe-history-item:hover {
+    background: #2A2A2A;
+}
+
+.NB-dark .NB-describe-history-item.NB-active {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-describe-history-prompt {
+    color: #DDD;
+}
+
+.NB-dark .NB-describe-history-meta,
+.NB-dark .NB-describe-history-empty,
+.NB-dark .NB-describe-usage {
+    color: #777;
+}
+
+.NB-dark .NB-describe-usage {
+    border-top-color: #333;
+}
+
+.NB-dark .NB-describe-history-delete:hover {
+    background: #444;
+    color: #EEE;
+}
+
+.NB-dark .NB-describe-composer-box {
+    background: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark .NB-describe-composer-box:focus-within {
+    border-color: #5C89C9;
+}
+
+.NB-dark .NB-describe-input {
+    color: #E8E8E8;
+    background: transparent;
+    border: none;
+}
+
+.NB-dark .NB-describe-input::placeholder,
+.NB-dark .NB-describe-composer-hint {
+    color: #777;
+}
+
+.NB-dark .NB-describe-status {
+    background: #252525;
+    border-color: #3A3A3A;
+}
+
+.NB-dark .NB-describe-status.NB-error {
+    background: #3A2525;
+    border-color: #6B3A3A;
+}
+
+.NB-dark .NB-describe-status-message {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-describe-status-count,
+.NB-dark .NB-describe-queries,
+.NB-dark .NB-describe-usage-message {
+    color: #999;
+}
+
+.NB-dark .NB-describe-step,
+.NB-dark .NB-describe-query {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #888;
+}
+
+.NB-dark .NB-describe-step.NB-done {
+    color: #7CC25A;
+    border-color: #3F5F33;
+}
+
+.NB-dark .NB-describe-step.NB-current {
+    color: #8FB4EA;
+    border-color: #3F5A80;
+}
+
+.NB-dark .NB-describe-query {
+    color: #BBB;
+}
+
+.NB-dark .NB-describe-loading {
+    color: #777;
+}
+
+.NB-dark .NB-add-site-card-freshness .NB-middot {
+    color: #5A6265;
+}
+
+.NB-dark .NB-describe-notice {
+    color: #F0C56B;
+}
+
+.NB-dark .NB-describe-match {
+    color: #909090;
+}
+
+.NB-dark .NB-describe-match-pending {
+    color: #7F93AD;
+}
+
+.NB-dark .NB-add-site-card-stories .NB-storytitles-feed-border-inner,
+.NB-dark .NB-add-site-card-stories .NB-storytitles-feed-border-outer {
+    background-color: #3A4245;
+}
+
+.NB-dark .NB-describe-web-icon {
+    filter: invert(1);
+    opacity: 0.55;
+}
+
+.NB-dark .NB-describe-reason {
+    color: #D0D0D0;
+}
+
+.NB-dark .NB-describe-reason-pending {
+    color: #777;
+}
+
+.NB-dark .NB-describe-reason + .NB-add-site-card-desc {
+    color: #808080;
+}
+
+.NB-dark .NB-describe-example,
+.NB-dark .NB-describe-upgrade-card {
+    background: #2A2A2A;
+    border-color: #444;
+    color: #DDD;
+}
+
+.NB-dark .NB-describe-upgrade-title {
+    color: #E8E8E8;
+}
+
+.NB-dark .NB-describe-upgrade-desc {
+    color: #AAA;
+}
+
+.NB-dark .NB-autocomplete-describe {
+    background: #27354A;
+}
+
+.NB-dark .NB-autocomplete-describe .NB-add-autocomplete-title {
+    color: #8FB4EA;
 
 /* darkmode.css: The new stories pill (media/js/newsblur/views/new_stories_indicator_view.js) keeps its accent
    but drops to a deeper blue with a heavier shadow on the dark list. */

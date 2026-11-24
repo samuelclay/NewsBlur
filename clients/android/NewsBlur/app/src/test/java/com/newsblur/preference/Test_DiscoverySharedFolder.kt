@@ -28,7 +28,7 @@ class Test_DiscoverySharedFolder {
         preference: DiscoveryViewPreferences,
         saved: SavedStateHandle = SavedStateHandle(),
         feedApi: FeedApi = mockk(),
-    ) = DiscoveryViewModel(mockk(), feedApi, saved, preference).apply { workerDispatcher = main.dispatcher }
+    ) = DiscoveryViewModel(mockk(), feedApi, mockk(), saved, preference).apply { workerDispatcher = main.dispatcher }
 
     private fun folder(name: String, vararg parents: String) = Folder().apply {
         this.name = name
@@ -37,8 +37,8 @@ class Test_DiscoverySharedFolder {
 
     @Test fun test_folder_choice_updates_the_other_retained_discovery_host() = runTest {
         val fixture = DiscoveryPreferencesFixture()
-        val discovery = DiscoveryViewModel(mockk(), mockk(), SavedStateHandle(), fixture.preference)
-        val related = DiscoveryViewModel(mockk(), mockk(), SavedStateHandle(), fixture.preference)
+        val discovery = DiscoveryViewModel(mockk(), mockk(), mockk(), SavedStateHandle(), fixture.preference)
+        val related = DiscoveryViewModel(mockk(), mockk(), mockk(), SavedStateHandle(), fixture.preference)
         runCurrent()
         related.chooseFolder("Technology - Gadgets")
         runCurrent()

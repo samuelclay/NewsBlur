@@ -477,8 +477,11 @@
                 .removeClass('NB-story-pane-north')
                 .removeClass('NB-story-pane-south')
                 .removeClass('NB-story-pane-hidden')
+                // reader.js: Full uses the same titles pane as Split. It is normally hidden there, but the Try
+                // view opens it to hold the Subscribe bar, and without this class its rows take the padding
+                // meant for a full-width list and the titles wrap in half the pane.
                 .toggleClass('NB-story-pane-' + story_anchor,
-                    NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout') == 'split');
+                    _.contains(['split', 'full'], NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout')));
             // reader.js: a phone list (views/mobile_layout_view.js) borrows the compact rows of the
             // side-by-side titles pane, which are styled under NB-story-pane-west.
             if (this.flags.mobile &&
@@ -3577,7 +3580,14 @@
             // Already in add site view — handle navigation between sub-states
             if (this.flags['add_site_view'] && this.add_site_view) {
                 if (options.tab) {
-                    this.add_site_view.navigate_to_state(options.tab, options.category, options.subcategory);
+                    // reader.js: text handed over by the add-feed popover (reader_add_feed.js) goes along too,
+                    // so the open view runs that search instead of only switching tabs.
+                    this.add_site_view.navigate_to_state(options.tab, options.category, options.subcategory, {
+                        search_id: options.search_id,
+                        scroll_top: options.scroll_top,
+                        initial_query: options.initial_query,
+                        initial_url: options.initial_url
+                    });
                 }
                 return;
             }
@@ -3606,7 +3616,9 @@
                 initial_category: options.category,
                 initial_subcategory: options.subcategory,
                 initial_url: options.initial_url,
-                initial_query: options.initial_query
+                initial_query: options.initial_query,
+                initial_search_id: options.search_id,
+                initial_scroll_top: options.scroll_top
             });
             this.$s.$content_pane.append(this.add_site_view.$el);
 
@@ -7629,6 +7641,12 @@
                 this.socket.removeAllListeners('webfeed:subscribe_update');
                 this.socket.on('webfeed:subscribe_update', _.bind(this.handle_webfeed_subscribe_update, this));
 
+                // Describe feed search streaming listeners (apps/describe/tasks.py via node/describe.coffee)
+                _.each(['start', 'phase', 'queries', 'candidates', 'verdicts', 'remove', 'complete', 'error', 'usage'], _.bind(function (event_type) {
+                    this.socket.removeAllListeners('describe:' + event_type);
+                    this.socket.on('describe:' + event_type, _.bind(this.handle_describe_event, this));
+                }, this));
+
                 // Archive Extension real-time event listeners
                 this.socket.removeAllListeners('archive:new');
                 this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
@@ -8375,6 +8393,17 @@
             NEWSBLUR.log(['webfeed:subscribe_update', data]);
             if (this.add_site_view) {
                 this.add_site_view.handle_webfeed_subscribe_update(data);
+            }
+        },
+
+        // ============================
+        // = Describe Feeds Streaming =
+        // ============================
+
+        handle_describe_event: function (data) {
+            NEWSBLUR.log(['describe:' + (data && data.type), data]);
+            if (this.add_site_view && this.add_site_view.describe_view) {
+                this.add_site_view.describe_view.handle_event(data);
             }
         },
 
@@ -9349,7 +9378,9 @@
                 self.open_add_site({
                     tab: origin.tab,
                     category: origin.category,
-                    subcategory: origin.subcategory
+                    subcategory: origin.subcategory,
+                    search_id: origin.search_id,
+                    scroll_top: origin.scroll_top
                 });
             });
 

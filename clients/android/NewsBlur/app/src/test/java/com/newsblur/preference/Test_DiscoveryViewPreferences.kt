@@ -21,7 +21,7 @@ class Test_DiscoveryViewPreferences {
     @get:Rule val main = MainDispatcherRule()
 
     private fun discovery(preferences: DiscoveryViewPreferences, saved: SavedStateHandle = SavedStateHandle()) =
-        DiscoveryViewModel(mockk(), mockk(), saved, preferences)
+        DiscoveryViewModel(mockk(), mockk(), mockk(), saved, preferences)
 
     private fun related(preferences: DiscoveryViewPreferences) = DiscoverFeedsViewModel(preferences, mockk())
 

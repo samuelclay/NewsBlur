@@ -239,6 +239,12 @@ msgstr[0] "%(count)s feed"
 msgstr[1] "%(count)s feeds"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "%(count)s feed tot nu toe"
+msgstr[1] "%(count)s feeds tot nu toe"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s volger"
@@ -313,8 +319,8 @@ msgstr[1] "%(count)s maanden"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s nieuw artikel"
+msgstr[1] "%(count)s nieuwe artikelen"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -589,6 +595,10 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Je kunt vandaag nog %(remaining)s van de %(limit)s zoekopdrachten uitvoeren"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1597,6 +1607,9 @@ msgstr "Op basis van je interesses"
 msgid "Begin Training"
 msgstr "Training starten"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Verslagen van fietstochten en langeafstandstochten"
+
 msgid "Bio"
 msgstr "Biografie"
 
@@ -1645,6 +1658,9 @@ msgstr "Blurblogtitel"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Boekrecensies van nieuwe sciencefiction en fantasy"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -2332,6 +2348,9 @@ msgstr "Bezig met verwijderen..."
 msgid "Delivery"
 msgstr "Bezorging"
 
+msgid "Describe"
+msgstr "Beschrijven"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Beschrijf een artikel dat je zoekt, dan analyseren we de pagina opnieuw om het te vinden."
 
@@ -2340,11 +2359,20 @@ msgstr ""
 "Beschrijf een onderwerp en AI beoordeelt elk artikel aan de hand van je prompt, zodat je overeenkomsten "
 "kunt uitlichten of verbergen."
 
+msgid "Describe the feeds you’re looking for"
+msgstr "Beschrijf de feeds die je zoekt"
+
 msgid "Describe what to focus or hide"
 msgstr "Beschrijf wat je wilt uitlichten of verbergen"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Beschrijf waarnaar je wilt zoeken en AI analyseert de afbeeldingen van elk artikel op basis van je prompt."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Beschrijf wat je wilt lezen en laat NewsBlur passende feeds vinden"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Beschrijven welke feeds je wilt, is een Premium-functie. Upgrade om op beschrijving te zoeken."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2460,6 +2488,9 @@ msgstr "Geen voorbeeld weergeven, alleen de titel van het artikel"
 
 msgid "Don't show a thumbnail"
 msgstr "Geen miniatuur tonen"
+
+msgid "Done"
+msgstr "Klaar"
 
 msgid "Done!"
 msgstr "Klaar!"
@@ -2612,6 +2643,9 @@ msgstr "Groeperen van artikelen inschakelen"
 
 msgid "Enable the sites you want"
 msgstr "Schakel de gewenste sites in"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "Ingenieurs schrijven over hoe grote systemen falen"
 
 msgid "English"
 msgstr "Engels"
@@ -2796,6 +2830,9 @@ msgstr "Gezichten"
 msgid "Fact check this story"
 msgstr "Feiten controleren bij dit artikel"
 
+msgid "Failed"
+msgstr "Mislukt"
+
 msgid "Failed to connect to server"
 msgstr "Verbinding met de server mislukt"
 
@@ -2965,6 +3002,9 @@ msgstr "Bestanden"
 msgid "Filled Icons"
 msgstr "Gevulde pictogrammen"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Analoge fotografie met informatie over camera’s en filmsoorten"
+
 msgid "Filter by date range"
 msgstr "Filteren op datumbereik"
 
@@ -3024,6 +3064,16 @@ msgstr "%(voice)s zoeken in de stemmenlijst"
 
 msgid "Find Friends"
 msgstr "Vrienden zoeken"
+
+msgid "Find feeds"
+msgstr "Feeds zoeken"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "Feeds zoeken over ‘%(term)s’"
+
+msgid "Find feeds by describing them"
+msgstr "Vind feeds door ze te beschrijven"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Vind je unieke NewsBlur-e-mailadres in het venster E-mailnieuwsbrieven"
@@ -3175,6 +3225,12 @@ msgid "Forwarding email address"
 msgstr "Doorstuur-e-mailadres"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "%(count)s feed gevonden die bij je beschrijving past"
+msgstr[1] "%(count)s feeds gevonden die bij je beschrijving passen"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "%(count)s patroon gevonden. Selecteer het patroon dat het best overeenkomt met de artikelen die je zoekt."
@@ -3182,6 +3238,11 @@ msgstr[1] "%(count)s patronen gevonden. Selecteer het patroon dat het best overe
 
 msgid "Found in the Account dialog"
 msgstr "Te vinden in het accountvenster"
+
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr ""
+"Gevonden op het web via deze zoekopdracht. NewsBlur voegt deze toe wanneer je het probeert of je erop "
+"abonneert."
 
 msgid "Free"
 msgstr "Gratis"
@@ -3436,6 +3497,9 @@ msgstr "Goede leestips"
 msgid "Good Reads on NewsBlur"
 msgstr "Goede leestips op NewsBlur"
 
+msgid "Good match"
+msgstr "Goede overeenkomst"
+
 msgid "Goodies &amp; Extras"
 msgstr "Extra’s &amp; meer"
 
@@ -3686,6 +3750,9 @@ msgstr "Je feeds indexeren voor zoekopdrachten"
 msgid "Indexing..."
 msgstr "Indexeren..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Indiegameontwikkelaars die schrijven over hun werk in uitvoering"
+
 msgid "Infrequent Site Stories"
 msgstr "Artikelen van weinig actieve sites"
 
@@ -3747,6 +3814,12 @@ msgstr "januari"
 
 msgid "Japanese"
 msgstr "Japans"
+
+msgid "Judging"
+msgstr "Beoordelen"
+
+msgid "Judging…"
+msgstr "Beoordelen…"
 
 msgid "July"
 msgstr "juli"
@@ -3936,8 +4009,17 @@ msgstr "Stemmen laden..."
 msgid "Loading your blocklist settings..."
 msgstr "Je instellingen voor de blokkeerlijst laden..."
 
+msgid "Loading your search…"
+msgstr "Je zoekopdracht wordt geladen…"
+
 msgid "Loading..."
 msgstr "Laden..."
+
+msgid "Loading…"
+msgstr "Laden…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Lokaal nieuws en evenementen in Portland, Oregon"
 
 msgid "Location"
 msgstr "Locatie"
@@ -3959,6 +4041,9 @@ msgstr "Lange artikelen"
 
 msgid "Long Reads on NewsBlur"
 msgstr "Lange artikelen op NewsBlur"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Lange essays over steden, huisvesting en openbaar vervoer"
 
 msgid "Long reads for later"
 msgstr "Lange artikelen voor later"
@@ -4125,6 +4210,10 @@ msgstr "Gevonden via een dubbele titel"
 
 msgid "Matched via related topics"
 msgstr "Gevonden via verwante onderwerpen"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "Komt overeen met “%(query)s”"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Komt overeen met artikeltitels die alle trefwoorden bevatten"
@@ -4358,6 +4447,9 @@ msgstr "Verloopt nooit"
 msgid "Never gonna expire. Congrats!"
 msgstr "Verloopt nooit. Gefeliciteerd!"
 
+msgid "New"
+msgstr "Nieuw"
+
 msgid "New Arrivals"
 msgstr "Nieuw binnen"
 
@@ -4425,6 +4517,13 @@ msgstr "NewsBlur controleert de pagina automatisch op wijzigingen"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "NewsBlur op iOS met alle functies"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur leest je beschrijving, doorzoekt de feedindex en het open web en beoordeelt vervolgens elke "
+"overeenkomst. Dit kan een minuut duren."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur zoekt automatisch de RSS-feed voor deze site."
@@ -4505,6 +4604,9 @@ msgstr "Geen feeds gevonden"
 
 msgid "No feeds found in this category."
 msgstr "Geen feeds gevonden in deze categorie."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "Er zijn geen feeds gevonden die bij die beschrijving passen. Probeer het eens anders te beschrijven."
 
 msgid "No folders match"
 msgstr "Geen mappen gevonden"
@@ -4748,7 +4850,7 @@ msgid "Off"
 msgstr "Uit"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Toon ze in een melding met ‘N nieuwe artikelen’"
 
 msgid "Official NewsBlur Android App"
 msgstr "Officiële NewsBlur-app voor Android"
@@ -4871,7 +4973,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Alleen aantallen tonen bij ingeklapte mappen"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Toon ze alleen wanneer de lijst opnieuw wordt geladen"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Alleen lange gedeelde artikelen in blurblogs afkappen"
@@ -5090,6 +5192,9 @@ msgstr "Per site"
 msgid "Per-feed notification settings"
 msgstr "Meldingsinstellingen per feed"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Persoonlijke blogs over het restaureren van oude huizen"
+
 msgid "Phrase to match in story text"
 msgstr "Zin waarop wordt gezocht in de artikeltekst"
 
@@ -5227,6 +5332,9 @@ msgstr[1] "Premium-proefperiode (%(count)s dagen)"
 
 msgid "Premium details"
 msgstr "Premiumdetails"
+
+msgid "Premium feature"
+msgstr "Premium-functie"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5606,6 +5714,9 @@ msgstr "%(voice)s uit de rotatie verwijderen"
 msgid "Remove from Up Next"
 msgstr "Verwijderen uit Hierna afspelen"
 
+msgid "Remove from history"
+msgstr "Uit geschiedenis verwijderen"
+
 msgid "Remove this list"
 msgstr "Deze lijst verwijderen"
 
@@ -5708,6 +5819,9 @@ msgstr "Opnieuw proberen"
 
 msgid "Retry fetching and parsing"
 msgstr "Ophalen en parseren opnieuw proberen"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Recensies van nieuwe iOS-apps met veel schermafbeeldingen"
 
 msgid "Rewinding..."
 msgstr "Terugspoelen..."
@@ -5875,9 +5989,16 @@ msgstr "Geplande bezorging (dagelijks of tweemaal per dag)"
 msgid "Science"
 msgstr "Wetenschap"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Wetenschappers leggen nieuw onderzoek uit in begrijpelijke taal"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Gerichte classifiers zijn alleen beschikbaar voor %(plan)s-abonnees."
+
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Score: %(score)s van de 10 voor je beschrijving"
 
 msgid "Scroll to comments"
 msgstr "Naar de reacties scrollen"
@@ -5900,6 +6021,9 @@ msgstr "Zoek in alle opgeslagen artikelen en tags"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Doorzoek al je abonnementen met de volledige tekstzoekfunctie van Elasticsearch."
+
+msgid "Search again"
+msgstr "Opnieuw zoeken"
 
 msgid "Search archives..."
 msgstr "Archieven doorzoeken..."
@@ -5969,6 +6093,9 @@ msgstr "Je artikelen doorzoeken"
 msgid "Search: \"%(value_1)s\""
 msgstr "Zoeken: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "Zoekopdrachten die je uitvoert, worden hier bewaard."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "Zoeken in <b>%(feed_title)s</b> naar \"<b>%(query)s</b>\""
@@ -5976,11 +6103,23 @@ msgstr "Zoeken in <b>%(feed_title)s</b> naar \"<b>%(query)s</b>\""
 msgid "Searching RSS feeds..."
 msgstr "RSS-feeds zoeken..."
 
+msgid "Searching feeds"
+msgstr "Feeds doorzoeken"
+
+msgid "Searching for"
+msgstr "Zoeken naar"
+
 msgid "Searching saved stories..."
 msgstr "Opgeslagen artikelen doorzoeken..."
 
+msgid "Searching the web"
+msgstr "Zoeken op internet"
+
 msgid "Searching your archive..."
 msgstr "Je archief doorzoeken..."
+
+msgid "Searching…"
+msgstr "Zoeken…"
 
 msgid "Seconds to skip backward"
 msgstr "Seconden om terug te spoelen"
@@ -6255,7 +6394,7 @@ msgid "Show more related stories"
 msgstr "Meer gerelateerde artikelen weergeven"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Nieuwe artikelen tonen zodra ze binnenkomen"
 
 msgid "Show on Load"
 msgstr "Bij laden tonen"
@@ -6324,8 +6463,8 @@ msgstr "Sitemeldingen"
 msgid "Site Settings"
 msgstr "Site-instellingen"
 
-msgid "Site URL or search by name..."
-msgstr "Site-URL of zoek op naam..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "URL of naam van de site, of beschrijf wat je wilt lezen"
 
 msgid "Site by Site"
 msgstr "Per site"
@@ -6371,6 +6510,9 @@ msgstr "Sociaal"
 
 msgid "Social Connections"
 msgstr "Sociale connecties"
+
+msgid "Something went wrong while searching."
+msgstr "Er is iets misgegaan tijdens het zoeken."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6513,6 +6655,12 @@ msgstr "Categoriseren wordt gestart..."
 
 msgid "Starting trial..."
 msgstr "Proefperiode starten..."
+
+msgid "Starting your search…"
+msgstr "Je zoekopdracht starten…"
+
+msgid "Starting…"
+msgstr "Bezig met starten…"
 
 msgid "Statistics"
 msgstr "Statistieken"
@@ -6699,6 +6847,9 @@ msgstr "Stream onderbroken. 10 seconden lang geen antwoord ontvangen."
 
 msgid "Stripe Id:"
 msgstr "Stripe-ID:"
+
+msgid "Strong match"
+msgstr "Sterke overeenkomst"
 
 msgid "Style"
 msgstr "Stijl"
@@ -6940,6 +7091,12 @@ msgstr "Bedankt! Je hebt een %(bold_start)sPremium Archive-account%(bold_end)s."
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Bedankt! Je hebt een %(bold_start)sPremium Pro-account%(bold_end)s."
 
+msgid "That search could not be loaded."
+msgstr "Deze zoekopdracht kon niet worden geladen."
+
+msgid "That search is no longer in your history."
+msgstr "Die zoekopdracht staat niet meer in je geschiedenis."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "De AI-dienst deed er te lang over om te reageren. Probeer het opnieuw."
 
@@ -7017,6 +7174,9 @@ msgstr "De oorspronkelijke pagina is door de uitgever uitgeschakeld."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "De HTML van de pagina wordt opgehaald en geparseerd om de inhoudsstructuur te bepalen."
+
+msgid "The search could not be started."
+msgstr "De zoekopdracht kon niet worden gestart."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7410,6 +7570,9 @@ msgstr "Probeer een andere zoekterm of plak rechtstreeks een URL."
 msgid "Try again"
 msgstr "Probeer opnieuw"
 
+msgid "Try describing something like"
+msgstr "Probeer iets te beschrijven zoals"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Probeer andere zoekwoorden of wis de zoekopdracht om alles te zien."
 
@@ -7502,6 +7665,9 @@ msgstr "Onbekende fout"
 
 msgid "Unknown question"
 msgstr "Onbekende vraag"
+
+msgid "Unlimited searches"
+msgstr "Onbeperkt zoeken"
 
 msgid "Unlock"
 msgstr "Ontgrendelen"
@@ -7781,8 +7947,14 @@ msgstr "Steminstellingen"
 msgid "Voices"
 msgstr "Stemmen"
 
+msgid "Waiting for a verdict…"
+msgstr "Wachten op een oordeel…"
+
 msgid "Warning: This is actually permanent"
 msgstr "Waarschuwing: dit is echt permanent"
+
+msgid "Weak match"
+msgstr "Zwakke overeenkomst"
 
 msgid "Weather"
 msgstr "Weer"
@@ -7834,6 +8006,9 @@ msgstr "woensdag"
 
 msgid "Weekly"
 msgstr "Wekelijks"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Vegetarische recepten voor doordeweeks, met stapsgewijze foto’s"
 
 msgid "Welcome to NewsBlur"
 msgstr "Welkom bij NewsBlur"
@@ -8038,6 +8213,9 @@ msgstr "Gisteren, %(time)s"
 msgid "You"
 msgstr "Jij"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Er loopt al een zoekopdracht. Wacht tot deze is voltooid."
+
 #, python-format
 msgid "You are followed by %(count)s person"
 msgid_plural "You are followed by %(count)s people"
@@ -8232,6 +8410,9 @@ msgstr "Je premiumaccount wordt op deze datum teruggezet naar een lager abonneme
 
 msgid "Your profile"
 msgstr "Je profiel"
+
+msgid "Your searches"
+msgstr "Je zoekopdrachten"
 
 msgid "Your subscription is no longer active."
 msgstr "Je abonnement is niet langer actief."

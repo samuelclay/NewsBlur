@@ -223,6 +223,11 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s akış"
 
 #, python-format
+msgid "%(count)s feed so far"
+msgid_plural "%(count)s feeds so far"
+msgstr[0] "Şu ana kadar %(count)s akış"
+
+#, python-format
 msgid "%(count)s follower"
 msgid_plural "%(count)s followers"
 msgstr[0] "%(count)s takipçi"
@@ -285,7 +290,7 @@ msgstr[0] "%(count)s ay"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s yeni haber"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -527,6 +532,10 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(remaining)s of %(limit)s searches left today"
+msgstr "Bugün %(limit)s arama hakkınızdan %(remaining)s kaldı"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1519,6 +1528,9 @@ msgstr "İlgi alanlarınıza göre"
 msgid "Begin Training"
 msgstr "Eğitimi başlat"
 
+msgid "Bike touring and long-distance cycling trip reports"
+msgstr "Bisiklet turları ve uzun mesafeli bisiklet gezisi yazıları"
+
 msgid "Bio"
 msgstr "Hakkında"
 
@@ -1567,6 +1579,9 @@ msgstr "Blurblog başlığı"
 
 msgid "Blurblogs"
 msgstr "Blurblog'lar"
+
+msgid "Book reviews of new science fiction and fantasy"
+msgstr "Yeni bilim kurgu ve fantastik kitapları hakkında incelemeler"
 
 msgid "Bookmarklet"
 msgstr "Yer imi uygulaması"
@@ -2252,17 +2267,29 @@ msgstr "Siliniyor..."
 msgid "Delivery"
 msgstr "Sunum"
 
+msgid "Describe"
+msgstr "Tarif edin"
+
 msgid "Describe a story you're looking for and we'll re-analyze the page to find it."
 msgstr "Aradığınız haberi açıklayın; bulmak için sayfayı yeniden analiz edelim."
 
 msgid "Describe a topic and AI will score each story against your prompt to focus or hide matches."
 msgstr "Bir konu açıklayın; yapay zekâ, odaklanmanız veya gizlemeniz için her haberi isteminize göre puanlasın."
 
+msgid "Describe the feeds you’re looking for"
+msgstr "Aradığınız akışları açıklayın"
+
 msgid "Describe what to focus or hide"
 msgstr "Neye odaklanılacağını veya neyin gizleneceğini açıklayın"
 
 msgid "Describe what to look for and AI will analyze each story’s images against your prompt."
 msgstr "Neye bakılacağını açıklayın; yapay zekâ her haberin görsellerini isteminize göre analiz etsin."
+
+msgid "Describe what you want to read and let NewsBlur find matching feeds"
+msgstr "Okumak istediklerinizi açıklayın, eşleşen akışları NewsBlur bulsun"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "İstediğiniz akışları açıklama özelliği Premium'a özeldir. Açıklamaya göre arama yapmak için yükseltin."
 
 msgctxt "summary length"
 msgid "Detailed"
@@ -2378,6 +2405,9 @@ msgstr "Önizlemeyi gösterme, yalnızca haber başlığını göster"
 
 msgid "Don't show a thumbnail"
 msgstr "Küçük resim gösterme"
+
+msgid "Done"
+msgstr "Bitti"
 
 msgid "Done!"
 msgstr "Tamamlandı!"
@@ -2533,6 +2563,9 @@ msgstr "Haber kümelemeyi etkinleştir"
 
 msgid "Enable the sites you want"
 msgstr "İstediğiniz siteleri etkinleştirin"
+
+msgid "Engineers writing about how large systems fail"
+msgstr "Büyük sistemlerin nasıl arızalandığını anlatan mühendisler"
 
 msgid "English"
 msgstr "İngilizce"
@@ -2719,6 +2752,9 @@ msgstr "Yüzler"
 msgid "Fact check this story"
 msgstr "Bu haberdeki bilgileri doğrula"
 
+msgid "Failed"
+msgstr "Başarısız"
+
 msgid "Failed to connect to server"
 msgstr "Sunucuya bağlanılamadı"
 
@@ -2888,6 +2924,9 @@ msgstr "Dosyalar"
 msgid "Filled Icons"
 msgstr "Dolu Simgeler"
 
+msgid "Film photography with notes on cameras and film stocks"
+msgstr "Fotoğraf makineleri ve film türleri hakkında notlarla analog fotoğrafçılık"
+
 msgid "Filter by date range"
 msgstr "Tarih aralığına göre filtrele"
 
@@ -2949,6 +2988,16 @@ msgstr "Ses listesinde %(voice)s sesini bul"
 
 msgid "Find Friends"
 msgstr "Arkadaş Bul"
+
+msgid "Find feeds"
+msgstr "Akış bul"
+
+#, python-format
+msgid "Find feeds about “%(term)s”"
+msgstr "“%(term)s” için akışları bul"
+
+msgid "Find feeds by describing them"
+msgstr "Akışları açıklayarak bulun"
 
 msgid "Find your unique NewsBlur email address in the Email Newsletters dialog"
 msgstr "Benzersiz NewsBlur e-posta adresinizi E-posta Bültenleri iletişim kutusunda bulun"
@@ -3101,12 +3150,20 @@ msgid "Forwarding email address"
 msgstr "E-posta yönlendirme adresi"
 
 #, python-format
+msgid "Found %(count)s feed that matches your description"
+msgid_plural "Found %(count)s feeds that match your description"
+msgstr[0] "Açıklamanıza uyan %(count)s akış bulundu"
+
+#, python-format
 msgid "Found %(count)s pattern. Select the one that best matches the stories you want."
 msgid_plural "Found %(count)s patterns. Select the one that best matches the stories you want."
 msgstr[0] "%(count)s desen bulundu. Görmek istediğiniz haberlerle en iyi eşleşeni seçin."
 
 msgid "Found in the Account dialog"
 msgstr "Hesap iletişim kutusunda yer alır"
+
+msgid "Found on the web by this search. NewsBlur adds it when you try or subscribe."
+msgstr "Bu arama sayesinde web'de bulundu. Denediğinizde veya abone olduğunuzda NewsBlur ekler."
 
 msgid "Free"
 msgstr "Ücretsiz"
@@ -3361,6 +3418,9 @@ msgstr "Okumaya Değer"
 msgid "Good Reads on NewsBlur"
 msgstr "NewsBlur'da okumaya değer haberler"
 
+msgid "Good match"
+msgstr "İyi eşleşme"
+
 msgid "Goodies &amp; Extras"
 msgstr "Ek Özellikler &amp; Ekstralar"
 
@@ -3610,6 +3670,9 @@ msgstr "Arama için akışlarınız dizine ekleniyor"
 msgid "Indexing..."
 msgstr "Dizin oluşturuluyor..."
 
+msgid "Indie game developers writing about their work in progress"
+msgstr "Geliştirme sürecindeki çalışmalarını yazan bağımsız oyun geliştiricileri"
+
 msgid "Infrequent Site Stories"
 msgstr "Seyrek Güncellenen Sitelerin Haberleri"
 
@@ -3671,6 +3734,12 @@ msgstr "Ocak"
 
 msgid "Japanese"
 msgstr "Japonca"
+
+msgid "Judging"
+msgstr "Değerlendiriliyor"
+
+msgid "Judging…"
+msgstr "Değerlendiriliyor…"
 
 msgid "July"
 msgstr "Temmuz"
@@ -3860,8 +3929,17 @@ msgstr "Sesler yükleniyor..."
 msgid "Loading your blocklist settings..."
 msgstr "Engelleme listesi ayarlarınız yükleniyor..."
 
+msgid "Loading your search…"
+msgstr "Aramanız yükleniyor…"
+
 msgid "Loading..."
 msgstr "Yükleniyor..."
+
+msgid "Loading…"
+msgstr "Yükleniyor…"
+
+msgid "Local news and events in Portland, Oregon"
+msgstr "Portland, Oregon'daki yerel haberler ve etkinlikler"
 
 msgid "Location"
 msgstr "Konum"
@@ -3883,6 +3961,9 @@ msgstr "Uzun Okumalar"
 
 msgid "Long Reads on NewsBlur"
 msgstr "NewsBlur'da uzun okumalar"
+
+msgid "Long essays about cities, housing and public transit"
+msgstr "Şehirler, konut ve toplu taşıma hakkında uzun denemeler"
 
 msgid "Long reads for later"
 msgstr "Daha sonra okumak için uzun yazılar"
@@ -4045,6 +4126,10 @@ msgstr "Eşleşme yinelenen bir başlık üzerinden bulundu"
 
 msgid "Matched via related topics"
 msgstr "İlgili konular üzerinden eşleşti"
+
+#, python-format
+msgid "Matched “%(query)s”"
+msgstr "“%(query)s” ile eşleşti"
 
 msgid "Matches story titles containing all keywords"
 msgstr "Başlıkta tüm anahtar kelimeleri içeren haberlerle eşleşir"
@@ -4274,6 +4359,9 @@ msgstr "Süresi dolmasın"
 msgid "Never gonna expire. Congrats!"
 msgstr "Süresi hiç dolmayacak. Tebrikler!"
 
+msgid "New"
+msgstr "Yeni"
+
 msgid "New Arrivals"
 msgstr "Yeni Gelenler"
 
@@ -4341,6 +4429,13 @@ msgstr "NewsBlur, sayfadaki değişiklikleri otomatik olarak izler"
 
 msgid "NewsBlur on iOS with the full feature set"
 msgstr "iOS'te tüm özellikleriyle NewsBlur"
+
+msgid ""
+"NewsBlur reads your description, searches its index of feeds and the open web, then judges every match. It "
+"can take a minute."
+msgstr ""
+"NewsBlur açıklamanızı okur, akış dizininde ve açık web'de arama yapar, ardından her eşleşmeyi "
+"değerlendirir. Bu işlem bir dakika sürebilir."
 
 msgid "NewsBlur will automatically find the RSS feed for this site."
 msgstr "NewsBlur bu site için RSS akışını otomatik olarak bulur."
@@ -4419,6 +4514,9 @@ msgstr "Akış bulunamadı"
 
 msgid "No feeds found in this category."
 msgstr "Bu kategoride akış bulunamadı."
+
+msgid "No feeds matched that description. Try describing it another way."
+msgstr "Açıklamanızla eşleşen akış bulunamadı. Başka bir şekilde açıklamayı deneyin."
 
 msgid "No folders match"
 msgstr "Eşleşen klasör yok"
@@ -4661,7 +4759,7 @@ msgid "Off"
 msgstr "Kapalı"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Bunları “N yeni haber” rozetiyle sun"
 
 msgid "Official NewsBlur Android App"
 msgstr "Resmî NewsBlur Android uygulaması"
@@ -4775,7 +4873,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Sayıları yalnızca daraltılmış klasörlerde göster"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Yalnızca liste yeniden yüklendiğinde göster"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Yalnızca blurblog'lardaki uzun paylaşılan haberleri kısalt"
@@ -4998,6 +5096,9 @@ msgstr "Site başına"
 msgid "Per-feed notification settings"
 msgstr "Akış bazında bildirim ayarları"
 
+msgid "Personal blogs about restoring old houses"
+msgstr "Eski evleri yenileme üzerine kişisel bloglar"
+
 msgid "Phrase to match in story text"
 msgstr "Haber metninde eşleştirilecek ifade"
 
@@ -5134,6 +5235,9 @@ msgstr[0] "Premium deneme (%(count)s gün)"
 
 msgid "Premium details"
 msgstr "Premium ayrıntıları"
+
+msgid "Premium feature"
+msgstr "Premium özellik"
 
 #, python-format
 msgid "Premium fonts require a %(link_start)spremium account%(link_end)s"
@@ -5504,6 +5608,9 @@ msgstr "%(voice)s sesini döngüden çıkar"
 msgid "Remove from Up Next"
 msgstr "Sıradan çıkar"
 
+msgid "Remove from history"
+msgstr "Geçmişten kaldır"
+
 msgid "Remove this list"
 msgstr "Bu listeyi kaldır"
 
@@ -5605,6 +5712,9 @@ msgstr "Yeniden dene"
 
 msgid "Retry fetching and parsing"
 msgstr "Getirmeyi ve ayrıştırmayı yeniden dene"
+
+msgid "Reviews of new iOS apps with lots of screenshots"
+msgstr "Ekran görüntüleriyle dolu yeni iOS uygulamalarının incelemeleri"
 
 msgid "Rewinding..."
 msgstr "Geri sarılıyor..."
@@ -5770,9 +5880,16 @@ msgstr "Planlanmış gönderim (günde bir veya iki kez)"
 msgid "Science"
 msgstr "Bilim"
 
+msgid "Scientists explaining new research in plain language"
+msgstr "Yeni araştırmaları sade bir dille açıklayan bilim insanları"
+
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Kapsamlı sınıflandırıcılar yalnızca %(plan)s abonelerine sunulur."
+
+#, python-format
+msgid "Scored %(score)s out of 10 for your description"
+msgstr "Açıklamanız için 10 üzerinden %(score)s puan aldı"
 
 msgid "Scroll to comments"
 msgstr "Yorumlara kaydır"
@@ -5795,6 +5912,9 @@ msgstr "Tüm kaydedilmiş haberlerde ve etiketlerde arayın"
 
 msgid "Search across all your subscriptions with Elasticsearch-powered full-text search."
 msgstr "Elasticsearch destekli tam metin aramayla tüm aboneliklerinizde arama yapın."
+
+msgid "Search again"
+msgstr "Yeniden ara"
 
 msgid "Search archives..."
 msgstr "Arşivlerde ara..."
@@ -5864,6 +5984,9 @@ msgstr "Haberlerinizde arama yapın"
 msgid "Search: \"%(value_1)s\""
 msgstr "Arama: \"%(value_1)s\""
 
+msgid "Searches you run will be kept here."
+msgstr "Yaptığınız aramalar burada tutulur."
+
 #, python-format
 msgid "Searching <b>%(feed_title)s</b> for \"<b>%(query)s</b>\""
 msgstr "\"<b>%(query)s</b>\" ifadesi için <b>%(feed_title)s</b> aranıyor"
@@ -5871,11 +5994,23 @@ msgstr "\"<b>%(query)s</b>\" ifadesi için <b>%(feed_title)s</b> aranıyor"
 msgid "Searching RSS feeds..."
 msgstr "RSS akışları aranıyor..."
 
+msgid "Searching feeds"
+msgstr "Akışlar aranıyor"
+
+msgid "Searching for"
+msgstr "Aranan:"
+
 msgid "Searching saved stories..."
 msgstr "Kaydedilmiş haberler aranıyor..."
 
+msgid "Searching the web"
+msgstr "Web'de aranıyor"
+
 msgid "Searching your archive..."
 msgstr "Arşivinizde aranıyor..."
+
+msgid "Searching…"
+msgstr "Aranıyor…"
 
 msgid "Seconds to skip backward"
 msgstr "Geriye atlanacak saniye"
@@ -6151,7 +6286,7 @@ msgid "Show more related stories"
 msgstr "Daha fazla benzer haber göster"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Yeni haberleri geldikçe göster"
 
 msgid "Show on Load"
 msgstr "Yüklenince göster"
@@ -6220,8 +6355,8 @@ msgstr "Site Bildirimleri"
 msgid "Site Settings"
 msgstr "Site ayarları"
 
-msgid "Site URL or search by name..."
-msgstr "Site URL'si veya ada göre arayın..."
+msgid "Site URL, name, or describe what you want to read"
+msgstr "Site URL'si, adı veya okumak istediklerinizi açıklayın"
 
 msgid "Site by Site"
 msgstr "Siteye Göre"
@@ -6267,6 +6402,9 @@ msgstr "Sosyal"
 
 msgid "Social Connections"
 msgstr "Sosyal Bağlantılar"
+
+msgid "Something went wrong while searching."
+msgstr "Arama sırasında bir sorun oluştu."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6406,6 +6544,12 @@ msgstr "Kategorilere ayırma başlatılıyor..."
 
 msgid "Starting trial..."
 msgstr "Deneme başlatılıyor..."
+
+msgid "Starting your search…"
+msgstr "Aramanız başlatılıyor…"
+
+msgid "Starting…"
+msgstr "Başlatılıyor…"
 
 msgid "Statistics"
 msgstr "İstatistikler"
@@ -6591,6 +6735,9 @@ msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
 
 msgid "Stripe Id:"
 msgstr "Stripe Kimliği:"
+
+msgid "Strong match"
+msgstr "Güçlü eşleşme"
 
 msgid "Style"
 msgstr "Tarz"
@@ -6831,6 +6978,12 @@ msgstr "Teşekkürler! %(bold_start)sPremium Archive hesabınız%(bold_end)s var
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Teşekkürler! %(bold_start)sPremium Pro hesabınız%(bold_end)s var."
 
+msgid "That search could not be loaded."
+msgstr "Bu arama yüklenemedi."
+
+msgid "That search is no longer in your history."
+msgstr "Bu arama artık geçmişinizde yok."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Yapay zekâ hizmetinin yanıt vermesi çok uzun sürdü. Lütfen tekrar deneyin."
 
@@ -6911,6 +7064,9 @@ msgstr "Orijinal sayfa yayıncı tarafından devre dışı bırakıldı."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Sayfanın HTML'i içerik yapısını çıkarmak için alınıp ayrıştırılır."
+
+msgid "The search could not be started."
+msgstr "Arama başlatılamadı."
 
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
@@ -7294,6 +7450,9 @@ msgstr "Başka bir arama terimi deneyin veya doğrudan bir URL yapıştırın."
 msgid "Try again"
 msgstr "Tekrar dene"
 
+msgid "Try describing something like"
+msgstr "Şuna benzer bir şey açıklamayı deneyin"
+
 msgid "Try different keywords, or clear the search to see everything."
 msgstr "Farklı anahtar kelimeler deneyin veya her şeyi görmek için aramayı temizleyin."
 
@@ -7385,6 +7544,9 @@ msgstr "Bilinmeyen hata"
 
 msgid "Unknown question"
 msgstr "Bilinmeyen soru"
+
+msgid "Unlimited searches"
+msgstr "Sınırsız arama"
 
 msgid "Unlock"
 msgstr "Kilidi aç"
@@ -7658,8 +7820,14 @@ msgstr "Ses ayarları"
 msgid "Voices"
 msgstr "Sesler"
 
+msgid "Waiting for a verdict…"
+msgstr "Bir karar bekleniyor…"
+
 msgid "Warning: This is actually permanent"
 msgstr "Uyarı: Bu işlem gerçekten kalıcıdır"
+
+msgid "Weak match"
+msgstr "Zayıf eşleşme"
 
 msgid "Weather"
 msgstr "Hava Durumu"
@@ -7709,6 +7877,9 @@ msgstr "Çarşamba"
 
 msgid "Weekly"
 msgstr "Haftalık"
+
+msgid "Weeknight vegetarian recipes with step-by-step photos"
+msgstr "Hafta içi akşamları için adım adım fotoğraflı vejetaryen tarifler"
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"
@@ -7915,6 +8086,9 @@ msgstr "Dün, %(time)s"
 msgid "You"
 msgstr "Siz"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Zaten devam eden bir aramanız var. Önce tamamlanmasını bekleyin."
+
 #, python-format
 msgid "You are followed by %(count)s person"
 msgid_plural "You are followed by %(count)s people"
@@ -8106,6 +8280,9 @@ msgstr "Premium hesabınızın düşürüleceği tarih:"
 
 msgid "Your profile"
 msgstr "Profiliniz"
+
+msgid "Your searches"
+msgstr "Aramalarınız"
 
 msgid "Your subscription is no longer active."
 msgstr "Aboneliğiniz artık etkin değil."

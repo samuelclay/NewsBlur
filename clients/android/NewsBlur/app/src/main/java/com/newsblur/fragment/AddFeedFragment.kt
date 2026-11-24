@@ -25,6 +25,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.design.NewsBlurTheme
 import com.newsblur.design.toVariant
 import com.newsblur.di.IconLoader
+import com.newsblur.discover.DiscoveryTab
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppConstants
@@ -123,6 +124,16 @@ class AddFeedFragment : BottomSheetDialogFragment() {
                                 host.showDiscovery(tab, state.parent)
                             } else {
                                 startActivity(DiscoverSitesActivity.intent(host, tab, state.parent))
+                            }
+                            dismiss()
+                        },
+                        onDescribe = { prompt ->
+                            // AddFeedFragment.kt hands a typed description to the Describe tab, which starts the search.
+                            val host = requireActivity()
+                            if (host is DiscoverSitesActivity) {
+                                host.showDiscovery(DiscoveryTab.DESCRIBE, state.parent, prompt)
+                            } else {
+                                startActivity(DiscoverSitesActivity.intent(host, DiscoveryTab.DESCRIBE, state.parent, prompt))
                             }
                             dismiss()
                         },

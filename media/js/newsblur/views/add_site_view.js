@@ -89,6 +89,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
 
     TABS: [
         { id: 'search', label: gettext('Search'), icon: '/media/img/icons/nouns/search.svg', mono: true },
+        { id: 'describe', label: gettext('Describe'), icon: '/media/img/icons/lucide/sparkles.svg', mono: true },
         { id: 'web-feed', label: gettext('Web Feed'), icon: '/media/img/icons/nouns/web-feed.svg', mono: true },
         { id: 'popular', label: gettext('Popular'), icon: '/media/img/icons/heroicons-solid/fire.svg', mono: true },
         { id: 'youtube', label: 'YouTube', icon: '/media/img/icons/lucide/youtube.svg', mono: true },
@@ -301,9 +302,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         if (this.options.initial_url) {
             this.webfeed_state.url = this.options.initial_url;
         }
-        if (this.options.initial_query) {
+        // add_site_view.js: a description typed in the add-feed popover opens the Describe tab, not Search.
+        if (this.options.initial_query && this.active_tab !== 'describe') {
             this.search_query = this.options.initial_query;
         }
+        this.describe_view = null;
 
         this.render();
 
@@ -416,6 +419,10 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     close: function () {
+        if (this.describe_view) {
+            this.describe_view.close();
+            this.describe_view = null;
+        }
         this.$el.remove();
     },
 
@@ -635,6 +642,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     render_active_tab: function () {
         var tab_renderers = {
             'search': 'render_search_tab',
+            'describe': 'render_describe_tab',
             'popular': 'render_popular_tab',
             'youtube': 'render_youtube_tab',
             'reddit': 'render_reddit_tab',
@@ -648,6 +656,34 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var renderer = tab_renderers[this.active_tab];
         if (renderer && this[renderer]) {
             this[renderer]();
+        }
+    },
+
+    // ================
+    // = Describe Tab =
+    // ================
+
+    // add_site_view.js: the Describe tab is its own view (describe_feeds_view.js) mounted in the tab pane.
+    // Try/Add/Stats clicks inside its cards are handled by this view's delegated events.
+    render_describe_tab: function () {
+        var $tab = this.$('.NB-add-site-describe-tab');
+        if (this.describe_view) {
+            this.describe_view.on_shown();
+            return;
+        }
+        this.describe_view = new NEWSBLUR.Views.DescribeFeedsView({
+            add_site_view: this,
+            initial_query: this.options.initial_tab === 'describe' ? this.options.initial_query : null,
+            initial_search_id: this.options.initial_search_id,
+            initial_scroll_top: this.options.initial_scroll_top
+        });
+        $tab.html(this.describe_view.render().el);
+        this.describe_view.on_shown();
+    },
+
+    handle_describe_event: function (data) {
+        if (this.describe_view) {
+            this.describe_view.handle_event(data);
         }
     },
 
@@ -735,7 +771,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
                 // Grid view - render feed cards
                 var $results = this.make_results_container();
                 _.each(sorted_results, function(feed) {
-                    $results.append(this.render_feed_card(feed));
+                    $results.append(this.render_feed_card(feed, feed.stories));
                 }, this);
 
                 if (state.is_loading) {
@@ -885,7 +921,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             _.each(sorted_models, function (trending_feed) {
                 var feed = trending_feed.get("feed");
                 var feed_data = feed.toJSON ? feed.toJSON() : feed;
-                $grid.append(self.render_feed_card(feed_data));
+                $grid.append(self.render_feed_card(feed_data, self.trending_story_data(trending_feed)));
             });
             return $grid;
         } else {
@@ -997,7 +1033,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             _.each(new_feeds, function (trending_feed) {
                 var feed = trending_feed.get("feed");
                 var feed_data = feed.toJSON ? feed.toJSON() : feed;
-                $grid.append(self.render_feed_card(feed_data));
+                $grid.append(self.render_feed_card(feed_data, self.trending_story_data(trending_feed)));
             });
         } else {
             var $list = $container.find('.NB-trending-feed-badges');
@@ -3802,7 +3838,7 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         // Render feed cards in a grid
         var $grid = self.make_results_container();
         _.each(feeds, function(feed) {
-            $grid.append(self.render_feed_card(feed));
+            $grid.append(self.render_feed_card(feed, feed.stories));
         });
         $results.html($grid);
     },
@@ -4062,8 +4098,13 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         return $list;
     },
 
-    render_feed_card: function (feed, stories) {
-        var self = this;
+    // add_site_view.js: the one feed card every Add Site grid draws (and Describe in both layouts). The top
+    // holds the feed, the middle is the site's own story title rows (render_card_stories), and the actions
+    // sit on one line: along the bottom in a grid, beside the title in a list. Describe passes extras in
+    // options: title_accessories (after the title), freshness_aside (after the freshness date, past a middot)
+    // and lead (above the tagline).
+    render_feed_card: function (feed, stories, options) {
+        options = options || {};
         stories = stories || [];
 
         // Check if already subscribed. Use feed.feed (actual Feed FK from popular_feeds API)
@@ -4072,61 +4113,6 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var feed_id = feed.feed || feed.feed_id || feed.id;
         var feed_model = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
         var subscribed = feed_model && !feed_model.get('temp');
-
-        // Get display preferences
-        var image_preview = NEWSBLUR.assets.preference('add_site_image_preview') || 'large';
-        var content_preview = NEWSBLUR.assets.preference('add_site_content_preview') || 'medium';
-
-        var $stories_preview = null;
-        if (stories.length > 0) {
-            $stories_preview = $.make('div', { className: 'NB-add-site-card-stories' },
-                _.map(stories.slice(0, 3), function(story) {
-                    var story_elements = [];
-
-                    // Add story image if preference allows and image exists
-                    if (image_preview !== 'none') {
-                        var image_url = story.image_urls && story.image_urls.length > 0 ? story.image_urls[0] : null;
-                        if (!image_url && story.story_content) {
-                            // Try to extract first image from content
-                            var img_match = story.story_content.match(/<img[^>]+src=["']([^"']+)["']/i);
-                            if (img_match) image_url = img_match[1];
-                        }
-                        if (image_url) {
-                            var image_class = 'NB-add-site-card-story-image';
-                            if (image_preview === 'small') {
-                                image_class += ' NB-image-small';
-                            } else {
-                                image_class += ' NB-image-large';
-                            }
-                            story_elements.push($.make('img', {
-                                src: image_url,
-                                className: image_class,
-                                onerror: "this.style.display='none'"
-                            }));
-                        }
-                    }
-
-                    // add_site_view.js: dir="auto" isolates feed-provided titles and previews for LTR and RTL readers.
-
-                    story_elements.push($.make('div', { className: 'NB-add-site-card-story-title', dir: 'auto' },
-                        story.story_title || story.title || gettext('Untitled')));
-
-                    // Add story content preview based on preference
-                    if (content_preview !== 'title' && story.story_content) {
-                        var content_text = self.strip_html(story.story_content);
-                        if (content_text) {
-                            var max_lines = content_preview === 'small' ? 1 : (content_preview === 'medium' ? 2 : 3);
-                            var max_chars = max_lines * 80; // Approximate chars per line
-                            var preview_text = self.truncate_text(content_text, max_chars);
-                            var preview_class = 'NB-add-site-card-story-preview NB-preview-lines-' + max_lines;
-                            story_elements.push($.make('div', { className: preview_class, dir: 'auto' }, preview_text));
-                        }
-                    }
-
-                    return $.make('div', { className: 'NB-add-site-card-story' }, story_elements);
-                })
-            );
-        }
 
         var meta_parts = [];
         if (feed.num_subscribers) {
@@ -4140,19 +4126,71 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             meta_parts.push(interpolate(ngettext('%(count)s story/month', '%(count)s stories/month', stories_count), {count: stories_count.toLocaleString()}, true));
         }
         var $freshness = this.make_freshness_indicator(feed.last_story_date, { show_empty: true });
-
-        // Feed tagline/description always shown
-        var $description = null;
-        if (feed.tagline) {
-            $description = $.make('div', { className: 'NB-add-site-card-desc' },
-                this.truncate_text(feed.tagline, 150));
+        if (options.freshness_aside) {
+            $freshness = ($freshness || $.make('div', { className: 'NB-add-site-card-freshness' })).append([
+                $freshness ? $.make('span', { className: 'NB-middot' }, '\u00b7') : null,
+                options.freshness_aside
+            ]);
         }
 
-        // Build actions based on subscription status
-        var $actions;
+        var $description = null;
+        if (feed.tagline) {
+            $description = $.make('div', { className: 'NB-add-site-card-desc', dir: 'auto' },
+                this.truncate_text(feed.tagline, 200));
+        }
+
+        var $actions = this.make_card_actions({
+            subscribed: subscribed,
+            feed_id: feed_id,
+            feed_url: feed.feed_address || feed.address,
+            selected_folder: feed
+        });
+        var list_layout = this.view_mode === 'list';
+
+        var $card = $.make('div', {
+            className: 'NB-add-site-card' + (subscribed ? ' NB-add-site-card-subscribed' : ''),
+            'data-feed-id': feed_id
+        }, [
+            $.make('div', { className: 'NB-add-site-card-top' }, [
+                $.make('div', { className: 'NB-add-site-card-header' }, [
+                    $.make('img', {
+                        src: feed.favicon_url || feed.favicon || '/media/img/icons/lucide/rss.svg',
+                        className: 'NB-add-site-card-icon',
+                        onerror: "this.src='/media/img/icons/lucide/rss.svg'"
+                    }),
+                    $.make('div', { className: 'NB-add-site-card-info' }, [
+                        $.make('div', { className: 'NB-add-site-card-title-row' }, [
+                            $.make('div', { className: 'NB-add-site-card-title', dir: 'auto' },
+                                feed.feed_title || feed.title || gettext('Unknown Feed'))
+                        ].concat(options.title_accessories || [])),
+                        meta_parts.length && $.make('div', { className: 'NB-add-site-card-meta' }, meta_parts.join(' • ')),
+                        $freshness
+                    ].filter(Boolean)),
+                    list_layout && $actions
+                ].filter(Boolean)),
+                options.lead,
+                $description
+            ].filter(Boolean)),
+            this.render_card_stories(feed, stories, function () { return $card; }),
+            !list_layout && $actions
+        ].filter(Boolean));
+        return $card;
+    },
+
+    // add_site_view.js: a trending feed's stories (models/trending_feeds.js keeps them as a collection) as the
+    // plain story data render_feed_card takes.
+    trending_story_data: function (trending_feed) {
+        var stories = trending_feed.get("stories");
+        return stories && stories.toJSON ? stories.toJSON() : (stories || []);
+    },
+
+    // add_site_view.js: Try and Stats, then the folder picker and Add, on one line. A subscribed feed shows
+    // its badge with Stats and Open instead. Cards for sites NewsBlur hasn't saved yet (Describe's web finds)
+    // have no feed_id; Try, Stats and Add create the feed from feed_url first (link_popular_feed).
+    make_card_actions: function (config) {
         var $stats_btn = $.make('div', {
             className: 'NB-add-site-stats-btn NB-modal-submit-button NB-modal-submit-grey',
-            'data-feed-id': feed_id
+            'data-feed-id': config.feed_id
         }, [
             $.make('img', {
                 src: '/media/embed/icons/nouns/dialog-statistics.svg',
@@ -4161,64 +4199,109 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             gettext('Stats')
         ]);
 
-        if (subscribed) {
-            $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
+        if (config.subscribed) {
+            return $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
                 $.make('div', { className: 'NB-subscribed-badge' }, [
-                    $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
+                    $.make('span', { className: 'NB-subscribed-badge-check' }, '✓'),
                     gettext('Subscribed')
                 ]),
-                $.make('div', { className: 'NB-add-site-card-actions-row' }, [
-                    $stats_btn,
-                    $.make('div', {
-                        className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
-                        'data-feed-id': feed_id
-                    }, gettext('Open'))
-                ])
-            ]);
-        } else {
-            $actions = $.make('div', { className: 'NB-add-site-card-actions' }, [
-                $.make('div', { className: 'NB-add-site-card-actions-row' }, [
-                    $.make('div', {
-                        className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
-                        'data-feed-id': feed_id
-                    }, gettext('Try')),
-                    $stats_btn
-                ]),
-                $.make('div', { className: 'NB-add-site-card-add-group' }, [
-                    this.make_folder_selector(feed),
-                    $.make('div', {
-                        className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
-                        'data-feed-id': feed_id,
-                        'data-feed-url': feed.feed_address || feed.address
-                    }, gettext('Add'))
-                ])
+                $stats_btn,
+                $.make('div', {
+                    className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
+                    'data-feed-id': config.feed_id
+                }, gettext('Open'))
             ]);
         }
+        return $.make('div', { className: 'NB-add-site-card-actions' }, [
+            $.make('div', {
+                className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
+                'data-feed-id': config.feed_id
+            }, gettext('Try')),
+            $stats_btn,
+            $.make('div', { className: 'NB-add-site-card-add-group' }, [
+                this.make_folder_selector(config.selected_folder),
+                $.make('div', {
+                    className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
+                    'data-feed-id': config.feed_id,
+                    'data-feed-url': config.feed_url
+                }, gettext('Add'))
+            ])
+        ]);
+    },
 
-        // Single DOM structure for both grid and list - CSS Grid handles layout
+    // add_site_view.js: a card's stories drawn as the site's own story title rows (story_titles_view.js), the
+    // same rows the Search list shows. feed_model lends the rows this feed's icon and color when the reader
+    // has no model for it, which is true of every feed you haven't subscribed to.
+    render_card_stories: function (feed, stories, get_card) {
+        var limit = this.get_stories_limit();
+        if (!stories.length || limit === 0) return null;
+
+        var collection = new NEWSBLUR.Collections.Stories(_.map(stories.slice(0, limit), this.safe_card_story));
+        // add_site_view.js: these are all the stories the card has, so story_titles_view.js fill_out never
+        // tries to page in more.
+        collection.no_more_stories = true;
+        var image_preview = NEWSBLUR.assets.preference('image_preview') || 'large-right';
+        var $story_titles = $.make('div', { className: 'NB-story-titles' });
+        var story_titles_view = new NEWSBLUR.Views.StoryTitlesView({
+            el: $story_titles,
+            collection: collection,
+            $story_titles: $story_titles,
+            override_layout: 'split',
+            pane_anchor: 'west',
+            in_add_site_view: this,
+            feed_model: new NEWSBLUR.Models.Feed(_.extend({}, feed, { id: feed.feed || feed.feed_id || feed.id })),
+            on_story_click: _.bind(function (story) {
+                this.open_card_story(story, feed, get_card());
+            }, this)
+        });
         return $.make('div', {
-            className: 'NB-add-site-card' + (subscribed ? ' NB-add-site-card-subscribed' : ''),
-            'data-feed-id': feed_id
-        }, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('img', {
-                    src: feed.favicon_url || feed.favicon || '/media/img/icons/lucide/rss.svg',
-                    className: 'NB-add-site-card-icon',
-                    onerror: "this.src='/media/img/icons/lucide/rss.svg'"
-                }),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title', dir: 'auto' },
-                        feed.feed_title || feed.title || gettext('Unknown Feed')),
-                    $.make('div', { className: 'NB-add-site-card-meta' },
-                        meta_parts.join(' \u2022 ')
-                    ),
-                    $freshness
-                ].filter(Boolean))
-            ]),
-            $description,
-            $stories_preview,
-            $actions
-        ].filter(Boolean));
+            className: 'NB-add-site-card-stories NB-story-pane-west NB-image-preview-' + image_preview
+        }, [story_titles_view.render().el]);
+    },
+
+    // add_site_view.js: the story row template (story_title_view.js) writes the first image URL into a quoted
+    // CSS url() and links the permalink. Describe's web finds come from sites NewsBlur has never fetched, so a
+    // card keeps only plain http(s) URLs, which can't close those quotes. apps/describe/models.py filters them
+    // too; this keeps any card safe whatever its source.
+    safe_card_story: function (story) {
+        var safe_url = function (url) {
+            return _.isString(url) && /^https?:\/\/[^\s"'()<>\\]+$/i.test(url);
+        };
+        return _.extend({}, story, {
+            image_urls: _.filter(story.image_urls || [], safe_url),
+            story_permalink: safe_url(story.story_permalink) ? story.story_permalink : ''
+        });
+    },
+
+    // add_site_view.js: a story row opens its story in the feed: in the feed itself when you subscribe to it,
+    // otherwise in Try. NewsBlur story hashes start with their feed's id; a row without one (a site NewsBlur
+    // hasn't saved, or a Describe search stored before its stories kept their hashes) does what the card's
+    // Try or Open button does.
+    open_card_story: function (story, feed, $card) {
+        // add_site_view.js: both clicks of a double click land here; the story opens once.
+        var now = new Date().getTime();
+        if (this.card_story_opened_at && now - this.card_story_opened_at < 600) return;
+        this.card_story_opened_at = now;
+        var story_feed_id = story.get('story_feed_id');
+        var story_hash = String(story.get('story_hash') || '');
+        if (!(story_feed_id > 0) || !_.string.startsWith(story_hash, story_feed_id + ':')) {
+            $card.find('.NB-add-site-try-btn, .NB-add-site-open-btn').first().trigger('click');
+            return;
+        }
+        var subscribed_feed = NEWSBLUR.assets.feeds.get(story_feed_id);
+        if (subscribed_feed && !subscribed_feed.get('temp')) {
+            NEWSBLUR.reader.open_feed(story_feed_id, {
+                'story_id': story_hash,
+                'story_title': story.get('story_title')
+            });
+            return;
+        }
+        NEWSBLUR.reader.load_feed_in_tryfeed_view(story_feed_id, {
+            'feed': new NEWSBLUR.Models.Feed(_.extend({}, feed, { id: story_feed_id })),
+            'select_story_in_feed': story_hash,
+            'story_title': story.get('story_title'),
+            'discover_origin': this.get_discover_origin()
+        });
     },
 
     make_source_card: function (config) {
@@ -4247,51 +4330,12 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var feed_model = feed_id && NEWSBLUR.assets.feeds.get(feed_id);
         var subscribed = feed_model && !feed_model.get('temp');
 
-        var $actions;
-        var $stats_btn = $.make('div', {
-            className: 'NB-add-site-stats-btn NB-modal-submit-button NB-modal-submit-grey',
-            'data-feed-id': feed_id
-        }, [
-            $.make('img', {
-                src: '/media/embed/icons/nouns/dialog-statistics.svg',
-                className: 'NB-add-site-stats-icon'
-            }),
-            gettext('Stats')
-        ]);
-
-        if (subscribed) {
-            $actions = $.make('div', { className: 'NB-add-site-card-actions NB-add-site-card-actions-subscribed' }, [
-                $.make('div', { className: 'NB-subscribed-badge' }, [
-                    $.make('span', { className: 'NB-subscribed-badge-check' }, '\u2713'),
-                    gettext('Subscribed')
-                ]),
-                $.make('div', { className: 'NB-add-site-card-actions-row' }, [
-                    $stats_btn,
-                    $.make('div', {
-                        className: 'NB-add-site-open-btn NB-modal-submit-button NB-modal-submit-green',
-                        'data-feed-id': feed_id
-                    }, gettext('Open'))
-                ])
-            ]);
-        } else {
-            $actions = $.make('div', { className: 'NB-add-site-card-actions' }, [
-                $.make('div', { className: 'NB-add-site-card-actions-row' }, [
-                    $.make('div', {
-                        className: 'NB-add-site-try-btn NB-modal-submit-button NB-modal-submit-green',
-                        'data-feed-id': feed_id
-                    }, gettext('Try')),
-                    $stats_btn
-                ]),
-                $.make('div', { className: 'NB-add-site-card-add-group' }, [
-                    this.make_folder_selector(),
-                    $.make('div', {
-                        className: 'NB-add-site-subscribe-btn NB-modal-submit-button NB-modal-submit-grey',
-                        'data-feed-id': feed_id,
-                        'data-feed-url': config.feed_url
-                    }, gettext('Add'))
-                ])
-            ]);
-        }
+        var $actions = this.make_card_actions({
+            subscribed: subscribed,
+            feed_id: feed_id,
+            feed_url: config.feed_url
+        });
+        var list_layout = this.view_mode === 'list';
 
         // Single DOM structure for both grid and list - CSS handles layout
         var card_attrs = {
@@ -4305,16 +4349,21 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             card_attrs['data-feed-url'] = config.feed_url;
         }
         return $.make('div', card_attrs, [
-            $.make('div', { className: 'NB-add-site-card-header' }, [
-                $.make('img', icon_attrs),
-                $.make('div', { className: 'NB-add-site-card-info' }, [
-                    $.make('div', { className: 'NB-add-site-card-title' }, config.title),
-                    $.make('div', { className: 'NB-add-site-card-meta' }, config.meta || ''),
-                    $freshness
-                ].filter(Boolean))
-            ]),
-            description_el,
-            $actions
+            $.make('div', { className: 'NB-add-site-card-top' }, [
+                $.make('div', { className: 'NB-add-site-card-header' }, [
+                    $.make('img', icon_attrs),
+                    $.make('div', { className: 'NB-add-site-card-info' }, [
+                        $.make('div', { className: 'NB-add-site-card-title-row' }, [
+                            $.make('div', { className: 'NB-add-site-card-title' }, config.title)
+                        ]),
+                        config.meta && $.make('div', { className: 'NB-add-site-card-meta' }, config.meta),
+                        $freshness
+                    ].filter(Boolean)),
+                    list_layout && $actions
+                ].filter(Boolean)),
+                description_el
+            ].filter(Boolean)),
+            !list_layout && $actions
         ].filter(Boolean));
     },
 
@@ -4387,16 +4436,6 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     truncate_text: function (text, max_length) {
         if (!text || text.length <= max_length) return text;
         return text.substring(0, max_length) + '...';
-    },
-
-    strip_html: function (html) {
-        if (!html) return '';
-        // Remove HTML tags and decode entities
-        var tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        var text = tmp.textContent || tmp.innerText || '';
-        // Normalize whitespace
-        return text.replace(/\s+/g, ' ').trim();
     },
 
     make_freshness_indicator: function (last_story_date, options) {
@@ -4821,6 +4860,11 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
         var tab_info = _.find(this.TABS, function (t) { return t.id === tab; });
         var tab_label = tab_info ? tab_info.label : tab;
         var origin = { tab: tab, tab_label: tab_label };
+
+        if (tab === 'describe' && this.describe_view) {
+            _.extend(origin, this.describe_view.get_origin());
+            return origin;
+        }
 
         var tab_config = this.TAB_SEARCH_CONFIG[tab];
         if (tab_config) {
@@ -5704,7 +5748,8 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
     },
 
     // add_site_view.js - navigate_to_state: called on back/forward when view is already open
-    navigate_to_state: function (tab, category, subcategory) {
+    navigate_to_state: function (tab, category, subcategory, options) {
+        options = options || {};
         var target_tab = tab || 'search';
         if (target_tab === 'trending') target_tab = 'search';
         var deslug_cat = category ? this._deslugify(category) : null;
@@ -5755,7 +5800,30 @@ NEWSBLUR.Views.AddSiteView = Backbone.View.extend({
             }
         }
 
+        // add_site_view.js: text handed over by the add-feed popover (reader_add_feed.js) while this view
+        // is open runs its search here, the way initialize does on a fresh open. A Web Feed analysis that
+        // is still running keeps its URL, because its variants and Subscribe button belong to that URL.
+        var handoff_url = target_tab === 'web-feed' && !this.webfeed_state.is_analyzing ? options.initial_url : null;
+        if (target_tab === 'search' && options.initial_query) {
+            this.search_query = options.initial_query;
+        }
+        if (handoff_url) {
+            this.webfeed_state.url = handoff_url;
+        }
+
         this.render_active_tab();
+        if (target_tab === 'describe' && options.search_id && this.describe_view &&
+            this.describe_view.loading_search_id !== options.search_id) {
+            this.describe_view.open_search(options.search_id, { scroll_top: options.scroll_top });
+        } else if (target_tab === 'describe' && options.initial_query && this.describe_view) {
+            this.describe_view.search_for_prompt(options.initial_query);
+        }
+        if (target_tab === 'search' && options.initial_query) {
+            this.perform_search();
+        }
+        if (handoff_url) {
+            this.perform_webfeed_analyze();
+        }
         this.bind_scroll_handler();
         this.update_tab_overflow();
         this.update_url();

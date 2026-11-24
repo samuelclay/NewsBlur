@@ -476,6 +476,7 @@ INSTALLED_APPS = (
     "apps.search",
     "apps.categories",
     "apps.discover",
+    "apps.describe",
     "apps.ask_ai",
     "apps.listen",
     "apps.webfeed",
@@ -533,6 +534,7 @@ CELERY_TASK_ROUTES = {
     "archive-process-batch": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "archive-cleanup-old": {"queue": "push_feeds", "binding_key": "push_feeds"},
     "generate-user-briefing": {"queue": "work_queue", "binding_key": "work_queue"},
+    "describe-feeds-search": {"queue": "work_queue", "binding_key": "work_queue"},
     "compute-story-clusters": {"queue": "update_feeds", "binding_key": "update_feeds"},
 }
 CELERY_TASK_QUEUES = {
@@ -584,6 +586,11 @@ CELERY_TASK_QUEUES = {
 }
 CELERY_TASK_DEFAULT_QUEUE = "work_queue"
 
+# settings.py: the queue apps/describe/views.py sends Describe searches to. Staging runs no Celery worker of
+# its own and shares production's broker, so its deploy (ansible/roles/web/tasks/staging_services.yml) sets
+# this to a queue only staging's task-staging worker reads; production workers don't have unmerged tasks.
+DESCRIBE_SEARCH_QUEUE = "work_queue"
+
 # Worktree queue isolation: prefix all queue names so worktree celery workers
 # only process tasks from their own worktree, not from main or other worktrees.
 NEWSBLUR_WORKTREE = os.environ.get("NEWSBLUR_WORKTREE", "")
@@ -615,6 +622,7 @@ CELERY_IMPORTS = (
     "apps.search.tasks",
     "apps.statistics.tasks",
     "apps.ask_ai.tasks",
+    "apps.describe.tasks",
     "apps.archive_extension.tasks",
     "apps.archive_assistant.tasks",
     "apps.briefing.tasks",

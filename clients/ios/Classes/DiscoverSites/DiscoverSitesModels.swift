@@ -15,6 +15,7 @@ enum DiscoverSitesFeedViewMode: String {
 
 enum DiscoverTab: String, CaseIterable, Identifiable {
     case search
+    case describe
     case webFeed
     case popular
     case youtube
@@ -28,6 +29,7 @@ enum DiscoverTab: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .search: return "Search"
+        case .describe: return NBLocalization.text("Describe")
         case .webFeed: return "Web Feed"
         case .popular: return "Popular"
         case .youtube: return "YouTube"
@@ -41,6 +43,7 @@ enum DiscoverTab: String, CaseIterable, Identifiable {
     var sfSymbol: String {
         switch self {
         case .search: return "magnifyingglass"
+        case .describe: return "sparkles"
         case .webFeed: return "globe"
         case .popular: return "flame.fill"
         case .youtube: return "play.rectangle.fill"
@@ -150,7 +153,8 @@ struct DiscoverFeedFreshness: Equatable {
         }
     }
 
-    private static func parseDate(_ value: Any?, timeZone: TimeZone) -> Date? {
+    // DiscoverSitesModels.swift also parses the ISO 8601 dates apps/describe/models.py writes for searches and stories.
+    static func parseDate(_ value: Any?, timeZone: TimeZone) -> Date? {
         if let number = value as? NSNumber {
             let milliseconds = number.doubleValue
             guard milliseconds.isFinite, abs(milliseconds) <= 8_640_000_000_000_000 else { return nil }
@@ -280,6 +284,288 @@ struct SearchTabState {
     var isTrendingLoaded: Bool = false
     var errorMessage: String?
     var trendingErrorMessage: String?
+}
+
+// MARK: - Describe
+
+// DiscoverSitesModels.swift: mirrors MDescribeSearch.summary() in apps/describe/models.py, the light shape of a history entry.
+struct DescribeSearchSummary: Identifiable, Equatable {
+    let id: String
+    var prompt: String
+    var status: String
+    var phase: String
+    var createdDate: Date?
+    var completedDate: Date?
+    var resultCount: Int
+
+    init?(dict: [String: Any], timeZone: TimeZone = .current) {
+        guard let id = dict["id"] as? String, !id.isEmpty else { return nil }
+        self.id = id
+        self.prompt = dict["prompt"] as? String ?? ""
+        self.status = dict["status"] as? String ?? "queued"
+        self.phase = dict["phase"] as? String ?? self.status
+        self.createdDate = DiscoverFeedFreshness.parseDate(dict["created_date"], timeZone: timeZone)
+        self.completedDate = DiscoverFeedFreshness.parseDate(dict["completed_date"], timeZone: timeZone)
+        self.resultCount = (dict["result_count"] as? NSNumber)?.intValue ?? 0
+    }
+
+    var isRunning: Bool { status == "queued" || status == "running" }
+    var isFinished: Bool { status == "complete" || status == "error" }
+
+    // DiscoverSitesModels.swift words the history meta like describe_feeds_view.js render_history.
+    var metaLabel: String {
+        if status == "error" { return NBLocalization.text("Failed") }
+        if isRunning { return NBLocalization.text("Searching…") }
+        return NBLocalization.plural("%@ feeds", groupedCount: resultCount)
+    }
+
+    func relativeDateLabel(now: Date = Date(), locale: Locale = NBLocalization.formattingLocale) -> String {
+        guard let createdDate else { return "" }
+        let days = Int(floor(now.timeIntervalSince(createdDate) / 86400))
+        if days < 1 { return NBLocalization.text("Today") }
+        if days < 7 { return String(format: NBLocalization.text("%@d ago"), NBLocalization.formattedCount(days)) }
+        if days < 30 { return String(format: NBLocalization.text("%@w ago"), NBLocalization.formattedCount(days / 7)) }
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter.string(from: createdDate)
+    }
+}
+
+// DiscoverSitesModels.swift: one of the three story titles stored with a result row (make_result_row in apps/describe/models.py).
+struct DescribeResultStory: Identifiable {
+    let id: String
+    let title: String
+    let permalink: String
+    let date: Date?
+
+    init?(dict: [String: Any], index: Int, timeZone: TimeZone = .current) {
+        let title = dict["story_title"] as? String ?? ""
+        guard !title.isEmpty else { return nil }
+        self.title = title
+        self.permalink = dict["story_permalink"] as? String ?? ""
+        self.id = permalink.isEmpty ? "\(index):\(title)" : permalink
+        self.date = DiscoverFeedFreshness.parseDate(dict["story_date"], timeZone: timeZone)
+    }
+}
+
+// DiscoverSitesModels.swift: a feed found by the pipeline, hydrated with its canonical feed dictionary (hydrate_results).
+struct DescribeResult: Identifiable {
+    enum ScoreTone {
+        case high
+        case medium
+        case low
+        case pending
+    }
+
+    // DiscoverSitesModels.swift: feedId is the row's key within its search, not always a NewsBlur feed id. A feed
+    // found on the web is not saved until someone subscribes, so its key is negative (make_result_row in
+    // apps/describe/models.py). Only feed.id may be sent to the server or looked up among the user's feeds.
+    let feedId: Int
+    let feed: DiscoverPopularFeed
+    let source: String
+    let matchedQuery: String
+    let similarity: Double?
+    let score: Int?
+    let reason: String?
+    let judged: Bool
+    let stories: [DescribeResultStory]
+
+    var id: Int { feedId }
+
+    init?(dict: [String: Any], timeZone: TimeZone = .current) {
+        guard let feedId = (dict["feed_id"] as? NSNumber)?.intValue, feedId != 0 else { return nil }
+        self.feedId = feedId
+        var feedDict = dict["feed"] as? [String: Any] ?? [:]
+        // DiscoverSitesModels.swift keeps the row's own feed fields when a feed was not hydrated.
+        for key in ["feed_title", "feed_address", "feed_link"] where (feedDict[key] as? String ?? "").isEmpty {
+            feedDict[key] = dict[key] as? String ?? ""
+        }
+        // DiscoverSitesModels.swift keys an unsaved feed by its address, like parsePopularFeedEntry in
+        // DiscoverSitesViewModel.swift, so resolvePreviewFeed links it by URL and the card subscribes by URL.
+        let savedFeedId = [(feedDict["id"] as? NSNumber)?.intValue, feedId].compactMap { $0 }.first { $0 > 0 }
+        let address = feedDict["feed_address"] as? String ?? ""
+        guard savedFeedId != nil || !address.isEmpty else { return nil }
+        self.feed = DiscoverPopularFeed(feedId: savedFeedId.map(String.init) ?? address, feedDict: feedDict)
+        self.source = dict["source"] as? String ?? "index"
+        self.matchedQuery = dict["matched_query"] as? String ?? ""
+        self.similarity = (dict["similarity"] as? NSNumber)?.doubleValue
+        self.score = (dict["score"] as? NSNumber)?.intValue
+        let reason = dict["reason"] as? String ?? ""
+        self.reason = reason.isEmpty ? nil : reason
+        self.judged = (dict["judged"] as? NSNumber)?.boolValue ?? false
+        let storiesArray = dict["stories"] as? [[String: Any]] ?? []
+        self.stories = storiesArray.enumerated().compactMap { DescribeResultStory(dict: $1, index: $0, timeZone: timeZone) }
+    }
+
+    var isFromWeb: Bool { source == "web" }
+
+    // DiscoverSitesModels.swift uses the describe_feeds_view.js thresholds: 8 and up high, 5 to 7 medium, below grey.
+    var scoreTone: ScoreTone {
+        guard judged, let score else { return .pending }
+        if score >= 8 { return .high }
+        if score >= 5 { return .medium }
+        return .low
+    }
+
+    var scoreLabel: String {
+        guard judged, let score else { return NBLocalization.text("Judging…") }
+        return String(format: NBLocalization.text("%@/10"), NBLocalization.formattedCount(score))
+    }
+
+    var sourceLabel: String {
+        isFromWeb ? NBLocalization.text("Found on the web") : NBLocalization.text("NewsBlur index")
+    }
+
+    var reasonLabel: String {
+        if judged, let reason { return reason }
+        if !matchedQuery.isEmpty { return String(format: NBLocalization.text("Matched “%@”"), matchedQuery) }
+        return NBLocalization.text("Waiting for a verdict…")
+    }
+
+    var hasVerdict: Bool { judged && reason != nil }
+}
+
+// DiscoverSitesModels.swift: mirrors MDescribeSearch.to_payload() in apps/describe/models.py.
+struct DescribeSearch {
+    var summary: DescribeSearchSummary
+    var requestId: String
+    var phaseMessage: String
+    var subQueries: [String]
+    var error: String?
+    var statsNote: String?
+    var results: [DescribeResult]
+
+    init?(dict: [String: Any], timeZone: TimeZone = .current) {
+        guard let summary = DescribeSearchSummary(dict: dict, timeZone: timeZone) else { return nil }
+        self.summary = summary
+        self.requestId = dict["request_id"] as? String ?? ""
+        self.phaseMessage = dict["phase_message"] as? String ?? ""
+        self.subQueries = (dict["sub_queries"] as? [String] ?? []).filter { !$0.isEmpty }
+        let error = dict["error"] as? String ?? ""
+        self.error = error.isEmpty ? nil : error
+        let stats = dict["stats"] as? [String: Any] ?? [:]
+        let note = stats["note"] as? String ?? ""
+        self.statsNote = note.isEmpty ? nil : note
+        let rows = dict["results"] as? [[String: Any]] ?? []
+        var seen = Set<Int>()
+        // DiscoverSitesModels.swift keeps server order and one card per feed, like describe_feeds_view.js rows.
+        self.results = rows.compactMap { DescribeResult(dict: $0, timeZone: timeZone) }.filter { seen.insert($0.feedId).inserted }
+    }
+
+    var id: String { summary.id }
+    var prompt: String { summary.prompt }
+    var status: String { summary.status }
+    var phase: String { summary.phase }
+    var isRunning: Bool { summary.isRunning }
+    var isFinished: Bool { summary.isFinished }
+
+    // DiscoverSitesModels.swift matches describe_feeds_view.js results_signature so an unchanged poll is ignored.
+    var resultsSignature: String {
+        results.map { "\($0.feedId):\($0.judged ? String($0.score ?? -1) : "-")" }.joined(separator: ",")
+    }
+
+    func differs(from other: DescribeSearch) -> Bool {
+        status != other.status || phase != other.phase || phaseMessage != other.phaseMessage ||
+            error != other.error || subQueries != other.subQueries || statsNote != other.statsNote ||
+            resultsSignature != other.resultsSignature
+    }
+
+    // DiscoverSitesModels.swift words the status line like describe_feeds_view.js render_status.
+    var statusMessage: String {
+        if status == "error" {
+            return error ?? NBLocalization.text("Something went wrong while searching.")
+        }
+        if status == "complete" {
+            if results.isEmpty { return NBLocalization.text("No feeds matched that description. Try describing it another way.") }
+            return NBLocalization.plural("Found %@ feeds that match your description", groupedCount: results.count)
+        }
+        if !phaseMessage.isEmpty { return phaseMessage }
+        return NBLocalization.text("Starting your search…")
+    }
+}
+
+// DiscoverSitesModels.swift: mirrors DescribeUsageTracker.snapshot() in apps/describe/usage.py.
+struct DescribeUsage: Equatable {
+    let tier: String
+    let limit: Int?
+    let used: Int
+    let remaining: Int?
+    let resetsIn: String?
+
+    init?(dict: Any?) {
+        guard let dict = dict as? [String: Any] else { return nil }
+        self.tier = dict["tier"] as? String ?? "free"
+        self.limit = (dict["limit"] as? NSNumber)?.intValue
+        self.used = (dict["used"] as? NSNumber)?.intValue ?? 0
+        self.remaining = (dict["remaining"] as? NSNumber)?.intValue
+        let resetsIn = dict["resets_in"] as? String ?? ""
+        self.resetsIn = resetsIn.isEmpty ? nil : resetsIn
+    }
+
+    // DiscoverSitesModels.swift: a zero limit means the account's tier cannot search at all (free accounts).
+    var isLocked: Bool { limit == 0 }
+
+    var label: String {
+        guard let limit else { return NBLocalization.text("Unlimited searches") }
+        if limit == 0 { return NBLocalization.text("Premium feature") }
+        return String(format: NBLocalization.text("%1$@ of %2$@ searches left today"),
+                      NBLocalization.formattedCount(remaining ?? max(0, limit - used)), NBLocalization.formattedCount(limit))
+    }
+}
+
+struct DescribeTabState {
+    var prompt: String = ""
+    var search: DescribeSearch?
+    var history: [DescribeSearchSummary] = []
+    var usage: DescribeUsage?
+    var isHistoryLoaded: Bool = false
+    var isHistoryLoading: Bool = false
+    var isStarting: Bool = false
+    var isOpening: Bool = false
+    var errorMessage: String?
+    var upgradeMessage: String?
+    var historyErrorMessage: String?
+    var deletingSearchIDs: Set<String> = []
+
+    // DiscoverSitesModels.swift: the composer gives way to the upgrade card once the server reports a locked tier.
+    var showsUpgrade: Bool { upgradeMessage != nil || (usage?.isLocked == true && search == nil) }
+}
+
+// DiscoverSitesModels.swift: the pipeline phases in order, as the progress stepper labels them (describe_feeds_view.js PHASES).
+enum DescribePhase: String, CaseIterable {
+    case expanding
+    case searching
+    case judging
+    case hunting
+    case complete
+
+    var label: String {
+        switch self {
+        case .expanding: return NBLocalization.text("Reading")
+        case .searching: return NBLocalization.text("Searching feeds")
+        case .judging: return NBLocalization.text("Judging")
+        case .hunting: return NBLocalization.text("Searching the web")
+        case .complete: return NBLocalization.text("Done")
+        }
+    }
+
+    // DiscoverSitesModels.swift: the same eleven examples as describe_feeds_view.js EXAMPLES, in the same order.
+    static var examplePrompts: [String] {
+        [
+            NBLocalization.text("Reviews of new iOS apps with lots of screenshots"),
+            NBLocalization.text("Long essays about cities, housing and public transit"),
+            NBLocalization.text("Indie game developers writing about their work in progress"),
+            NBLocalization.text("Weeknight vegetarian recipes with step-by-step photos"),
+            NBLocalization.text("Scientists explaining new research in plain language"),
+            NBLocalization.text("Personal blogs about restoring old houses"),
+            NBLocalization.text("Film photography with notes on cameras and film stocks"),
+            NBLocalization.text("Local news and events in Portland, Oregon"),
+            NBLocalization.text("Book reviews of new science fiction and fantasy"),
+            NBLocalization.text("Engineers writing about how large systems fail"),
+            NBLocalization.text("Bike touring and long-distance cycling trip reports"),
+        ]
+    }
 }
 
 struct WebFeedTabState {

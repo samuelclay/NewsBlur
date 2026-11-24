@@ -87,6 +87,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var in_add_site_view = this.options.in_add_site_view;
         var override_layout = this.options.override_layout;
         var pane_anchor = this.options.pane_anchor;
+        // story_titles_view.js: an Add Site card (add_site_view.js render_card_stories) lends its rows the
+        // card's feed and handles their clicks itself.
+        var feed_model = this.options.feed_model;
+        var on_story_click = this.options.on_story_click;
         var stories = this.collection.map(function (story) {
             return new NEWSBLUR.Views.StoryTitleView({
                 model: story,
@@ -102,7 +106,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                 on_trending_feed: on_trending_feed,
                 in_trending_view: in_trending_view,
                 in_popover: in_popover,
-                in_add_site_view: in_add_site_view
+                in_add_site_view: in_add_site_view,
+                feed_model: feed_model,
+                on_story_click: on_story_click
             }).render();
         });
         this.stories = stories;
@@ -393,6 +399,8 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
             var in_add_site_view = this.options.in_add_site_view;
             var override_layout = this.options.override_layout;
             var pane_anchor = this.options.pane_anchor;
+            var feed_model = this.options.feed_model;
+            var on_story_click = this.options.on_story_click;
             var story_layout = this.options.override_layout ||
                 NEWSBLUR.assets.view_setting(NEWSBLUR.reader.active_feed, 'layout');
             // story_titles_view.js: stories.js insert_realtime_stories names the stories it placed inside the
@@ -414,7 +422,9 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
                     on_trending_feed: on_trending_feed,
                     in_trending_view: in_trending_view,
                     in_popover: in_popover,
-                    in_add_site_view: in_add_site_view
+                    in_add_site_view: in_add_site_view,
+                    feed_model: feed_model,
+                    on_story_click: on_story_click
                 }).render();
             }));
             var $stories = _.map(stories, function (story) {
@@ -548,7 +558,10 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
 
     fill_out: function (options) {
         this.snap_back_scroll_position();
-        if (this.collection.no_more_stories ||
+        // story_titles_view.js: an Add Site preview (add_site_view.js) shows a few stories of a feed the reader
+        // hasn't opened, so it never pages in more of the reader's own.
+        if (this.options.in_add_site_view ||
+            this.collection.no_more_stories ||
             !this.collection.length ||
             NEWSBLUR.reader.flags.story_titles_closed) {
             return;
@@ -837,7 +850,7 @@ NEWSBLUR.Views.StoryTitlesView = Backbone.View.extend({
         var $story_titles = this.$story_titles;
         var scroll_y = $story_titles.scrollTop();
 
-        if (this.options.on_discover_feed || this.options.on_discover_story) {
+        if (this.options.on_discover_feed || this.options.on_discover_story || this.options.in_add_site_view) {
             return;
         }
 

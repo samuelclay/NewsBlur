@@ -138,6 +138,20 @@ msgstr[1] "%(count)s дні"
 msgstr[2] "%(count)s днів"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s годину"
+msgstr[1] "%(count)s години"
+msgstr[2] "%(count)s годин"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s хвилину"
+msgstr[1] "%(count)s хвилини"
+msgstr[2] "%(count)s хвилин"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s місяць"
@@ -1357,6 +1371,10 @@ msgstr "Найдешевший платний тариф"
 msgid "Check the FAQ"
 msgstr "Переглянути поширені запитання"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "Пошук стрічки за запитом %(site)s"
+
 msgid "Chief Morale Officer"
 msgstr "Головний директор із настрою"
 
@@ -1728,8 +1746,18 @@ msgstr "За замовчуванням"
 msgid "Delete"
 msgstr "Видалити"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "Кількома словами опишіть, що ви хочете читати."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "Пошук стрічок за описом доступний у Premium. Перейдіть на вищий план, щоб шукати за описом."
+
 msgid "Description"
 msgstr "Опис"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "Опис може містити не більше %(limit)d символів"
 
 msgid "Developer"
 msgstr "Розробник"
@@ -3202,6 +3230,10 @@ msgstr[2] ""
 "Минуло %(counter)s місяців відтоді, як ви востаннє заходили в NewsBlur. Відтоді багато що змінилося. Ми "
 "повністю оновили дизайн, додали поширені статті (Blurblogs) і нативні програми для iOS та Android. Якщо вам"
 " бракує функцій старого Google Reader, вам сподобається новий NewsBlur."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "Оцінюємо %(count)s стрічок відповідно до вашого опису"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4935,6 +4967,9 @@ msgstr "Читати новини цікавіше з друзями. Діліт
 msgid "Reading stories across folders with River of News"
 msgstr "Читання статей у різних папках у режимі «Потік новин»"
 
+msgid "Reading your description"
+msgstr "Читаємо ваш опис"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5316,6 +5351,12 @@ msgstr "Шукайте в архіві прочитаного"
 msgid "Search your entire archive with full-text search"
 msgstr "Шукайте в усьому архіві за повним текстом"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "Пошук у стрічках NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "Шукаємо в інтернеті стрічки, яких ще немає в NewsBlur"
+
 msgid "Searching your sites and saved stories"
 msgstr "Пошук на ваших сайтах і серед збережених статей"
 
@@ -5593,6 +5634,9 @@ msgstr "Хтось уже використовує цю адресу елект�
 
 msgid "Someone is already using that username."
 msgstr "Це ім’я користувача вже зайняте."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "Під час пошуку сталася помилка. Спробуйте ще раз."
 
 msgid "Something went wrong..."
 msgstr "Щось пішло не так..."
@@ -5930,6 +5974,12 @@ msgstr "Цей елемент не відтворюється"
 msgid "That part of the story doesn't exist."
 msgstr "Цієї частини статті не існує."
 
+msgid "That search is no longer in your history."
+msgstr "Цього пошуку більше немає у вашій історії."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "Цей пошук ще триває. Спершу дочекайтеся його завершення."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "Цю статтю видалено зі стрічки, тож позначати її як непрочитану не потрібно."
 
@@ -6080,6 +6130,12 @@ msgstr "Оригінальна стаття зі скорочених RSS-стр
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Так само, як звичайні стрічки. Користувачі Premium і Pro отримують оновлення частіше."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "Не вдалося зв’язатися зі службами, потрібними для пошуку. Спробуйте ще раз."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "Час пошуку вичерпався. Ось що вдалося знайти."
+
 msgid "The shared comment cannot be found."
 msgstr "Не вдалося знайти поширений коментар."
 
@@ -6207,6 +6263,9 @@ msgstr "Це вже RSS-стрічка. Підписуємося безпосе�
 
 msgid "This payment has been refunded."
 msgstr "Кошти за цей платіж повернуто."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "Пошук зупинився, не завершившись. Повторіть пошук."
 
 msgid "This story has no text to read aloud."
 msgstr "У цій статті немає тексту для озвучення."
@@ -7049,6 +7108,9 @@ msgstr "Учора, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "Учора, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "Пошук уже виконується. Спершу дочекайтеся його завершення."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7176,6 +7238,13 @@ msgid ""
 msgstr ""
 "Ви почали стежити за <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "Сьогодні у вас залишився %(count)s пошук за описом (скидання через %(time)s)."
+msgstr[1] "Сьогодні у вас залишилося %(count)s пошуки за описом (скидання через %(time)s)."
+msgstr[2] "Сьогодні у вас залишилося %(count)s пошуків за описом (скидання через %(time)s)."
 
 msgid "You have a follow request:"
 msgstr "У вас є запит на підписку:"
@@ -7452,6 +7521,10 @@ msgid ""
 msgstr ""
 "Нещодавно ви користувалися NewsBlur, тож, можливо, не планували переходити на безкоштовний обліковий запис?"
 " Можливо, вам просто потрібно поновити підписку. Допоможемо вам це зробити."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "Сьогодні ви використали всі пошуки за описом (%(limit)s). Ліміт поновиться %(time)s."
 
 msgid "YouTube search request failed."
 msgstr "Не вдалося виконати пошуковий запит YouTube."

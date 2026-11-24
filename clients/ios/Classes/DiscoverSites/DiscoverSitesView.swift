@@ -86,6 +86,8 @@ struct DiscoverSourcePageView: View {
         switch tab {
         case .search:
             SearchTabView(viewModel: viewModel, onTryFeed: onTryFeed, onOpenStory: onOpenStory, onAddFeed: onAddFeed)
+        case .describe:
+            DescribeTabView(viewModel: viewModel, onTryFeed: onTryFeed, onAddFeed: onAddFeed)
         case .webFeed:
             WebFeedTabView(viewModel: viewModel)
         case .popular:

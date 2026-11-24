@@ -129,6 +129,18 @@ msgstr[0] "%(count)s दिन"
 msgstr[1] "%(count)s दिन"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s घंटे"
+msgstr[1] "%(count)s घंटे"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s मिनट"
+msgstr[1] "%(count)s मिनट"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s महीना"
@@ -1329,6 +1341,10 @@ msgstr "सबसे सस्ता सशुल्क प्लान"
 msgid "Check the FAQ"
 msgstr "FAQ देखें"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "फ़ीड के लिए %(site)s की जाँच हो रही है"
+
 msgid "Chief Morale Officer"
 msgstr "मुख्य मनोबल अधिकारी"
 
@@ -1697,8 +1713,18 @@ msgstr "डिफ़ॉल्ट"
 msgid "Delete"
 msgstr "हटाएँ"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "कुछ शब्दों में बताएँ कि आप क्या पढ़ना चाहते हैं।"
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "आपको चाहिए ऐसी फ़ीड का वर्णन करना एक प्रीमियम सुविधा है। वर्णन के आधार पर खोजने के लिए अपग्रेड करें।"
+
 msgid "Description"
 msgstr "विवरण"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "विवरण अधिकतम %(limit)d अक्षरों तक सीमित हैं"
 
 msgid "Developer"
 msgstr "डेवलपर"
@@ -3140,6 +3166,10 @@ msgstr[1] ""
 "आपने NewsBlur को आख़िरी बार देखे हुए %(counter)s महीने हो गए हैं। तब से बहुत कुछ बदल गया है। हमने साझा "
 "लेखों (Blurblog) और iOS/Android के मूल ऐप्स के साथ पूरी तरह नया डिज़ाइन लॉन्च किया है। अगर आपको पुराने "
 "Google Reader की सुविधाएँ याद आती हैं, तो आपको नया NewsBlur पसंद आएगा।"
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "आपके विवरण के आधार पर %(count)s फ़ीड का आकलन किया जा रहा है"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4852,6 +4882,9 @@ msgstr "दोस्तों के साथ समाचार पढ़न�
 msgid "Reading stories across folders with River of News"
 msgstr "समाचार धारा के साथ फ़ोल्डरों में मौजूद लेख पढ़ना"
 
+msgid "Reading your description"
+msgstr "आपका वर्णन पढ़ा जा रहा है"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5230,6 +5263,12 @@ msgstr "अपना ब्राउज़िंग रीडिंग आर्
 msgid "Search your entire archive with full-text search"
 msgstr "पूर्ण-पाठ खोज से अपना पूरा संग्रह खोजें"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "NewsBlur की फ़ीड खोजी जा रही हैं"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "वेब पर ऐसे फ़ीड खोजे जा रहे हैं जिन्हें NewsBlur ने नहीं देखा"
+
 msgid "Searching your sites and saved stories"
 msgstr "अपनी साइटों और सहेजे गए लेखों में खोज करना"
 
@@ -5504,6 +5543,9 @@ msgstr "इस ईमेल पते का उपयोग पहले से
 
 msgid "Someone is already using that username."
 msgstr "यह उपयोगकर्ता नाम पहले से कोई इस्तेमाल कर रहा है।"
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "खोज के दौरान कुछ गड़बड़ हुई। कृपया फिर से कोशिश करें।"
 
 msgid "Something went wrong..."
 msgstr "कुछ गड़बड़ हो गई..."
@@ -5842,6 +5884,12 @@ msgstr "वह आइटम चल नहीं रहा है"
 msgid "That part of the story doesn't exist."
 msgstr "लेख का यह हिस्सा मौजूद नहीं है।"
 
+msgid "That search is no longer in your history."
+msgstr "यह खोज अब आपके इतिहास में नहीं है।"
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "वह खोज अभी चल रही है। पहले उसके पूरा होने की प्रतीक्षा करें।"
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "यह लेख फ़ीड से हटा दिया गया है, इसे अपठित चिह्नित करने की ज़रूरत नहीं।"
 
@@ -5990,6 +6038,12 @@ msgstr "संक्षिप्त RSS फ़ीड से मूल लेख 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "सामान्य फ़ीड की तरह ही। Premium और Pro उपयोगकर्ताओं को अपडेट अधिक तेज़ी से मिलते हैं।"
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "खोज उन सेवाओं तक नहीं पहुँच पाई जिन पर यह निर्भर करती है। कृपया फिर से कोशिश करें।"
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "खोज में समय समाप्त हो गया, इसलिए अब तक जो मिला है, वह यह है।"
+
 msgid "The shared comment cannot be found."
 msgstr "साझा की गई टिप्पणी नहीं मिल सकती।"
 
@@ -6112,6 +6166,9 @@ msgstr "यह पहले से ही RSS फ़ीड है। सीध�
 
 msgid "This payment has been refunded."
 msgstr "यह भुगतान वापस कर दिया गया है।"
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "यह खोज पूरी होने से पहले रुक गई। फिर से कोशिश करने के लिए दोबारा खोजें।"
 
 msgid "This story has no text to read aloud."
 msgstr "इस लेख में ज़ोर से पढ़ने के लिए कोई पाठ नहीं है।"
@@ -6940,6 +6997,9 @@ msgstr "कल, %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "कल, %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "आपकी एक खोज पहले से चल रही है। पहले उसके पूरा होने की प्रतीक्षा करें।"
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7060,6 +7120,12 @@ msgid ""
 msgstr ""
 "आपने <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span> को फ़ॉलो किया।"
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "आज आपके पास विवरण खोज की %(count)s खोज बाकी है (रीसेट %(time)s में होगा)।"
+msgstr[1] "आज आपके पास विवरण खोज की %(count)s खोजें बाकी हैं (रीसेट %(time)s में होगा)।"
 
 msgid "You have a follow request:"
 msgstr "आपको फ़ॉलो करने का अनुरोध मिला है:"
@@ -7335,6 +7401,10 @@ msgid ""
 msgstr ""
 "आप हाल ही में NewsBlur पर थे, इसलिए शायद आपका इरादा मुफ़्त खाते पर वापस जाने का नहीं था? शायद आपको बस अपनी "
 "प्रीमियम सदस्यता फिर से शुरू करनी है। आइए, इसमें आपकी मदद करें।"
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "आपने आज की सभी %(limit)s वर्णन खोजों का उपयोग कर लिया है। आपकी सीमा %(time)s में रीसेट होगी।"
 
 msgid "YouTube search request failed."
 msgstr "YouTube खोज अनुरोध विफल रहा।"

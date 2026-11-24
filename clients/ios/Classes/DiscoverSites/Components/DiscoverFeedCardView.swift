@@ -19,6 +19,10 @@ struct DiscoverFeedCardView: View {
     var onTryFeed: ((DiscoverPopularFeed) -> Void)?
     var onOpenStory: ((DiscoverPopularFeed, DiscoverStory) -> Void)?
     var onAddFeed: ((DiscoverPopularFeed) -> Void)?
+    // DiscoverFeedCardView.swift lets a Describe result decorate the shared card with the judge's verdict and the
+    // story titles stored with the search, which have no story hashes to open.
+    var verdict: DescribeResult? = nil
+    var headlines: [DescribeResultStory] = []
 
     @ViewBuilder
     var body: some View {
@@ -58,6 +62,9 @@ struct DiscoverFeedCardView: View {
                 }
                 Spacer(minLength: 0)
             }
+            if let verdict {
+                verdictView(verdict)
+            }
             statisticsView
 
             if let description = feed.rawFeedDict["description"] as? String, !description.isEmpty {
@@ -65,6 +72,13 @@ struct DiscoverFeedCardView: View {
                     .font(.subheadline)
                     .foregroundColor(DiscoverColors.textSecondary)
                     .lineLimit(3)
+            }
+
+            if !headlines.isEmpty {
+                Divider()
+                ForEach(headlines.prefix(3)) { headline in
+                    headlineRow(headline)
+                }
             }
 
             if showStories && !feed.stories.isEmpty {
@@ -192,6 +206,61 @@ struct DiscoverFeedCardView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityIdentifier("discover-freshness-\(feed.id)")
+    }
+
+    // MARK: - Describe Verdict
+
+    // DiscoverFeedCardView.swift follows the describe_feeds_view.js card tags: a score pill, a source badge and the reason.
+    private func verdictView(_ verdict: DescribeResult) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Text(verdict.scoreLabel)
+                    .font(.caption.weight(.bold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(DiscoverColors.scoreBackground(verdict.scoreTone), in: Capsule())
+                    .foregroundColor(DiscoverColors.scoreText(verdict.scoreTone))
+                    .accessibilityLabel(verdict.judged
+                        ? String(format: NBLocalization.text("Match score %@"), verdict.scoreLabel) : verdict.scoreLabel)
+                    .accessibilityIdentifier("discover-describe-score-\(feed.id)")
+                Label(verdict.sourceLabel, systemImage: verdict.isFromWeb ? "globe" : "dot.radiowaves.up.forward")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(DiscoverColors.sourceBackground(fromWeb: verdict.isFromWeb), in: Capsule())
+                    .foregroundColor(DiscoverColors.sourceText(fromWeb: verdict.isFromWeb))
+                    .accessibilityIdentifier("discover-describe-source-\(feed.id)")
+            }
+            Text(verdict.reasonLabel)
+                .font(.subheadline)
+                .foregroundColor(verdict.hasVerdict ? DiscoverColors.textPrimary : DiscoverColors.textSecondary)
+                .lineLimit(4)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("discover-describe-reason-\(feed.id)")
+        }
+    }
+
+    private func headlineRow(_ headline: DescribeResultStory) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Circle()
+                .fill(DiscoverColors.accent)
+                .frame(width: 5, height: 5)
+                .padding(.top, 6)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(headline.title)
+                    .font(.system(size: 13))
+                    .foregroundColor(DiscoverColors.textPrimary)
+                    .lineLimit(2)
+                if let date = headline.date {
+                    Text(relativeDate(date))
+                        .font(.system(size: 11))
+                        .foregroundColor(DiscoverColors.textSecondary)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("discover-describe-headline-\(feed.id)")
     }
 
     // MARK: - Story Row

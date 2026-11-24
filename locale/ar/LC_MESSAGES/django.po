@@ -160,6 +160,26 @@ msgstr[4] "%(count)s يومًا"
 msgstr[5] "%(count)s يوم"
 
 #, python-format
+msgid "%(count)s hour"
+msgid_plural "%(count)s hours"
+msgstr[0] "%(count)s ساعة"
+msgstr[1] "%(count)s ساعة"
+msgstr[2] "%(count)s ساعتين"
+msgstr[3] "%(count)s ساعات"
+msgstr[4] "%(count)s ساعة"
+msgstr[5] "%(count)s ساعة"
+
+#, python-format
+msgid "%(count)s minute"
+msgid_plural "%(count)s minutes"
+msgstr[0] "%(count)s دقيقة"
+msgstr[1] "%(count)s دقيقة"
+msgstr[2] "%(count)s دقيقتين"
+msgstr[3] "%(count)s دقائق"
+msgstr[4] "%(count)s دقيقة"
+msgstr[5] "%(count)s دقيقة"
+
+#, python-format
 msgid "%(count)s month"
 msgid_plural "%(count)s months"
 msgstr[0] "%(count)s شهر"
@@ -1407,6 +1427,10 @@ msgstr "أقل باقة مدفوعة تكلفةً"
 msgid "Check the FAQ"
 msgstr "راجع الأسئلة الشائعة"
 
+#, python-format
+msgid "Checking %(site)s for a feed"
+msgstr "جارٍ التحقق من وجود خلاصة لـ %(site)s"
+
 msgid "Chief Morale Officer"
 msgstr "مسؤول المعنويات الأول"
 
@@ -1772,8 +1796,18 @@ msgstr "افتراضي"
 msgid "Delete"
 msgstr "حذف"
 
+msgid "Describe what you'd like to read in a few words."
+msgstr "صِف باختصار ما تود قراءته."
+
+msgid "Describing the feeds you want is a premium feature. Upgrade to search by description."
+msgstr "وصف الخلاصات التي تريدها ميزة مدفوعة. رقِّ للبحث حسب الوصف."
+
 msgid "Description"
 msgstr "الوصف"
+
+#, python-format
+msgid "Descriptions are limited to %(limit)d characters"
+msgstr "يقتصر الوصف على %(limit)d حرفًا"
 
 msgid "Developer"
 msgstr "مطوّر"
@@ -3215,6 +3249,10 @@ msgstr[5] ""
 "مرّ %(counter)s شهر منذ آخر مرة استخدمت فيها NewsBlur. لقد تغيّر الكثير منذ ذلك الحين. أطلقنا للتو تصميمًا "
 "جديدًا بالكامل، يتضمن قصصًا مشتركة (مدونات Blurblog) وتطبيقات أصلية لنظامي iOS وAndroid. إذا كنت تفتقد "
 "ميزات Google Reader القديمة، فستعجبك NewsBlur الجديدة."
+
+#, python-format
+msgid "Judging %(count)s feeds against your description"
+msgstr "جارٍ تقييم %(count)s من الخلاصات استنادًا إلى وصفك"
 
 #, python-format
 msgid "Just go to <a href=\"https://%(domain)s/?next=opml\">Manage NewsBlur > Import or upload sites</a>."
@@ -4904,6 +4942,9 @@ msgstr "تصبح قراءة الأخبار أفضل مع الأصدقاء. شا�
 msgid "Reading stories across folders with River of News"
 msgstr "قراءة القصص عبر المجلدات باستخدام تدفّق الأخبار"
 
+msgid "Reading your description"
+msgstr "جارٍ قراءة وصفك"
+
 msgid ""
 "Readwise Reader is an all-in-one reading app that combines RSS feeds, read-later articles, PDFs, EPUBs, and"
 " email newsletters with deep highlighting and annotation. It's built for people who want everything in one "
@@ -5277,6 +5318,12 @@ msgstr "ابحث في أرشيف القراءة"
 msgid "Search your entire archive with full-text search"
 msgstr "ابحث في أرشيفك بالكامل باستخدام البحث النصي الكامل"
 
+msgid "Searching NewsBlur's feeds"
+msgstr "جارٍ البحث في خلاصات NewsBlur"
+
+msgid "Searching the web for feeds NewsBlur hasn't seen"
+msgstr "جارٍ البحث على الويب عن خلاصات لم يسبق لـ NewsBlur رؤيتها"
+
 msgid "Searching your sites and saved stories"
 msgstr "البحث في مواقعك والقصص المحفوظة"
 
@@ -5556,6 +5603,9 @@ msgstr "هناك من يستخدم عنوان البريد الإلكتروني 
 
 msgid "Someone is already using that username."
 msgstr "هناك من يستخدم اسم المستخدم هذا بالفعل."
+
+msgid "Something went wrong while searching. Please try again."
+msgstr "حدث خطأ أثناء البحث. يُرجى المحاولة مجددًا."
 
 msgid "Something went wrong..."
 msgstr "حدث خطأ ما..."
@@ -5891,6 +5941,12 @@ msgstr "هذا العنصر لا يعمل الآن"
 msgid "That part of the story doesn't exist."
 msgstr "هذا الجزء من القصة غير موجود."
 
+msgid "That search is no longer in your history."
+msgstr "لم يعد هذا البحث موجودًا في سجلّك."
+
+msgid "That search is still running. Wait for it to finish first."
+msgstr "لا يزال البحث جاريًا. انتظر حتى ينتهي أولًا."
+
 msgid "That story has been removed from the feed, no need to mark it unread."
 msgstr "أُزيلت هذه القصة من الخلاصة، لذا لا حاجة إلى وضع علامة «غير مقروءة» عليها."
 
@@ -6034,6 +6090,12 @@ msgstr "تُوسَّع القصة الأصلية بسلاسة في خلاصات 
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "مثل الخلاصات العادية. يحصل مستخدمو Premium وPro على تحديثات بوتيرة أسرع."
 
+msgid "The search couldn't reach the services it relies on. Please try again."
+msgstr "تعذّر على البحث الوصول إلى الخدمات التي يعتمد عليها. يُرجى المحاولة مرة أخرى."
+
+msgid "The search ran out of time, so this is what was found so far."
+msgstr "انتهى وقت البحث، وهذه هي النتائج التي عُثر عليها حتى الآن."
+
 msgid "The shared comment cannot be found."
 msgstr "تعذّر العثور على التعليق المشترك."
 
@@ -6164,6 +6226,9 @@ msgstr "هذه خلاصة RSS بالفعل. جارٍ الاشتراك مباشر
 
 msgid "This payment has been refunded."
 msgstr "تم رد قيمة هذه الدفعة."
+
+msgid "This search stopped before it finished. Search again to retry."
+msgstr "توقف هذا البحث قبل اكتماله. أعد البحث للمحاولة مرة أخرى."
 
 msgid "This story has no text to read aloud."
 msgstr "لا تحتوي هذه القصة على نص لقراءته بصوت عالٍ."
@@ -6976,6 +7041,9 @@ msgstr "أمس، %(date)s %(time)s"
 msgid "Yesterday, %(time)s"
 msgstr "أمس، %(time)s"
 
+msgid "You already have a search running. Wait for it to finish first."
+msgstr "لديك بحث جارٍ بالفعل. انتظر حتى يكتمل أولاً."
+
 #, python-format
 msgid "You and %(username)s both follow %(counter)s person:"
 msgid_plural "You and %(username)s both follow %(counter)s people:"
@@ -7124,6 +7192,16 @@ msgid ""
 msgstr ""
 "تابعت <span class=\"NB-interaction-username NB-splash-link\" data-user-"
 "id=\"%(user_id)s\">%(other_username)s</span>."
+
+#, python-format
+msgid "You have %(count)s Describe search left today (resets in %(time)s)."
+msgid_plural "You have %(count)s Describe searches left today (resets in %(time)s)."
+msgstr[0] "لديك %(count)s من عمليات البحث الوصفية المتبقية اليوم (تُعاد التهيئة بعد %(time)s)."
+msgstr[1] "لديك %(count)s عملية بحث وصفية متبقية اليوم (تُعاد التهيئة بعد %(time)s)."
+msgstr[2] "لديك %(count)s عمليتا بحث وصفيتان متبقيتان اليوم (تُعاد التهيئة بعد %(time)s)."
+msgstr[3] "لديك %(count)s عمليات بحث وصفية متبقية اليوم (تُعاد التهيئة بعد %(time)s)."
+msgstr[4] "لديك %(count)s عملية بحث وصفية متبقية اليوم (تُعاد التهيئة بعد %(time)s)."
+msgstr[5] "لديك %(count)s عملية بحث وصفية متبقية اليوم (تُعاد التهيئة بعد %(time)s)."
 
 msgid "You have a follow request:"
 msgstr "لديك طلب متابعة:"
@@ -7386,6 +7464,10 @@ msgid ""
 msgstr ""
 "لقد استخدمت NewsBlur مؤخرًا، لذا ربما لم تكن تقصد الانتقال مجددًا إلى الحساب المجاني؟ ربما تحتاج فقط إلى "
 "تجديد اشتراك Premium. دعنا نساعدك على ذلك."
+
+#, python-format
+msgid "You've used all %(limit)s Describe searches today. Your limit resets in %(time)s."
+msgstr "لقد استخدمت جميع عمليات البحث بالوصف (%(limit)s) لهذا اليوم. يُعاد ضبط الحد بعد %(time)s."
 
 msgid "YouTube search request failed."
 msgstr "تعذّر تنفيذ طلب البحث على YouTube."

@@ -33624,11 +33624,15 @@ button.NB-static-card-altlink {
     margin-left: 8px;
 }
 
-/* Subscribed two-row layout in add site list view */
+/* Subscribed actions in the add site list view sit on one line, like the feed cards' (add_site_view.js
+   make_card_actions) */
 .NB-feed-badge-subscribed-actions.NB-feed-badge-actions-add-site {
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: center;
     gap: 6px;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
 }
 
 .NB-subscribed-badge {
@@ -34696,56 +34700,17 @@ button.NB-static-card-altlink {
     grid-template-columns: 1fr;
 }
 
-/* List view: use CSS Grid to place actions next to header */
-.NB-add-site-results-list .NB-add-site-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-}
-
-.NB-add-site-results-list .NB-add-site-card-header {
-    grid-column: 1;
-    grid-row: 1;
-    align-items: flex-start;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions {
-    grid-column: 2;
-    grid-row: 1;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    margin-top: 0;
-    padding-top: 0;
+/* List view: render_feed_card puts the actions at the right end of the header, on one line */
+.NB-add-site-results-list .NB-add-site-card-header .NB-add-site-card-actions {
+    flex-shrink: 0;
+    margin: 0 0 0 12px;
+    padding: 0;
     border-top: none;
-    align-self: start;
-    margin-left: 12px;
 }
 
-.NB-add-site-results-list .NB-add-site-card-desc {
-    grid-column: 1 / -1;
-    grid-row: 2;
-}
-
-.NB-add-site-results-list .NB-add-site-card-stories {
-    grid-column: 1 / -1;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions .NB-add-site-card-add-group {
-    margin-left: 0;
-    max-width: 260px;
-}
-
-.NB-add-site-results-list .NB-add-site-card-actions-subscribed {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
+.NB-add-site-results-list .NB-add-site-card-header .NB-add-site-card-add-group {
+    flex: 0 1 auto;
+    width: 200px;
 }
 
 /* Grid Column Overrides - auto uses the base auto-fill rule above */
@@ -34765,12 +34730,13 @@ button.NB-static-card-altlink {
     grid-template-columns: repeat(4, 1fr);
 }
 
-/* Feed Card */
+/* Feed Card (add_site_view.js render_feed_card and make_source_card). The same colors and spacing as the
+   Search list's feed badges (.NB-trending-feed-badge), so a grid and a list read as one design. */
 .NB-add-site-card {
+    position: relative;
     background: #FFF;
-    border: 1px solid #E0E0E0;
-    border-radius: 12px;
-    padding: 16px;
+    border: 1px solid #E8E8E6;
+    border-radius: 10px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
     display: flex;
     flex-direction: column;
@@ -34779,15 +34745,20 @@ button.NB-static-card-altlink {
 }
 
 .NB-add-site-card:hover {
-    border-color: #C0C0C0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-color: #D0D0CE;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.NB-add-site-card-top {
+    padding: 14px 16px 12px;
+    background: linear-gradient(180deg, #FCFCFC 0%, #F8F8F6 100%);
+    border-bottom: 1px solid #F0F0EE;
 }
 
 .NB-add-site-card-header {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 12px;
 }
 
 .NB-add-site-card-icon {
@@ -34821,14 +34792,26 @@ button.NB-static-card-altlink {
     min-width: 0;
 }
 
+/* The title, and on Describe cards the web icon and the match label after it */
+.NB-add-site-card-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+    margin-bottom: 2px;
+}
+
+/* A long title wraps to a second line rather than losing its end to the web icon and match label */
 .NB-add-site-card-title {
     font-size: 15px;
     font-weight: 600;
+    line-height: 1.3;
     color: #333;
-    margin-bottom: 4px;
+    min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 .NB-add-site-card-meta {
@@ -34842,7 +34825,7 @@ button.NB-static-card-altlink {
     align-items: center;
     gap: 6px;
     font-size: 11px;
-    margin-top: 4px;
+    margin-top: 3px;
 }
 
 .NB-freshness-dot {
@@ -34880,8 +34863,11 @@ button.NB-static-card-altlink {
     font-size: 13px;
     color: #666;
     line-height: 1.4;
-    flex: 1;
-    margin-bottom: 12px;
+    margin-top: 10px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
 }
 
 .NB-add-site-card-url {
@@ -34895,91 +34881,56 @@ button.NB-static-card-altlink {
     font-family: monospace;
 }
 
-/* Story Previews in Card */
+/* Stories in a card are the site's story title rows (add_site_view.js render_card_stories), edge to edge
+   like the Search list's. They take the card's spare height so the actions stay along the bottom. */
 .NB-add-site-card-stories {
-    background: #F8F8F8;
-    border-radius: 8px;
-    padding: 10px 12px;
-    margin-bottom: 12px;
+    flex: 1 1 auto;
 }
 
-.NB-add-site-card-story {
-    padding: 6px 0;
-    border-bottom: 1px solid #E8E8E8;
+.NB-add-site-card-stories .NB-story-titles {
+    margin: 0;
+    border: none;
 }
 
-.NB-add-site-card-story:last-child {
+.NB-add-site-card-stories .NB-story-title {
+    border-left: none;
+    border-right: none;
+}
+
+.NB-add-site-card-stories .NB-story-title:first-child {
+    border-top: none;
+}
+
+.NB-add-site-card-stories .NB-story-title:last-child {
     border-bottom: none;
-    padding-bottom: 0;
 }
 
-.NB-add-site-card-story:first-child {
-    padding-top: 0;
-}
-
-.NB-add-site-card-story-title {
-    font-size: 12px;
-    color: #555;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.NB-add-site-card-story-image {
-    width: 100%;
-    height: auto;
+/* In a grid card the thumbnail is a square at the top of its row, so a narrow card's wrapping title doesn't
+   stretch it into a tall strip */
+.NB-add-site-results-grid .NB-add-site-card-stories .NB-storytitles-story-image {
+    height: 78px;
     border-radius: 4px;
-    margin-bottom: 6px;
-    object-fit: cover;
 }
 
-.NB-add-site-card-story-image.NB-image-small {
-    width: 48px;
-    height: 48px;
-    float: left;
-    margin-right: 8px;
-    margin-bottom: 0;
+/* A feed without a favicon color (a site NewsBlur hasn't fetched yet) gets a quiet bar; story_title_view.js
+   color_feedbar sets the colored ones inline */
+.NB-add-site-card-stories .NB-storytitles-feed-border-inner,
+.NB-add-site-card-stories .NB-storytitles-feed-border-outer {
+    background-color: #E0E0DE;
 }
 
-.NB-add-site-card-story-image.NB-image-large {
-    max-height: 120px;
-}
-
-/* Story Content Preview */
-.NB-add-site-card-story-preview {
-    font-size: 11px;
-    color: #888;
-    line-height: 1.4;
-    margin-top: 4px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-1 {
-    -webkit-line-clamp: 1;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-2 {
-    -webkit-line-clamp: 2;
-}
-
-.NB-add-site-card-story-preview.NB-preview-lines-3 {
-    -webkit-line-clamp: 3;
-}
-
-/* Card Actions */
-.NB-add-site-card-actions-row {
-    display: contents;
-}
-
+/* Card Actions: Try, Stats, then the folder picker and Add, on one line (add_site_view.js make_card_actions) */
 .NB-add-site-card-actions {
     display: flex;
     align-items: center;
     gap: 6px;
     margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid #F0F0F0;
+    padding: 10px 12px;
+    border-top: 1px solid #F0F0EE;
+}
+
+.NB-add-site-card-stories + .NB-add-site-card-actions {
+    margin-top: 0;
 }
 
 .NB-add-site-folder-select {
@@ -35007,7 +34958,8 @@ button.NB-static-card-altlink {
     gap: 0;
     margin-left: auto;
     min-width: 0;
-    flex: 0 1 auto;
+    flex: 1 1 auto;
+    max-width: 240px;
     background: #F0F0F0;
     border-radius: 6px;
     padding: 3px;
@@ -35034,9 +34986,13 @@ button.NB-static-card-altlink {
     font-size: 11px;
 }
 
-/* Subscribed Card Actions */
+/* Subscribed Card Actions: the badge on the left, Stats and Open on the right */
 .NB-add-site-card-actions-subscribed {
-    gap: 8px;
+    gap: 6px;
+}
+
+.NB-add-site-card-actions-subscribed .NB-subscribed-badge {
+    margin-right: auto;
 }
 
 .NB-add-site-subscribed-indicator {
@@ -37642,17 +37598,22 @@ button.NB-static-card-altlink {
 
 
 .NB-dark .NB-add-site-card {
-    background: #2A2A2A;
-    border-color: #3A3A3A;
+    background: #252D30;
+    border-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card:hover {
-    border-color: #555;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-color: #4A5255;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-add-site-card-top {
+    background: linear-gradient(180deg, #303739 0%, #282D30 100%);
+    border-bottom-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-icon {
-    background: #3A3A3A;
+    background: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-title {
@@ -37660,11 +37621,11 @@ button.NB-static-card-altlink {
 }
 
 .NB-dark .NB-add-site-card-meta {
-    color: #888;
+    color: #808080;
 }
 
 .NB-dark .NB-add-site-card-desc {
-    color: #AAA;
+    color: #909090;
 }
 
 .NB-dark .NB-add-site-card-url {
@@ -37672,24 +37633,8 @@ button.NB-static-card-altlink {
     color: #999;
 }
 
-.NB-dark .NB-add-site-card-stories {
-    background: #333;
-}
-
-.NB-dark .NB-add-site-card-story {
-    border-color: #444;
-}
-
-.NB-dark .NB-add-site-card-story-title {
-    color: #CCC;
-}
-
-.NB-dark .NB-add-site-card-story-preview {
-    color: #999;
-}
-
 .NB-dark .NB-add-site-card-actions {
-    border-color: #3A3A3A;
+    border-color: #3A4245;
 }
 
 .NB-dark .NB-add-site-card-add-group {
@@ -44878,3 +44823,568 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     background: #e3e6e0; color: #4b673e; font-size: 20px;
 }
 .NB-dark .NB-motion-refresh-check { background: #303936; color: #b6d99f; }
+
+/* ======================================
+   Describe tab (describe_feeds_view.js)
+   ====================================== */
+
+.NB-add-site-describe-tab {
+    padding-right: 0;
+}
+
+.NB-describe {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    min-height: 100%;
+    padding-right: 16px;
+}
+
+/* History rail */
+.NB-describe-rail {
+    flex: 0 0 240px;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100vh - 120px);
+}
+
+.NB-describe-rail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 0 8px;
+}
+
+.NB-describe-rail-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8a8a;
+}
+
+.NB-describe-new-search {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5C89C9;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.NB-describe-new-search:hover {
+    background: rgba(92, 137, 201, 0.12);
+}
+
+.NB-describe-new-search-plus {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.NB-describe-history {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.NB-describe-history-empty {
+    font-size: 12px;
+    color: #999;
+    padding: 8px;
+    line-height: 1.4;
+}
+
+.NB-describe-history-item {
+    position: relative;
+    padding: 8px 26px 8px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.NB-describe-history-item:hover {
+    background: #F2F4F6;
+}
+
+.NB-describe-history-item.NB-active {
+    background: #FFF;
+    border-color: #D0D4D8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.NB-describe-history-item.NB-deleting {
+    opacity: 0.4;
+}
+
+.NB-describe-history-prompt {
+    font-size: 13px;
+    line-height: 1.35;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.NB-describe-history-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #999;
+}
+
+.NB-describe-history-item.NB-running .NB-describe-history-count {
+    color: #5C89C9;
+}
+
+.NB-describe-history-delete {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 50%;
+    color: #999;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+.NB-describe-history-item:hover .NB-describe-history-delete {
+    opacity: 1;
+}
+
+.NB-describe-history-delete:hover {
+    background: #E6E6E6;
+    color: #333;
+}
+
+.NB-describe-usage {
+    font-size: 11px;
+    color: #999;
+    padding: 6px 8px;
+    border-top: 1px solid #E8E8E8;
+}
+
+/* Composer */
+.NB-describe-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.NB-describe-composer-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFF;
+    border: 2px solid #D0D4D8;
+    border-radius: 14px;
+    padding: 8px 8px 8px 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-describe-composer-box:focus-within {
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.15);
+}
+
+.NB-describe-composer-icon {
+    width: 20px;
+    height: 20px;
+    opacity: 0.55;
+    flex-shrink: 0;
+}
+
+.NB-describe-input {
+    flex: 1;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #333;
+    padding: 11px 0;
+    height: 44px;
+    min-height: 44px;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+/* reader.css: a placeholder never grows the textarea (it is not part of scrollHeight), so it stays on
+   one line and ends in an ellipsis instead of wrapping into a clipped second line. */
+.NB-describe-input::placeholder {
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NB-describe-composer-box .NB-describe-submit {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    font-size: 13px;
+}
+
+.NB-describe-composer-hint {
+    font-size: 12px;
+    color: #999;
+    margin: 8px 4px 0;
+    line-height: 1.4;
+}
+
+/* Status */
+.NB-describe-status {
+    background: #F6F7F9;
+    border: 1px solid #E4E7EB;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.NB-describe-status.NB-hidden {
+    display: none;
+}
+
+.NB-describe-status.NB-error {
+    background: #FDF2F2;
+    border-color: #F1C2C2;
+}
+
+.NB-describe-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.NB-describe-status-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    min-width: 0;
+}
+
+.NB-describe-status-count {
+    font-weight: 500;
+    color: #777;
+    white-space: nowrap;
+}
+
+.NB-describe-status-count::before {
+    content: '\00b7';
+    margin-right: 8px;
+}
+
+.NB-describe-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(92, 137, 201, 0.25);
+    border-top-color: #5C89C9;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: NB-describe-spin 0.8s linear infinite;
+}
+
+@keyframes NB-describe-spin {
+    to { transform: rotate(360deg); }
+}
+
+.NB-describe-steps {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.NB-describe-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #AAA;
+    padding: 3px 8px 3px 6px;
+    border-radius: 999px;
+    background: #FFF;
+    border: 1px solid #E4E7EB;
+}
+
+.NB-describe-step-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #D0D4D8;
+}
+
+.NB-describe-step.NB-done {
+    color: #3a7a1f;
+    border-color: #CFE5C4;
+}
+
+.NB-describe-step.NB-done .NB-describe-step-dot {
+    background: #5BA03A;
+}
+
+.NB-describe-step.NB-current {
+    color: #2F5F9E;
+    border-color: #A9C1E5;
+}
+
+.NB-describe-step.NB-current .NB-describe-step-dot {
+    background: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.2);
+    animation: NB-describe-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes NB-describe-pulse {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(92, 137, 201, 0.15); }
+    50% { box-shadow: 0 0 0 5px rgba(92, 137, 201, 0.3); }
+}
+
+.NB-describe-queries {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 12px;
+    color: #777;
+}
+
+.NB-describe-queries-label {
+    margin-right: 2px;
+}
+
+.NB-describe-query {
+    background: #FFF;
+    border: 1px solid #E4E7EB;
+    border-radius: 999px;
+    padding: 2px 9px;
+    color: #555;
+}
+
+.NB-describe-notice {
+    font-size: 12px;
+    color: #9A6A0B;
+}
+
+.NB-describe-usage-message {
+    font-size: 12px;
+    color: #777;
+}
+
+/* Results */
+.NB-describe-body {
+    min-height: 120px;
+}
+
+.NB-describe-loading {
+    padding: 32px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+.NB-describe-card {
+    transition: opacity 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+.NB-describe-card-new {
+    animation: NB-describe-card-in 0.5s ease;
+}
+
+@keyframes NB-describe-card-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.NB-describe-card-removed {
+    opacity: 0;
+    transform: scale(0.97);
+}
+
+/* Describe result cards (describe_feeds_view.js make_card): how well a feed matches follows its freshness
+   date, past a middot; the judge's reason leads, then the feed's own tagline, smaller. */
+.NB-add-site-card-freshness .NB-middot {
+    color: #BBB;
+}
+
+.NB-describe-match {
+    color: #888;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.NB-describe-match-pending {
+    color: #8A9BB3;
+    font-weight: 500;
+    animation: NB-describe-fade 1.4s ease-in-out infinite;
+}
+
+@keyframes NB-describe-fade {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+}
+
+.NB-describe-web-icon {
+    width: 13px;
+    height: 13px;
+    margin-top: 4px;
+    flex-shrink: 0;
+    opacity: 0.5;
+}
+
+.NB-describe-reason {
+    margin-top: 10px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #333;
+}
+
+.NB-describe-reason-pending {
+    color: #999;
+    font-style: italic;
+}
+
+.NB-describe-reason + .NB-add-site-card-desc {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #8A8A8A;
+}
+
+/* Empty state and upgrade */
+.NB-describe-empty {
+    padding: 8px 0 24px;
+}
+
+.NB-describe-empty-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8a8a8a;
+    margin: 0 4px 10px;
+}
+
+/* reader.css: two columns of examples where the tab is wide enough, one where it is not. */
+.NB-describe-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 8px;
+}
+
+.NB-describe-example {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.NB-describe-example:hover {
+    border-color: #5C89C9;
+    box-shadow: 0 2px 8px rgba(92, 137, 201, 0.15);
+}
+
+.NB-describe-example-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.6;
+}
+
+.NB-describe-upgrade-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 40px 24px;
+    background: #FFF;
+    border: 1px solid #E0E0E0;
+    border-radius: 14px;
+}
+
+.NB-describe-upgrade-icon {
+    width: 32px;
+    height: 32px;
+    opacity: 0.6;
+}
+
+.NB-describe-upgrade-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+}
+
+.NB-describe-upgrade-desc {
+    font-size: 14px;
+    color: #666;
+    max-width: 420px;
+    line-height: 1.5;
+}
+
+/* Add-feed popover: "Find feeds about ..." row (reader_add_feed.js) */
+.NB-autocomplete-describe {
+    background: #F3F7FD;
+}
+
+.NB-autocomplete-describe .NB-add-autocomplete-title {
+    color: #2F5F9E;
+}
+
+.NB-autocomplete-describe-icon {
+    opacity: 0.7;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+    .NB-describe {
+        flex-direction: column;
+    }
+
+    .NB-describe-rail {
+        flex: 0 0 auto;
+        width: 100%;
+        position: static;
+        max-height: none;
+    }
+
+    .NB-describe-history {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .NB-describe-history-item {
+        flex: 1 1 200px;
+    }
+}
