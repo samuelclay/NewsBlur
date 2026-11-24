@@ -20,7 +20,7 @@ from urllib.parse import urljoin, urlsplit, urlunsplit
 import feedparser
 import requests
 from bs4 import BeautifulSoup
-from django.utils.html import escape, strip_tags
+from django.utils.html import strip_tags
 
 from apps.describe.models import safe_http_url
 from apps.rss_feeds.models import DuplicateFeed, Feed
@@ -135,7 +135,7 @@ def preview_site(url):
     return {
         "feed": None,
         "feed_address": address,
-        "feed_title": clean_text(channel.get("title"), 255) or escape(address),
+        "feed_title": clean_text(channel.get("title"), 255) or address,
         "feed_link": safe_http_url(channel.get("link")) or safe_http_url(url),
         "tagline": clean_text(channel.get("subtitle"), 200),
         "stories": [
@@ -284,16 +284,15 @@ def response_socket(response):
 
 
 def clean_text(value, limit):
-    """HTML-safe text from a feed's own title, tagline or headline.
+    """Plain text from a feed's own title, tagline or headline, as a reader should see it.
 
-    Tags are dropped and what is left is HTML-escaped, the way NewsBlur keeps
-    feed and story titles: these strings reach add_site_view.js and
-    story_title_view.js, which insert card text as HTML, and nothing else has
-    sanitized an unsaved feed. Escaping matters even after strip_tags, which
-    leaves a tag with no closing ">" (such as "<img src=x onerror=...") as is.
-    The limit applies to the plain text, so an escaped entity is never cut in half.
+    Tags are dropped and entities decoded, the way NewsBlur keeps its own feed
+    titles. The iOS and Android Describe tabs show these strings as text, and the
+    web card (describe_feeds_view.js make_card) escapes them before they reach
+    markup, so a tag strip_tags leaves behind for want of a closing ">" (such as
+    "<img src=x onerror=...") is only ever shown, never run.
     """
-    return escape(" ".join(strip_tags(html.unescape(value or "")).split())[:limit])
+    return " ".join(strip_tags(html.unescape(value or "")).split())[:limit]
 
 
 def existing_feed(address):

@@ -701,6 +701,13 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
 
     make_card: function (row) {
         var feed = _.clone(row.feed || {});
+        // describe_feeds_view.js: a site found on the web arrives as plain text (apps/describe/web_preview.py
+        // clean_text), but the card and its story rows insert titles as HTML, so its text is escaped here.
+        // Index feeds arrive as NewsBlur stores them, the same as on every other Add Site card.
+        if (row.source === 'web') {
+            feed.feed_title = this.plain(feed.feed_title || row.feed_title);
+            feed.tagline = this.plain(feed.tagline || row.tagline);
+        }
         var stories = this.card_stories(row);
         // describe_feeds_view.js: a site found on the web has no feed record, so its freshness comes from the
         // newest story the search read instead of saying it has none.
@@ -729,10 +736,12 @@ NEWSBLUR.Views.DescribeFeedsView = Backbone.View.extend({
     // story title rows can draw. Searches saved before the snapshot carried story_hash and story_feed_id still
     // draw: their rows get the row key as a feed id and a made up hash, and a click tries the feed.
     card_stories: function (row) {
+        var self = this;
         var feed_id = (row.feed && row.feed.id) || row.feed_id;
         return _.map(row.stories || [], function (story, index) {
             var timestamp = story.story_date ? Date.parse(story.story_date) / 1000 : null;
-            return _.extend({}, story, {
+            var title = row.source === 'web' ? { story_title: self.plain(story.story_title) } : {};
+            return _.extend({}, story, title, {
                 story_feed_id: story.story_feed_id || feed_id,
                 story_hash: story.story_hash || ('describe:' + row.feed_id + ':' + index),
                 story_timestamp: story.story_timestamp || (timestamp ? Math.round(timestamp) : null)

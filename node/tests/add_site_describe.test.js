@@ -344,3 +344,29 @@ test('a search that starts after another was picked still counts against the all
 
     assert.deepEqual(describe_view.usage, usage);
 });
+
+test('a site found on the web reaches the card escaped, and an index feed as NewsBlur stores it', function () {
+    const h = popover_fixture('describe');
+    const describe_view = h.add_site_view.describe_view;
+    const drawn = [];
+    const draw = h.add_site_view.render_feed_card;
+    h.add_site_view.render_feed_card = function (feed, stories, options) {
+        drawn.push({ feed: feed, stories: stories });
+        return draw.call(this, feed, [], options);
+    };
+    const hostile = '<img src=x onerror=alert(1)//';
+    describe_view.make_card({
+        feed_id: -1, source: 'web', judged: true, score: 9, reason: 'Matches',
+        feed: { feed_title: 'Ben & Jerry ' + hostile, tagline: 'Scoops ' + hostile, feed_address: 'https://found.example.com/feed/' },
+        stories: [{ story_title: 'Scoop ' + hostile, story_date: '2026-11-20T09:00:00' }]
+    });
+    describe_view.make_card(result_row(42, 8));
+
+    // No markup survives, and the words do.
+    for (const text of [drawn[0].feed.feed_title, drawn[0].feed.tagline, drawn[0].stories[0].story_title]) {
+        assert.doesNotMatch(text, /[<>]/);
+        assert.match(text, /&lt;img src=x onerror=alert\(1\)/);
+    }
+    assert.match(drawn[0].feed.feed_title, /^Ben &amp; Jerry /);
+    assert.equal(drawn[1].feed.feed_title, 'Feed 42');
+});

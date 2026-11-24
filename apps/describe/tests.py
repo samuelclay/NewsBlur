@@ -894,26 +894,27 @@ class Test_DescribeWebPreview(TestCase):
         )
         return hydrate_results([make_unsaved_row(-1, preview)])[0]
 
-    def test_text_from_a_found_site_reaches_the_card_html_safe(self):
-        # The reader inserts feed and story titles as HTML, and strip_tags leaves a tag with no closing
-        # ">" alone, so a found site's text has to arrive escaped, and escaped only once.
+    def test_text_from_a_found_site_is_stored_as_the_reader_should_see_it(self):
+        # Titles are stored as plain text, the way NewsBlur keeps its own feed titles: the iOS and Android
+        # Describe tabs show them as text, and the web card escapes them (describe_feeds_view.js make_card).
+        # Tags are dropped, entities decoded, and a tag with no closing ">" stays as visible text.
         hostile = (
             self.FEED_XML.replace(
                 b"<title>Brand New Blog</title>",
-                b"<title>Ben &amp; Jerry &lt;img src=x onerror=alert(document.cookie)//</title>",
+                b"<title>Ben &amp; Jerry&#x27;s &lt;img src=x onerror=alert(document.cookie)//</title>",
             )
             .replace(
                 b"<description>Fresh writing</description>",
-                b"<description>Scoops &lt;svg onload=alert(1)//</description>",
+                b"<description>Scoops &lt;b&gt;daily&lt;/b&gt;</description>",
             )
             .replace(b"<title>Hello world</title>", b"<title>Scoop &lt;img src=x onerror=alert(2)//</title>")
         )
         row = self.card_row(hostile)
         self.assertEqual(
-            row["feed"]["feed_title"], "Ben &amp; Jerry &lt;img src=x onerror=alert(document.cookie)//"
+            row["feed"]["feed_title"], "Ben & Jerry's <img src=x onerror=alert(document.cookie)//"
         )
-        self.assertEqual(row["feed"]["tagline"], "Scoops &lt;svg onload=alert(1)//")
-        self.assertEqual(row["stories"][0]["story_title"], "Scoop &lt;img src=x onerror=alert(2)//")
+        self.assertEqual(row["feed"]["tagline"], "Scoops daily")
+        self.assertEqual(row["stories"][0]["story_title"], "Scoop <img src=x onerror=alert(2)//")
 
     def test_links_and_images_from_a_found_site_must_be_plain_http(self):
         hostile = (
