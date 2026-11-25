@@ -272,6 +272,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
+@property (nonatomic) BOOL isPremiumArchiveExtra;
 @property (nonatomic) BOOL isPremiumPro;
 @property (nonatomic) BOOL briefingEnabled;
 @property (nonatomic) NSInteger premiumExpire;
@@ -342,6 +343,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
 - (void)showPremiumDialogForPro;
+- (void)updatePremiumTiersFromProfile:(NSDictionary *)profile;
 - (void)showUsageBillingDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;

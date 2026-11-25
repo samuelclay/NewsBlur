@@ -242,6 +242,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 @synthesize dictTextFeeds;
 @synthesize isPremium;
 @synthesize isPremiumArchive;
+@synthesize isPremiumArchiveExtra;
 @synthesize isPremiumPro;
 @synthesize briefingEnabled;
 @synthesize premiumExpire;
@@ -306,6 +307,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     cachedUserAvatars.memoryCache.costLimit = 10 * 1024 * 1024; // 10 MB
     isPremium = NO;
     isPremiumArchive = NO;
+    isPremiumArchiveExtra = NO;
     isPremiumPro = NO;
     briefingEnabled = NO;
     premiumExpire = 0;
@@ -1072,6 +1074,20 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
 
 - (void)showPremiumDialog {
     [self showPremiumDialogScrollTo:nil];
+}
+
+// NewsBlurAppDelegate.m reads the tier flags from /reader/feeds (FeedsObjCViewController.m) and from
+// /profile/save_ios_receipt (PremiumManager.m). Premium Archive Extra is Premium Archive with more Listen time,
+// so an Extra subscriber passes every Archive check.
+- (void)updatePremiumTiersFromProfile:(NSDictionary *)profile {
+    self.isPremium = [[profile objectForKey:@"is_premium"] integerValue] == 1;
+    self.isPremiumArchiveExtra = [[profile objectForKey:@"is_archive_extra"] integerValue] == 1;
+    self.isPremiumArchive = [[profile objectForKey:@"is_archive"] integerValue] == 1 || self.isPremiumArchiveExtra;
+    self.isPremiumPro = [[profile objectForKey:@"is_pro"] integerValue] == 1;
+    id premiumExpire = [profile objectForKey:@"premium_expire"];
+    if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
+        self.premiumExpire = [premiumExpire integerValue];
+    }
 }
 
 - (void)showPremiumDialogForArchive {
