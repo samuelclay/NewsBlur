@@ -3845,7 +3845,7 @@ msgstr "每週聆聽朗讀文章最多 1 小時"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "每週聆聽朗讀文章最多 10 小時"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

@@ -3917,7 +3917,7 @@ msgstr "Haftada 1 saat haberleri sesli dinleyin"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

@@ -3993,7 +3993,7 @@ msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

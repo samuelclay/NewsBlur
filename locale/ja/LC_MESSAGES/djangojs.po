@@ -3845,7 +3845,7 @@ msgstr "読み上げ記事を週1時間聴取"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "読み上げ記事を週10時間聴取"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

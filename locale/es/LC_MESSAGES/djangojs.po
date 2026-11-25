@@ -4008,7 +4008,7 @@ msgstr "Escucha 1 hora de artículos en voz alta a la semana"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Escucha 10 horas de artículos en voz alta a la semana"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

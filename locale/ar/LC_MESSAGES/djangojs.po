@@ -4329,7 +4329,7 @@ msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

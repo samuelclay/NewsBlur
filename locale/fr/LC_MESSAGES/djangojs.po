@@ -4023,7 +4023,7 @@ msgstr "Écoutez 1 heure d’articles lus à voix haute par semaine"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Écoutez 10 heures d’articles lus à voix haute par semaine"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

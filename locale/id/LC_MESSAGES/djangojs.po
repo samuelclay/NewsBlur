@@ -4003,7 +4003,7 @@ msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

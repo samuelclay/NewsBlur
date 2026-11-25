@@ -3885,7 +3885,7 @@ msgstr "ฟังบทความที่อ่านออกเสียง
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

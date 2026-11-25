@@ -4095,7 +4095,7 @@ msgstr "Слухайте озвучення статей до 1 години н�
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Слухайте озвучення статей до 10 годин на тиждень"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"

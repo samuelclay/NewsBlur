@@ -3853,7 +3853,7 @@ msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 �
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
 
-msgid "Listen to stories read aloud each week"
+msgid "Listen to 2 hours of stories read aloud a week"
 msgstr ""
 
 msgid "Listen to story"
