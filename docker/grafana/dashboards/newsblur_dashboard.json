@@ -12875,7 +12875,7 @@
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "sample_limit: free story previews used up. cap_reached: monthly Archive/Pro cap. preview_ended: tried to go past 30 seconds. preview_limit: voice previews used up.",
+   "description": "sample_limit: daily budget of new preview audio used up (Free and Premium). cap_reached: weekly Archive, Archive Extra or Pro cap. preview_ended: tried to go past the 60 second preview. preview_limit: voice previews used up.",
    "fieldConfig": {
     "defaults": {
      "color": {
