@@ -26,6 +26,6 @@ Come back to the same tab to see all your apps. Here’s the book club example a
 
 **Connected accounts** counts people whose access tokens are still valid. **Active readers** estimates how many different people your app made requests for over the last seven days. If one reader refreshes ten times, that’s ten requests and one reader. You can also see total requests since tracking began and when the last one came in.
 
-If I registered your app before this launch, it can keep syncing on your current plan for now. I’ve also given lifetime Premium Pro to the developers of the feed readers listed in Goodies and to WinBlur.
+If I registered your app before this launch, it can keep syncing on your current plan for now. I’ve also given lifetime Premium Pro to the developers of the feed readers listed in Goodies.
 
 What are you building with your NewsBlur stories? I’d love to see it on the [NewsBlur forum](https://forum.newsblur.com).
