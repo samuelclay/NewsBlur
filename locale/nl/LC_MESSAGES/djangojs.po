@@ -1732,6 +1732,11 @@ msgstr "Browser"
 msgid "Browser Extensions"
 msgstr "Browserextensies"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr ""
+"Bouw je een openbare RSS-lezer die iedereen kan gebruiken? Dan kom je mogelijk in aanmerking voor een "
+"gratis NewsBlur Premium Pro-account."
+
 msgid "Bullet points"
 msgstr "Opsomming"
 
@@ -2116,6 +2121,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "Voorbeeld van het toestemmingsscherm"
+
+msgid "Contact Samuel"
+msgstr "Neem contact op met Samuel"
 
 msgid "Content"
 msgstr "Inhoud"

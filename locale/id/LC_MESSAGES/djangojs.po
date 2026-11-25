@@ -1734,6 +1734,11 @@ msgstr "Browser"
 msgid "Browser Extensions"
 msgstr "Ekstensi Browser"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr ""
+"Sedang membuat pembaca RSS publik yang bisa digunakan siapa saja? Anda mungkin memenuhi syarat untuk "
+"mendapatkan akun NewsBlur Premium Pro gratis."
+
 msgid "Bullet points"
 msgstr "Poin-poin"
 
@@ -2118,6 +2123,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "Pratinjau layar persetujuan"
+
+msgid "Contact Samuel"
+msgstr "Hubungi Samuel"
 
 msgid "Content"
 msgstr "Konten"

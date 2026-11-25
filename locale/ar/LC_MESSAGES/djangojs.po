@@ -2045,6 +2045,9 @@ msgstr "المتصفح"
 msgid "Browser Extensions"
 msgstr "إضافات المتصفح"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "هل تطوّر قارئ RSS عامًا يمكن لأي شخص استخدامه؟ قد تكون مؤهلًا للحصول على حساب NewsBlur Premium Pro مجاني."
+
 msgid "Bullet points"
 msgstr "نقاط التعداد"
 
@@ -2443,6 +2446,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "معاينة شاشة الموافقة"
+
+msgid "Contact Samuel"
+msgstr "تواصل مع صموئيل"
 
 msgid "Content"
 msgstr "المحتوى"

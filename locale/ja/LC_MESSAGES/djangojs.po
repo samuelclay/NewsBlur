@@ -1634,6 +1634,9 @@ msgstr "ブラウザー"
 msgid "Browser Extensions"
 msgstr "ブラウザー拡張機能"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "誰でも使える公開 RSS リーダーを開発していますか？ NewsBlur Premium Pro のアカウントを無料で利用できる場合があります。"
+
 msgid "Bullet points"
 msgstr "箇条書き"
 
@@ -2004,6 +2007,9 @@ msgstr "接続済みアカウントには有効期限内のアクセストーク
 
 msgid "Consent screen preview"
 msgstr "同意画面のプレビュー"
+
+msgid "Contact Samuel"
+msgstr "Samuel に問い合わせる"
 
 msgid "Content"
 msgstr "コンテンツ"

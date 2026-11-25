@@ -1654,6 +1654,11 @@ msgstr "Tarayıcı"
 msgid "Browser Extensions"
 msgstr "Tarayıcı Eklentileri"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr ""
+"Herkesin kullanabileceği, herkese açık bir RSS okuyucusu mu geliştiriyorsunuz? Ücretsiz bir NewsBlur "
+"Premium Pro hesabı almaya uygun olabilirsiniz."
+
 msgid "Bullet points"
 msgstr "Madde işaretleri"
 
@@ -2036,6 +2041,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "İzin ekranı önizlemesi"
+
+msgid "Contact Samuel"
+msgstr "Samuel ile iletişime geçin"
 
 msgid "Content"
 msgstr "İçerik"

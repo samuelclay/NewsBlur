@@ -1634,6 +1634,9 @@ msgstr "浏览器"
 msgid "Browser Extensions"
 msgstr "浏览器扩展"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "正在开发任何人都能使用的公共 RSS 阅读器？你可能有资格免费获得 NewsBlur Premium Pro 账户。"
+
 msgid "Bullet points"
 msgstr "要点"
 
@@ -2004,6 +2007,9 @@ msgstr "已连接的账户拥有未过期的访问令牌。活跃读者数按连
 
 msgid "Consent screen preview"
 msgstr "授权页面预览"
+
+msgid "Contact Samuel"
+msgstr "联系 Samuel"
 
 msgid "Content"
 msgstr "内容"

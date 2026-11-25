@@ -1726,6 +1726,9 @@ msgstr "דפדפן"
 msgid "Browser Extensions"
 msgstr "תוספי דפדפן"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "בונים קורא RSS ציבורי שפתוח לכולם? ייתכן שתוכלו לקבל חשבון NewsBlur Premium Pro בחינם."
+
 msgid "Bullet points"
 msgstr "תבליטים"
 
@@ -2108,6 +2111,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "תצוגה מקדימה של מסך ההסכמה"
+
+msgid "Contact Samuel"
+msgstr "יצירת קשר עם סמואל"
 
 msgid "Content"
 msgstr "תוכן"

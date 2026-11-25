@@ -1730,6 +1730,11 @@ msgstr "ब्राउज़र"
 msgid "Browser Extensions"
 msgstr "ब्राउज़र एक्सटेंशन"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr ""
+"क्या आप ऐसा सार्वजनिक RSS रीडर बना रहे हैं जिसे कोई भी इस्तेमाल कर सके? आपको मुफ़्त NewsBlur Premium Pro "
+"खाता मिल सकता है।"
+
 msgid "Bullet points"
 msgstr "बुलेट पॉइंट"
 
@@ -2112,6 +2117,9 @@ msgstr ""
 
 msgid "Consent screen preview"
 msgstr "सहमति स्क्रीन का पूर्वावलोकन"
+
+msgid "Contact Samuel"
+msgstr "सैमुअल से संपर्क करें"
 
 msgid "Content"
 msgstr "सामग्री"

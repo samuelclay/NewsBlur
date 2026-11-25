@@ -1634,6 +1634,9 @@ msgstr "브라우저"
 msgid "Browser Extensions"
 msgstr "브라우저 확장 프로그램"
 
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "누구나 사용할 수 있는 공개 RSS 리더를 개발하고 계신가요? NewsBlur Premium Pro 계정을 무료로 받으실 수 있습니다."
+
 msgid "Bullet points"
 msgstr "글머리 기호"
 
@@ -2008,6 +2011,9 @@ msgstr "연결된 계정은 만료되지 않은 액세스 토큰을 보유하고
 
 msgid "Consent screen preview"
 msgstr "동의 화면 미리보기"
+
+msgid "Contact Samuel"
+msgstr "Samuel에게 문의하기"
 
 msgid "Content"
 msgstr "콘텐츠"
