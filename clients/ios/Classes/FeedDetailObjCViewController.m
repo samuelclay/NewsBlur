@@ -3070,6 +3070,8 @@ static const CGFloat NBBottomNextFeedHeight = 56.0f;
 }
 
 - (void)finishFirstPageResponse:(NSDictionary *)response feedPage:(NSInteger)page feedId:(NSString *)feedId load:(StoryFirstPageLoad *)load {
+    // FeedDetailObjCViewController.m receives live feed and river replies here. Cached pages cannot diagnose connectivity.
+    if (page == 1) [appDelegate.feedsViewController retryOfflineFeedList];
     if (storiesCollection.notificationStory) {
         NSDictionary *updated = response;
         if (load && page == 1) {

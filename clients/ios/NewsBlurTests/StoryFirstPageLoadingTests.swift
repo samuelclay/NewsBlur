@@ -2063,6 +2063,33 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.first?.url, firstURL)
     }
 
+    func test_liveRiverResponseRetriesOfflineFeedListAfterCacheDisplay() async {
+        let fixture = makeFixture()
+        fixture.app.riverFeeds = [1]
+        fixture.openRiver()
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response())
+        await settle()
+        fixture.app.requests.removeAll()
+
+        let feeds = FirstPageSelectionFeeds()
+        feeds.appDelegate = fixture.app
+        fixture.app.feedsViewController = feeds
+        feeds.isOffline = true
+        fixture.openRiver()
+        await settle()
+        XCTAssertEqual(fixture.hashes.count, 12)
+        XCTAssertTrue(fixture.app.requests.isEmpty, "Showing a cached page cannot confirm connectivity.")
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response())
+        XCTAssertEqual(fixture.app.requests.dropFirst().compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"],
+                       "Opening a cached river leaves the sidebar offline until its network response triggers feed recovery.")
+    }
+
     // NewStoriesNewestPage.swift: past the new stories pill's cap, a tap shows the newest stories and the river pages on
     // below them. Widening the folder to every feed the pill took stories from changes the river's page URL, and the
     // next page must still land rather than be dropped as the old first page's.
