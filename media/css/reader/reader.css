@@ -44878,3 +44878,215 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     background: #e3e6e0; color: #4b673e; font-size: 20px;
 }
 .NB-dark .NB-motion-refresh-check { background: #303936; color: #b6d99f; }
+
+.NB-premium-tier-features-pro .NB-feature-oauth .NB-premium-bullet-image {
+    background: transparent url("/media/embed/icons/nouns/dialog-oauth-application.svg") no-repeat center / contain;
+}
+
+/* reader_oauth_applications.js is a tab in the standard Account dialog. */
+.NB-modal.NB-modal-account .NB-tab-oauth {
+    height: auto;
+    padding: 20px 24px 24px;
+    line-height: 1.5;
+}
+
+.NB-modal-account .NB-modal-tab-oauth {
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+.NB-tab-oauth h3 {
+    margin: 0;
+    padding-inline-start: 32px;
+    background: url("/media/embed/icons/nouns/dialog-oauth-application.svg") left center / 24px no-repeat;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+[dir=rtl] .NB-tab-oauth h3 {
+    background-position: right center;
+}
+
+.NB-oauth-intro {
+    margin: 6px 0 20px;
+    max-width: 72ch;
+}
+
+.NB-oauth-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.NB-oauth-columns > * {
+    min-width: 0;
+}
+
+.NB-tab-oauth label {
+    display: block;
+    margin: 0 0 14px;
+    font-weight: bold;
+}
+
+.NB-tab-oauth label input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px 10px;
+    font: inherit;
+    font-weight: normal;
+}
+
+.NB-dark .NB-tab-oauth input::placeholder {
+    color: #bec0c1;
+    opacity: 1;
+}
+
+.NB-oauth-preview {
+    border-inline-start: 1px solid rgba(127, 127, 127, .35);
+    padding-inline-start: 24px;
+}
+
+.NB-oauth-preview h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.NB-oauth-preview-link {
+    margin: 0 0 16px;
+}
+
+.NB-oauth-url {
+    border-radius: 5px;
+    background: rgba(127, 127, 127, .09);
+    overflow-wrap: anywhere;
+    padding: 12px 14px;
+    display: block;
+    text-align: left;
+    font: 12px/1.55 monospace;
+    user-select: all;
+}
+
+.NB-tab-oauth input[readonly] {
+    font-family: monospace;
+}
+
+.NB-oauth-help {
+    font-size: 12px;
+    margin: 6px 0 12px;
+}
+
+.NB-oauth-error:empty {
+    display: none;
+}
+
+.NB-tab-oauth .NB-oauth-upgrade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    text-align: start;
+    margin: 0 0 20px;
+}
+
+.NB-oauth-upgrade button {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .NB-modal.NB-modal-account .NB-tab-oauth {
+        padding: 14px;
+    }
+
+    .NB-oauth-columns {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .NB-oauth-preview {
+        border-inline-start: 0;
+        border-top: 1px solid rgba(127, 127, 127, .35);
+        padding: 14px 0 0;
+    }
+}
+
+/* reader_oauth_applications.js shows the owner's registrations and their current usage. */
+.NB-oauth-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.NB-oauth-refresh {
+    background: none;
+    border: 0;
+    color: #365c7d;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.NB-dark .NB-oauth-refresh {
+    color: var(--nb-dark-link);
+}
+
+.NB-oauth-registration {
+    border-block: 1px solid rgba(127, 127, 127, .35);
+    margin-bottom: 10px;
+}
+
+.NB-oauth-registration[open] {
+    padding-bottom: 14px;
+}
+
+.NB-oauth-registration > summary,
+.NB-oauth-app-details > summary {
+    cursor: pointer;
+    padding-block: 9px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.NB-oauth-app-row {
+    padding: 6px 0 10px;
+    border-block-start: 1px solid rgba(127, 127, 127, .35);
+}
+
+.NB-oauth-app-details[open] {
+    margin-bottom: 14px;
+}
+
+.NB-oauth-redirects {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.NB-oauth-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
+    gap: 8px 16px;
+    margin: 0;
+}
+
+.NB-oauth-metrics dt {
+    font-size: 12px;
+}
+
+.NB-oauth-metrics dd {
+    margin: 2px 0 0;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 700px) {
+    .NB-oauth-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-23T03:00:17-05:00</updated>
+  <updated>2026-11-24T23:42:16-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,50 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Connect your app to NewsBlur with self-serve OAuth.</title>
+    <link href="https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth/" rel="alternate" type="text/html" title="Connect your app to NewsBlur with self-serve OAuth." />
+    <published>2026-11-25T03:00:00-05:00</published>
+    <updated>2026-11-25T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth/">
+      <![CDATA[<p>For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from <strong>Account → OAuth applications</strong> on the web. You need Premium Pro to run an app. The people who connect to it can use any NewsBlur plan.</p>
+
+<h3 id="what-your-readers-will-see">What your readers will see</h3>
+
+<p>Say you’re building a little app for your book club. Each member connects their NewsBlur account and picks a saved story to bring to the next meeting. They sign in on NewsBlur, see what your app wants to read, and decide whether to give it access. Their password stays with NewsBlur.</p>
+
+<p>Choose <strong>Create a new OAuth application</strong> and enter your app’s name, website, and redirect URL. That last one is the address in your app where NewsBlur sends a reader after they authorize it. As you type, you can see how the authorization link takes shape. Click <strong>Consent screen preview</strong> to see the page your readers will get.</p>
+
+<p><img src="/assets/oauth-book-club-consent.png" alt="Consent preview for Book Club Reader showing its website, the stories it asks to read, and the Authorize and Deny buttons" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Click <strong>Create application</strong> to get your client ID and secret. Copy the secret before closing the dialog. NewsBlur shows it once. The <a href="https://www.newsblur.com/api">API docs</a> walk through exchanging the authorization code for an access token.</p>
+
+<h3 id="is-anyone-using-it">Is anyone using it?</h3>
+
+<p>Come back to the same tab to see all your apps. Here’s the book club example after two people connected and the app made three requests on their behalf.</p>
+
+<p><img src="/assets/oauth-book-club-activity.png" alt="Book Club Reader in Account with two connected accounts, two active readers in seven days, three API requests, and the time of the last request" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Connected accounts</strong> counts people whose access tokens are still valid. <strong>Active readers</strong> estimates how many different people your app made requests for over the last seven days. If one reader refreshes ten times, that’s ten requests and one reader. You can also see total requests since tracking began and when the last one came in.</p>
+
+<p>Existing apps need an active Premium Pro owner to keep working, too. I’m giving lifetime Premium Pro to the developers of the existing feed readers listed in Goodies so people who use those readers can keep syncing.</p>
+
+<p>What are you building with your NewsBlur stories? I’d love to see it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from Account → OAuth applications on the...]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">New stories as they arrive, and live updates in every app</title>
@@ -2116,75 +2160,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Refer friends, gift subscriptions, and never pay for NewsBlur premium again</title>
-    <link href="https://blog.newsblur.com/2026/03/26/refer-and-gift/" rel="alternate" type="text/html" title="Refer friends, gift subscriptions, and never pay for NewsBlur premium again" />
-    <published>2026-03-26T00:00:00-04:00</published>
-    <updated>2026-03-26T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/26/refer-and-gift</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/26/refer-and-gift/">
-      <![CDATA[<p>If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still love it, tell people. Post about it on LinkedIn, on X, on Facebook, on Instagram, on TikTok, wherever you hang out online. Word of mouth is still king, and it’s how NewsBlur has always grown.</p>
-
-<p>To make that more rewarding, I’m launching two new features today: referrals and gift subscriptions.</p>
-
-<h3 id="earn-free-premium-by-referring-friends">Earn free premium by referring friends</h3>
-
-<p>Every NewsBlur user now has a personal referral link. Share it with someone, and if they sign up and subscribe, you earn free time on your current tier. There’s no cap. Your next billing date gets pushed forward automatically, so you won’t be charged while you have referral credit.</p>
-
-<!-- SCREENSHOT: Refer tab of the Refer & Gift modal showing the hero banner, referral URL with copy button, and referral stats -->
-<p><img src="/assets/refer-and-gift-refer-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Open the Refer &amp; Gift modal from the Manage menu to find your link. Copy it and share it however you’d like. The modal also shows your referral stats: how many people have signed up through your link, how many have subscribed, and how many years of premium you’ve earned.</p>
-
-<p>The credit scales proportionally based on your tier and what your referral subscribes to. If they subscribe to your tier or higher, you get a full free year. If they subscribe to a lower tier, you get proportional credit:</p>
-
-<ul>
-  <li><strong>Premium subscribers</strong> earn a full free year for every referral, regardless of what tier the referred person picks</li>
-  <li><strong>Premium Archive subscribers</strong> earn a free year when the referral subscribes to Archive or Pro, or 4 free months for a Premium referral</li>
-  <li><strong>Premium Pro subscribers</strong> earn 4 free months for an Archive referral, 2 free months for Premium, or 1 free month for Pro</li>
-</ul>
-
-<p>The higher your tier, the more it pays to refer people to higher tiers. When a referral converts, you’ll get an email confirming your credit, and your subscription renewal date adjusts automatically. No action needed on your part.</p>
-
-<h3 id="gift-a-subscription-to-anyone">Gift a subscription to anyone</h3>
-
-<p>The Gift tab lets you buy a NewsBlur subscription for someone else. Pick a tier, check out through Stripe, and you’ll get a shareable gift link. The recipient clicks the link, signs up or logs in, and their premium activates instantly.</p>
-
-<!-- SCREENSHOT: Gift tab showing the hero banner with how-it-works steps, tier selector (Premium/Archive/Pro), and Create Gift Link button -->
-<p><img src="/assets/refer-and-gift-gift-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Three tiers are available as gifts:</p>
-
-<ul>
-  <li><strong>Premium</strong> at $36/year</li>
-  <li><strong>Premium Archive</strong> at $99/year</li>
-  <li><strong>Premium Pro</strong> at $29/month</li>
-</ul>
-
-<p>If the gift isn’t redeemed within 90 days, you get a full refund automatically. No need to contact support or remember to follow up.</p>
-
-<h3 id="how-to-access-it">How to access it</h3>
-
-<p>Open the Manage menu (the gear icon at the bottom of the feed list) and choose <strong>Refer &amp; Gift</strong>. The modal has two tabs: Refer for your referral link and stats, and Gift for purchasing gift subscriptions.</p>
-
-<!-- SCREENSHOT: Manage menu showing the new Refer & Gift option -->
-<p><img src="/assets/refer-and-gift-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Referrals and gift subscriptions are available now on the web for all NewsBlur users. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still...]]>
     </summary>
     
   </entry>

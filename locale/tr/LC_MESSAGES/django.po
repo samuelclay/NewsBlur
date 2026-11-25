@@ -424,11 +424,11 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> (aylık 29 $) ile tüm akışlar 5-15 dakikada bir alınır; düzenli ifade eğitimi, "
-"10.000'e kadar site ve öncelikli destek sunulur."
+"#366944;\">Premium Pro</a> (aylık 29 $) tüm akışların 5–15 dakikada bir alınmasını, düzenli ifade "
+"eğitimini, 10.000'e kadar siteyi, OAuth uygulama kaydını ve öncelikli desteği sunar."
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -901,6 +901,9 @@ msgstr ""
 "akışları arasında günlük özetler, gelen kutusu düzenleme ve kaydedilmiş haberler arasında araştırma yer "
 "alır."
 
+msgid "Application website"
+msgstr "Uygulama web sitesi"
+
 msgid "Apply training across a folder"
 msgstr "Eğitimi bir klasördeki tüm akışlara uygula"
 
@@ -1365,9 +1368,6 @@ msgstr "İstemci"
 msgid "Client id"
 msgstr "İstemci kimliği"
 
-msgid "Client secret"
-msgstr "İstemci gizli anahtarı"
-
 msgid "Client type"
 msgstr "İstemci türü"
 
@@ -1483,6 +1483,9 @@ msgstr "Tek komutla bağlanın"
 msgid "Connect your account"
 msgstr "Hesabınızı bağlayın"
 
+msgid "Consent screen preview"
+msgstr "Onay ekranı önizlemesi"
+
 msgid "Contact"
 msgstr "İletişim"
 
@@ -1561,6 +1564,9 @@ msgstr ""
 msgid "Create Account"
 msgstr "Hesap Oluştur"
 
+msgid "Create OAuth applications"
+msgstr "OAuth uygulamaları oluştur"
+
 msgid "Create a new account instead"
 msgstr "Bunun yerine yeni bir hesap oluştur"
 
@@ -1572,6 +1578,9 @@ msgstr "Hesap Oluştur"
 
 msgid "Create an account"
 msgstr "Hesap oluştur"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuth uygulamaları oluşturmak için NewsBlur Premium Pro gerekir."
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Stripe ve PayPal üzerinden kredi/banka kartları."
@@ -1873,6 +1882,12 @@ msgstr "Mühendis ve Yazar"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "Premium özelliklerden memnun musunuz? Onları sonsuza dek kullanmaya devam edin!"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "Kimlik bilgisi, joker karakter veya parça içermeyen tek bir yönlendirme URL'si girin."
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "Bir HTTP veya HTTPS site adresi girin."
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "E-posta adresinizi girin; yeni bir şifre belirlemeniz için size bir bağlantı gönderelim."
@@ -3678,13 +3693,14 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur Premium, 1.024 siteye kadar yılda 36 dolardan başlıyor &mdash; Feedly Pro'nun yarı fiyatına. Yoğun"
-" kullanıcılar için NewsBlur Pro, ayda 29 dolara 10.000 sitenin tamamında 5 dakikada bir akış yenileme, "
-"regex sınıflandırıcıları ve öncelikli destek sunuyor. Feedly'nin benzer Enterprise planı ayda 18 dolar, "
-"ancak 2.500 kaynakla sınırlı ve regex filtreleme ya da kendi sunucusunda barındırma olanağı sunmuyor."
+"NewsBlur Premium, 1.024'e kadar site için yılda 36 $'dan başlar &mdash; Feedly Pro'nun yarı fiyatına. İleri"
+" düzey kullanıcılar için NewsBlur aylık 29 $'lık Pro, 10.000 sitenin tümünden akışların 5 dakikada bir "
+"alınmasını, düzenli ifade sınıflandırıcılarını, OAuth uygulama kaydını ve öncelikli desteği içerir. "
+"Feedly'nin benzer Enterprise planı aylık 18 $ tutar, ancak kaynak sayısını 2.500 ile sınırlar ve düzenli "
+"ifade filtreleme ya da kendi sunucunuzda barındırma seçeneği sunmaz."
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "NewsBlur Fiyatlandırması - Her Okuyucuya Uygun Planlar"
@@ -4006,16 +4022,6 @@ msgstr ""
 "önemli haberlerinizin kişiselleştirilmiş bir yapay zekâ özetini oluşturur. Bu özellikler, pasif okumayı "
 "aktif bilgi toplamaya dönüştürür."
 
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur OAuth'ı destekler; ancak OAuth özellikli bir istemciye sahip olmak için istemci kimliği ve gizli "
-"anahtar istemek üzere Samuel'e <a href=\"mailto:samuel@newsblur.com\">e-posta göndermeniz</a> gerekir. "
-"NewsBlur kullanıcı adınızı, yönlendirme URI'nizi (genellikle istemci uygulamanızın web sitesi) ve uygulama "
-"adınızı belirtmeniz gerekir."
-
 msgid "NewsBlur username"
 msgstr "NewsBlur kullanıcı adı"
 
@@ -4323,6 +4329,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Aynı siteden günde birden fazla haber yalnızca premium kullanıcılar paylaşabilir."
 
+msgid "Open NewsBlur to register your application."
+msgstr "Uygulamanızı kaydetmek için NewsBlur adresini açın."
+
 msgid "Open Source"
 msgstr "Açık kaynak"
 
@@ -4564,10 +4573,10 @@ msgstr "Premium Pro"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
+" OAuth application registration, and priority support."
 msgstr ""
-"Premium Pro (aylık 29 $) tüm akışlarınızın 5-15 dakikada bir alınmasını, regex eğitimini, 10.000'e kadar "
-"siteyi ve öncelikli desteği sunar."
+"Premium Pro (aylık 29 $) tüm akışların 5–15 dakikada bir alınmasını, düzenli ifade eğitimini, 10.000'e "
+"kadar siteyi, OAuth uygulama kaydını ve öncelikli desteği sunar."
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur Fiyatlandırması"
@@ -4936,6 +4945,9 @@ msgstr "Zekâ sınıflandırıcıları için düzenli ifade modu geçişi"
 
 msgid "Register a new application"
 msgstr "Yeni bir uygulama kaydet"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr "Kullanıcıların NewsBlur hesaplarını uygulamanıza bağlayabilmesi için uygulamanızı web üzerinde kaydedin."
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "Sık kullandığınız aramalara kolayca erişebilmeniz için özel akışlar oluşturulur"
@@ -5442,6 +5454,9 @@ msgstr "Oturum açın; akışlarınız, eğitimleriniz ve kaydedilmiş haberleri
 
 msgid "Sign in to NewsBlur"
 msgstr "NewsBlur hesabıyla giriş yap"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "OAuth uygulamalarınızı görüntülemek için giriş yapın."
 
 msgid "Sign in with Apple"
 msgstr "Apple ile Giriş Yap"
@@ -5998,6 +6013,9 @@ msgstr "Kendiniz barındırmak zorunda olmadığınız tek açık kaynaklı RSS 
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "Kısaltılmış RSS akışlarındaki özgün haber, kesintisiz biçimde genişletilir"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "Bu OAuth uygulamasının sahibinin etkin bir NewsBlur Premium Pro aboneliği olmalıdır."
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Normal akışlarla aynıdır. Premium ve Pro kullanıcıları daha sık güncelleme alır."
 
@@ -6424,6 +6442,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Kullanım"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "Yönlendirme URL'si için HTTPS kullanın veya localhost üzerinde HTTP kullanın."
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6794,6 +6815,15 @@ msgstr "Çok Okunan Haberler"
 msgid "Widely-read, long reads, good reads"
 msgstr "Çok okunanlar, uzun okumalar, okumaya değer haberler"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"Etkin bir Premium Pro hesabınız varsa <a href=\"/account/applications/register/\">bir OAuth uygulaması "
+"oluşturabilirsiniz</a>. İstemci kimliği ve gizli anahtar almak için uygulama adını, web sitesini ve "
+"yönlendirme URL'sini girin. Hesaplarını bağlayan kişiler herhangi bir NewsBlur planını kullanabilir."
+
 msgid "Works Everywhere"
 msgstr "Her Yerde Çalışır"
 
@@ -6839,11 +6869,11 @@ msgstr ""
 "özelliklerini de içerir."
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
 msgstr ""
-"Evet, Premium Pro tüm Premium ve Archive özelliklerine ek olarak gerçek zamanlı getirme, regex ve öncelikli"
-" destek sunar."
+"Evet, Premium Pro; tüm Premium ve Archive özelliklerinin yanı sıra gerçek zamanlı akış alımını, düzenli "
+"ifadeleri, OAuth uygulama kaydını ve öncelikli desteği içerir."
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr "Evet, tüm zekâ eğitimi özellikleri bültenlerde de normal akışlardaki gibi çalışır."
@@ -7441,6 +7471,9 @@ msgstr ""
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "Hesabınız %(date)s tarihine kadar Premium olarak kalacak. Bugün başka hiçbir şey değişmiyor."
+
+msgid "Your app name"
+msgstr "Uygulamanızın adı"
 
 msgid "Your applications"
 msgstr "Uygulamalarınız"

@@ -480,6 +480,7 @@
     <string name="pro_enable_sites">10,000 साइटों तक फ़ॉलो करें</string>
     <string name="pro_all_feeds_fetched">सभी फ़ीड हर 5–15 मिनट में प्राप्त की जाती हैं</string>
     <string name="pro_regex_train">रेगुलर एक्सप्रेशन से लेखों को प्रशिक्षित करें</string>
+    <string name="pro_oauth_applications">OAuth एप्लिकेशन बनाएँ</string>
     <string name="pro_priority_support">प्राथमिकता सहायता</string>
     <string name="pro_natural_language_search">प्राकृतिक भाषा में खोज</string>
     <string name="settings_cat_offline">ऑफ़लाइन पढ़ना</string>
@@ -622,6 +623,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">स्क्रॉल करके आगे बढ़ने पर लेखों को अपने-आप पढ़ा हुआ चिह्नित करें</string>
     <string name="settings_story_clustering">संबंधित लेखों को समूहित करें</string>
     <string name="settings_story_clustering_summary">किसी लेख के शीर्षक के नीचे अन्य फ़ीड के डुप्लिकेट लेख दिखाएँ</string>
+    <string name="settings_show_new_stories">नए लेख आते ही दिखाएँ</string>
+    <string name="settings_show_new_stories_summary">खुली साइट या फ़ोल्डर में नए लेख आने पर “N नए लेख” पिल दिखाएँ</string>
     <string name="settings_cluster_matches">क्लस्टर मिलान</string>
     <string name="settings_cluster_matches_summary">चुनें कि क्लस्टर में केवल डुप्लिकेट शीर्षक दिखें या संबंधित लेख भी</string>
     <string name="settings_story_clustering_save_failed">लेख समूहीकरण की प्राथमिकता सहेजी नहीं जा सकी</string>
@@ -1515,4 +1518,8 @@
     <string name="settings_listen_speed">प्लेबैक गति</string>
     <string name="archive_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें</string>
     <string name="pro_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d नया लेख</item>
+        <item quantity="other">%d नए लेख</item>
+    </plurals>
 </resources>

@@ -46,6 +46,7 @@
 "%@ left in this preview" = "נותרו %@ בתצוגה המקדימה הזו";
 "%@ left this week" = "נותרו %@ השבוע";
 "%@ match" = "התאמה של %@";
+"%@ new stories" = "%@ כתבות חדשות";
 "%@ opens" = "%@ פתיחות";
 "%@ or search" = "%@ או חיפוש";
 "%@ public comments" = "%@ תגובות ציבוריות";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "שמירת מגבלת ההוצאה נכשלה. נסו שוב.";
 "Couldn’t load the full image. You can try opening it in your browser." = "לא ניתן לטעון את התמונה המלאה. אפשר לנסות לפתוח אותה בדפדפן.";
 "Counting is difficult..." = "קשה לספור...";
+"Create OAuth applications" = "יצירת יישומי OAuth";
 "Create a feed from any web page" = "יצירת פיד מכל דף אינטרנט";
 "Create a new account instead" = "במקום זאת, יצירת חשבון חדש";
 "Create account" = "יצירת חשבון";
@@ -990,6 +992,7 @@
 "Show feed list" = "הצג את רשימת הפידים";
 "Show feeds after being read" = "הצגת פידים לאחר קריאתם";
 "Show hidden stories" = "הצגת כתבות מוסתרות";
+"Show new stories as they arrive" = "הצגת כתבות חדשות כשהן מגיעות";
 "Show original story" = "הצגת הכתבה המקורית";
 "Show original text" = "הצג את הטקסט המקורי";
 "Show public comments" = "הצגת תגובות ציבוריות";
@@ -998,6 +1001,7 @@
 "Show unread count" = "הצגת מספר הכתבות שלא נקראו";
 "Show with feed icons" = "הצגה עם סמלי פידים";
 "Show without icons" = "הצג ללא סמלים";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "הצגת תגית ״N כתבות חדשות״ כשכתבות מגיעות לפיד או לתיקייה הפתוחים.";
 "Shows the music settings" = "הצגת הגדרות המוזיקה";
 "Sidebar" = "סרגל צד";
 "Sign Up" = "הרשמה";

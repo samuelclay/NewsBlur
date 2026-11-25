@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">追蹤多達 10,000 個網站</string>
     <string name="pro_all_feeds_fetched">所有訂閱來源每 5 至 15 分鐘擷取一次</string>
     <string name="pro_regex_train">使用正規表示式訓練文章</string>
+    <string name="pro_oauth_applications">建立 OAuth 應用程式</string>
     <string name="pro_priority_support">優先支援</string>
     <string name="pro_natural_language_search">自然語言搜尋</string>
     <string name="settings_cat_offline">離線閱讀</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">捲動瀏覽文章時自動標記為已讀</string>
     <string name="settings_story_clustering">將相關文章分群</string>
     <string name="settings_story_clustering_summary">在文章標題下方顯示其他訂閱來源中的重複文章</string>
+    <string name="settings_show_new_stories">新文章到達時立即顯示</string>
+    <string name="settings_show_new_stories_summary">開啟的網站或資料夾有新文章時，顯示「N 篇新文章」提示標籤</string>
     <string name="settings_cluster_matches">分群比對</string>
     <string name="settings_cluster_matches_summary">選擇群組只顯示重複標題，還是也顯示相關文章</string>
     <string name="settings_story_clustering_save_failed">無法儲存文章分群偏好設定</string>
@@ -1481,4 +1484,7 @@
     <string name="settings_listen_speed">播放速度</string>
     <string name="archive_listen">每週聆聽朗讀文章最多 1 小時</string>
     <string name="pro_listen">每週聆聽朗讀文章最多 10 小時</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d 篇新文章</item>
+    </plurals>
 </resources>

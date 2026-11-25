@@ -480,6 +480,7 @@ om over de wereld te praten.</string>
     <string name="pro_enable_sites">Volg maximaal 10.000 sites</string>
     <string name="pro_all_feeds_fetched">Alle feeds worden elke 5–15 minuten opgehaald</string>
     <string name="pro_regex_train">Artikelen trainen met reguliere expressies</string>
+    <string name="pro_oauth_applications">OAuth-applicaties maken</string>
     <string name="pro_priority_support">Prioriteitsondersteuning</string>
     <string name="pro_natural_language_search">Zoeken in natuurlijke taal</string>
     <string name="settings_cat_offline">Offline lezen</string>
@@ -622,6 +623,8 @@ om over de wereld te praten.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Artikelen automatisch als gelezen markeren zodra je er voorbij scrolt</string>
     <string name="settings_story_clustering">Gerelateerde artikelen groeperen</string>
     <string name="settings_story_clustering_summary">Toon dubbele artikelen van andere feeds onder een artikeltitel</string>
+    <string name="settings_show_new_stories">Nieuwe artikelen meteen tonen</string>
+    <string name="settings_show_new_stories_summary">Toont een melding met \"N nieuwe artikelen\" wanneer er artikelen binnenkomen in de geopende site of map</string>
     <string name="settings_cluster_matches">Overeenkomsten clusteren</string>
     <string name="settings_cluster_matches_summary">Kies of clusters alleen dubbele titels of ook verwante artikelen tonen</string>
     <string name="settings_story_clustering_save_failed">Voorkeur voor het groeperen van artikelen kon niet worden opgeslagen</string>
@@ -1515,4 +1518,8 @@ om over de wereld te praten.</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
     <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
     <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d nieuw artikel</item>
+        <item quantity="other">%d nieuwe artikelen</item>
+    </plurals>
 </resources>

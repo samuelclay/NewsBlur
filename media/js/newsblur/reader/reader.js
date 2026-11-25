@@ -1463,6 +1463,11 @@
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
 
+            if (this.flags.oauth_application_requested) {
+                this.flags.oauth_application_requested = false;
+                return;
+            }
+
             // Handle test/next parameters for opening dialogs - skip normal dialog logic if present.
             // `next` is what the dev-autologin redirect uses; `test` is the hand-typed knob.
             // Both accept the same dialog keywords.

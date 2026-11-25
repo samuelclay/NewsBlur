@@ -443,11 +443,12 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> (29 $/mese) recupera tutti i feed ogni 5-15 minuti, offre l'addestramento regex,"
-" supporta fino a 10.000 siti e include assistenza prioritaria."
+"#366944;\">Premium Pro</a> (29 $/mese) ti offre l’aggiornamento di tutti i feed ogni 5-15 minuti, "
+"l’addestramento regex, fino a 10.000 siti, la registrazione delle applicazioni OAuth e il supporto "
+"prioritario."
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -922,6 +923,9 @@ msgstr ""
 "archivio. Tra le attività più comuni ci sono i briefing quotidiani, la gestione della posta in arrivo e la "
 "ricerca tra gli articoli salvati."
 
+msgid "Application website"
+msgstr "Sito web dell’applicazione"
+
 msgid "Apply training across a folder"
 msgstr "Applica l’addestramento a un’intera cartella"
 
@@ -1386,9 +1390,6 @@ msgstr "Client"
 msgid "Client id"
 msgstr "ID client"
 
-msgid "Client secret"
-msgstr "Chiave segreta client"
-
 msgid "Client type"
 msgstr "Tipo di client"
 
@@ -1504,6 +1505,9 @@ msgstr "Connettiti con un solo comando"
 msgid "Connect your account"
 msgstr "Collega il tuo account"
 
+msgid "Consent screen preview"
+msgstr "Anteprima della schermata di consenso"
+
 msgid "Contact"
 msgstr "Contatti"
 
@@ -1582,6 +1586,9 @@ msgstr ""
 msgid "Create Account"
 msgstr "Crea account"
 
+msgid "Create OAuth applications"
+msgstr "Crea applicazioni OAuth"
+
 msgid "Create a new account instead"
 msgstr "Crea invece un nuovo account"
 
@@ -1593,6 +1600,9 @@ msgstr "Crea un account"
 
 msgid "Create an account"
 msgstr "Crea un account"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Per creare applicazioni OAuth è necessario NewsBlur Premium Pro."
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Carte di credito/debito tramite Stripe e PayPal."
@@ -1892,6 +1902,12 @@ msgstr "Ingegnere e scrittore"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "Ti piacciono le funzionalità Premium? Conservale per sempre!"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "Inserisci un solo URL di reindirizzamento, senza credenziali, caratteri jolly o frammenti."
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "Inserisci l'indirizzo di un sito web HTTP o HTTPS."
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "Inserisci il tuo indirizzo email e ti invieremo un link per impostare una nuova password."
@@ -3732,13 +3748,14 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur Premium parte da 36 $/anno per un massimo di 1.024 siti &mdash; metà del costo di Feedly Pro. Per "
-"gli utenti esperti, NewsBlur Pro a 29 $/mese include il recupero dei feed ogni 5 minuti per tutti i 10.000 "
-"siti, classificatori regex e assistenza prioritaria. Il piano Enterprise equivalente di Feedly costa 18 "
-"$/mese, ma è limitato a 2.500 fonti e non offre filtri regex né hosting autonomo."
+"NewsBlur Premium parte da 36 $/anno per un massimo di 1.024 siti &mdash; la metà del costo di Feedly Pro. "
+"Per gli utenti più esigenti, NewsBlur Pro a 29 $/mese include l’aggiornamento dei feed ogni 5 minuti per "
+"tutti i 10.000 siti, classificatori regex, la registrazione delle applicazioni OAuth e il supporto "
+"prioritario. Il piano Enterprise comparabile di Feedly costa 18 $/mese, ma è limitato a 2.500 fonti e non "
+"offre il filtraggio regex né l’hosting autonomo."
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "Prezzi di NewsBlur - Piani per ogni lettore"
@@ -4062,16 +4079,6 @@ msgstr ""
 " con IA dei tuoi articoli principali, con sezioni configurabili. Queste funzionalità trasformano la lettura"
 " passiva in una raccolta attiva di informazioni."
 
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur supporta OAuth, ma per avere un client abilitato per OAuth devi <a "
-"href=\"mailto:samuel@newsblur.com\">scrivere a Samuel</a> per richiedere un ID client e un secret. Dovrai "
-"fornire il tuo nome utente NewsBlur, l'URI di reindirizzamento (spesso è semplicemente il sito web della "
-"tua app client) e il nome dell'app."
-
 msgid "NewsBlur username"
 msgstr "Nome utente NewsBlur"
 
@@ -4379,6 +4386,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Solo gli utenti Premium possono condividere più articoli al giorno dallo stesso sito."
 
+msgid "Open NewsBlur to register your application."
+msgstr "Apri NewsBlur per registrare la tua applicazione."
+
 msgid "Open Source"
 msgstr "Open source"
 
@@ -4619,10 +4629,10 @@ msgstr "Premium Pro"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
+" OAuth application registration, and priority support."
 msgstr ""
-"Premium Pro (29 $/mese) ti offre aggiornamenti di tutti i feed ogni 5-15 minuti, addestramento regex, fino "
-"a 10.000 siti e assistenza prioritaria."
+"Premium Pro (29 $/mese) ti offre l’aggiornamento di tutti i feed ogni 5-15 minuti, l’addestramento regex, "
+"fino a 10.000 siti, la registrazione delle applicazioni OAuth e il supporto prioritario."
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Prezzi di NewsBlur"
@@ -4992,6 +5002,11 @@ msgstr "Attiva/disattiva la modalità regex per i classificatori di intelligenza
 
 msgid "Register a new application"
 msgstr "Registra una nuova applicazione"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr ""
+"Registra la tua applicazione sul web per consentire alle persone di collegare i propri account NewsBlur ad "
+"essa."
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "Le ricerche usate regolarmente vengono comodamente aggiunte come feed"
@@ -5499,6 +5514,9 @@ msgstr "Accedi per sincronizzare subito i tuoi feed, l'addestramento e gli artic
 
 msgid "Sign in to NewsBlur"
 msgstr "Accedi a NewsBlur"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "Accedi per visualizzare le tue applicazioni OAuth."
 
 msgid "Sign in with Apple"
 msgstr "Accedi con Apple"
@@ -6052,6 +6070,9 @@ msgstr "L'unico lettore RSS open source che non devi ospitare sui tuoi server"
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "L'articolo originale dei feed RSS troncati viene ampliato senza interruzioni"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "Il proprietario di questa applicazione OAuth deve avere un abbonamento Premium Pro attivo NewsBlur."
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Come per i feed normali. Gli utenti Premium e Pro ricevono aggiornamenti più frequenti."
 
@@ -6486,6 +6507,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Usa"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "Usa HTTPS per l'URL di reindirizzamento oppure HTTP su localhost."
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6845,6 +6869,15 @@ msgstr "Articoli più letti"
 msgid "Widely-read, long reads, good reads"
 msgstr "Più letti, letture lunghe, letture consigliate"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"Con un account Premium Pro attivo, puoi <a href=\"/account/applications/register/\">creare un'applicazione "
+"OAuth</a>. Inserisci il nome dell'applicazione, il sito web e l'URL di reindirizzamento per ricevere un ID "
+"client e una chiave segreta. Chi collega il proprio account può usare qualsiasi piano NewsBlur."
+
 msgid "Works Everywhere"
 msgstr "Funziona ovunque"
 
@@ -6891,11 +6924,11 @@ msgstr ""
 "avanzate di addestramento."
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
 msgstr ""
-"Sì, Premium Pro include tutte le funzionalità di Premium e Archive, oltre al recupero in tempo reale, alle "
-"espressioni regolari e all'assistenza prioritaria."
+"Sì, Premium Pro include tutte le funzionalità di Premium e Archive, oltre all’aggiornamento in tempo reale,"
+" alle regex, alla registrazione delle applicazioni OAuth e al supporto prioritario."
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr ""
@@ -7522,6 +7555,9 @@ msgstr ""
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "Il tuo account resterà Premium fino al %(date)s. Oggi non cambia nient'altro."
+
+msgid "Your app name"
+msgstr "Nome della tua app"
 
 msgid "Your applications"
 msgstr "Le tue applicazioni"

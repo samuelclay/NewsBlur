@@ -318,10 +318,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
+			<key>many</key>
+			<string>%@ nouveaux articles</string>
 			<key>one</key>
-			<string>%@ new story</string>
+			<string>%@ nouvel article</string>
 			<key>other</key>
-			<string>%@ new stories</string>
+			<string>%@ nouveaux articles</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>

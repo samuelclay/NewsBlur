@@ -11,10 +11,12 @@
                 <input class="input-block-level" type="text" value="{{ application.client_id }}" readonly>
             </li>
 
+            {% if application.applicationwebsite %}
             <li>
-                <p><b>{% trans "Client secret" %}</b></p>
-                <input class="input-block-level" type="text" value="{{ application.client_secret }}" readonly>
+                <p><b>{% trans "Application website" %}</b></p>
+                <p>{{ application.applicationwebsite.website }}</p>
             </li>
+            {% endif %}
 
             <li>
                 <p><b>{% trans "Client type" %}</b></p>

@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">最大10,000サイトをフォロー</string>
     <string name="pro_all_feeds_fetched">すべてのフィードを5～15分ごとに取得</string>
     <string name="pro_regex_train">正規表現で記事を学習</string>
+    <string name="pro_oauth_applications">OAuthアプリケーションを作成</string>
     <string name="pro_priority_support">優先サポート</string>
     <string name="pro_natural_language_search">自然言語検索</string>
     <string name="settings_cat_offline">オフラインで読む</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">記事をスクロールして通過したら自動的に既読にする</string>
     <string name="settings_story_clustering">関連する記事をまとめる</string>
     <string name="settings_story_clustering_summary">記事タイトルの下に、他のフィードにある重複記事を表示</string>
+    <string name="settings_show_new_stories">新しい記事を受信したら表示</string>
+    <string name="settings_show_new_stories_summary">開いているサイトまたはフォルダーに記事が届いたとき、「新着記事：N件」のピルを表示</string>
     <string name="settings_cluster_matches">一致した記事をまとめる</string>
     <string name="settings_cluster_matches_summary">クラスターに重複したタイトルのみを表示するか、関連する記事も表示するかを選択します</string>
     <string name="settings_story_clustering_save_failed">記事のクラスタリング設定を保存できませんでした</string>
@@ -1481,4 +1484,7 @@
     <string name="settings_listen_speed">再生速度</string>
     <string name="archive_listen">読み上げ記事を週1時間聴取</string>
     <string name="pro_listen">読み上げ記事を週10時間聴取</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">新着記事：%d件</item>
+    </plurals>
 </resources>

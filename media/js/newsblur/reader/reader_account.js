@@ -47,6 +47,7 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
     make_modal: function () {
         var self = this;
+        this.oauth_applications = new NEWSBLUR.AccountOAuthApplications(this);
 
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal-account NB-modal' }, [
             $.make('div', { className: 'NB-modal-tabs' }, [
@@ -54,7 +55,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-account' }, gettext('Account')),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-premium' }, gettext('Payments')),
                 $.make('div', { className: 'NB-modal-tab NB-modal-tab-emails' }, gettext('Emails')),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-custom' }, gettext('Custom CSS/JavaScript'))
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-custom' }, gettext('Custom CSS/JavaScript')),
+                $.make('button', { type: 'button', className: 'NB-modal-tab NB-modal-tab-oauth' }, gettext('OAuth applications'))
             ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
@@ -368,8 +370,16 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 e.preventDefault();
                 self.save_account_settings();
                 return false;
-            })
+            }),
+            this.oauth_applications.$tab
         ]);
+    },
+
+    switch_tab: function (tab) {
+        this.$modal.find('.NB-preferences-form').toggle(tab !== 'oauth');
+        if (tab === 'oauth') this.oauth_applications.load_applications();
+        NEWSBLUR.Modal.prototype.switch_tab.call(this, tab);
+        this.resize();
     },
 
     render_dates: function () {
@@ -862,14 +872,15 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
 
     serialize_preferences: function () {
         var preferences = {};
+        var $form = this.$modal.find('.NB-preferences-form');
 
-        $('input[type=radio]:checked, select, textarea, input[type=text], input[type=password]', this.$modal).each(function () {
+        $('input[type=radio]:checked, select, textarea, input[type=text], input[type=password]', $form).each(function () {
             var name = $(this).attr('name');
             var preference = preferences[name] = $(this).val();
             if (preference == 'true') preferences[name] = true;
             else if (preference == 'false') preferences[name] = false;
         });
-        $('input[type=checkbox]', this.$modal).each(function () {
+        $('input[type=checkbox]', $form).each(function () {
             preferences[$(this).attr('name')] = $(this).is(':checked');
         });
 
@@ -1148,6 +1159,8 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
                 newtab = 'emails';
             } else if ($t.hasClass('NB-modal-tab-custom')) {
                 newtab = 'custom';
+            } else if ($t.hasClass('NB-modal-tab-oauth')) {
+                newtab = 'oauth';
             }
             self.switch_tab(newtab);
         });
@@ -1209,9 +1222,10 @@ _.extend(NEWSBLUR.ReaderAccount.prototype, {
     },
 
     handle_change: function () {
+        var $form = this.$modal.find('.NB-preferences-form');
         $('.NB-account-invoice-text', this.$modal).on('input change', _.bind(this.enable_save, this));
-        $('input[type=radio],input[type=checkbox],select,input', this.$modal).not('.NB-preference-delete-classifiers input').bind('change', _.bind(this.enable_save, this));
-        $('input', this.$modal).not('.NB-preference-delete-classifiers input').bind('keydown', _.bind(this.enable_save, this));
+        $('input[type=radio],input[type=checkbox],select,input', $form).not('.NB-preference-delete-classifiers input').bind('change', _.bind(this.enable_save, this));
+        $('input', $form).not('.NB-preference-delete-classifiers input').bind('keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input[type=text],textarea', 'keydown', _.bind(this.enable_save, this));
         $('.NB-tab-custom', this.$modal).delegate('input,textarea', 'change', _.bind(this.enable_save, this));
     },

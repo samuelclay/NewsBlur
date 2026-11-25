@@ -46,6 +46,7 @@
 "%@ left in this preview" = "इस प्रीव्यू में %@ बाकी";
 "%@ left this week" = "इस सप्ताह %@ शेष";
 "%@ match" = "%@ मिलान";
+"%@ new stories" = "%@ नए लेख";
 "%@ opens" = "%@ बार खुलता है";
 "%@ or search" = "%@ या खोजें";
 "%@ public comments" = "%@ सार्वजनिक टिप्पणियाँ";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "आपकी खर्च सीमा सहेजी नहीं जा सकी। कृपया फिर से कोशिश करें।";
 "Couldn’t load the full image. You can try opening it in your browser." = "पूरी इमेज लोड नहीं हो सकी। आप इसे अपने ब्राउज़र में खोलने की कोशिश कर सकते हैं।";
 "Counting is difficult..." = "गिनती करना मुश्किल है...";
+"Create OAuth applications" = "OAuth एप्लिकेशन बनाएँ";
 "Create a feed from any web page" = "किसी भी वेब पेज से फ़ीड बनाएँ";
 "Create a new account instead" = "इसके बजाय नया खाता बनाएँ";
 "Create account" = "खाता बनाएँ";
@@ -990,6 +992,7 @@
 "Show feed list" = "फ़ीड सूची दिखाएँ";
 "Show feeds after being read" = "पढ़ने के बाद फ़ीड दिखाएँ";
 "Show hidden stories" = "छिपे हुए लेख दिखाएँ";
+"Show new stories as they arrive" = "नए लेख आते ही दिखाएँ";
 "Show original story" = "मूल लेख दिखाएँ";
 "Show original text" = "मूल टेक्स्ट दिखाएँ";
 "Show public comments" = "सार्वजनिक टिप्पणियाँ दिखाएँ";
@@ -998,6 +1001,7 @@
 "Show unread count" = "अपठित संख्या दिखाएँ";
 "Show with feed icons" = "फ़ीड आइकन के साथ दिखाएँ";
 "Show without icons" = "बिना आइकन के दिखाएँ";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "खुले फ़ीड या फ़ोल्डर में नए लेख आने पर “N नए लेख” पिल दिखाता है।";
 "Shows the music settings" = "संगीत सेटिंग्स दिखाता है";
 "Sidebar" = "साइडबार";
 "Sign Up" = "साइन अप करें";

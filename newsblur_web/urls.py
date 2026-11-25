@@ -189,7 +189,7 @@ urlpatterns = [
     url(r"^account/signup/?$", profile_views.signup, name="signup"),
     url(r"^account/logout/?$", LogoutView, {"next_page": "/"}, name="logout"),
     url(r"^account/ifttt/v1/", include("apps.oauth.urls")),
-    url(r"^account/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+    url(r"^account/", include("apps.oauth.account_urls", namespace="oauth2_provider")),
     url(r"^monitor/", include("apps.monitor.urls"), name="monitor"),
     url(r"^health-check/?", static_views.health_check, name="health-check"),
     url("", include("django_prometheus.urls")),

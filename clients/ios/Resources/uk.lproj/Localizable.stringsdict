@@ -352,10 +352,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
+			<key>few</key>
+			<string>%@ нові статті</string>
+			<key>many</key>
+			<string>%@ нових статей</string>
 			<key>one</key>
-			<string>%@ new story</string>
+			<string>%@ нова стаття</string>
 			<key>other</key>
-			<string>%@ new stories</string>
+			<string>%@ нових статей</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>

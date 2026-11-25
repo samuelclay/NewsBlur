@@ -46,6 +46,7 @@
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
 "%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
+"%@ new stories" = "%@ artikel baru";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
 "%@ public comments" = "%@ komentar publik";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Batas pengeluaran Anda tidak dapat disimpan. Silakan coba lagi.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Gambar penuh tidak dapat dimuat. Anda dapat mencoba membukanya di browser.";
 "Counting is difficult..." = "Menghitung itu sulit...";
+"Create OAuth applications" = "Buat aplikasi OAuth";
 "Create a feed from any web page" = "Buat feed dari halaman web mana pun";
 "Create a new account instead" = "Buat akun baru saja";
 "Create account" = "Buat akun";
@@ -990,6 +992,7 @@
 "Show feed list" = "Tampilkan daftar feed";
 "Show feeds after being read" = "Tampilkan feed setelah dibaca";
 "Show hidden stories" = "Tampilkan artikel tersembunyi";
+"Show new stories as they arrive" = "Tampilkan artikel baru saat tersedia";
 "Show original story" = "Tampilkan artikel asli";
 "Show original text" = "Tampilkan teks asli";
 "Show public comments" = "Tampilkan komentar publik";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Tampilkan jumlah belum dibaca";
 "Show with feed icons" = "Tampilkan dengan ikon feed";
 "Show without icons" = "Tampilkan tanpa ikon";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Menampilkan pil \"N artikel baru\" saat artikel baru tersedia di feed atau folder yang terbuka.";
 "Shows the music settings" = "Menampilkan pengaturan musik";
 "Sidebar" = "Bilah sisi";
 "Sign Up" = "Daftar";

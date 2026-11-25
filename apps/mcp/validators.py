@@ -11,6 +11,8 @@ from oauth2_provider.models import get_grant_model
 from oauth2_provider.oauth2_validators import OAuth2Validator
 from oauth2_provider.settings import oauth2_settings
 
+from apps.oauth.traffic import record_request
+
 LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "[::1]"}
 
 
@@ -55,6 +57,12 @@ class RFC8252OAuth2Validator(OAuth2Validator):
             super().invalidate_authorization_code(client_id, code, request, *args, **kwargs)
         except Grant.DoesNotExist:
             pass
+
+    def validate_bearer_token(self, token, scopes, request):
+        valid = super().validate_bearer_token(token, scopes, request)
+        if valid and request.client:
+            record_request(request.client.pk, request.access_token.user_id)
+        return valid
 
     def save_bearer_token(self, token, request, *args, **kwargs):
         """Tell clients how long the refresh token lasts.

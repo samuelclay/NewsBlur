@@ -53,6 +53,7 @@
     * {% trans "All feeds fetched every 5-15 minutes" %}
     * {% trans "Train stories with regular expressions" %}
     * {% trans "Listen to 10 hours of stories read aloud a week" %}
+    * {% trans "Create OAuth applications" %}
     * {% trans "Priority support" %}
 
 {% trans "All of this for $29/month." %}

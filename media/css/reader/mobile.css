@@ -2161,6 +2161,10 @@ body.NB-mobile #simplemodal-container .NB-modal .NB-preferences-scroll {
     padding-right: 0 !important;
 }
 
+body.NB-mobile #simplemodal-container .NB-modal-account .NB-tab.NB-tab-oauth {
+    padding-right: 14px !important;
+}
+
 body.NB-mobile #simplemodal-container .NB-modal .NB-modal-tabs {
     display: flex;
     flex-wrap: nowrap;

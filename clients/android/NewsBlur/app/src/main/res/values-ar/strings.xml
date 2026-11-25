@@ -492,6 +492,7 @@
     <string name="pro_enable_sites">تابع ما يصل إلى 10,000 موقع</string>
     <string name="pro_all_feeds_fetched">يتم جلب جميع الخلاصات كل 5 إلى 15 دقيقة</string>
     <string name="pro_regex_train">درّب القصص باستخدام التعابير النمطية</string>
+    <string name="pro_oauth_applications">إنشاء تطبيقات OAuth</string>
     <string name="pro_priority_support">دعم ذو أولوية</string>
     <string name="pro_natural_language_search">البحث باللغة الطبيعية</string>
     <string name="settings_cat_offline">القراءة دون اتصال</string>
@@ -654,6 +655,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">وضع علامة «مقروءة» على القصص تلقائيًا عند تجاوزها بالتمرير</string>
     <string name="settings_story_clustering">تجميع القصص ذات الصلة</string>
     <string name="settings_story_clustering_summary">عرض القصص المكررة من خلاصات أخرى أسفل عنوان القصة</string>
+    <string name="settings_show_new_stories">أظهر القصص الجديدة فور وصولها</string>
+    <string name="settings_show_new_stories_summary">أظهر شارة \"N قصة جديدة\" عند وصول القصص إلى الموقع أو المجلد المفتوح</string>
     <string name="settings_cluster_matches">مطابقات التجميع</string>
     <string name="settings_cluster_matches_summary">اختر ما إذا كانت المجموعات تعرض العناوين المكررة فقط أم القصص ذات الصلة أيضًا</string>
     <string name="settings_story_clustering_save_failed">تعذّر حفظ تفضيل تجميع القصص</string>
@@ -1651,4 +1654,12 @@
     <string name="settings_listen_speed">سرعة التشغيل</string>
     <string name="archive_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا</string>
     <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d 3 قصص جديدة</item>
+        <item quantity="many">%d قصة جديدة</item>
+        <item quantity="one">%d قصة جديدة</item>
+        <item quantity="other">%d قصص جديدة</item>
+        <item quantity="two">%d قصتان جديدتان</item>
+        <item quantity="zero">%d قصة جديدة</item>
+    </plurals>
 </resources>

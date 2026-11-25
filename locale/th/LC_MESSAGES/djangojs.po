@@ -283,7 +283,7 @@ msgstr[0] "%(count)s เดือน"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "บทความใหม่ %(count)s รายการ"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1017,6 +1017,9 @@ msgstr "วิเคราะห์บทความด้วย AI และ�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "หมวดหมู่ทั้งหมด (%(value_1)s)"
 
+msgid "API requests"
+msgstr "คำขอ API"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "ได้แน่นอน เปิดเครื่องมือฝึก แล้วลบเครื่องหมายชอบหรือไม่ชอบเพื่อรีเซ็ต"
 
@@ -1035,6 +1038,9 @@ msgstr "การดำเนินการ"
 
 msgid "Active"
 msgstr "ใช้งานอยู่"
+
+msgid "Active readers · 7 days"
+msgstr "ผู้อ่านที่ใช้งานอยู่ · 7 วัน"
 
 msgid "Activities"
 msgstr "กิจกรรม"
@@ -1148,6 +1154,9 @@ msgstr "กำลังเพิ่ม..."
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "หลังจาก %(slider)s %(count)s วินาที"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "หลังจากผู้อ่านอนุญาตแอปของคุณแล้ว NewsBlur จะส่งผู้อ่านไปยัง URL นี้พร้อมรหัสการอนุญาต"
 
 msgid "After marking feed/folder read"
 msgstr "หลังจากทำเครื่องหมายว่าฟีด/โฟลเดอร์อ่านแล้ว"
@@ -1308,6 +1317,12 @@ msgstr "ไม่จำกัดเวลา"
 msgid "Appearance"
 msgstr "รูปลักษณ์"
 
+msgid "Application name"
+msgstr "ชื่อแอปพลิเคชัน"
+
+msgid "Application website"
+msgstr "เว็บไซต์ของแอปพลิเคชัน"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1434,6 +1449,9 @@ msgstr "ชื่อผู้เขียน"
 
 msgid "Author: "
 msgstr "ผู้เขียน: "
+
+msgid "Authorization link"
+msgstr "ลิงก์การอนุญาต"
 
 msgid "Authors"
 msgstr "ผู้เขียน"
@@ -1878,6 +1896,12 @@ msgstr "คลิกแหล่งใดก็ได้เพื่ออ่า
 msgid "Click to block"
 msgstr "คลิกเพื่อบล็อก"
 
+msgid "Client ID"
+msgstr "รหัสไคลเอนต์"
+
+msgid "Client secret"
+msgstr "รหัสลับไคลเอนต์"
+
 msgid "Close"
 msgstr "ปิด"
 
@@ -1980,11 +2004,28 @@ msgstr ""
 "เชื่อมต่อ NewsBlur กับบริการหลายร้อยรายการ บันทึกบทความไปยัง Pocket, Instapaper, Evernote หรือ Notion "
 "แชร์โพสต์ไปยัง Slack และเรียกใช้เวิร์กโฟลว์ที่กำหนดเองจากการฝึกของคุณ"
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"เชื่อมต่อแอปของคุณกับ NewsBlur เพื่อให้ผู้อ่านอนุญาตให้เข้าถึงบทความและฟีดของตนได้ "
+"ผู้อ่านทุกแพ็กเกจสามารถเชื่อมต่อได้"
+
 msgid "Connected"
 msgstr "เชื่อมต่อแล้ว"
 
 msgid "Connected accounts"
 msgstr "บัญชีที่เชื่อมต่อ"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"บัญชีที่เชื่อมต่อมีโทเค็นการเข้าถึงที่ยังไม่หมดอายุ จำนวนผู้อ่านที่ใช้งานอยู่เป็นค่าประมาณในช่วง 7 "
+"วันตามเวลา UTC คำขอ API และกิจกรรมล่าสุดจะนับตั้งแต่เริ่มติดตาม"
+
+msgid "Consent screen preview"
+msgstr "ตัวอย่างหน้าจอขอความยินยอม"
 
 msgid "Content"
 msgstr "เนื้อหา"
@@ -2019,8 +2060,14 @@ msgstr "คัดลอกข้อความ"
 msgid "Copy URL"
 msgstr "คัดลอก URL"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "คัดลอกรหัสลับไคลเอนต์ตอนนี้ คุณจะดูได้เพียงครั้งเดียว"
+
 msgid "Could not add this classifier. Try again."
 msgstr "เพิ่มตัวจำแนกนี้ไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "Could not create the application. Please try again."
+msgstr "สร้างแอปพลิเคชันไม่สำเร็จ โปรดลองอีกครั้ง"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "ยกเลิกการเชื่อมต่อบัญชีนี้ไม่ได้ โปรดลองอีกครั้ง"
@@ -2030,6 +2077,9 @@ msgstr "ไม่พบฟีด RSS สำหรับ URL นี้"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "โหลดคำถามที่พบบ่อยไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "โหลดแอปพลิเคชันของคุณไม่ได้ ลองรีเฟรช"
 
 msgid "Couldn't load audio for this story."
 msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
@@ -2049,14 +2099,29 @@ msgstr "สร้างบัญชี"
 msgid "Create Gift Link"
 msgstr "สร้างลิงก์ของขวัญ"
 
+msgid "Create OAuth applications"
+msgstr "สร้างแอปพลิเคชัน OAuth"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "สร้างฟีดจากเว็บไซต์ใดก็ได้ แม้ไม่มี RSS"
+
+msgid "Create a new OAuth application"
+msgstr "สร้างแอปพลิเคชัน OAuth ใหม่"
 
 msgid "Create a new subfolder"
 msgstr "สร้างโฟลเดอร์ย่อยใหม่"
 
+msgid "Create another application"
+msgstr "สร้างแอปพลิเคชันอีกแอป"
+
+msgid "Create application"
+msgstr "สร้างแอปพลิเคชัน"
+
 msgid "Created:"
 msgstr "สร้างเมื่อ:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "การสร้างแอปพลิเคชัน OAuth ต้องใช้ NewsBlur Premium Pro"
 
 msgid "Creative"
 msgstr "สร้างสรรค์"
@@ -3727,6 +3792,9 @@ msgstr "IP ล่าสุด:"
 msgid "Last Update"
 msgstr "อัปเดตล่าสุด"
 
+msgid "Last activity"
+msgstr "กิจกรรมล่าสุด"
+
 msgid "Last seen:"
 msgstr "พบเห็นล่าสุด:"
 
@@ -3808,6 +3876,9 @@ msgstr "กำลังโหลด PayPal..."
 
 msgid "Loading Training..."
 msgstr "กำลังโหลดการฝึก..."
+
+msgid "Loading applications…"
+msgstr "กำลังโหลดแอปพลิเคชัน…"
 
 msgid "Loading checkout..."
 msgstr "กำลังโหลดหน้าชำระเงิน..."
@@ -4465,6 +4536,9 @@ msgstr "ไม่มีคำถามที่ตรงกับการค้
 msgid "No recency filter"
 msgstr "ไม่มีตัวกรองตามความใหม่"
 
+msgid "No recorded activity"
+msgstr "ไม่มีกิจกรรมที่บันทึกไว้"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "ยังไม่มีผู้ที่คุณแนะนำ แชร์ลิงก์ของคุณเพื่อเริ่มต้น!"
 
@@ -4613,6 +4687,12 @@ msgstr "จำนวนข่าวที่จะรวมในสรุปแ
 msgid "Numbers & Symbols"
 msgstr "ตัวเลขและสัญลักษณ์"
 
+msgid "OAuth application created"
+msgstr "สร้างแอปพลิเคชัน OAuth แล้ว"
+
+msgid "OAuth applications"
+msgstr "แอปพลิเคชัน OAuth"
+
 msgid "OFF"
 msgstr "ปิด"
 
@@ -4629,7 +4709,7 @@ msgid "Off"
 msgstr "ปิด"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "แสดงเป็นป้าย “บทความใหม่ N รายการ”"
 
 msgid "Official NewsBlur Android App"
 msgstr "แอป Android อย่างเป็นทางการของ NewsBlur"
@@ -4739,7 +4819,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "แสดงจำนวนเฉพาะโฟลเดอร์ที่ยุบอยู่"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "แสดงบทความเหล่านั้นเมื่อโหลดรายการใหม่เท่านั้น"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "ตัดทอนบทความที่แชร์ซึ่งยาวเกินไปเฉพาะใน Blurblog"
@@ -5392,6 +5472,9 @@ msgstr "ซับเรดดิต Reddit"
 msgid "Redeemed"
 msgstr "แลกใช้แล้ว"
 
+msgid "Redirect URL"
+msgstr "URL เปลี่ยนเส้นทาง"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "ลดความรกในรายการบทความของคุณ"
 
@@ -5409,6 +5492,9 @@ msgstr "ประวัติการแนะนำ"
 
 msgid "Refine with a hint"
 msgstr "ปรับแต่งด้วยคำใบ้"
+
+msgid "Refresh"
+msgstr "รีเฟรช"
 
 msgid "Refund $12"
 msgstr "คืนเงิน $12"
@@ -6097,7 +6183,7 @@ msgid "Show more related stories"
 msgstr "แสดงบทความที่เกี่ยวข้องเพิ่มเติม"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "แสดงบทความใหม่เมื่อเข้ามา"
 
 msgid "Show on Load"
 msgstr "แสดงเมื่อโหลด"
@@ -6948,6 +7034,13 @@ msgstr "สัปดาห์นี้"
 msgid "This Year"
 msgstr "ปีนี้"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"ตัวอย่างนี้ขอสิทธิ์เข้าถึงเพื่ออ่าน สร้างค่า state ใหม่ทุกครั้งที่ลงชื่อเข้าใช้ "
+"และตรวจสอบค่านั้นเมื่อผู้อ่านกลับมา"
+
 msgid "This is just the demo."
 msgstr "นี่เป็นเพียงเดโม"
 
@@ -7288,6 +7381,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "เลิกปิดเสียงเว็บไซต์นี้"
+
+msgid "Unavailable"
+msgstr "ไม่พร้อมใช้งาน"
 
 msgid "Uncategorized"
 msgstr "ไม่มีหมวดหมู่"
@@ -7913,6 +8009,9 @@ msgstr "คุณไม่มีบทความที่ยังไม่ไ
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "คุณยังไม่ได้ติดตามบทความที่แชร์โดยใครเลย"
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "คุณยังไม่ได้ลงทะเบียนแอปพลิเคชัน OAuth"
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "คุณต้องติดตาม %(value_1)s จึงจะตอบกลับได้"
@@ -7987,11 +8086,20 @@ msgstr "โดเมนที่เก็บถาวรของคุณ"
 msgid "Your Blurblog"
 msgstr "Blurblog ของคุณ"
 
+msgid "Your OAuth applications"
+msgstr "แอปพลิเคชัน OAuth ของคุณ"
+
 msgid "Your Referral Link"
 msgstr "ลิงก์แนะนำของคุณ"
 
 msgid "Your Referral Stats"
 msgstr "สถิติการแนะนำของคุณ"
+
+msgid "Your app name"
+msgstr "ชื่อแอปของคุณ"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "แอปพลิเคชันของคุณหยุดชั่วคราวจนกว่าบัญชีจะมี Premium Pro ที่ใช้งานอยู่"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "คุณยังเข้าถึงบทความที่เก็บถาวรไว้ได้ แต่บทความใหม่จะเป็นไปตามนโยบายการเก็บรักษามาตรฐาน"

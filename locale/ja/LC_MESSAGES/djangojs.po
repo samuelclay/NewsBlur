@@ -283,7 +283,7 @@ msgstr[0] "%(count)sか月"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "新着記事：%(count)s件"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1015,6 +1015,9 @@ msgstr "ニュースフィードの記事をAIで分析し、あなたに合わ�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "すべてのカテゴリ（%(value_1)s）"
 
+msgid "API requests"
+msgstr "API リクエスト数"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "もちろんです。トレーナーを開いて、付けた高評価や低評価を外せばリセットできます。"
 
@@ -1033,6 +1036,9 @@ msgstr "アクション"
 
 msgid "Active"
 msgstr "有効"
+
+msgid "Active readers · 7 days"
+msgstr "アクティブなリーダー数 · 7日間"
 
 msgid "Activities"
 msgstr "アクティビティ"
@@ -1144,6 +1150,9 @@ msgstr "追加中..."
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s秒後"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "読者がアプリを認証すると、NewsBlurは認証コードを付けてこのURLにリダイレクトします。"
 
 msgid "After marking feed/folder read"
 msgstr "フィード／フォルダーを既読にした後"
@@ -1296,6 +1305,12 @@ msgstr "すべての期間"
 msgid "Appearance"
 msgstr "外観"
 
+msgid "Application name"
+msgstr "アプリケーション名"
+
+msgid "Application website"
+msgstr "アプリケーションのウェブサイト"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1422,6 +1437,9 @@ msgstr "著者名"
 
 msgid "Author: "
 msgstr "著者："
+
+msgid "Authorization link"
+msgstr "認証リンク"
 
 msgid "Authors"
 msgstr "著者"
@@ -1864,6 +1882,12 @@ msgstr "ソースをクリックすると、そのバージョンの記事を読
 msgid "Click to block"
 msgstr "クリックしてブロック"
 
+msgid "Client ID"
+msgstr "クライアントID"
+
+msgid "Client secret"
+msgstr "クライアントシークレット"
+
 msgid "Close"
 msgstr "閉じる"
 
@@ -1962,11 +1986,24 @@ msgid ""
 "shares to Slack; trigger custom workflows from your training."
 msgstr "NewsBlurを何百ものサービスに接続できます。記事をPocket、Instapaper、Evernote、Notionに保存したり、Slackで共有したり、学習内容をきっかけに独自のワークフローを実行したりできます。"
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr "アプリをNewsBlurに接続すると、読者が記事やフィードへのアクセスを許可できるようになります。どのプランの読者でも接続できます。"
+
 msgid "Connected"
 msgstr "接続済み"
 
 msgid "Connected accounts"
 msgstr "接続済みアカウント"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr "接続済みアカウントには有効期限内のアクセストークンがあります。アクティブなリーダー数は、過去7日間（UTC）を基に推定されます。API リクエスト数と最終アクティビティは、追跡開始時点から計測されます。"
+
+msgid "Consent screen preview"
+msgstr "同意画面のプレビュー"
 
 msgid "Content"
 msgstr "コンテンツ"
@@ -2001,8 +2038,14 @@ msgstr "テキストをコピー"
 msgid "Copy URL"
 msgstr "URLをコピー"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "クライアントシークレットを今すぐコピーしてください。この情報は一度しか表示されません。"
+
 msgid "Could not add this classifier. Try again."
 msgstr "この分類器を追加できませんでした。もう一度お試しください。"
+
+msgid "Could not create the application. Please try again."
+msgstr "アプリケーションを作成できませんでした。もう一度お試しください。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "このアカウントを切断できませんでした。もう一度お試しください。"
@@ -2012,6 +2055,9 @@ msgstr "このURLのRSSフィードが見つかりませんでした"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQを読み込めませんでした。もう一度お試しください。"
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "アプリケーションを読み込めませんでした。再読み込みしてください。"
 
 msgid "Couldn't load audio for this story."
 msgstr "この記事の音声を読み込めませんでした。"
@@ -2031,14 +2077,29 @@ msgstr "アカウントを作成"
 msgid "Create Gift Link"
 msgstr "ギフトリンクを作成"
 
+msgid "Create OAuth applications"
+msgstr "OAuthアプリケーションを作成"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "RSSがなくても、あらゆるウェブサイトのフィードを作成できます。"
+
+msgid "Create a new OAuth application"
+msgstr "新しいOAuthアプリケーションを作成"
 
 msgid "Create a new subfolder"
 msgstr "新しいサブフォルダーを作成"
 
+msgid "Create another application"
+msgstr "別のアプリケーションを作成"
+
+msgid "Create application"
+msgstr "アプリケーションを作成"
+
 msgid "Created:"
 msgstr "作成日："
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuthアプリケーションの作成にはNewsBlurプレミアム Proが必要です。"
 
 msgid "Creative"
 msgstr "クリエイティブ"
@@ -3693,6 +3754,9 @@ msgstr "最後のIPアドレス："
 msgid "Last Update"
 msgstr "最終更新"
 
+msgid "Last activity"
+msgstr "最終アクティビティ"
+
 msgid "Last seen:"
 msgstr "最終確認："
 
@@ -3772,6 +3836,9 @@ msgstr "PayPalを読み込み中..."
 
 msgid "Loading Training..."
 msgstr "学習データを読み込み中..."
+
+msgid "Loading applications…"
+msgstr "アプリケーションを読み込み中…"
 
 msgid "Loading checkout..."
 msgstr "チェックアウトを読み込み中..."
@@ -4425,6 +4492,9 @@ msgstr "検索に一致する質問はありません。"
 msgid "No recency filter"
 msgstr "新しさフィルターなし"
 
+msgid "No recorded activity"
+msgstr "記録されたアクティビティはありません"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "まだ紹介はありません。リンクを共有して始めましょう！"
 
@@ -4573,6 +4643,12 @@ msgstr "各ブリーフィングに含める記事数"
 msgid "Numbers & Symbols"
 msgstr "数字と記号"
 
+msgid "OAuth application created"
+msgstr "OAuthアプリケーションを作成しました"
+
+msgid "OAuth applications"
+msgstr "OAuthアプリケーション"
+
 msgid "OFF"
 msgstr "オフ"
 
@@ -4589,7 +4665,7 @@ msgid "Off"
 msgstr "オフ"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "「新着記事：N件」のピルを表示"
 
 msgid "Official NewsBlur Android App"
 msgstr "公式NewsBlur Androidアプリ"
@@ -4697,7 +4773,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "折りたたまれたフォルダーにのみ件数を表示"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "リストの再読み込み時のみ表示"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Blurblogでは長い共有記事のみ省略する"
@@ -5346,6 +5422,9 @@ msgstr "Redditのサブレディット"
 msgid "Redeemed"
 msgstr "引き換え済み"
 
+msgid "Redirect URL"
+msgstr "リダイレクトURL"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "記事の流れをすっきり整理"
 
@@ -5363,6 +5442,9 @@ msgstr "紹介履歴"
 
 msgid "Refine with a hint"
 msgstr "ヒントで絞り込む"
+
+msgid "Refresh"
+msgstr "再読み込み"
 
 msgid "Refund $12"
 msgstr "12ドルを返金"
@@ -6045,7 +6127,7 @@ msgid "Show more related stories"
 msgstr "関連する記事をもっと表示"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "新しい記事を受信したら表示"
 
 msgid "Show on Load"
 msgstr "読み込み時に表示"
@@ -6884,6 +6966,11 @@ msgstr "今週"
 msgid "This Year"
 msgstr "今年"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr "この例では読み取りアクセスをリクエストします。ログインごとに新しいstate値を生成し、読者が戻ってきたときに検証してください。"
+
 msgid "This is just the demo."
 msgstr "これはデモです。"
 
@@ -7214,6 +7301,9 @@ msgstr "URL："
 
 msgid "Un-mute this site"
 msgstr "このサイトのミュートを解除"
+
+msgid "Unavailable"
+msgstr "利用不可"
 
 msgid "Uncategorized"
 msgstr "未分類"
@@ -7833,6 +7923,9 @@ msgstr "未読の記事はありません。"
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "まだ誰の共有記事も購読していません。"
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "OAuth アプリケーションはまだ登録されていません。"
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "返信するには、%(value_1)sをフォローする必要があります"
@@ -7905,11 +7998,20 @@ msgstr "アーカイブ済みドメイン"
 msgid "Your Blurblog"
 msgstr "あなたのBlurblog"
 
+msgid "Your OAuth applications"
+msgstr "あなたの OAuth アプリケーション"
+
 msgid "Your Referral Link"
 msgstr "紹介リンク"
 
 msgid "Your Referral Stats"
 msgstr "紹介実績"
+
+msgid "Your app name"
+msgstr "アプリ名"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "アカウントでプレミアム Proが有効になるまで、アプリケーションは一時停止されます。"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "アーカイブした記事には引き続きアクセスできますが、新しい記事には通常の保存期間ポリシーが適用されます。"

@@ -393,6 +393,9 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
         if (next) console.log(['load_url_next_param', next, route_found]);
         if (next == 'optout') {
             NEWSBLUR.reader.open_account_modal({ 'animate_email': true });
+        } else if (next == 'oauth-applications' || next == 'create-oauth-application') {
+            NEWSBLUR.reader.flags.oauth_application_requested = true;
+            NEWSBLUR.reader.open_account_modal({tab: 'oauth', create_oauth: next == 'create-oauth-application'});
         } else if (next == 'goodies') {
             NEWSBLUR.reader.open_goodies_modal();
         } else if (next == 'newsletters') {

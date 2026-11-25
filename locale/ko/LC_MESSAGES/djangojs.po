@@ -283,7 +283,7 @@ msgstr[0] "%(count)s개월"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s개의 새 스토리"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1015,6 +1015,9 @@ msgstr "뉴스 피드를 AI로 분석하고 나만을 위한 일일 요약을 �
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "전체 카테고리 (%(value_1)s)"
 
+msgid "API requests"
+msgstr "API 요청 수"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "물론입니다. 트레이너를 열고 좋아요나 싫어요 표시를 삭제해 초기화하세요."
 
@@ -1033,6 +1036,9 @@ msgstr "작업"
 
 msgid "Active"
 msgstr "활성"
+
+msgid "Active readers · 7 days"
+msgstr "활성 독자 · 7일"
 
 msgid "Activities"
 msgstr "활동"
@@ -1144,6 +1150,9 @@ msgstr "추가 중..."
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s초 후"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "독자가 앱을 승인하면 NewsBlur에서 인증 코드와 함께 이 URL로 이동시킵니다."
 
 msgid "After marking feed/folder read"
 msgstr "피드/폴더를 읽음으로 표시한 후"
@@ -1296,6 +1305,12 @@ msgstr "전체 기간"
 msgid "Appearance"
 msgstr "모양"
 
+msgid "Application name"
+msgstr "애플리케이션 이름"
+
+msgid "Application website"
+msgstr "애플리케이션 웹사이트"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1422,6 +1437,9 @@ msgstr "작성자 이름"
 
 msgid "Author: "
 msgstr "작성자: "
+
+msgid "Authorization link"
+msgstr "승인 링크"
 
 msgid "Authors"
 msgstr "작성자"
@@ -1864,6 +1882,12 @@ msgstr "원하는 출처를 클릭해 해당 버전을 읽거나, 중복 항목�
 msgid "Click to block"
 msgstr "클릭하여 차단"
 
+msgid "Client ID"
+msgstr "클라이언트 ID"
+
+msgid "Client secret"
+msgstr "클라이언트 비밀 키"
+
 msgid "Close"
 msgstr "닫기"
 
@@ -1966,11 +1990,24 @@ msgstr ""
 "NewsBlur를 수백 가지 서비스와 연결하세요. 스토리를 Pocket, Instapaper, Evernote 또는 Notion에 저장하고, Slack에 공유 글을 게시하고, 학습 결과를 "
 "바탕으로 맞춤 워크플로를 실행할 수 있습니다."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr "독자가 스토리와 피드에 대한 액세스를 허용할 수 있도록 앱을 NewsBlur에 연결하세요. 모든 요금제의 독자가 연결할 수 있습니다."
+
 msgid "Connected"
 msgstr "연결됨"
 
 msgid "Connected accounts"
 msgstr "연결된 계정"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr "연결된 계정은 만료되지 않은 액세스 토큰을 보유하고 있습니다. 활성 독자 수는 UTC 기준 7일 동안의 추정치입니다. API 요청 수와 마지막 활동은 추적 시작 시점부터 측정됩니다."
+
+msgid "Consent screen preview"
+msgstr "동의 화면 미리보기"
 
 msgid "Content"
 msgstr "콘텐츠"
@@ -2005,8 +2042,14 @@ msgstr "텍스트 복사"
 msgid "Copy URL"
 msgstr "URL 복사"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "클라이언트 시크릿을 지금 복사하세요. 이 값은 한 번만 볼 수 있습니다."
+
 msgid "Could not add this classifier. Try again."
 msgstr "이 분류기를 추가할 수 없습니다. 다시 시도하세요."
+
+msgid "Could not create the application. Please try again."
+msgstr "애플리케이션을 만들 수 없습니다. 다시 시도하세요."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "계정 연결을 해제할 수 없습니다. 다시 시도해 주세요."
@@ -2016,6 +2059,9 @@ msgstr "이 URL에서 RSS 피드를 찾을 수 없습니다"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ를 불러오지 못했습니다. 다시 시도해 주세요."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "애플리케이션을 불러오지 못했습니다. 새로고침해 보세요."
 
 msgid "Couldn't load audio for this story."
 msgstr "이 스토리의 오디오를 불러오지 못했습니다."
@@ -2035,14 +2081,29 @@ msgstr "계정 만들기"
 msgid "Create Gift Link"
 msgstr "선물 링크 만들기"
 
+msgid "Create OAuth applications"
+msgstr "OAuth 애플리케이션 만들기"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "RSS가 없는 웹사이트에서도 피드를 만들 수 있습니다."
+
+msgid "Create a new OAuth application"
+msgstr "새 OAuth 애플리케이션 만들기"
 
 msgid "Create a new subfolder"
 msgstr "새 하위 폴더 만들기"
 
+msgid "Create another application"
+msgstr "애플리케이션 추가 만들기"
+
+msgid "Create application"
+msgstr "애플리케이션 만들기"
+
 msgid "Created:"
 msgstr "생성일:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuth 애플리케이션을 만들려면 NewsBlur 프리미엄 프로가 필요합니다."
 
 msgid "Creative"
 msgstr "크리에이티브"
@@ -3701,6 +3762,9 @@ msgstr "마지막 IP:"
 msgid "Last Update"
 msgstr "마지막 업데이트"
 
+msgid "Last activity"
+msgstr "마지막 활동"
+
 msgid "Last seen:"
 msgstr "마지막 확인:"
 
@@ -3780,6 +3844,9 @@ msgstr "PayPal을 불러오는 중..."
 
 msgid "Loading Training..."
 msgstr "학습 데이터 불러오는 중..."
+
+msgid "Loading applications…"
+msgstr "애플리케이션을 불러오는 중…"
 
 msgid "Loading checkout..."
 msgstr "결제 페이지를 불러오는 중..."
@@ -4433,6 +4500,9 @@ msgstr "검색어와 일치하는 질문이 없습니다."
 msgid "No recency filter"
 msgstr "기간 필터 없음"
 
+msgid "No recorded activity"
+msgstr "기록된 활동이 없습니다."
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "아직 추천 실적이 없습니다. 링크를 공유해 시작하세요!"
 
@@ -4581,6 +4651,12 @@ msgstr "각 브리핑에 포함할 스토리 수"
 msgid "Numbers & Symbols"
 msgstr "숫자 및 기호"
 
+msgid "OAuth application created"
+msgstr "OAuth 애플리케이션을 만들었습니다"
+
+msgid "OAuth applications"
+msgstr "OAuth 애플리케이션"
+
 msgid "OFF"
 msgstr "끔"
 
@@ -4597,7 +4673,7 @@ msgid "Off"
 msgstr "끔"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "새 스토리 수를 “N개의 새 스토리” 알림으로 표시"
 
 msgid "Official NewsBlur Android App"
 msgstr "공식 NewsBlur Android 앱"
@@ -4705,7 +4781,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "접힌 폴더에만 개수 표시"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "목록을 새로고침할 때만 표시"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Blurblog에서는 긴 공유 스토리만 줄여서 표시"
@@ -5354,6 +5430,9 @@ msgstr "Reddit 서브레딧"
 msgid "Redeemed"
 msgstr "사용 완료"
 
+msgid "Redirect URL"
+msgstr "리디렉션 URL"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "스토리 스트림의 복잡함 줄이기"
 
@@ -5371,6 +5450,9 @@ msgstr "추천 내역"
 
 msgid "Refine with a hint"
 msgstr "힌트를 사용해 다듬기"
+
+msgid "Refresh"
+msgstr "새로고침"
 
 msgid "Refund $12"
 msgstr "$12 환불"
@@ -6053,7 +6135,7 @@ msgid "Show more related stories"
 msgstr "관련 스토리 더 보기"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "새 스토리가 도착하는 대로 표시"
 
 msgid "Show on Load"
 msgstr "로드 시 표시"
@@ -6892,6 +6974,11 @@ msgstr "이번 주"
 msgid "This Year"
 msgstr "올해"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr "이 예시는 읽기 액세스를 요청합니다. 로그인할 때마다 새로운 state 값을 생성하고 독자가 돌아왔을 때 이를 확인하세요."
+
 msgid "This is just the demo."
 msgstr "이것은 데모일 뿐입니다."
 
@@ -7224,6 +7311,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "이 사이트 음소거 해제"
+
+msgid "Unavailable"
+msgstr "사용할 수 없음"
 
 msgid "Uncategorized"
 msgstr "분류되지 않음"
@@ -7843,6 +7933,9 @@ msgstr "읽지 않은 스토리가 없습니다."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "아직 다른 사람의 공유 스토리를 구독하지 않았습니다."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "아직 OAuth 애플리케이션을 등록하지 않았습니다."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "답글을 달려면 %(value_1)s님을 팔로우해야 합니다"
@@ -7915,11 +8008,20 @@ msgstr "보관된 도메인"
 msgid "Your Blurblog"
 msgstr "내 Blurblog"
 
+msgid "Your OAuth applications"
+msgstr "내 OAuth 애플리케이션"
+
 msgid "Your Referral Link"
 msgstr "추천 링크"
 
 msgid "Your Referral Stats"
 msgstr "추천 통계"
+
+msgid "Your app name"
+msgstr "앱 이름"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "계정에 프리미엄 프로가 활성화될 때까지 앱 사용이 일시 중지됩니다."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "보관한 스토리는 계속 볼 수 있지만, 새 스토리에는 기본 보관 정책이 적용됩니다."
