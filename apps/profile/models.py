@@ -2929,7 +2929,9 @@ class Profile(models.Model):
             )
 
         self.setup_premium_history()
-        self.activate_archive()
+        # The duplicate check above stopped a replayed transaction, so a new Archive transaction means the
+        # App Store moved this subscription to plain Archive, including back down from Archive Extra.
+        self.activate_archive(downgrade_extra=True)
 
         logging.user(self.user, "~FG~BBNew iOS archive subscription: $%s~FW" % amount)
         return True
@@ -3036,7 +3038,10 @@ class Profile(models.Model):
         elif product_id and "premium.archive.extra" in product_id:
             self.activate_archive_extra()
         elif product_id and "premium.archive" in product_id:
-            self.activate_archive()
+            # The duplicate check above stopped a replayed order, and Google Play names the product of the
+            # purchase it just processed, so a new Archive order means the subscription is on plain Archive
+            # now, including back down from Archive Extra.
+            self.activate_archive(downgrade_extra=True)
         elif not self.is_premium:
             self.activate_premium()
 

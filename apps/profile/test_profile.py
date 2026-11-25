@@ -802,6 +802,43 @@ class Test_AndroidSubscriptionActivation(TestCase):
             ).exists()
         )
 
+    @patch.object(Profile, "setup_premium_history")
+    @patch("apps.profile.views.get_google_play_subscription")
+    def test_a_play_crossgrade_from_archive_extra_to_archive_removes_extra(
+        self, mock_subscription, mock_setup
+    ):
+        from apps.profile.views import handle_google_play_notification
+
+        Profile.objects.filter(pk=self.profile.pk).update(
+            is_premium=True, is_archive=True, is_archive_extra=True
+        )
+        mock_subscription.return_value = {"latestOrderId": "GPA.1000-0000-0000-00005"}
+
+        # google_play_rtdn looks the user up fresh from the purchase token.
+        handle_google_play_notification(
+            User.objects.get(pk=self.user.pk), 4, "archive-token", "nb.premium.archive.99"
+        )
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_a_new_legacy_ios_archive_receipt_after_extra_removes_extra(self, mock_setup):
+        Profile.objects.filter(pk=self.profile.pk).update(
+            is_premium=True, is_archive=True, is_archive_extra=True
+        )
+        self.client.login(username="androidsubtest", password="password")
+
+        self.client.post(
+            reverse("save-ios-receipt"),
+            {"product_identifier": "newsblur_premium_archive", "transaction_identifier": "ios-archive-2"},
+        )
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
     def test_save_android_receipt_passes_product_id(self):
         self.client.login(username="androidsubtest", password="password")
 
