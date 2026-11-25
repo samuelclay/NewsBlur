@@ -1,8 +1,9 @@
 """Listen limits by plan (apps/listen/usage.py).
 
-Premium Pro, Premium Archive Extra and Premium Archive users get full stories up to a weekly cap of estimated
-audio time, counting only audio generated fresh for them (cached segments are free). Weeks start on Sunday at
-midnight in the account's timezone. Everyone else gets a 60 second sample of any story, with a daily budget of
+Premium Pro, Premium Archive Extra and Premium Archive users get full stories up to a cap of estimated audio
+time, counting only audio generated fresh for them (cached segments are free): 10 hours a week for Pro, 10 hours
+a month for Archive Extra and 1 hour a month for Archive. Weeks start on Sunday and months on the 1st, at midnight
+in the account's timezone. Everyone else gets a 60 second sample of any story, with a daily budget of
 fresh preview audio so sampling story after story, or rebuilding one with other voices, can't generate without
 end. Voice previews have a separate daily allowance.
 
@@ -21,12 +22,13 @@ from utils import log as logging
 from .models import MListenUsage
 
 PRO_WEEKLY_SECONDS = 10 * 60 * 60
-ARCHIVE_EXTRA_WEEKLY_SECONDS = 2 * 60 * 60
-ARCHIVE_WEEKLY_SECONDS = 1 * 60 * 60
-WEEKLY_SECONDS = {
-    "pro": PRO_WEEKLY_SECONDS,
-    "archive_extra": ARCHIVE_EXTRA_WEEKLY_SECONDS,
-    "archive": ARCHIVE_WEEKLY_SECONDS,
+ARCHIVE_EXTRA_MONTHLY_SECONDS = 10 * 60 * 60
+ARCHIVE_MONTHLY_SECONDS = 1 * 60 * 60
+# (allowance, period) by plan; only these plans hear full stories.
+ALLOWANCES = {
+    "pro": (PRO_WEEKLY_SECONDS, "week"),
+    "archive_extra": (ARCHIVE_EXTRA_MONTHLY_SECONDS, "month"),
+    "archive": (ARCHIVE_MONTHLY_SECONDS, "month"),
 }
 # Python's weekday() counts Monday as 0; Listen's week starts on Sunday (6).
 WEEK_START_WEEKDAY = 6
@@ -58,11 +60,15 @@ class ListenUsageTracker:
 
     @property
     def is_archive_tier(self):
-        return self.tier in WEEKLY_SECONDS
+        return self.tier in ALLOWANCES
 
     @property
-    def weekly_limit(self):
-        return WEEKLY_SECONDS.get(self.tier)
+    def allowance_limit(self):
+        return ALLOWANCES[self.tier][0] if self.is_archive_tier else None
+
+    @property
+    def period(self):
+        return ALLOWANCES[self.tier][1] if self.is_archive_tier else None
 
     @property
     def previews_limit(self):
@@ -100,6 +106,20 @@ class ListenUsageTracker:
         end = self._local_midnight(sunday + datetime.timedelta(days=7))
         return self._to_utc(start), self._to_utc(end), end
 
+    def month_window(self, now=None):
+        """(start_utc, end_utc, reset_local): the calendar month containing `now`, from the user's midnight on
+        the 1st to the next 1st."""
+        first = self._local_now(now).date().replace(day=1)
+        start = self._local_midnight(first)
+        end = self._local_midnight((first + datetime.timedelta(days=32)).replace(day=1))
+        return self._to_utc(start), self._to_utc(end), end
+
+    def allowance_window(self, now=None):
+        """The window the plan's allowance counts over: a month for Archive and Archive Extra, a week for Pro."""
+        if self.period == "month":
+            return self.month_window(now)
+        return self.week_window(now)
+
     # Resets -------------------------------------------------------------------
     def last_reset(self):
         return MListenUsage.objects(user_id=self.user.pk, kind="reset").order_by("-created_at").first()
@@ -112,7 +132,7 @@ class ListenUsageTracker:
         return start
 
     def reset_usage(self, staff_user=None):
-        """Start this account's weekly cap and daily allowances over from now. The usage rows themselves are
+        """Start this account's listening allowance and daily limits over from now. The usage rows themselves are
         kept; the "reset" row marks where counting starts again (apps/listen/views.py listen_reset_usage)."""
         MListenUsage(user_id=self.user.pk, kind="reset", reason="manual", plan_tier=self.tier).save()
         logging.user(
@@ -122,7 +142,7 @@ class ListenUsageTracker:
 
     # Counters -----------------------------------------------------------------
     def seconds_used(self):
-        start, end, _ = self.week_window()
+        start, end, _ = self.allowance_window()
         start = self._since_reset(start)
         result = MListenUsage._get_collection().aggregate(
             [
@@ -199,7 +219,7 @@ class ListenUsageTracker:
         if cached:
             return True, None, None
         if self.is_archive_tier:
-            if self.seconds_used() >= self.weekly_limit:
+            if self.seconds_used() >= self.allowance_limit:
                 return False, "cap_reached", self.cap_message()
             return True, None, None
         if self.fresh_sample_seconds() >= SAMPLE_FRESH_SECONDS_PER_DAY:
@@ -272,9 +292,10 @@ class ListenUsageTracker:
         return " ".join(parts)
 
     def _reset_day(self):
-        """The weekday the allowance comes back, e.g. "Sunday", in the user's language."""
-        _, _, reset_local = self.week_window()
-        return formats.date_format(reset_local.date(), "l")
+        """When the allowance comes back, in the user's language: the weekday for Pro ("Sunday"), the date for
+        a monthly plan ("December 1")."""
+        _, _, reset_local = self.allowance_window()
+        return formats.date_format(reset_local.date(), "MONTH_DAY_FORMAT" if self.period == "month" else "l")
 
     def cap_message(self):
         if self.tier == "pro":
@@ -286,18 +307,18 @@ class ListenUsageTracker:
             }
         if self.tier == "archive":
             return gettext(
-                "You've listened to %(limit)s of stories this week. Listening resets on %(day)s, "
-                "or switch to Premium Archive Extra for %(extra_limit)s a week."
+                "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, "
+                "or switch to Premium Archive Extra for %(extra_limit)s a month."
             ) % {
-                "limit": self.format_duration(ARCHIVE_WEEKLY_SECONDS),
+                "limit": self.format_duration(ARCHIVE_MONTHLY_SECONDS),
                 "day": self._reset_day(),
-                "extra_limit": self.format_duration(ARCHIVE_EXTRA_WEEKLY_SECONDS),
+                "extra_limit": self.format_duration(ARCHIVE_EXTRA_MONTHLY_SECONDS),
             }
         return gettext(
-            "You've listened to %(limit)s of stories this week. Listening resets on %(day)s, "
+            "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, "
             "or upgrade to Premium Pro for %(pro_limit)s a week."
         ) % {
-            "limit": self.format_duration(ARCHIVE_EXTRA_WEEKLY_SECONDS),
+            "limit": self.format_duration(ARCHIVE_EXTRA_MONTHLY_SECONDS),
             "day": self._reset_day(),
             "pro_limit": self.format_duration(PRO_WEEKLY_SECONDS),
         }
@@ -311,15 +332,15 @@ class ListenUsageTracker:
     def upgrade_message(self):
         if self.is_archive_tier:
             return None
-        return gettext("Premium Archive unlocks full stories read aloud, up to %(limit)s a week.") % {
-            "limit": self.format_duration(ARCHIVE_WEEKLY_SECONDS)
+        return gettext("Premium Archive unlocks full stories read aloud, up to %(limit)s a month.") % {
+            "limit": self.format_duration(ARCHIVE_MONTHLY_SECONDS)
         }
 
     # Snapshot -----------------------------------------------------------------
     def snapshot(self):
-        limit = self.weekly_limit
+        limit = self.allowance_limit
         used = self.seconds_used() if limit else 0
-        _, _, reset_local = self.week_window()
+        _, _, reset_local = self.allowance_window()
         samples_used = 0 if self.is_archive_tier else len(self.sampled_story_hashes())
         last_reset = self.last_reset()
         return {
@@ -328,8 +349,8 @@ class ListenUsageTracker:
             "seconds_used": used,
             "seconds_limit": limit,
             "seconds_remaining": max(0, limit - used) if limit else None,
-            # The allowance window. Clients word the footer ("left this week") and the reset day from these.
-            "period": "week" if limit else None,
+            # The allowance window. Clients word the footer ("left this month") and the reset day from these.
+            "period": self.period,
             "resets_at": reset_local.isoformat() if limit else None,
             "samples_used": samples_used,
             # Previews have no story limit any more. Older apps show "N story previews left" only when this is

@@ -67,7 +67,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
     is_archive = models.BooleanField(default=False, blank=True, null=True)
-    # Premium Archive Extra: Premium Archive with 2 hours of Listen a week instead of 1 (apps/listen/usage.py).
+    # Premium Archive Extra: Premium Archive with 10 hours of Listen a month instead of 1 (apps/listen/usage.py).
     # Always set together with is_archive, and cleared on Pro, on a switch back to Archive and on deactivation.
     is_archive_extra = models.BooleanField(default=False, blank=True, null=True)
     is_pro = models.BooleanField(default=False, blank=True, null=True)
@@ -939,7 +939,7 @@ class Profile(models.Model):
         return self.activate_archive(never_expire=never_expire, extra=True)
 
     def activate_archive(self, never_expire=False, extra=False):
-        """Premium Archive, or with extra=True Premium Archive Extra (2 hours of Listen a week instead of 1).
+        """Premium Archive, or with extra=True Premium Archive Extra (10 hours of Listen a month instead of 1).
 
         The two share everything else, so switching between them on an account that is already Archive only
         flips is_archive_extra and skips the archive setup below.

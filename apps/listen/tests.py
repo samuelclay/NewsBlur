@@ -17,8 +17,8 @@ from apps.listen.text import (
     truncate_segments,
 )
 from apps.listen.usage import (
-    ARCHIVE_EXTRA_WEEKLY_SECONDS,
-    ARCHIVE_WEEKLY_SECONDS,
+    ARCHIVE_EXTRA_MONTHLY_SECONDS,
+    ARCHIVE_MONTHLY_SECONDS,
     PRO_WEEKLY_SECONDS,
     SAMPLE_FRESH_SECONDS_PER_DAY,
     ListenUsageTracker,
@@ -387,11 +387,11 @@ class Test_ListenViews(ListenTestCase):
         denied = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         self.assertEqual(denied["reason"], "cap_reached")
         self.assertEqual(denied["usage"]["seconds_remaining"], 0)
-        self.assertEqual(denied["usage"]["seconds_limit"], ARCHIVE_WEEKLY_SECONDS)
-        self.assertEqual(denied["usage"]["period"], "week")
-        self.assertIn("this week", denied["message"])
+        self.assertEqual(denied["usage"]["seconds_limit"], ARCHIVE_MONTHLY_SECONDS)
+        self.assertEqual(denied["usage"]["period"], "month")
+        self.assertIn("this month", denied["message"])
 
-    def test_archive_extra_listens_for_two_hours_a_week(self, configured):
+    def test_archive_extra_listens_for_ten_hours_a_month(self, configured):
         story = self.make_story()
         MListenUsage(user_id=self.user.pk, kind="segment", seconds=90 * 60, cached=False).save()
 
@@ -406,9 +406,10 @@ class Test_ListenViews(ListenTestCase):
         extra = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         self.assertEqual(extra["code"], 1)
         self.assertEqual(extra["usage"]["tier"], "archive_extra")
-        self.assertEqual(extra["usage"]["seconds_limit"], ARCHIVE_EXTRA_WEEKLY_SECONDS)
+        self.assertEqual(extra["usage"]["seconds_limit"], ARCHIVE_EXTRA_MONTHLY_SECONDS)
+        self.assertEqual(extra["usage"]["period"], "month")
 
-        MListenUsage(user_id=self.user.pk, kind="segment", seconds=30 * 60, cached=False).save()
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=510 * 60, cached=False).save()
         capped = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 1})
         self.assertEqual(capped["reason"], "cap_reached")
 
@@ -856,9 +857,38 @@ class Test_ListenUsageWindows(SimpleTestCase):
         self.assertEqual(day_start, datetime.datetime(2026, 3, 8, 5, 0))
         self.assertEqual(day_end, datetime.datetime(2026, 3, 9, 4, 0))
 
-    def test_weekly_limits_are_ten_hours_for_pro_and_one_hour_for_archive(self):
-        self.assertEqual(PRO_WEEKLY_SECONDS, 10 * 60 * 60)
-        self.assertEqual(ARCHIVE_WEEKLY_SECONDS, 60 * 60)
+    def test_archive_plans_count_the_calendar_month_and_pro_the_week(self):
+        import pytz
+        from types import SimpleNamespace
+
+        def tracker(**flags):
+            profile = dict(
+                timezone="America/New_York",
+                is_pro=False,
+                is_archive=True,
+                is_archive_extra=False,
+                is_premium=True,
+            )
+            profile.update(flags)
+            return ListenUsageTracker(SimpleNamespace(pk=1, profile=SimpleNamespace(**profile)))
+
+        # Nov 4, 2026: the month began at midnight EDT on Nov 1 (04:00 UTC) and ends at midnight EST on Dec 1.
+        now = pytz.UTC.localize(datetime.datetime(2026, 11, 4, 15, 0))
+        for archive in (tracker(), tracker(is_archive_extra=True)):
+            start, end, reset_local = archive.allowance_window(now=now)
+            self.assertEqual(
+                (start, end), (datetime.datetime(2026, 11, 1, 4, 0), datetime.datetime(2026, 12, 1, 5, 0))
+            )
+            self.assertEqual(reset_local.date(), datetime.date(2026, 12, 1))
+        start, end, _ = tracker(is_pro=True).allowance_window(now=now)
+        self.assertEqual(
+            (start, end), (datetime.datetime(2026, 11, 1, 4, 0), datetime.datetime(2026, 11, 8, 5, 0))
+        )
+        # December rolls over into the next year.
+        start, end, _ = tracker().allowance_window(
+            now=pytz.UTC.localize(datetime.datetime(2026, 12, 20, 15, 0))
+        )
+        self.assertEqual(end, datetime.datetime(2027, 1, 1, 5, 0))
 
     def test_durations_read_as_hours_and_minutes(self):
         tracker = self.tracker("UTC")
@@ -877,18 +907,19 @@ class Test_ListenUsageWindows(SimpleTestCase):
             profile.update(flags)
             return ListenUsageTracker(SimpleNamespace(pk=1, profile=SimpleNamespace(**profile)))
 
+        # Monthly plans name the date the allowance comes back, which depends on today.
         archive = tracker(is_premium=True, is_archive=True)
-        self.assertEqual(
+        self.assertRegex(
             archive.cap_message(),
-            "You've listened to 1 hour of stories this week. Listening resets on Sunday, "
-            "or switch to Premium Archive Extra for 2 hours a week.",
+            r"^You've listened to 1 hour of stories this month\. Listening resets on [A-Z][a-z]+ 1, "
+            r"or switch to Premium Archive Extra for 10 hours a month\.$",
         )
         self.assertIsNone(archive.upgrade_message())
         extra = tracker(is_premium=True, is_archive=True, is_archive_extra=True)
-        self.assertEqual(
+        self.assertRegex(
             extra.cap_message(),
-            "You've listened to 2 hours of stories this week. Listening resets on Sunday, "
-            "or upgrade to Premium Pro for 10 hours a week.",
+            r"^You've listened to 10 hours of stories this month\. Listening resets on [A-Z][a-z]+ 1, "
+            r"or upgrade to Premium Pro for 10 hours a week\.$",
         )
         pro = tracker(is_premium=True, is_archive=True, is_pro=True)
         self.assertEqual(
@@ -896,7 +927,7 @@ class Test_ListenUsageWindows(SimpleTestCase):
         )
         free = tracker()
         self.assertEqual(
-            free.upgrade_message(), "Premium Archive unlocks full stories read aloud, up to 1 hour a week."
+            free.upgrade_message(), "Premium Archive unlocks full stories read aloud, up to 1 hour a month."
         )
-        self.assertEqual(pro.weekly_limit, PRO_WEEKLY_SECONDS)
-        self.assertEqual(archive.weekly_limit, ARCHIVE_WEEKLY_SECONDS)
+        self.assertEqual(pro.allowance_limit, PRO_WEEKLY_SECONDS)
+        self.assertEqual(archive.allowance_limit, ARCHIVE_MONTHLY_SECONDS)

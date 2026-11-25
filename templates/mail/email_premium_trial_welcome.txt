@@ -23,7 +23,7 @@
 
     * {% trans "Follow up to 4,096 sites" %}
     * {% trans "Web Feeds from any website, even without RSS" %}
-    * {% trans "Listen to 1 hour of stories read aloud a week" %}
+    * {% trans "Listen to 1 hour of stories read aloud a month" %}
     * {% trans "Ask AI questions about stories" %}
     * {% trans "Apply training across a folder" %}
     * {% trans "Apply training globally" %}
