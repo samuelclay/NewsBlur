@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)sで送信"
 
@@ -942,9 +946,6 @@ msgstr "1日2回"
 
 msgid "30 second preview"
 msgstr "30秒間プレビュー"
-
-msgid "30s preview"
-msgstr "30秒プレビュー"
 
 msgid "3x daily"
 msgstr "1日3回"
@@ -3428,8 +3429,10 @@ msgstr "見出し"
 msgid "Health"
 msgstr "健康"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "最初の30秒を音声で試聴できます。プレミアムアーカイブでは記事全体を読み上げます。"
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "ハート"
@@ -5038,6 +5041,10 @@ msgstr "場所"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
 
 #, python-format

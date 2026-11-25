@@ -603,6 +603,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s zum Senden"
 
@@ -1015,9 +1019,6 @@ msgid "2x daily"
 msgstr "2-mal täglich"
 
 msgid "30 second preview"
-msgstr "30-Sekunden-Vorschau"
-
-msgid "30s preview"
 msgstr "30-Sekunden-Vorschau"
 
 msgid "3x daily"
@@ -3584,8 +3585,11 @@ msgstr "Schlagzeilen"
 msgid "Health"
 msgstr "Gesundheit"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "Lass dir die ersten 30 Sekunden vorlesen. Mit Premium Archive werden ganze Artikel vorgelesen."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Hearts"
 msgstr "Herzen"
@@ -5250,6 +5254,10 @@ msgstr "Orte"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
 
 #, python-format

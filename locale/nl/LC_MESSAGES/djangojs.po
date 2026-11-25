@@ -599,6 +599,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s om te verzenden"
 
@@ -1012,9 +1016,6 @@ msgstr "2 keer per dag"
 
 msgid "30 second preview"
 msgstr "Voorbeeld van 30 seconden"
-
-msgid "30s preview"
-msgstr "Preview van 30 s"
 
 msgid "3x daily"
 msgstr "3 keer per dag"
@@ -3565,8 +3566,11 @@ msgstr "Koppen"
 msgid "Health"
 msgstr "Gezondheid"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "Luister naar de eerste 30 seconden. Met Premium Archive kun je hele artikelen beluisteren."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Hearts"
 msgstr "Hartjes"
@@ -5222,6 +5226,10 @@ msgstr "Plaatsen"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
 
 #, python-format

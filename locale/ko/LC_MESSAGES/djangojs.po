@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s 키로 보내기"
 
@@ -942,9 +946,6 @@ msgstr "하루 2회"
 
 msgid "30 second preview"
 msgstr "30초 미리 듣기"
-
-msgid "30s preview"
-msgstr "30초 미리보기"
 
 msgid "3x daily"
 msgstr "하루 3회"
@@ -3434,8 +3435,10 @@ msgstr "헤드라인"
 msgid "Health"
 msgstr "건강"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "처음 30초를 소리 내어 들어보세요. 프리미엄 아카이브에서는 스토리 전체를 읽어줍니다."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "하트"
@@ -5046,6 +5049,10 @@ msgstr "장소"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
 
 #, python-format

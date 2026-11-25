@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "按 %(shortcut)s 发送"
 
@@ -942,9 +946,6 @@ msgstr "每天 2 次"
 
 msgid "30 second preview"
 msgstr "30 秒试听"
-
-msgid "30s preview"
-msgstr "30 秒预览"
 
 msgid "3x daily"
 msgstr "每天 3 次"
@@ -3428,8 +3429,10 @@ msgstr "标题"
 msgid "Health"
 msgstr "健康"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "聆听前 30 秒的朗读。高级归档版可朗读整篇文章。"
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "爱心"
@@ -5038,6 +5041,10 @@ msgstr "地点"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
 
 #, python-format

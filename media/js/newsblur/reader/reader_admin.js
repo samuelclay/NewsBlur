@@ -170,12 +170,16 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         var minutes = function (seconds) { return Math.round((seconds || 0) / 60); };
         var lines = [];
         if (usage.seconds_limit) {
-            lines.push(interpolate(gettext("Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."), {
+            // reader_admin.js: Archive and Archive Extra count a calendar month, Pro a week (apps/listen/usage.py).
+            var allowance = {
                 tier: usage.tier,
                 used: minutes(usage.seconds_used),
                 limit: minutes(usage.seconds_limit),
                 resets: usage.resets_at ? new Date(usage.resets_at).toLocaleString() : ''
-            }, true));
+            };
+            lines.push(usage.period == 'month' ?
+                interpolate(gettext("Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."), allowance, true) :
+                interpolate(gettext("Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."), allowance, true));
         } else {
             lines.push(interpolate(gettext("Plan: %(tier)s. %(count)s stories previewed today."), {
                 tier: usage.tier,
