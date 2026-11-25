@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
-import android.text.Layout
 import android.text.util.Linkify
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -127,6 +126,7 @@ class SubscriptionActivity : NbActivity() {
     private var archiveListenTitle: TextView? = null
     private var archiveHoursToggle: ComposeView? = null
     private val archiveHoursShown = mutableStateOf(ArchiveListenHours.ONE)
+    private val archiveHoursCaptions = mutableStateOf<Map<ArchiveListenHours, String>>(emptyMap())
 
     /** Null until the toggle is touched, so the card follows the account's own plan as it loads. */
     private var chosenArchiveHours: ArchiveListenHours? = null
@@ -456,6 +456,7 @@ class SubscriptionActivity : NbActivity() {
                 setContent {
                     ArchiveHoursToggle(
                         selected = archiveHoursShown.value,
+                        captions = archiveHoursCaptions.value,
                         colors = toggleColors,
                         onSelect = ::chooseArchiveHours,
                     )
@@ -472,13 +473,20 @@ class SubscriptionActivity : NbActivity() {
     }
 
     private fun renderArchiveListenLine(plan: ArchiveCardPlan) {
-        archiveListenTitle?.apply {
-            setText(if (plan.showsHoursToggle) R.string.archive_listen_weekly else R.string.archive_listen)
-            // Even lines keep the title above the toggle from leaving one word on its second line.
-            breakStrategy = if (plan.showsHoursToggle) Layout.BREAK_STRATEGY_BALANCED else Layout.BREAK_STRATEGY_HIGH_QUALITY
-        }
+        archiveListenTitle?.setText(if (plan.hours == ArchiveListenHours.TWO) R.string.archive_extra_listen else R.string.archive_listen)
         archiveHoursToggle?.isVisible = plan.showsHoursToggle
         archiveHoursShown.value = plan.hours
+        archiveHoursCaptions.value =
+            ArchiveListenHours.entries
+                .mapNotNull { hours ->
+                    val caption =
+                        if (hours == plan.ownedHours) {
+                            getString(R.string.subscription_current_plan)
+                        } else {
+                            firstPricingPhase(hours.productId)?.let(::formatShortPricing)
+                        }
+                    caption?.let { hours to it }
+                }.toMap()
     }
 
     private fun createDivider(): View =
@@ -666,13 +674,23 @@ class SubscriptionActivity : NbActivity() {
         UIUtils.handleUri(this, prefsRepo, uri)
     }
 
-    private fun isPurchasable(productId: String): Boolean =
+    private fun firstPricingPhase(productId: String): ProductDetails.PricingPhase? =
         availableSubscriptions[productId]
             ?.subscriptionOfferDetails
             ?.firstOrNull()
             ?.pricingPhases
             ?.pricingPhaseList
-            ?.firstOrNull() != null
+            ?.firstOrNull()
+
+    private fun isPurchasable(productId: String): Boolean = firstPricingPhase(productId) != null
+
+    /** "$159.00/year", short enough for a toggle segment's caption. */
+    private fun formatShortPricing(pricing: ProductDetails.PricingPhase): String =
+        when (pricing.billingPeriod) {
+            "P1Y" -> getString(R.string.subscription_price_per_year, pricing.formattedPrice)
+            "P1M" -> getString(R.string.subscription_price_monthly, pricing.formattedPrice)
+            else -> getString(R.string.subscription_price_generic, pricing.formattedPrice, readableBillingPeriod(pricing.billingPeriod))
+        }
 
     private fun formatProductPricing(pricing: ProductDetails.PricingPhase): String {
         val formattedPrice = pricing.formattedPrice

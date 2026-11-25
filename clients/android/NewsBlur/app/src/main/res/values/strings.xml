@@ -443,6 +443,9 @@ people together to talk about the world.</string>
     <string name="subscription_price_yearly">%1$s/year (%2$s/month)</string>
     <string name="subscription_price_monthly">%1$s/month</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <!-- SubscriptionActivity.kt: a yearly price under a plan's position on the Premium Archive card's hours toggle. -->
+    <string name="subscription_price_per_year">%1$s/year</string>
+    <string name="subscription_current_plan">Current plan</string>
     <string name="premium_archive_includes_above">Your premium archive subscription includes everything above</string>
     <string name="premium_archive_extra_includes_above">Your premium archive extra subscription includes everything above</string>
     <string name="premium_pro_includes_above">Your premium pro subscription includes everything above</string>
@@ -1767,8 +1770,8 @@ people together to talk about the world.</string>
     <string name="settings_listen_delivery">Delivery</string>
     <string name="settings_listen_speed">Playback speed</string>
     <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
-    <!-- SubscriptionActivity.kt: the Premium Archive card's Listen line when a 1 hour or 2 hours toggle sits under it. -->
-    <string name="archive_listen_weekly">Listen to stories read aloud each week</string>
+    <!-- SubscriptionActivity.kt: the Premium Archive card's Listen line with its toggle on 2 hours, for Premium Archive Extra. -->
+    <string name="archive_extra_listen">Listen to 2 hours of stories read aloud a week</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
     <!-- NewStoriesPill.kt: stories that arrived for the open story list while it was on screen. -->
     <plurals name="new_stories_pill">

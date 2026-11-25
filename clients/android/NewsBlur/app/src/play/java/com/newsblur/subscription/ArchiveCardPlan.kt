@@ -19,7 +19,7 @@ enum class ArchiveCardStatus {
     /** The chosen plan is the account's own. */
     OWNED,
 
-    /** Premium Pro already has more listening than either plan. */
+    /** Premium Pro already has more listening than either plan, so the card has no toggle. */
     INCLUDED_IN_PRO,
 
     /** One hour, chosen by an account that already has two. Downgrades go through Play, not this card. */
@@ -33,11 +33,13 @@ data class ArchiveCardPlan(
     val showsHoursToggle: Boolean,
     val hours: ArchiveListenHours,
     val status: ArchiveCardStatus,
+    /** The position that is the account's own plan, captioned as such on the toggle. */
+    val ownedHours: ArchiveListenHours?,
 )
 
 /**
- * The toggle needs Play to sell Premium Archive Extra, or an account that already has it. Until someone touches it,
- * it sits on the account's own plan: two hours for Archive Extra, one for everyone else.
+ * The toggle needs Play to sell Premium Archive Extra, or an account that already has it, and Pro never sees it.
+ * Until someone touches it, it sits on the account's own plan: two hours for Archive Extra, one for everyone else.
  */
 fun archiveCardPlan(
     isPremium: Boolean,
@@ -48,14 +50,15 @@ fun archiveCardPlan(
     chosenHours: ArchiveListenHours?,
 ): ArchiveCardPlan {
     val ownsExtra = isArchiveExtra && !isPro
-    val showsHoursToggle = extraOffered || ownsExtra
-    val hours =
+    val showsHoursToggle = !isPro && (extraOffered || ownsExtra)
+    val ownedHours =
         when {
-            !showsHoursToggle -> ArchiveListenHours.ONE
-            chosenHours != null -> chosenHours
+            isPro -> null
             ownsExtra -> ArchiveListenHours.TWO
-            else -> ArchiveListenHours.ONE
+            isArchive -> ArchiveListenHours.ONE
+            else -> null
         }
+    val hours = if (showsHoursToggle) chosenHours ?: ownedHours ?: ArchiveListenHours.ONE else ArchiveListenHours.ONE
     val status =
         when {
             isPro -> ArchiveCardStatus.INCLUDED_IN_PRO
@@ -66,5 +69,5 @@ fun archiveCardPlan(
             isPremium -> ArchiveCardStatus.UPGRADE_FROM_PREMIUM
             else -> ArchiveCardStatus.PURCHASE
         }
-    return ArchiveCardPlan(showsHoursToggle, hours, status)
+    return ArchiveCardPlan(showsHoursToggle, hours, status, ownedHours)
 }

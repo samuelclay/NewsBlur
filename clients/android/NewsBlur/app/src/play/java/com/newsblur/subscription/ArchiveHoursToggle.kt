@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -30,6 +32,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,11 +50,13 @@ data class ArchiveHoursToggleColors(
 
 /**
  * The "1 hour | 2 hours" switch on the Premium Archive card's Listen line. Both segments take the width of the
- * longer label, and the selected one is a pill in the card's own gradient that slides across when it changes.
+ * wider one, and the selected one is a pill in the card's own gradient that slides across when it changes. Each
+ * segment can carry a caption, its yearly price or "Current plan", since the buy button is far down the card.
  */
 @Composable
 fun ArchiveHoursToggle(
     selected: ArchiveListenHours,
+    captions: Map<ArchiveListenHours, String>,
     colors: ArchiveHoursToggleColors,
     onSelect: (ArchiveListenHours) -> Unit,
     modifier: Modifier = Modifier,
@@ -89,13 +94,8 @@ fun ArchiveHoursToggle(
                 targetValue = if (isSelected) colors.selectedText else colors.text,
                 label = "archiveHoursText",
             )
-            Text(
-                text = pluralStringResource(R.plurals.listen_hours, hours.hours, hours.hours),
-                color = textColor,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier =
                     Modifier
                         .weight(1f)
@@ -106,8 +106,29 @@ fun ArchiveHoursToggle(
                             indication = ripple(color = colors.thumbStart),
                             role = Role.RadioButton,
                             onClick = { onSelect(hours) },
-                        ).padding(horizontal = 18.dp, vertical = 9.dp),
-            )
+                        ).padding(horizontal = 16.dp, vertical = if (captions.isEmpty()) 9.dp else 6.dp),
+            ) {
+                Text(
+                    text = pluralStringResource(R.plurals.listen_hours, hours.hours, hours.hours),
+                    color = textColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                )
+                // An empty caption still takes its line, so both segments keep the same height.
+                if (captions.isNotEmpty()) {
+                    Text(
+                        text = captions[hours].orEmpty(),
+                        color = textColor.copy(alpha = textColor.alpha * 0.85f),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
         }
     }
 }

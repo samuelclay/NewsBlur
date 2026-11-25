@@ -32,35 +32,34 @@ class Test_ArchiveCardPlan {
 
     @Test
     fun test_without_extra_from_play_the_card_stays_premium_archive_without_a_toggle() {
-        assertEquals(ArchiveCardPlan(false, ONE, PURCHASE), plan(Account.FREE, extraOffered = false, chosenHours = TWO))
-        assertEquals(ArchiveCardPlan(false, ONE, OWNED), plan(Account.ARCHIVE, extraOffered = false, chosenHours = TWO))
-        assertEquals(ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO), plan(Account.PRO, extraOffered = false))
+        assertEquals(ArchiveCardPlan(false, ONE, PURCHASE, null), plan(Account.FREE, extraOffered = false, chosenHours = TWO))
+        assertEquals(ArchiveCardPlan(false, ONE, OWNED, ONE), plan(Account.ARCHIVE, extraOffered = false, chosenHours = TWO))
     }
 
     @Test
     fun test_the_toggle_starts_on_one_hour_and_two_hours_sells_archive_extra() {
-        assertEquals(ArchiveCardPlan(true, ONE, PURCHASE), plan(Account.FREE))
-        assertEquals(ArchiveCardPlan(true, TWO, PURCHASE), plan(Account.FREE, chosenHours = TWO))
-        assertEquals(ArchiveCardPlan(true, TWO, UPGRADE_FROM_PREMIUM), plan(Account.PREMIUM, chosenHours = TWO))
+        assertEquals(ArchiveCardPlan(true, ONE, PURCHASE, null), plan(Account.FREE))
+        assertEquals(ArchiveCardPlan(true, TWO, PURCHASE, null), plan(Account.FREE, chosenHours = TWO))
+        assertEquals(ArchiveCardPlan(true, TWO, UPGRADE_FROM_PREMIUM, null), plan(Account.PREMIUM, chosenHours = TWO))
     }
 
     @Test
     fun test_archive_subscribers_own_one_hour_and_upgrade_to_two() {
-        assertEquals(ArchiveCardPlan(true, ONE, OWNED), plan(Account.ARCHIVE))
-        assertEquals(ArchiveCardPlan(true, TWO, UPGRADE_FROM_ARCHIVE), plan(Account.ARCHIVE, chosenHours = TWO))
+        assertEquals(ArchiveCardPlan(true, ONE, OWNED, ONE), plan(Account.ARCHIVE))
+        assertEquals(ArchiveCardPlan(true, TWO, UPGRADE_FROM_ARCHIVE, ONE), plan(Account.ARCHIVE, chosenHours = TWO))
     }
 
     @Test
     fun test_archive_extra_subscribers_own_two_hours_and_one_hour_is_included() {
-        assertEquals(ArchiveCardPlan(true, TWO, OWNED), plan(Account.ARCHIVE_EXTRA))
-        assertEquals(ArchiveCardPlan(true, ONE, INCLUDED_IN_ARCHIVE_EXTRA), plan(Account.ARCHIVE_EXTRA, chosenHours = ONE))
+        assertEquals(ArchiveCardPlan(true, TWO, OWNED, TWO), plan(Account.ARCHIVE_EXTRA))
+        assertEquals(ArchiveCardPlan(true, ONE, INCLUDED_IN_ARCHIVE_EXTRA, TWO), plan(Account.ARCHIVE_EXTRA, chosenHours = ONE))
         // Their plan still reads as Archive Extra when Play stops selling it.
-        assertEquals(ArchiveCardPlan(true, TWO, OWNED), plan(Account.ARCHIVE_EXTRA, extraOffered = false))
+        assertEquals(ArchiveCardPlan(true, TWO, OWNED, TWO), plan(Account.ARCHIVE_EXTRA, extraOffered = false))
     }
 
     @Test
-    fun test_pro_includes_both_positions() {
-        assertEquals(ArchiveCardPlan(true, ONE, INCLUDED_IN_PRO), plan(Account.PRO))
-        assertEquals(ArchiveCardPlan(true, TWO, INCLUDED_IN_PRO), plan(Account.PRO, chosenHours = TWO))
+    fun test_pro_keeps_the_card_as_it_was_without_a_toggle() {
+        assertEquals(ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO, null), plan(Account.PRO))
+        assertEquals(ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO, null), plan(Account.PRO, chosenHours = TWO))
     }
 }
