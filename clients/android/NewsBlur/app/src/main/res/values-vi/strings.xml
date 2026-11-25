@@ -1345,7 +1345,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="listen_resume">Tiếp tục</string>
     <string name="listen_pause">Tạm dừng</string>
     <string name="listen_play">Phát</string>
-    <string name="listen_preview_pill">Bản nghe thử 30 giây</string>
     <string name="listen_open_player">Mở trình phát</string>
     <string name="listen_close">Đóng trình phát</string>
     <string name="listen_loading">Đang chuẩn bị bài viết…</string>
@@ -1399,7 +1398,6 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="listen_speed_exact">Tốc độ phát chính xác</string>
     <string name="listen_speed_slider">Thanh trượt tốc độ phát</string>
     <string name="listen_speed_button">Tốc độ phát %1$s×</string>
-    <string name="listen_preview_banner">Đang nghe thử 30 giây. Premium Archive mở khóa toàn bộ bài viết.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">Còn %1$d giây</item>
     </plurals>

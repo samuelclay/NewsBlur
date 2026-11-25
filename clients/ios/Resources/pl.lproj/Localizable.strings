@@ -82,7 +82,6 @@
 "2,000 stories" = "2000 artykułów";
 "20 stories" = "20 artykułów";
 "2x daily" = "2 razy dziennie";
-"30s preview" = "Podgląd 30 s";
 "3x daily" = "3 razy dziennie";
 "5 stories" = "5 artykułów";
 "5,000 stories" = "5000 artykułów";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Tekst z wczoraj";
 "Text view" = "Widok tekstowy";
 "Text view conveniently extracts the story" = "Widok tekstowy wygodnie wyodrębnia treść artykułu";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "To był 30-sekundowy podgląd. Premium Archive odblokowuje pełne artykuły.";
 "The audio couldn't be loaded. Try again in a moment." = "Nie udało się wczytać dźwięku. Spróbuj ponownie za chwilę.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Widok pełnego tekstu to <a href=\"http://ios.newsblur.com/premium\">funkcja premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Symulator iOS nie mógł zmienić ikony ekranu początkowego. Spróbuj na urządzeniu.";

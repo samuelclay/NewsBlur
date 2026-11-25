@@ -82,7 +82,6 @@
 "2,000 stories" = "2,000 เรื่อง";
 "20 stories" = "20 เรื่อง";
 "2x daily" = "วันละ 2 ครั้ง";
-"30s preview" = "ตัวอย่าง 30 วินาที";
 "3x daily" = "วันละ 3 ครั้ง";
 "5 stories" = "5 เรื่อง";
 "5,000 stories" = "5,000 เรื่อง";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "ข้อความจากเมื่อวาน";
 "Text view" = "มุมมองข้อความ";
 "Text view conveniently extracts the story" = "มุมมองข้อความช่วยดึงเนื้อหาบทความออกมา";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "นี่เป็นตัวอย่างเสียง 30 วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม";
 "The audio couldn't be loaded. Try again in a moment." = "โหลดเสียงไม่ได้ โปรดลองอีกครั้งในอีกสักครู่";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "มุมมองข้อความฉบับเต็มเป็น<a href=\"http://ios.newsblur.com/premium\">ฟีเจอร์พรีเมียม</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "ตัวจำลอง iOS ไม่สามารถเปลี่ยนไอคอนหน้าจอโฮมได้ ลองทำบนอุปกรณ์จริง";

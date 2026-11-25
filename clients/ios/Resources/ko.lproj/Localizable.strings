@@ -82,7 +82,6 @@
 "2,000 stories" = "스토리 2,000개";
 "20 stories" = "스토리 20개";
 "2x daily" = "하루 2회";
-"30s preview" = "30초 미리 듣기";
 "3x daily" = "하루 3회";
 "5 stories" = "스토리 5개";
 "5,000 stories" = "스토리 5,000개";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "어제의 텍스트";
 "Text view" = "텍스트 보기";
 "Text view conveniently extracts the story" = "텍스트 보기는 스토리 내용을 편리하게 추출합니다";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "30초 미리 듣기를 이용하셨습니다. 프리미엄 아카이브에서 전체 스토리를 이용할 수 있습니다.";
 "The audio couldn't be loaded. Try again in a moment." = "오디오를 불러오지 못했습니다. 잠시 후 다시 시도하세요.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "전체 텍스트 보기는 <a href=\"http://ios.newsblur.com/premium\">프리미엄 기능</a>입니다";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 시뮬레이터에서 홈 화면 아이콘을 변경할 수 없습니다. 기기에서 시도해 보세요.";

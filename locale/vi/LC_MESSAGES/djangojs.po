@@ -527,6 +527,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s để gửi"
 
@@ -916,11 +920,17 @@ msgstr "/tháng"
 msgid "/year"
 msgstr "/năm"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 tháng"
 
 msgid "1 year"
 msgstr "1 năm"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Có 28 công cụ, hỗ trợ đọc, thao tác, huấn luyện và khám phá."
@@ -2090,6 +2100,9 @@ msgstr "Không thể tải ứng dụng của bạn. Thử làm mới."
 msgid "Couldn't load audio for this story."
 msgstr "Không tải được âm thanh cho bài viết này."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Đếm thật khó"
 
@@ -2134,6 +2147,9 @@ msgstr "Sáng tạo"
 
 msgid "Credit"
 msgstr "Tín dụng"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Giọng đọc hiện tại"
@@ -3816,6 +3832,10 @@ msgstr "Cập nhật lần cuối"
 msgid "Last activity"
 msgstr "Hoạt động gần nhất"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Lần cuối hoạt động:"
 
@@ -3885,6 +3905,9 @@ msgstr "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "Nghe bài viết"
@@ -4335,6 +4358,9 @@ msgstr "Không bao giờ hết hạn"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Sẽ không bao giờ hết hạn. Chúc mừng!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Mới thêm"
@@ -5082,6 +5108,14 @@ msgstr "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể th
 msgid "Places"
 msgstr "Địa điểm"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Nền tảng"
 
@@ -5178,6 +5212,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive đọc toàn bộ bài viết thành tiếng."
@@ -5643,6 +5680,9 @@ msgstr "Yêu cầu Premium Archive"
 
 msgid "Reset"
 msgstr "Đặt lại"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Khôi phục favicon ban đầu"
@@ -7726,6 +7766,10 @@ msgstr "Trực quan"
 msgid "Voice"
 msgstr "Giọng đọc"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "Không thể ghi âm giọng nói. Vui lòng thử lại."
 
@@ -7791,6 +7835,9 @@ msgstr "Thứ Tư"
 
 msgid "Weekly"
 msgstr "Hàng tuần"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Chào mừng bạn đến với NewsBlur"

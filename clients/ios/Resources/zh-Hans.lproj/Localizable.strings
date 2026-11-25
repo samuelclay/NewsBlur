@@ -82,7 +82,6 @@
 "2,000 stories" = "2,000 篇文章";
 "20 stories" = "20 篇文章";
 "2x daily" = "每天 2 次";
-"30s preview" = "30 秒试听";
 "3x daily" = "每天 3 次";
 "5 stories" = "5 篇文章";
 "5,000 stories" = "5,000 篇文章";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "昨天的文本";
 "Text view" = "文本视图";
 "Text view conveniently extracts the story" = "文本视图可便捷地提取文章内容";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "这是 30 秒试听。升级到高级归档版即可解锁完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "无法加载音频。请稍后重试。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整的文本视图是<a href=\"http://ios.newsblur.com/premium\">高级功能</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 模拟器无法更改主屏幕图标。请在设备上尝试。";

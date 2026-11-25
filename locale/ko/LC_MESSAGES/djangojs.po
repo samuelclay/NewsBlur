@@ -525,6 +525,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s 키로 보내기"
 
@@ -914,11 +918,17 @@ msgstr "/월"
 msgid "/year"
 msgstr "/년"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1개월"
 
 msgid "1 year"
 msgstr "1년"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할 수 있습니다."
@@ -2066,6 +2076,9 @@ msgstr "애플리케이션을 불러오지 못했습니다. 새로고침해 보�
 msgid "Couldn't load audio for this story."
 msgstr "이 스토리의 오디오를 불러오지 못했습니다."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "개수 세기는 어렵습니다"
 
@@ -2110,6 +2123,9 @@ msgstr "크리에이티브"
 
 msgid "Credit"
 msgstr "크레딧"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "현재 음성"
@@ -3765,6 +3781,10 @@ msgstr "마지막 업데이트"
 msgid "Last activity"
 msgstr "마지막 활동"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "마지막 확인:"
 
@@ -3832,6 +3852,9 @@ msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 �
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "스토리 듣기"
@@ -4276,6 +4299,9 @@ msgstr "만료 안 함"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "만료되지 않습니다. 축하합니다!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "새로 도착한 항목"
@@ -5011,6 +5037,14 @@ msgstr "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제
 msgid "Places"
 msgstr "장소"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "플랫폼"
 
@@ -5107,6 +5141,9 @@ msgstr "프리미엄"
 
 msgid "Premium Archive"
 msgstr "프리미엄 아카이브"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "프리미엄 아카이브는 스토리 전체를 소리 내어 읽어 줍니다."
@@ -5568,6 +5605,9 @@ msgstr "프리미엄 아카이브 필요"
 
 msgid "Reset"
 msgstr "초기화"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "기본 파비콘으로 재설정"
@@ -7603,6 +7643,10 @@ msgstr "시각"
 msgid "Voice"
 msgstr "음성"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "음성 녹음에 실패했습니다. 다시 시도해 주세요."
 
@@ -7664,6 +7708,9 @@ msgstr "수요일"
 
 msgid "Weekly"
 msgstr "매주"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur에 오신 것을 환영합니다"

@@ -1423,7 +1423,6 @@
     <string name="listen_resume">Wznów</string>
     <string name="listen_pause">Wstrzymaj</string>
     <string name="listen_play">Odtwórz</string>
-    <string name="listen_preview_pill">Podgląd 30 s</string>
     <string name="listen_open_player">Otwórz odtwarzacz</string>
     <string name="listen_close">Zamknij odtwarzacz</string>
     <string name="listen_loading">Przygotowywanie artykułu…</string>
@@ -1483,7 +1482,6 @@
     <string name="listen_speed_exact">Dokładna szybkość odtwarzania</string>
     <string name="listen_speed_slider">Suwak szybkości odtwarzania</string>
     <string name="listen_speed_button">Prędkość odtwarzania %1$s×</string>
-    <string name="listen_preview_banner">Podgląd 30 sekund. Premium Archive odblokowuje pełne artykuły.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Pozostały %1$d sekundy</item>
         <item quantity="many">Pozostało %1$d sekund</item>

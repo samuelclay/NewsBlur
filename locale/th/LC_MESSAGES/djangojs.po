@@ -525,6 +525,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s เพื่อส่ง"
 
@@ -914,11 +918,17 @@ msgstr "/เดือน"
 msgid "/year"
 msgstr "/ปี"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 เดือน"
 
 msgid "1 year"
 msgstr "1 ปี"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "มีเครื่องมือ 28 รายการ ครอบคลุมการอ่าน การดำเนินการ การฝึกตัวกรอง และการค้นพบเนื้อหา"
@@ -2084,6 +2094,9 @@ msgstr "โหลดแอปพลิเคชันของคุณไม่
 msgid "Couldn't load audio for this story."
 msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "การนับเป็นเรื่องยาก"
 
@@ -2128,6 +2141,9 @@ msgstr "สร้างสรรค์"
 
 msgid "Credit"
 msgstr "เครดิต"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "เสียงปัจจุบัน"
@@ -3795,6 +3811,10 @@ msgstr "อัปเดตล่าสุด"
 msgid "Last activity"
 msgstr "กิจกรรมล่าสุด"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "พบเห็นล่าสุด:"
 
@@ -3864,6 +3884,9 @@ msgstr "ฟังบทความที่อ่านออกเสียง
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "ฟังบทความ"
@@ -4312,6 +4335,9 @@ msgstr "ไม่มีวันหมดอายุ"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "ไม่มีวันหมดอายุ ยินดีด้วย!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "มาใหม่"
@@ -5049,6 +5075,14 @@ msgstr "เลือกภาษาที่ต้องการให้ NewsB
 msgid "Places"
 msgstr "สถานที่"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "แพลตฟอร์ม"
 
@@ -5145,6 +5179,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive อ่านบทความเต็มทั้งหมดออกเสียง"
@@ -5610,6 +5647,9 @@ msgstr "ต้องใช้ Premium Archive"
 
 msgid "Reset"
 msgstr "รีเซ็ต"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "รีเซ็ตเป็นไอคอนเว็บไซต์เดิม"
@@ -7673,6 +7713,10 @@ msgstr "ภาพ"
 msgid "Voice"
 msgstr "เสียงพูด"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "บันทึกเสียงไม่สำเร็จ โปรดลองอีกครั้ง"
 
@@ -7734,6 +7778,9 @@ msgstr "วันพุธ"
 
 msgid "Weekly"
 msgstr "รายสัปดาห์"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "ยินดีต้อนรับสู่ NewsBlur"

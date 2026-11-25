@@ -525,6 +525,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone、iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "按 %(shortcut)s 傳送"
 
@@ -914,11 +918,17 @@ msgstr "/月"
 msgid "/year"
 msgstr "/年"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 個月"
 
 msgid "1 year"
 msgstr "1 年"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
@@ -2062,6 +2072,9 @@ msgstr "無法載入你的應用程式。請嘗試重新整理。"
 msgid "Couldn't load audio for this story."
 msgstr "無法載入這篇文章的音訊。"
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "計數很難"
 
@@ -2106,6 +2119,9 @@ msgstr "創意"
 
 msgid "Credit"
 msgstr "獲得的回饋"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "目前語音"
@@ -3757,6 +3773,10 @@ msgstr "上次更新"
 msgid "Last activity"
 msgstr "上次活動"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "上次上線："
 
@@ -3824,6 +3844,9 @@ msgstr "每週聆聽朗讀文章最多 1 小時"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "每週聆聽朗讀文章最多 10 小時"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "聆聽文章"
@@ -4268,6 +4291,9 @@ msgstr "永不過期"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "永不過期。恭喜！"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "最新上架"
@@ -5003,6 +5029,14 @@ msgstr "選擇你希望 NewsBlur 使用的語言。你隨時可以在偏好設�
 msgid "Places"
 msgstr "地點"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "平台"
 
@@ -5099,6 +5133,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive 可朗讀完整文章。"
@@ -5560,6 +5597,9 @@ msgstr "需要 Premium Archive"
 
 msgid "Reset"
 msgstr "重設"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "還原為原始網站圖示"
@@ -7591,6 +7631,10 @@ msgstr "視覺"
 msgid "Voice"
 msgstr "語音"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "語音錄製失敗。請再試一次。"
 
@@ -7652,6 +7696,9 @@ msgstr "星期三"
 
 msgid "Weekly"
 msgstr "每週"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "歡迎使用 NewsBlur"

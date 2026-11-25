@@ -593,6 +593,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s untuk mengirim"
 
@@ -986,11 +990,17 @@ msgstr "/bulan"
 msgid "/year"
 msgstr "/tahun"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 bulan"
 
 msgid "1 year"
 msgstr "1 tahun"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemukan konten."
@@ -2176,6 +2186,9 @@ msgstr "Tidak dapat memuat aplikasi Anda. Coba segarkan."
 msgid "Couldn't load audio for this story."
 msgstr "Audio untuk artikel ini tidak dapat dimuat."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Menghitung itu sulit"
 
@@ -2220,6 +2233,9 @@ msgstr "Kreatif"
 
 msgid "Credit"
 msgstr "Kredit"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Suara saat ini"
@@ -3913,6 +3929,10 @@ msgstr "Pembaruan Terakhir"
 msgid "Last activity"
 msgstr "Aktivitas terakhir"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Terakhir terlihat:"
 
@@ -3982,6 +4002,9 @@ msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "Dengarkan artikel"
@@ -4440,6 +4463,9 @@ msgstr "Tidak pernah kedaluwarsa"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Tidak akan pernah kedaluwarsa. Selamat!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Pendatang Baru"
@@ -5195,6 +5221,14 @@ msgstr "Pilih bahasa yang ingin digunakan NewsBlur. Anda dapat mengubahnya kapan
 msgid "Places"
 msgstr "Tempat"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Platform"
 
@@ -5293,6 +5327,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive membacakan artikel secara utuh."
@@ -5765,6 +5802,9 @@ msgstr "Memerlukan Premium Archive"
 
 msgid "Reset"
 msgstr "Atur ulang"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Kembalikan favicon asli"
@@ -7875,6 +7915,10 @@ msgstr "Visual"
 msgid "Voice"
 msgstr "Suara"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "Rekaman suara gagal. Silakan coba lagi."
 
@@ -7940,6 +7984,9 @@ msgstr "Rabu"
 
 msgid "Weekly"
 msgstr "Mingguan"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"

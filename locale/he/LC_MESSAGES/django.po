@@ -4205,6 +4205,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "רק משתמשי Premium יכולים לשתף כמה כתבות ביום מאותו אתר."
 
+msgid "Only staff can see or reset another account's listening."
+msgstr ""
+
 msgid "Open NewsBlur to register your application."
 msgstr "פתחו את NewsBlur כדי לרשום את האפליקציה שלכם."
 
@@ -5700,6 +5703,9 @@ msgstr "תודה שניסית את NewsBlur! מקווה ש־NewsBlur יהפוך 
 msgid "Thanks!"
 msgstr "תודה!"
 
+msgid "That account doesn't exist."
+msgstr ""
+
 msgid "That item isn't playing"
 msgstr "הפריט הזה לא מתנגן"
 
@@ -7122,6 +7128,12 @@ msgstr "הרווחת <b>%(credit_text)s</b> של %(tier_name)s בחינם, כת�
 
 #, python-format
 msgid ""
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a week."
+msgstr ""
+
+#, python-format
+msgid ""
 "You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
@@ -7132,14 +7144,13 @@ msgstr ""
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
 msgstr "האזנת ל־%(limit)s מתוך מכסת הכתבות השבועית. המכסה מתאפסת ב־%(day)s."
 
+msgid ""
+"You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
+"listen to full stories."
+msgstr ""
+
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "ניצלת את כל תצוגות הקול המקדימות להיום. הן מתאפסות בחצות."
-
-#, python-format
-msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
-msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
-msgstr[0] "האזנת היום לתצוגה מקדימה של %(count)d כתבה. שדרוג ל־Premium Archive מאפשר להאזין לכתבות מלאות."
-msgstr[1] "האזנת היום לתצוגה מקדימה של %(count)d כתבות. שדרוג ל־Premium Archive מאפשר להאזין לכתבות מלאות."
 
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "

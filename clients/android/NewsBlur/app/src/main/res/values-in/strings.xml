@@ -1345,7 +1345,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_resume">Lanjutkan</string>
     <string name="listen_pause">Jeda</string>
     <string name="listen_play">Putar</string>
-    <string name="listen_preview_pill">Pratinjau 30 dtk</string>
     <string name="listen_open_player">Buka pemutar</string>
     <string name="listen_close">Tutup pemutar</string>
     <string name="listen_loading">Menyiapkan artikel…</string>
@@ -1399,7 +1398,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_speed_exact">Kecepatan pemutaran tepat</string>
     <string name="listen_speed_slider">Penggeser kecepatan pemutaran</string>
     <string name="listen_speed_button">Kecepatan pemutaran %1$s×</string>
-    <string name="listen_preview_banner">Pratinjau 30 detik. Premium Archive membuka akses ke artikel lengkap.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">Sisa %1$d detik</item>
     </plurals>

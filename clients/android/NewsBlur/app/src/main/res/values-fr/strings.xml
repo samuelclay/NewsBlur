@@ -1397,7 +1397,6 @@ les gens pour parler du monde.</string>
     <string name="listen_resume">Reprendre</string>
     <string name="listen_pause">Mettre en pause</string>
     <string name="listen_play">Lire</string>
-    <string name="listen_preview_pill">Aperçu de 30 s</string>
     <string name="listen_open_player">Ouvrir le lecteur</string>
     <string name="listen_close">Fermer le lecteur</string>
     <string name="listen_loading">Préparation de l’article…</string>
@@ -1455,7 +1454,6 @@ les gens pour parler du monde.</string>
     <string name="listen_speed_exact">Vitesse de lecture exacte</string>
     <string name="listen_speed_slider">Curseur de vitesse de lecture</string>
     <string name="listen_speed_button">Vitesse de lecture %1$s×</string>
-    <string name="listen_preview_banner">Aperçu de 30 secondes. Premium Archive donne accès aux articles complets.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="many">%1$d secondes restantes</item>
         <item quantity="one">Il vous reste %1$d seconde</item>

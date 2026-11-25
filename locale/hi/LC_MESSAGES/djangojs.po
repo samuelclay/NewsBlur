@@ -589,6 +589,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "भेजने के लिए %(shortcut)s"
 
@@ -982,11 +986,17 @@ msgstr "/माह"
 msgid "/year"
 msgstr "/वर्ष"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 महीना"
 
 msgid "1 year"
 msgstr "1 वर्ष"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "पढ़ने, कार्रवाइयों, प्रशिक्षण और खोज के लिए 28 टूल उपलब्ध हैं।"
@@ -2170,6 +2180,9 @@ msgstr "आपके एप्लिकेशन लोड नहीं हो �
 msgid "Couldn't load audio for this story."
 msgstr "इस लेख के लिए ऑडियो लोड नहीं हो सका।"
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "गिनना मुश्किल है"
 
@@ -2214,6 +2227,9 @@ msgstr "रचनात्मक"
 
 msgid "Credit"
 msgstr "श्रेय"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "मौजूदा आवाज़"
@@ -3896,6 +3912,10 @@ msgstr "पिछला अपडेट"
 msgid "Last activity"
 msgstr "पिछली गतिविधि"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "आख़िरी बार देखा गया:"
 
@@ -3965,6 +3985,9 @@ msgstr "हर सप्ताह लेखों को पढ़कर सु�
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "लेख सुनें"
@@ -4423,6 +4446,9 @@ msgstr "कभी समाप्त न हों"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "अब कभी समाप्त नहीं होगा। बधाई!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "नए आगमन"
@@ -5176,6 +5202,14 @@ msgstr "चुनें कि NewsBlur कौन-सी भाषा इस्�
 msgid "Places"
 msgstr "स्थान"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "प्लैटफ़ॉर्म"
 
@@ -5272,6 +5306,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive पूरे लेख ज़ोर से पढ़कर सुनाता है।"
@@ -5744,6 +5781,9 @@ msgstr "Premium Archive आवश्यक है"
 
 msgid "Reset"
 msgstr "रीसेट करें"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "मूल फ़ेविकॉन पर रीसेट करें"
@@ -7839,6 +7879,10 @@ msgstr "दृश्य"
 msgid "Voice"
 msgstr "आवाज़"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "आवाज़ रिकॉर्ड नहीं हो सकी। कृपया फिर से कोशिश करें।"
 
@@ -7902,6 +7946,9 @@ msgstr "बुधवार"
 
 msgid "Weekly"
 msgstr "साप्ताहिक"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur में आपका स्वागत है"

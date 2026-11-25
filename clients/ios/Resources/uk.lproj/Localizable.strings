@@ -82,7 +82,6 @@
 "2,000 stories" = "2 000 статей";
 "20 stories" = "20 статей";
 "2x daily" = "Двічі на день";
-"30s preview" = "30-секундне прослуховування";
 "3x daily" = "3 рази на день";
 "5 stories" = "5 статей";
 "5,000 stories" = "5 000 статей";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Текст за вчора";
 "Text view" = "Текстовий вигляд";
 "Text view conveniently extracts the story" = "Режим перегляду тексту зручно витягує текст статті";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Це був 30-секундний попередній перегляд. Premium Archive відкриває повний доступ до статей.";
 "The audio couldn't be loaded. Try again in a moment." = "Не вдалося завантажити аудіо. Спробуйте ще раз за мить.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Повний перегляд тексту — це <a href=\"http://ios.newsblur.com/premium\">функція Premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Симулятор iOS не зміг змінити іконку на головному екрані. Спробуйте зробити це на пристрої.";

@@ -529,6 +529,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "Göndermek için %(shortcut)s"
 
@@ -918,11 +922,17 @@ msgstr "/ay"
 msgid "/year"
 msgstr "/yıl"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 ay"
 
 msgid "1 year"
 msgstr "1 yıl"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
@@ -2098,6 +2108,9 @@ msgstr "Uygulamalarınız yüklenemedi. Sayfayı yenilemeyi deneyin."
 msgid "Couldn't load audio for this story."
 msgstr "Bu haberin sesi yüklenemedi."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Saymak zor"
 
@@ -2142,6 +2155,9 @@ msgstr "Yaratıcı"
 
 msgid "Credit"
 msgstr "Kredi"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Geçerli ses"
@@ -3827,6 +3843,10 @@ msgstr "Son güncelleme"
 msgid "Last activity"
 msgstr "Son etkinlik"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Son görülme:"
 
@@ -3896,6 +3916,9 @@ msgstr "Haftada 1 saat haberleri sesli dinleyin"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "Haberi dinle"
@@ -4346,6 +4369,9 @@ msgstr "Süresi dolmasın"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Süresi hiç dolmayacak. Tebrikler!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Yeni Gelenler"
@@ -5095,6 +5121,14 @@ msgstr "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zam
 msgid "Places"
 msgstr "Yerler"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Platform"
 
@@ -5193,6 +5227,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive, haberlerin tamamını sesli okur."
@@ -5658,6 +5695,9 @@ msgstr "Premium Archive gerektirir"
 
 msgid "Reset"
 msgstr "Sıfırla"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
@@ -7744,6 +7784,10 @@ msgstr "Görsel"
 msgid "Voice"
 msgstr "Ses"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "Ses kaydı başarısız oldu. Lütfen tekrar deneyin."
 
@@ -7807,6 +7851,9 @@ msgstr "Çarşamba"
 
 msgid "Weekly"
 msgstr "Haftalık"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"

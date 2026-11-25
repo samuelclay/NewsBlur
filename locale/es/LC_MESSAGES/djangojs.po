@@ -591,6 +591,10 @@ msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
 msgid "%(shortcut)s to send"
 msgstr "%(shortcut)s para enviar"
 
@@ -984,11 +988,17 @@ msgstr "/mes"
 msgid "/year"
 msgstr "/año"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 mes"
 
 msgid "1 year"
 msgstr "1 año"
+
+msgid "2 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Hay 28 herramientas disponibles para leer, realizar acciones, entrenar y descubrir contenido."
@@ -2176,6 +2186,9 @@ msgstr "No se pudieron cargar tus aplicaciones. Intenta actualizar la página."
 msgid "Couldn't load audio for this story."
 msgstr "No se pudo cargar el audio de este artículo."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Contar es difícil"
 
@@ -2220,6 +2233,9 @@ msgstr "Creativo"
 
 msgid "Credit"
 msgstr "Crédito"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Voz actual"
@@ -3918,6 +3934,10 @@ msgstr "Última actualización"
 msgid "Last activity"
 msgstr "Última actividad"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Última vez visto:"
 
@@ -3987,6 +4007,9 @@ msgstr "Escucha 1 hora de artículos en voz alta a la semana"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Escucha 10 horas de artículos en voz alta a la semana"
+
+msgid "Listen to stories read aloud each week"
+msgstr ""
 
 msgid "Listen to story"
 msgstr "Escuchar artículo"
@@ -4447,6 +4470,9 @@ msgstr "Nunca expirar"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Nunca caducará. ¡Felicidades!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Novedades"
@@ -5206,6 +5232,14 @@ msgstr "Elige el idioma que quieres que use NewsBlur. Puedes cambiarlo en cualqu
 msgid "Places"
 msgstr "Lugares"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Plataforma"
 
@@ -5302,6 +5336,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive lee artículos completos en voz alta."
@@ -5778,6 +5815,9 @@ msgstr "Requiere Premium Archive"
 
 msgid "Reset"
 msgstr "Restablecer"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Restaurar favicon original"
@@ -7894,6 +7934,10 @@ msgstr "Visual"
 msgid "Voice"
 msgstr "Voz"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "No se pudo grabar la voz. Inténtalo de nuevo."
 
@@ -7959,6 +8003,9 @@ msgstr "miércoles"
 
 msgid "Weekly"
 msgstr "Semanal"
+
+msgid "Weekly listening"
+msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Bienvenido a NewsBlur"

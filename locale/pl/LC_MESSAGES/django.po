@@ -4436,6 +4436,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Tylko użytkownicy premium mogą udostępniać wiele artykułów dziennie z tej samej witryny."
 
+msgid "Only staff can see or reset another account's listening."
+msgstr ""
+
 msgid "Open NewsBlur to register your application."
 msgstr "Otwórz NewsBlur, aby zarejestrować aplikację."
 
@@ -5975,6 +5978,9 @@ msgstr ""
 msgid "Thanks!"
 msgstr "Dziękujemy!"
 
+msgid "That account doesn't exist."
+msgstr ""
+
 msgid "That item isn't playing"
 msgstr "Ten element nie jest odtwarzany"
 
@@ -7500,6 +7506,12 @@ msgstr ""
 
 #, python-format
 msgid ""
+"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a week."
+msgstr ""
+
+#, python-format
+msgid ""
 "You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
@@ -7510,15 +7522,13 @@ msgstr ""
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
 msgstr "W tym tygodniu odsłuchano %(limit)s artykułów. Limit odsłuchu odnowi się %(day)s."
 
+msgid ""
+"You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
+"listen to full stories."
+msgstr ""
+
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Wykorzystano wszystkie podglądy głosu na dziś. Limit odnowi się o północy."
-
-#, python-format
-msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
-msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
-msgstr[0] "Dziś obejrzano podgląd %(count)d artykułu. Przejdź na Premium Archive, aby odsłuchiwać pełne artykuły."
-msgstr[1] "Dziś obejrzano podgląd %(count)d artykułów. Przejdź na Premium Archive, aby odsłuchiwać pełne artykuły."
-msgstr[2] "Dziś obejrzano podgląd %(count)d artykułów. Przejdź na Premium Archive, aby odsłuchiwać pełne artykuły."
 
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "
