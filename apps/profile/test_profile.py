@@ -2305,13 +2305,31 @@ class Test_StripeWebhookOrdering(TestCase):
         self.assertFalse(self.profile.is_archive_extra)
 
         extra = dict(self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")})
-        stripe_subscription_updated(None, self._event(extra))
+        with patch("stripe.Subscription.retrieve", return_value={"plan": extra["plan"]}):
+            stripe_subscription_updated(None, self._event(extra))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
         live_archive = {"plan": {"id": self.archive_price}}
         with patch("stripe.Subscription.retrieve", return_value=live_archive):
             stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
+    def test_a_late_archive_extra_event_keeps_a_downgrade_to_archive(self):
+        """The mirror case: after switching back to Archive, an older Archive Extra update must not restore Extra."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        self._assert_archive_active()
+        stale_extra = dict(
+            self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")}
+        )
+
+        with patch("stripe.Subscription.retrieve", return_value={"plan": {"id": self.archive_price}}):
+            stripe_subscription_updated(None, self._event(stale_extra))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive)
         self.assertFalse(self.profile.is_archive_extra)
@@ -2323,12 +2341,11 @@ class Test_StripeWebhookOrdering(TestCase):
 
         stripe_checkout_session_completed(None, self._event(self._checkout_object()))
         extra_price = Profile.plan_to_stripe_price("archive_extra")
-        stripe_subscription_updated(
-            None, self._event(dict(self._subscription_object(), plan={"id": extra_price}))
-        )
-
         live_extra = {"plan": {"id": extra_price}}
         with patch("stripe.Subscription.retrieve", return_value=live_extra):
+            stripe_subscription_updated(
+                None, self._event(dict(self._subscription_object(), plan={"id": extra_price}))
+            )
             stripe_subscription_updated(None, self._event(self._subscription_object()))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
