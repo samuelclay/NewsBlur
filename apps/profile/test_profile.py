@@ -381,6 +381,53 @@ class Test_UpgradePaths(TestCase):
         m["email_pro"].assert_not_called()
         m["email_staff"].assert_not_called()
 
+    # --- Archive <-> Archive Extra ----------------------------------------
+
+    def test_free_to_archive_extra_sets_up_the_archive(self):
+        m = self._start_patches()
+        self._set_state(is_premium=False, is_archive=False, is_premium_trial=None)
+
+        self.profile.activate_archive_extra()
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertTrue(self.profile.is_archive_extra)
+        m["archive_fetch"].assert_called_once()
+        self.assertEqual(m["email_staff"].call_args.kwargs["tier"], "archive_extra")
+
+    def test_archive_and_archive_extra_switch_without_redoing_the_archive(self):
+        m = self._start_patches()
+        self._set_state(is_premium=True, is_archive=True, is_archive_extra=False, is_premium_trial=False)
+
+        self.profile.activate_archive_extra()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        self.profile.activate_archive()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+        m["archive_fetch"].assert_not_called()
+        m["schedule_setup"].apply_async.assert_not_called()
+
+    def test_pro_and_deactivation_clear_archive_extra(self):
+        self._start_patches()
+        self._set_state(is_premium=True, is_archive=True, is_archive_extra=True, is_premium_trial=False)
+
+        self.profile.activate_pro()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_pro)
+        self.assertFalse(self.profile.is_archive_extra)
+
+        self.profile.activate_archive_extra()
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.is_archive_extra, "a late Archive Extra event must not touch Pro")
+
+        self._set_state(is_pro=False, is_archive_extra=True)
+        self.profile.deactivate_premium()
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.is_archive_extra)
+
     # --- downgrade prevention --------------------------------------------
 
     def test_activate_premium_does_not_clear_archive(self):
@@ -701,6 +748,28 @@ class Test_AndroidSubscriptionActivation(TestCase):
                 user=self.user,
                 payment_identifier="GPA.1000-0000-0000-00002",
                 payment_provider="android-pro",
+            ).exists()
+        )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_archive")
+    def test_activate_android_archive_extra_is_not_mistaken_for_archive(
+        self, mock_activate_archive, mock_setup
+    ):
+        # nb.premium.archive.extra.159 contains "premium.archive", so a check for Archive first would sell
+        # Archive Extra as plain Archive.
+        result = self.profile.activate_android_premium(
+            order_id="GPA.1000-0000-0000-00004", product_id="nb.premium.archive.extra.159"
+        )
+
+        self.assertTrue(result)
+        mock_activate_archive.assert_called_once_with(never_expire=False, extra=True)
+        self.assertTrue(
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_identifier="GPA.1000-0000-0000-00004",
+                payment_provider="android-archive-extra",
+                payment_amount=159,
             ).exists()
         )
 
@@ -2214,6 +2283,25 @@ class Test_StripeWebhookOrdering(TestCase):
         stripe_subscription_updated(None, self._event(self._subscription_object()))
 
         self._assert_archive_active()
+
+    def test_switching_the_subscription_between_archive_and_archive_extra(self):
+        """The web toggle switches a Stripe subscription's price; the update webhook moves the tier with it."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        self._assert_archive_active()
+        self.assertFalse(self.profile.is_archive_extra)
+
+        extra = dict(self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")})
+        stripe_subscription_updated(None, self._event(extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
 
 
 @override_settings(

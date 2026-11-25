@@ -907,6 +907,8 @@ def save_ios_receipt(request):
 
     if product_identifier == "newsblur_premium_pro":
         paid = request.user.profile.activate_ios_pro(transaction_identifier)
+    elif product_identifier == "newsblur_premium_archive_extra":
+        paid = request.user.profile.activate_ios_archive_extra(transaction_identifier)
     elif product_identifier == "newsblur_premium_archive":
         paid = request.user.profile.activate_ios_archive(transaction_identifier)
     else:
@@ -1136,7 +1138,7 @@ def switch_paypal_subscription(request):
         return HttpResponseRedirect(approve_url)
 
     paypal_return = reverse("paypal-return")
-    if plan == "archive":
+    if plan in ("archive", "archive_extra"):
         paypal_return = reverse("paypal-archive-return")
     return HttpResponseRedirect(paypal_return)
 
@@ -1598,6 +1600,7 @@ def payment_history(request):
     return {
         "is_premium": user.profile.is_premium,
         "is_archive": user.profile.is_archive,
+        "is_archive_extra": bool(user.profile.is_archive_extra),
         "is_pro": user.profile.is_pro,
         "premium_expire": user.profile.premium_expire,
         "premium_renewal": user.profile.premium_renewal,
@@ -2014,6 +2017,8 @@ def email_optout_token(request, username, secret):
 @json.json_view
 def ios_subscription_status(request):
     from appstoreserverlibrary.signed_data_verifier import VerificationException, VerificationStatus
+
+    from apps.profile.apple_notifications import process_apple_notification
 
     from apps.profile.apple_notifications import process_apple_notification
 

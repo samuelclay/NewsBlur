@@ -16,9 +16,11 @@ PAYMENT_PROVIDERS = (
     "paypal",
     "ios-subscription",
     "ios-archive-subscription",
+    "ios-archive-extra-subscription",
     "ios-pro-subscription",
     "android-subscription",
     "android-archive",
+    "android-archive-extra",
     "android-pro",
 )
 

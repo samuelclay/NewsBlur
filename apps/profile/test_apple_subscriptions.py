@@ -138,19 +138,32 @@ class Test_AppleSubscriptions(TestCase):
         self.assertFalse(Profile.objects.get(user=self.user).is_premium)
 
     def test_archive_and_pro_activate_correct_tier(self):
-        for product, archive, pro in (
-            ("newsblur_premium_archive", True, False),
-            ("newsblur_premium_pro", True, True),
+        for product, archive, extra, pro in (
+            ("newsblur_premium_archive", True, False, False),
+            ("newsblur_premium_archive_extra", True, True, False),
+            ("newsblur_premium_pro", True, False, True),
         ):
             with self.subTest(product=product):
                 Profile.objects.filter(user=self.user).update(
-                    is_premium=False, is_archive=False, is_pro=False
+                    is_premium=False, is_archive=False, is_archive_extra=False, is_pro=False
                 )
                 self.apply(productId=product, transactionId=product)
                 profile = Profile.objects.get(user=self.user)
                 self.assertEqual(profile.is_archive, archive)
+                self.assertEqual(bool(profile.is_archive_extra), extra)
                 self.assertEqual(profile.is_pro, pro)
                 self.assertEqual(profile.premium_expire, self.expiration)
+
+    def test_archive_subscriber_switching_to_archive_extra_gets_two_hours(self):
+        Profile.objects.filter(user=self.user).update(
+            is_premium=True,
+            is_archive=True,
+            is_archive_extra=False,
+            premium_expire=self.now + datetime.timedelta(days=30),
+        )
+        result = self.apply(productId="newsblur_premium_archive_extra")
+        self.assertNotEqual(result.get("reason"), "cross-tier")
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
 
     def test_lifetime_entitlement_is_preserved(self):
         Profile.objects.filter(user=self.user).update(is_premium=True, premium_expire=None)

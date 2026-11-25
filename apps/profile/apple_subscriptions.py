@@ -10,6 +10,8 @@ from apps.profile.models import PaymentHistory, Profile
 APPLE_PRODUCTS = {
     "newsblur_premium_auto_renew_36": ("premium", "ios-subscription", 36, 1),
     "newsblur_premium_archive": ("archive", "ios-archive-subscription", 99, 2),
+    # Archive Extra shares Archive's rank, so switching between them is a same-tier change of the Listen allowance.
+    "newsblur_premium_archive_extra": ("archive_extra", "ios-archive-extra-subscription", 159, 2),
     "newsblur_premium_pro": ("pro", "ios-pro-subscription", 29, 3),
 }
 APPLE_PROVIDERS = tuple(product[1] for product in APPLE_PRODUCTS.values())
