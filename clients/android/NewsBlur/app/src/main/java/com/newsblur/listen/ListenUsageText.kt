@@ -28,14 +28,14 @@ import kotlin.math.max
 
 /**
  * ListenUsageText.kt words the usage line the same way as the web player: the hours and minutes of new audio left
- * this week for Premium Archive and Pro (the allowance resets on Sunday, apps/listen/usage.py), or the free story
- * and voice previews left today for everyone else.
+ * this week for Premium Archive, Archive Extra and Pro (the allowance resets on Sunday, apps/listen/usage.py), or
+ * the free story and voice previews left today for everyone else.
  */
 @Composable
 fun listenUsageSummary(usage: ListenUsage?): String? {
     usage ?: return null
     val parts = mutableListOf<String>()
-    if (usage.isArchiveTier) {
+    if (usage.hasWeeklyAllowance) {
         val remaining = usage.secondsRemaining ?: return null
         val timeLeft = listenDurationText(listenHoursAndMinutes(remaining))
         parts += stringResource(R.string.listen_time_left_this_week, timeLeft)
@@ -64,7 +64,7 @@ fun ListenUsageFooter(
     val summary = listenUsageSummary(usage) ?: return
     Row(modifier = modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(text = summary, color = colors.textSecondary, fontSize = 12.sp, modifier = Modifier.weight(1f, fill = false))
-        if (usage?.isArchiveTier != true) {
+        if (usage?.hasWeeklyAllowance != true) {
             Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.listen_upgrade),

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.newsblur.network.resolveListenAudioUrl
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.util.Locale
@@ -56,6 +57,25 @@ class Test_ListenApiParsing {
         assertTrue(manifest.paragraphs.first().isTitle)
         assertEquals(listOf(0), manifest.segments.first().paragraphs)
         assertEquals("George", manifest.voice?.name)
+    }
+
+    @Test
+    fun test_archive_extra_usage_counts_down_the_weekly_allowance() {
+        // The tier alone marks Premium Archive Extra as a weekly plan, whatever is_archive_tier says.
+        val extra =
+            Gson().fromJson(
+                """{"code": 1, "usage": {"tier": "archive_extra", "seconds_used": 600, "seconds_limit": 7200,
+                    "seconds_remaining": 6600, "samples_limit": null, "preview_seconds": null}}""",
+                ListenUsageResponse::class.java,
+            )
+        assertTrue(extra.usage!!.hasWeeklyAllowance)
+        val premium =
+            Gson().fromJson(
+                """{"code": 1, "usage": {"tier": "premium", "is_archive_tier": false, "samples_limit": null,
+                    "preview_seconds": 60}}""",
+                ListenUsageResponse::class.java,
+            )
+        assertFalse(premium.usage!!.hasWeeklyAllowance)
     }
 
     @Test

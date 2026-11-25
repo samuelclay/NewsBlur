@@ -111,7 +111,7 @@ object ListenSegments {
     ): Int = segments.getOrNull(segmentIndex)?.paragraphs?.minOrNull() ?: 0
 }
 
-/** ListenTimeline.kt: how a 30 second preview ends, fading out over its last moment instead of cutting off. */
+/** ListenTimeline.kt: how a preview ends, fading out over its last moment instead of cutting off. */
 object ListenPreviewFade {
     const val FADE_MS = 1_500L
 

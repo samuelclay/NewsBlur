@@ -1611,7 +1611,11 @@ people together to talk about the world.</string>
     <string name="listen_resume">Resume</string>
     <string name="listen_pause">Pause</string>
     <string name="listen_play">Play</string>
-    <string name="listen_preview_pill">30s preview</string>
+    <!-- The length comes from the server; "s" abbreviates seconds. -->
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="one">%1$ds preview</item>
+        <item quantity="other">%1$ds preview</item>
+    </plurals>
     <string name="listen_open_player">Open player</string>
     <string name="listen_close">Close player</string>
     <string name="listen_loading">Getting the story ready…</string>
@@ -1670,7 +1674,10 @@ people together to talk about the world.</string>
     <string name="listen_speed_exact">Exact playback speed</string>
     <string name="listen_speed_slider">Playback speed slider</string>
     <string name="listen_speed_button">Playback speed %1$s×</string>
-    <string name="listen_preview_banner">Previewing 30 seconds. Premium Archive unlocks full stories.</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="one">Previewing %1$d second. Premium Archive unlocks full stories.</item>
+        <item quantity="other">Previewing %1$d seconds. Premium Archive unlocks full stories.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">%1$d second left</item>
         <item quantity="other">%1$d seconds left</item>

@@ -36,7 +36,18 @@ data class ListenUsage(
     @SerializedName("previews_used") val previewsUsed: Int = 0,
     @SerializedName("previews_limit") val previewsLimit: Int? = null,
     @SerializedName("upgrade_message") val upgradeMessage: String? = null,
-)
+) {
+    /** Premium Archive, Archive Extra and Pro listen against a weekly allowance; everyone else gets previews. */
+    val hasWeeklyAllowance: Boolean
+        get() = isArchiveTier || tier in WEEKLY_TIERS
+
+    companion object {
+        const val TIER_ARCHIVE = "archive"
+        const val TIER_ARCHIVE_EXTRA = "archive_extra"
+        const val TIER_PRO = "pro"
+        private val WEEKLY_TIERS = setOf(TIER_ARCHIVE, TIER_ARCHIVE_EXTRA, TIER_PRO)
+    }
+}
 
 data class ListenParagraph(
     @SerializedName("index") val index: Int = 0,
@@ -62,10 +73,15 @@ data class ListenSegment(
 
 data class ListenPreviewInfo(
     @SerializedName("is_preview") val isPreview: Boolean = false,
-    @SerializedName("seconds") val seconds: Double = 30.0,
+    @SerializedName("seconds") val seconds: Double = DEFAULT_SECONDS,
     @SerializedName("samples_used") val samplesUsed: Int = 0,
     @SerializedName("samples_limit") val samplesLimit: Int? = null,
-)
+) {
+    companion object {
+        /** A preview's length until the server says otherwise (preview.seconds or usage.preview_seconds). */
+        const val DEFAULT_SECONDS = 60.0
+    }
+}
 
 data class ListenManifest(
     @SerializedName("code") val code: Int = 0,
