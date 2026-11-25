@@ -9,6 +9,7 @@ import datetime
 import html
 import re
 import time
+import uuid
 import zlib
 
 import celery
@@ -18,6 +19,7 @@ import numpy as np
 import pymongo
 import redis
 import urllib3
+from celery.exceptions import SoftTimeLimitExceeded
 from django.conf import settings
 from django.contrib.auth.models import User
 from mongoengine.queryset import NotUniqueError
@@ -156,6 +158,70 @@ class MUserSearch(mongo.Document):
             time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
         )
 
+    @staticmethod
+    def discover_claim_key(feed_id):
+        return f"discover:index:feed:{feed_id}"
+
+    @classmethod
+    def claimed_discover_feeds(cls, feed_ids):
+        if not feed_ids:
+            return set()
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        claims = r.mget([cls.discover_claim_key(feed_id) for feed_id in feed_ids])
+        return {feed_id for feed_id, claim in zip(feed_ids, claims) if claim}
+
+    @classmethod
+    def update_discover_claims(cls, feed_ids, expected, owner=None):
+        # apps/search/tasks.py takes ownership at worker start. A failed dispatch can
+        # then cancel queued work without releasing a running worker's claim.
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        change = r.register_script(
+            """if redis.call('get', KEYS[1]) ~= ARGV[1] then return 0 end
+               if ARGV[2] == '' then return redis.call('del', KEYS[1]) end
+               redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3])
+               return 1"""
+        )
+        pipe = r.pipeline()
+        for feed_id in feed_ids:
+            change(
+                keys=[cls.discover_claim_key(feed_id)],
+                args=[expected, owner or "", settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH],
+                client=pipe,
+            )
+        return [feed_id for feed_id, changed in zip(feed_ids, pipe.execute()) if changed]
+
+    def schedule_remaining_discover_feeds(self, feed_ids, notify_done=False):
+        """Queue only missing feeds from apps/discover/views.py, even after a full-account run."""
+        r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
+        claim_id = uuid.uuid4().hex
+        limit = settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH
+        pipe = r.pipeline()
+        for feed_id in feed_ids:
+            pipe.set(self.discover_claim_key(feed_id), claim_id, nx=True, ex=limit)
+        claimed = [feed_id for feed_id, acquired in zip(feed_ids, pipe.execute()) if acquired]
+        tasks = [
+            IndexSubscriptionsChunkForDiscover.s(chunk, self.user_id, claim_id).set(
+                queue="discover_indexer", expires=limit, soft_time_limit=limit - 60, time_limit=limit
+            )
+            for chunk in chunks(claimed, 6)
+        ]
+        published = 0
+        try:
+            if notify_done:
+                # Older readers wait for an account-wide "done" socket event. A manual run
+                # doesn't set the account flag used by automatic discovery in apps/search/models.py.
+                finish = FinishIndexSubscriptionsForDiscover.s(
+                    user_id=self.user_id, start=time.time(), total=len(claimed), notify_only=True
+                ).set(queue="discover_indexer")
+                celery.chord(tasks)(finish)
+            else:
+                for task in tasks:
+                    task.apply_async()
+                    published += len(task.args[0])
+        except Exception:
+            self.update_discover_claims(claimed[published:], claim_id)
+            raise
+
     # Should be run as a background task
     def index_subscriptions_for_search(self):
         self.index_subscriptions_for("search")
@@ -239,12 +305,12 @@ class MUserSearch(mongo.Document):
         self.subscriptions_indexing = False
         self.save()
 
-    def finish_index_subscriptions_for_discover(self, start, total):
-        from apps.rss_feeds.models import Feed
-
+    def finish_index_subscriptions_for_discover(self, start, total, notify_only=False):
         r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
         user = User.objects.get(pk=self.user_id)
         r.publish(user.username, "discover_index_complete:done")
+        if notify_only:
+            return
 
         duration = time.time() - start
         logging.user(
@@ -282,12 +348,14 @@ class MUserSearch(mongo.Document):
         logging.user(user, "~FCIndexing %s feeds for discover..." % len(feed_ids))
 
         for feed_id in feed_ids:
-            feed = Feed.get_by_id(feed_id)
-            if not feed:
-                continue
-
-            feed.index_stories_for_discover()
-            r.publish(user.username, "discover_index_complete:feeds:%s" % feed_id)
+            try:
+                feed = Feed.get_by_id(feed_id)
+                if feed and feed.index_stories_for_discover():
+                    r.publish(user.username, "discover_index_complete:feeds:%s" % feed_id)
+            except SoftTimeLimitExceeded:
+                raise
+            except Exception as exc:
+                logging.user(user, f"~FRDiscover indexing failed for feed {feed_id}: {exc}")
 
     @classmethod
     def schedule_index_feeds_for_search(cls, feed_ids, user_id):

@@ -3,12 +3,14 @@ import json
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStory
+from apps.search.models import DiscoverStory, MUserSearch
+from apps.search.tasks import IndexSubscriptionsChunkForDiscover
 
 
 class Test_DiscoverViews(TestCase):
@@ -23,6 +25,93 @@ class Test_DiscoverViews(TestCase):
         """Test that feed autocomplete endpoint returns valid response."""
         response = self.client.get("/discover/autocomplete/", {"term": "news"})
         self.assertEqual(response.status_code, 200)
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class Test_DiscoveryIndex(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="folder-discovery")
+        self.user.profile.is_archive = True
+        self.user.profile.save(update_fields=["is_archive"])
+        self.client.force_login(self.user)
+        MUserSearch.get_user(self.user.pk).update(set__discover_indexed=True)
+
+    def feed(self, name, subscribed=True):
+        feed = Feed.objects.create(feed_address=f"https://example.com/{name}", feed_title=name)
+        if subscribed:
+            UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+        return feed
+
+    def test_index_remaining_folder_feeds_after_account_indexing_finished(self):
+        with_stories = self.feed("with-stories")
+        empty = self.feed("empty")
+        other_folder = self.feed("another-folder")
+        unsubscribed = self.feed("unsubscribed", subscribed=False)
+        story = MStory.objects.create(
+            story_feed_id=with_stories.pk,
+            story_title="Apartment listing",
+            story_date=datetime.datetime.now(),
+            story_guid="listing",
+        )
+
+        with patch.object(DiscoverStory, "index") as index_story:
+            response = self.client.post(
+                "/discover/index/", {"feed_ids": [with_stories.pk, empty.pk, unsubscribed.pk]}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        for feed in (with_stories, empty, other_folder, unsubscribed):
+            feed.refresh_from_db()
+        self.assertTrue(with_stories.discover_indexed)
+        self.assertTrue(empty.discover_indexed)
+        self.assertFalse(other_folder.discover_indexed)
+        self.assertFalse(unsubscribed.discover_indexed)
+        self.assertEqual(with_stories.archive_subscribers, 1)
+        self.assertEqual(
+            [call.kwargs["story_hash"] for call in index_story.call_args_list], [story.story_hash]
+        )
+
+    def test_overlapping_requests_and_status_after_a_missed_notification(self):
+        feed_id = self.feed("shared-in-two-folders").pk
+        scope = {"feed_ids": [feed_id]}
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            idle = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+            publish.assert_not_called()
+            first = self.client.post("/discover/index/", scope).json()
+            overlapping = self.client.post("/discover/index/", scope).json()
+            publish.assert_called_once()
+            args, kwargs = publish.call_args.args[:2]
+        IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
+
+        self.assertFalse(idle["indexing"])
+        self.assertEqual(idle["pending_feed_ids"], [feed_id])
+        self.assertTrue(first["indexing"])
+        self.assertTrue(overlapping["indexing"])
+        after = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+        self.assertFalse(after["indexing"])
+        self.assertEqual(after["indexed_feed_ids"], [feed_id])
+        self.assertEqual(after["pending_feed_ids"], [])
+
+    def test_a_failed_feed_can_be_retried_after_other_feeds_finish(self):
+        failing = self.feed("failing")
+        empty = self.feed("empty")
+        MStory.objects.create(
+            story_feed_id=failing.pk,
+            story_title="Local news",
+            story_date=datetime.datetime.now(),
+            story_guid="local-news",
+        )
+        scope = {"feed_ids": [failing.pk, empty.pk]}
+        with patch.object(DiscoverStory, "index", side_effect=RuntimeError("Embedding service unavailable")):
+            result = self.client.post("/discover/index/", scope).json()
+        self.assertFalse(result["indexing"])
+        self.assertEqual(result["indexed_feed_ids"], [empty.pk])
+        self.assertEqual(result["pending_feed_ids"], [failing.pk])
+
+        with patch.object(DiscoverStory, "index"):
+            retried = self.client.post("/discover/index/", scope).json()
+        self.assertCountEqual(retried["indexed_feed_ids"], [failing.pk, empty.pk])
+        self.assertEqual(retried["pending_feed_ids"], [])
 
 
 class Test_FeedAutocompleteUrlTerm(TestCase):
