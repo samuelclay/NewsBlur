@@ -35,6 +35,14 @@ import WebKit
         XCTAssertTrue(feeds.isOffline, "Only a successful feed list response can restore subscriptions.")
         app.getRequests.first?.failure(nil, URLError(.notConnectedToInternet))
         XCTAssertEqual(app.getRequests.count, 2, "Reachability can return before the previous request reports network loss.")
+
+        app.getRequests.last?.failure(nil, URLError(.serverCertificateUntrusted))
+        reachable.isReachable = false
+        networkChanged()
+        XCTAssertEqual(app.getRequests.count, 2)
+        reachable.isReachable = true
+        networkChanged()
+        XCTAssertEqual(app.getRequests.count, 3, "Leaving captive Wi-Fi for a reachable network must retry the feed list.")
     }
 
     func test_closedAuthenticationFixtureReleasesItsReaderAndWebView() async throws {

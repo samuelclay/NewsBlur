@@ -66,6 +66,13 @@ static BOOL NBFeedListFailedForConnectivity(NSError *error, NSHTTPURLResponse *r
         case NSURLErrorInternationalRoamingOff:
         case NSURLErrorCallIsActive:
         case NSURLErrorDataNotAllowed:
+        // A captive network can interrupt TLS or present its own certificate. FeedsObjCViewController.m
+        // retries the normal HTTPS request so the new connection validates the server again.
+        case NSURLErrorSecureConnectionFailed:
+        case NSURLErrorServerCertificateHasBadDate:
+        case NSURLErrorServerCertificateUntrusted:
+        case NSURLErrorServerCertificateHasUnknownRoot:
+        case NSURLErrorServerCertificateNotYetValid:
             return YES;
         default:
             return NO;
