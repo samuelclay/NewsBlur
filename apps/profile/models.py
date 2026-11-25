@@ -5001,6 +5001,10 @@ def stripe_current_plan_id(subscription_id):
             " ---> Couldn't fetch Stripe subscription %s, keeping the tier: %s" % (subscription_id, e)
         )
         return None
+    if subscription.get("status") not in ("active", "trialing", "past_due"):
+        # A canceled or expired subscription keeps its last price, which says nothing about what the account
+        # pays for now, such as an old Archive subscription replaced by a new Archive Extra one.
+        return None
     plan = subscription.get("plan")
     if not plan:
         items = (subscription.get("items") or {}).get("data") or []

@@ -853,6 +853,25 @@ class Test_AndroidSubscriptionActivation(TestCase):
         self.assertTrue(self.profile.is_archive_extra, "Google's lookup failed")
 
     @patch.object(Profile, "setup_premium_history")
+    def test_a_play_archive_renewal_keeps_extra_that_stripe_bills_for(self, mock_setup):
+        """An old Play Archive subscription can keep renewing after the account upgraded on the web."""
+        self._make_archive_extra()
+        Profile.objects.filter(pk=self.profile.pk).update(active_provider="stripe")
+        live_archive = {
+            "latestOrderId": "GPA.1000-0000-0000-00007",
+            "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+            "lineItems": [{"productId": "nb.premium.archive.99"}],
+        }
+        with patch("apps.profile.views.get_google_play_subscription", return_value=live_archive):
+            from apps.profile.views import handle_google_play_notification
+
+            handle_google_play_notification(
+                User.objects.get(pk=self.user.pk), 2, "play-token", "nb.premium.archive.99"
+            )
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+    @patch.object(Profile, "setup_premium_history")
     def test_an_unsigned_ios_archive_receipt_keeps_extra(self, mock_setup):
         """Restore Purchases resends an old Archive purchase under a new transaction id."""
         self._make_archive_extra()
@@ -2399,12 +2418,12 @@ class Test_StripeWebhookOrdering(TestCase):
         self.assertFalse(self.profile.is_archive_extra)
 
         extra = dict(self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")})
-        with patch("stripe.Subscription.retrieve", return_value={"plan": extra["plan"]}):
+        with patch("stripe.Subscription.retrieve", return_value={"status": "active", "plan": extra["plan"]}):
             stripe_subscription_updated(None, self._event(extra))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
-        live_archive = {"plan": {"id": self.archive_price}}
+        live_archive = {"status": "active", "plan": {"id": self.archive_price}}
         with patch("stripe.Subscription.retrieve", return_value=live_archive):
             stripe_subscription_updated(None, self._event(self._subscription_object()))
         self.profile.refresh_from_db()
@@ -2422,7 +2441,10 @@ class Test_StripeWebhookOrdering(TestCase):
             self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")}
         )
 
-        with patch("stripe.Subscription.retrieve", return_value={"plan": {"id": self.archive_price}}):
+        with patch(
+            "stripe.Subscription.retrieve",
+            return_value={"status": "active", "plan": {"id": self.archive_price}},
+        ):
             stripe_subscription_updated(None, self._event(stale_extra))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive)
@@ -2448,6 +2470,19 @@ class Test_StripeWebhookOrdering(TestCase):
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
+    def test_an_event_from_a_canceled_archive_subscription_keeps_archive_extra(self):
+        """A late event for an old, canceled Archive subscription after a new Archive Extra one started."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        Profile.objects.filter(pk=self.profile.pk).update(is_archive_extra=True)
+        canceled_archive = {"status": "canceled", "plan": {"id": self.archive_price}}
+        with patch("stripe.Subscription.retrieve", return_value=canceled_archive):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
     def test_a_late_archive_event_keeps_archive_extra(self):
         """Stripe can deliver the Archive update from before an Extra upgrade after the upgrade itself."""
         self._start_patches()
@@ -2455,7 +2490,7 @@ class Test_StripeWebhookOrdering(TestCase):
 
         stripe_checkout_session_completed(None, self._event(self._checkout_object()))
         extra_price = Profile.plan_to_stripe_price("archive_extra")
-        live_extra = {"plan": {"id": extra_price}}
+        live_extra = {"status": "active", "plan": {"id": extra_price}}
         with patch("stripe.Subscription.retrieve", return_value=live_extra):
             stripe_subscription_updated(
                 None, self._event(dict(self._subscription_object(), plan={"id": extra_price}))

@@ -677,9 +677,11 @@ def handle_google_play_notification(user, notification_type, purchase_token, sub
             order_id=order_id_for_payment,
             product_id=subscription_id,
         )
-        if google_play_confirms_plain_archive(subscription_info, subscription_id):
+        billed_elsewhere = user.profile.active_provider not in (None, "", "google-play")
+        if google_play_confirms_plain_archive(subscription_info, subscription_id) and not billed_elsewhere:
             # A crossgrade from Archive Extra back to Archive. Checked even when the app's receipt already
             # recorded this order, and only on Google's word, since a late notification can name an old product.
+            # Extra that Stripe or PayPal bills for stays, even while an old Play Archive keeps renewing.
             user.profile.activate_archive(downgrade_extra=True)
         user.profile.active_provider = "google-play"
         user.profile.premium_renewal = True

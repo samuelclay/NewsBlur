@@ -179,11 +179,12 @@ class Test_AppleSubscriptions(TestCase):
             "expiresDate": stamp(self.now + datetime.timedelta(days=345)),
         }
         self.apply(**old_archive)
-        self.apply(
-            productId="newsblur_premium_archive_extra",
-            transactionId="extra-1",
-            purchaseDate=stamp(self.now - datetime.timedelta(days=2)),
-        )
+        extra = {
+            "productId": "newsblur_premium_archive_extra",
+            "transactionId": "extra-1",
+            "purchaseDate": stamp(self.now - datetime.timedelta(days=2)),
+        }
+        self.apply(**extra)
         self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
 
         self.apply(**old_archive)
@@ -196,6 +197,11 @@ class Test_AppleSubscriptions(TestCase):
         )
         self.assertFalse(
             Profile.objects.get(user=self.user).is_archive_extra, "a newer Archive is a crossgrade"
+        )
+
+        self.apply(**extra)
+        self.assertFalse(
+            Profile.objects.get(user=self.user).is_archive_extra, "a replayed Extra kept Archive"
         )
 
     def test_an_apple_archive_transaction_keeps_extra_billed_by_another_store(self):
