@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 10,000 แห่ง</string>
     <string name="pro_all_feeds_fetched">ดึงข้อมูลทุกฟีดทุก 5-15 นาที</string>
     <string name="pro_regex_train">ฝึกคัดกรองเรื่องด้วยนิพจน์ทั่วไป</string>
+    <string name="pro_oauth_applications">สร้างแอปพลิเคชัน OAuth</string>
     <string name="pro_priority_support">การสนับสนุนแบบเร่งด่วน</string>
     <string name="pro_natural_language_search">ค้นหาด้วยภาษาธรรมชาติ</string>
     <string name="settings_cat_offline">อ่านแบบออฟไลน์</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">ทำเครื่องหมายบทความว่าอ่านแล้วโดยอัตโนมัติเมื่อเลื่อนผ่าน</string>
     <string name="settings_story_clustering">จัดกลุ่มบทความที่เกี่ยวข้อง</string>
     <string name="settings_story_clustering_summary">แสดงบทความซ้ำจากฟีดอื่นใต้ชื่อเรื่อง</string>
+    <string name="settings_show_new_stories">แสดงบทความใหม่เมื่อเข้ามา</string>
+    <string name="settings_show_new_stories_summary">แสดงป้าย “บทความใหม่ N รายการ” เมื่อมีบทความเข้ามาในเว็บไซต์หรือโฟลเดอร์ที่เปิดอยู่</string>
     <string name="settings_cluster_matches">เกณฑ์การจัดกลุ่ม</string>
     <string name="settings_cluster_matches_summary">เลือกว่าจะแสดงเฉพาะชื่อเรื่องที่ซ้ำกัน หรือรวมเรื่องที่เกี่ยวข้องด้วย</string>
     <string name="settings_story_clustering_save_failed">บันทึกค่ากำหนดการจัดกลุ่มบทความไม่สำเร็จ</string>
@@ -1481,4 +1484,7 @@
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
     <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์</string>
     <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">บทความใหม่ %d รายการ</item>
+    </plurals>
 </resources>

@@ -438,11 +438,11 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> ($29/माह) में आपकी सभी फ़ीड हर 5–15 मिनट में फ़ेच होती हैं, और साथ ही रेगेक्स "
-"प्रशिक्षण, 10,000 तक साइटें और प्राथमिकता वाली सहायता मिलती है।"
+"#366944;\">Premium Pro</a> ($29/महीना) में सभी फ़ीड हर 5-15 मिनट में फ़ेच होती हैं, रेगेक्स प्रशिक्षण, "
+"10,000 तक साइटें, OAuth एप्लिकेशन पंजीकरण और प्राथमिकता सहायता शामिल हैं।"
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -917,6 +917,9 @@ msgstr ""
 "इंटेलिजेंस फ़िल्टर को प्रशिक्षित करना, नई फ़ीड की सदस्यता लेना और अपने संग्रह में खोजना। आम वर्कफ़्लो में "
 "दैनिक ब्रीफ़िंग, इनबॉक्स छँटाई और सहेजे गए लेखों पर शोध शामिल हैं।"
 
+msgid "Application website"
+msgstr "एप्लिकेशन की वेबसाइट"
+
 msgid "Apply training across a folder"
 msgstr "किसी फ़ोल्डर में सभी पर प्रशिक्षण लागू करें"
 
@@ -1375,9 +1378,6 @@ msgstr "क्लाइंट"
 msgid "Client id"
 msgstr "क्लाइंट आईडी"
 
-msgid "Client secret"
-msgstr "क्लाइंट सीक्रेट"
-
 msgid "Client type"
 msgstr "क्लाइंट प्रकार"
 
@@ -1492,6 +1492,9 @@ msgstr "एक कमांड में कनेक्ट करें"
 msgid "Connect your account"
 msgstr "अपना खाता कनेक्ट करें"
 
+msgid "Consent screen preview"
+msgstr "सहमति स्क्रीन का पूर्वावलोकन"
+
 msgid "Contact"
 msgstr "संपर्क करें"
 
@@ -1570,6 +1573,9 @@ msgstr ""
 msgid "Create Account"
 msgstr "खाता बनाएँ"
 
+msgid "Create OAuth applications"
+msgstr "OAuth एप्लिकेशन बनाएँ"
+
 msgid "Create a new account instead"
 msgstr "इसके बजाय नया खाता बनाएँ"
 
@@ -1581,6 +1587,9 @@ msgstr "खाता बनाएँ"
 
 msgid "Create an account"
 msgstr "खाता बनाएँ"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuth एप्लिकेशन बनाने के लिए NewsBlur Premium Pro आवश्यक है।"
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Stripe और PayPal के ज़रिए क्रेडिट/डेबिट कार्ड।"
@@ -1878,6 +1887,12 @@ msgstr "इंजीनियर और लेखक"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "प्रीमियम सुविधाओं का आनंद ले रहे हैं? इन्हें हमेशा के लिए अपने पास रखें!"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "बिना क्रेडेंशियल, वाइल्डकार्ड या फ़्रैगमेंट वाला एक रीडायरेक्ट URL दर्ज करें।"
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "HTTP या HTTPS वेबसाइट का पता दर्ज करें।"
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "अपना ईमेल पता दर्ज करें और हम आपको नया पासवर्ड सेट करने के लिए एक लिंक भेजेंगे।"
@@ -3684,13 +3699,14 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur Premium की कीमत सालाना $36 से शुरू होती है, जिसमें अधिकतम 1,024 साइटें शामिल हैं &mdash; Feedly "
-"Pro की आधी कीमत। पावर यूज़र्स के लिए, NewsBlur Pro $29/महीने में सभी 10,000 साइटों के लिए 5-मिनट पर फ़ीड "
-"फ़ेचिंग, रेगेक्स क्लासिफ़ायर और प्राथमिकता सहायता देता है। Feedly का तुलनीय Enterprise प्लान $18/महीने का "
-"है, लेकिन इसमें अधिकतम 2,500 स्रोत ही शामिल हैं और यह रेगेक्स फ़िल्टरिंग या सेल्फ़-होस्टिंग नहीं देता।"
+"NewsBlur Premium की कीमत 1,024 तक साइटों के लिए $36/वर्ष से शुरू होती है &mdash; Feedly Pro की आधी कीमत। "
+"पावर यूज़र्स के लिए, NewsBlur Pro ($29/महीना) में सभी 10,000 साइटों के लिए 5-मिनट की फ़ीड फ़ेचिंग, रेगेक्स "
+"क्लासिफ़ायर, OAuth एप्लिकेशन पंजीकरण और प्राथमिकता सहायता शामिल हैं। Feedly के तुलनीय Enterprise प्लान की "
+"कीमत $18/महीना है, लेकिन इसमें अधिकतम 2,500 स्रोत हैं और यह रेगेक्स फ़िल्टरिंग या सेल्फ़-होस्टिंग की सुविधा"
+" नहीं देता।"
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "NewsBlur की कीमतें - हर पाठक के लिए योजनाएँ"
@@ -4007,15 +4023,6 @@ msgstr ""
 "जिसमें अनुभागों को अपनी पसंद के अनुसार बदला जा सकता है। ये सुविधाएँ निष्क्रिय रूप से पढ़ने को सक्रिय रूप से"
 " जानकारी जुटाने में बदल देती हैं।"
 
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur OAuth का समर्थन करता है, लेकिन OAuth-सक्षम क्लाइंट बनाने के लिए आपको क्लाइंट आईडी और सीक्रेट का "
-"अनुरोध करने हेतु <a href=\"mailto:samuel@newsblur.com\">Samuel को ईमेल</a> करना होगा। आपको अपना NewsBlur "
-"उपयोगकर्ता नाम, रीडायरेक्ट URI (अक्सर बस आपके क्लाइंट ऐप की वेबसाइट) और ऐप का नाम देना होगा।"
-
 msgid "NewsBlur username"
 msgstr "NewsBlur उपयोगकर्ता नाम"
 
@@ -4322,6 +4329,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "केवल प्रीमियम उपयोगकर्ता ही एक ही साइट से प्रतिदिन कई लेख शेयर कर सकते हैं।"
 
+msgid "Open NewsBlur to register your application."
+msgstr "अपना एप्लिकेशन पंजीकृत करने के लिए NewsBlur खोलें।"
+
 msgid "Open Source"
 msgstr "ओपन सोर्स"
 
@@ -4562,10 +4572,10 @@ msgstr "Premium Pro"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
+" OAuth application registration, and priority support."
 msgstr ""
-"Premium Pro ($29/माह) में आपकी सभी फ़ीड हर 5–15 मिनट में फ़ेच होती हैं, और साथ ही रेगेक्स प्रशिक्षण, 10,000"
-" तक साइटें और प्राथमिकता वाली सहायता मिलती है।"
+"Premium Pro ($29/महीना) में सभी फ़ीड हर 5-15 मिनट में फ़ेच होती हैं, रेगेक्स प्रशिक्षण, 10,000 तक साइटें, "
+"OAuth एप्लिकेशन पंजीकरण और प्राथमिकता सहायता शामिल हैं।"
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - NewsBlur की कीमतें"
@@ -4929,6 +4939,9 @@ msgstr "इंटेलिजेंस क्लासिफ़ायर के 
 
 msgid "Register a new application"
 msgstr "नया एप्लिकेशन पंजीकृत करें"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr "वेब पर अपना एप्लिकेशन पंजीकृत करें, ताकि लोग अपने NewsBlur खातों को इससे जोड़ सकें।"
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "अक्सर इस्तेमाल की जाने वाली खोजों के लिए सुविधाजनक रूप से अलग फ़ीड बनाई जाती हैं"
@@ -5433,6 +5446,9 @@ msgstr "साइन इन करें और आपके फ़ीड, प�
 
 msgid "Sign in to NewsBlur"
 msgstr "NewsBlur में साइन इन करें"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "अपने OAuth एप्लिकेशन देखने के लिए लॉग इन करें।"
 
 msgid "Sign in with Apple"
 msgstr "Apple से साइन इन करें"
@@ -5987,6 +6003,9 @@ msgstr "एकमात्र ओपन सोर्स RSS रीडर जि�
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "संक्षिप्त RSS फ़ीड से मूल लेख बिना किसी रुकावट के पूरा दिखाया जाता है"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "इस OAuth एप्लिकेशन के मालिक के पास सक्रिय NewsBlur Premium Pro सदस्यता होनी चाहिए।"
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "सामान्य फ़ीड की तरह ही। Premium और Pro उपयोगकर्ताओं को अपडेट अधिक तेज़ी से मिलते हैं।"
 
@@ -6419,6 +6438,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "उपयोग"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "रीडायरेक्ट URL के लिए HTTPS का इस्तेमाल करें, या localhost पर HTTP का।"
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6778,6 +6800,15 @@ msgstr "व्यापक रूप से पढ़े गए लेख"
 msgid "Widely-read, long reads, good reads"
 msgstr "व्यापक रूप से पढ़े गए लेख, लंबे लेख, अच्छे लेख"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"सक्रिय Premium Pro खाते के साथ, आप <a href=\"/account/applications/register/\">OAuth एप्लिकेशन बना सकते "
+"हैं</a>। क्लाइंट ID और सीक्रेट पाने के लिए एप्लिकेशन का नाम, वेबसाइट और रीडायरेक्ट URL दर्ज करें। अपने खाते"
+" जोड़ने वाले लोग कोई भी NewsBlur प्लान इस्तेमाल कर सकते हैं।"
+
 msgid "Works Everywhere"
 msgstr "हर जगह काम करता है"
 
@@ -6822,11 +6853,11 @@ msgid "Yes, Premium Archive includes all Premium features plus the archive, AI, 
 msgstr "हाँ, Premium Archive में Premium की सभी सुविधाओं के साथ संग्रह, AI और उन्नत प्रशिक्षण सुविधाएँ भी शामिल हैं।"
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
 msgstr ""
-"हाँ, Premium Pro में Premium और Archive की सभी सुविधाएँ, साथ ही रीयल-टाइम फ़ेचिंग, regex और प्राथमिकता "
-"सहायता शामिल हैं।"
+"हाँ, Premium Pro में Premium और Archive की सभी सुविधाओं के साथ रीयल-टाइम फ़ेचिंग, रेगेक्स, OAuth एप्लिकेशन "
+"पंजीकरण और प्राथमिकता सहायता शामिल हैं।"
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr "हाँ, इंटेलिजेंस प्रशिक्षण की सभी सुविधाएँ न्यूज़लेटर पर भी नियमित फ़ीड की तरह काम करती हैं।"
@@ -7426,6 +7457,9 @@ msgstr ""
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "आपका खाता %(date)s तक Premium रहेगा। आज और कुछ नहीं बदलेगा।"
+
+msgid "Your app name"
+msgstr "आपके ऐप का नाम"
 
 msgid "Your applications"
 msgstr "आपके ऐप्लिकेशन"

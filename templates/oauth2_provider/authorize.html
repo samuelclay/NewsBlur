@@ -8,16 +8,21 @@
 
 {% load i18n %}
 {% block content %}
+{% autoescape on %}
 
 <div class="NB-static-title">
     Authorize {{ application.name }}
 </div>
 
     <div class="NB-static-form-wrapper block-center">
+        {% if preview %}<p class="NB-oauth-preview-notice">{% trans "Consent screen preview" %}</p>{% endif %}
         {% if not error %}
             <form id="authorizationForm" method="post" class="NB-static-form">
                 <h3 class="block-center-heading">{{ application.name }} would like to access your NewsBlur account</h3>
-                {% csrf_token %}
+                {% if application.applicationwebsite %}
+                    <p>{{ application.applicationwebsite.website }}</p>
+                {% endif %}
+                {% if not preview %}{% csrf_token %}{% endif %}
 
                 {% for field in form %}
                     {% if field.is_hidden %}
@@ -37,8 +42,8 @@
 
                 <div class="control-group">
                     <div class="controls">
-                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-green" name="allow" value="Authorize" />
-                        <input type="submit" class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-grey NB-right" value="Deny"/>
+                        <input type="submit"{% if preview %} disabled{% endif %} class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-green" name="allow" value="Authorize" />
+                        <input type="submit"{% if preview %} disabled{% endif %} class="NB-static-form-submit NB-modal-submit-button NB-modal-submit-grey NB-right" value="Deny"/>
                     </div>
                 </div>
             </form>
@@ -48,4 +53,5 @@
             <p>{{ error.description }}</p>
         {% endif %}
     </div>
+{% endautoescape %}
 {% endblock %}

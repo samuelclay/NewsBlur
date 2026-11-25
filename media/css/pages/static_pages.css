@@ -4956,6 +4956,12 @@ body.NB-dark.NB-static .NB-module-title-prefix {
     color: #FBDB9B;
 }
 
+.NB-static-oauth .NB-oauth-preview-notice {
+    text-align: center;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
 /* OAuth authorize buttons (templates/oauth2_provider/authorize.html).
    payments.css paints every `.NB-static-form input` translucent white with white text,
    which left the Authorize/Deny buttons nearly invisible on the cream background.

@@ -272,6 +272,16 @@ class Profile(models.Model):
         return price
 
     @property
+    def can_register_oauth_application(self):
+        return bool(
+            self.is_pro
+            and self.is_premium
+            and not self.is_premium_trial
+            and self.user.is_active
+            and (self.premium_expire is None or self.premium_expire > datetime.datetime.now())
+        )
+
+    @property
     def premium_available_text_classifiers(self):
         return self.is_archive or self.is_pro
 
@@ -800,7 +810,16 @@ class Profile(models.Model):
 
         return True
 
+    def has_oauth_reader_grant(self):
+        return (
+            self.user.payments.filter(payment_provider="oauth-reader-grant").exclude(refunded=True).exists()
+        )
+
     def extend_premium_by_days(self, days, tier=None):
+        # A referral or gift must not replace the lifetime grant from apps/oauth/reader_grants.py.
+        if self.is_pro and self.premium_expire is None and self.has_oauth_reader_grant():
+            return
+
         now = datetime.datetime.now()
 
         # Ensure user is at the required tier
@@ -1098,6 +1117,10 @@ class Profile(models.Model):
         return True
 
     def deactivate_premium(self):
+        # A canceled store subscription is independent of the grant in apps/oauth/reader_grants.py.
+        if self.is_pro and self.has_oauth_reader_grant():
+            return
+
         logging.user(
             self.user,
             "~FMTier change: deactivate_premium (was: premium=%s, archive=%s, pro=%s)"
@@ -1743,7 +1766,7 @@ class Profile(models.Model):
         if free_lifetime_premium:
             logging.user(self.user, "~BY~SN~FWFree lifetime premium")
 
-        if new_premium_expire:
+        if new_premium_expire and not (free_lifetime_premium and self.has_oauth_reader_grant()):
             # Only move premium expire forward, never earlier. Also set expiration if not premium.
             if (
                 force_expiration

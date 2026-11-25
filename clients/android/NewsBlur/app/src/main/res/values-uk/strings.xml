@@ -486,6 +486,7 @@
     <string name="pro_enable_sites">Відстежуйте до 10 000 сайтів</string>
     <string name="pro_all_feeds_fetched">Усі стрічки оновлюються кожні 5–15 хвилин</string>
     <string name="pro_regex_train">Навчайте фільтри статей за допомогою регулярних виразів</string>
+    <string name="pro_oauth_applications">Створити програми OAuth</string>
     <string name="pro_priority_support">Пріоритетна підтримка</string>
     <string name="pro_natural_language_search">Пошук природною мовою</string>
     <string name="settings_cat_offline">Читання офлайн</string>
@@ -638,6 +639,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Автоматично позначати статті як прочитані під час прокручування стрічки</string>
     <string name="settings_story_clustering">Групувати пов’язані статті</string>
     <string name="settings_story_clustering_summary">Показувати дублікати статей з інших стрічок під заголовком статті</string>
+    <string name="settings_show_new_stories">Показувати нові статті в міру надходження</string>
+    <string name="settings_show_new_stories_summary">Показувати бульбашку «N нових статей», коли у відкритому сайті або папці з’являються нові статті</string>
     <string name="settings_cluster_matches">Збіги в групах</string>
     <string name="settings_cluster_matches_summary">Виберіть, чи показувати в групах лише дублікати заголовків або також схожі статті</string>
     <string name="settings_story_clustering_save_failed">Не вдалося зберегти налаштування групування статей</string>
@@ -1583,4 +1586,10 @@
     <string name="settings_listen_speed">Швидкість відтворення</string>
     <string name="archive_listen">Слухайте озвучення статей до 1 години на тиждень</string>
     <string name="pro_listen">Слухайте озвучення статей до 10 годин на тиждень</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d нові статті</item>
+        <item quantity="many">%d нових статей</item>
+        <item quantity="one">%d нова стаття</item>
+        <item quantity="other">%d нових статей</item>
+    </plurals>
 </resources>

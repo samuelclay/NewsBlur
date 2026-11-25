@@ -7,6 +7,7 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.generic import RedirectView
 
 from apps.mcp import views as mcp_views
+from apps.oauth import applications as oauth_applications
 from apps.profile import views as profile_views
 from apps.profile import web_social_auth
 from apps.profile.language import (
@@ -188,6 +189,9 @@ urlpatterns = [
     url(r"^account/login/?$", profile_views.login, name="login"),
     url(r"^account/signup/?$", profile_views.signup, name="signup"),
     url(r"^account/logout/?$", LogoutView, {"next_page": "/"}, name="logout"),
+    url(r"^account/applications/register/?$", oauth_applications.register_application),
+    url(r"^account/applications/preview/?$", oauth_applications.preview_application),
+    url(r"^account/applications/usage/?$", oauth_applications.owned_applications),
     url(r"^account/ifttt/v1/", include("apps.oauth.urls")),
     url(r"^account/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     url(r"^monitor/", include("apps.monitor.urls"), name="monitor"),

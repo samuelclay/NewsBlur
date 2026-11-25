@@ -46,6 +46,7 @@
 "%@ left in this preview" = "%@ restant dans cet aperçu";
 "%@ left this week" = "%@ restant cette semaine";
 "%@ match" = "Correspondance %@";
+"%@ new stories" = "%@ nouveaux articles";
 "%@ opens" = "%@ ouvertures";
 "%@ or search" = "%@ ou rechercher";
 "%@ public comments" = "%@ commentaires publics";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Impossible d’enregistrer votre limite de dépenses. Veuillez réessayer.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Impossible de charger l’image en entier. Vous pouvez essayer de l’ouvrir dans votre navigateur.";
 "Counting is difficult..." = "Compter, c’est difficile...";
+"Create OAuth applications" = "Créer des applications OAuth";
 "Create a feed from any web page" = "Créer un flux à partir de n’importe quelle page Web";
 "Create a new account instead" = "Créer plutôt un nouveau compte";
 "Create account" = "Créer un compte";
@@ -990,6 +992,7 @@
 "Show feed list" = "Afficher la liste des flux";
 "Show feeds after being read" = "Afficher les flux après leur lecture";
 "Show hidden stories" = "Afficher les articles masqués";
+"Show new stories as they arrive" = "Afficher les nouveaux articles dès leur arrivée";
 "Show original story" = "Afficher l’article d’origine";
 "Show original text" = "Afficher le texte original";
 "Show public comments" = "Afficher les commentaires publics";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Afficher le nombre d’articles non lus";
 "Show with feed icons" = "Afficher avec les icônes des flux";
 "Show without icons" = "Afficher sans icônes";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Affiche une pastille « N nouveaux articles » lorsque des articles arrivent dans le flux ou le dossier ouvert.";
 "Shows the music settings" = "Affiche les paramètres de musique";
 "Sidebar" = "Barre latérale";
 "Sign Up" = "S’inscrire";

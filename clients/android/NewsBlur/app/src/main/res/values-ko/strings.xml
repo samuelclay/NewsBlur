@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">최대 10,000개 사이트 팔로우</string>
     <string name="pro_all_feeds_fetched">모든 피드를 5~15분마다 가져옵니다</string>
     <string name="pro_regex_train">정규식으로 스토리 학습</string>
+    <string name="pro_oauth_applications">OAuth 애플리케이션 만들기</string>
     <string name="pro_priority_support">우선 지원</string>
     <string name="pro_natural_language_search">자연어 검색</string>
     <string name="settings_cat_offline">오프라인 읽기</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">스크롤해 지나간 스토리를 자동으로 읽음으로 표시</string>
     <string name="settings_story_clustering">관련 스토리 묶기</string>
     <string name="settings_story_clustering_summary">스토리 제목 아래에 다른 피드의 중복 스토리 표시</string>
+    <string name="settings_show_new_stories">새 스토리가 도착하면 표시</string>
+    <string name="settings_show_new_stories_summary">열린 사이트나 폴더에 스토리가 도착하면 “N개의 새 스토리” 알림을 표시합니다</string>
     <string name="settings_cluster_matches">클러스터 일치 항목</string>
     <string name="settings_cluster_matches_summary">클러스터에 중복 제목만 표시할지, 관련 스토리도 표시할지 선택하세요</string>
     <string name="settings_story_clustering_save_failed">스토리 그룹화 설정을 저장하지 못했습니다</string>
@@ -1481,4 +1484,7 @@
     <string name="settings_listen_speed">재생 속도</string>
     <string name="archive_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용</string>
     <string name="pro_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d개의 새 스토리</item>
+    </plurals>
 </resources>

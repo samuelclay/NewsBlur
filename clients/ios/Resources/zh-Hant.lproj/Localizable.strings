@@ -46,6 +46,7 @@
 "%@ left in this preview" = "此預覽還剩 %@";
 "%@ left this week" = "本週剩餘 %@";
 "%@ match" = "符合 %@ 項";
+"%@ new stories" = "%@ 篇新文章";
 "%@ opens" = "%@ 次開啟";
 "%@ or search" = "%@ 或搜尋";
 "%@ public comments" = "%@ 則公開留言";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "無法儲存你的支出上限。請再試一次。";
 "Couldn’t load the full image. You can try opening it in your browser." = "無法載入完整圖片。你可以試著在瀏覽器中開啟。";
 "Counting is difficult..." = "計數真不容易……";
+"Create OAuth applications" = "建立 OAuth 應用程式";
 "Create a feed from any web page" = "從任何網頁建立訂閱來源";
 "Create a new account instead" = "改為建立新帳戶";
 "Create account" = "建立帳戶";
@@ -990,6 +992,7 @@
 "Show feed list" = "顯示訂閱來源清單";
 "Show feeds after being read" = "閱讀後仍顯示訂閱來源";
 "Show hidden stories" = "顯示已隱藏的文章";
+"Show new stories as they arrive" = "新文章到達時立即顯示";
 "Show original story" = "顯示原始文章";
 "Show original text" = "顯示原文";
 "Show public comments" = "顯示公開留言";
@@ -998,6 +1001,7 @@
 "Show unread count" = "顯示未讀數量";
 "Show with feed icons" = "顯示訂閱來源圖示";
 "Show without icons" = "不顯示圖示";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "開啟的訂閱來源或資料夾有新文章時，顯示「N 篇新文章」提示標籤。";
 "Shows the music settings" = "顯示音樂設定";
 "Sidebar" = "側邊欄";
 "Sign Up" = "註冊";

@@ -477,6 +477,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="pro_enable_sites">Ikuti hingga 10.000 situs</string>
     <string name="pro_all_feeds_fetched">Semua feed diperbarui setiap 5–15 menit</string>
     <string name="pro_regex_train">Latih artikel dengan ekspresi reguler</string>
+    <string name="pro_oauth_applications">Buat aplikasi OAuth</string>
     <string name="pro_priority_support">Dukungan prioritas</string>
     <string name="pro_natural_language_search">Pencarian bahasa alami</string>
     <string name="settings_cat_offline">Membaca offline</string>
@@ -614,6 +615,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Tandai artikel sebagai telah dibaca secara otomatis saat digulir melewatinya</string>
     <string name="settings_story_clustering">Kelompokkan artikel terkait</string>
     <string name="settings_story_clustering_summary">Tampilkan artikel duplikat dari feed lain di bawah judul artikel</string>
+    <string name="settings_show_new_stories">Tampilkan artikel baru saat tersedia</string>
+    <string name="settings_show_new_stories_summary">Tampilkan pil \"N artikel baru\" saat artikel baru tersedia di situs atau folder yang terbuka</string>
     <string name="settings_cluster_matches">Kecocokan klaster</string>
     <string name="settings_cluster_matches_summary">Pilih apakah klaster hanya menampilkan judul duplikat atau juga artikel terkait</string>
     <string name="settings_story_clustering_save_failed">Tidak dapat menyimpan preferensi pengelompokan artikel</string>
@@ -1481,4 +1484,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
     <string name="archive_listen">Dengarkan artikel yang dibacakan hingga 1 jam per minggu</string>
     <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d artikel baru</item>
+    </plurals>
 </resources>

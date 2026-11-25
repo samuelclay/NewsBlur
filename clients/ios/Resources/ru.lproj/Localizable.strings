@@ -46,6 +46,7 @@
 "%@ left in this preview" = "В этой демоверсии осталось %@";
 "%@ left this week" = "На этой неделе осталось %@";
 "%@ match" = "совпадение %@";
+"%@ new stories" = "%@ новых статей";
 "%@ opens" = "%@ открытий";
 "%@ or search" = "%@ или поиск";
 "%@ public comments" = "%@ публичных комментариев";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Не удалось сохранить лимит расходов. Попробуйте ещё раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не удалось загрузить изображение полностью. Попробуйте открыть его в браузере.";
 "Counting is difficult..." = "Считать непросто...";
+"Create OAuth applications" = "Создать OAuth-приложения";
 "Create a feed from any web page" = "Создать ленту из любой веб-страницы";
 "Create a new account instead" = "Вместо этого создать новый аккаунт";
 "Create account" = "Создать аккаунт";
@@ -990,6 +992,7 @@
 "Show feed list" = "Показать список лент";
 "Show feeds after being read" = "Показывать ленты после прочтения";
 "Show hidden stories" = "Показать скрытые статьи";
+"Show new stories as they arrive" = "Показывать новые статьи по мере их поступления";
 "Show original story" = "Показать исходную статью";
 "Show original text" = "Показать исходный текст";
 "Show public comments" = "Показывать публичные комментарии";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Показывать количество непрочитанных";
 "Show with feed icons" = "Показывать значки лент";
 "Show without icons" = "Показывать без значков";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Показывает плашку «N новых статей», когда в открытой ленте или папке появляются новые статьи.";
 "Shows the music settings" = "Показывает настройки музыки";
 "Sidebar" = "Боковая панель";
 "Sign Up" = "Зарегистрироваться";

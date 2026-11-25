@@ -311,8 +311,8 @@ msgstr[1] "%(count)s bulan"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s artikel baru"
+msgstr[1] "%(count)s artikel baru"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1090,6 +1090,9 @@ msgstr "Analisis artikel berbasis AI dan rangkuman harian yang dipersonalisasi d
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "SEMUA KATEGORI (%(value_1)s)"
 
+msgid "API requests"
+msgstr "Permintaan API"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Tentu. Buka pelatih, lalu hapus tanda suka atau tidak suka untuk mengatur ulang."
 
@@ -1108,6 +1111,9 @@ msgstr "Tindakan"
 
 msgid "Active"
 msgstr "Aktif"
+
+msgid "Active readers · 7 days"
+msgstr "Pembaca aktif · 7 hari"
 
 msgid "Activities"
 msgstr "Aktivitas"
@@ -1223,6 +1229,11 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "Setelah %(slider)s %(count)s detik."
 msgstr[1] "Setelah %(slider)s %(count)s detik."
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr ""
+"Setelah pembaca mengizinkan aplikasi Anda, NewsBlur akan mengarahkan mereka ke URL ini dengan kode "
+"otorisasi."
 
 msgid "After marking feed/folder read"
 msgstr "Setelah menandai feed/folder sebagai telah dibaca"
@@ -1387,6 +1398,12 @@ msgstr "Kapan saja"
 msgid "Appearance"
 msgstr "Tampilan"
 
+msgid "Application name"
+msgstr "Nama aplikasi"
+
+msgid "Application website"
+msgstr "Situs web aplikasi"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1517,6 +1534,9 @@ msgstr "Nama penulis"
 
 msgid "Author: "
 msgstr "Penulis: "
+
+msgid "Authorization link"
+msgstr "Tautan otorisasi"
 
 msgid "Authors"
 msgstr "Penulis"
@@ -1968,6 +1988,12 @@ msgstr "Klik sumber mana pun untuk membaca versi tersebut, atau tandai semua dup
 msgid "Click to block"
 msgstr "Klik untuk memblokir"
 
+msgid "Client ID"
+msgstr "ID Klien"
+
+msgid "Client secret"
+msgstr "Rahasia klien"
+
 msgid "Close"
 msgstr "Tutup"
 
@@ -2070,11 +2096,28 @@ msgstr ""
 "Hubungkan NewsBlur ke ratusan layanan. Simpan artikel ke Pocket, Instapaper, Evernote, atau Notion; bagikan"
 " postingan ke Slack; picu alur kerja khusus dari pelatihan Anda."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"Hubungkan aplikasi Anda ke NewsBlur agar pembaca dapat memberikan akses ke artikel dan feed mereka. Pembaca"
+" dengan paket apa pun dapat menghubungkannya."
+
 msgid "Connected"
 msgstr "Terhubung"
 
 msgid "Connected accounts"
 msgstr "Akun terhubung"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"Akun yang terhubung memiliki token akses yang belum kedaluwarsa. Pembaca aktif diperkirakan selama tujuh "
+"hari UTC. Permintaan API dan aktivitas terakhir dihitung sejak pelacakan dimulai."
+
+msgid "Consent screen preview"
+msgstr "Pratinjau layar persetujuan"
 
 msgid "Content"
 msgstr "Konten"
@@ -2109,8 +2152,14 @@ msgstr "Salin Teks"
 msgid "Copy URL"
 msgstr "Salin URL"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "Salin rahasia klien Anda sekarang. Anda hanya dapat melihatnya sekali."
+
 msgid "Could not add this classifier. Try again."
 msgstr "Tidak dapat menambahkan pengklasifikasi ini. Coba lagi."
+
+msgid "Could not create the application. Please try again."
+msgstr "Aplikasi tidak dapat dibuat. Silakan coba lagi."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Tidak dapat memutuskan koneksi akun ini. Silakan coba lagi."
@@ -2120,6 +2169,9 @@ msgstr "Feed RSS untuk URL ini tidak dapat ditemukan"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ tidak dapat dimuat. Silakan coba lagi."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "Tidak dapat memuat aplikasi Anda. Coba segarkan."
 
 msgid "Couldn't load audio for this story."
 msgstr "Audio untuk artikel ini tidak dapat dimuat."
@@ -2139,14 +2191,29 @@ msgstr "Buat Akun"
 msgid "Create Gift Link"
 msgstr "Buat Tautan Hadiah"
 
+msgid "Create OAuth applications"
+msgstr "Buat aplikasi OAuth"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "Buat feed untuk situs web apa pun, bahkan tanpa RSS."
+
+msgid "Create a new OAuth application"
+msgstr "Buat aplikasi OAuth baru"
 
 msgid "Create a new subfolder"
 msgstr "Buat subfolder baru"
 
+msgid "Create another application"
+msgstr "Buat aplikasi lain"
+
+msgid "Create application"
+msgstr "Buat aplikasi"
+
 msgid "Created:"
 msgstr "Dibuat:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Membuat aplikasi OAuth memerlukan Premium Pro NewsBlur."
 
 msgid "Creative"
 msgstr "Kreatif"
@@ -3843,6 +3910,9 @@ msgstr "IP terakhir:"
 msgid "Last Update"
 msgstr "Pembaruan Terakhir"
 
+msgid "Last activity"
+msgstr "Aktivitas terakhir"
+
 msgid "Last seen:"
 msgstr "Terakhir terlihat:"
 
@@ -3924,6 +3994,9 @@ msgstr "Memuat PayPal..."
 
 msgid "Loading Training..."
 msgstr "Memuat Pelatihan..."
+
+msgid "Loading applications…"
+msgstr "Memuat aplikasi…"
 
 msgid "Loading checkout..."
 msgstr "Memuat pembayaran..."
@@ -4591,6 +4664,9 @@ msgstr "Tidak ada pertanyaan yang cocok dengan pencarian tersebut."
 msgid "No recency filter"
 msgstr "Tanpa filter kebaruan"
 
+msgid "No recorded activity"
+msgstr "Tidak ada aktivitas yang tercatat"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "Belum ada referal. Bagikan tautan Anda untuk memulai!"
 
@@ -4742,6 +4818,12 @@ msgstr "Jumlah artikel yang disertakan dalam setiap ringkasan"
 msgid "Numbers & Symbols"
 msgstr "Angka & Simbol"
 
+msgid "OAuth application created"
+msgstr "Aplikasi OAuth dibuat"
+
+msgid "OAuth applications"
+msgstr "Aplikasi OAuth"
+
 msgid "OFF"
 msgstr "NONAKTIF"
 
@@ -4758,7 +4840,7 @@ msgid "Off"
 msgstr "Nonaktif"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Tampilkan dalam pil \"N artikel baru\""
 
 msgid "Official NewsBlur Android App"
 msgstr "Aplikasi Android resmi NewsBlur"
@@ -4881,7 +4963,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Hanya tampilkan jumlah pada folder yang diciutkan"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Tampilkan artikel tersebut hanya saat daftar dimuat ulang"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Hanya pangkas artikel panjang yang dibagikan di blurblog"
@@ -5544,6 +5626,9 @@ msgstr "Subreddit Reddit"
 msgid "Redeemed"
 msgstr "Telah ditukarkan"
 
+msgid "Redirect URL"
+msgstr "URL pengalihan"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "Kurangi kepadatan di aliran artikel Anda"
 
@@ -5561,6 +5646,9 @@ msgstr "Riwayat Referral"
 
 msgid "Refine with a hint"
 msgstr "Persempit dengan petunjuk"
+
+msgid "Refresh"
+msgstr "Segarkan"
 
 msgid "Refund $12"
 msgstr "Refund $12"
@@ -6261,7 +6349,7 @@ msgid "Show more related stories"
 msgstr "Tampilkan lebih banyak artikel terkait"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Tampilkan artikel baru saat tersedia"
 
 msgid "Show on Load"
 msgstr "Tampilkan saat Dimuat"
@@ -7128,6 +7216,13 @@ msgstr "Minggu Ini"
 msgid "This Year"
 msgstr "Tahun Ini"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"Contoh ini meminta akses baca. Buat nilai state baru untuk setiap proses masuk dan verifikasikan saat "
+"pembaca kembali."
+
 msgid "This is just the demo."
 msgstr "Ini hanya demo."
 
@@ -7478,6 +7573,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "Batal bisukan situs ini"
+
+msgid "Unavailable"
+msgstr "Tidak tersedia"
 
 msgid "Uncategorized"
 msgstr "Tanpa kategori"
@@ -8126,6 +8224,9 @@ msgstr "Anda tidak memiliki artikel yang belum dibaca."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "Anda belum berlangganan artikel yang dibagikan siapa pun."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "Anda belum mendaftarkan aplikasi OAuth apa pun."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Anda harus mengikuti %(value_1)s untuk membalas"
@@ -8202,11 +8303,20 @@ msgstr "Domain Arsip Anda"
 msgid "Your Blurblog"
 msgstr "Blurblog Anda"
 
+msgid "Your OAuth applications"
+msgstr "Aplikasi OAuth Anda"
+
 msgid "Your Referral Link"
 msgstr "Tautan Referal Anda"
 
 msgid "Your Referral Stats"
 msgstr "Statistik Referral Anda"
+
+msgid "Your app name"
+msgstr "Nama aplikasi Anda"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "Aplikasi Anda dijeda hingga akun Anda memiliki Premium Pro aktif."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Artikel yang Anda arsipkan tetap dapat diakses, tetapi artikel baru mengikuti kebijakan retensi standar."

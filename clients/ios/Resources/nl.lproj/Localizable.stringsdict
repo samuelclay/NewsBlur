@@ -285,9 +285,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
 			<key>one</key>
-			<string>%@ new story</string>
+			<string>%@ nieuw artikel</string>
 			<key>other</key>
-			<string>%@ new stories</string>
+			<string>%@ nieuwe artikelen</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>

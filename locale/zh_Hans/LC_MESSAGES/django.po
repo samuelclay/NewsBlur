@@ -411,10 +411,10 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">高级专业版</a>（每月 29 美元）可让所有订阅源每 5–15 分钟抓取一次，提供正则表达式训练、最多 10,000 个网站和优先支持。"
+"#366944;\">高级专业版</a>（每月 $29），所有订阅源每 5-15 分钟抓取一次，并提供正则表达式训练、最多 10,000 个网站、OAuth 应用注册和优先支持。"
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -831,6 +831,9 @@ msgid ""
 "filters, subscribe to new feeds, and search your archive. Common workflows include daily briefings, inbox "
 "triage, and research across saved stories."
 msgstr "你能做的它都能做：阅读文章、保存文章并添加标签、将文章标记为已读、训练智能过滤器、订阅新订阅源，以及搜索归档。常见用法包括每日简报、收件箱筛选，以及在已保存的文章中进行研究。"
+
+msgid "Application website"
+msgstr "应用网站"
 
 msgid "Apply training across a folder"
 msgstr "将训练应用到整个文件夹"
@@ -1253,9 +1256,6 @@ msgstr "客户端"
 msgid "Client id"
 msgstr "客户端 ID"
 
-msgid "Client secret"
-msgstr "客户端密钥"
-
 msgid "Client type"
 msgstr "客户端类型"
 
@@ -1365,6 +1365,9 @@ msgstr "一条命令即可连接"
 msgid "Connect your account"
 msgstr "连接你的账户"
 
+msgid "Consent screen preview"
+msgstr "同意页面预览"
+
 msgid "Contact"
 msgstr "联系"
 
@@ -1439,6 +1442,9 @@ msgstr "Craig Hockenberry 深入探究了 Canon 打印机为何在 Mac 上总是
 msgid "Create Account"
 msgstr "创建账户"
 
+msgid "Create OAuth applications"
+msgstr "创建 OAuth 应用"
+
 msgid "Create a new account instead"
 msgstr "改为创建新账户"
 
@@ -1450,6 +1456,9 @@ msgstr "创建账户"
 
 msgid "Create an account"
 msgstr "创建账户"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "创建 OAuth 应用需要 NewsBlur 高级专业版。"
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "通过 Stripe 和 PayPal 使用信用卡/借记卡支付。"
@@ -1743,6 +1752,12 @@ msgstr "工程师兼作家"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "喜欢高级功能？永久保留它们！"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "请输入单个重定向 URL，且不要包含凭据、通配符或片段。"
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "请输入 HTTP 或 HTTPS 网站地址。"
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "输入你的电子邮箱地址，我们会向你发送设置新密码的链接。"
@@ -3397,11 +3412,11 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur 高级版每年 36 美元起，最多支持 1,024 个网站 &mdash; 价格仅为 Feedly Pro 的一半。面向高级用户的 NewsBlur 专业版每月 29 美元，支持全部 10,000 "
-"个网站每 5 分钟抓取一次订阅源、正则分类器和优先支持。Feedly 类似的企业版每月 18 美元，但上限为 2,500 个来源，且不提供正则过滤或自托管功能。"
+"NewsBlur 高级版每年 $36 起，最多支持 1,024 个网站 &mdash;，价格只有 Feedly Pro 的一半。对于高级用户，NewsBlur 专业版每月 $29，可为全部 10,000 个网站每 "
+"5 分钟抓取一次订阅源，并提供正则表达式分类器、OAuth 应用注册和优先支持。Feedly 同类的企业版套餐每月收费 $18，但最多仅支持 2,500 个订阅源，也不提供正则表达式筛选或自行托管。"
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "NewsBlur 价格 - 适合每位读者的套餐"
@@ -3655,14 +3670,6 @@ msgid ""
 msgstr ""
 "NewsBlur 凭借 Inoreader 不具备的 AI 功能脱颖而出。“询问 AI”可让你使用 Claude、GPT、Gemini 或 Grok 查询任意文章 &mdash; "
 "获取摘要、提取要点或提出后续问题。每日简报会根据你的偏好分栏，为你生成个性化的热门文章 AI 摘要。这些功能将被动阅读转变为主动获取信息。"
-
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur 支持 OAuth，但要启用 OAuth 的客户端，你必须<a href=\"mailto:samuel@newsblur.com\">给 Samuel 发邮件</a>申请客户端 ID "
-"和密钥。你需要提供你的 NewsBlur 用户名、重定向 URI（通常是客户端应用的网站）和应用名称。"
 
 msgid "NewsBlur username"
 msgstr "NewsBlur 用户名"
@@ -3940,6 +3947,9 @@ msgstr "Widgetsmith 用户中只有 1.9%% 使用显示缩放 &mdash; 远低于�
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "只有高级用户才能每天分享来自同一网站的多篇文章。"
 
+msgid "Open NewsBlur to register your application."
+msgstr "打开 NewsBlur 注册你的应用。"
+
 msgid "Open Source"
 msgstr "开源"
 
@@ -4172,8 +4182,8 @@ msgstr "高级专业版"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
-msgstr "高级专业版（每月 29 美元）可让你每 5–15 分钟获取所有订阅源、使用正则表达式训练、订阅多达 10,000 个网站，并享有优先支持。"
+" OAuth application registration, and priority support."
+msgstr "高级专业版（每月 $29）可让所有订阅源每 5-15 分钟抓取一次，并提供正则表达式训练、最多 10,000 个网站、OAuth 应用注册和优先支持。"
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "高级专业版 - NewsBlur 价格"
@@ -4518,6 +4528,9 @@ msgstr "智能分类器的正则表达式模式开关"
 
 msgid "Register a new application"
 msgstr "注册新应用"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr "在网上注册你的应用，让用户可以将自己的 NewsBlur 账户连接到该应用。"
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "常用搜索会方便地拥有各自的订阅源"
@@ -4992,6 +5005,9 @@ msgstr "登录后，你的订阅源、训练数据和已保存的文章会立即
 
 msgid "Sign in to NewsBlur"
 msgstr "登录 NewsBlur"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "登录以查看你的 OAuth 应用。"
 
 msgid "Sign in with Apple"
 msgstr "通过 Apple 登录"
@@ -5507,6 +5523,9 @@ msgstr "唯一一款无需自行托管的开源 RSS 阅读器"
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "无缝展开 RSS 订阅源截断的原文"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "此 OAuth 应用的所有者需要拥有有效的 NewsBlur 高级专业版订阅。"
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "与常规订阅源相同。高级版和专业版用户可享受更快的更新频率。"
 
@@ -5901,6 +5920,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "使用"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "重定向 URL 请使用 HTTPS，或在 localhost 上使用 HTTP。"
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6232,6 +6254,14 @@ msgstr "广受阅读的文章"
 msgid "Widely-read, long reads, good reads"
 msgstr "广受阅读的文章、长篇阅读和优质阅读"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"拥有有效高级专业版账户后，你可以<a href=\"/account/applications/register/\">创建 OAuth 应用</a>。请输入应用名称、网站和重定向 URL，即可获取客户端 ID "
+"和密钥。连接账户的用户可以使用任何 NewsBlur 套餐。"
+
 msgid "Works Everywhere"
 msgstr "随处可用"
 
@@ -6269,9 +6299,9 @@ msgid "Yes, Premium Archive includes all Premium features plus the archive, AI, 
 msgstr "是的，高级归档版包含高级版的所有功能，以及归档、AI 和高级训练功能。"
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
-msgstr "是的，高级专业版包含高级版和归档版的所有功能，另有实时抓取、正则表达式和优先支持。"
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
+msgstr "是的，高级专业版包含高级版和归档版的所有功能，此外还提供实时抓取、正则表达式、OAuth 应用注册和优先支持。"
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr "是的，所有智能训练功能都适用于新闻简报，与普通订阅源一样。"
@@ -6798,6 +6828,9 @@ msgstr "你的账户将恢复为免费版。你仍可保留所有订阅源（最
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "你的账户将保持高级版状态至 %(date)s。今天不会有其他变化。"
+
+msgid "Your app name"
+msgstr "你的应用名称"
 
 msgid "Your applications"
 msgstr "你的应用"

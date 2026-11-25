@@ -155,6 +155,7 @@ struct PremiumView: View {
             PremiumFeature(title: NBLocalization.text("All feeds fetched every 5-15 minutes"), icon: "bolt.fill", iconColor: PremiumColors.proOrange),
             PremiumFeature(title: NBLocalization.text("Train stories with regular expressions"), icon: "textformat.abc", iconColor: .yellow),
             PremiumFeature(title: NBLocalization.text("Listen to 10 hours of stories read aloud a week"), icon: "headphones", iconColor: .purple),
+            PremiumFeature(title: NBLocalization.text("Create OAuth applications"), icon: "key.fill", iconColor: .yellow),
             PremiumFeature(title: NBLocalization.text("Priority support"), icon: "lifepreserver", iconColor: .yellow)
         ]
     }

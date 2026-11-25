@@ -311,8 +311,8 @@ msgstr[1] "%(count)s חודשים"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s כתבה חדשה"
+msgstr[1] "%(count)s כתבות חדשות"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1086,6 +1086,9 @@ msgstr "ניתוח כתבות בעזרת בינה מלאכותית וסיכומ�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "כל הקטגוריות (%(value_1)s)"
 
+msgid "API requests"
+msgstr "בקשות API"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "בהחלט. פתחו את כלי האימון והסירו כל סימון של אגודל למעלה או למטה כדי לאפס אותו."
 
@@ -1104,6 +1107,9 @@ msgstr "פעולות"
 
 msgid "Active"
 msgstr "פעיל"
+
+msgid "Active readers · 7 days"
+msgstr "קוראים פעילים · 7 ימים"
 
 msgid "Activities"
 msgstr "פעילויות"
@@ -1219,6 +1225,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "לאחר %(slider)s %(count)s שנייה."
 msgstr[1] "לאחר %(slider)s %(count)s שניות."
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "לאחר שקוראי היישום מאשרים את הגישה, NewsBlur מפנה אותם לכתובת ה-URL הזו עם קוד הרשאה."
 
 msgid "After marking feed/folder read"
 msgstr "לאחר סימון הפיד/התיקייה כנקראו"
@@ -1383,6 +1392,12 @@ msgstr "בכל עת"
 msgid "Appearance"
 msgstr "מראה"
 
+msgid "Application name"
+msgstr "שם היישום"
+
+msgid "Application website"
+msgstr "אתר היישום"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1511,6 +1526,9 @@ msgstr "שם המחבר"
 
 msgid "Author: "
 msgstr "מחבר: "
+
+msgid "Authorization link"
+msgstr "קישור הרשאה"
 
 msgid "Authors"
 msgstr "מחברים"
@@ -1960,6 +1978,12 @@ msgstr "לחצו על מקור כלשהו כדי לקרוא את הגרסה של
 msgid "Click to block"
 msgstr "לחץ כדי לחסום"
 
+msgid "Client ID"
+msgstr "מזהה לקוח"
+
+msgid "Client secret"
+msgstr "סוד לקוח"
+
 msgid "Close"
 msgstr "סגירה"
 
@@ -2062,11 +2086,28 @@ msgstr ""
 "חברו את NewsBlur למאות שירותים. שמרו כתבות ב-Pocket, ב-Instapaper, ב-Evernote או ב-Notion; פרסמו שיתופים "
 "ב-Slack; והפעילו תהליכי עבודה מותאמים אישית על סמך האימון שלכם."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"חברו את היישום שלכם ל־NewsBlur כדי שקוראים יוכלו להעניק לו גישה לכתבות ולפידים שלהם. קוראים בכל תוכנית "
+"יכולים להתחבר."
+
 msgid "Connected"
 msgstr "מחובר"
 
 msgid "Connected accounts"
 msgstr "חשבונות מחוברים"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"לחשבונות מחוברים יש אסימון גישה שטרם פג תוקפו. מספר הקוראים הפעילים הוא הערכה על פני שבעה ימים לפי UTC. "
+"בקשות API והפעילות האחרונה נמדדות מתחילת המעקב."
+
+msgid "Consent screen preview"
+msgstr "תצוגה מקדימה של מסך ההסכמה"
 
 msgid "Content"
 msgstr "תוכן"
@@ -2101,8 +2142,14 @@ msgstr "העתקת טקסט"
 msgid "Copy URL"
 msgstr "העתקת כתובת URL"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "העתיקו עכשיו את הסוד של הלקוח. תוכלו לראות אותו רק פעם אחת."
+
 msgid "Could not add this classifier. Try again."
 msgstr "לא ניתן להוסיף את המסווג הזה. נסו שוב."
+
+msgid "Could not create the application. Please try again."
+msgstr "לא ניתן ליצור את היישום. נסו שוב."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "ניתוק החשבון הזה נכשל. נסה שוב."
@@ -2112,6 +2159,9 @@ msgstr "לא נמצא פיד RSS עבור כתובת ה־URL הזו"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "טעינת השאלות הנפוצות נכשלה. נסו שוב."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "טעינת היישומים שלך נכשלה. נסו לרענן."
 
 msgid "Couldn't load audio for this story."
 msgstr "לא ניתן לטעון את השמע של הכתבה הזו."
@@ -2131,14 +2181,29 @@ msgstr "יצירת חשבון"
 msgid "Create Gift Link"
 msgstr "יצירת קישור למתנה"
 
+msgid "Create OAuth applications"
+msgstr "יצירת יישומי OAuth"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "צרו פיד לכל אתר, גם בלי RSS."
+
+msgid "Create a new OAuth application"
+msgstr "יצירת יישום OAuth חדש"
 
 msgid "Create a new subfolder"
 msgstr "צור תיקיית משנה חדשה"
 
+msgid "Create another application"
+msgstr "יצירת יישום נוסף"
+
+msgid "Create application"
+msgstr "יצירת יישום"
+
 msgid "Created:"
 msgstr "נוצר:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "יצירת יישומי OAuth מחייבת NewsBlur Premium Pro."
 
 msgid "Creative"
 msgstr "יצירתי"
@@ -3816,6 +3881,9 @@ msgstr "כתובת IP אחרונה:"
 msgid "Last Update"
 msgstr "עדכון אחרון"
 
+msgid "Last activity"
+msgstr "פעילות אחרונה"
+
 msgid "Last seen:"
 msgstr "נראה לאחרונה:"
 
@@ -3897,6 +3965,9 @@ msgstr "טוען את PayPal..."
 
 msgid "Loading Training..."
 msgstr "טוען אימון..."
+
+msgid "Loading applications…"
+msgstr "טוען יישומים…"
 
 msgid "Loading checkout..."
 msgstr "טוען את דף התשלום..."
@@ -4562,6 +4633,9 @@ msgstr "אין שאלות שתואמות לחיפוש הזה."
 msgid "No recency filter"
 msgstr "ללא מסנן עדכניות"
 
+msgid "No recorded activity"
+msgstr "אין פעילות מתועדת"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "עדיין אין הפניות. שתפו את הקישור שלכם כדי להתחיל!"
 
@@ -4711,6 +4785,12 @@ msgstr "מספר הכתבות שייכללו בכל תדריך"
 msgid "Numbers & Symbols"
 msgstr "מספרים וסמלים"
 
+msgid "OAuth application created"
+msgstr "יישום OAuth נוצר"
+
+msgid "OAuth applications"
+msgstr "יישומי OAuth"
+
 msgid "OFF"
 msgstr "כבוי"
 
@@ -4727,7 +4807,7 @@ msgid "Off"
 msgstr "כבוי"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "הצעתן בתוך תגית ״N כתבות חדשות״"
 
 msgid "Official NewsBlur Android App"
 msgstr "אפליקציית Android הרשמית של NewsBlur"
@@ -4844,7 +4924,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "הצגת ספירות רק בתיקיות מכווצות"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "הצגתן רק לאחר טעינה מחדש של הרשימה"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "לקצר רק כתבות משותפות ארוכות ב־Blurblog"
@@ -5501,6 +5581,9 @@ msgstr "תת־פורומים של Reddit"
 msgid "Redeemed"
 msgstr "נוצל"
 
+msgid "Redirect URL"
+msgstr "כתובת להפניה מחדש"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "לצמצם את העומס בזרם הכתבות שלך"
 
@@ -5518,6 +5601,9 @@ msgstr "היסטוריית הפניות"
 
 msgid "Refine with a hint"
 msgstr "דייק באמצעות רמז"
+
+msgid "Refresh"
+msgstr "רענון"
 
 msgid "Refund $12"
 msgstr "החזר כספי של $12"
@@ -6212,7 +6298,7 @@ msgid "Show more related stories"
 msgstr "הצג כתבות קשורות נוספות"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "הצגת כתבות חדשות כשהן מגיעות"
 
 msgid "Show on Load"
 msgstr "הצג בעת טעינה"
@@ -7066,6 +7152,11 @@ msgstr "השבוע"
 msgid "This Year"
 msgstr "השנה"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr "בדוגמה הזו מתבקשת גישת קריאה. צרו ערך state חדש לכל התחברות ואמתו אותו כשהקורא חוזר."
+
 msgid "This is just the demo."
 msgstr "זו רק הדגמה."
 
@@ -7404,6 +7495,9 @@ msgstr "כתובת URL:"
 
 msgid "Un-mute this site"
 msgstr "בטל השתקה של האתר הזה"
+
+msgid "Unavailable"
+msgstr "לא זמין"
 
 msgid "Uncategorized"
 msgstr "ללא קטגוריה"
@@ -8038,6 +8132,9 @@ msgstr "אין לך כתבות שלא נקראו."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "עדיין לא נרשמת לכתבות המשותפות של אף אחד."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "עדיין לא נרשמו יישומי OAuth."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "עליך לעקוב אחרי %(value_1)s כדי להשיב"
@@ -8112,11 +8209,20 @@ msgstr "הדומיינים שלך בארכיון"
 msgid "Your Blurblog"
 msgstr "ה-Blurblog שלך"
 
+msgid "Your OAuth applications"
+msgstr "יישומי OAuth שלך"
+
 msgid "Your Referral Link"
 msgstr "קישור ההפניה שלך"
 
 msgid "Your Referral Stats"
 msgstr "נתוני ההפניות שלך"
+
+msgid "Your app name"
+msgstr "שם היישום שלך"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "היישומים שלך מושהים עד שיהיה לחשבון שלך מינוי Premium Pro פעיל."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "הכתבות שבארכיון יישארו נגישות, אך על כתבות חדשות תחול מדיניות השמירה הרגילה."

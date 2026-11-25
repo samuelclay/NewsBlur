@@ -283,7 +283,7 @@ msgstr[0] "%(count)s 个月"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s 篇新文章"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1015,6 +1015,9 @@ msgstr "借助 AI 分析文章，并根据你的新闻订阅源生成个性化�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "所有分类 (%(value_1)s)"
 
+msgid "API requests"
+msgstr "API 请求"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "当然可以。打开训练器，移除任何点赞或点踩即可重置。"
 
@@ -1033,6 +1036,9 @@ msgstr "操作"
 
 msgid "Active"
 msgstr "活跃"
+
+msgid "Active readers · 7 days"
+msgstr "活跃读者 · 7 天"
 
 msgid "Activities"
 msgstr "动态"
@@ -1144,6 +1150,9 @@ msgstr "正在添加…"
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s 秒后"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "读者授权你的应用后，NewsBlur 会将他们重定向到此 URL，并附上授权码。"
 
 msgid "After marking feed/folder read"
 msgstr "将订阅源/文件夹标记为已读后"
@@ -1296,6 +1305,12 @@ msgstr "任何时间"
 msgid "Appearance"
 msgstr "外观"
 
+msgid "Application name"
+msgstr "应用名称"
+
+msgid "Application website"
+msgstr "应用网站"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1422,6 +1437,9 @@ msgstr "作者姓名"
 
 msgid "Author: "
 msgstr "作者："
+
+msgid "Authorization link"
+msgstr "授权链接"
 
 msgid "Authors"
 msgstr "作者"
@@ -1864,6 +1882,12 @@ msgstr "点击任意来源以改读该版本，或一次性将所有重复项标
 msgid "Click to block"
 msgstr "点击以屏蔽"
 
+msgid "Client ID"
+msgstr "客户端 ID"
+
+msgid "Client secret"
+msgstr "客户端密钥"
+
 msgid "Close"
 msgstr "关闭"
 
@@ -1962,11 +1986,24 @@ msgid ""
 "shares to Slack; trigger custom workflows from your training."
 msgstr "将 NewsBlur 连接到数百种服务。将文章保存到 Pocket、Instapaper、Evernote 或 Notion；将分享内容发布到 Slack；根据你的训练触发自定义工作流。"
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr "将你的应用连接到 NewsBlur，让读者授权访问他们的文章和订阅源。任何套餐的读者都可以连接。"
+
 msgid "Connected"
 msgstr "已连接"
 
 msgid "Connected accounts"
 msgstr "已连接的账户"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr "已连接的账户拥有未过期的访问令牌。活跃读者数按连续 7 个 UTC 日估算。API 请求数和最近活动时间从开始跟踪时起统计。"
+
+msgid "Consent screen preview"
+msgstr "授权页面预览"
 
 msgid "Content"
 msgstr "内容"
@@ -2001,8 +2038,14 @@ msgstr "复制文本"
 msgid "Copy URL"
 msgstr "复制网址"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "请立即复制客户端密钥。它只会显示一次。"
+
 msgid "Could not add this classifier. Try again."
 msgstr "无法添加此分类器。请重试。"
+
+msgid "Could not create the application. Please try again."
+msgstr "无法创建应用。请重试。"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "无法断开此账户的连接。请重试。"
@@ -2012,6 +2055,9 @@ msgstr "无法为此 URL 找到 RSS 源"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "无法加载常见问题，请重试。"
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "无法加载你的应用。请尝试刷新。"
 
 msgid "Couldn't load audio for this story."
 msgstr "无法加载这篇文章的音频。"
@@ -2031,14 +2077,29 @@ msgstr "创建账户"
 msgid "Create Gift Link"
 msgstr "创建礼品链接"
 
+msgid "Create OAuth applications"
+msgstr "创建 OAuth 应用"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "为任何网站创建订阅源，即使它没有 RSS。"
+
+msgid "Create a new OAuth application"
+msgstr "创建新的 OAuth 应用"
 
 msgid "Create a new subfolder"
 msgstr "创建新子文件夹"
 
+msgid "Create another application"
+msgstr "创建另一个应用"
+
+msgid "Create application"
+msgstr "创建应用"
+
 msgid "Created:"
 msgstr "创建时间："
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "创建 OAuth 应用需要 NewsBlur 高级专业版。"
 
 msgid "Creative"
 msgstr "创意"
@@ -3693,6 +3754,9 @@ msgstr "上次 IP："
 msgid "Last Update"
 msgstr "上次更新"
 
+msgid "Last activity"
+msgstr "最近活动"
+
 msgid "Last seen:"
 msgstr "上次出现："
 
@@ -3772,6 +3836,9 @@ msgstr "正在加载 PayPal…"
 
 msgid "Loading Training..."
 msgstr "正在加载训练数据…"
+
+msgid "Loading applications…"
+msgstr "正在加载应用…"
 
 msgid "Loading checkout..."
 msgstr "正在加载结账页面…"
@@ -4425,6 +4492,9 @@ msgstr "没有与此搜索匹配的问题。"
 msgid "No recency filter"
 msgstr "不限制时间范围"
 
+msgid "No recorded activity"
+msgstr "没有记录的活动"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "还没有推荐记录。分享你的链接，开始推荐吧！"
 
@@ -4573,6 +4643,12 @@ msgstr "每份简报包含的文章数量"
 msgid "Numbers & Symbols"
 msgstr "数字与符号"
 
+msgid "OAuth application created"
+msgstr "OAuth 应用已创建"
+
+msgid "OAuth applications"
+msgstr "OAuth 应用"
+
 msgid "OFF"
 msgstr "关"
 
@@ -4589,7 +4665,7 @@ msgid "Off"
 msgstr "关闭"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "以“有 N 篇新文章”提示条显示"
 
 msgid "Official NewsBlur Android App"
 msgstr "官方 NewsBlur Android 应用"
@@ -4697,7 +4773,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "仅在折叠的文件夹上显示计数"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "仅在列表重新加载时显示"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "仅截断 Blurblog 中过长的分享文章"
@@ -5346,6 +5422,9 @@ msgstr "Reddit 子版块"
 msgid "Redeemed"
 msgstr "已兑换"
 
+msgid "Redirect URL"
+msgstr "重定向 URL"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "精简你的文章流"
 
@@ -5363,6 +5442,9 @@ msgstr "推荐记录"
 
 msgid "Refine with a hint"
 msgstr "添加提示以优化"
+
+msgid "Refresh"
+msgstr "刷新"
 
 msgid "Refund $12"
 msgstr "退款 12 美元"
@@ -6045,7 +6127,7 @@ msgid "Show more related stories"
 msgstr "显示更多相关文章"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "新文章到达时显示"
 
 msgid "Show on Load"
 msgstr "加载时显示"
@@ -6882,6 +6964,11 @@ msgstr "本周"
 msgid "This Year"
 msgstr "今年"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr "此示例请求读取权限。每次登录时都生成新的 state 值，并在读者返回时进行验证。"
+
 msgid "This is just the demo."
 msgstr "这只是演示版。"
 
@@ -7212,6 +7299,9 @@ msgstr "URL："
 
 msgid "Un-mute this site"
 msgstr "取消屏蔽此网站"
+
+msgid "Unavailable"
+msgstr "不可用"
 
 msgid "Uncategorized"
 msgstr "未分类"
@@ -7831,6 +7921,9 @@ msgstr "没有未读文章。"
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "你尚未订阅任何人分享的文章。"
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "你还没有注册任何 OAuth 应用。"
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "你必须关注 %(value_1)s 才能回复"
@@ -7903,11 +7996,20 @@ msgstr "已归档的域名"
 msgid "Your Blurblog"
 msgstr "你的 Blurblog"
 
+msgid "Your OAuth applications"
+msgstr "你的 OAuth 应用"
+
 msgid "Your Referral Link"
 msgstr "你的推荐链接"
 
 msgid "Your Referral Stats"
 msgstr "你的推荐统计"
+
+msgid "Your app name"
+msgstr "你的应用名称"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "你的应用已暂停，直到你的账户开通高级专业版。"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "你已归档的文章仍可访问，但新文章将遵循标准保留政策。"

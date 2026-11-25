@@ -483,6 +483,7 @@ le persone per parlare del mondo.</string>
     <string name="pro_enable_sites">Segui fino a 10.000 siti</string>
     <string name="pro_all_feeds_fetched">Tutti i feed vengono aggiornati ogni 5-15 minuti</string>
     <string name="pro_regex_train">Addestra gli articoli con espressioni regolari</string>
+    <string name="pro_oauth_applications">Crea applicazioni OAuth</string>
     <string name="pro_priority_support">Assistenza prioritaria</string>
     <string name="pro_natural_language_search">Ricerca in linguaggio naturale</string>
     <string name="settings_cat_offline">Lettura offline</string>
@@ -630,6 +631,8 @@ le persone per parlare del mondo.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Contrassegna automaticamente gli articoli come letti quando li superi scorrendo</string>
     <string name="settings_story_clustering">Raggruppa gli articoli correlati</string>
     <string name="settings_story_clustering_summary">Mostra gli articoli duplicati di altri feed sotto il titolo di un articolo</string>
+    <string name="settings_show_new_stories">Mostra i nuovi articoli man mano che arrivano</string>
+    <string name="settings_show_new_stories_summary">Mostra un avviso «N nuovi articoli» quando arrivano articoli nel sito o nella cartella aperti</string>
     <string name="settings_cluster_matches">Corrispondenze dei gruppi</string>
     <string name="settings_cluster_matches_summary">Scegli se i gruppi devono mostrare solo i titoli duplicati oppure anche gli articoli correlati</string>
     <string name="settings_story_clustering_save_failed">Impossibile salvare la preferenza di raggruppamento degli articoli</string>
@@ -1549,4 +1552,9 @@ le persone per parlare del mondo.</string>
     <string name="settings_listen_speed">Velocità di riproduzione</string>
     <string name="archive_listen">Ascolta 1 ora di articoli letti ad alta voce a settimana</string>
     <string name="pro_listen">Ascolta 10 ore di articoli letti ad alta voce a settimana</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d nuovi articoli</item>
+        <item quantity="one">%d nuovo articolo</item>
+        <item quantity="other">%d nuovi articoli</item>
+    </plurals>
 </resources>

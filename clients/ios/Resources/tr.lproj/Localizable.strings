@@ -46,6 +46,7 @@
 "%@ left in this preview" = "Bu önizlemede %@ kaldı";
 "%@ left this week" = "Bu hafta %@ kaldı";
 "%@ match" = "%@ eşleşme";
+"%@ new stories" = "%@ yeni haber";
 "%@ opens" = "%@ açılma";
 "%@ or search" = "%@ veya ara";
 "%@ public comments" = "%@ herkese açık yorum";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Harcama sınırınız kaydedilemedi. Lütfen tekrar deneyin.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Görselin tamamı yüklenemedi. Tarayıcınızda açmayı deneyebilirsiniz.";
 "Counting is difficult..." = "Saymak zor iş...";
+"Create OAuth applications" = "OAuth uygulamaları oluştur";
 "Create a feed from any web page" = "Herhangi bir web sayfasından akış oluşturun";
 "Create a new account instead" = "Bunun yerine yeni bir hesap oluştur";
 "Create account" = "Hesap oluştur";
@@ -990,6 +992,7 @@
 "Show feed list" = "Akış listesini göster";
 "Show feeds after being read" = "Okunduktan sonra akışları göster";
 "Show hidden stories" = "Gizli haberleri göster";
+"Show new stories as they arrive" = "Yeni haberleri geldikçe göster";
 "Show original story" = "Orijinal haberi göster";
 "Show original text" = "Orijinal metni göster";
 "Show public comments" = "Herkese açık yorumları göster";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Okunmamış sayısını göster";
 "Show with feed icons" = "Akış simgeleriyle göster";
 "Show without icons" = "Simgeler olmadan göster";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Açık akışa veya klasöre yeni haberler geldiğinde “N yeni haber” rozeti gösterir.";
 "Shows the music settings" = "Müzik ayarlarını gösterir";
 "Sidebar" = "Kenar çubuğu";
 "Sign Up" = "Kaydol";

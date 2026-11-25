@@ -419,11 +419,11 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> (29 USD/tháng) giúp làm mới tất cả nguồn cấp sau mỗi 5–15 phút, huấn luyện "
-"regex, theo dõi tối đa 10.000 trang web và được hỗ trợ ưu tiên."
+"#366944;\">Premium Pro</a> (29 USD/tháng) giúp bạn cập nhật mọi nguồn cấp sau mỗi 5–15 phút, huấn luyện "
+"regex, sử dụng tối đa 10.000 trang web, đăng ký ứng dụng OAuth và nhận hỗ trợ ưu tiên."
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -892,6 +892,9 @@ msgstr ""
 " thông minh, đăng ký nguồn cấp dữ liệu mới và tìm kiếm trong kho lưu trữ. Các quy trình phổ biến gồm xem "
 "bản tin tóm tắt hằng ngày, xử lý hộp thư đến và nghiên cứu các bài viết đã lưu."
 
+msgid "Application website"
+msgstr "Trang web của ứng dụng"
+
 msgid "Apply training across a folder"
 msgstr "Áp dụng huấn luyện cho cả thư mục"
 
@@ -1353,9 +1356,6 @@ msgstr "Máy khách"
 msgid "Client id"
 msgstr "ID ứng dụng"
 
-msgid "Client secret"
-msgstr "Mã bí mật ứng dụng"
-
 msgid "Client type"
 msgstr "Loại ứng dụng"
 
@@ -1470,6 +1470,9 @@ msgstr "Kết nối bằng một lệnh"
 msgid "Connect your account"
 msgstr "Kết nối tài khoản của bạn"
 
+msgid "Consent screen preview"
+msgstr "Xem trước màn hình đồng ý"
+
 msgid "Contact"
 msgstr "Liên hệ"
 
@@ -1548,6 +1551,9 @@ msgstr ""
 msgid "Create Account"
 msgstr "Tạo tài khoản"
 
+msgid "Create OAuth applications"
+msgstr "Tạo ứng dụng OAuth"
+
 msgid "Create a new account instead"
 msgstr "Thay vào đó, tạo tài khoản mới"
 
@@ -1559,6 +1565,9 @@ msgstr "Tạo tài khoản"
 
 msgid "Create an account"
 msgstr "Tạo tài khoản"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Cần có NewsBlur Premium Pro để tạo ứng dụng OAuth."
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Thẻ tín dụng/ghi nợ qua Stripe và PayPal."
@@ -1856,6 +1865,12 @@ msgstr "Kỹ sư & Nhà văn"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "Đang tận hưởng các tính năng cao cấp? Hãy giữ chúng mãi mãi!"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "Nhập một URL chuyển hướng duy nhất, không có thông tin đăng nhập, ký tự đại diện hoặc đoạn neo."
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "Nhập địa chỉ trang web HTTP hoặc HTTPS."
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "Nhập địa chỉ email của bạn, chúng tôi sẽ gửi cho bạn liên kết để đặt mật khẩu mới."
@@ -3669,13 +3684,14 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur Premium có giá từ 36 USD/năm cho tối đa 1.024 trang web &mdash; bằng một nửa giá Feedly Pro. Dành "
-"cho người dùng chuyên sâu, NewsBlur Pro với giá 29 USD/tháng bao gồm khả năng lấy nguồn cấp mỗi 5 phút cho "
-"cả 10.000 trang web, bộ phân loại regex và hỗ trợ ưu tiên. Gói Enterprise tương đương của Feedly có giá 18 "
-"USD/tháng nhưng giới hạn ở 2.500 nguồn và không hỗ trợ lọc regex hay tự lưu trữ."
+"NewsBlur Premium có giá từ 36 USD/năm cho tối đa 1.024 trang web &mdash; bằng một nửa chi phí của Feedly "
+"Pro. Với người dùng chuyên sâu, NewsBlur Pro với giá 29 USD/tháng bao gồm cập nhật mọi nguồn cấp sau mỗi 5 "
+"phút cho tối đa 10.000 trang web, bộ phân loại regex, đăng ký ứng dụng OAuth và hỗ trợ ưu tiên. Gói "
+"Enterprise tương đương của Feedly có giá 18 USD/tháng nhưng giới hạn ở 2.500 nguồn và không hỗ trợ lọc "
+"regex hoặc tự lưu trữ."
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "Bảng giá NewsBlur - Gói dành cho mọi độc giả"
@@ -3992,15 +4008,6 @@ msgstr ""
 "theo. Bản tin hằng ngày tạo bản tóm tắt AI cá nhân hóa về các bài viết hàng đầu của bạn với các mục có thể "
 "tùy chỉnh. Những tính năng này biến việc đọc thụ động thành quá trình thu thập thông tin chủ động."
 
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur hỗ trợ OAuth, nhưng để dùng ứng dụng có bật OAuth, bạn phải <a "
-"href=\"mailto:samuel@newsblur.com\">gửi email cho Samuel</a> để yêu cầu client ID và secret. Bạn cần cung "
-"cấp tên người dùng NewsBlur, URI chuyển hướng (thường chỉ là trang web của ứng dụng) và tên ứng dụng."
-
 msgid "NewsBlur username"
 msgstr "Tên người dùng NewsBlur"
 
@@ -4305,6 +4312,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Chỉ người dùng trả phí mới có thể chia sẻ nhiều bài viết mỗi ngày từ cùng một trang."
 
+msgid "Open NewsBlur to register your application."
+msgstr "Mở NewsBlur để đăng ký ứng dụng của bạn."
+
 msgid "Open Source"
 msgstr "Mã nguồn mở"
 
@@ -4543,10 +4553,10 @@ msgstr "Premium Pro"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
+" OAuth application registration, and priority support."
 msgstr ""
-"Premium Pro (29 USD/tháng) giúp bạn nhận dữ liệu từ mọi nguồn cấp mỗi 5–15 phút, huấn luyện biểu thức chính"
-" quy, theo dõi tối đa 10.000 trang web và được ưu tiên hỗ trợ."
+"Premium Pro (29 USD/tháng) giúp bạn cập nhật mọi nguồn cấp sau mỗi 5–15 phút, huấn luyện regex, sử dụng tối"
+" đa 10.000 trang web, đăng ký ứng dụng OAuth và nhận hỗ trợ ưu tiên."
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Bảng giá NewsBlur"
@@ -4913,6 +4923,9 @@ msgstr "Bật/tắt chế độ biểu thức chính quy cho bộ phân loại m
 
 msgid "Register a new application"
 msgstr "Đăng ký ứng dụng mới"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr "Đăng ký ứng dụng của bạn trên web để mọi người có thể kết nối tài khoản NewsBlur với ứng dụng đó."
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "Các tìm kiếm thường dùng sẽ được tạo nguồn cấp riêng để tiện truy cập"
@@ -5415,6 +5428,9 @@ msgstr "Đăng nhập để đồng bộ ngay các nguồn cấp, nội dung đ�
 
 msgid "Sign in to NewsBlur"
 msgstr "Đăng nhập vào NewsBlur"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "Đăng nhập để xem ứng dụng OAuth của bạn."
 
 msgid "Sign in with Apple"
 msgstr "Đăng nhập bằng Apple"
@@ -5969,6 +5985,9 @@ msgstr "Trình đọc RSS mã nguồn mở duy nhất mà bạn không cần t�
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "Bài viết gốc từ các nguồn cấp RSS bị cắt ngắn được mở rộng liền mạch"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "Chủ sở hữu ứng dụng OAuth này cần có gói đăng ký NewsBlur Premium Pro đang hoạt động."
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Giống như các nguồn cấp thông thường. Người dùng Premium và Pro được cập nhật thường xuyên hơn."
 
@@ -6395,6 +6414,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Sử dụng"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "Dùng HTTPS cho URL chuyển hướng hoặc HTTP nếu là localhost."
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6760,6 +6782,15 @@ msgstr "Bài viết được đọc nhiều"
 msgid "Widely-read, long reads, good reads"
 msgstr "Được đọc nhiều, bài dài, bài hay"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"Với tài khoản Premium Pro đang hoạt động, bạn có thể <a href=\"/account/applications/register/\">tạo ứng "
+"dụng OAuth</a>. Nhập tên ứng dụng, trang web và URL chuyển hướng để nhận mã ứng dụng và mã bí mật. Người "
+"kết nối tài khoản có thể dùng bất kỳ gói NewsBlur nào."
+
 msgid "Works Everywhere"
 msgstr "Hoạt động ở mọi nơi"
 
@@ -6805,11 +6836,11 @@ msgstr ""
 "luyện nâng cao."
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
 msgstr ""
-"Có, Premium Pro bao gồm tất cả tính năng của Premium và Archive, cùng với tính năng tải nội dung theo thời "
-"gian thực, biểu thức chính quy và hỗ trợ ưu tiên."
+"Có, Premium Pro bao gồm mọi tính năng của Premium và Archive, cùng với cập nhật theo thời gian thực, regex,"
+" đăng ký ứng dụng OAuth và hỗ trợ ưu tiên."
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr ""
@@ -7411,6 +7442,9 @@ msgstr ""
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "Tài khoản của bạn vẫn giữ trạng thái Premium đến %(date)s. Hôm nay không có gì khác thay đổi."
+
+msgid "Your app name"
+msgstr "Tên ứng dụng của bạn"
 
 msgid "Your applications"
 msgstr "Ứng dụng của bạn"

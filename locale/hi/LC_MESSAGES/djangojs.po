@@ -311,8 +311,8 @@ msgstr[1] "%(count)s महीने"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(count)s नया लेख"
+msgstr[1] "%(count)s नए लेख"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1086,6 +1086,9 @@ msgstr "AI-संचालित लेख विश्लेषण और आ�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "सभी श्रेणियाँ (%(value_1)s)"
 
+msgid "API requests"
+msgstr "API अनुरोध"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "बिल्कुल। ट्रेनर खोलें और उसे रीसेट करने के लिए कोई भी थम्स अप या थम्स डाउन हटा दें।"
 
@@ -1104,6 +1107,9 @@ msgstr "कार्रवाइयाँ"
 
 msgid "Active"
 msgstr "सक्रिय"
+
+msgid "Active readers · 7 days"
+msgstr "सक्रिय पाठक · 7 दिन"
 
 msgid "Activities"
 msgstr "गतिविधियाँ"
@@ -1219,6 +1225,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s सेकंड बाद।"
 msgstr[1] "%(slider)s %(count)s सेकंड बाद।"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "पाठक द्वारा आपके ऐप को अनुमति देने के बाद, NewsBlur उन्हें प्राधिकरण कोड के साथ इस URL पर भेजता है।"
 
 msgid "After marking feed/folder read"
 msgstr "फ़ीड/फ़ोल्डर को पढ़ा हुआ चिह्नित करने के बाद"
@@ -1383,6 +1392,12 @@ msgstr "कभी भी"
 msgid "Appearance"
 msgstr "प्रकटन"
 
+msgid "Application name"
+msgstr "एप्लिकेशन का नाम"
+
+msgid "Application website"
+msgstr "एप्लिकेशन वेबसाइट"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1515,6 +1530,9 @@ msgstr "लेखक का नाम"
 
 msgid "Author: "
 msgstr "लेखक: "
+
+msgid "Authorization link"
+msgstr "प्राधिकरण लिंक"
 
 msgid "Authors"
 msgstr "लेखक"
@@ -1964,6 +1982,12 @@ msgstr "उस संस्करण को पढ़ने के लिए क
 msgid "Click to block"
 msgstr "ब्लॉक करने के लिए क्लिक करें"
 
+msgid "Client ID"
+msgstr "क्लाइंट ID"
+
+msgid "Client secret"
+msgstr "क्लाइंट सीक्रेट"
+
 msgid "Close"
 msgstr "बंद करें"
 
@@ -2066,11 +2090,28 @@ msgstr ""
 "NewsBlur को सैकड़ों सेवाओं से जोड़ें। लेख Pocket, Instapaper, Evernote या Notion में सहेजें; Slack पर साझा "
 "करें; अपनी प्रशिक्षण गतिविधियों से कस्टम वर्कफ़्लो शुरू करें।"
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"अपने ऐप को NewsBlur से कनेक्ट करें, ताकि पाठक अपने लेखों और फ़ीड तक पहुँच की अनुमति दे सकें। किसी भी प्लान "
+"के पाठक कनेक्ट कर सकते हैं।"
+
 msgid "Connected"
 msgstr "कनेक्ट किया गया"
 
 msgid "Connected accounts"
 msgstr "कनेक्ट किए गए खाते"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"कनेक्ट किए गए खातों के एक्सेस टोकन की समय-सीमा समाप्त नहीं हुई है। सक्रिय पाठकों का अनुमान पिछले सात UTC "
+"दिनों के आधार पर लगाया जाता है। API अनुरोधों और पिछली गतिविधि को ट्रैकिंग शुरू होने के समय से मापा जाता है।"
+
+msgid "Consent screen preview"
+msgstr "सहमति स्क्रीन का पूर्वावलोकन"
 
 msgid "Content"
 msgstr "सामग्री"
@@ -2105,8 +2146,14 @@ msgstr "टेक्स्ट कॉपी करें"
 msgid "Copy URL"
 msgstr "URL कॉपी करें"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "अपना क्लाइंट सीक्रेट अभी कॉपी करें। यह आपको केवल एक बार दिखेगा।"
+
 msgid "Could not add this classifier. Try again."
 msgstr "यह क्लासिफ़ायर जोड़ा नहीं जा सका। फिर से कोशिश करें।"
+
+msgid "Could not create the application. Please try again."
+msgstr "एप्लिकेशन नहीं बनाया जा सका। कृपया फिर से कोशिश करें।"
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "इस खाते का कनेक्शन नहीं हटाया जा सका। कृपया फिर से कोशिश करें।"
@@ -2116,6 +2163,9 @@ msgstr "इस URL के लिए RSS फ़ीड नहीं मिली"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ लोड नहीं हो सका। कृपया फिर से कोशिश करें।"
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "आपके एप्लिकेशन लोड नहीं हो सके। रीफ़्रेश करके देखें।"
 
 msgid "Couldn't load audio for this story."
 msgstr "इस लेख के लिए ऑडियो लोड नहीं हो सका।"
@@ -2135,14 +2185,29 @@ msgstr "खाता बनाएँ"
 msgid "Create Gift Link"
 msgstr "उपहार लिंक बनाएँ"
 
+msgid "Create OAuth applications"
+msgstr "OAuth एप्लिकेशन बनाएँ"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "RSS के बिना भी किसी भी वेबसाइट के लिए फ़ीड बनाएँ।"
+
+msgid "Create a new OAuth application"
+msgstr "नया OAuth एप्लिकेशन बनाएँ"
 
 msgid "Create a new subfolder"
 msgstr "नया सबफ़ोल्डर बनाएँ"
 
+msgid "Create another application"
+msgstr "एक और एप्लिकेशन बनाएँ"
+
+msgid "Create application"
+msgstr "एप्लिकेशन बनाएँ"
+
 msgid "Created:"
 msgstr "बनाया गया:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuth एप्लिकेशन बनाने के लिए NewsBlur Premium Pro आवश्यक है।"
 
 msgid "Creative"
 msgstr "रचनात्मक"
@@ -3828,6 +3893,9 @@ msgstr "अंतिम IP:"
 msgid "Last Update"
 msgstr "पिछला अपडेट"
 
+msgid "Last activity"
+msgstr "पिछली गतिविधि"
+
 msgid "Last seen:"
 msgstr "आख़िरी बार देखा गया:"
 
@@ -3909,6 +3977,9 @@ msgstr "PayPal लोड हो रहा है..."
 
 msgid "Loading Training..."
 msgstr "ट्रेनिंग लोड हो रही है..."
+
+msgid "Loading applications…"
+msgstr "एप्लिकेशन लोड हो रहे हैं…"
 
 msgid "Loading checkout..."
 msgstr "चेकआउट लोड हो रहा है..."
@@ -4576,6 +4647,9 @@ msgstr "इस खोज से मेल खाते कोई प्रश्
 msgid "No recency filter"
 msgstr "हालिया सामग्री का कोई फ़िल्टर नहीं"
 
+msgid "No recorded activity"
+msgstr "कोई गतिविधि दर्ज नहीं की गई"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "अभी तक कोई रेफ़रल नहीं। शुरू करने के लिए अपना लिंक साझा करें!"
 
@@ -4727,6 +4801,12 @@ msgstr "हर ब्रीफ़िंग में शामिल किए �
 msgid "Numbers & Symbols"
 msgstr "संख्याएँ और प्रतीक"
 
+msgid "OAuth application created"
+msgstr "OAuth एप्लिकेशन बनाया गया"
+
+msgid "OAuth applications"
+msgstr "OAuth एप्लिकेशन"
+
 msgid "OFF"
 msgstr "बंद"
 
@@ -4743,7 +4823,7 @@ msgid "Off"
 msgstr "बंद"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "उन्हें “N नए लेख” पिल में दिखाएँ"
 
 msgid "Official NewsBlur Android App"
 msgstr "आधिकारिक NewsBlur Android ऐप"
@@ -4862,7 +4942,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "केवल समेटे गए फ़ोल्डरों पर संख्या दिखाएँ"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "उन्हें केवल सूची फिर से लोड होने पर दिखाएँ"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "केवल Blurblog में लंबे साझा किए गए लेखों को छोटा करें"
@@ -5525,6 +5605,9 @@ msgstr "Reddit सबरेडिट"
 msgid "Redeemed"
 msgstr "भुनाया गया"
 
+msgid "Redirect URL"
+msgstr "रीडायरेक्ट URL"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "अपनी समाचार धारा में अव्यवस्था कम करें"
 
@@ -5542,6 +5625,9 @@ msgstr "रेफ़रल इतिहास"
 
 msgid "Refine with a hint"
 msgstr "संकेत देकर बेहतर बनाएँ"
+
+msgid "Refresh"
+msgstr "रीफ़्रेश करें"
 
 msgid "Refund $12"
 msgstr "$12 वापस करें"
@@ -6240,7 +6326,7 @@ msgid "Show more related stories"
 msgstr "और संबंधित लेख दिखाएँ"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "नए लेख आते ही दिखाएँ"
 
 msgid "Show on Load"
 msgstr "लोड होने पर दिखाएँ"
@@ -7102,6 +7188,13 @@ msgstr "इस सप्ताह"
 msgid "This Year"
 msgstr "इस वर्ष"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"यह उदाहरण पढ़ने की पहुँच का अनुरोध करता है। हर साइन-इन के लिए नया state मान बनाएँ और पाठक के लौटने पर उसे "
+"सत्यापित करें।"
+
 msgid "This is just the demo."
 msgstr "यह सिर्फ़ डेमो है।"
 
@@ -7448,6 +7541,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "इस साइट को अनम्यूट करें"
+
+msgid "Unavailable"
+msgstr "अनुपलब्ध"
 
 msgid "Uncategorized"
 msgstr "बिना श्रेणी"
@@ -8092,6 +8188,9 @@ msgstr "आपके पास कोई अपठित लेख नहीं 
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "आपने अभी तक किसी के भी साझा किए गए लेखों की सदस्यता नहीं ली है।"
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "आपने अभी तक कोई OAuth एप्लिकेशन पंजीकृत नहीं किया है।"
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "जवाब देने के लिए आपको %(value_1)s को फ़ॉलो करना होगा"
@@ -8168,11 +8267,20 @@ msgstr "आपके संग्रहीत डोमेन"
 msgid "Your Blurblog"
 msgstr "आपका Blurblog"
 
+msgid "Your OAuth applications"
+msgstr "आपके OAuth एप्लिकेशन"
+
 msgid "Your Referral Link"
 msgstr "आपका रेफ़रल लिंक"
 
 msgid "Your Referral Stats"
 msgstr "आपके रेफ़रल के आँकड़े"
+
+msgid "Your app name"
+msgstr "आपके ऐप का नाम"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "आपके खाते में सक्रिय Premium Pro होने तक आपके एप्लिकेशन रोक दिए गए हैं।"
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "आपके आर्काइव किए गए लेख उपलब्ध रहेंगे, लेकिन नए लेख सामान्य संग्रहण नीति के अनुसार रखे जाएंगे।"

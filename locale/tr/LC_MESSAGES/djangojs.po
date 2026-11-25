@@ -285,7 +285,7 @@ msgstr[0] "%(count)s ay"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s yeni haber"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1019,6 +1019,9 @@ msgstr "Haber akışlarınızdaki içeriklerin yapay zekâ destekli analizi ve s
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "TÜM KATEGORİLER (%(value_1)s)"
 
+msgid "API requests"
+msgstr "API istekleri"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Elbette. Eğiticiyi açın ve sıfırlamak için beğeni ya da beğenmeme işaretlerini kaldırın."
 
@@ -1037,6 +1040,9 @@ msgstr "İşlemler"
 
 msgid "Active"
 msgstr "Etkin"
+
+msgid "Active readers · 7 days"
+msgstr "Etkin okuyucular · 7 gün"
 
 msgid "Activities"
 msgstr "Etkinlikler"
@@ -1150,6 +1156,11 @@ msgstr "Ekleniyor..."
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s saniye sonra."
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr ""
+"Bir okuyucu uygulamanıza izin verdikten sonra NewsBlur, okuyucuyu bir yetkilendirme koduyla bu URL’ye "
+"yönlendirir."
 
 msgid "After marking feed/folder read"
 msgstr "Akışı/klasörü okundu olarak işaretledikten sonra"
@@ -1310,6 +1321,12 @@ msgstr "Tüm zamanlar"
 msgid "Appearance"
 msgstr "Görünüm"
 
+msgid "Application name"
+msgstr "Uygulama adı"
+
+msgid "Application website"
+msgstr "Uygulama web sitesi"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1438,6 +1455,9 @@ msgstr "Yazar adı"
 
 msgid "Author: "
 msgstr "Yazar: "
+
+msgid "Authorization link"
+msgstr "Yetkilendirme bağlantısı"
 
 msgid "Authors"
 msgstr "Yazarlar"
@@ -1886,6 +1906,12 @@ msgstr ""
 msgid "Click to block"
 msgstr "Engellemek için tıklayın"
 
+msgid "Client ID"
+msgstr "İstemci Kimliği"
+
+msgid "Client secret"
+msgstr "İstemci gizli anahtarı"
+
 msgid "Close"
 msgstr "Kapat"
 
@@ -1988,11 +2014,28 @@ msgstr ""
 "NewsBlur'u yüzlerce hizmete bağlayın. Haberleri Pocket, Instapaper, Evernote veya Notion'a kaydedin; "
 "paylaşımları Slack'te yayınlayın; eğitimlerinizden özel iş akışlarını tetikleyin."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"Okuyucuların haberlerine ve akışlarına erişim izni verebilmesi için uygulamanızı NewsBlur ile bağlayın. Her"
+" plandaki okuyucular bağlanabilir."
+
 msgid "Connected"
 msgstr "Bağlandı"
 
 msgid "Connected accounts"
 msgstr "Bağlı hesaplar"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"Bağlı hesapların süresi dolmamış bir erişim belirteci vardır. Etkin okuyucu sayısı yedi UTC günü üzerinden "
+"tahmin edilir. API istekleri ve son etkinlik, izleme başlangıcından itibaren ölçülür."
+
+msgid "Consent screen preview"
+msgstr "İzin ekranı önizlemesi"
 
 msgid "Content"
 msgstr "İçerik"
@@ -2031,8 +2074,14 @@ msgstr "Metni kopyala"
 msgid "Copy URL"
 msgstr "URL'yi kopyala"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "İstemci gizli anahtarınızı şimdi kopyalayın. Bu anahtarı yalnızca bir kez görebilirsiniz."
+
 msgid "Could not add this classifier. Try again."
 msgstr "Bu sınıflandırıcı eklenemedi. Yeniden deneyin."
+
+msgid "Could not create the application. Please try again."
+msgstr "Uygulama oluşturulamadı. Lütfen yeniden deneyin."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Bu hesabın bağlantısı kesilemedi. Lütfen tekrar deneyin."
@@ -2042,6 +2091,9 @@ msgstr "Bu URL için RSS akışı bulunamadı"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "SSS yüklenemedi. Lütfen tekrar deneyin."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "Uygulamalarınız yüklenemedi. Sayfayı yenilemeyi deneyin."
 
 msgid "Couldn't load audio for this story."
 msgstr "Bu haberin sesi yüklenemedi."
@@ -2061,14 +2113,29 @@ msgstr "Hesap Oluştur"
 msgid "Create Gift Link"
 msgstr "Hediye Bağlantısı Oluştur"
 
+msgid "Create OAuth applications"
+msgstr "OAuth uygulamaları oluştur"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "RSS olmasa bile herhangi bir web sitesi için akış oluşturun."
+
+msgid "Create a new OAuth application"
+msgstr "Yeni bir OAuth uygulaması oluştur"
 
 msgid "Create a new subfolder"
 msgstr "Yeni bir alt klasör oluştur"
 
+msgid "Create another application"
+msgstr "Başka bir uygulama oluştur"
+
+msgid "Create application"
+msgstr "Uygulama oluştur"
+
 msgid "Created:"
 msgstr "Oluşturulma tarihi:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "OAuth uygulamaları oluşturmak için NewsBlur Premium Pro gerekir."
 
 msgid "Creative"
 msgstr "Yaratıcı"
@@ -3757,6 +3824,9 @@ msgstr "Son IP:"
 msgid "Last Update"
 msgstr "Son güncelleme"
 
+msgid "Last activity"
+msgstr "Son etkinlik"
+
 msgid "Last seen:"
 msgstr "Son görülme:"
 
@@ -3838,6 +3908,9 @@ msgstr "PayPal yükleniyor..."
 
 msgid "Loading Training..."
 msgstr "Eğitim yükleniyor..."
+
+msgid "Loading applications…"
+msgstr "Uygulamalar yükleniyor…"
 
 msgid "Loading checkout..."
 msgstr "Ödeme sayfası yükleniyor..."
@@ -4497,6 +4570,9 @@ msgstr "Bu aramayla eşleşen soru yok."
 msgid "No recency filter"
 msgstr "Güncellik filtresi yok"
 
+msgid "No recorded activity"
+msgstr "Kaydedilmiş etkinlik yok"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "Henüz davet yok. Başlamak için bağlantınızı paylaşın!"
 
@@ -4645,6 +4721,12 @@ msgstr "Her özete eklenecek haber sayısı"
 msgid "Numbers & Symbols"
 msgstr "Sayılar ve Semboller"
 
+msgid "OAuth application created"
+msgstr "OAuth uygulaması oluşturuldu"
+
+msgid "OAuth applications"
+msgstr "OAuth uygulamaları"
+
 msgid "OFF"
 msgstr "KAPALI"
 
@@ -4661,7 +4743,7 @@ msgid "Off"
 msgstr "Kapalı"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Bunları “N yeni haber” rozetiyle göster"
 
 msgid "Official NewsBlur Android App"
 msgstr "Resmî NewsBlur Android uygulaması"
@@ -4775,7 +4857,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Sayıları yalnızca daraltılmış klasörlerde göster"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Yalnızca liste yeniden yüklendiğinde göster"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Yalnızca blurblog'lardaki uzun paylaşılan haberleri kısalt"
@@ -5438,6 +5520,9 @@ msgstr "Reddit Subreddit'leri"
 msgid "Redeemed"
 msgstr "Kullanıldı"
 
+msgid "Redirect URL"
+msgstr "Yönlendirme URL'si"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "Haber akışınızdaki kalabalığı azaltın"
 
@@ -5455,6 +5540,9 @@ msgstr "Davet Geçmişi"
 
 msgid "Refine with a hint"
 msgstr "Bir ipucuyla iyileştirin"
+
+msgid "Refresh"
+msgstr "Yenile"
 
 msgid "Refund $12"
 msgstr "12 $ iade et"
@@ -6151,7 +6239,7 @@ msgid "Show more related stories"
 msgstr "Daha fazla benzer haber göster"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Yeni haberleri geldikçe göster"
 
 msgid "Show on Load"
 msgstr "Yüklenince göster"
@@ -7011,6 +7099,13 @@ msgstr "Bu hafta"
 msgid "This Year"
 msgstr "Bu Yıl"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"Bu örnek, okuma erişimi ister. Her oturum açma işleminde yeni bir state değeri oluşturun ve okuyucu geri "
+"döndüğünde bunu doğrulayın."
+
 msgid "This is just the demo."
 msgstr "Bu yalnızca bir demo."
 
@@ -7355,6 +7450,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "Bu sitenin sesini aç"
+
+msgid "Unavailable"
+msgstr "Kullanılamıyor"
 
 msgid "Uncategorized"
 msgstr "Kategorize edilmemiş"
@@ -7994,6 +8092,9 @@ msgstr "Okunmamış haberiniz yok."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "Henüz kimsenin paylaşılan haberlerine abone olmadınız."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "Henüz hiçbir OAuth uygulaması kaydetmediniz."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Yanıt vermek için %(value_1)s kişisini takip ediyor olmalısınız"
@@ -8070,11 +8171,20 @@ msgstr "Arşivlenmiş alan adlarınız"
 msgid "Your Blurblog"
 msgstr "Blurblog'unuz"
 
+msgid "Your OAuth applications"
+msgstr "OAuth uygulamalarınız"
+
 msgid "Your Referral Link"
 msgstr "Davet Bağlantınız"
 
 msgid "Your Referral Stats"
 msgstr "Davet İstatistikleriniz"
+
+msgid "Your app name"
+msgstr "Uygulamanızın adı"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "Hesabınızda etkin bir Premium Pro olana kadar uygulamalarınız duraklatılır."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "Arşivlediğiniz haberlere erişmeye devam edebilirsiniz; yeni haberler standart saklama politikasına tabidir."

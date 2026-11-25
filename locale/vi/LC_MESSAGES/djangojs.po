@@ -283,7 +283,7 @@ msgstr[0] "%(count)s tháng"
 #, python-format
 msgid "%(count)s new story"
 msgid_plural "%(count)s new stories"
-msgstr[0] ""
+msgstr[0] "%(count)s bài viết mới"
 
 #, python-format
 msgid "%(count)s newsletter"
@@ -1019,6 +1019,9 @@ msgstr "Phân tích bài viết bằng AI và tóm tắt hằng ngày được c
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "TẤT CẢ DANH MỤC (%(value_1)s)"
 
+msgid "API requests"
+msgstr "Yêu cầu API"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "Chắc chắn rồi. Mở công cụ huấn luyện và gỡ mọi đánh giá thích hoặc không thích để đặt lại."
 
@@ -1037,6 +1040,9 @@ msgstr "Thao tác"
 
 msgid "Active"
 msgstr "Đang hoạt động"
+
+msgid "Active readers · 7 days"
+msgstr "Người đọc đang hoạt động · 7 ngày"
 
 msgid "Activities"
 msgstr "Hoạt động"
@@ -1150,6 +1156,9 @@ msgstr "Đang thêm..."
 msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "Sau %(slider)s %(count)s giây."
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "Sau khi người đọc cấp quyền cho ứng dụng của bạn, NewsBlur sẽ chuyển họ đến URL này cùng với mã ủy quyền."
 
 msgid "After marking feed/folder read"
 msgstr "Sau khi đánh dấu nguồn cấp dữ liệu/thư mục là đã đọc"
@@ -1310,6 +1319,12 @@ msgstr "Mọi lúc"
 msgid "Appearance"
 msgstr "Giao diện"
 
+msgid "Application name"
+msgstr "Tên ứng dụng"
+
+msgid "Application website"
+msgstr "Trang web của ứng dụng"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1436,6 +1451,9 @@ msgstr "Tên tác giả"
 
 msgid "Author: "
 msgstr "Tác giả: "
+
+msgid "Authorization link"
+msgstr "Liên kết ủy quyền"
 
 msgid "Authors"
 msgstr "Tác giả"
@@ -1882,6 +1900,12 @@ msgstr "Nhấp vào bất kỳ nguồn nào để đọc phiên bản đó, ho�
 msgid "Click to block"
 msgstr "Nhấp để chặn"
 
+msgid "Client ID"
+msgstr "ID ứng dụng"
+
+msgid "Client secret"
+msgstr "Mã bí mật ứng dụng"
+
 msgid "Close"
 msgstr "Đóng"
 
@@ -1984,11 +2008,28 @@ msgstr ""
 "Kết nối NewsBlur với hàng trăm dịch vụ. Lưu bài viết vào Pocket, Instapaper, Evernote hoặc Notion; đăng bài"
 " chia sẻ lên Slack; kích hoạt quy trình tùy chỉnh từ quá trình huấn luyện của bạn."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"Kết nối ứng dụng của bạn với NewsBlur để người đọc có thể cấp quyền truy cập vào bài viết và nguồn cấp của "
+"họ. Người đọc dùng bất kỳ gói nào đều có thể kết nối."
+
 msgid "Connected"
 msgstr "Đã kết nối"
 
 msgid "Connected accounts"
 msgstr "Tài khoản đã kết nối"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"Tài khoản đã kết nối có mã truy cập chưa hết hạn. Số người đọc đang hoạt động được ước tính trong 7 ngày "
+"UTC. Yêu cầu API và hoạt động gần nhất được tính từ thời điểm bắt đầu theo dõi."
+
+msgid "Consent screen preview"
+msgstr "Bản xem trước màn hình chấp thuận"
 
 msgid "Content"
 msgstr "Nội dung"
@@ -2025,8 +2066,14 @@ msgstr "Sao chép văn bản"
 msgid "Copy URL"
 msgstr "Sao chép URL"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "Hãy sao chép khóa bí mật của ứng dụng ngay bây giờ. Bạn chỉ xem được khóa này một lần."
+
 msgid "Could not add this classifier. Try again."
 msgstr "Không thể thêm bộ phân loại này. Hãy thử lại."
+
+msgid "Could not create the application. Please try again."
+msgstr "Không thể tạo ứng dụng. Vui lòng thử lại."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Không thể ngắt kết nối tài khoản này. Vui lòng thử lại."
@@ -2036,6 +2083,9 @@ msgstr "Không tìm thấy nguồn cấp RSS cho URL này"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "Không tải được câu hỏi thường gặp. Vui lòng thử lại."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "Không thể tải ứng dụng của bạn. Thử làm mới."
 
 msgid "Couldn't load audio for this story."
 msgstr "Không tải được âm thanh cho bài viết này."
@@ -2055,14 +2105,29 @@ msgstr "Tạo tài khoản"
 msgid "Create Gift Link"
 msgstr "Tạo liên kết quà tặng"
 
+msgid "Create OAuth applications"
+msgstr "Tạo ứng dụng OAuth"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "Tạo nguồn cấp cho bất kỳ website nào, kể cả khi không có RSS."
+
+msgid "Create a new OAuth application"
+msgstr "Tạo ứng dụng OAuth mới"
 
 msgid "Create a new subfolder"
 msgstr "Tạo thư mục con mới"
 
+msgid "Create another application"
+msgstr "Tạo ứng dụng khác"
+
+msgid "Create application"
+msgstr "Tạo ứng dụng"
+
 msgid "Created:"
 msgstr "Ngày tạo:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Tạo ứng dụng OAuth yêu cầu gói Premium Pro NewsBlur."
 
 msgid "Creative"
 msgstr "Sáng tạo"
@@ -3748,6 +3813,9 @@ msgstr "IP gần đây nhất:"
 msgid "Last Update"
 msgstr "Cập nhật lần cuối"
 
+msgid "Last activity"
+msgstr "Hoạt động gần nhất"
+
 msgid "Last seen:"
 msgstr "Lần cuối hoạt động:"
 
@@ -3829,6 +3897,9 @@ msgstr "Đang tải PayPal..."
 
 msgid "Loading Training..."
 msgstr "Đang tải nội dung huấn luyện..."
+
+msgid "Loading applications…"
+msgstr "Đang tải ứng dụng…"
 
 msgid "Loading checkout..."
 msgstr "Đang tải trang thanh toán..."
@@ -4490,6 +4561,9 @@ msgstr "Không có câu hỏi nào khớp với tìm kiếm đó."
 msgid "No recency filter"
 msgstr "Không lọc theo thời gian"
 
+msgid "No recorded activity"
+msgstr "Chưa ghi nhận hoạt động"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "Chưa có lượt giới thiệu nào. Chia sẻ liên kết của bạn để bắt đầu!"
 
@@ -4638,6 +4712,12 @@ msgstr "Số bài viết cần đưa vào mỗi bản tin tóm tắt"
 msgid "Numbers & Symbols"
 msgstr "Số & ký hiệu"
 
+msgid "OAuth application created"
+msgstr "Đã tạo ứng dụng OAuth"
+
+msgid "OAuth applications"
+msgstr "Ứng dụng OAuth"
+
 msgid "OFF"
 msgstr "TẮT"
 
@@ -4654,7 +4734,7 @@ msgid "Off"
 msgstr "Tắt"
 
 msgid "Offer them in an \"N new stories\" pill"
-msgstr ""
+msgstr "Hiển thị chúng trong nhãn “N bài viết mới”"
 
 msgid "Official NewsBlur Android App"
 msgstr "Ứng dụng Android chính thức của NewsBlur"
@@ -4768,7 +4848,7 @@ msgid "Only show counts on collapsed folders"
 msgstr "Chỉ hiển thị số lượng trong các thư mục đã thu gọn"
 
 msgid "Only show them when the list reloads"
-msgstr ""
+msgstr "Chỉ hiển thị bài viết khi tải lại danh sách"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Chỉ cắt ngắn các bài viết được chia sẻ dài trong blurblog"
@@ -5425,6 +5505,9 @@ msgstr "Các subreddit trên Reddit"
 msgid "Redeemed"
 msgstr "Đã đổi"
 
+msgid "Redirect URL"
+msgstr "URL chuyển hướng"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "Giảm bớt sự lộn xộn trong dòng tin của bạn"
 
@@ -5442,6 +5525,9 @@ msgstr "Lịch sử giới thiệu"
 
 msgid "Refine with a hint"
 msgstr "Tinh chỉnh bằng gợi ý"
+
+msgid "Refresh"
+msgstr "Làm mới"
 
 msgid "Refund $12"
 msgstr "Hoàn tiền 12 USD"
@@ -6136,7 +6222,7 @@ msgid "Show more related stories"
 msgstr "Hiển thị thêm bài viết liên quan"
 
 msgid "Show new stories as they arrive"
-msgstr ""
+msgstr "Hiển thị bài viết mới ngay khi có"
 
 msgid "Show on Load"
 msgstr "Hiển thị khi tải"
@@ -6993,6 +7079,13 @@ msgstr "Tuần này"
 msgid "This Year"
 msgstr "Năm nay"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"Ví dụ này yêu cầu quyền đọc. Hãy tạo giá trị state mới cho mỗi lần đăng nhập và xác minh giá trị đó khi "
+"người đọc quay lại."
+
 msgid "This is just the demo."
 msgstr "Đây chỉ là bản demo."
 
@@ -7337,6 +7430,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "Bỏ tắt tiếng trang này"
+
+msgid "Unavailable"
+msgstr "Không khả dụng"
 
 msgid "Uncategorized"
 msgstr "Chưa phân loại"
@@ -7978,6 +8074,9 @@ msgstr "Bạn không có bài viết chưa đọc nào."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "Bạn chưa đăng ký theo dõi bài viết được chia sẻ của ai."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "Bạn chưa đăng ký ứng dụng OAuth nào."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Bạn phải theo dõi %(value_1)s mới có thể trả lời"
@@ -8054,11 +8153,20 @@ msgstr "Các tên miền đã lưu trữ"
 msgid "Your Blurblog"
 msgstr "Blurblog của bạn"
 
+msgid "Your OAuth applications"
+msgstr "Ứng dụng OAuth của bạn"
+
 msgid "Your Referral Link"
 msgstr "Liên kết giới thiệu của bạn"
 
 msgid "Your Referral Stats"
 msgstr "Thống kê giới thiệu của bạn"
+
+msgid "Your app name"
+msgstr "Tên ứng dụng của bạn"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "Các ứng dụng của bạn đã bị tạm dừng cho đến khi tài khoản có gói Premium Pro đang hoạt động."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr ""

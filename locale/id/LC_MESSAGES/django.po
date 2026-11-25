@@ -439,11 +439,11 @@ msgstr ""
 msgid ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
 "#366944;\">Premium Pro</a> ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up "
-"to 10,000 sites, and priority support."
+"to 10,000 sites, OAuth application registration, and priority support."
 msgstr ""
 "<a href=\"https://%(domain)s%(autologin_url)s?next=renew\" style=\"text-decoration: none; color: "
-"#366944;\">Premium Pro</a> ($29/bulan) menyediakan pembaruan semua feed setiap 5–15 menit, pelatihan regex,"
-" hingga 10.000 situs, dan dukungan prioritas."
+"#366944;\">Premium Pro</a> ($29/bulan) memberi Anda pembaruan semua feed setiap 5–15 menit, pelatihan "
+"regex, hingga 10.000 situs, pendaftaran aplikasi OAuth, dan dukungan prioritas."
 
 #, python-format
 msgid "<b>%(counter)s</b> follower"
@@ -916,6 +916,9 @@ msgstr ""
 "sebagai telah dibaca, melatih filter kecerdasan, berlangganan feed baru, dan mencari di arsip. Alur kerja "
 "umum mencakup ringkasan harian, memilah kotak masuk, dan meneliti artikel yang disimpan."
 
+msgid "Application website"
+msgstr "Situs web aplikasi"
+
 msgid "Apply training across a folder"
 msgstr "Terapkan pelatihan ke seluruh folder"
 
@@ -1378,9 +1381,6 @@ msgstr "Klien"
 msgid "Client id"
 msgstr "ID klien"
 
-msgid "Client secret"
-msgstr "Rahasia klien"
-
 msgid "Client type"
 msgstr "Jenis klien"
 
@@ -1495,6 +1495,9 @@ msgstr "Hubungkan dengan satu perintah"
 msgid "Connect your account"
 msgstr "Hubungkan akun Anda"
 
+msgid "Consent screen preview"
+msgstr "Pratinjau layar persetujuan"
+
 msgid "Contact"
 msgstr "Kontak"
 
@@ -1573,6 +1576,9 @@ msgstr ""
 msgid "Create Account"
 msgstr "Buat Akun"
 
+msgid "Create OAuth applications"
+msgstr "Buat aplikasi OAuth"
+
 msgid "Create a new account instead"
 msgstr "Buat akun baru saja"
 
@@ -1584,6 +1590,9 @@ msgstr "Buat Akun"
 
 msgid "Create an account"
 msgstr "Buat akun"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Membuat aplikasi OAuth memerlukan NewsBlur Premium Pro."
 
 msgid "Credit/debit cards via Stripe and PayPal."
 msgstr "Kartu kredit/debit melalui Stripe dan PayPal."
@@ -1883,6 +1892,12 @@ msgstr "Insinyur & Penulis"
 
 msgid "Enjoying premium features? Keep them forever!"
 msgstr "Menikmati fitur premium? Pertahankan selamanya!"
+
+msgid "Enter a single redirect URL without credentials, wildcards, or a fragment."
+msgstr "Masukkan satu URL pengalihan tanpa kredensial, karakter pengganti, atau fragmen."
+
+msgid "Enter an HTTP or HTTPS website address."
+msgstr "Masukkan alamat situs web HTTP atau HTTPS."
 
 msgid "Enter your email address and we'll send you a link to set a new password."
 msgstr "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk membuat kata sandi baru."
@@ -3706,14 +3721,14 @@ msgstr ""
 msgid ""
 "NewsBlur Premium starts at $36/year for up to 1,024 sites &mdash; half the cost of Feedly Pro. For power "
 "users, NewsBlur Pro at $29/month includes 5-minute feed fetching for all 10,000 sites, regex classifiers, "
-"and priority support. Feedly's comparable Enterprise plan costs $18/month but caps at 2,500 sources and "
-"doesn't offer regex filtering or self-hosting."
+"OAuth application registration, and priority support. Feedly's comparable Enterprise plan costs $18/month "
+"but caps at 2,500 sources and doesn't offer regex filtering or self-hosting."
 msgstr ""
-"NewsBlur Premium mulai dari $36/tahun untuk hingga 1.024 situs &mdash; setengah harga Feedly Pro. Untuk "
-"pengguna berat, NewsBlur Pro seharga $29/bulan mencakup pengambilan feed setiap 5 menit untuk semua 10.000 "
-"situs, pengklasifikasi regex, dan dukungan prioritas. Paket Enterprise Feedly yang sebanding berharga "
-"$18/bulan, tetapi dibatasi hingga 2.500 sumber dan tidak menyediakan pemfilteran regex atau hosting "
-"mandiri."
+"NewsBlur Premium mulai dari $36/tahun untuk hingga 1.024 situs &mdash; setengah biaya Feedly Pro. Untuk "
+"pengguna tingkat lanjut, NewsBlur Pro seharga $29/bulan mencakup pembaruan feed setiap 5 menit untuk semua "
+"10.000 situs, pengklasifikasi regex, pendaftaran aplikasi OAuth, dan dukungan prioritas. Paket Enterprise "
+"Feedly yang sebanding berharga $18/bulan, tetapi dibatasi hingga 2.500 sumber dan tidak menawarkan "
+"pemfilteran regex atau hosting mandiri."
 
 msgid "NewsBlur Pricing - Plans for Every Reader"
 msgstr "Harga NewsBlur - Paket untuk Setiap Pembaca"
@@ -4038,16 +4053,6 @@ msgstr ""
 "dipersonalisasi dari artikel teratas Anda dengan bagian yang dapat disesuaikan. Fitur-fitur ini mengubah "
 "membaca pasif menjadi pengumpulan informasi yang aktif."
 
-msgid ""
-"NewsBlur supports OAuth but to have an OAuth enabled client you must <a "
-"href=\"mailto:samuel@newsblur.com\">email Samuel</a> to request a client ID and secret. You will need to "
-"provide your NewsBlur username, redirect URI (often just your client app's website), and app name."
-msgstr ""
-"NewsBlur mendukung OAuth, tetapi untuk menggunakan klien berkemampuan OAuth, Anda harus <a "
-"href=\"mailto:samuel@newsblur.com\">mengirim email ke Samuel</a> untuk meminta ID dan rahasia klien. Anda "
-"perlu memberikan nama pengguna NewsBlur, URI pengalihan (biasanya situs web aplikasi klien Anda), dan nama "
-"aplikasi."
-
 msgid "NewsBlur username"
 msgstr "Nama pengguna NewsBlur"
 
@@ -4355,6 +4360,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Hanya pengguna premium yang dapat membagikan beberapa artikel per hari dari situs yang sama."
 
+msgid "Open NewsBlur to register your application."
+msgstr "Buka NewsBlur untuk mendaftarkan aplikasi Anda."
+
 msgid "Open Source"
 msgstr "Sumber Terbuka"
 
@@ -4594,10 +4602,10 @@ msgstr "Premium Pro"
 
 msgid ""
 "Premium Pro ($29/month) gives you all feeds fetched every 5-15 minutes, regex training, up to 10,000 sites,"
-" and priority support."
+" OAuth application registration, and priority support."
 msgstr ""
-"Premium Pro ($29/bulan) menyediakan pengambilan semua feed setiap 5–15 menit, pelatihan regex, hingga "
-"10.000 situs, dan dukungan prioritas."
+"Premium Pro ($29/bulan) memberi Anda pembaruan semua feed setiap 5–15 menit, pelatihan regex, hingga 10.000"
+" situs, pendaftaran aplikasi OAuth, dan dukungan prioritas."
 
 msgid "Premium Pro - NewsBlur Pricing"
 msgstr "Premium Pro - Harga NewsBlur"
@@ -4965,6 +4973,9 @@ msgstr "Alihkan mode regex untuk pengklasifikasi kecerdasan"
 
 msgid "Register a new application"
 msgstr "Daftarkan aplikasi baru"
+
+msgid "Register your application on the web so people can connect their NewsBlur accounts to it."
+msgstr "Daftarkan aplikasi Anda di web agar orang dapat menghubungkan akun NewsBlur mereka ke aplikasi tersebut."
 
 msgid "Regularly used searches are conveniently given their own feeds"
 msgstr "Pencarian yang sering digunakan akan otomatis memiliki feed sendiri"
@@ -5475,6 +5486,9 @@ msgstr "Masuk agar feed, pelatihan, dan artikel tersimpan Anda langsung disinkro
 
 msgid "Sign in to NewsBlur"
 msgstr "Masuk ke NewsBlur"
+
+msgid "Sign in to view your OAuth applications."
+msgstr "Masuk untuk melihat aplikasi OAuth Anda."
 
 msgid "Sign in with Apple"
 msgstr "Masuk dengan Apple"
@@ -6030,6 +6044,9 @@ msgstr "Satu-satunya pembaca RSS sumber terbuka yang tidak perlu Anda hosting se
 msgid "The original story from truncated RSS feeds is seamlessly expanded"
 msgstr "Artikel asli dari feed RSS yang terpotong diperluas dengan mulus"
 
+msgid "The owner of this OAuth application needs an active NewsBlur Premium Pro subscription."
+msgstr "Pemilik aplikasi OAuth ini memerlukan langganan NewsBlur Premium Pro yang aktif."
+
 msgid "The same as regular feeds. Premium and Pro users get faster update frequencies."
 msgstr "Sama seperti feed biasa. Pengguna Premium dan Pro mendapatkan frekuensi pembaruan yang lebih cepat."
 
@@ -6464,6 +6481,9 @@ msgctxt "heading for CLI usage examples"
 msgid "Use"
 msgstr "Penggunaan"
 
+msgid "Use HTTPS for the redirect URL, or HTTP on localhost."
+msgstr "Gunakan HTTPS untuk URL pengalihan, atau HTTP jika menggunakan localhost."
+
 msgid ""
 "Use NewsBlur with your favorite reading apps. Full sync support for Reeder, ReadKit, Unread, lire, Fiery "
 "Feeds, Newsify, and many more. Your read state, saved stories, and training all sync across every app. "
@@ -6824,6 +6844,15 @@ msgstr "Artikel yang Banyak Dibaca"
 msgid "Widely-read, long reads, good reads"
 msgstr "Banyak dibaca, bacaan panjang, bacaan bagus"
 
+msgid ""
+"With an active Premium Pro account, you can <a href=\"/account/applications/register/\">create an OAuth "
+"application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. "
+"People who connect their accounts can use any NewsBlur plan."
+msgstr ""
+"Dengan akun Premium Pro yang aktif, Anda dapat <a href=\"/account/applications/register/\">membuat aplikasi"
+" OAuth</a>. Masukkan nama aplikasi, situs web, dan URL pengalihan untuk mendapatkan ID dan rahasia klien. "
+"Orang yang menghubungkan akun mereka dapat menggunakan paket NewsBlur apa pun."
+
 msgid "Works Everywhere"
 msgstr "Berfungsi di Mana Saja"
 
@@ -6867,11 +6896,11 @@ msgid "Yes, Premium Archive includes all Premium features plus the archive, AI, 
 msgstr "Ya, Premium Archive mencakup semua fitur Premium ditambah arsip, AI, dan fitur pelatihan tingkat lanjut."
 
 msgid ""
-"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, and priority "
-"support."
+"Yes, Premium Pro includes all Premium and Archive features plus real-time fetching, regex, OAuth "
+"application registration, and priority support."
 msgstr ""
-"Ya, Premium Pro mencakup semua fitur Premium dan Archive, serta pengambilan waktu nyata, regex, dan "
-"dukungan prioritas."
+"Ya, Premium Pro mencakup semua fitur Premium dan Archive, serta pembaruan real-time, regex, pendaftaran "
+"aplikasi OAuth, dan dukungan prioritas."
 
 msgid "Yes, all intelligence training features work on newsletters just like regular feeds."
 msgstr "Ya, semua fitur pelatihan kecerdasan berfungsi pada buletin seperti halnya pada feed biasa."
@@ -7486,6 +7515,9 @@ msgstr ""
 #, python-format
 msgid "Your account stays Premium through %(date)s. Nothing else changes today."
 msgstr "Akun Anda tetap Premium hingga %(date)s. Tidak ada perubahan lain hari ini."
+
+msgid "Your app name"
+msgstr "Nama aplikasi Anda"
 
 msgid "Your applications"
 msgstr "Aplikasi Anda"

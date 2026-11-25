@@ -250,10 +250,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>@</string>
-			<key>one</key>
-			<string>%@ new story</string>
 			<key>other</key>
-			<string>%@ new stories</string>
+			<string>%@ artikel baru</string>
 		</dict>
 	</dict>
 	<key>%@ opens</key>
