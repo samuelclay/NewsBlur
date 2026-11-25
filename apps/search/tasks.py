@@ -1,6 +1,9 @@
 """Search tasks: index user subscriptions and feeds in Elasticsearch."""
 
+import time
+
 from celery.exceptions import SoftTimeLimitExceeded
+from django.conf import settings
 
 from newsblur_web.celeryapp import app
 from utils import log as logging
@@ -83,7 +86,10 @@ def FinishIndexSubscriptionsForDiscover(
 ):
     from apps.search.models import MUserSearch
 
-    if feed_ids and MUserSearch.claimed_discover_feeds(feed_ids):
+    # apps/search/models.py gives each claim one lease in the queue and one on the worker.
+    # Later runs can reclaim a failed feed, but must not keep this account waiting indefinitely.
+    deadline = start + 2 * settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH
+    if feed_ids and time.time() < deadline and MUserSearch.claimed_discover_feeds(feed_ids):
         raise self.retry(countdown=15)
 
     logging.debug(" ---> Indexing finished for %s" % (user_id))

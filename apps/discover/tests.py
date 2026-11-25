@@ -163,6 +163,31 @@ class Test_DiscoveryIndex(TestCase):
         finish.type.run([], **finish.kwargs)
         self.assertTrue(user_search.reload().discover_indexed)
 
+    def test_account_finishes_when_all_subscribed_feeds_are_already_indexed(self):
+        feed = self.feed("indexed-by-another-reader")
+        Feed.objects.filter(pk=feed.pk).update(discover_indexed=True)
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"):
+            user_search.index_subscriptions_for_discover()
+        user_search.reload()
+        self.assertTrue(user_search.discover_indexed)
+        self.assertFalse(user_search.discover_indexing)
+
+    def test_later_claims_cannot_prolong_an_expired_account_run(self):
+        feed = self.feed("repeatedly-claimed")
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            self.client.post("/discover/index/", {"feed_ids": [feed.pk]})
+        args, kwargs = publish.call_args.args[:2]
+        try:
+            FinishIndexSubscriptionsForDiscover.run([], self.user.pk, start=0, total=1, feed_ids=[feed.pk])
+            self.assertFalse(user_search.reload().discover_indexing)
+            self.assertFalse(Feed.objects.get(pk=feed.pk).discover_indexed)
+        finally:
+            IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
+
 
 class Test_FeedAutocompleteUrlTerm(TestCase):
     """A feed URL term answers that feed, then its site, and falls back to word matching."""
