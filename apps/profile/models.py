@@ -275,6 +275,10 @@ class Profile(models.Model):
             price = "P-5JM46230U31841226MHZOMZY"
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
+        elif plan == "archive_extra":
+            # $159/year "NewsBlur Premium Archive Extra subscription". There is no sandbox plan, so local
+            # development offers Archive Extra through Stripe only.
+            price = None if settings.DEBUG else "P-42M09399PN6032344NMDG2LI"
         elif plan == "pro":
             price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:

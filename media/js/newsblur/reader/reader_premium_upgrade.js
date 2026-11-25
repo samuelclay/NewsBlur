@@ -548,8 +548,11 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         } else {
             if (plan == 'premium') return "P-48R22630SD810553FMHZONIY";
             if (plan == 'archive') return "P-5JM46230U31841226MHZOMZY";
+            if (plan == 'archive_extra') return "P-42M09399PN6032344NMDG2LI";
             if (plan == 'pro') return "P-1AE0908250058421JM565SVY";
         }
+        // reader_premium_upgrade.js: Archive Extra has no PayPal sandbox plan, so in development it has no
+        // PayPal button.
         return null;
     },
 
