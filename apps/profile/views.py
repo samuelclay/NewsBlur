@@ -637,6 +637,18 @@ def get_google_play_subscription(purchase_token):
         return None
 
 
+def google_play_confirms_plain_archive(subscription_info, product_id):
+    """Whether Google's subscriptionsv2 record says this purchase token is live on plain Archive now."""
+    if not subscription_info or not product_id:
+        return False
+    if "premium.archive" not in product_id or "premium.archive.extra" in product_id:
+        return False
+    live_states = ("SUBSCRIPTION_STATE_ACTIVE", "SUBSCRIPTION_STATE_IN_GRACE_PERIOD")
+    if subscription_info.get("subscriptionState") not in live_states:
+        return False
+    return any(item.get("productId") == product_id for item in subscription_info.get("lineItems", []))
+
+
 def handle_google_play_notification(user, notification_type, purchase_token, subscription_id):
     NOTIFICATION_NAMES = {
         1: "RECOVERED",
@@ -665,6 +677,10 @@ def handle_google_play_notification(user, notification_type, purchase_token, sub
             order_id=order_id_for_payment,
             product_id=subscription_id,
         )
+        if google_play_confirms_plain_archive(subscription_info, subscription_id):
+            # A crossgrade from Archive Extra back to Archive. Checked even when the app's receipt already
+            # recorded this order, and only on Google's word, since a late notification can name an old product.
+            user.profile.activate_archive(downgrade_extra=True)
         user.profile.active_provider = "google-play"
         user.profile.premium_renewal = True
         user.profile.save()

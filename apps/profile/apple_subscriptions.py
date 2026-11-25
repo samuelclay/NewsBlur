@@ -133,13 +133,16 @@ def apply_verified_apple_transaction(transaction_data, now=None):
     if tier == "archive":
         # Archive and Archive Extra share a rank, so a replayed or late notification for an older Archive
         # transaction also gets here. Only an Archive purchase newer than every Archive Extra purchase takes
-        # Extra away, which is what an App Store crossgrade back to Archive produces.
+        # Extra away, which is what an App Store crossgrade back to Archive produces. Extra billed by Stripe,
+        # PayPal or Google Play (Profile.active_provider in apps/profile/models.py) isn't in Apple's history,
+        # so an Apple Archive transaction never takes that away.
         latest_extra = (
             PaymentHistory.objects.filter(user_id=user_id, payment_provider="ios-archive-extra-subscription")
             .exclude(refunded=True)
             .aggregate(latest=Max("payment_date"))["latest"]
         )
-        profile.activate_archive(downgrade_extra=not latest_extra or purchase > latest_extra)
+        newest_purchase = not latest_extra or purchase > latest_extra
+        profile.activate_archive(downgrade_extra=newest_purchase and not profile.active_provider)
     else:
         getattr(profile, "activate_%s" % tier)()
     with transaction.atomic():

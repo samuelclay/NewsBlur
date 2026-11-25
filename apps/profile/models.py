@@ -2929,9 +2929,10 @@ class Profile(models.Model):
             )
 
         self.setup_premium_history()
-        # The duplicate check above stopped a replayed transaction, so a new Archive transaction means the
-        # App Store moved this subscription to plain Archive, including back down from Archive Extra.
-        self.activate_archive(downgrade_extra=True)
+        # An unsigned receipt can't say what the subscription is on now: Restore Purchases resends old Archive
+        # purchases under new transaction ids, and deferred purchases arrive as "in-progress". So this keeps
+        # Archive Extra, and the signed notifications in apps/profile/apple_subscriptions.py move it back.
+        self.activate_archive()
 
         logging.user(self.user, "~FG~BBNew iOS archive subscription: $%s~FW" % amount)
         return True
@@ -3038,10 +3039,9 @@ class Profile(models.Model):
         elif product_id and "premium.archive.extra" in product_id:
             self.activate_archive_extra()
         elif product_id and "premium.archive" in product_id:
-            # The duplicate check above stopped a replayed order, and Google Play names the product of the
-            # purchase it just processed, so a new Archive order means the subscription is on plain Archive
-            # now, including back down from Archive Extra.
-            self.activate_archive(downgrade_extra=True)
+            # Keeps Archive Extra. A move back to plain Archive needs Google's own subscription record, which
+            # handle_google_play_notification in apps/profile/views.py checks.
+            self.activate_archive()
         elif not self.is_premium:
             self.activate_premium()
 

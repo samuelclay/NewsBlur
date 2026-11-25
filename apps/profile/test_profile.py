@@ -802,42 +802,70 @@ class Test_AndroidSubscriptionActivation(TestCase):
             ).exists()
         )
 
-    @patch.object(Profile, "setup_premium_history")
-    @patch("apps.profile.views.get_google_play_subscription")
-    def test_a_play_crossgrade_from_archive_extra_to_archive_removes_extra(
-        self, mock_subscription, mock_setup
-    ):
-        from apps.profile.views import handle_google_play_notification
-
+    def _make_archive_extra(self):
         Profile.objects.filter(pk=self.profile.pk).update(
             is_premium=True, is_archive=True, is_archive_extra=True
         )
-        mock_subscription.return_value = {"latestOrderId": "GPA.1000-0000-0000-00005"}
+
+    def _play_notification(self, product_id, subscription_info):
+        from apps.profile.views import handle_google_play_notification
 
         # google_play_rtdn looks the user up fresh from the purchase token.
-        handle_google_play_notification(
-            User.objects.get(pk=self.user.pk), 4, "archive-token", "nb.premium.archive.99"
-        )
-
+        with patch("apps.profile.views.get_google_play_subscription", return_value=subscription_info):
+            handle_google_play_notification(User.objects.get(pk=self.user.pk), 4, "play-token", product_id)
         self.profile.refresh_from_db()
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_a_play_crossgrade_from_archive_extra_to_archive_removes_extra(self, mock_setup):
+        """The app posts its receipt first, so the notification's order is already recorded by then."""
+        self._make_archive_extra()
+        self.client.login(username="androidsubtest", password="password")
+        self.client.post(
+            reverse("save-android-receipt"),
+            {"order_id": "GPA.1000-0000-0000-00005", "product_id": "nb.premium.archive.99"},
+        )
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra, "an unverified receipt keeps Extra")
+
+        self._play_notification(
+            "nb.premium.archive.99",
+            {
+                "latestOrderId": "GPA.1000-0000-0000-00005",
+                "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+                "lineItems": [{"productId": "nb.premium.archive.99"}],
+            },
+        )
         self.assertTrue(self.profile.is_archive)
         self.assertFalse(self.profile.is_archive_extra)
 
     @patch.object(Profile, "setup_premium_history")
-    def test_a_new_legacy_ios_archive_receipt_after_extra_removes_extra(self, mock_setup):
-        Profile.objects.filter(pk=self.profile.pk).update(
-            is_premium=True, is_archive=True, is_archive_extra=True
-        )
+    def test_a_late_play_archive_notification_keeps_extra_unless_google_confirms_it(self, mock_setup):
+        self._make_archive_extra()
+        replaced = {
+            "latestOrderId": "GPA.1000-0000-0000-00006",
+            "subscriptionState": "SUBSCRIPTION_STATE_EXPIRED",
+            "lineItems": [{"productId": "nb.premium.archive.99"}],
+        }
+        self._play_notification("nb.premium.archive.99", replaced)
+        self.assertTrue(self.profile.is_archive_extra, "the old Archive token is no longer live")
+
+        self._play_notification("nb.premium.archive.99", None)
+        self.assertTrue(self.profile.is_archive_extra, "Google's lookup failed")
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_an_unsigned_ios_archive_receipt_keeps_extra(self, mock_setup):
+        """Restore Purchases resends an old Archive purchase under a new transaction id."""
+        self._make_archive_extra()
         self.client.login(username="androidsubtest", password="password")
 
         self.client.post(
             reverse("save-ios-receipt"),
-            {"product_identifier": "newsblur_premium_archive", "transaction_identifier": "ios-archive-2"},
+            {"product_identifier": "newsblur_premium_archive", "transaction_identifier": "restored-1"},
         )
 
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive)
-        self.assertFalse(self.profile.is_archive_extra)
+        self.assertTrue(self.profile.is_archive_extra)
 
     def test_save_android_receipt_passes_product_id(self):
         self.client.login(username="androidsubtest", password="password")

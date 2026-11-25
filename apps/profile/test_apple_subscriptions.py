@@ -198,6 +198,23 @@ class Test_AppleSubscriptions(TestCase):
             Profile.objects.get(user=self.user).is_archive_extra, "a newer Archive is a crossgrade"
         )
 
+    def test_an_apple_archive_transaction_keeps_extra_billed_by_another_store(self):
+        """Extra bought through Stripe isn't in Apple's history, so a lingering Apple Archive can't undo it."""
+        Profile.objects.filter(user=self.user).update(
+            is_premium=True,
+            is_archive=True,
+            is_archive_extra=True,
+            is_pro=False,
+            active_provider="stripe",
+            premium_expire=self.now + datetime.timedelta(days=200),
+        )
+        self.apply(
+            productId="newsblur_premium_archive",
+            transactionId="archive-1",
+            purchaseDate=int((self.now - datetime.timedelta(days=1)).timestamp() * 1000),
+        )
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
+
     def test_lifetime_entitlement_is_preserved(self):
         Profile.objects.filter(user=self.user).update(is_premium=True, premium_expire=None)
         self.assertEqual(self.apply()["reason"], "lifetime")
