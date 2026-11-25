@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.text.Layout
 import android.text.util.Linkify
 import android.transition.AutoTransition
 import android.transition.TransitionManager
@@ -471,7 +472,11 @@ class SubscriptionActivity : NbActivity() {
     }
 
     private fun renderArchiveListenLine(plan: ArchiveCardPlan) {
-        archiveListenTitle?.setText(if (plan.showsHoursToggle) R.string.archive_listen_weekly else R.string.archive_listen)
+        archiveListenTitle?.apply {
+            setText(if (plan.showsHoursToggle) R.string.archive_listen_weekly else R.string.archive_listen)
+            // Even lines keep the title above the toggle from leaving one word on its second line.
+            breakStrategy = if (plan.showsHoursToggle) Layout.BREAK_STRATEGY_BALANCED else Layout.BREAK_STRATEGY_HIGH_QUALITY
+        }
         archiveHoursToggle?.isVisible = plan.showsHoursToggle
         archiveHoursShown.value = plan.hours
     }
