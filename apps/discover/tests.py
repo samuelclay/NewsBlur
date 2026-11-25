@@ -3,12 +3,17 @@ import json
 from unittest.mock import patch
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.client import Client
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
-from apps.rss_feeds.models import Feed
+from apps.rss_feeds.models import Feed, MStory
+from apps.search.models import DiscoverStory, MUserSearch
+from apps.search.tasks import (
+    FinishIndexSubscriptionsForDiscover,
+    IndexSubscriptionsChunkForDiscover,
+)
 
 
 class Test_DiscoverViews(TestCase):
@@ -23,6 +28,165 @@ class Test_DiscoverViews(TestCase):
         """Test that feed autocomplete endpoint returns valid response."""
         response = self.client.get("/discover/autocomplete/", {"term": "news"})
         self.assertEqual(response.status_code, 200)
+
+
+@override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+class Test_DiscoveryIndex(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="folder-discovery")
+        self.user.profile.is_archive = True
+        self.user.profile.save(update_fields=["is_archive"])
+        self.client.force_login(self.user)
+        MUserSearch.get_user(self.user.pk).update(set__discover_indexed=True)
+
+    def feed(self, name, subscribed=True):
+        feed = Feed.objects.create(feed_address=f"https://example.com/{name}", feed_title=name)
+        if subscribed:
+            UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+        return feed
+
+    def test_index_remaining_folder_feeds_after_account_indexing_finished(self):
+        with_stories = self.feed("with-stories")
+        empty = self.feed("empty")
+        other_folder = self.feed("another-folder")
+        unsubscribed = self.feed("unsubscribed", subscribed=False)
+        story = MStory.objects.create(
+            story_feed_id=with_stories.pk,
+            story_title="Apartment listing",
+            story_date=datetime.datetime.now(),
+            story_guid="listing",
+        )
+
+        with patch.object(DiscoverStory, "index") as index_story:
+            response = self.client.post(
+                "/discover/index/", {"feed_ids": [with_stories.pk, empty.pk, unsubscribed.pk]}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        for feed in (with_stories, empty, other_folder, unsubscribed):
+            feed.refresh_from_db()
+        self.assertTrue(with_stories.discover_indexed)
+        self.assertTrue(empty.discover_indexed)
+        self.assertFalse(other_folder.discover_indexed)
+        self.assertFalse(unsubscribed.discover_indexed)
+        self.assertEqual(with_stories.archive_subscribers, 1)
+        self.assertEqual(
+            [call.kwargs["story_hash"] for call in index_story.call_args_list], [story.story_hash]
+        )
+
+    def test_overlapping_requests_and_status_after_a_missed_notification(self):
+        feed_id = self.feed("shared-in-two-folders").pk
+        scope = {"feed_ids": [feed_id]}
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            idle = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+            publish.assert_not_called()
+            first = self.client.post("/discover/index/", scope).json()
+            overlapping = self.client.post("/discover/index/", scope).json()
+            publish.assert_called_once()
+            args, kwargs = publish.call_args.args[:2]
+        IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
+
+        self.assertFalse(idle["indexing"])
+        self.assertEqual(idle["pending_feed_ids"], [feed_id])
+        self.assertTrue(first["indexing"])
+        self.assertTrue(overlapping["indexing"])
+        after = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+        self.assertFalse(after["indexing"])
+        self.assertEqual(after["indexed_feed_ids"], [feed_id])
+        self.assertEqual(after["pending_feed_ids"], [])
+
+    def test_a_failed_feed_can_be_retried_after_other_feeds_finish(self):
+        failing = self.feed("failing")
+        empty = self.feed("empty")
+        MStory.objects.create(
+            story_feed_id=failing.pk,
+            story_title="Local news",
+            story_date=datetime.datetime.now(),
+            story_guid="local-news",
+        )
+        scope = {"feed_ids": [failing.pk, empty.pk]}
+        with patch.object(DiscoverStory, "index", side_effect=RuntimeError("Embedding service unavailable")):
+            result = self.client.post("/discover/index/", scope).json()
+        self.assertFalse(result["indexing"])
+        self.assertEqual(result["indexed_feed_ids"], [empty.pk])
+        self.assertEqual(result["pending_feed_ids"], [failing.pk])
+
+        with patch.object(DiscoverStory, "index"):
+            retried = self.client.post("/discover/index/", scope).json()
+        self.assertCountEqual(retried["indexed_feed_ids"], [failing.pk, empty.pk])
+        self.assertEqual(retried["pending_feed_ids"], [])
+
+    def test_folder_click_during_automatic_indexing_shares_the_queued_work(self):
+        feed = self.feed("already-queued")
+        scope = {"feed_ids": [feed.pk]}
+        user_search = MUserSearch.get_user(self.user.pk)
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"), patch(
+            "apps.search.models.celery.chord"
+        ) as chord:
+            user_search.index_subscriptions_for_discover()
+            queued = chord.call_args.args[0]
+
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            status = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+            clicked = self.client.post("/discover/index/", scope).json()
+        for task in queued:
+            task.apply(throw=True)
+
+        self.assertTrue(status["indexing"])
+        self.assertTrue(clicked["indexing"])
+        publish.assert_not_called()
+        after = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+        self.assertFalse(after["indexing"])
+        self.assertEqual(after["indexed_feed_ids"], [feed.pk])
+
+    def test_automatic_completion_waits_for_a_feed_queued_by_the_popover(self):
+        from celery.exceptions import Retry
+
+        feed = self.feed("queued-by-reader")
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            self.client.post("/discover/index/", {"feed_ids": [feed.pk]})
+        args, kwargs = publish.call_args.args[:2]
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"), patch(
+            "apps.search.models.celery.chord"
+        ) as chord:
+            user_search.index_subscriptions_for_discover()
+        finish = chord.return_value.call_args.args[0]
+        with patch.object(FinishIndexSubscriptionsForDiscover, "retry", side_effect=Retry), self.assertRaises(
+            Retry
+        ):
+            finish.type.run([], **finish.kwargs)
+        self.assertFalse(user_search.reload().discover_indexed)
+
+        IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
+        finish.type.run([], **finish.kwargs)
+        self.assertTrue(user_search.reload().discover_indexed)
+
+    def test_account_finishes_when_all_subscribed_feeds_are_already_indexed(self):
+        feed = self.feed("indexed-by-another-reader")
+        Feed.objects.filter(pk=feed.pk).update(discover_indexed=True)
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"):
+            user_search.index_subscriptions_for_discover()
+        user_search.reload()
+        self.assertTrue(user_search.discover_indexed)
+        self.assertFalse(user_search.discover_indexing)
+
+    def test_later_claims_cannot_prolong_an_expired_account_run(self):
+        feed = self.feed("repeatedly-claimed")
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            self.client.post("/discover/index/", {"feed_ids": [feed.pk]})
+        args, kwargs = publish.call_args.args[:2]
+        try:
+            FinishIndexSubscriptionsForDiscover.run([], self.user.pk, start=0, total=1, feed_ids=[feed.pk])
+            self.assertFalse(user_search.reload().discover_indexing)
+            self.assertFalse(Feed.objects.get(pk=feed.pk).discover_indexed)
+        finally:
+            IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
 
 
 class Test_FeedAutocompleteUrlTerm(TestCase):

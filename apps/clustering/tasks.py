@@ -67,9 +67,11 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
         CLUSTER_TIER_TITLE_SCORE,
         CLUSTER_ZKEY_PREFIX_RELATED,
         CLUSTER_ZKEY_PREFIX_TITLE,
+        category_article_key,
         find_semantic_clusters,
         find_title_clusters,
         merge_clusters,
+        normalize_title,
         store_clusters_to_redis,
     )
     from apps.rss_feeds.models import Feed, MStory
@@ -180,7 +182,15 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
         batch = all_hashes_list[batch_start : batch_start + 100]
         for story in (
             MStory.objects(story_hash__in=batch)
-            .only("story_hash", "story_feed_id", "story_title", "story_date", "cluster_checked")
+            .only(
+                "story_hash",
+                "story_feed_id",
+                "story_title",
+                "story_date",
+                "story_permalink",
+                "story_guid",
+                "cluster_checked",
+            )
             .order_by()
         ):
             stories.append(
@@ -188,6 +198,8 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
                     "story_hash": story.story_hash,
                     "story_feed_id": story.story_feed_id,
                     "story_title": story.story_title or "",
+                    "story_permalink": story.story_permalink,
+                    "id": story.story_guid,
                     "story_date": time.mktime(story.story_date.timetuple()) if story.story_date else 0,
                     "cluster_checked": getattr(story, "cluster_checked", False),
                 }
@@ -276,15 +288,16 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
             feed_title_map=feed_title_map,
         )
 
-        # Persist the title-only clusters to the sCLt:/zCLt: namespace so
-        # users on "Title only" mode see clean duplicate-only clusters.
-        # Every member here is a Tier 1 match by definition, so score them
-        # all as title.
+        title_member_hashes = {h for members in title_clusters.values() for h in members}
+        article_keys = {
+            s["story_hash"]: category_article_key(s, normalize_title(s["story_title"]))
+            for s in stories
+            if s["story_hash"] in title_member_hashes
+            and original_feed_map.get(s["story_feed_id"], s["story_feed_id"]) == s["story_feed_id"]
+        }
+        # Persist the title-only clusters to the sCLt:/zCLt: namespace.
         if title_clusters:
-            title_member_tiers = {}
-            for members in title_clusters.values():
-                for h in members:
-                    title_member_tiers[h] = CLUSTER_TIER_TITLE_SCORE
+            title_member_tiers = dict.fromkeys(title_member_hashes, CLUSTER_TIER_TITLE_SCORE)
             store_clusters_to_redis(
                 title_clusters,
                 candidate_cluster_map=candidate_cluster_map_title,
@@ -292,15 +305,12 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
                 key_prefix=CLUSTER_KEY_PREFIX_TITLE,
                 zkey_prefix=CLUSTER_ZKEY_PREFIX_TITLE,
                 member_tiers=title_member_tiers,
+                article_keys=article_keys,
             )
 
         # Persist the merged clusters to the sCL:/zCL: namespace (default).
         # Tag each member with its tier provenance: any member that appeared
         # in a title cluster gets tier 1, everything else is tier 2 (related).
-        title_member_hashes = set()
-        for members in title_clusters.values():
-            for h in members:
-                title_member_hashes.add(h)
         merged_member_tiers = {}
         for members in combined.values():
             for h in members:
@@ -312,6 +322,7 @@ def _compute_story_clusters_inner(feed_id, feed, cluster_start, r_replica, r_pri
             candidate_cluster_map=candidate_cluster_map_related,
             story_title_map=story_title_map,
             member_tiers=merged_member_tiers,
+            article_keys=article_keys,
         )
         logging.debug(
             " ---> ~FBClustering: found %s title + %s semantic = %s combined clusters for feed %s"

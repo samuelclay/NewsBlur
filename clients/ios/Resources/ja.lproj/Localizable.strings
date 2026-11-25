@@ -46,6 +46,7 @@
 "%@ left in this preview" = "このプレビューの残り%@";
 "%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
+"%@ new stories" = "新着記事：%@件";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
 "%@ public comments" = "公開コメント%@件";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "支出上限を保存できませんでした。もう一度お試しください。";
 "Couldn’t load the full image. You can try opening it in your browser." = "画像全体を読み込めませんでした。ブラウザーで開いてみてください。";
 "Counting is difficult..." = "数えるのは難しいですね…";
+"Create OAuth applications" = "OAuthアプリケーションを作成";
 "Create a feed from any web page" = "どのウェブページからでもフィードを作成";
 "Create a new account instead" = "代わりに新しいアカウントを作成";
 "Create account" = "アカウントを作成";
@@ -990,6 +992,7 @@
 "Show feed list" = "フィード一覧を表示";
 "Show feeds after being read" = "既読後もフィードを表示";
 "Show hidden stories" = "非表示の記事を表示";
+"Show new stories as they arrive" = "新しい記事を受信したら表示";
 "Show original story" = "元の記事を表示";
 "Show original text" = "元のテキストを表示";
 "Show public comments" = "公開コメントを表示";
@@ -998,6 +1001,7 @@
 "Show unread count" = "未読数を表示";
 "Show with feed icons" = "フィードアイコンと一緒に表示";
 "Show without icons" = "アイコンなしで表示";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "開いているフィードまたはフォルダーに記事が届いたとき、「新着記事：N件」のピルを表示します。";
 "Shows the music settings" = "音楽の設定を表示";
 "Sidebar" = "サイドバー";
 "Sign Up" = "登録";

@@ -289,6 +289,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, strong) NSString *pendingFolder;
 @property (nonatomic, strong) NSString *pendingDailyBriefingStoryHash;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingWidgetNavigation;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
@@ -487,6 +488,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (void)refreshVisibleInteractions;
 - (NSArray *)updateSavedSearches:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;

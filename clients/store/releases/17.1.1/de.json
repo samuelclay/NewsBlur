@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "whats_new": "Wir haben einen Fehler behoben, durch den beim Anhören eines Artikels mit gesperrtem Bildschirm ganze Absätze stumm bleiben konnten. Wenn in einem Feed mehr als 20 neue Artikel eintreffen, siehst du die ersten jetzt schneller, sobald du auf die Schaltfläche für neue Artikel tippst."
+  }
+}

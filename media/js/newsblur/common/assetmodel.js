@@ -59,7 +59,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.briefing_section_feeds = new NEWSBLUR.Collections.BriefingSectionFeeds();
         this.searches_feeds = new NEWSBLUR.Collections.SearchesFeeds();
         this.queued_read_stories = {};
-        this.queued_realtime_stories = {};
+        this.queued_realtime_stories = [];
         this.classifiers = {};
         this.friends = {};
         this.profile = {};
@@ -1236,35 +1236,55 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
     },
 
     add_dashboard_story: function (story_hash, dashboard_stories, dashboard_count) {
-        var self = this;
+        var request = _.find(this.queued_realtime_stories, function (queued) {
+            return queued.dashboard_stories == dashboard_stories;
+        });
+        if (!request) {
+            request = { dashboard_stories: dashboard_stories, story_hashes: [] };
+            this.queued_realtime_stories.push(request);
+        }
+        request.story_hashes.push(story_hash);
+        request.dashboard_count = dashboard_count;
+        // NEWSBLUR.log(['Marking real-time load', this.queued_realtime_stories, story_hash]);
 
-
-        var pre_callback = (function (dashboard_stories, dashboard_count) {
-            return function (data) {
-                dashboard_stories.add(data.stories, { silent: true });
-                dashboard_stories.limit_visible_on_dashboard(dashboard_count);
-                dashboard_stories.trigger('reset', { added: 1 });
-            };
-        })(dashboard_stories, dashboard_count);
-
-        if (!('hashes' in this.queued_realtime_stories)) { this.queued_realtime_stories['hashes'] = []; }
-        this.queued_realtime_stories['hashes'].push(story_hash);
-        // NEWSBLUR.log(['Marking real-time load', this.queued_realtime_stories['hashes'], story_hash]);
-
+        // assetmodel.js: Every dashboard module that shows the story's feed asks for it in the same turn, and
+        // the throttle runs its first call at once, so the queue is read after the turn to fetch for them all.
         this.throttled_add_dashboard_story = this.throttled_add_dashboard_story || _.throttle(_.bind(function () {
-            this.make_request('/reader/river_stories', {
-                h: this.queued_realtime_stories['hashes'],
-                dashboard: true
-            }, pre_callback, null, {
-                'ajax_group': 'dashboard',
-                'request_type': 'GET',
-                'beforeSend': function () {
-                    // NEWSBLUR.log(['Clearing realtime stories', self.queued_realtime_stories['hashes']])
-                    self.queued_realtime_stories = {};
-                }
-            });
+            _.defer(_.bind(this.fetch_queued_dashboard_stories, this));
         }, this), 1000);
         this.throttled_add_dashboard_story();
+    },
+
+    // assetmodel.js: One fetch serves every dashboard module that queued a story, so the answer is split up:
+    // each module's collection takes only the stories that module asked for.
+    fetch_queued_dashboard_stories: function () {
+        var requests = this.queued_realtime_stories;
+        // NEWSBLUR.log(['Clearing realtime stories', requests]);
+        this.queued_realtime_stories = [];
+        if (!requests.length) return;
+
+        var pre_callback = function (data) {
+            // assetmodel.js: make_request answers a failed request with a message and no stories.
+            var fetched_stories = data.stories || [];
+            _.each(requests, function (request) {
+                var stories = _.filter(fetched_stories, function (story) {
+                    return _.contains(request.story_hashes, story.story_hash);
+                });
+                if (!stories.length) return;
+
+                request.dashboard_stories.add(stories, { silent: true });
+                request.dashboard_stories.limit_visible_on_dashboard(request.dashboard_count);
+                request.dashboard_stories.trigger('reset', { added: stories.length });
+            });
+        };
+
+        this.make_request('/reader/river_stories', {
+            h: _.uniq(_.flatten(_.pluck(requests, 'story_hashes'))),
+            dashboard: true
+        }, pre_callback, null, {
+            'ajax_group': 'dashboard',
+            'request_type': 'GET'
+        });
     },
 
     fetch_river_blurblogs_stories: function (feed_id, page, options, callback, error_callback, first_load) {

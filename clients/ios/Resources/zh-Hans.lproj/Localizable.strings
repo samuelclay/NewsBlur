@@ -46,6 +46,7 @@
 "%@ left in this preview" = "此预览还剩 %@";
 "%@ left this week" = "本周还剩 %@";
 "%@ match" = "%@ 个匹配项";
+"%@ new stories" = "%@ 篇新文章";
 "%@ opens" = "%@ 次打开";
 "%@ or search" = "%@ 或搜索";
 "%@ public comments" = "%@ 条公开评论";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "无法保存你的消费限额。请重试。";
 "Couldn’t load the full image. You can try opening it in your browser." = "无法加载完整图片。你可以尝试在浏览器中打开。";
 "Counting is difficult..." = "计数很难……";
+"Create OAuth applications" = "创建 OAuth 应用";
 "Create a feed from any web page" = "从任意网页创建订阅源";
 "Create a new account instead" = "改为创建新账户";
 "Create account" = "创建账户";
@@ -990,6 +992,7 @@
 "Show feed list" = "显示订阅源列表";
 "Show feeds after being read" = "显示已读完的订阅源";
 "Show hidden stories" = "显示已隐藏的文章";
+"Show new stories as they arrive" = "新文章到达时显示";
 "Show original story" = "显示原文";
 "Show original text" = "显示原文";
 "Show public comments" = "显示公开评论";
@@ -998,6 +1001,7 @@
 "Show unread count" = "显示未读数";
 "Show with feed icons" = "与订阅源图标一起显示";
 "Show without icons" = "不显示图标";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "打开的订阅源或文件夹中有新文章时，显示“有 N 篇新文章”提示条。";
 "Shows the music settings" = "显示音乐设置";
 "Sidebar" = "侧边栏";
 "Sign Up" = "注册";

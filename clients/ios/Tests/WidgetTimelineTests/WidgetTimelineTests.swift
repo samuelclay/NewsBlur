@@ -9,6 +9,20 @@ final class Test_WidgetTimeline: XCTestCase {
         let title: String
     }
 
+    func test_newFolderSnapshotFetchesStoriesButGalleryAndCachedSnapshotsReturnImmediately() async {
+        for (cached, preview, expected) in [(nil, false, "Fresh folder story"),
+                                            (nil, true, "Gallery sample"),
+                                            ("Cached folder story", false, "Cached folder story")] {
+            let title = await WidgetTimeline.snapshot(cached: cached, isPreview: preview) {
+                "Gallery sample"
+            } load: {
+                if preview || cached != nil { XCTFail("Only an uncached, placed widget needs a fetch") }
+                return "Fresh folder story"
+            }
+            XCTAssertEqual(title, expected)
+        }
+    }
+
     func test_fetchedStoriesAreNotScheduledAsFutureUpdates() {
         let fetchedAt = Date(timeIntervalSince1970: 1_792_605_600)
         let timeline = WidgetTimeline.make(at: fetchedAt) {

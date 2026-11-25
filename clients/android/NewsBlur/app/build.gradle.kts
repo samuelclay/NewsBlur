@@ -1,3 +1,8 @@
+import com.android.build.api.artifact.SingleArtifact
+import java.security.MessageDigest
+import java.util.HexFormat
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -28,8 +33,8 @@ android {
             libs.versions.targetSdk
                 .get()
                 .toInt()
-        versionCode = 303
-        versionName = "17.0"
+        versionCode = 304
+        versionName = "17.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
@@ -103,7 +108,54 @@ ktlint {
     }
 }
 
-if (!fdroid) apply(from = "src/play/dependencies.gradle")
+if (!fdroid) {
+    apply(from = "src/play/dependencies.gradle")
+
+    androidComponents.onVariants(androidComponents.selector().withBuildType("release")) { variant ->
+        // graphics-path ships stripped JNI libraries. checksums.properties ties each symbol file to its library.
+        val libraryName = "libandroidx.graphics.path.so"
+        val symbolFile = "$libraryName.dbg"
+        val abis = setOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+        val companions = layout.projectDirectory.dir("src/play/graphics-path-symbols")
+        val hashes = companions.file("checksums.properties")
+        val mergedLibraries = variant.artifacts.get(SingleArtifact.MERGED_NATIVE_LIBS)
+        val output = layout.buildDirectory.dir("graphics-path-symbols")
+        val prepareSymbols = tasks.register("prepareGraphicsPathDebugSymbols") {
+            inputs.dir(mergedLibraries)
+            inputs.file(hashes)
+            for (abi in abis) {
+                inputs.file(companions.file("$abi/$symbolFile"))
+            }
+            outputs.dir(output)
+            doLast {
+                val expected = Properties().apply { hashes.asFile.inputStream().use { load(it) } }
+                val libraries = mergedLibraries.get().dir("lib").asFile
+                val packagedAbis = libraries.listFiles().orEmpty()
+                    .filter { it.resolve(libraryName).isFile }
+                    .map { it.name }.toSet()
+                check(packagedAbis == abis) {
+                    "Update graphics-path debug symbols for the packaged ABIs: $packagedAbis"
+                }
+                fun verify(file: File, key: String) {
+                    val digest = MessageDigest.getInstance("SHA-256").digest(file.readBytes())
+                    check(HexFormat.of().formatHex(digest) == expected.getProperty(key)) {
+                        "Update graphics-path debug symbols: checksum mismatch for $file"
+                    }
+                }
+                for (abi in abis) {
+                    verify(libraries.resolve("$abi/$libraryName"), "$abi.library")
+                    val source = companions.file("$abi/$symbolFile").asFile
+                    verify(source, "$abi.symbols")
+                    source.copyTo(output.get().file("$abi/$symbolFile").asFile, overwrite = true)
+                }
+            }
+        }
+        for (abi in abis) {
+            val symbols = prepareSymbols.map { output.get().file("$abi/$symbolFile") }
+            variant.bundleConfig.addMetadataFile("com.android.tools.build.debugsymbols/$abi", symbols)
+        }
+    }
+}
 
 dependencies {
     implementation(libs.androidx.fragment)
@@ -131,6 +183,8 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
     testImplementation(libs.sqlite.jdbc)
+    // NewsBlurSocketClient.kt parses Socket.IO frames with org.json, which android.jar only stubs.
+    testImplementation(libs.org.json)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -74,6 +74,20 @@ public class BlurDatabaseHelper {
     private final SQLiteDatabase dbRO;
     private final SQLiteDatabase dbRW;
 
+    // BlurDatabaseHelper.java lists the stories NewStoriesPill.kt added at the edge of the open list, whatever
+    // their dates, until the reading session restarts and they fall back into date order.
+    private final Set<String> pinnedSessionStoryHashes = new LinkedHashSet<>();
+
+    // BlurDatabaseHelper.java bumps this when the reading session is cleared, moves to another list (a switch or a
+    // reload) or the account's tables are dropped, never while a page of the same session loads, so a delayed
+    // NewStoriesPill.kt tap can't change another session.
+    private final java.util.concurrent.atomic.AtomicLong readingSessionVersion = new java.util.concurrent.atomic.AtomicLong();
+
+    /** The reading session's version; check it under RW_MUTEX, which every session change takes. */
+    public long getReadingSessionVersion() {
+        return readingSessionVersion.get();
+    }
+
     public BlurDatabaseHelper(Context context) {
         com.newsblur.util.Log.d(this.getClass().getName(), "new DB conn requested");
         synchronized (RW_MUTEX) {
@@ -222,6 +236,7 @@ public class BlurDatabaseHelper {
     public void dropAndRecreateTables() {
         com.newsblur.util.Log.i(this.getClass().getName(), "dropping and recreating all tables . . .");
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             resetCustomIcons();
             dbWrapper.dropAndRecreateTables();
         }
@@ -256,7 +271,7 @@ public class BlurDatabaseHelper {
     }
 
     @NonNull
-    private List<String> getAllSocialFeeds() {
+    public List<String> getAllSocialFeeds() {
         String q1 = "SELECT " + DatabaseConstants.SOCIAL_FEED_ID +
                 " FROM " + DatabaseConstants.SOCIALFEED_TABLE;
         Cursor c = dbRO.rawQuery(q1, null);
@@ -612,7 +627,9 @@ public class BlurDatabaseHelper {
     }
 
     public void prepareOrderedReadingSession(@NonNull FeedSet fs, @NonNull List<String> storyHashes) {
+        unpinSessionStories();
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             dbRW.beginTransaction();
             try {
                 dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
@@ -832,6 +849,21 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void markStoryStarredFromRealtime(@NonNull String hash, boolean starred, long observedAt) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_STARRED, starred);
+        if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, observedAt);
+        String selection = DatabaseConstants.STORY_HASH + " = ?";
+        if (starred) {
+            // RealtimeUpdates.kt can echo a local save or repeat an event after the server supplied its date.
+            selection += " AND (" + DatabaseConstants.STORY_STARRED + " IS NOT 1 OR COALESCE("
+                    + DatabaseConstants.STORY_STARRED_DATE + ", 0) = 0)";
+        }
+        synchronized (RW_MUTEX) {
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, new String[]{hash});
+        }
+    }
+
     public void setFeedsActive(@NonNull Set<String> feedIds, boolean active) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
@@ -892,6 +924,27 @@ public class BlurDatabaseHelper {
             dbRW.beginTransaction();
             try {
                 Set<FeedSet> impacted = new ClusterReadStore(dbRW).apply(hashes, read, adjustCounts, actionTime);
+                dbRW.setTransactionSuccessful();
+                return impacted;
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+    }
+
+    /** RealtimeUpdates.kt recounts the feeds of remote reads for stories this device holds no copy of. */
+    @NonNull
+    public Set<String> storyHashesWithoutLocalCopy(@NonNull Collection<String> hashes) {
+        return new ClusterReadStore(dbRO).withoutLocalCopy(hashes);
+    }
+
+    /** RealtimeUpdates.kt: another device's read or unread, skipping stories with this device's own still queued. */
+    @NonNull
+    public Set<FeedSet> applyRemoteStoryReadHashes(@NonNull Collection<String> hashes, boolean read) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                Set<FeedSet> impacted = new ClusterReadStore(dbRW).applyRemote(hashes, read);
                 dbRW.setTransactionSuccessful();
                 return impacted;
             } finally {
@@ -1155,7 +1208,8 @@ public class BlurDatabaseHelper {
             String hash,
             @NonNull List<String> highlights,
             @NonNull List<String> userTags,
-            boolean starred
+            boolean starred,
+            long actionTime
     ) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
@@ -1189,6 +1243,7 @@ public class BlurDatabaseHelper {
                 // fix the state
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_STARRED, starred);
+                if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, actionTime);
                 values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
                 values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
@@ -1404,7 +1459,45 @@ public class BlurDatabaseHelper {
     }
 
     @NonNull
-    public Cursor getActiveStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+    public Cursor getStoryListCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+        if (fs.isUnfilteredSavedList()) {
+            // An open Saved Stories list follows saves and removals made after reading_session was populated.
+            String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
+                    + DatabaseConstants.getSavedStoriesSortOrder(cursorFilters.getStoryOrder());
+            return rawQuery(sql, null, cancellationSignal);
+        }
+
+        return getReadingStoriesCursor(fs, cursorFilters, cancellationSignal);
+    }
+
+    public long prepareSavedReadingSession(@NonNull FeedSet fs, long previousVersion, boolean restoringReader) {
+        if (!fs.isUnfilteredSavedList()) return previousVersion;
+        synchronized (RW_MUTEX) {
+            long version = readingSessionVersion.get();
+            if (previousVersion == version || !isFeedSetReady(fs)) return previousVersion;
+            String insert = "INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE + " (" + DatabaseConstants.READING_SESSION_STORY_HASH + ")"
+                    + " SELECT " + DatabaseConstants.STORY_HASH + " FROM " + DatabaseConstants.STORY_TABLE
+                    + " WHERE " + DatabaseConstants.STORY_STARRED + " = 1";
+            dbRW.beginTransaction();
+            try {
+                if (previousVersion < 0 && !restoringReader) {
+                    // A new reader starts with the list as it is now, including saves and removals since it opened.
+                    dbRW.execSQL("DELETE FROM " + DatabaseConstants.READING_SESSION_TABLE);
+                } else {
+                    // Reading.kt can restore a pager whose open article the reader has since unsaved.
+                    insert += " EXCEPT SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE;
+                }
+                dbRW.execSQL(insert);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+            return version;
+        }
+    }
+
+    @NonNull
+    public Cursor getReadingStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we
@@ -1438,16 +1531,99 @@ public class BlurDatabaseHelper {
         } else if (fs.isAllSaved()) {
             q.append(" ORDER BY ").append(DatabaseConstants.getSavedStoriesSortOrder(order));
         } else {
-            q.append(" ORDER BY ").append(DatabaseConstants.getStorySortOrder(order));
+            q.append(" ORDER BY ");
+            String[] pinned = getPinnedSessionStoryHashes().toArray(new String[0]);
+            if (pinned.length > 0) {
+                // Pinned stories sort first in a newest-first list and last in an oldest-first one, in date
+                // order among themselves. The session selection's GROUP BY keeps a later page that
+                // brings the same story from listing it twice.
+                q.append(DatabaseConstants.STORY_HASH).append(" IN (");
+                for (int i = 0; i < pinned.length; i++) q.append(i == 0 ? "?" : ", ?");
+                q.append(order == StoryOrder.NEWEST ? ") DESC, " : ") ASC, ");
+            }
+            q.append(DatabaseConstants.getStorySortOrder(order));
+            return rawQuery(q.toString(), pinned.length > 0 ? pinned : null, cancellationSignal);
         }
         return rawQuery(q.toString(), null, cancellationSignal);
+    }
+
+    /** RealtimeUpdates.kt checks the open list before offering a new story in its pill. */
+    public boolean isStoryInReadingSession(@NonNull String storyHash) {
+        Cursor c = dbRO.query(DatabaseConstants.READING_SESSION_TABLE,
+                new String[]{DatabaseConstants.READING_SESSION_STORY_HASH},
+                DatabaseConstants.READING_SESSION_STORY_HASH + " = ?",
+                new String[]{storyHash},
+                null, null, null, "1");
+        try {
+            return c.moveToFirst();
+        } finally {
+            closeQuietly(c);
+        }
+    }
+
+    /**
+     * NewStoriesPill.kt adds stories RealtimeUpdates.kt already stored to the open list, without
+     * re-fetching a page. They are pinned to the list's edge (getActiveStoriesCursorNoPrep): the top of
+     * a newest-first list and the end of an oldest-first one, even a story published days ago and
+     * fetched only now.
+     */
+    public void addStoriesToReadingSession(@NonNull Collection<String> storyHashes) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                for (String storyHash : storyHashes) {
+                    if (TextUtils.isEmpty(storyHash)) continue;
+                    ContentValues sessionHashValues = new ContentValues();
+                    sessionHashValues.put(DatabaseConstants.READING_SESSION_STORY_HASH, storyHash);
+                    dbRW.insert(DatabaseConstants.READING_SESSION_TABLE, null, sessionHashValues);
+                }
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
+        synchronized (pinnedSessionStoryHashes) {
+            for (String storyHash : storyHashes) {
+                if (!TextUtils.isEmpty(storyHash)) pinnedSessionStoryHashes.add(storyHash);
+            }
+        }
+    }
+
+    /** The stories NewStoriesPill.kt pinned to the open list's edge, for StoryViewAdapter.kt. */
+    @NonNull
+    public Set<String> getPinnedSessionStoryHashes() {
+        synchronized (pinnedSessionStoryHashes) {
+            return new HashSet<>(pinnedSessionStoryHashes);
+        }
+    }
+
+    private void unpinSessionStories() {
+        synchronized (pinnedSessionStoryHashes) {
+            pinnedSessionStoryHashes.clear();
+        }
+    }
+
+    /** RealtimeUpdates.kt replaces saved story counts after a save or unsave on another device. */
+    public void replaceStarredCounts(@NonNull List<ContentValues> starredCountValues) {
+        synchronized (RW_MUTEX) {
+            dbRW.beginTransaction();
+            try {
+                dbRW.delete(DatabaseConstants.STARREDCOUNTS_TABLE, null, null);
+                bulkInsertValuesExtSync(DatabaseConstants.STARREDCOUNTS_TABLE, starredCountValues);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+        }
     }
 
     public void clearStorySession() {
         com.newsblur.util.Log.i(this, "reading session reset");
         synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
             dbRW.delete(DatabaseConstants.READING_SESSION_TABLE, null, null);
         }
+        unpinSessionStories();
     }
 
     /**
@@ -1562,6 +1738,9 @@ public class BlurDatabaseHelper {
     }
 
     public void setSessionFeedSet(@Nullable FeedSet fs) {
+        synchronized (RW_MUTEX) {
+            readingSessionVersion.incrementAndGet();
+        }
         if (fs == null) {
             synchronized (RW_MUTEX) {
                 dbRW.delete(DatabaseConstants.SYNC_METADATA_TABLE, DatabaseConstants.SYNC_METADATA_KEY + " = ?", new String[]{DatabaseConstants.SYNC_METADATA_KEY_SESSION_FEED_SET});

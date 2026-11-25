@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.database.Cursor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.database.DatabaseConstants
 import com.newsblur.domain.Classifier
@@ -34,7 +35,7 @@ sealed interface ReadingAction : Serializable {
     ) : ReadingAction
 
     data class ReportStoryReadTimes(
-        val readTimesJson: String,
+        @SerializedName("readTimesJson") val readTimesJson: String,
         override val time: Long = System.currentTimeMillis(),
         override val tried: Int = 0,
     ) : ReadingAction
@@ -233,6 +234,7 @@ sealed interface ReadingAction : Serializable {
                 RuntimeTypeAdapterFactory
                     .of(ReadingAction::class.java, "type")
                     .registerSubtype(MarkStoryRead::class.java, "MARK_READ_STORY")
+                    .registerSubtype(ReportStoryReadTimes::class.java, "REPORT_STORY_READ_TIMES")
                     .registerSubtype(MarkStoryUnread::class.java, "MARK_UNREAD_STORY")
                     .registerSubtype(MarkFeedRead::class.java, "MARK_READ_FEED")
                     .registerSubtype(SaveStory::class.java, "SAVE_STORY")
@@ -441,12 +443,12 @@ fun ReadingAction.doLocal(
         }
 
         is ReadingAction.SaveStory -> {
-            dbHelper.setStoryStarred(storyHash, highlights, userTags, true)
+            dbHelper.setStoryStarred(storyHash, highlights, userTags, true, time)
             plus(UPDATE_METADATA)
         }
 
         is ReadingAction.UnsaveStory -> {
-            dbHelper.setStoryStarred(storyHash, emptyList(), emptyList(), false)
+            dbHelper.setStoryStarred(storyHash, emptyList(), emptyList(), false, time)
             plus(UPDATE_METADATA)
         }
 

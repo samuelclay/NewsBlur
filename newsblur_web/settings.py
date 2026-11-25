@@ -173,7 +173,7 @@ MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
     "apps.profile.middleware.SimpsonsMiddleware",
     "apps.profile.middleware.ServerHostnameMiddleware",
-    "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "apps.oauth.validators.ProApplicationMiddleware",
     "apps.profile.language.NewsBlurLocaleMiddleware",
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     "utils.request_introspection_middleware.DumpRequestMiddleware",
@@ -202,7 +202,7 @@ OAUTH2_PROVIDER = {
         "mcp": "Connect AI agents to read and write your NewsBlur data",
     },
     "CLIENT_ID_GENERATOR_CLASS": "oauth2_provider.generators.ClientIdGenerator",
-    "OAUTH2_VALIDATOR_CLASS": "apps.mcp.validators.RFC8252OAuth2Validator",
+    "OAUTH2_VALIDATOR_CLASS": "apps.oauth.validators.ProApplicationValidator",
     "ACCESS_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 365 * 10,  # 10 years
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 60 * 60,  # 1 hour
     "PKCE_REQUIRED": False,  # Allow legacy OAuth clients that don't support PKCE (e.g., Unread, other third-party apps)

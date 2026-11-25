@@ -46,6 +46,7 @@
 "%@ left in this preview" = "Ti restano %@ in questa anteprima";
 "%@ left this week" = "%@ rimanenti questa settimana";
 "%@ match" = "corrispondenza %@";
+"%@ new stories" = "%@ nuovi articoli";
 "%@ opens" = "%@ aperture";
 "%@ or search" = "%@ o cerca";
 "%@ public comments" = "%@ commenti pubblici";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Impossibile salvare il limite di spesa. Riprova.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Impossibile caricare l'immagine completa. Puoi provare ad aprirla nel browser.";
 "Counting is difficult..." = "Contare è difficile...";
+"Create OAuth applications" = "Crea applicazioni OAuth";
 "Create a feed from any web page" = "Crea un feed da qualsiasi pagina web";
 "Create a new account instead" = "Crea invece un nuovo account";
 "Create account" = "Crea account";
@@ -990,6 +992,7 @@
 "Show feed list" = "Mostra l'elenco dei feed";
 "Show feeds after being read" = "Mostra i feed dopo averli letti";
 "Show hidden stories" = "Mostra gli articoli nascosti";
+"Show new stories as they arrive" = "Mostra i nuovi articoli man mano che arrivano";
 "Show original story" = "Mostra l’articolo originale";
 "Show original text" = "Mostra il testo originale";
 "Show public comments" = "Mostra i commenti pubblici";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Mostra il conteggio dei non letti";
 "Show with feed icons" = "Mostra con le icone dei feed";
 "Show without icons" = "Mostra senza icone";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Mostra un fumetto «N nuovi articoli» quando arrivano articoli nel feed o nella cartella aperta.";
 "Shows the music settings" = "Mostra le impostazioni musicali";
 "Sidebar" = "Barra laterale";
 "Sign Up" = "Registrati";

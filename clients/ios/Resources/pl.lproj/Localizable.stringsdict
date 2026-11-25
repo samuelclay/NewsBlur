@@ -342,6 +342,26 @@
 			<string>Pozostało minut w tym miesiącu: %@</string>
 		</dict>
 	</dict>
+	<key>%@ new stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@new_story_count@</string>
+		<key>new_story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ nowe artykuły</string>
+			<key>many</key>
+			<string>%@ nowych artykułów</string>
+			<key>one</key>
+			<string>%@ nowy artykuł</string>
+			<key>other</key>
+			<string>%@ nowych artykułów</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -12,6 +12,7 @@ import com.newsblur.di.IconFileCache
 import com.newsblur.di.StoryImageCache
 import com.newsblur.di.ThumbnailCache
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.util.FileCache
 import com.newsblur.util.Log
 import com.newsblur.util.StorySplitView
@@ -43,6 +44,9 @@ class NbApplication :
 
     @Inject
     lateinit var dbHelper: Provider<BlurDatabaseHelper>
+
+    @Inject
+    lateinit var realtimeUpdates: Provider<RealtimeUpdates>
 
     override fun onCreate() {
         super<Application>.onCreate()
@@ -90,11 +94,14 @@ class NbApplication :
         super.onStart(owner)
         isAppForeground = true
         foregroundSessionId += 1
+        // RealtimeUpdates.kt keeps the socket only while the app is visible, then catches up on return.
+        realtimeUpdates.get().onAppForeground()
     }
 
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         isAppForeground = false
+        realtimeUpdates.get().onAppBackground()
     }
 
     companion object {

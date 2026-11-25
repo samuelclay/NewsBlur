@@ -22,6 +22,10 @@ public class AppConstants {
     // a pref for the time we completed the last full sync of the feed/fodler list
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
 
+    // a pref for the time SyncService.kt last asked for unread hashes, which keep the offline stories current while
+    // RealtimeUpdates.kt holds off the feed/folder list sync
+    public static final String LAST_UNREAD_SYNC_TIME = "LAST_UNREAD_SYNC_TIME";
+
     // how long to wait before auto-syncing the feed/folder list
     public static final long AUTO_SYNC_TIME_MILLIS = 15L * 60L * 1000L;
 

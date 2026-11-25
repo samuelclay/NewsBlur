@@ -65,6 +65,8 @@ NEWSBLUR.hotkeys = {
         }
     };
 
+    var editableInputTypes = /^(text|password|url|search|email|tel|number|date|datetime-local|month|week|time)$/;
+
     function keyHandler( handleObj ) {
         // Only care when a possible input has been specified
         if ( typeof handleObj.data !== "string" ) {
@@ -75,9 +77,10 @@ NEWSBLUR.hotkeys = {
             keys = handleObj.data.toLowerCase().split(" ");
     
         handleObj.handler = function( event ) {
-            // Don't fire in text-accepting inputs that we didn't directly bind to
-            if ( this !== event.target && (/textarea|select/i.test( event.target.nodeName ) ||
-                 event.target.type === "text" || event.target.type === "password") ) {
+            var target = event.target,
+                editableInput = /^input$/i.test(target.nodeName) && editableInputTypes.test(target.type);
+            // jquery.hotkeys.js leaves typing and cursor movement to the focused editor.
+            if ( this !== target && (editableInput || target.isContentEditable || /^(textarea|select)$/i.test(target.nodeName)) ) {
                 return;
             }
             

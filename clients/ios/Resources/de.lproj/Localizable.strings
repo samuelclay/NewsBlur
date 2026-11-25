@@ -46,6 +46,7 @@
 "%@ left in this preview" = "In dieser Vorschau noch %@";
 "%@ left this week" = "Diese Woche noch %@ übrig";
 "%@ match" = "%@ Übereinstimmung";
+"%@ new stories" = "%@ neue Artikel";
 "%@ opens" = "%@ Aufrufe";
 "%@ or search" = "%@ oder suchen";
 "%@ public comments" = "%@ öffentliche Kommentare";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Dein Ausgabenlimit konnte nicht gespeichert werden. Bitte versuche es erneut.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Das vollständige Bild konnte nicht geladen werden. Du kannst versuchen, es in deinem Browser zu öffnen.";
 "Counting is difficult..." = "Zählen ist schwierig ...";
+"Create OAuth applications" = "OAuth-Anwendungen erstellen";
 "Create a feed from any web page" = "Feed von einer beliebigen Webseite erstellen";
 "Create a new account instead" = "Stattdessen neues Konto erstellen";
 "Create account" = "Konto erstellen";
@@ -990,6 +992,7 @@
 "Show feed list" = "Feedliste anzeigen";
 "Show feeds after being read" = "Feeds nach dem Lesen anzeigen";
 "Show hidden stories" = "Versteckte Artikel anzeigen";
+"Show new stories as they arrive" = "Neue Artikel direkt bei ihrem Eintreffen anzeigen";
 "Show original story" = "Originalartikel anzeigen";
 "Show original text" = "Originaltext anzeigen";
 "Show public comments" = "Öffentliche Kommentare anzeigen";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Anzahl ungelesener Artikel anzeigen";
 "Show with feed icons" = "Mit Feed-Symbolen anzeigen";
 "Show without icons" = "Ohne Symbole anzeigen";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Zeigt eine Anzeige „N neue Artikel“ an, wenn im geöffneten Feed oder Ordner neue Artikel eintreffen.";
 "Shows the music settings" = "Zeigt die Musikeinstellungen an";
 "Sidebar" = "Seitenleiste";
 "Sign Up" = "Registrieren";

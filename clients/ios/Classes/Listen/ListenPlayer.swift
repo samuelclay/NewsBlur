@@ -64,6 +64,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private(set) var story: [String: Any]?
 
     private let player = AVQueuePlayer()
+    private let activateSession: (AVAudioSession) throws -> Void
     private var itemSegments: [ObjectIdentifier: Int] = [:]
     private var itemObservations: [ObjectIdentifier: NSKeyValueObservation] = [:]
     private var pendingItemSeeks: [ObjectIdentifier: TimeInterval] = [:]
@@ -88,6 +89,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var currentItemObservation: NSKeyValueObservation?
     private var timeControlObservation: NSKeyValueObservation?
     private var resumeAfterInterruption = false
+    private var holdsNarrationSession = false
     private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
     /// Listening analytics (listen-spec "Listening analytics beacon"): audio timeline played since the last report.
     private var unreportedSeconds: TimeInterval = 0
@@ -95,7 +97,8 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var lastReportDate = Date()
     private var appDelegate: NewsBlurAppDelegate? { NewsBlurAppDelegate.shared() }
 
-    private override init() {
+    init(activateSession: @escaping (AVAudioSession) throws -> Void = { try $0.setActive(true) }) {
+        self.activateSession = activateSession
         super.init()
         player.actionAtItemEnd = .advance
         player.automaticallyWaitsToMinimizeStalling = false
@@ -119,6 +122,10 @@ final class ListenPlayer: NSObject, ObservableObject {
         center.addObserver(self, selector: #selector(audioMixSettingsChanged), name: ListenAudioMix.didChange, object: nil)
         center.addObserver(self, selector: #selector(voiceVolumeChanged), name: ListenAudioMix.voiceVolumeDidChange, object: nil)
         ListenVoiceBoost.gain = Float(max(1, ListenAudioMix.effectiveVoiceVolume))
+    }
+
+    deinit {
+        if let timeObserver { player.removeTimeObserver(timeObserver) }
     }
 
     /// Playing over other audio or lowering the music changed: the queued segments gain or lose the voice boost tap
@@ -333,6 +340,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     }
 
     private func clearSession() {
+        holdsNarrationSession = false
         voiceOverride = nil
         reportProgress()
         generation += 1
@@ -908,8 +916,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private func currentItemChanged() {
         guard let item = player.currentItem, let segment = itemSegments[ObjectIdentifier(item)] else { return }
         if wantsToPlay {
-            // ListenPlayer.swift reclaims the session when the queue advances in case another feature took it.
-            activateAudioSession()
+            ensureNarrationAudioSession()
         }
         if segment != segmentIndex {
             segmentIndex = segment
@@ -1014,7 +1021,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     }
 
     private func startPlayback() {
-        activateAudioSession()
+        ensureNarrationAudioSession()
         player.defaultRate = Float(speed)
         player.playImmediately(atRate: Float(speed))
         if status != .playing {
@@ -1184,16 +1191,26 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     // MARK: - Audio session
 
-    /// VoiceRecorder.swift (Ask AI) switches the session to recording, so every start restores spoken playback.
+    /// Keep the active mixer running across ListenPlayer.swift's queue advances and buffering gaps.
+    /// VoiceRecorder.swift can switch the shared session to recording, in which case narration must reclaim it.
+    private func ensureNarrationAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        if !holdsNarrationSession || session.category != .playback || session.mode != .spokenAudio {
+            activateAudioSession()
+        }
+    }
+
     /// Listen plays over other audio, lowering it while the voice speaks, when ListenAudioMix.swift says it mixes.
     func activateAudioSession(forNarration: Bool = true) {
+        holdsNarrationSession = false
         let session = AVAudioSession.sharedInstance()
         let configuration = ListenAudioMix.sessionConfiguration(mixes: forNarration && ListenAudioMix.playsOverOtherAudio,
                                                                 lowersMusic: ListenAudioMix.lowersMusicWhileSpeaking)
         do {
             try session.setCategory(.playback, mode: .spokenAudio, policy: configuration.policy,
                                     options: configuration.options)
-            try session.setActive(true)
+            try activateSession(session)
+            holdsNarrationSession = forNarration && wantsToPlay
         } catch {
             NSLog("Listen couldn't activate the audio session: %@", error as NSError)
         }
@@ -1222,6 +1239,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     /// story lets go of the audio session and the music comes back up. A voice sample playing in Listen Settings
     /// keeps it (ListenVoiceSettingsModel.swift).
     private func yieldAudioSessionWhileMixing() {
+        holdsNarrationSession = false
         guard ListenAudioMix.playsOverOtherAudio, !ListenMediaPlayer.shared.isActive,
               !ListenVoicePreviewPlayer.isPlayingSample else { return }
         do {

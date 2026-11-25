@@ -37,8 +37,10 @@ from apps.monitor.views import (
     UserSearches,
     WebFeedUsage,
 )
+from apps.oauth.usage import usage_metrics
 
 urlpatterns = [
+    path("oauth-usage", usage_metrics, name="oauth_usage"),
     url(r"^app-servers?$", AppServers.as_view(), name="app_servers"),
     url(r"^app-times?$", AppTimes.as_view(), name="app_times"),
     url(r"^ask-ai?$", AskAI.as_view(), name="ask_ai"),

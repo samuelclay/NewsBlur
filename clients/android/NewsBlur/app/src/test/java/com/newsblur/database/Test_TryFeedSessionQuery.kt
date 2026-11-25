@@ -14,6 +14,7 @@ import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.slot
 import io.mockk.unmockkConstructor
+import java.sql.DriverManager
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -56,12 +57,82 @@ class Test_TryFeedSessionQuery {
         )
     }
 
-    private fun query(feedSet: FeedSet): String {
+    @Test fun test_open_saved_list_reflects_saves_and_removals_during_the_session() {
+        DriverManager.getConnection("jdbc:sqlite::memory:").use { db ->
+            db.createStatement().use { sql ->
+                sql.execute(DatabaseConstants.FEED_SQL)
+                sql.execute(DatabaseConstants.STORY_SQL)
+                sql.execute(DatabaseConstants.READING_SESSION_SQL)
+                sql.execute("INSERT INTO feeds (_id) VALUES (1)")
+                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date) VALUES ('1:old',1,1,100), ('1:recent',1,1,200), ('1:removed',1,0,0)")
+                sql.execute("INSERT INTO reading_session VALUES ('1:old'), ('1:removed')")
+
+                fun hashes(feedSet: FeedSet) = sql.executeQuery(query(feedSet)).use { rows ->
+                    buildList { while (rows.next()) add(rows.getString("story_hash")) }
+                }
+                assertEquals(listOf("1:recent", "1:old"), hashes(FeedSet.allSaved()))
+                // A saved search still restricts membership to its matching rows.
+                sql.execute("DELETE FROM reading_session WHERE session_story_hash='1:removed'")
+                val search = FeedSet.allSaved().apply { searchQuery = "economics" }
+                assertEquals(listOf("1:old"), hashes(search))
+            }
+        }
+    }
+
+    @Test fun test_saved_reader_keeps_the_open_article_after_it_is_unsaved() {
+        DriverManager.getConnection("jdbc:sqlite::memory:").use { db ->
+            db.createStatement().use { sql ->
+                sql.execute(DatabaseConstants.FEED_SQL)
+                sql.execute(DatabaseConstants.STORY_SQL)
+                sql.execute(DatabaseConstants.READING_SESSION_SQL)
+                sql.execute("INSERT INTO feeds (_id) VALUES (1)")
+                sql.execute("INSERT INTO stories (story_hash, feed_id, starred, starred_date, read) VALUES ('1:next',1,1,100,1), ('1:between',1,1,150,1), ('1:open',1,1,200,1), ('1:removed',1,0,175,1)")
+                sql.execute("INSERT INTO reading_session VALUES ('1:next')")
+                val feedSet = FeedSet.allSaved()
+                val sessionCursor = mockk<Cursor>(relaxed = true)
+                every { sessionCursor.moveToFirst() } returns true
+                val search = FeedSet.allSaved().apply { searchQuery = "economics" }
+                every { sessionCursor.getString(0) } returns search.toCompactSerial()
+                every { database.query(DatabaseConstants.SYNC_METADATA_TABLE, null, any(), any(), null, null, null, null) } returns sessionCursor
+                every { database.execSQL(any()) } answers { sql.executeUpdate(firstArg<String>()); Unit }
+                helper.prepareSavedReadingSession(search, -1L, false)
+                sql.executeQuery(query(search, reader = true)).use { rows ->
+                    assertEquals(listOf("1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
+                }
+                sql.execute("INSERT INTO reading_session VALUES ('1:removed')")
+                every { sessionCursor.getString(0) } returns feedSet.toCompactSerial()
+                // Both saves arrived after the session started. The article next to the tapped one must also be swipeable.
+                val version = helper.prepareSavedReadingSession(feedSet, -1L, false)
+                helper.prepareSavedReadingSession(feedSet, version, false)
+                sql.executeQuery(query(feedSet, reader = true)).use { rows ->
+                    assertTrue(rows.next())
+                    assertEquals("1:open", rows.getString("story_hash"))
+                    assertTrue(rows.next())
+                    assertEquals("1:between", rows.getString("story_hash"))
+                }
+                // Opening another reader against the same session must not duplicate the previous snapshot.
+                helper.prepareSavedReadingSession(feedSet, -1L, false)
+                sql.executeQuery("SELECT COUNT(*) FROM reading_session").use { count ->
+                    assertTrue(count.next())
+                    assertEquals(3, count.getInt(1))
+                }
+                sql.execute("UPDATE stories SET starred=0 WHERE story_hash='1:open'")
+                helper.prepareSavedReadingSession(feedSet, version, false)
+                helper.prepareSavedReadingSession(feedSet, -1L, true)
+                sql.executeQuery(query(FeedSet.allSaved(), reader = true)).use { rows ->
+                    assertEquals(listOf("1:open", "1:between", "1:next"), buildList { while (rows.next()) add(rows.getString("story_hash")) })
+                }
+            }
+        }
+    }
+
+    private fun query(feedSet: FeedSet, reader: Boolean = false): String {
         val sql = slot<String>()
         val cursor = mockk<Cursor>(relaxed = true)
         every { cursor.moveToFirst() } returns true
         every { database.rawQuery(capture(sql), any(), any<CancellationSignal>()) } returns cursor
-        helper.getActiveStoriesCursor(feedSet, filters, mockk()).close()
+        if (reader) helper.getReadingStoriesCursor(feedSet, filters, mockk()).close()
+        else helper.getStoryListCursor(feedSet, filters, mockk()).close()
         return sql.captured
     }
 }

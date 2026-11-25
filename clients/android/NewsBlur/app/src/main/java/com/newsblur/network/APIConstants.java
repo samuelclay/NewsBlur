@@ -43,6 +43,8 @@ public class APIConstants {
 	public static final String PATH_FEED_STORIES = "/reader/feed";
     public static final String PATH_REFRESH_FEED = "/reader/refresh_feed";
 	public static final String PATH_FEED_UNREAD_COUNT = "/reader/feed_unread_count";
+	public static final String PATH_REFRESH_FEEDS = "/reader/refresh_feeds";
+	public static final String PATH_STARRED_COUNTS = "/reader/starred_counts";
 	public static final String PATH_SOCIALFEED_STORIES = "/social/stories";
 	public static final String PATH_SIGNUP = "/api/signup";
 	public static final String PATH_SHARE_EXTERNAL_STORY = "/api/share_story/";

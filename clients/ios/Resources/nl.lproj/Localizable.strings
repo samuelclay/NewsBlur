@@ -46,6 +46,7 @@
 "%@ left in this preview" = "%@ over in deze preview";
 "%@ left this week" = "Nog %@ over deze week";
 "%@ match" = "%@ overeenkomst";
+"%@ new stories" = "%@ nieuwe artikelen";
 "%@ opens" = "%@ keer geopend";
 "%@ or search" = "%@ of zoeken";
 "%@ public comments" = "%@ openbare reacties";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Je bestedingslimiet kan niet worden opgeslagen. Probeer het opnieuw.";
 "Couldn’t load the full image. You can try opening it in your browser." = "De volledige afbeelding kon niet worden geladen. Je kunt proberen deze in je browser te openen.";
 "Counting is difficult..." = "Tellen is lastig...";
+"Create OAuth applications" = "OAuth-applicaties maken";
 "Create a feed from any web page" = "Maak een feed van elke webpagina";
 "Create a new account instead" = "In plaats daarvan een nieuw account aanmaken";
 "Create account" = "Account aanmaken";
@@ -990,6 +992,7 @@
 "Show feed list" = "Feedlijst weergeven";
 "Show feeds after being read" = "Feeds na het lezen weergeven";
 "Show hidden stories" = "Verborgen artikelen weergeven";
+"Show new stories as they arrive" = "Nieuwe artikelen meteen tonen";
 "Show original story" = "Origineel artikel tonen";
 "Show original text" = "Originele tekst weergeven";
 "Show public comments" = "Openbare reacties tonen";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Ongelezen aantal weergeven";
 "Show with feed icons" = "Weergeven met feedpictogrammen";
 "Show without icons" = "Weergeven zonder pictogrammen";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Toont een melding met ‘N nieuwe artikelen’ wanneer er artikelen binnenkomen in de geopende feed of map.";
 "Shows the music settings" = "Toont de muziekvoorkeuren";
 "Sidebar" = "Zijbalk";
 "Sign Up" = "Registreren";

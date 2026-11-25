@@ -46,6 +46,7 @@
 "%@ left in this preview" = "Pozostało %@ w tej wersji próbnej";
 "%@ left this week" = "Pozostało %@ w tym tygodniu";
 "%@ match" = "%@ dopasowanie";
+"%@ new stories" = "%@ nowych artykułów";
 "%@ opens" = "%@ otwarć";
 "%@ or search" = "%@ lub wyszukaj";
 "%@ public comments" = "%@ komentarzy publicznych";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Nie udało się zapisać limitu wydatków. Spróbuj ponownie.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Nie udało się wczytać pełnego obrazu. Możesz spróbować otworzyć go w przeglądarce.";
 "Counting is difficult..." = "Liczenie jest trudne...";
+"Create OAuth applications" = "Twórz aplikacje OAuth";
 "Create a feed from any web page" = "Utwórz kanał z dowolnej strony internetowej";
 "Create a new account instead" = "Zamiast tego utwórz nowe konto";
 "Create account" = "Utwórz konto";
@@ -990,6 +992,7 @@
 "Show feed list" = "Pokaż listę kanałów";
 "Show feeds after being read" = "Pokazuj kanały po przeczytaniu";
 "Show hidden stories" = "Pokaż ukryte artykuły";
+"Show new stories as they arrive" = "Wyświetlaj nowe artykuły od razu po ich pojawieniu się";
 "Show original story" = "Pokaż oryginalny artykuł";
 "Show original text" = "Pokaż oryginalny tekst";
 "Show public comments" = "Pokaż publiczne komentarze";
@@ -998,6 +1001,7 @@
 "Show unread count" = "Pokaż liczbę nieprzeczytanych";
 "Show with feed icons" = "Pokaż ikony kanałów";
 "Show without icons" = "Pokaż bez ikon";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Gdy w otwartym kanale lub folderze pojawią się artykuły, wyświetli plakietkę „N nowych artykułów”.";
 "Shows the music settings" = "Pokazuje ustawienia muzyki";
 "Sidebar" = "Panel boczny";
 "Sign Up" = "Zarejestruj się";

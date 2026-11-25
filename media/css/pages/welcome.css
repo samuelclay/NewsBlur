@@ -3642,3 +3642,7 @@ a.NB-fgi img {
 .NB-dark .NB-welcome-footer .NB-twitter-avatar {
     box-shadow: 0 0 1px rgba(255, 255, 255, 0.3);
 }
+
+.NB-pricing-tier-pro .NB-feature-oauth .NB-pricing-bullet {
+    background-image: url("/media/embed/icons/nouns/dialog-oauth-application.svg");
+}

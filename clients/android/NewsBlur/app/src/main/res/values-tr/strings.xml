@@ -480,6 +480,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="pro_enable_sites">10.000\'e kadar siteyi takip edin</string>
     <string name="pro_all_feeds_fetched">Tüm akışlar 5-15 dakikada bir alınır</string>
     <string name="pro_regex_train">Haberleri düzenli ifadelerle eğit</string>
+    <string name="pro_oauth_applications">OAuth uygulamaları oluştur</string>
     <string name="pro_priority_support">Öncelikli destek</string>
     <string name="pro_natural_language_search">Doğal dilde arama</string>
     <string name="settings_cat_offline">Çevrimdışı okuma</string>
@@ -622,6 +623,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Haberleri kaydırıp geçerken otomatik olarak okundu olarak işaretle</string>
     <string name="settings_story_clustering">İlgili haberleri grupla</string>
     <string name="settings_story_clustering_summary">Diğer akışlardaki yinelenen haberleri haber başlığının altında göster</string>
+    <string name="settings_show_new_stories">Yeni haberleri geldikçe göster</string>
+    <string name="settings_show_new_stories_summary">Açık siteye veya klasöre yeni haberler geldiğinde “N yeni haber” rozeti göster</string>
     <string name="settings_cluster_matches">Küme eşleşmeleri</string>
     <string name="settings_cluster_matches_summary">Kümelerin yalnızca yinelenen başlıkları mı yoksa ilgili haberleri de mi göstereceğini seçin</string>
     <string name="settings_story_clustering_save_failed">Haber kümeleme tercihi kaydedilemedi</string>
@@ -1515,4 +1518,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_listen_speed">Oynatma hızı</string>
     <string name="archive_listen">Haftada 1 saat haberleri sesli dinleyin</string>
     <string name="pro_listen">Haftada 10 saat haberleri sesli dinleyin</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d yeni haber</item>
+        <item quantity="other">%d yeni haber</item>
+    </plurals>
 </resources>

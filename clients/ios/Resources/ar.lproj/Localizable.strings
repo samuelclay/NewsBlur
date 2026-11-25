@@ -46,6 +46,7 @@
 "%@ left in this preview" = "تبقّى %@ في هذه المعاينة";
 "%@ left this week" = "تبقّى %@ هذا الأسبوع";
 "%@ match" = "%@ تطابق";
+"%@ new stories" = "%@ قصة جديدة";
 "%@ opens" = "%@ مرة فتح";
 "%@ or search" = "%@ أو ابحث";
 "%@ public comments" = "%@ تعليقات عامة";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "تعذّر حفظ حدّ الإنفاق. يُرجى المحاولة مجددًا.";
 "Couldn’t load the full image. You can try opening it in your browser." = "تعذّر تحميل الصورة كاملة. يمكنك محاولة فتحها في المتصفح.";
 "Counting is difficult..." = "العدّ صعب...";
+"Create OAuth applications" = "إنشاء تطبيقات OAuth";
 "Create a feed from any web page" = "أنشئ خلاصة من أي صفحة ويب";
 "Create a new account instead" = "إنشاء حساب جديد بدلاً من ذلك";
 "Create account" = "إنشاء حساب";
@@ -990,6 +992,7 @@
 "Show feed list" = "إظهار قائمة الخلاصات";
 "Show feeds after being read" = "إظهار الخلاصات بعد قراءتها";
 "Show hidden stories" = "إظهار القصص المخفية";
+"Show new stories as they arrive" = "أظهر القصص الجديدة فور وصولها";
 "Show original story" = "عرض القصة الأصلية";
 "Show original text" = "إظهار النص الأصلي";
 "Show public comments" = "إظهار التعليقات العامة";
@@ -998,6 +1001,7 @@
 "Show unread count" = "إظهار عدد غير المقروء";
 "Show with feed icons" = "عرض مع أيقونات الخلاصات";
 "Show without icons" = "عرض بلا أيقونات";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "يعرض شارة «N قصة جديدة» عند وصول القصص إلى الخلاصة أو المجلد المفتوح.";
 "Shows the music settings" = "إظهار إعدادات الموسيقى";
 "Sidebar" = "الشريط الجانبي";
 "Sign Up" = "إنشاء حساب";

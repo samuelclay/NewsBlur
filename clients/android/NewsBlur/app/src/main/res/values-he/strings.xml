@@ -483,6 +483,7 @@
     <string name="pro_enable_sites">עקוב אחר עד 10,000 אתרים</string>
     <string name="pro_all_feeds_fetched">כל הפידים נמשכים כל 5–15 דקות</string>
     <string name="pro_regex_train">אימון כתבות באמצעות ביטויים רגולריים</string>
+    <string name="pro_oauth_applications">יצירת יישומי OAuth</string>
     <string name="pro_priority_support">תמיכה בעדיפות גבוהה</string>
     <string name="pro_natural_language_search">חיפוש בשפה טבעית</string>
     <string name="settings_cat_offline">קריאה במצב לא מקוון</string>
@@ -630,6 +631,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">סימון אוטומטי של כתבות כנקראו בעת גלילה מעבר להן</string>
     <string name="settings_story_clustering">קבצו כתבות קשורות</string>
     <string name="settings_story_clustering_summary">הצגת כתבות כפולות מפידים אחרים מתחת לכותרת הכתבה</string>
+    <string name="settings_show_new_stories">הצגת כתבות חדשות עם הגעתן</string>
+    <string name="settings_show_new_stories_summary">הצגת תגית ״N כתבות חדשות״ כשמגיעות כתבות לאתר או לתיקייה הפתוחים</string>
     <string name="settings_cluster_matches">התאמות באשכולות</string>
     <string name="settings_cluster_matches_summary">בחרו אם האשכולות יציגו רק כותרות כפולות או גם כתבות קשורות</string>
     <string name="settings_story_clustering_save_failed">לא ניתן לשמור את העדפת קיבוץ הכתבות</string>
@@ -1549,4 +1552,9 @@
     <string name="settings_listen_speed">מהירות ההשמעה</string>
     <string name="archive_listen">האזנה להקראה של כתבות במשך שעה בשבוע</string>
     <string name="pro_listen">האזנה להקראה של כתבות במשך 10 שעות בשבוע</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d כתבה חדשה</item>
+        <item quantity="other">%d כתבות חדשות</item>
+        <item quantity="two">%d כתבות חדשות</item>
+    </plurals>
 </resources>

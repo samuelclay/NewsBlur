@@ -113,7 +113,7 @@ public class Story implements Serializable {
     public boolean hasModifications;
 
     @SerializedName("cluster_stories")
-    public ClusterStory[] clusterStories = new ClusterStory[]{};
+    public ClusterStory[] clusterStories = ClusterStory.EMPTY;
 
     // NOTE: this is parsed and saved to the DB, but is *not* generally un-thawed when stories are fetched back from the DB
     @SerializedName("image_urls")
@@ -470,6 +470,7 @@ public class Story implements Serializable {
     }
 
     public static class ClusterStory implements Serializable {
+        private static final ClusterStory[] EMPTY = new ClusterStory[0];
 
         private static final long serialVersionUID = 1L;
 
@@ -514,16 +515,12 @@ public class Story implements Serializable {
         }
 
         public static ClusterStory[] fromJson(String json) {
-            if (TextUtils.isEmpty(json)) {
-                return new ClusterStory[]{};
+            if (TextUtils.isEmpty(json) || "[]".equals(json) || "null".equals(json)) {
+                return EMPTY;
             }
 
             ClusterStory[] clusterStories = DatabaseConstants.JsonHelper.fromJson(json, ClusterStory[].class);
-            if (clusterStories == null) {
-                return new ClusterStory[]{};
-            }
-
-            return clusterStories;
+            return clusterStories == null ? EMPTY : clusterStories;
         }
 
         @Override

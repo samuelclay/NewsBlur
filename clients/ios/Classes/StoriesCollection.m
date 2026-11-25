@@ -424,7 +424,15 @@
 - (NSArray *)storiesByIncludingNotificationStory:(NSArray *)stories {
     NSDictionary *target = self.notificationStory;
     if (!stories || !target || !self.readFilterOverride ||
-        ![[NSString stringWithFormat:@"%@", target[@"story_feed_id"]] isEqualToString:self.activeFeedIdStr]) return stories;
+        ![target[@"story_hash"] isEqualToString:self.notificationStoryHash]) return stories;
+
+    if (self.isTrending) {
+        // StoriesCollection.m preserves the server's ranking when the article is still on the list.
+        for (NSDictionary *story in stories) {
+            if ([story[@"story_hash"] isEqualToString:target[@"story_hash"]]) return stories;
+        }
+        return [stories arrayByAddingObject:target];
+    }
 
     // StoriesCollection.m retains one exact lookup beyond the loaded pages, without changing their page numbers.
     BOOL hasCurrentTarget = NO;
@@ -466,6 +474,51 @@
     self.storyCount = (int)[self.activeFeedStories count];
     [self calculateStoryLocations];
     self.storyLocationsCount = (int)[self.activeFeedStoryLocations count];
+}
+
+// StoriesCollection.m puts stories that arrived over the socket (RealtimeUpdates.swift) at the top of a newest-first
+// list and at the end of an oldest-first one, in the list's order among themselves, whatever their dates: a story
+// published days ago but fetched just now still arrives where the reader is looking. The list stays out of date
+// order until it loads again; a later page skips stories already listed (FeedDetailObjCViewController.m).
+- (NSInteger)insertRealtimeStories:(NSArray *)stories {
+    NSMutableArray *merged = [NSMutableArray arrayWithArray:self.activeFeedStories ?: @[]];
+    NSMutableSet *listedHashes = [NSMutableSet setWithCapacity:merged.count];
+    for (NSDictionary *story in merged) {
+        if (story[@"story_hash"]) [listedHashes addObject:story[@"story_hash"]];
+    }
+    BOOL oldestFirst = [self.activeOrder isEqualToString:@"oldest"];
+    NSMutableArray *arriving = [NSMutableArray array];
+    for (NSDictionary *story in stories) {
+        NSString *storyHash = story[@"story_hash"];
+        if (![storyHash isKindOfClass:[NSString class]] || [listedHashes containsObject:storyHash]) continue;
+        [arriving addObject:story];
+        [listedHashes addObject:storyHash];
+    }
+    if (!arriving.count) return 0;
+    [arriving sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(NSDictionary *first, NSDictionary *second) {
+        double firstTimestamp = [first[@"story_timestamp"] doubleValue];
+        double secondTimestamp = [second[@"story_timestamp"] doubleValue];
+        if (firstTimestamp == secondTimestamp) return NSOrderedSame;
+        BOOL firstLeads = oldestFirst ? firstTimestamp < secondTimestamp : firstTimestamp > secondTimestamp;
+        return firstLeads ? NSOrderedAscending : NSOrderedDescending;
+    }];
+    if (oldestFirst) {
+        [merged addObjectsFromArray:arriving];
+    } else {
+        [merged insertObjects:arriving atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, arriving.count)]];
+    }
+    self.activeFeedStories = merged;
+    self.storyCount = (int)merged.count;
+    [self calculateStoryLocations];
+    return arriving.count;
+}
+
+// StoriesCollection.m takes NewStoriesNewestPage.swift's list without starting the list over: unlike setStories:, it
+// keeps the stories read this session and adds no notification story.
+- (void)replaceStoriesKeepingReadState:(NSArray *)stories {
+    self.activeFeedStories = stories;
+    self.storyCount = (int)stories.count;
+    [self calculateStoryLocations];
 }
 
 - (void)setStories:(NSArray *)activeFeedStoriesValue {

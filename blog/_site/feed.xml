@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-20T02:57:14-05:00</updated>
+  <updated>2026-11-25T11:47:25-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -20,6 +20,274 @@ A new sound of an old instrument.
   
   
 
+  
+  <entry>
+    <title type="html">Connect your app to NewsBlur with self-serve OAuth.</title>
+    <link href="https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth/" rel="alternate" type="text/html" title="Connect your app to NewsBlur with self-serve OAuth." />
+    <published>2026-11-25T03:00:00-05:00</published>
+    <updated>2026-11-25T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth/">
+      <![CDATA[<p>For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from <strong>Account → OAuth applications</strong> on the web. You need Premium Pro to register and run a new app. The people who connect to it can use any NewsBlur plan.</p>
+
+<h3 id="what-your-readers-will-see">What your readers will see</h3>
+
+<p>Say you’re building a little app for your book club. Each member connects their NewsBlur account and picks a saved story to bring to the next meeting. They sign in on NewsBlur, see what your app wants to read, and decide whether to give it access. Their password stays with NewsBlur.</p>
+
+<p>Choose <strong>Create a new OAuth application</strong> and enter your app’s name, website, and redirect URL. That last one is the address in your app where NewsBlur sends a reader after they authorize it. As you type, you can see how the authorization link takes shape. Click <strong>Consent screen preview</strong> to see the page your readers will get.</p>
+
+<p><img src="/assets/oauth-book-club-consent.png" alt="Consent preview for Book Club Reader showing its website, the stories it asks to read, and the Authorize and Deny buttons" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p>Click <strong>Create application</strong> to get your client ID and secret. Copy the secret before closing the dialog. NewsBlur shows it once. The <a href="https://www.newsblur.com/api">API docs</a> walk through exchanging the authorization code for an access token.</p>
+
+<h3 id="is-anyone-using-it">Is anyone using it?</h3>
+
+<p>Come back to the same tab to see all your apps. Here’s the book club example after two people connected and the app made three requests on their behalf.</p>
+
+<p><img src="/assets/oauth-book-club-activity.png" alt="Book Club Reader in Account with two connected accounts, two active readers in seven days, three API requests, and the time of the last request" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<p><strong>Connected accounts</strong> counts people whose access tokens are still valid. <strong>Active readers</strong> estimates how many different people your app made requests for over the last seven days. If one reader refreshes ten times, that’s ten requests and one reader. You can also see total requests since tracking began and when the last one came in.</p>
+
+<p>If I registered your app before this launch, it can keep syncing on your current plan for now. I’ve also given lifetime Premium Pro to the developers of the feed readers listed in Goodies.</p>
+
+<p>What are you building with your NewsBlur stories? I’d love to see it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from Account → OAuth applications on the...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">New stories as they arrive, and live updates in every app</title>
+    <link href="https://blog.newsblur.com/2026/11/23/new-stories-as-they-arrive/" rel="alternate" type="text/html" title="New stories as they arrive, and live updates in every app" />
+    <published>2026-11-23T03:00:00-05:00</published>
+    <updated>2026-11-23T03:00:00-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/23/new-stories-as-they-arrive</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/23/new-stories-as-they-arrive/">
+      <![CDATA[<p>Every NewsBlur app is now live while it’s open. Read a story on your phone and it’s read on your Mac, your iPad, and the web a second later. Save one on the web and it’s saved on your phone. And when a site you’re reading publishes something new, it shows up right at the top of your list, one tap away.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--stage">
+  <div class="mobile-release-phone__device" style="aspect-ratio: 1600 / 1275">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/realtime-new-stories.webp" alt="The Cooking folder on an iPhone with a 22 new stories pill floating under the toolbar, and All Site Stories on a Galaxy S22 with a full-width 1 new story button above the first story" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="live-updates-in-the-apps">Live updates in the apps</h3>
+
+<p>The iPhone, iPad, Mac, and Android apps now stay connected to NewsBlur while they’re open. Mark a story read or unread anywhere, save it or unsave it, and every other device follows within a second or two. Unread counts climb as your sites publish, and your shared stories and interactions come in as they happen.</p>
+
+<p>So you can start reading on your phone, pick up on the Mac, and never wade back through stories you’ve already read. Your counts are current the moment you look, without pulling to refresh.</p>
+
+<p>The iPhone, iPad, and Android apps let go of the connection when you leave them and catch up the moment you’re back. The Mac app stays connected the whole time it’s running. Android still downloads your unread stories every 15 minutes for reading offline.</p>
+
+<h3 id="new-stories-as-they-arrive">New stories as they arrive</h3>
+
+<p>New stories now come to you while you read. When the site or folder you have open publishes something, a pill slides in under the toolbar with the count. Tap it and the list scrolls to the top as the new stories slide in, pushing everything else down.</p>
+
+<p><img src="/assets/realtime-mac-row.webp" alt="NewsBlur for Mac reading the Boston folder, with a full-width 4 new stories button at the top of the story list" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<p>They always land at the top, right where you’re looking, even a story NewsBlur only picked up hours after it was published. The next time the list loads, everything is back in date order. If you read oldest first, they join at the bottom instead.</p>
+
+<p>The pill only counts stories you’d actually see. In Focus it counts only Focus stories, and stories your classifiers hide never come through it.</p>
+
+<h3 id="it-stays-out-of-your-way">It stays out of your way</h3>
+
+<p>Five seconds after you start scrolling down, the pill slides back under the toolbar. It returns once you haven’t scrolled for three minutes.</p>
+
+<p>The stories keep waiting either way. A full-width button at the top of the list shows the count, so you can bring them in whenever you scroll back up. The pill stays hidden while that button is on screen.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/realtime-iphone-row.webp" alt="The Cooking folder on an iPhone, with a full-width 22 new stories button at the top of the story list" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<p>It works the same on the iPad and the web.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--tablet">
+  <div class="mobile-release-phone__device" style="aspect-ratio: 2746 / 1908">
+    <div class="mobile-release-phone__screen">
+      
+      <img src="/assets/realtime-ipad-row.webp" alt="NewsBlur for iPad showing All Site Stories, with a 2 new stories button at the top of the story list next to the open story" loading="lazy" />
+      
+    </div>
+  </div>
+</figure>
+
+<div style="display: flex;gap: 16px;justify-content: center;margin: 24px auto;">
+  <img src="/assets/realtime-web-row.webp" alt="The web reader's story list with a full-width 3 new stories button at the top" style="width: 46%;border: 1px solid rgba(0,0,0,0.1);margin: 0;" />
+  <img src="/assets/realtime-web-pill.webp" alt="The web reader's story list scrolled down, with a 3 new stories pill floating under the feed's title bar" style="width: 46%;border: 1px solid rgba(0,0,0,0.1);margin: 0;" />
+</div>
+
+<h3 id="leaving-a-list-open-overnight">Leaving a list open overnight</h3>
+
+<p>Leave a list open all day and the pill keeps counting. It loads 20 stories ahead, so it can say 3,000 new stories without loading all of them. Tap it and you get the 20 newest at the top, as if you’d just opened the list, and the rest load as you scroll.</p>
+
+<h3 id="turning-it-off">Turning it off</h3>
+
+<p>To hide the pill and the button, turn off <strong>Show new stories as they arrive</strong>. It’s in Preferences under Feeds on the web, Preferences under Story List on iPhone, iPad, and Mac, and Settings under Story list on Android, and it’s set per device. New stories then appear when the list reloads, and read states and counts still update live.</p>
+
+<p><img src="/assets/realtime-web-preference.webp" alt="The Show new stories as they arrive preference on the web, with Offer them in an N new stories pill selected and Only show them when the list reloads as the other choice" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
+
+<h3 id="availability">Availability</h3>
+
+<p>The pill is live on the web now. Live updates and new stories are in the latest NewsBlur for iPhone, iPad, and Mac on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a>, and for Android on <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>.</p>
+
+<p>If the pill shows up when it shouldn’t, or one device’s counts fall behind another’s, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[Every NewsBlur app is now live while it’s open. Read a story on your phone and it’s read on your Mac, your iPad, and the web a second later. Save one on the web and it’s saved on your phone. And when a site you’re reading publishes something new, it...]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Everything moves into place</title>
+    <link href="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/" rel="alternate" type="text/html" title="Everything moves into place" />
+    <published>2026-11-22T15:08:54-05:00</published>
+    <updated>2026-11-22T15:08:54-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/22/newsblur-17-motion</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/22/newsblur-17-motion/">
+      <![CDATA[<p>NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.</p>
+
+<figure class="mobile-release-phone mobile-release-phone--iphone-17">
+  <div class="mobile-release-phone__device">
+    <div class="mobile-release-phone__screen">
+      
+      <video muted="" loop="" playsinline="" controls="" preload="none" poster="/assets/motion-folder-and-story.webp" aria-label="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order">
+        <source src="/assets/motion-folder-and-story.mp4" type="video/mp4" />
+        <img src="/assets/motion-folder-and-story.webp" alt="Tapping the Cooking folder: the screen slides over and the folder&#39;s stories fade in from the top, one row after the next. Then tapping the first story: its site, title, byline, tags, photo, and story buttons arrive in order" />
+      </video>
+      
+    </div>
+  </div>
+</figure>
+
+<h3 id="one-row-after-the-next">One row after the next</h3>
+
+<p>Open a folder and its stories come in from the top, one after the next. Open a story and its site, title, byline, tags, and text arrive in order, followed by the story buttons. The list you’re leaving fades out as it looked, and menus, dialogs, and theme changes get the same treatment.</p>
+
+<p>It stays out of your way. Each row fades in quickly, scrolling finishes anything still animating, and things already on screen don’t move again.</p>
+
+<h3 id="reduce-motion">Reduce motion</h3>
+
+<p>If you’d rather have less of it, turn on <strong>Reduce motion</strong> under Appearance in Preferences, on the web, iOS, Mac, and Android. Nothing slides, but things still fade in. NewsBlur also follows your device’s own Reduce Motion setting.</p>
+
+<p><img src="/assets/reduce-motion.webp" alt="The Reduce motion setting under Appearance in Preferences on the web, on iOS, and on Android, each described as Keep fades, without movement" style="width: 90%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-new-frame-for-the-mac">A new frame for the Mac</h3>
+
+<p>The Mac app now has one translucent sidebar and toolbar around a rounded reading area, and new windows open with all three panes.</p>
+
+<p><img src="/assets/mac-17-reader-frame.webp" alt="The NewsBlur Mac app with a translucent sidebar and toolbar around the story list and the reader, showing the Cooking folder" style="width: 100%;margin: 24px auto;display: block;" /></p>
+
+<h3 id="a-few-fixes">A few fixes</h3>
+
+<ul>
+  <li>On iPhone, marking stories older than a number of days now updates the list on screen.</li>
+  <li>On iPad, the Ask AI and sharing composers stay above the keyboard in landscape.</li>
+  <li>On iPhone and Android phones, the Grid and List switch in Discover sits next to search, so the category tags get the whole row.</li>
+  <li>On iOS, stories load more smoothly in the Gray theme.</li>
+  <li>On Android, read titles are lighter so they’re easier to tell apart from unread ones, and article headlines wrap in balanced lines.</li>
+  <li>On Android, stories that arrive after you mark a folder as read no longer show up already read.</li>
+  <li>On Android tablets, settings dialogs keep what you’d chosen when you rotate the screen.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>NewsBlur 17 is available now on the <a href="https://apps.apple.com/app/newsblur/id463981119">App Store</a> and <a href="https://play.google.com/store/apps/details?id=com.newsblur">Google Play</a>. If something moves in a way that bothers you, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    <category term="ios" />
+    
+    <category term="android" />
+    
+    <category term="macos" />
+    
+    
+    <summary type="html">
+      <![CDATA[NewsBlur 17 is out for iPhone, iPad, Mac, and Android, and the same work is live on the web. Feeds, folders, and stories now move into place as they load, in the order you read them.
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
+    <title type="html">Reddit feeds are back on NewsBlur</title>
+    <link href="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/" rel="alternate" type="text/html" title="Reddit feeds are back on NewsBlur" />
+    <published>2026-11-21T14:18:05-05:00</published>
+    <updated>2026-11-21T14:18:05-05:00</updated>
+    <id>https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back</id>
+    <content type="html" xml:base="https://blog.newsblur.com/2026/11/21/reddit-feeds-are-back/">
+      <![CDATA[<p>In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It <a href="https://forum.newsblur.com/t/13890">came up on the forum</a> right away. Reddit is also retiring its RSS feeds.</p>
+
+<p>Since November 10, NewsBlur gets Reddit posts from <a href="https://redlisten.com">RedListen</a>, a service that serves Reddit’s own listings. Subreddit, user, multireddit, comment, and search feeds all update again, and you don’t need to change anything.</p>
+
+<h3 id="whats-different">What’s different</h3>
+
+<p>RedListen has a monthly limit on how many posts it returns, so NewsBlur reads Reddit a little differently than it used to:</p>
+
+<ul>
+  <li><strong>Subreddits are checked about once an hour,</strong> many at a time. Quiet subreddits get every post. The busiest ones get a share of their posts, and that share grows with the number of NewsBlur readers following them.</li>
+  <li><strong>Hot and Top feeds read the same as New.</strong></li>
+  <li><strong>Reddit’s front page, r/all, and r/popular aren’t available,</strong> and those feeds will say so.</li>
+  <li><strong>Comment thread and search feeds update at most twice a day,</strong> and less often while they’re quiet. Comment threads older than 30 days can’t be fetched anymore.</li>
+  <li><strong>Refreshing a Reddit feed yourself still fetches it right away,</strong> and so does adding a new one.</li>
+  <li><strong>Posts keep their formatting.</strong> Reddit sends post text as plain text with formatting marks, and NewsBlur turns it into paragraphs, links, emphasis, code, quotes, and lists. Images come through too.</li>
+  <li><strong>Personal Reddit RSS feeds,</strong> the ones with <code class="language-plaintext highlighter-rouge">?feed=</code> in the address, still come straight from Reddit for as long as Reddit serves them.</li>
+</ul>
+
+<h3 id="availability">Availability</h3>
+
+<p>It’s been live since November 10. It all happens on NewsBlur’s servers, so it works on the web and in every app without an update. If a subreddit isn’t coming through the way you’d expect, let me know on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
+]]>
+    </content>
+    
+    
+    
+    <category term="web" />
+    
+    
+    <summary type="html">
+      <![CDATA[In the middle of October, Reddit started refusing NewsBlur’s requests for subreddit feeds, and by early November every Reddit feed in NewsBlur had stopped updating. It came up on the forum right away. Reddit is also retiring its RSS feeds.
+]]>
+    </summary>
+    
+  </entry>
   
   <entry>
     <title type="html">A rewritten mobile web version of NewsBlur, and feeds that load instantly</title>
@@ -1892,296 +2160,6 @@ newsblur auth login
     
     <summary type="html">
       <![CDATA[NewsBlur’s Intelligence Trainer has always had a simple rule: thumbs up beats thumbs down. If a story matches both a liked and a disliked classifier, the story shows up in Focus. That works well most of the time. But sometimes you run into a topic, author, or tag that you...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Refer friends, gift subscriptions, and never pay for NewsBlur premium again</title>
-    <link href="https://blog.newsblur.com/2026/03/26/refer-and-gift/" rel="alternate" type="text/html" title="Refer friends, gift subscriptions, and never pay for NewsBlur premium again" />
-    <published>2026-03-26T00:00:00-04:00</published>
-    <updated>2026-03-26T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/26/refer-and-gift</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/26/refer-and-gift/">
-      <![CDATA[<p>If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still love it, tell people. Post about it on LinkedIn, on X, on Facebook, on Instagram, on TikTok, wherever you hang out online. Word of mouth is still king, and it’s how NewsBlur has always grown.</p>
-
-<p>To make that more rewarding, I’m launching two new features today: referrals and gift subscriptions.</p>
-
-<h3 id="earn-free-premium-by-referring-friends">Earn free premium by referring friends</h3>
-
-<p>Every NewsBlur user now has a personal referral link. Share it with someone, and if they sign up and subscribe, you earn free time on your current tier. There’s no cap. Your next billing date gets pushed forward automatically, so you won’t be charged while you have referral credit.</p>
-
-<!-- SCREENSHOT: Refer tab of the Refer & Gift modal showing the hero banner, referral URL with copy button, and referral stats -->
-<p><img src="/assets/refer-and-gift-refer-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Open the Refer &amp; Gift modal from the Manage menu to find your link. Copy it and share it however you’d like. The modal also shows your referral stats: how many people have signed up through your link, how many have subscribed, and how many years of premium you’ve earned.</p>
-
-<p>The credit scales proportionally based on your tier and what your referral subscribes to. If they subscribe to your tier or higher, you get a full free year. If they subscribe to a lower tier, you get proportional credit:</p>
-
-<ul>
-  <li><strong>Premium subscribers</strong> earn a full free year for every referral, regardless of what tier the referred person picks</li>
-  <li><strong>Premium Archive subscribers</strong> earn a free year when the referral subscribes to Archive or Pro, or 4 free months for a Premium referral</li>
-  <li><strong>Premium Pro subscribers</strong> earn 4 free months for an Archive referral, 2 free months for Premium, or 1 free month for Pro</li>
-</ul>
-
-<p>The higher your tier, the more it pays to refer people to higher tiers. When a referral converts, you’ll get an email confirming your credit, and your subscription renewal date adjusts automatically. No action needed on your part.</p>
-
-<h3 id="gift-a-subscription-to-anyone">Gift a subscription to anyone</h3>
-
-<p>The Gift tab lets you buy a NewsBlur subscription for someone else. Pick a tier, check out through Stripe, and you’ll get a shareable gift link. The recipient clicks the link, signs up or logs in, and their premium activates instantly.</p>
-
-<!-- SCREENSHOT: Gift tab showing the hero banner with how-it-works steps, tier selector (Premium/Archive/Pro), and Create Gift Link button -->
-<p><img src="/assets/refer-and-gift-gift-tab.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Three tiers are available as gifts:</p>
-
-<ul>
-  <li><strong>Premium</strong> at $36/year</li>
-  <li><strong>Premium Archive</strong> at $99/year</li>
-  <li><strong>Premium Pro</strong> at $29/month</li>
-</ul>
-
-<p>If the gift isn’t redeemed within 90 days, you get a full refund automatically. No need to contact support or remember to follow up.</p>
-
-<h3 id="how-to-access-it">How to access it</h3>
-
-<p>Open the Manage menu (the gear icon at the bottom of the feed list) and choose <strong>Refer &amp; Gift</strong>. The modal has two tabs: Refer for your referral link and stats, and Gift for purchasing gift subscriptions.</p>
-
-<!-- SCREENSHOT: Manage menu showing the new Refer & Gift option -->
-<p><img src="/assets/refer-and-gift-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Referrals and gift subscriptions are available now on the web for all NewsBlur users. If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you’ve been following along lately, you know NewsBlur has been shipping feature after feature: story clustering, timed feed muting, the new site discovery panel, Ask AI, and more. I’m not slowing down, and I want people to know about it. If you’ve been using NewsBlur for years and still...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Daily Briefing: A personalized summary of your news, delivered on your schedule</title>
-    <link href="https://blog.newsblur.com/2026/03/25/daily-briefing/" rel="alternate" type="text/html" title="Daily Briefing: A personalized summary of your news, delivered on your schedule" />
-    <published>2026-03-25T00:00:00-04:00</published>
-    <updated>2026-03-25T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/25/daily-briefing</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/25/daily-briefing/">
-      <![CDATA[<p>Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the topics I’ve trained as interesting?</p>
-
-<p>That’s the Daily Briefing. It reads your feeds, scores every story, and writes a personalized summary organized into sections that make sense for the way you read. It shows up as a feed in your sidebar, and you can have it emailed to you on a schedule you control.</p>
-
-<!-- SCREENSHOT: Daily Briefing summary view showing a full briefing with sections like Top Stories, Based on your interests, and Long reads for later, with feed favicons next to each story -->
-<p><img src="/assets/daily-briefing-summary.png" style="width: 100%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>Click “Daily Briefing” in your sidebar to open the briefing view. The first time, you’ll see an onboarding screen where you configure your preferences. Hit generate and NewsBlur does the rest: it scores your stories using a mix of trending read time, feed engagement, how often you read each feed, your classifier training, and recency, then generates a written summary of the top stories.</p>
-
-<!-- SCREENSHOT: Briefing onboarding/settings view showing frequency, time, style, and section options -->
-<p><img src="/assets/daily-briefing-onboarding.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>Each briefing is organized into sections:</p>
-
-<ul>
-  <li><strong>Top stories</strong> — The most important stories from your feeds, ranked by a weighted score of trending engagement, how often you read each feed, your classifier training, and recency</li>
-  <li><strong>From infrequent sites</strong> — Stories from feeds that rarely publish, so they don’t get buried under higher-volume feeds</li>
-  <li><strong>Long reads for later</strong> — Longer articles worth setting time aside for, detected by word count</li>
-  <li><strong>Based on your interests</strong> — Stories matching your trained topics, authors, and tags, with green classifier pills showing exactly why each story was selected</li>
-  <li><strong>Follow-ups</strong> — New posts from feeds where you recently read other stories</li>
-  <li><strong>Widely covered</strong> — Stories that appear across 3 or more of your feeds, using NewsBlur’s story clustering to group duplicates</li>
-</ul>
-
-<p>You can enable or disable any of these sections, and drag to reorder them so your briefing is organized the way you want. If you only care about top stories and classifier matches, turn off the rest.</p>
-
-<h3 id="custom-keyword-sections">Custom keyword sections</h3>
-
-<p>On top of the built-in sections, you can add up to five custom keyword sections. Type a keyword or phrase and NewsBlur uses Elasticsearch to find matching stories across your feeds, then a dedicated section is written for them. If you always want a section about “climate change” or “Apple earnings,” just add the keyword and it appears in every briefing when there’s stories that match.</p>
-
-<p><img src="/assets/daily-briefing-custom-keywords.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="three-writing-styles">Three writing styles</h3>
-
-<p>Choose how you want your briefing written:</p>
-
-<ul>
-  <li><strong>Bullets</strong> — One-sentence summaries for each story, grouped by section. Quick to scan.</li>
-  <li><strong>Editorial</strong> — Narrative prose that explains why each story matters and connects them thematically. Each story’s feed favicon appears as an inline bullet.</li>
-  <li><strong>Headlines</strong> — Just the linked story titles, nothing else. The fastest way to scan.</li>
-</ul>
-
-<!-- SCREENSHOT: Side-by-side comparison or single example of the editorial writing style with favicons as bullets -->
-<p><img src="/assets/daily-briefing-editorial-style.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="delivery-schedule">Delivery schedule</h3>
-
-<p>Set the briefing to generate once, twice, or three times a day, or weekly. Each frequency has its own delivery slots:</p>
-
-<ul>
-  <li><strong>Daily</strong>: Pick morning, afternoon, or evening</li>
-  <li><strong>Twice daily</strong>: Morning plus your choice of afternoon or evening</li>
-  <li><strong>Three times daily</strong>: Morning, afternoon, and evening</li>
-  <li><strong>Weekly</strong>: Pick the day of the week</li>
-</ul>
-
-<p>Briefings are delivered at fixed times in your local timezone: 8:30 AM, 12:30 PM, and 5:00 PM. Each briefing only includes stories from its lookback window, and stories never repeat across same-day briefings.</p>
-
-<h3 id="notifications">Notifications</h3>
-
-<p>Turn on email notifications for your briefing feed and the full summary lands in your inbox, complete with feed favicons, section icons, and classifier pills. The HTML is fully inlined for email clients, so it looks right in Gmail, Apple Mail, Outlook, and everywhere else.</p>
-
-<!-- SCREENSHOT: Daily Briefing email in an email client showing the full formatted summary -->
-<p><img src="/assets/daily-briefing-email.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>You can also enable web, iOS, and Android push notifications if you’d rather get a ping than an email.</p>
-
-<h3 id="choose-your-model">Choose your model</h3>
-
-<p>The briefing summary is written by a language model, and you can pick which one. The same model selector from Ask AI is available here, so you can use whichever model you prefer for writing style and quality.</p>
-
-<h3 id="your-data-stays-yours">Your data stays yours</h3>
-
-<p>The briefing uses your feed stories and classifier training to generate the summary. Story content is sent to the model provider you choose, but NewsBlur doesn’t use your data to train models or for any purpose beyond generating your briefing. The same privacy principles from Ask AI apply here.</p>
-
-<h3 id="availability">Availability</h3>
-
-<p>The Daily Briefing is available now on the web for <a href="https://newsblur.com/?next=premium">Premium Archive</a> and Premium Pro subscribers. You can configure everything from the briefing view in the sidebar.</p>
-
-<p>All users can open the Daily Briefing to see a preview with a handful of top stories. To unlock full briefings with all sections, custom keywords, and scheduled delivery, upgrade to Premium Archive.</p>
-
-<p>If you have feedback or ideas for how to make the Daily Briefing better, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Every morning I open NewsBlur and scroll through hundreds of unread stories. Most days I can keep up. But some days I just want someone to tell me what matters. What’s the big story across my feeds? What are the long reads I should save for later? What matches the...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Story clustering: automatically group duplicate stories across your feeds</title>
-    <link href="https://blog.newsblur.com/2026/03/18/story-clustering/" rel="alternate" type="text/html" title="Story clustering: automatically group duplicate stories across your feeds" />
-    <published>2026-03-18T00:00:00-04:00</published>
-    <updated>2026-03-18T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/18/story-clustering</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/18/story-clustering/">
-      <![CDATA[<p>If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with duplicates, and the stories you haven’t read yet get buried.</p>
-
-<p>Story clustering solves this. When NewsBlur detects that multiple feeds are covering the same story, it groups them together and shows you the highest-scoring version. The duplicates don’t disappear – they fold neatly underneath, so you can still see who else reported it and jump to their version if you want a different perspective.</p>
-
-<h3 id="how-it-works">How it works</h3>
-
-<p>In the story titles list, clustered stories show their sources directly below the representative story. Each source shows the feed’s favicon, feed name, story title, and how long ago it was published. Click any source to read that version instead.</p>
-
-<!-- SCREENSHOT: Story titles view showing a clustered story with 2-3 sources listed underneath it -->
-<p><img src="/assets/story-clustering-titles.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>When you open a clustered story, the detail view shows rich cards for each alternative source at the bottom. These cards include the feed icon, story title, a content preview, the article’s thumbnail image, author, and date. Click any card to jump to that version of the story.</p>
-
-<!-- SCREENSHOT: Story detail view showing the cluster cards section at the bottom with "Also reported by N sources" header and rich cards -->
-<p><img src="/assets/story-clustering-detail.png" style="width: 90%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="two-layers-of-detection">Two layers of detection</h3>
-
-<p>Clustering uses two complementary approaches to catch duplicates:</p>
-
-<p><strong>Title matching</strong> is the fast, obvious check. NewsBlur normalizes story titles (lowercasing, stripping punctuation) and groups exact matches. But it also does fuzzy matching using significant-word overlap – so “Apple Announces New iPhone” and “Apple Reveals the New iPhone at WWDC” will still cluster together, even though the titles aren’t identical.</p>
-
-<p><strong>Semantic matching</strong> goes deeper. NewsBlur sends each story’s title to Elasticsearch’s more_like_this query, searching across all your subscribed feeds for articles covering the same topic. This catches stories that are about the same event but written with completely different headlines. The two layers are merged, so title matches and semantic matches combine into a single cluster.</p>
-
-<p>Clustering runs automatically in the background every time a feed updates. Results are cached for 14 days, so clusters are ready instantly when you load your river.</p>
-
-<h3 id="mark-duplicates-as-read">Mark duplicates as read</h3>
-
-<p>When you read a clustered story, you can optionally have NewsBlur mark all the duplicates as read too. This is off by default – enable it in the feed options popover under “Story Clustering” or in Manage &gt; Preferences &gt; Stories.</p>
-
-<!-- SCREENSHOT: Feed options popover showing the Story Clustering section with the "Cluster related stories" / "Keep stories separate" toggle and the mark-read option -->
-<p><img src="/assets/story-clustering-popover.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>There are two controls:</p>
-
-<ul>
-  <li><strong>Cluster related stories / Keep stories separate</strong> – Toggles clustering on or off. When enabled, duplicate stories are grouped in your river view. When disabled, every story appears individually as before.</li>
-  <li><strong>Mark all as read / Keep others unread</strong> – When you read the representative story, this controls whether the other stories in the cluster are automatically marked as read.</li>
-</ul>
-
-<p>The same options are available in the global Preferences dialog under the Stories tab.</p>
-
-<!-- SCREENSHOT: Preferences modal, Stories tab, showing the story clustering radio buttons and mark-read checkbox -->
-<p><img src="/assets/story-clustering-preferences.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<h3 id="availability">Availability</h3>
-
-<p>Story clustering is available to all NewsBlur users on the web. If a feed you subscribe to has cluster data, you’ll see grouped stories automatically – no configuration needed. Clustering is now enabled by default for all users, and can be toggled off or back on in your account Preferences.</p>
-
-<p><strong>Premium Archive subscribers</strong> get full control over clustering: choose between single-line and expanded preview styles, and automatically mark duplicate stories as read when you read the representative story.</p>
-
-<p><strong>Premium and free users</strong> see clustered stories on popular feeds where cluster data already exists. You’ll see clusters most often on widely-subscribed news feeds. To unlock clustering settings and get clustering across all your feeds, <a href="https://newsblur.com/?next=premium">upgrade to Premium Archive</a>.</p>
-
-<p>If you have feedback or ideas for improvements, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[If you subscribe to more than a handful of news feeds, you’ve hit this problem: a story breaks, and suddenly the same headline appears across five, ten, twenty of your subscriptions. You’re reading the same article over and over, just published by different outlets. Your river view fills up with...]]>
-    </summary>
-    
-  </entry>
-  
-  <entry>
-    <title type="html">Mute feeds for a set amount of time</title>
-    <link href="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/" rel="alternate" type="text/html" title="Mute feeds for a set amount of time" />
-    <published>2026-03-16T00:00:00-04:00</published>
-    <updated>2026-03-16T00:00:00-04:00</updated>
-    <id>https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time</id>
-    <content type="html" xml:base="https://blog.newsblur.com/2026/03/16/mute-feeds-for-a-set-amount-of-time/">
-      <![CDATA[<p>Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed and it stays muted until you remember to unmute it. Usually you forget.</p>
-
-<p>Now you can mute a feed for a specific duration. Pick anywhere from 1 day to 1 year using the slider, or mute indefinitely the old-fashioned way. When the time’s up, NewsBlur automatically unmutes the feed the next time you load your feeds. No reminders to set, no manual cleanup.</p>
-
-<h3 id="two-ways-to-mute">Two ways to mute</h3>
-
-<p>Right-click any feed and choose “Mute this site.” Instead of muting immediately, a slider appears with two buttons: one to mute for a set duration, and one to mute indefinitely. Drag the slider to pick your duration, from 1 day all the way to 1 year with natural stops at 1 week, 2 weeks, 1 month, 3 months, and so on.</p>
-
-<p><img src="/assets/mute-feed-set-time-menu.png" style="width: 50%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>The same controls are available in Site Settings. Open any feed’s settings and you’ll see a Mute section with a status message showing whether the feed is active, muted with a countdown, or muted indefinitely. The slider and buttons work the same way, and you can unmute at any time.</p>
-
-<p><img src="/assets/mute-feed-set-time-settings.png" style="width: 80%;border: 1px solid rgba(0,0,0,0.1);margin: 24px auto;display: block;" /></p>
-
-<p>If a feed is on a timed mute, the right-click menu shows how much time is left next to the “Un-mute this site” option, so you always know when it’s coming back.</p>
-
-<h3 id="auto-unmute">Auto-unmute</h3>
-
-<p>When a timed mute expires, NewsBlur unmutes the feed automatically the next time you open NewsBlur or refresh your feeds. There’s nothing to configure and no background job to wait for. Free accounts respect the 64-feed limit, so if you’re at the cap, the feed stays muted until you have room.</p>
-
-<p>Timed muting is available now on the web for all NewsBlur users. If you have feedback or ideas, please share them on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
-]]>
-    </content>
-    
-    
-    
-    <category term="web" />
-    
-    
-    <summary type="html">
-      <![CDATA[Sometimes a feed gets noisy for a while. An election cycle, a product launch, a conference week. You don’t want to unsubscribe because you’ll want it back eventually, but you also don’t want 200 unread stories piling up every day. Until now, muting was all or nothing: mute a feed...]]>
     </summary>
     
   </entry>

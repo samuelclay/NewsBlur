@@ -241,6 +241,10 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Listen to 10 hours of stories read aloud a week')
                         ]),
+                        $.make('li', { className: 'NB-feature-oauth' }, [
+                            $.make('div', { className: 'NB-premium-bullet-image' }),
+                            gettext('Create OAuth applications')
+                        ]),
                         $.make('li', { className: 'NB-4' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Priority support')

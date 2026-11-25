@@ -486,6 +486,7 @@
     <string name="pro_enable_sites">Obserwuj do 10 000 witryn</string>
     <string name="pro_all_feeds_fetched">Wszystkie kanały są pobierane co 5–15 minut</string>
     <string name="pro_regex_train">Trenuj filtrowanie artykułów za pomocą wyrażeń regularnych</string>
+    <string name="pro_oauth_applications">Twórz aplikacje OAuth</string>
     <string name="pro_priority_support">Priorytetowe wsparcie</string>
     <string name="pro_natural_language_search">Wyszukiwanie w języku naturalnym</string>
     <string name="settings_cat_offline">Czytanie offline</string>
@@ -638,6 +639,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Automatycznie oznaczaj artykuły jako przeczytane po przewinięciu</string>
     <string name="settings_story_clustering">Grupuj powiązane artykuły</string>
     <string name="settings_story_clustering_summary">Pokazuj duplikaty artykułów z innych kanałów pod tytułem artykułu</string>
+    <string name="settings_show_new_stories">Wyświetlaj nowe artykuły od razu po ich pojawieniu się</string>
+    <string name="settings_show_new_stories_summary">Wyświetlaj plakietkę „N nowych artykułów”, gdy pojawią się artykuły w otwartej witrynie lub folderze</string>
     <string name="settings_cluster_matches">Dopasowania w grupach</string>
     <string name="settings_cluster_matches_summary">Wybierz, czy grupy mają pokazywać tylko zduplikowane tytuły, czy także podobne artykuły</string>
     <string name="settings_story_clustering_save_failed">Nie udało się zapisać ustawienia grupowania artykułów</string>
@@ -1583,4 +1586,10 @@
     <string name="settings_listen_speed">Szybkość odtwarzania</string>
     <string name="archive_listen">Słuchaj artykułów czytanych na głos przez 1 godzinę tygodniowo</string>
     <string name="pro_listen">Słuchaj artykułów czytanych na głos przez 10 godzin tygodniowo</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d nowe artykuły</item>
+        <item quantity="many">%d nowych artykułów</item>
+        <item quantity="one">%d nowy artykuł</item>
+        <item quantity="other">%d nowych artykułów</item>
+    </plurals>
 </resources>

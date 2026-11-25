@@ -342,6 +342,26 @@
 			<string>Залишилося хвилин цього місяця: %@</string>
 		</dict>
 	</dict>
+	<key>%@ new stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@new_story_count@</string>
+		<key>new_story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>few</key>
+			<string>%@ нові статті</string>
+			<key>many</key>
+			<string>%@ нових статей</string>
+			<key>one</key>
+			<string>%@ нова стаття</string>
+			<key>other</key>
+			<string>%@ нових статей</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

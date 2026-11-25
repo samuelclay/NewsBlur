@@ -134,7 +134,7 @@ class Test_StoryViewAdapterSubscriptionPreview {
             every { adapter["buildDisplayItems"](any<List<Story>>()) } answers { callOriginal() }
             every { adapter["calculateStoryDiff"](any<StoryViewAdapter.StorySubmission>()) } answers { callOriginal() }
             every { adapter["commitStoryDiff"](any<StoryViewAdapter.StoryDifference>()) } answers { callOriginal() }
-            every { adapter["applySkipBackfill"](any<List<Story>>(), false) } answers { firstArg<List<Story>>() }
+            every { adapter["applySkipBackfill"](any<List<Story>>(), false, any<Set<String>>()) } answers { firstArg<List<Story>>() }
             every { grid.adapter } returns adapter
         }
 

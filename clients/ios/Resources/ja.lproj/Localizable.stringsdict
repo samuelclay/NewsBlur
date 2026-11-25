@@ -240,6 +240,20 @@
 			<string>今月の残り%@分</string>
 		</dict>
 	</dict>
+	<key>%@ new stories</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@new_story_count@</string>
+		<key>new_story_count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>@</string>
+			<key>other</key>
+			<string>新着記事：%@件</string>
+		</dict>
+	</dict>
 	<key>%@ opens</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

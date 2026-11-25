@@ -157,8 +157,6 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
             ], 'NB-listen-voice-section'),
             $.make('div', { className: 'NB-listen-voice-browser' }, [
                 $.make('div', { className: 'NB-listen-rotation' }),
-                // listen_settings_popover.js: type "text", because jquery.hotkeys only stands down
-                // for text inputs, and a search input would let s, m, y and space act on the story.
                 $.make('input', {
                     type: 'text',
                     className: 'NB-listen-search',

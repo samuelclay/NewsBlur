@@ -311,6 +311,12 @@ msgstr[0] "%(count)s Monat"
 msgstr[1] "%(count)s Monate"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] "%(count)s neuer Artikel"
+msgstr[1] "%(count)s neue Artikel"
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s Newsletter"
@@ -1086,6 +1092,9 @@ msgstr "KI-gestützte Artikelanalysen und personalisierte tägliche Zusammenfass
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "ALLE KATEGORIEN (%(value_1)s)"
 
+msgid "API requests"
+msgstr "API-Anfragen"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr ""
 "Auf jeden Fall. Öffne den Trainer und entferne beliebige positive oder negative Bewertungen, um ihn "
@@ -1106,6 +1115,9 @@ msgstr "Aktionen"
 
 msgid "Active"
 msgstr "Aktiv"
+
+msgid "Active readers · 7 days"
+msgstr "Aktive Leser · 7 Tage"
 
 msgid "Activities"
 msgstr "Aktivitäten"
@@ -1225,6 +1237,11 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "Nach %(slider)s %(count)s Sekunde."
 msgstr[1] "Nach %(slider)s %(count)s Sekunden."
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr ""
+"Nachdem ein Leser deiner App Zugriff gewährt hat, leitet NewsBlur ihn mit einem Autorisierungscode an diese"
+" URL weiter."
 
 msgid "After marking feed/folder read"
 msgstr "Nach dem Markieren von Feed/Ordner als gelesen"
@@ -1389,6 +1406,12 @@ msgstr "Jederzeit"
 msgid "Appearance"
 msgstr "Darstellung"
 
+msgid "Application name"
+msgstr "Name der Anwendung"
+
+msgid "Application website"
+msgstr "Website der Anwendung"
+
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(count)s merges (%(stories)s)"
@@ -1521,6 +1544,9 @@ msgstr "Autorenname"
 
 msgid "Author: "
 msgstr "Autor: "
+
+msgid "Authorization link"
+msgstr "Autorisierungslink"
 
 msgid "Authors"
 msgstr "Autoren"
@@ -1719,6 +1745,11 @@ msgstr "Browser"
 
 msgid "Browser Extensions"
 msgstr "Browser-Erweiterungen"
+
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr ""
+"Entwickelst du einen öffentlichen RSS-Reader, den alle nutzen können? Dann kommt für dich ein kostenloses "
+"NewsBlur Premium Pro-Konto infrage."
 
 msgid "Bullet points"
 msgstr "Stichpunkte"
@@ -1974,6 +2005,12 @@ msgstr ""
 msgid "Click to block"
 msgstr "Zum Blockieren klicken"
 
+msgid "Client ID"
+msgstr "Client-ID"
+
+msgid "Client secret"
+msgstr "Client-Secret"
+
 msgid "Close"
 msgstr "Schließen"
 
@@ -2076,11 +2113,31 @@ msgstr ""
 "Verbinde NewsBlur mit Hunderten von Diensten. Speichere Artikel in Pocket, Instapaper, Evernote oder "
 "Notion, teile Beiträge in Slack und löse über dein Training benutzerdefinierte Workflows aus."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"Verbinde deine App mit NewsBlur, damit Leser Zugriff auf ihre Artikel und Feeds gewähren können. Leser "
+"aller Tarife können eine Verbindung herstellen."
+
 msgid "Connected"
 msgstr "Verbunden"
 
 msgid "Connected accounts"
 msgstr "Verbundene Konten"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"Verbundene Konten haben ein nicht abgelaufenes Zugriffstoken. Die Zahl aktiver Leser wird anhand von sieben"
+" UTC-Tagen geschätzt. API-Anfragen und letzte Aktivität werden ab Beginn der Erfassung gemessen."
+
+msgid "Consent screen preview"
+msgstr "Vorschau des Zustimmungsbildschirms"
+
+msgid "Contact Samuel"
+msgstr "Samuel kontaktieren"
 
 msgid "Content"
 msgstr "Inhalt"
@@ -2117,8 +2174,14 @@ msgstr "Text kopieren"
 msgid "Copy URL"
 msgstr "URL kopieren"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "Kopiere jetzt dein Client-Secret. Du kannst es nur einmal ansehen."
+
 msgid "Could not add this classifier. Try again."
 msgstr "Dieser Klassifikator konnte nicht hinzugefügt werden. Versuch es noch einmal."
+
+msgid "Could not create the application. Please try again."
+msgstr "Die Anwendung konnte nicht erstellt werden. Bitte versuche es erneut."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "Dieses Konto konnte nicht getrennt werden. Bitte versuche es erneut."
@@ -2128,6 +2191,9 @@ msgstr "Für diese URL konnte kein RSS-Feed gefunden werden"
 
 msgid "Could not load FAQ. Please try again."
 msgstr "FAQ konnte nicht geladen werden. Bitte versuche es erneut."
+
+msgid "Could not load your applications. Try refreshing."
+msgstr "Deine Anwendungen konnten nicht geladen werden. Versuche, die Seite zu aktualisieren."
 
 msgid "Couldn't load audio for this story."
 msgstr "Audio für diesen Artikel konnte nicht geladen werden."
@@ -2147,14 +2213,29 @@ msgstr "Konto erstellen"
 msgid "Create Gift Link"
 msgstr "Geschenklink erstellen"
 
+msgid "Create OAuth applications"
+msgstr "OAuth-Anwendungen erstellen"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "Erstelle einen Feed für jede Website, auch ohne RSS."
+
+msgid "Create a new OAuth application"
+msgstr "Neue OAuth-Anwendung erstellen"
 
 msgid "Create a new subfolder"
 msgstr "Neuen Unterordner erstellen"
 
+msgid "Create another application"
+msgstr "Weitere Anwendung erstellen"
+
+msgid "Create application"
+msgstr "Anwendung erstellen"
+
 msgid "Created:"
 msgstr "Erstellt:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "Zum Erstellen von OAuth-Anwendungen ist NewsBlur Premium Pro erforderlich."
 
 msgid "Creative"
 msgstr "Kreativ"
@@ -3850,6 +3931,9 @@ msgstr "Letzte IP-Adresse:"
 msgid "Last Update"
 msgstr "Letzte Aktualisierung"
 
+msgid "Last activity"
+msgstr "Letzte Aktivität"
+
 msgid "Last seen:"
 msgstr "Zuletzt gesehen:"
 
@@ -3931,6 +4015,9 @@ msgstr "PayPal wird geladen …"
 
 msgid "Loading Training..."
 msgstr "Training wird geladen …"
+
+msgid "Loading applications…"
+msgstr "Anwendungen werden geladen…"
 
 msgid "Loading checkout..."
 msgstr "Kasse wird geladen …"
@@ -4601,6 +4688,9 @@ msgstr "Keine Fragen entsprechen dieser Suche."
 msgid "No recency filter"
 msgstr "Kein Aktualitätsfilter"
 
+msgid "No recorded activity"
+msgstr "Keine aufgezeichnete Aktivität"
+
 msgid "No referrals yet. Share your link to get started!"
 msgstr "Noch keine Empfehlungen. Teile deinen Link, um loszulegen!"
 
@@ -4752,6 +4842,12 @@ msgstr "Anzahl der Artikel pro Briefing"
 msgid "Numbers & Symbols"
 msgstr "Zahlen & Symbole"
 
+msgid "OAuth application created"
+msgstr "OAuth-Anwendung erstellt"
+
+msgid "OAuth applications"
+msgstr "OAuth-Anwendungen"
+
 msgid "OFF"
 msgstr "AUS"
 
@@ -4766,6 +4862,9 @@ msgstr "Oktober"
 
 msgid "Off"
 msgstr "Aus"
+
+msgid "Offer them in an \"N new stories\" pill"
+msgstr "Sie als Anzeige „N neue Artikel“ anbieten"
 
 msgid "Official NewsBlur Android App"
 msgstr "Offizielle NewsBlur-Android-App"
@@ -4886,6 +4985,9 @@ msgstr "Nur Kommentare von Freunden anzeigen"
 
 msgid "Only show counts on collapsed folders"
 msgstr "Anzahl nur bei eingeklappten Ordnern anzeigen"
+
+msgid "Only show them when the list reloads"
+msgstr "Zeige sie erst an, wenn die Liste neu geladen wird"
 
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "Nur lange geteilte Artikel in Blurblogs kürzen"
@@ -5556,6 +5658,9 @@ msgstr "Reddit-Subreddits"
 msgid "Redeemed"
 msgstr "Eingelöst"
 
+msgid "Redirect URL"
+msgstr "Weiterleitungs-URL"
+
 msgid "Reduce clutter in your river of stories"
 msgstr "Weniger Unordnung in deinem Nachrichtenstrom"
 
@@ -5573,6 +5678,9 @@ msgstr "Empfehlungsverlauf"
 
 msgid "Refine with a hint"
 msgstr "Mit einem Hinweis verfeinern"
+
+msgid "Refresh"
+msgstr "Aktualisieren"
 
 msgid "Refund $12"
 msgstr "12 $ erstatten"
@@ -6273,6 +6381,9 @@ msgstr "Verlauf anzeigen"
 
 msgid "Show more related stories"
 msgstr "Weitere ähnliche Artikel anzeigen"
+
+msgid "Show new stories as they arrive"
+msgstr "Neue Artikel direkt bei ihrem Eintreffen anzeigen"
 
 msgid "Show on Load"
 msgstr "Beim Laden anzeigen"
@@ -7137,6 +7248,13 @@ msgstr "Diese Woche"
 msgid "This Year"
 msgstr "Dieses Jahr"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr ""
+"Dieses Beispiel fordert Lesezugriff an. Erzeuge für jede Anmeldung einen neuen Statuswert und überprüfe "
+"ihn, wenn der Leser zurückkehrt."
+
 msgid "This is just the demo."
 msgstr "Das ist nur die Demo."
 
@@ -7494,6 +7612,9 @@ msgstr "URL:"
 
 msgid "Un-mute this site"
 msgstr "Stummschaltung dieser Website aufheben"
+
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
 
 msgid "Uncategorized"
 msgstr "Ohne Kategorie"
@@ -8142,6 +8263,9 @@ msgstr "Du hast keine ungelesenen Artikel."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "Du hast noch keine geteilten Artikel von anderen abonniert."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "Du hast noch keine OAuth-Anwendungen registriert."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "Du musst %(value_1)s folgen, um zu antworten"
@@ -8218,11 +8342,20 @@ msgstr "Deine archivierten Domains"
 msgid "Your Blurblog"
 msgstr "Dein Blurblog"
 
+msgid "Your OAuth applications"
+msgstr "Deine OAuth-Anwendungen"
+
 msgid "Your Referral Link"
 msgstr "Dein Empfehlungslink"
 
 msgid "Your Referral Stats"
 msgstr "Deine Empfehlungsstatistiken"
+
+msgid "Your app name"
+msgstr "Name deiner App"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "Deine Anwendungen sind pausiert, bis dein Konto über Premium Pro verfügt."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr ""

@@ -54,6 +54,31 @@ static UIImage *NBImageFromColor(UIColor *color) {
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
+static BOOL NBFeedListFailedForConnectivity(NSError *error, NSHTTPURLResponse *response) {
+    if (response.statusCode >= 400 || ![error.domain isEqualToString:NSURLErrorDomain]) return NO;
+    switch (error.code) {
+        case NSURLErrorTimedOut:
+        case NSURLErrorCannotFindHost:
+        case NSURLErrorCannotConnectToHost:
+        case NSURLErrorNetworkConnectionLost:
+        case NSURLErrorDNSLookupFailed:
+        case NSURLErrorNotConnectedToInternet:
+        case NSURLErrorInternationalRoamingOff:
+        case NSURLErrorCallIsActive:
+        case NSURLErrorDataNotAllowed:
+        // A captive network can interrupt TLS or present its own certificate. FeedsObjCViewController.m
+        // retries the normal HTTPS request so the new connection validates the server again.
+        case NSURLErrorSecureConnectionFailed:
+        case NSURLErrorServerCertificateHasBadDate:
+        case NSURLErrorServerCertificateUntrusted:
+        case NSURLErrorServerCertificateHasUnknownRoot:
+        case NSURLErrorServerCertificateNotYetValid:
+            return YES;
+        default:
+            return NO;
+    }
+}
+
 static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     id explicitFlag = results[@"briefing_enabled"];
     if (explicitFlag && explicitFlag != [NSNull null]) {
@@ -116,6 +141,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 @property (atomic) NSUInteger feedListAccountGeneration;
 @property (atomic) NSUInteger feedListRequestGeneration;
+@property (nonatomic) BOOL loadingFeedList;
+@property (nonatomic) BOOL networkReturnedDuringFeedListRequest;
+@property (nonatomic) BOOL feedListFailedWithoutNetwork;
 @property (nonatomic) BOOL awaitingAuthenticatedFeedList;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -1317,6 +1345,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 - (void)returnToApp {
     NSDate *decayDate = [[NSDate alloc] initWithTimeIntervalSinceNow:(-1 * BACKGROUND_REFRESH_SECONDS)];
     NSLog(@"Left app: %@ - %f", self.leftAppDate, [self.leftAppDate timeIntervalSinceDate:decayDate]);
+    // FeedsObjCViewController.m skips the reload when the realtime socket stayed connected the whole time
+    // (the Mac app keeps it open while hidden), since RealtimeUpdates.swift already applied every change.
+    if ([RealtimeUpdates.shared hasStayedConnectedSince:self.leftAppDate]) return;
     if ([self.leftAppDate timeIntervalSinceDate:decayDate] < 0) {
         [appDelegate reloadFeedsView:YES];
     }
@@ -1326,6 +1357,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     [appDelegate resetFeedSubscriptionForAccountChange];
     self.feedListAccountGeneration++;
     self.feedListRequestGeneration++;
+    self.loadingFeedList = NO;
+    self.networkReturnedDuringFeedListRequest = NO;
+    self.feedListFailedWithoutNetwork = NO;
     [[OnboardingFeedLoading shared] reset];
     self.awaitingAuthenticatedFeedList = YES;
     [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
@@ -1360,12 +1394,26 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.inPullToRefresh_ = NO;
 }
 
+- (void)retryOfflineFeedList {
+    if (appDelegate.loginViewController.viewIfLoaded.window) return;
+    if (!appDelegate.activeUsername.length && !self.awaitingAuthenticatedFeedList) return;
+    if (self.loadingFeedList) {
+        self.networkReturnedDuringFeedListRequest = YES;
+    } else if (self.feedListFailedWithoutNetwork) {
+        [self fetchFeedList:NO];
+    }
+}
+
 -(void)fetchFeedList:(BOOL)showLoader {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSUInteger requestGeneration = ++self.feedListRequestGeneration;
+    self.loadingFeedList = YES;
+    self.networkReturnedDuringFeedListRequest = NO;
     NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
+    // A feed list load ends in a full count refresh, which covers RealtimeUpdates.swift's catch-up.
+    [RealtimeUpdates.shared noteFullCountRefresh];
     
     if (self.inPullToRefresh_) {
         urlFeedList = [NSString stringWithFormat:@"%@/reader/feeds?flat=true&update_counts=true&include_inactive=true",
@@ -1381,10 +1429,19 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
+        self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = NO;
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
+        self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = NBFeedListFailedForConnectivity(error, httpResponse);
+        // Reachability.m can report recovery before the old request delivers its transport error.
+        if (self.networkReturnedDuringFeedListRequest && self.feedListFailedWithoutNetwork) {
+            [self fetchFeedList:NO];
+            return;
+        }
         [[OnboardingFeedLoading shared] refreshDidFinish];
         [self finishedWithError:error statusCode:httpResponse.statusCode];
     }];
@@ -1463,6 +1520,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     [defaults setObject:appDelegate.dictSavedStoryTags forKey:@"share:tags"];
     [defaults setObject:appDelegate.dictFoldersArray forKey:@"share:folders"];
     [defaults setObject:preview forKey:@"widget:preview_images_size"];
+    [defaults setObject:[userPreferences objectForKey:@"infrequent_stories_per_month"] forKey:@"widget:infrequent_stories_per_month"];
     [self validateWidgetFeedsForGroupDefaults:defaults usingResults:results];
     // FeedsObjCViewController.m publishes the complete catalog for per-widget folder/site selection.
     NSDictionary *widgetCatalog = @{@"feeds": results[@"feeds"] ?: @{},
@@ -1824,7 +1882,10 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self loadNotificationStory];
     }
     
-    if (finished && !self.isOffline) [appDelegate feedSubscriptionsDidLoad];
+    if (finished && !self.isOffline) {
+        [appDelegate feedSubscriptionsDidLoad];
+        [RealtimeUpdates.shared feedListDidLoad];
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FinishedLoadingFeedsNotification" object:nil];
 }
 
@@ -1907,6 +1968,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self showRefreshNotifier];
     NSString *accountUsername = [appDelegate.activeUsername copy];
 
+    // FeedsObjCViewController.m issues the network request after publishing its cache. Let that load finish first.
+    if (appDelegate.database) self.loadingFeedList = YES;
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         NSDictionary *results;
@@ -2483,6 +2546,16 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     if (![identifier isKindOfClass:[NSString class]]) {
         identifier = notification.userInfo.allKeys.firstObject;
+    }
+
+    // MenuViewController.m also changes this preference directly, producing a defaults notification without a key.
+    if (!identifier || [identifier isEqual:@"infrequent_stories_per_month"]) {
+        NSNumber *limit = [[NSUserDefaults standardUserDefaults] objectForKey:@"infrequent_stories_per_month"];
+        NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.newsblur.NewsBlur-Group"];
+        if (limit && ![limit isEqual:[defaults objectForKey:@"widget:infrequent_stories_per_month"]]) {
+            [defaults setObject:limit forKey:@"widget:infrequent_stories_per_month"];
+            [self.appDelegate.storyPagesViewController reloadWidget];
+        }
     }
     
     // Listen/ListenPreferences.swift sends Listen and story button preferences to the server.
@@ -4562,6 +4635,7 @@ heightForHeaderInSection:(NSInteger)section {
     
     if (!feedId) {
         [self.appDelegate cancelOfflineQueue];
+        [RealtimeUpdates.shared noteFullCountRefresh];
     }
     
     [appDelegate GET:urlString parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
@@ -4599,6 +4673,29 @@ heightForHeaderInSection:(NSInteger)section {
 }
 
 - (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId {
+    [self finishRefreshingFeedList:results feedId:feedId loadFavicons:YES];
+}
+
+// FeedsObjCViewController.m applies the counts RealtimeUpdates.swift fetched for the feeds the socket named. It
+// skips the favicon download a full refresh does, and updates blurblog rows, which read dictSocialFeeds.
+- (void)applyRealtimeUnreadCounts:(NSDictionary *)results {
+    NSDictionary *socialCounts = [results[@"social_feeds"] isKindOfClass:[NSDictionary class]] ? results[@"social_feeds"] : nil;
+    if (socialCounts.count) {
+        NSMutableDictionary *socialFeeds = [self.appDelegate.dictSocialFeeds mutableCopy] ?: [NSMutableDictionary dictionary];
+        for (NSString *socialId in socialCounts) {
+            NSDictionary *counts = socialCounts[socialId];
+            NSString *key = [NSString stringWithFormat:@"%@", socialId];
+            if (![counts isKindOfClass:[NSDictionary class]] || ![socialFeeds[key] isKindOfClass:[NSDictionary class]]) continue;
+            NSMutableDictionary *socialFeed = [socialFeeds[key] mutableCopy];
+            [socialFeed addEntriesFromDictionary:[counts dictionaryWithValuesForKeys:@[@"ps", @"nt", @"ng"]]];
+            socialFeeds[key] = socialFeed;
+        }
+        self.appDelegate.dictSocialFeeds = socialFeeds;
+    }
+    [self finishRefreshingFeedList:results feedId:@"realtime" loadFavicons:NO];
+}
+
+- (void)finishRefreshingFeedList:(NSDictionary *)results feedId:(NSString *)feedId loadFavicons:(BOOL)loadFavicons {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSInteger intelligenceLevel = self.appDelegate.selectedIntelligence;
     // FeedsObjCViewController.m computes visibility on snapshots, then publishes on main
@@ -4685,7 +4782,7 @@ heightForHeaderInSection:(NSInteger)section {
             if (!feedId) {
                 [self.appDelegate startOfflineQueue];
             }
-            [self loadFavicons];
+            if (loadFavicons) [self loadFavicons];
 //            if (!self.searchFeedIds && self.feedTitlesTable.contentOffset.y == 0) {
 //                [UIView animateWithDuration:0.2 animations:^{
 //                    self.feedTitlesTable.contentOffset = CGPointMake(0, CGRectGetHeight(self.searchField.frame));

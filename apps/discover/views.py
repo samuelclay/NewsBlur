@@ -13,7 +13,9 @@ from urllib.parse import quote_plus, urlparse
 import requests
 from django.conf import settings
 from django.db.models import Count, Q
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.utils.translation import gettext
+from django.views.decorators.http import require_POST
 
 from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
@@ -435,12 +437,43 @@ def discover_stories(request, story_hash):
 
 
 @ajax_login_required
+@require_POST
 @json.json_view
 def discover_index(request):
-    user_search = MUserSearch.get_user(request.user.pk)
-    user_search.touch_discover_date()
+    if not request.user.profile.is_archive:
+        return HttpResponseForbidden()
 
-    return {"code": 1, "indexing": True}
+    subscriptions = UserSubscription.objects.filter(user=request.user, active=True)
+    scoped = "feed_ids" in request.POST or "feed_ids[]" in request.POST
+    if scoped:
+        try:
+            feed_ids = {
+                int(value)
+                for value in request.POST.getlist("feed_ids") + request.POST.getlist("feed_ids[]")
+                if value
+            }
+        except ValueError:
+            return HttpResponseBadRequest()
+        subscriptions = subscriptions.filter(feed_id__in=feed_ids)
+
+    pending = list(subscriptions.exclude(feed__discover_indexed=True).values_list("feed_id", flat=True))
+    if request.POST.get("status_only") != "1":
+        user_search = MUserSearch.get_user(request.user.pk)
+        user_search.update(set__last_discover_date=datetime.datetime.now())
+        user_search.schedule_remaining_discover_feeds(pending, notify_done=not scoped)
+
+    # The worker saves the feed before releasing its claim. Reading claims first
+    # keeps the last feed from briefly appearing unfinished and idle.
+    claimed = MUserSearch.claimed_discover_feeds(pending)
+    indexed, remaining = [], []
+    for feed_id, is_indexed in subscriptions.values_list("feed_id", "feed__discover_indexed"):
+        (indexed if is_indexed else remaining).append(feed_id)
+    return {
+        "code": 1,
+        "indexing": bool(claimed.intersection(remaining)),
+        "indexed_feed_ids": indexed,
+        "pending_feed_ids": remaining,
+    }
 
 
 def _get_trending_popular(days, limit, offset, one_year_ago):
