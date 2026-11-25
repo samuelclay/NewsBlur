@@ -48,6 +48,34 @@ class Test_ApplicationRegistration(TestCase):
             )
         self.assertFalse(Application.objects.filter(user=self.owner).exists())
 
+    def test_legacy_edit_form_requires_current_pro_and_preserves_credentials(self):
+        app = Application.objects.create(
+            name="Reader",
+            user=self.owner,
+            redirect_uris="https://reader.example/original",
+            authorization_grant_type=Application.GRANT_AUTHORIZATION_CODE,
+            client_type=Application.CLIENT_CONFIDENTIAL,
+        )
+        url = f"/account/applications/{app.pk}/update/"
+        self.assertEqual(self.client.get(url).status_code, 403)
+        self.set_pro(premium_expire=None)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'name="client_secret"')
+        self.assertNotContains(response, 'name="authorization_grant_type"')
+
+        updated = {"name": "Reader 2", "redirect_uris": "https://reader.example/callback"}
+        response = self.client.post(url, {**updated, "redirect_uris": "http://reader.example/callback"})
+        self.assertTrue(response.context["form"].errors.get("redirect_uris"))
+        original_credentials = (app.client_id, app.client_secret, app.authorization_grant_type)
+        response = self.client.post(url, {**updated, "authorization_grant_type": Application.GRANT_IMPLICIT})
+        self.assertEqual(response.status_code, 302)
+        app.refresh_from_db()
+        self.assertEqual((app.name, app.redirect_uris), (updated["name"], updated["redirect_uris"]))
+        self.assertEqual(
+            (app.client_id, app.client_secret, app.authorization_grant_type), original_credentials
+        )
+
     def test_owner_sees_distinct_connections_and_reader_traffic_for_only_their_apps(self):
         from unittest.mock import patch
         from uuid import uuid4

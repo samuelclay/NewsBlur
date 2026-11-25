@@ -1,4 +1,5 @@
 import logging
+from functools import wraps
 from urllib.parse import urlsplit
 
 import redis
@@ -6,11 +7,11 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import SESSION_KEY
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext
 from django.views.decorators.cache import never_cache
@@ -40,16 +41,60 @@ class RegistrationForm(forms.Form):
         return website
 
     def clean_redirect_uri(self):
-        uri = self.cleaned_data["redirect_uri"]
-        parsed = urlsplit(uri)
-        loopback = parsed.hostname in ("localhost", "127.0.0.1", "::1")
-        if parsed.scheme != "https" and not (parsed.scheme == "http" and loopback):
-            raise forms.ValidationError(gettext("Use HTTPS for the redirect URL, or HTTP on localhost."))
-        if parsed.fragment or parsed.username is not None or "*" in uri or any(c.isspace() for c in uri):
-            raise forms.ValidationError(
-                gettext("Enter a single redirect URL without credentials, wildcards, or a fragment.")
-            )
-        return uri
+        return validate_callback(self.cleaned_data["redirect_uri"])
+
+
+def validate_callback(uri):
+    parsed = urlsplit(uri)
+    loopback = parsed.hostname in ("localhost", "127.0.0.1", "::1")
+    if parsed.scheme != "https" and not (parsed.scheme == "http" and loopback):
+        raise forms.ValidationError(gettext("Use HTTPS for the redirect URL, or HTTP on localhost."))
+    if parsed.fragment or parsed.username is not None or "*" in uri or any(c.isspace() for c in uri):
+        raise forms.ValidationError(
+            gettext("Enter a single redirect URL without credentials, wildcards, or a fragment.")
+        )
+    return uri
+
+
+class ApplicationEditForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ("name", "redirect_uris")
+
+    def clean_redirect_uris(self):
+        uri = self.cleaned_data["redirect_uris"]
+        if uri == self.instance.redirect_uris:
+            # Keep native and multi-URL callbacks registered before self-service.
+            return uri
+        return validate_callback(forms.URLField(max_length=2048).clean(uri))
+
+
+def browser_session_required(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated or request.session.get(SESSION_KEY) != str(request.user.pk):
+            raise PermissionDenied
+        return view(request, *args, **kwargs)
+
+    return wrapped
+
+
+@never_cache
+@csrf_protect
+@require_http_methods(["GET", "POST"])
+@browser_session_required
+def edit_application(request, pk):
+    if not request.user.profile.can_register_oauth_application:
+        raise PermissionDenied
+    application = get_object_or_404(Application, pk=pk, user=request.user)
+    form = ApplicationEditForm(request.POST if request.method == "POST" else None, instance=application)
+    if request.method == "POST" and form.is_valid():
+        if form.changed_data:
+            application.save(update_fields=[*form.changed_data, "updated"])
+        return redirect("oauth2_provider:detail", pk=pk)
+    return render(
+        request, "oauth2_provider/application_form.html", {"application": application, "form": form}
+    )
 
 
 @never_cache
@@ -104,7 +149,11 @@ def register_application(request):
     if request.method == "GET":
         return HttpResponseRedirect("/?next=create-oauth-application")
     profile = getattr(request.user, "profile", None)
-    if not request.session.get(SESSION_KEY) or not profile or not profile.can_register_oauth_application:
+    if (
+        request.session.get(SESSION_KEY) != str(request.user.pk)
+        or not profile
+        or not profile.can_register_oauth_application
+    ):
         return JsonResponse(
             {"error": gettext("Creating OAuth applications requires NewsBlur Premium Pro.")}, status=403
         )
