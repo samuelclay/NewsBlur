@@ -54,6 +54,24 @@ static UIImage *NBImageFromColor(UIColor *color) {
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
+static BOOL NBFeedListFailedForConnectivity(NSError *error, NSHTTPURLResponse *response) {
+    if (response.statusCode >= 400 || ![error.domain isEqualToString:NSURLErrorDomain]) return NO;
+    switch (error.code) {
+        case NSURLErrorTimedOut:
+        case NSURLErrorCannotFindHost:
+        case NSURLErrorCannotConnectToHost:
+        case NSURLErrorNetworkConnectionLost:
+        case NSURLErrorDNSLookupFailed:
+        case NSURLErrorNotConnectedToInternet:
+        case NSURLErrorInternationalRoamingOff:
+        case NSURLErrorCallIsActive:
+        case NSURLErrorDataNotAllowed:
+            return YES;
+        default:
+            return NO;
+    }
+}
+
 static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     id explicitFlag = results[@"briefing_enabled"];
     if (explicitFlag && explicitFlag != [NSNull null]) {
@@ -1411,8 +1429,7 @@ static BOOL NBBoolPreferenceValue(id value) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         self.loadingFeedList = NO;
-        self.feedListFailedWithoutNetwork = !httpResponse && [error.domain isEqualToString:NSURLErrorDomain] &&
-            error.code != NSURLErrorCancelled;
+        self.feedListFailedWithoutNetwork = NBFeedListFailedForConnectivity(error, httpResponse);
         // Reachability.m can report recovery before the old request delivers its transport error.
         if (self.networkReturnedDuringFeedListRequest && self.feedListFailedWithoutNetwork) {
             [self fetchFeedList:NO];

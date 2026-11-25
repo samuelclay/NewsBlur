@@ -2095,16 +2095,23 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.dropFirst().compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"],
                        "Opening a cached river leaves the sidebar offline until its network response triggers feed recovery.")
         let retry = try XCTUnwrap(fixture.app.requests.last)
-        retry.failure(FeedListMaintenanceTask(), NSError(domain: "AFURLResponseSerializationErrorDomain", code: NSURLErrorBadServerResponse))
+        retry.failure(FeedListResponseTask(statusCode: 503), URLError(.networkConnectionLost) as NSError)
         XCTAssertTrue(feeds.isOffline)
         await loadRiverFromNetwork()
         XCTAssertEqual(fixture.app.requests.count, 1, "Opening another river during maintenance must only request its stories.")
 
         feeds.fetchFeedList(false)
-        fixture.app.fail(to: fixture.app.requests.count - 1)
+        let invalidResponse = try XCTUnwrap(fixture.app.requests.last)
+        invalidResponse.failure(FeedListResponseTask(statusCode: 200), URLError(.cannotParseResponse) as NSError)
+        await loadRiverFromNetwork()
+        XCTAssertEqual(fixture.app.requests.count, 1, "A malformed response cannot be fixed by recovering network connectivity.")
+
+        feeds.fetchFeedList(false)
+        let interrupted = try XCTUnwrap(fixture.app.requests.last)
+        interrupted.failure(FeedListResponseTask(statusCode: 200), URLError(.networkConnectionLost) as NSError)
         await loadRiverFromNetwork()
         XCTAssertEqual(fixture.app.requests.dropFirst().compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"],
-                       "A later network outage must re-enable recovery even after maintenance.")
+                       "Losing the connection while downloading the feed list must re-enable recovery even after 200 headers.")
     }
 
     // NewStoriesNewestPage.swift: past the new stories pill's cap, a tap shows the newest stories and the river pages on
@@ -2684,9 +2691,15 @@ private final class FirstPageLoadingStories: StoriesCollection {
     override var activeOrder: String! { order }
 }
 
-private final class FeedListMaintenanceTask: URLSessionDataTask, @unchecked Sendable {
+private final class FeedListResponseTask: URLSessionDataTask, @unchecked Sendable {
+    private let statusCode: Int
+    init(statusCode: Int) {
+        self.statusCode = statusCode
+        super.init()
+    }
+
     override var response: URLResponse? {
-        HTTPURLResponse(url: URL(string: "https://example.test/reader/feeds")!, statusCode: 503, httpVersion: nil, headerFields: nil)
+        HTTPURLResponse(url: URL(string: "https://example.test/reader/feeds")!, statusCode: statusCode, httpVersion: nil, headerFields: nil)
     }
 }
 
