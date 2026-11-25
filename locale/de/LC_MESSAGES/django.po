@@ -3314,6 +3314,9 @@ msgstr "„Vorlesen“ im Web, auf iPad, iPhone und Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "„Vorlesen“ läuft auf einem MacBook, iPad, iPhone und Android-Smartphone."
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "Pro Woche 1 Stunde lang Artikel vorlesen lassen"
 
@@ -4411,6 +4414,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "Nur Premium-Nutzer können mehrere Artikel pro Tag von derselben Website teilen."
 
+msgid "Only staff can see or reset another account's listening."
+msgstr ""
+
 msgid "Open NewsBlur to register your application."
 msgstr "Öffne NewsBlur, um deine Anwendung zu registrieren."
 
@@ -4629,6 +4635,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive – NewsBlur-Preise"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
 "Premium Archive speichert für immer jeden Artikel von jeder Website, der du folgst. Du bekommst alles aus "
@@ -4647,8 +4656,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium-Archive-Abonnement"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Mit Premium Archive kannst du vollständige Artikel vorlesen lassen, bis zu %(limit)s pro Woche."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Mit Premium Archive kannst du dir pro Monat bis zu %(limit)s vollständige Artikel vorlesen lassen."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -5954,6 +5963,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Danke!"
+
+msgid "That account doesn't exist."
+msgstr ""
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "Dieser Ordner hat sich geändert. Aktualisiere deine Feeds und wähle ihn erneut aus."
@@ -7488,24 +7500,27 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
+msgstr ""
+
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"Du hast diese Woche %(limit)s Artikel angehört. Dein Hörkontingent wird am %(day)s zurückgesetzt. Oder "
-"upgrade auf Premium Pro für %(pro_limit)s pro Woche."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
 msgstr "Du hast diese Woche %(limit)s Artikel angehört. Dein Hörkontingent wird am %(day)s zurückgesetzt."
 
+msgid ""
+"You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
+"listen to full stories."
+msgstr ""
+
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Du hast alle Sprachvorschauen für heute abgespielt. Sie werden um Mitternacht zurückgesetzt."
-
-#, python-format
-msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
-msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
-msgstr[0] "Du hast heute %(count)d Artikel probegehört. Upgrade auf Premium Archive, um vollständige Artikel anzuhören."
-msgstr[1] "Du hast heute %(count)d Artikel probegehört. Upgrade auf Premium Archive, um vollständige Artikel anzuhören."
 
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "

@@ -1371,7 +1371,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_resume">Devam et</string>
     <string name="listen_pause">Duraklat</string>
     <string name="listen_play">Oynat</string>
-    <string name="listen_preview_pill">30 sn önizleme</string>
     <string name="listen_open_player">Oynatıcıyı aç</string>
     <string name="listen_close">Oynatıcıyı kapat</string>
     <string name="listen_loading">Haber hazırlanıyor…</string>
@@ -1427,7 +1426,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="listen_speed_exact">Kesin oynatma hızı</string>
     <string name="listen_speed_slider">Oynatma hızı kaydırıcısı</string>
     <string name="listen_speed_button">Oynatma hızı %1$s×</string>
-    <string name="listen_preview_banner">30 saniyelik önizleme. Premium Archive tüm haberlerin kilidini açar.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">%1$d saniye kaldı</item>
         <item quantity="other">%1$d saniye kaldı</item>
@@ -1516,7 +1514,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_listen_voices_summary">Her dil için bir ses ve okuma biçimini seçin</string>
     <string name="settings_listen_delivery">Sunum</string>
     <string name="settings_listen_speed">Oynatma hızı</string>
-    <string name="archive_listen">Haftada 1 saat haberleri sesli dinleyin</string>
     <string name="pro_listen">Haftada 10 saat haberleri sesli dinleyin</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d yeni haber</item>

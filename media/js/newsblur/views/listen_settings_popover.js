@@ -629,15 +629,21 @@ NEWSBLUR.ListenSettingsPopover = NEWSBLUR.ReaderPopover.extend({
         var parts = [];
         if (usage.is_archive_tier) {
             if (_.isNumber(usage.seconds_remaining)) {
-                parts.push(interpolate(gettext('%(duration)s left this week'), {
-                    duration: this.format_allowance(usage.seconds_remaining)
-                }, true));
-                // listen_settings_popover.js: The allowance comes back on Sunday (apps/listen/usage.py
-                // sends resets_at), so the footer names the weekday rather than a date.
-                var resets = usage.resets_at && new Date(usage.resets_at);
+                // listen_settings_popover.js: Archive and Archive Extra count a calendar month, Pro a week
+                // (apps/listen/usage.py sends period and resets_at). A monthly allowance comes back on the 1st,
+                // so it names the date; a weekly one comes back on Sunday, so it names the weekday.
+                var monthly = usage.period == 'month';
+                var duration = this.format_allowance(usage.seconds_remaining);
+                parts.push(monthly ?
+                    interpolate(gettext('%(duration)s left this month'), { duration: duration }, true) :
+                    interpolate(gettext('%(duration)s left this week'), { duration: duration }, true));
+                // Midnight in the account's timezone, so read the date part rather than converting it to the
+                // browser's timezone, which could land on the day before.
+                var resets = usage.resets_at && new Date(usage.resets_at.slice(0, 10) + 'T12:00:00');
                 if (resets && !isNaN(resets.getTime())) {
                     parts.push(interpolate(gettext('Resets %(day)s'), {
-                        day: resets.toLocaleDateString(undefined, { weekday: 'long' })
+                        day: resets.toLocaleDateString(undefined, monthly ?
+                            { month: 'long', day: 'numeric' } : { weekday: 'long' })
                     }, true));
                 }
             }

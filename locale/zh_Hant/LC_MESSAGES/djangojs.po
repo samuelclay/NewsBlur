@@ -475,6 +475,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "本週剩餘 %(duration)s"
 
@@ -523,6 +527,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone、iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -914,11 +926,17 @@ msgstr "/月"
 msgid "/year"
 msgstr "/年"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 個月"
 
 msgid "1 year"
 msgstr "1 年"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
@@ -927,9 +945,6 @@ msgid "2x daily"
 msgstr "每日 2 次"
 
 msgid "30 second preview"
-msgstr "30 秒預覽"
-
-msgid "30s preview"
 msgstr "30 秒預覽"
 
 msgid "3x daily"
@@ -2068,6 +2083,9 @@ msgstr "無法載入你的應用程式。請嘗試重新整理。"
 msgid "Couldn't load audio for this story."
 msgstr "無法載入這篇文章的音訊。"
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "計數很難"
 
@@ -2112,6 +2130,9 @@ msgstr "創意"
 
 msgid "Credit"
 msgstr "獲得的回饋"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "目前語音"
@@ -3414,8 +3435,10 @@ msgstr "標題"
 msgid "Health"
 msgstr "健康"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "聆聽前 30 秒的朗讀。Premium Archive 可朗讀完整文章。"
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "愛心"
@@ -3763,6 +3786,10 @@ msgstr "上次更新"
 msgid "Last activity"
 msgstr "上次活動"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "上次上線："
 
@@ -3825,8 +3852,11 @@ msgstr "聆聽"
 msgid "Listen timed out. Try again in a moment."
 msgstr "聆聽逾時。請稍後再試。"
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "每週聆聽朗讀文章最多 1 小時"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "每週聆聽朗讀文章最多 10 小時"
@@ -4112,6 +4142,9 @@ msgstr "週一"
 msgid "Monday"
 msgstr "星期一"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "每月支出上限"
 
@@ -4274,6 +4307,9 @@ msgstr "永不過期"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "永不過期。恭喜！"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "最新上架"
@@ -5009,6 +5045,18 @@ msgstr "選擇你希望 NewsBlur 使用的語言。你隨時可以在偏好設�
 msgid "Places"
 msgstr "地點"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "平台"
 
@@ -5105,6 +5153,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive 可朗讀完整文章。"
@@ -5566,6 +5617,9 @@ msgstr "需要 Premium Archive"
 
 msgid "Reset"
 msgstr "重設"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "還原為原始網站圖示"
@@ -7596,6 +7650,10 @@ msgstr "視覺"
 
 msgid "Voice"
 msgstr "語音"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "語音錄製失敗。請再試一次。"

@@ -67,6 +67,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, unique=True, related_name="profile", on_delete=models.CASCADE)
     is_premium = models.BooleanField(default=False)
     is_archive = models.BooleanField(default=False, blank=True, null=True)
+    # Premium Archive Extra: Premium Archive with 10 hours of Listen a month instead of 1 (apps/listen/usage.py).
+    # Always set together with is_archive, and cleared on Pro, on a switch back to Archive and on deactivation.
+    is_archive_extra = models.BooleanField(default=False, blank=True, null=True)
     is_pro = models.BooleanField(default=False, blank=True, null=True)
     premium_expire = models.DateTimeField(blank=True, null=True)
     send_emails = models.BooleanField(default=True)
@@ -125,7 +128,7 @@ class Profile(models.Model):
     # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
     # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
     # price absent here, which is what makes a charge at any of these mean a full year.
-    ANNUAL_PRICES = {12, 24, 36, 99, 299}
+    ANNUAL_PRICES = {12, 24, 36, 99, 159, 299}
     # A same-identifier store receipt arriving within this window is a duplicate
     # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
     # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
@@ -210,11 +213,12 @@ class Profile(models.Model):
         return is_reached
 
     def __str__(self):
-        return "%s <%s>%s%s%s" % (
+        return "%s <%s>%s%s%s%s" % (
             self.user,
             self.user.email,
             " (Premium)" if self.is_premium and not self.is_archive and not self.is_pro else "",
-            " (Premium ARCHIVE)" if self.is_archive and not self.is_pro else "",
+            " (Premium ARCHIVE)" if self.is_archive and not self.is_archive_extra and not self.is_pro else "",
+            " (Premium ARCHIVE EXTRA)" if self.is_archive_extra and not self.is_pro else "",
             " (Premium PRO)" if self.is_pro else "",
         )
 
@@ -227,6 +231,12 @@ class Profile(models.Model):
             price = "price_0KK5a7wdsmP8XBlaHfbQNnaL"
             if settings.DEBUG:
                 price = "price_0KK5tVwdsmP8XBlaXW1vYUn9"
+        elif plan == "archive_extra":
+            # $159/year "NewsBlur Premium Archive Extra Subscription", created 2026-11-24 (lookup key
+            # newsblur-premium-archive-extra-159 in both live and test mode).
+            price = "price_0UfXStwdsmP8XBla7MuFguMA"
+            if settings.DEBUG:
+                price = "price_0UfXTewdsmP8XBlaAvwxmzi1"
         elif plan == "pro":
             price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
             if settings.DEBUG:
@@ -265,6 +275,10 @@ class Profile(models.Model):
             price = "P-5JM46230U31841226MHZOMZY"
             if settings.DEBUG:
                 price = "P-2EG40290653242115MHZROQQ"
+        elif plan == "archive_extra":
+            # $159/year "NewsBlur Premium Archive Extra subscription". There is no sandbox plan, so local
+            # development offers Archive Extra through Stripe only.
+            price = None if settings.DEBUG else "P-42M09399PN6032344NMDG2LI"
         elif plan == "pro":
             price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:
@@ -413,6 +427,7 @@ class Profile(models.Model):
         return {
             "is_premium": self.is_premium,
             "is_archive": self.is_archive,
+            "is_archive_extra": bool(self.is_archive_extra),
             "is_pro": self.is_pro,
             "is_premium_trial": self.is_premium_trial,
             "trial_days_remaining": self.trial_days_remaining,
@@ -827,6 +842,8 @@ class Profile(models.Model):
             self.activate_pro()
         elif tier == "archive" and not self.is_archive:
             self.activate_archive()
+        elif tier == "archive_extra" and not self.is_archive_extra:
+            self.activate_archive_extra()
         elif not self.is_premium:
             self.activate_premium()
 
@@ -920,11 +937,29 @@ class Profile(models.Model):
                 "~FR~BBFailed to delay PayPal renewal: %s~FW" % e,
             )
 
-    def activate_archive(self, never_expire=False):
+    def activate_archive_extra(self, never_expire=False):
+        return self.activate_archive(never_expire=never_expire, extra=True)
+
+    def activate_archive(self, never_expire=False, extra=False, downgrade_extra=False):
+        """Premium Archive, or with extra=True Premium Archive Extra (10 hours of Listen a month instead of 1).
+
+        The two share everything else, so switching between them on an account that is already Archive only
+        flips is_archive_extra and skips the archive setup below. A plain Archive call means "at least Archive"
+        and leaves Archive Extra in place; callers pass downgrade_extra=True only once the provider confirms the
+        subscription is on plain Archive now, since gifts, replayed notifications and late webhooks call it too.
+        """
+        tier = "archive_extra" if extra else "archive"
         logging.user(
             self.user,
-            "~FMTier change: activate_archive (was: premium=%s, archive=%s, pro=%s, trial=%s)"
-            % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
+            "~FMTier change: activate_%s (was: premium=%s, archive=%s, extra=%s, pro=%s, trial=%s)"
+            % (
+                tier,
+                self.is_premium,
+                self.is_archive,
+                self.is_archive_extra,
+                self.is_pro,
+                self.is_premium_trial,
+            ),
         )
 
         was_trial = self.is_premium_trial
@@ -937,15 +972,31 @@ class Profile(models.Model):
         # Atomically check archive to prevent duplicate processing from concurrent webhooks
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().get(pk=self.pk)
-            if fresh.is_archive:
-                logging.user(self.user, "~FMactivate_archive: already archive, skipping")
+            keeps_extra = fresh.is_archive_extra and not extra and not downgrade_extra
+            if fresh.is_pro or (fresh.is_archive and (bool(fresh.is_archive_extra) == extra or keeps_extra)):
+                logging.user(self.user, "~FMactivate_%s: already %s or higher, skipping" % (tier, tier))
                 return True
-            was_premium = fresh.is_premium
-            was_archive = fresh.is_archive
-            was_pro = fresh.is_pro
-            Profile.objects.filter(pk=self.pk).update(
-                is_premium=True, is_archive=True, is_premium_trial=False
-            )
+            if fresh.is_archive:
+                Profile.objects.filter(pk=self.pk).update(is_archive_extra=extra)
+                switched = True
+            else:
+                switched = False
+                was_premium = fresh.is_premium
+                was_archive = fresh.is_archive
+                was_pro = fresh.is_pro
+                Profile.objects.filter(pk=self.pk).update(
+                    is_premium=True, is_archive=True, is_archive_extra=extra, is_premium_trial=False
+                )
+
+        self.is_archive_extra = extra
+        if switched:
+            # Archive <-> Archive Extra: the archive itself is already set up, only the Listen allowance changes.
+            if extra:
+                from apps.profile.tasks import EmailStaffPremiumUpgrade
+
+                EmailStaffPremiumUpgrade.delay(user_id=self.user.pk, tier=tier, previous_tier="archive")
+            logging.user(self.user, "~FMSwitched to %s" % tier)
+            return True
 
         UserSubscription.schedule_fetch_archive_feeds_for_user(self.user.pk)
 
@@ -955,9 +1006,7 @@ class Profile(models.Model):
             from apps.profile.tasks import EmailStaffPremiumUpgrade
 
             staff_previous_tier = "trial" if was_trial else ("premium" if was_premium else "free")
-            EmailStaffPremiumUpgrade.delay(
-                user_id=self.user.pk, tier="archive", previous_tier=staff_previous_tier
-            )
+            EmailStaffPremiumUpgrade.delay(user_id=self.user.pk, tier=tier, previous_tier=staff_previous_tier)
         self.is_premium = True
         self.is_archive = True
         self.is_premium_trial = False
@@ -1045,7 +1094,7 @@ class Profile(models.Model):
             was_premium = fresh.is_premium
             was_archive = fresh.is_archive
             Profile.objects.filter(pk=self.pk).update(
-                is_premium=True, is_archive=True, is_pro=True, is_premium_trial=False
+                is_premium=True, is_archive=True, is_archive_extra=False, is_pro=True, is_premium_trial=False
             )
 
         subs = UserSubscription.objects.filter(user=self.user)
@@ -1065,6 +1114,7 @@ class Profile(models.Model):
             )
         self.is_premium = True
         self.is_archive = True
+        self.is_archive_extra = False
         self.is_pro = True
         self.is_premium_trial = False
         self.save()
@@ -1129,6 +1179,7 @@ class Profile(models.Model):
         self.is_premium = False
         self.is_pro = False
         self.is_archive = False
+        self.is_archive_extra = False
         self.save()
 
         subs = UserSubscription.objects.filter(user=self.user)
@@ -1234,7 +1285,7 @@ class Profile(models.Model):
         if not paypal_api:
             return
         paypal_return = reverse("paypal-return")
-        if plan == "archive":
+        if plan in ("archive", "archive_extra"):
             paypal_return = reverse("paypal-archive-return")
 
         try:
@@ -1500,6 +1551,7 @@ class Profile(models.Model):
             "stripe",
             "ios-subscription",
             "ios-archive-subscription",
+            "ios-archive-extra-subscription",
             "ios-pro-subscription",
             "android-subscription",
         ]:
@@ -1817,14 +1869,20 @@ class Profile(models.Model):
                 self.is_archive,
             ),
         )
+        archive_plans = (Profile.plan_to_stripe_price("archive"), Profile.plan_to_paypal_plan_id("archive"))
+        archive_extra_plans = (
+            Profile.plan_to_stripe_price("archive_extra"),
+            Profile.plan_to_paypal_plan_id("archive_extra"),
+        )
         if active_plan == Profile.plan_to_stripe_price("pro") and not self.is_pro:
             self.activate_pro()
-        elif active_plan == Profile.plan_to_stripe_price("archive") and not self.is_archive:
-            self.activate_archive()
         elif active_plan == Profile.plan_to_paypal_plan_id("pro") and not self.is_pro:
             self.activate_pro()
-        elif active_plan == Profile.plan_to_paypal_plan_id("archive") and not self.is_archive:
-            self.activate_archive()
+        elif active_plan and active_plan in archive_extra_plans and not self.is_archive_extra:
+            self.activate_archive_extra()
+        elif active_plan and active_plan in archive_plans and (not self.is_archive or self.is_archive_extra):
+            # Also covers an Archive Extra subscriber whose live subscription went back to plain Archive.
+            self.activate_archive(downgrade_extra=True)
 
     def preference_value(self, key, default=None):
         preferences = json.decode(self.preferences)
@@ -2350,9 +2408,11 @@ class Profile(models.Model):
         store_providers = [
             "android-subscription",
             "android-archive",
+            "android-archive-extra",
             "android-pro",
             "ios-subscription",
             "ios-archive-subscription",
+            "ios-archive-extra-subscription",
             "ios-pro-subscription",
         ]
         last_store_payment = (
@@ -2869,9 +2929,41 @@ class Profile(models.Model):
             )
 
         self.setup_premium_history()
+        # An unsigned receipt can't say what the subscription is on now: Restore Purchases resends old Archive
+        # purchases under new transaction ids, and deferred purchases arrive as "in-progress". So this keeps
+        # Archive Extra, and the signed notifications in apps/profile/apple_subscriptions.py move it back.
         self.activate_archive()
 
         logging.user(self.user, "~FG~BBNew iOS archive subscription: $%s~FW" % amount)
+        return True
+
+    def activate_ios_archive_extra(self, transaction_identifier=None, amount=159):
+        with transaction.atomic():
+            Profile.objects.select_for_update().filter(user=self.user).first()
+
+            duplicate_reason = self._duplicate_store_receipt_reason(
+                "ios-archive-extra-subscription", transaction_identifier, self.ANNUAL_RENEWAL_WINDOW_DAYS
+            )
+            if duplicate_reason:
+                logging.user(
+                    self.user,
+                    "~FG~BBAlready paid iOS archive extra subscription (%s): $%s~FW"
+                    % (duplicate_reason, transaction_identifier),
+                )
+                return False
+
+            PaymentHistory.objects.create(
+                user=self.user,
+                payment_date=datetime.datetime.now(),
+                payment_amount=amount,
+                payment_provider="ios-archive-extra-subscription",
+                payment_identifier=transaction_identifier,
+            )
+
+        self.setup_premium_history()
+        self.activate_archive_extra()
+
+        logging.user(self.user, "~FG~BBNew iOS archive extra subscription: $%s~FW" % amount)
         return True
 
     def activate_ios_pro(self, transaction_identifier=None, amount=29):
@@ -2908,7 +3000,10 @@ class Profile(models.Model):
         payment_provider = "android-subscription"
         payment_amount = 36 if amount is None else amount
 
-        if product_id and "premium.archive" in product_id:
+        if product_id and "premium.archive.extra" in product_id:
+            payment_provider = "android-archive-extra"
+            payment_amount = 159 if amount is None else amount
+        elif product_id and "premium.archive" in product_id:
             payment_provider = "android-archive"
             payment_amount = 99 if amount is None else amount
         elif product_id and "premium.pro" in product_id:
@@ -2941,7 +3036,11 @@ class Profile(models.Model):
 
         if product_id and "premium.pro" in product_id:
             self.activate_pro()
+        elif product_id and "premium.archive.extra" in product_id:
+            self.activate_archive_extra()
         elif product_id and "premium.archive" in product_id:
+            # Keeps Archive Extra. A move back to plain Archive needs Google's own subscription record, which
+            # handle_google_play_notification in apps/profile/views.py checks.
             self.activate_archive()
         elif not self.is_premium:
             self.activate_premium()
@@ -3432,7 +3531,12 @@ class Profile(models.Model):
             )
 
         # Tier display
-        tier_names = {"premium": "Premium", "archive": "Premium Archive", "pro": "Premium Pro"}
+        tier_names = {
+            "premium": "Premium",
+            "archive": "Premium Archive",
+            "archive_extra": "Premium Archive Extra",
+            "pro": "Premium Pro",
+        }
         previous_tier_names = {
             "free": "Free",
             "trial": "Trial",
@@ -3444,7 +3548,12 @@ class Profile(models.Model):
         transition_label = f"{previous_tier_display} \u2192 {tier_display}"
 
         # Tier header colors
-        tier_colors = {"premium": "#5ba4e5", "archive": "#2d5273", "pro": "#912d8d"}
+        tier_colors = {
+            "premium": "#5ba4e5",
+            "archive": "#2d5273",
+            "archive_extra": "#2d5273",
+            "pro": "#912d8d",
+        }
         header_color = tier_colors.get(tier, "#5ba4e5")
 
         data = {
@@ -4879,6 +4988,52 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
 zebra_webhook_checkout_session_completed.connect(stripe_checkout_session_completed)
 
 
+def stripe_current_plan_id(subscription_id):
+    """The price a Stripe subscription is on now, or None when Stripe can't say. The periodic Stripe history
+    sync (setup_premium_history) settles anything left undecided from the live subscription."""
+    if not subscription_id:
+        return None
+    stripe.api_key = settings.STRIPE_SECRET
+    try:
+        subscription = stripe.Subscription.retrieve(subscription_id)
+    except stripe.error.StripeError as e:
+        logging.debug(
+            " ---> Couldn't fetch Stripe subscription %s, keeping the tier: %s" % (subscription_id, e)
+        )
+        return None
+    if subscription.get("status") not in ("active", "trialing", "past_due"):
+        # A canceled or expired subscription keeps its last price, which says nothing about what the account
+        # pays for now, such as an old Archive subscription replaced by a new Archive Extra one.
+        return None
+    plan = subscription.get("plan")
+    if not plan:
+        items = (subscription.get("items") or {}).get("data") or []
+        plan = (items[0].get("plan") or items[0].get("price")) if items else None
+    return plan["id"] if plan else None
+
+
+def stripe_confirmed_plan_id(profile, subscription_id, plan_id):
+    """(plan_id, confirmed): the plan a webhook should act on, and whether Stripe itself just confirmed it.
+
+    When an event would switch an account between Archive and Archive Extra, ask Stripe which one the
+    subscription is on now, since events can arrive out of order. If Stripe can't say, a downgrade to Archive
+    waits for the history sync (None leaves the tier alone) and an upgrade to Archive Extra goes ahead. Only a
+    confirmed Archive plan may take Archive Extra away (activate_archive downgrade_extra), which also covers a
+    concurrent Extra upgrade landing after this snapshot of the profile.
+    """
+    archive_price = Profile.plan_to_stripe_price("archive")
+    extra_price = Profile.plan_to_stripe_price("archive_extra")
+    if plan_id not in (archive_price, extra_price) or not profile.is_archive or profile.is_pro:
+        return plan_id, False
+    current_price = extra_price if profile.is_archive_extra else archive_price
+    if plan_id == current_price:
+        return plan_id, False
+    live_plan_id = stripe_current_plan_id(subscription_id)
+    if live_plan_id:
+        return live_plan_id, True
+    return (None if plan_id == archive_price else plan_id), False
+
+
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json["data"]["object"]["customer"]
     plan = full_json["data"]["object"].get("plan")
@@ -4892,6 +5047,7 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
+        plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
@@ -4905,8 +5061,11 @@ def stripe_signup(sender, full_json, **kwargs):
             profile.activate_premium()
             MReferral.award_credit(profile.user.pk, 36, "premium")
         elif plan_id == Profile.plan_to_stripe_price("archive"):
-            profile.activate_archive()
+            profile.activate_archive(downgrade_extra=confirmed)
             MReferral.award_credit(profile.user.pk, 99, "archive")
+        elif plan_id == Profile.plan_to_stripe_price("archive_extra"):
+            profile.activate_archive_extra()
+            MReferral.award_credit(profile.user.pk, 159, "archive_extra")
         elif plan_id == Profile.plan_to_stripe_price("pro"):
             profile.activate_pro()
             MReferral.award_credit(profile.user.pk, 29, "pro")
@@ -4939,6 +5098,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
+        plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
@@ -4961,7 +5121,9 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price("archive"):
-                profile.activate_archive()
+                profile.activate_archive(downgrade_extra=confirmed)
+            elif plan_id == Profile.plan_to_stripe_price("archive_extra"):
+                profile.activate_archive_extra()
             elif plan_id == Profile.plan_to_stripe_price("pro"):
                 profile.activate_pro()
             profile.cancel_premium_paypal()
@@ -5288,7 +5450,7 @@ class PremiumPricingMigration(models.Model):
         amount = amount or 0
         if "pro" in provider or amount >= 299 or amount == 29:
             return "pro"
-        if "archive" in provider or amount == 99:
+        if "archive" in provider or amount in (99, 159):
             return "archive"
         return "premium"
 
@@ -5744,6 +5906,7 @@ class MReferral(mongo.Document):
     TIER_YEARLY_COST = {
         "premium": 36,
         "archive": 99,
+        "archive_extra": 159,
         "pro": 299,
     }
 
@@ -5812,6 +5975,8 @@ class MReferral(mongo.Document):
         profile = referrer.profile
         if profile.is_pro:
             referrer_tier = "pro"
+        elif profile.is_archive and profile.is_archive_extra:
+            referrer_tier = "archive_extra"
         elif profile.is_archive:
             referrer_tier = "archive"
         elif profile.is_premium:
@@ -5827,7 +5992,7 @@ class MReferral(mongo.Document):
         if payment_amount >= referrer_yearly:
             credit_months = 12
         else:
-            is_annual_referral = payment_tier in ("premium", "archive")
+            is_annual_referral = payment_tier in ("premium", "archive", "archive_extra")
             min_months = 2 if is_annual_referral else 1
             credit_months = min(12, max(min_months, round(payment_amount / referrer_yearly * 12)))
 

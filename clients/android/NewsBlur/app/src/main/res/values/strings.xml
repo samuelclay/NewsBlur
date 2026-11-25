@@ -397,6 +397,7 @@ people together to talk about the world.</string>
     <string name="main_menu_upgrade_premium">Upgrade to Premium</string>
     <string name="main_menu_upgrade_archive">Upgrade to Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Support Forum</string>
 
@@ -421,13 +422,16 @@ people together to talk about the world.</string>
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_header">Premium Subscription</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
     <string name="premium_subscription_active">Your premium subscription is active</string>
     <string name="archive_subscription_active">Your premium archive subscription is active</string>
+    <string name="archive_extra_subscription_active">Your premium archive extra subscription is active</string>
     <string name="pro_subscription_active">Your premium pro subscription is active</string>
     <string name="subscription_manage">Manage Subscription</string>
     <string name="subscription_details_error">Error retrieving subscription details</string>
@@ -439,7 +443,11 @@ people together to talk about the world.</string>
     <string name="subscription_price_yearly">%1$s/year (%2$s/month)</string>
     <string name="subscription_price_monthly">%1$s/month</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <!-- SubscriptionActivity.kt: a yearly price under a plan's position on the Premium Archive card's hours toggle. -->
+    <string name="subscription_price_per_year">%1$s/year</string>
+    <string name="subscription_current_plan">Current plan</string>
     <string name="premium_archive_includes_above">Your premium archive subscription includes everything above</string>
+    <string name="premium_archive_extra_includes_above">Your premium archive extra subscription includes everything above</string>
     <string name="premium_pro_includes_above">Your premium pro subscription includes everything above</string>
 
     <string name="premium_enable_sites">Follow up to 1,024 sites</string>
@@ -1606,7 +1614,11 @@ people together to talk about the world.</string>
     <string name="listen_resume">Resume</string>
     <string name="listen_pause">Pause</string>
     <string name="listen_play">Play</string>
-    <string name="listen_preview_pill">30s preview</string>
+    <!-- The length comes from the server; "s" abbreviates seconds. -->
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="one">%1$ds preview</item>
+        <item quantity="other">%1$ds preview</item>
+    </plurals>
     <string name="listen_open_player">Open player</string>
     <string name="listen_close">Close player</string>
     <string name="listen_loading">Getting the story ready…</string>
@@ -1665,7 +1677,10 @@ people together to talk about the world.</string>
     <string name="listen_speed_exact">Exact playback speed</string>
     <string name="listen_speed_slider">Playback speed slider</string>
     <string name="listen_speed_button">Playback speed %1$s×</string>
-    <string name="listen_preview_banner">Previewing 30 seconds. Premium Archive unlocks full stories.</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="one">Previewing %1$d second. Premium Archive unlocks full stories.</item>
+        <item quantity="other">Previewing %1$d seconds. Premium Archive unlocks full stories.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">%1$d second left</item>
         <item quantity="other">%1$d seconds left</item>
@@ -1731,6 +1746,7 @@ people together to talk about the world.</string>
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">%1$s left this week</string>
+    <string name="listen_time_left_this_month">%1$s left this month</string>
     <string name="listen_resets_on">Resets %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">%1$d free story preview left today</item>
@@ -1754,7 +1770,9 @@ people together to talk about the world.</string>
     <string name="settings_listen_voices_summary">Pick a voice for each language and how it reads</string>
     <string name="settings_listen_delivery">Delivery</string>
     <string name="settings_listen_speed">Playback speed</string>
-    <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
+    <string name="archive_listen">Listen to 1 hour of stories read aloud a month</string>
+    <!-- SubscriptionActivity.kt: the Premium Archive card's Listen line with its toggle on 10 hours, for Premium Archive Extra. -->
+    <string name="archive_extra_listen">Listen to 10 hours of stories read aloud a month</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
     <!-- NewStoriesPill.kt: stories that arrived for the open story list while it was on screen. -->
     <plurals name="new_stories_pill">

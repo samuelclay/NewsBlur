@@ -1371,7 +1371,6 @@
     <string name="listen_resume">फिर से शुरू करें</string>
     <string name="listen_pause">रोकें</string>
     <string name="listen_play">चलाएँ</string>
-    <string name="listen_preview_pill">30 सेकंड का पूर्वावलोकन</string>
     <string name="listen_open_player">प्लेयर खोलें</string>
     <string name="listen_close">प्लेयर बंद करें</string>
     <string name="listen_loading">लेख तैयार किया जा रहा है…</string>
@@ -1427,7 +1426,6 @@
     <string name="listen_speed_exact">सटीक प्लेबैक गति</string>
     <string name="listen_speed_slider">प्लेबैक गति स्लाइडर</string>
     <string name="listen_speed_button">प्लेबैक गति %1$s×</string>
-    <string name="listen_preview_banner">30 सेकंड का पूर्वावलोकन। Premium Archive में पूरे लेख अनलॉक होते हैं।</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">%1$d सेकंड बाकी</item>
         <item quantity="other">%1$d सेकंड बाकी</item>
@@ -1516,7 +1514,6 @@
     <string name="settings_listen_voices_summary">हर भाषा के लिए आवाज़ चुनें और तय करें कि वह कैसे पढ़े</string>
     <string name="settings_listen_delivery">डिलीवरी</string>
     <string name="settings_listen_speed">प्लेबैक गति</string>
-    <string name="archive_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें</string>
     <string name="pro_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d नया लेख</item>

@@ -1345,7 +1345,6 @@
     <string name="listen_resume">재개</string>
     <string name="listen_pause">일시 정지</string>
     <string name="listen_play">재생</string>
-    <string name="listen_preview_pill">30초 미리 듣기</string>
     <string name="listen_open_player">플레이어 열기</string>
     <string name="listen_close">플레이어 닫기</string>
     <string name="listen_loading">스토리 준비 중…</string>
@@ -1399,7 +1398,6 @@
     <string name="listen_speed_exact">정확한 재생 속도</string>
     <string name="listen_speed_slider">재생 속도 슬라이더</string>
     <string name="listen_speed_button">재생 속도 %1$s×</string>
-    <string name="listen_preview_banner">30초 미리 듣기 중입니다. 프리미엄 아카이브에서 전체 스토리를 이용할 수 있습니다.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">%1$d초 남음</item>
     </plurals>
@@ -1482,7 +1480,6 @@
     <string name="settings_listen_voices_summary">언어별 음성과 읽기 방식을 선택하세요</string>
     <string name="settings_listen_delivery">전달 방식</string>
     <string name="settings_listen_speed">재생 속도</string>
-    <string name="archive_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용</string>
     <string name="pro_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d개의 새 스토리</item>

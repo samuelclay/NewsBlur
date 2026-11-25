@@ -182,3 +182,49 @@ final class Test_ListenNarratorHandoff: XCTestCase {
         XCTAssertEqual(playStory("1:again"), "a")
     }
 }
+
+/// ListenPlayerTests.swift: the listening allowance reads in the period apps/listen/usage.py sends. Premium Archive
+/// and Archive Extra reset at midnight on the 1st of the month, Premium Pro at midnight on Sunday, both in the
+/// account's timezone, which `resets_at` carries as its offset.
+final class Test_ListenUsageAllowance: XCTestCase {
+    private var savedLanguage: Any?
+    private var savedTimeZone = NSTimeZone.default
+
+    override func setUp() {
+        super.setUp()
+        savedLanguage = UserDefaults.standard.object(forKey: NBLocalization.preferenceKey)
+        UserDefaults.standard.set("en", forKey: NBLocalization.preferenceKey)
+        savedTimeZone = NSTimeZone.default
+        // A device west of the account, where midnight in New York is still the evening before.
+        NSTimeZone.default = TimeZone(identifier: "Pacific/Honolulu")!
+    }
+
+    override func tearDown() {
+        NSTimeZone.default = savedTimeZone
+        UserDefaults.standard.set(savedLanguage, forKey: NBLocalization.preferenceKey)
+        super.tearDown()
+    }
+
+    private func usage(tier: String, period: String, limit: Double, resetsAt: String) -> ListenUsage {
+        ListenUsage(json: ["tier": tier, "is_archive_tier": true, "period": period, "seconds_used": 1800,
+                           "seconds_limit": limit, "seconds_remaining": limit - 1800, "resets_at": resetsAt])!
+    }
+
+    func test_monthlyAllowanceSaysThisMonthAndResetsOnTheFirst() throws {
+        let archive = usage(tier: "archive", period: "month", limit: 3600, resetsAt: "2026-12-01T00:00:00-05:00")
+
+        XCTAssertTrue(try XCTUnwrap(archive.allowanceLeftText).hasSuffix(" left this month"))
+        XCTAssertTrue(try XCTUnwrap(archive.allowanceOfLimitText).hasSuffix(" of listening left this month"))
+        let reset = try XCTUnwrap(archive.resetText)
+        XCTAssertTrue(reset.hasPrefix("Resets on "), reset)
+        XCTAssertTrue(reset.contains("December"), reset)
+    }
+
+    func test_weeklyAllowanceSaysThisWeekAndResetsOnSunday() throws {
+        let pro = usage(tier: "pro", period: "week", limit: 36000, resetsAt: "2026-11-29T00:00:00-05:00")
+
+        XCTAssertTrue(try XCTUnwrap(pro.allowanceLeftText).hasSuffix(" left this week"))
+        XCTAssertTrue(try XCTUnwrap(pro.allowanceOfLimitText).hasSuffix(" of listening left this week"))
+        XCTAssertEqual(pro.resetText, "Resets Sunday")
+    }
+}

@@ -600,6 +600,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Цього тижня залишилося %(duration)s"
 
@@ -656,6 +660,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1055,11 +1067,17 @@ msgstr "/місяць"
 msgid "/year"
 msgstr "/рік"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 місяць"
 
 msgid "1 year"
 msgstr "1 рік"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Доступно 28 інструментів для читання, дій, навчання та пошуку нового."
@@ -1069,9 +1087,6 @@ msgstr "2 рази на день"
 
 msgid "30 second preview"
 msgstr "Попереднє прослуховування — 30 секунд"
-
-msgid "30s preview"
-msgstr "Попереднє прослуховування — 30 с"
 
 msgid "3x daily"
 msgstr "3 рази на день"
@@ -2271,6 +2286,9 @@ msgstr "Не вдалося завантажити ваші програми. С
 msgid "Couldn't load audio for this story."
 msgstr "Не вдалося завантажити аудіо для цієї статті."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Рахувати — складно"
 
@@ -2315,6 +2333,9 @@ msgstr "Творчий"
 
 msgid "Credit"
 msgstr "Бонус"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Поточний голос"
@@ -3652,8 +3673,12 @@ msgstr "Заголовки"
 msgid "Health"
 msgstr "Здоров’я"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "Послухайте, як читаються перші 30 секунд. Premium Archive читає статті повністю."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 msgid "Hearts"
 msgstr "Серця"
@@ -4013,6 +4038,10 @@ msgstr "Останнє оновлення"
 msgid "Last activity"
 msgstr "Остання активність"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Востаннє в мережі:"
 
@@ -4077,8 +4106,11 @@ msgstr "Прослухати"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Час очікування прослуховування вичерпано. Спробуйте ще раз трохи пізніше."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Слухайте озвучення статей до 1 години на тиждень"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Слухайте озвучення статей до 10 годин на тиждень"
@@ -4380,6 +4412,9 @@ msgstr "Пн"
 msgid "Monday"
 msgstr "Понеділок"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "Місячний ліміт витрат"
 
@@ -4548,6 +4583,9 @@ msgstr "Безстроково"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Термін дії ніколи не закінчиться. Вітаємо!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Нові надходження"
@@ -5311,6 +5349,18 @@ msgstr "Виберіть мову, якою має користуватися Ne
 msgid "Places"
 msgstr "Місця"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Платформа"
 
@@ -5407,6 +5457,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive читає статті повністю вголос."
@@ -5886,6 +5939,9 @@ msgstr "Потребує Premium Archive"
 
 msgid "Reset"
 msgstr "Скинути"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Відновити оригінальну іконку сайту"
@@ -8005,6 +8061,10 @@ msgstr "Візуально"
 
 msgid "Voice"
 msgstr "Голос"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "Не вдалося записати голос. Спробуйте ще раз."

@@ -1648,14 +1648,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     appDelegate.dashboardArray = [results objectForKey:@"dashboard_rivers"];
     
-    appDelegate.isPremium = [[appDelegate.dictUserProfile objectForKey:@"is_premium"] integerValue] == 1;
-    appDelegate.isPremiumArchive = [[appDelegate.dictUserProfile objectForKey:@"is_archive"] integerValue] == 1;
-    appDelegate.isPremiumPro = [[appDelegate.dictUserProfile objectForKey:@"is_pro"] integerValue] == 1;
-    id premiumExpire = [appDelegate.dictUserProfile objectForKey:@"premium_expire"];
-    if (premiumExpire && ![premiumExpire isKindOfClass:[NSNull class]] && premiumExpire != 0) {
-        appDelegate.premiumExpire = [premiumExpire integerValue];
-    }
-    
+    [appDelegate updatePremiumTiersFromProfile:appDelegate.dictUserProfile];
+
     if (!appDelegate.premiumManager) {
         appDelegate.premiumManager = [PremiumManager new];
     }
@@ -2093,7 +2087,11 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [viewController startNewSection];
 
-    if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
+    if (appDelegate.isPremium && appDelegate.isPremiumArchiveExtra) {
+        [viewController addFeedListTitle:[NBLocalization text:@"Premium Archive Extra"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
+            [self.appDelegate showPremiumDialog];
+        }];
+    } else if (appDelegate.isPremium && appDelegate.isPremiumArchive) {
         [viewController addFeedListTitle:[NBLocalization text:@"Premium Archive"] iconName:@"feed-menu-subscription" selectionShouldDismiss:YES handler:^{
             [self.appDelegate showPremiumDialog];
         }];

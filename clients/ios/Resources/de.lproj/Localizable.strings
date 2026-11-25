@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Ordner %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Ordner %1$@, eingeklappt, %2$@";
 "%1$@ followed %2$@." = "%1$@ folgt jetzt %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Diesen Monat noch %1$@ von %2$@ Hörzeit";
 "%1$@ of %2$@ of listening left this week" = "Diese Woche sind noch %1$@ von %2$@ Hörzeit übrig";
 "%1$@ of %2$@ sites indexed" = "%1$@ von %2$@ Websites indexiert";
 "%1$@ of %2$@ story previews used today" = "Heute verwendete Artikelvorschauen: %1$@ von %2$@";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2.000 Artikel";
 "20 stories" = "20 Artikel";
 "2x daily" = "2-mal täglich";
-"30s preview" = "30-Sekunden-Vorschau";
 "3x daily" = "3-mal täglich";
 "5 stories" = "5 Artikel";
 "5,000 stories" = "5.000 Artikel";
@@ -536,7 +536,6 @@
 "List style" = "Listenstil";
 "Listen" = "Anhören";
 "Listen Settings" = "Vorleseeinstellungen";
-"Listen to 1 hour of stories read aloud a week" = "Pro Woche 1 Stunde lang Artikel vorlesen lassen";
 "Listen to 10 hours of stories read aloud a week" = "Pro Woche 10 Stunden lang Artikel vorlesen lassen";
 "Listen to story" = "Artikel anhören";
 "Listening isn't available right now." = "Anhören ist momentan nicht verfügbar.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Text von gestern";
 "Text view" = "Textansicht";
 "Text view conveniently extracts the story" = "Die Textansicht extrahiert den Artikel bequem";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Das war eine 30-Sekunden-Vorschau. Mit Premium Archive kannst du ganze Artikel anhören.";
 "The audio couldn't be loaded. Try again in a moment." = "Der Ton konnte nicht geladen werden. Versuch es gleich noch einmal.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Die vollständige Textansicht ist eine <a href=\"http://ios.newsblur.com/premium\">Premium-Funktion</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Der iOS-Simulator konnte das Home-Bildschirmsymbol nicht ändern. Versuche es auf einem Gerät.";

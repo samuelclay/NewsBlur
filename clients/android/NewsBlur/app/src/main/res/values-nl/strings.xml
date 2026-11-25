@@ -1371,7 +1371,6 @@ om over de wereld te praten.</string>
     <string name="listen_resume">Hervatten</string>
     <string name="listen_pause">Pauzeren</string>
     <string name="listen_play">Afspelen</string>
-    <string name="listen_preview_pill">Voorbeeld van 30 sec.</string>
     <string name="listen_open_player">Speler openen</string>
     <string name="listen_close">Speler sluiten</string>
     <string name="listen_loading">Artikel wordt klaargemaakt…</string>
@@ -1427,7 +1426,6 @@ om over de wereld te praten.</string>
     <string name="listen_speed_exact">Exacte afspeelsnelheid</string>
     <string name="listen_speed_slider">Schuifregelaar voor afspeelsnelheid</string>
     <string name="listen_speed_button">Afspeelsnelheid %1$s×</string>
-    <string name="listen_preview_banner">Voorbeeld van 30 seconden. Met Premium Archive kun je volledige artikelen beluisteren.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">Nog %1$d seconde</item>
         <item quantity="other">Nog %1$d seconden</item>
@@ -1516,7 +1514,6 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
-    <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
     <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d nieuw artikel</item>

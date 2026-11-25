@@ -381,6 +381,58 @@ class Test_UpgradePaths(TestCase):
         m["email_pro"].assert_not_called()
         m["email_staff"].assert_not_called()
 
+    # --- Archive <-> Archive Extra ----------------------------------------
+
+    def test_free_to_archive_extra_sets_up_the_archive(self):
+        m = self._start_patches()
+        self._set_state(is_premium=False, is_archive=False, is_premium_trial=None)
+
+        self.profile.activate_archive_extra()
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertTrue(self.profile.is_archive_extra)
+        m["archive_fetch"].assert_called_once()
+        self.assertEqual(m["email_staff"].call_args.kwargs["tier"], "archive_extra")
+
+    def test_archive_and_archive_extra_switch_without_redoing_the_archive(self):
+        m = self._start_patches()
+        self._set_state(is_premium=True, is_archive=True, is_archive_extra=False, is_premium_trial=False)
+
+        self.profile.activate_archive_extra()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        # A plain Archive activation (an Archive gift, a late notification) keeps the Extra hours someone paid for.
+        self.profile.activate_archive()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        self.profile.activate_archive(downgrade_extra=True)
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+        m["archive_fetch"].assert_not_called()
+        m["schedule_setup"].apply_async.assert_not_called()
+
+    def test_pro_and_deactivation_clear_archive_extra(self):
+        self._start_patches()
+        self._set_state(is_premium=True, is_archive=True, is_archive_extra=True, is_premium_trial=False)
+
+        self.profile.activate_pro()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_pro)
+        self.assertFalse(self.profile.is_archive_extra)
+
+        self.profile.activate_archive_extra()
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.is_archive_extra, "a late Archive Extra event must not touch Pro")
+
+        self._set_state(is_pro=False, is_archive_extra=True)
+        self.profile.deactivate_premium()
+        self.profile.refresh_from_db()
+        self.assertFalse(self.profile.is_archive_extra)
+
     # --- downgrade prevention --------------------------------------------
 
     def test_activate_premium_does_not_clear_archive(self):
@@ -429,6 +481,30 @@ class Test_UpgradePaths(TestCase):
 
         self.assertEqual(m["email_premium"].call_count, 1, "new-premium email must send exactly once")
         m["email_staff"].assert_not_called()
+
+
+class Test_ArchiveExtraReferralCredit(TestCase):
+    def test_archive_extra_referrer_is_credited_against_159(self):
+        """A $99 referral is 99/159 of an Archive Extra year, so the referrer gets 7 months, not the 12 the
+        $99 Archive price would give."""
+        from apps.profile.models import MReferral
+
+        referrer = User.objects.create_user(
+            username="extrareferrer", password="password", email="xr@test.com"
+        )
+        Profile.objects.filter(user=referrer).update(is_premium=True, is_archive=True, is_archive_extra=True)
+        referred = User.objects.create_user(
+            username="extrareferred", password="password", email="xd@test.com"
+        )
+        MReferral.objects(referred_user_id=referred.pk).delete()
+        MReferral(referrer_user_id=referrer.pk, referred_user_id=referred.pk, status="pending").save()
+
+        with patch.object(Profile, "extend_premium_by_days") as extend, patch(
+            "apps.profile.tasks.EmailReferralCredit.delay"
+        ):
+            MReferral.award_credit(referred.pk, 99, "archive")
+
+        extend.assert_called_once_with(210, tier="archive_extra")
 
 
 class Test_ConcurrentArchiveActivation(TestCase):
@@ -703,6 +779,108 @@ class Test_AndroidSubscriptionActivation(TestCase):
                 payment_provider="android-pro",
             ).exists()
         )
+
+    @patch.object(Profile, "setup_premium_history")
+    @patch.object(Profile, "activate_archive")
+    def test_activate_android_archive_extra_is_not_mistaken_for_archive(
+        self, mock_activate_archive, mock_setup
+    ):
+        # nb.premium.archive.extra.159 contains "premium.archive", so a check for Archive first would sell
+        # Archive Extra as plain Archive.
+        result = self.profile.activate_android_premium(
+            order_id="GPA.1000-0000-0000-00004", product_id="nb.premium.archive.extra.159"
+        )
+
+        self.assertTrue(result)
+        mock_activate_archive.assert_called_once_with(never_expire=False, extra=True)
+        self.assertTrue(
+            PaymentHistory.objects.filter(
+                user=self.user,
+                payment_identifier="GPA.1000-0000-0000-00004",
+                payment_provider="android-archive-extra",
+                payment_amount=159,
+            ).exists()
+        )
+
+    def _make_archive_extra(self):
+        Profile.objects.filter(pk=self.profile.pk).update(
+            is_premium=True, is_archive=True, is_archive_extra=True
+        )
+
+    def _play_notification(self, product_id, subscription_info):
+        from apps.profile.views import handle_google_play_notification
+
+        # google_play_rtdn looks the user up fresh from the purchase token.
+        with patch("apps.profile.views.get_google_play_subscription", return_value=subscription_info):
+            handle_google_play_notification(User.objects.get(pk=self.user.pk), 4, "play-token", product_id)
+        self.profile.refresh_from_db()
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_a_play_crossgrade_from_archive_extra_to_archive_removes_extra(self, mock_setup):
+        """The app posts its receipt first, so the notification's order is already recorded by then."""
+        self._make_archive_extra()
+        self.client.login(username="androidsubtest", password="password")
+        self.client.post(
+            reverse("save-android-receipt"),
+            {"order_id": "GPA.1000-0000-0000-00005", "product_id": "nb.premium.archive.99"},
+        )
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra, "an unverified receipt keeps Extra")
+
+        self._play_notification(
+            "nb.premium.archive.99",
+            {
+                "latestOrderId": "GPA.1000-0000-0000-00005",
+                "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+                "lineItems": [{"productId": "nb.premium.archive.99"}],
+            },
+        )
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_a_late_play_archive_notification_keeps_extra_unless_google_confirms_it(self, mock_setup):
+        self._make_archive_extra()
+        replaced = {
+            "latestOrderId": "GPA.1000-0000-0000-00006",
+            "subscriptionState": "SUBSCRIPTION_STATE_EXPIRED",
+            "lineItems": [{"productId": "nb.premium.archive.99"}],
+        }
+        self._play_notification("nb.premium.archive.99", replaced)
+        self.assertTrue(self.profile.is_archive_extra, "the old Archive token is no longer live")
+
+        self._play_notification("nb.premium.archive.99", None)
+        self.assertTrue(self.profile.is_archive_extra, "Google's lookup failed")
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_a_play_archive_renewal_keeps_extra_that_stripe_bills_for(self, mock_setup):
+        """An old Play Archive subscription can keep renewing after the account upgraded on the web, and Google
+        can deliver the same renewal again."""
+        self._make_archive_extra()
+        Profile.objects.filter(pk=self.profile.pk).update(active_provider="stripe")
+        live_archive = {
+            "latestOrderId": "GPA.1000-0000-0000-00007",
+            "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+            "lineItems": [{"productId": "nb.premium.archive.99"}],
+        }
+        for _ in range(2):
+            self._play_notification("nb.premium.archive.99", live_archive)
+            self.assertTrue(self.profile.is_archive_extra)
+
+    @patch.object(Profile, "setup_premium_history")
+    def test_an_unsigned_ios_archive_receipt_keeps_extra(self, mock_setup):
+        """Restore Purchases resends an old Archive purchase under a new transaction id."""
+        self._make_archive_extra()
+        self.client.login(username="androidsubtest", password="password")
+
+        self.client.post(
+            reverse("save-ios-receipt"),
+            {"product_identifier": "newsblur_premium_archive", "transaction_identifier": "restored-1"},
+        )
+
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertTrue(self.profile.is_archive_extra)
 
     def test_save_android_receipt_passes_product_id(self):
         self.client.login(username="androidsubtest", password="password")
@@ -1898,6 +2076,16 @@ class Test_PremiumExpireBillingPeriod(TestCase):
         self.assertGreater(days_out, 300)
         self.assertLess(days_out, 400)
 
+    def test_monthly_pro_switching_to_archive_extra_gets_a_year(self):
+        """$159 Archive Extra is billed yearly, so it buys a year even after months of $29 Pro charges."""
+        for month in range(3):
+            self._pay(days_ago=90 - (30 * month))
+        self._pay(days_ago=1, amount=159)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        self.assertGreater((expiration - datetime.datetime.now()).days, 300)
+
     def test_annual_switching_to_monthly_reads_as_monthly(self):
         """Régis's case: a $36 annual charge that has since aged out of the trailing year, the
         prorated $8.39 that the mid-cycle switch to Premium Pro billed, then monthly $29
@@ -2159,6 +2347,7 @@ class Test_StripeWebhookOrdering(TestCase):
 
     def _subscription_object(self):
         return {
+            "id": "sub_webhookorder",
             "customer": self.STRIPE_ID,
             "plan": {"id": self.archive_price, "active": True},
             "cancel_at": None,
@@ -2214,6 +2403,103 @@ class Test_StripeWebhookOrdering(TestCase):
         stripe_subscription_updated(None, self._event(self._subscription_object()))
 
         self._assert_archive_active()
+
+    def test_switching_the_subscription_between_archive_and_archive_extra(self):
+        """The web toggle switches a Stripe subscription's price; the update webhook moves the tier with it."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        self._assert_archive_active()
+        self.assertFalse(self.profile.is_archive_extra)
+
+        extra = dict(self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")})
+        with patch("stripe.Subscription.retrieve", return_value={"status": "active", "plan": extra["plan"]}):
+            stripe_subscription_updated(None, self._event(extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        live_archive = {"status": "active", "plan": {"id": self.archive_price}}
+        with patch("stripe.Subscription.retrieve", return_value=live_archive):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
+    def test_a_late_archive_extra_event_keeps_a_downgrade_to_archive(self):
+        """The mirror case: after switching back to Archive, an older Archive Extra update must not restore Extra."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        self._assert_archive_active()
+        stale_extra = dict(
+            self._subscription_object(), plan={"id": Profile.plan_to_stripe_price("archive_extra")}
+        )
+
+        with patch(
+            "stripe.Subscription.retrieve",
+            return_value={"status": "active", "plan": {"id": self.archive_price}},
+        ):
+            stripe_subscription_updated(None, self._event(stale_extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive)
+        self.assertFalse(self.profile.is_archive_extra)
+
+        # When Stripe can't be asked, an upgrade goes ahead: granting the extra hours early beats withholding them.
+        with patch("stripe.Subscription.retrieve", side_effect=stripe.error.APIConnectionError("down")):
+            stripe_subscription_updated(None, self._event(stale_extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+    def test_a_stale_archive_snapshot_does_not_undo_a_concurrent_extra_upgrade(self):
+        """An Archive webhook that read the profile before an Extra upgrade landed must not take Extra away."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        stale = Profile.objects.get(pk=self.profile.pk)
+        Profile.objects.filter(pk=self.profile.pk).update(is_archive_extra=True)
+
+        with patch("apps.profile.models.Profile.objects.get", return_value=stale):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+    def test_an_event_from_a_canceled_archive_subscription_keeps_archive_extra(self):
+        """A late event for an old, canceled Archive subscription after a new Archive Extra one started."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        Profile.objects.filter(pk=self.profile.pk).update(is_archive_extra=True)
+        canceled_archive = {"status": "canceled", "plan": {"id": self.archive_price}}
+        with patch("stripe.Subscription.retrieve", return_value=canceled_archive):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+    def test_a_late_archive_event_keeps_archive_extra(self):
+        """Stripe can deliver the Archive update from before an Extra upgrade after the upgrade itself."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        extra_price = Profile.plan_to_stripe_price("archive_extra")
+        live_extra = {"status": "active", "plan": {"id": extra_price}}
+        with patch("stripe.Subscription.retrieve", return_value=live_extra):
+            stripe_subscription_updated(
+                None, self._event(dict(self._subscription_object(), plan={"id": extra_price}))
+            )
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        # When Stripe can't be asked, the account keeps the tier it has rather than trusting the old event.
+        with patch("stripe.Subscription.retrieve", side_effect=stripe.error.APIConnectionError("down")):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
 
 
 @override_settings(

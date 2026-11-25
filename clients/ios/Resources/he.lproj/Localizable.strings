@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "תיקיית %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "תיקיית %1$@, מכווצת, %2$@";
 "%1$@ followed %2$@." = "%1$@ התחיל/ה לעקוב אחרי %2$@.";
+"%1$@ of %2$@ of listening left this month" = "נותרו %1$@ מתוך %2$@ להאזנה החודש";
 "%1$@ of %2$@ of listening left this week" = "נותרו %1$@ מתוך %2$@ להאזנה השבוע";
 "%1$@ of %2$@ sites indexed" = "אונדקסו %1$@ מתוך %2$@ אתרים";
 "%1$@ of %2$@ story previews used today" = "נעשה שימוש היום בתצוגות מקדימות של %1$@ מתוך %2$@ כתבות";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2,000 כתבות";
 "20 stories" = "20 כתבות";
 "2x daily" = "פעמיים ביום";
-"30s preview" = "תצוגה מקדימה של 30 שניות";
 "3x daily" = "3 פעמים ביום";
 "5 stories" = "5 כתבות";
 "5,000 stories" = "5,000 כתבות";
@@ -536,7 +536,6 @@
 "List style" = "סגנון רשימה";
 "Listen" = "האזנה";
 "Listen Settings" = "הגדרות האזנה";
-"Listen to 1 hour of stories read aloud a week" = "האזנה להקראה של כתבות במשך שעה בשבוע";
 "Listen to 10 hours of stories read aloud a week" = "האזנה להקראה של כתבות במשך 10 שעות בשבוע";
 "Listen to story" = "האזנה לכתבה";
 "Listening isn't available right now." = "האזנה אינה זמינה כרגע.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "טקסט מאתמול";
 "Text view" = "תצוגת טקסט";
 "Text view conveniently extracts the story" = "תצוגת הטקסט מחלצת את הכתבה בנוחות";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "זו הייתה תצוגה מקדימה של 30 שניות. Premium Archive פותח גישה לכתבות המלאות.";
 "The audio couldn't be loaded. Try again in a moment." = "לא ניתן לטעון את השמע. נסו שוב בעוד רגע.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "תצוגת הטקסט המלא היא <a href=\"http://ios.newsblur.com/premium\">תכונת Premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "הסימולטור של iOS לא הצליח לשנות את סמל מסך הבית. נסו זאת במכשיר.";

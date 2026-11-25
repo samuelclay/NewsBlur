@@ -475,6 +475,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "เหลือ %(duration)s ในสัปดาห์นี้"
 
@@ -523,6 +527,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -914,11 +926,17 @@ msgstr "/เดือน"
 msgid "/year"
 msgstr "/ปี"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 เดือน"
 
 msgid "1 year"
 msgstr "1 ปี"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "มีเครื่องมือ 28 รายการ ครอบคลุมการอ่าน การดำเนินการ การฝึกตัวกรอง และการค้นพบเนื้อหา"
@@ -927,9 +945,6 @@ msgid "2x daily"
 msgstr "วันละ 2 ครั้ง"
 
 msgid "30 second preview"
-msgstr "ตัวอย่าง 30 วินาที"
-
-msgid "30s preview"
 msgstr "ตัวอย่าง 30 วินาที"
 
 msgid "3x daily"
@@ -2090,6 +2105,9 @@ msgstr "โหลดแอปพลิเคชันของคุณไม่
 msgid "Couldn't load audio for this story."
 msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "การนับเป็นเรื่องยาก"
 
@@ -2134,6 +2152,9 @@ msgstr "สร้างสรรค์"
 
 msgid "Credit"
 msgstr "เครดิต"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "เสียงปัจจุบัน"
@@ -3448,8 +3469,10 @@ msgstr "พาดหัวข่าว"
 msgid "Health"
 msgstr "สุขภาพ"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "ฟังตัวอย่างการอ่าน 30 วินาทีแรก Premium Archive อ่านบทความได้ทั้งหมด"
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "หัวใจ"
@@ -3801,6 +3824,10 @@ msgstr "อัปเดตล่าสุด"
 msgid "Last activity"
 msgstr "กิจกรรมล่าสุด"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "พบเห็นล่าสุด:"
 
@@ -3865,8 +3892,11 @@ msgstr "ฟัง"
 msgid "Listen timed out. Try again in a moment."
 msgstr "หมดเวลาในการฟัง โปรดลองอีกครั้งในอีกสักครู่"
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
@@ -4154,6 +4184,9 @@ msgstr "จ."
 msgid "Monday"
 msgstr "วันจันทร์"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "วงเงินใช้จ่ายรายเดือน"
 
@@ -4318,6 +4351,9 @@ msgstr "ไม่มีวันหมดอายุ"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "ไม่มีวันหมดอายุ ยินดีด้วย!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "มาใหม่"
@@ -5055,6 +5091,18 @@ msgstr "เลือกภาษาที่ต้องการให้ NewsB
 msgid "Places"
 msgstr "สถานที่"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "แพลตฟอร์ม"
 
@@ -5151,6 +5199,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive อ่านบทความเต็มทั้งหมดออกเสียง"
@@ -5616,6 +5667,9 @@ msgstr "ต้องใช้ Premium Archive"
 
 msgid "Reset"
 msgstr "รีเซ็ต"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "รีเซ็ตเป็นไอคอนเว็บไซต์เดิม"
@@ -7678,6 +7732,10 @@ msgstr "ภาพ"
 
 msgid "Voice"
 msgstr "เสียงพูด"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "บันทึกเสียงไม่สำเร็จ โปรดลองอีกครั้ง"

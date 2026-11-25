@@ -78,7 +78,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var isLoadingManifest = false
     private var pendingJumpParagraph: Int?
     /// Scrubbing and skips wait for the position to settle before asking for audio, since each segment requested
-    /// counts against the weekly allowance (apps/listen/usage.py).
+    /// counts against the listening allowance (apps/listen/usage.py).
     private var seekSettleWork: DispatchWorkItem?
     private var isSettlingSeek = false
     private var generation = 0
@@ -184,7 +184,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     /// Seconds of audio a preview may play, or nil for full stories.
     var previewLimit: TimeInterval? {
         guard let manifest, manifest.preview.isPreview else { return nil }
-        return manifest.preview.seconds ?? usage?.previewSeconds ?? 30
+        return manifest.preview.seconds ?? usage?.previewSeconds ?? ListenUsage.defaultPreviewSeconds
     }
 
     /// Seconds left in a preview: the preview's limit, or its audio when that's shorter.

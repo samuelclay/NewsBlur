@@ -132,14 +132,19 @@ struct ListenVoice: Identifiable, Equatable {
     }
 }
 
-/// Monthly listening allowance and daily sample/preview counters (ListenModels.swift).
+/// The listening allowance and daily sample/preview counters (ListenModels.swift). apps/listen/usage.py runs the
+/// Premium Archive and Archive Extra allowances by calendar month and Premium Pro's by week.
 struct ListenUsage: Equatable {
     let tier: String
     let isArchiveTier: Bool
     let secondsUsed: Double
     let secondsLimit: Double?
     let secondsRemaining: Double?
+    /// "month" or "week": how long the allowance lasts before it resets.
+    let period: String?
     let resetsAt: Date?
+    /// The account's timezone, from the offset on `resets_at`, so the reset day reads the same on every device.
+    let resetsTimeZone: TimeZone?
     let samplesUsed: Int
     let samplesLimit: Int?
     let previewSeconds: Double?
@@ -154,10 +159,13 @@ struct ListenUsage: Equatable {
         secondsUsed = ListenJSON.double(json["seconds_used"]) ?? 0
         secondsLimit = ListenJSON.double(json["seconds_limit"])
         secondsRemaining = ListenJSON.double(json["seconds_remaining"])
+        period = ListenJSON.string(json["period"])
         if let resets = ListenJSON.string(json["resets_at"]) {
             resetsAt = ISO8601DateFormatter().date(from: resets)
+            resetsTimeZone = Self.timeZone(ofISO8601: resets)
         } else {
             resetsAt = nil
+            resetsTimeZone = nil
         }
         samplesUsed = ListenJSON.int(json["samples_used"]) ?? 0
         samplesLimit = ListenJSON.int(json["samples_limit"])
@@ -168,6 +176,59 @@ struct ListenUsage: Equatable {
     }
 
     var isPro: Bool { tier == "pro" }
+
+    var isMonthly: Bool { period == "month" }
+
+    /// The settings footer's "2 hr left this month", or "this week" for a weekly allowance.
+    var allowanceLeftText: String? {
+        guard let secondsRemaining else { return nil }
+        let left = ListenFormat.allowance(secondsRemaining)
+        return isMonthly ? String(format: NBLocalization.text("%@ left this month"), left)
+                         : String(format: NBLocalization.text("%@ left this week"), left)
+    }
+
+    /// Now Playing's "2 hr of 10 hr of listening left this month", or "this week" for a weekly allowance.
+    var allowanceOfLimitText: String? {
+        guard let secondsLimit else { return nil }
+        let left = ListenFormat.allowance(secondsRemaining ?? max(0, secondsLimit - secondsUsed))
+        let limit = ListenFormat.allowance(secondsLimit)
+        return isMonthly ? String(format: NBLocalization.text("%1$@ of %2$@ of listening left this month"), left, limit)
+                         : String(format: NBLocalization.text("%1$@ of %2$@ of listening left this week"), left, limit)
+    }
+
+    /// When the allowance comes back: the date of the 1st for a monthly allowance ("Resets on December 1"), the
+    /// weekday for a weekly one ("Resets Sunday").
+    var resetText: String? {
+        guard let resetsAt else { return nil }
+        let formatter = DateFormatter()
+        formatter.timeZone = resetsTimeZone ?? .current
+        if isMonthly {
+            formatter.locale = NBLocalization.formattingLocale
+            formatter.calendar = Calendar(identifier: .gregorian)
+            formatter.setLocalizedDateFormatFromTemplate("MMMMd")
+            return String(format: NBLocalization.text("Resets on %@"), formatter.string(from: resetsAt))
+        }
+        formatter.locale = Locale(identifier: NBLocalization.resolvedLanguage)
+        formatter.setLocalizedDateFormatFromTemplate("EEEE")
+        return String(format: NBLocalization.text("Resets %@"), formatter.string(from: resetsAt))
+    }
+
+    /// The fixed offset at the end of an ISO 8601 timestamp ("+09:00", "-0800" or "Z"). A device west of the
+    /// account would otherwise show midnight on the 1st as the last day of the month before.
+    private static func timeZone(ofISO8601 timestamp: String) -> TimeZone? {
+        if timestamp.hasSuffix("Z") {
+            return TimeZone(secondsFromGMT: 0)
+        }
+        guard let match = timestamp.range(of: #"[+-]\d{2}:?\d{2}$"#, options: .regularExpression) else { return nil }
+        let offset = timestamp[match].replacingOccurrences(of: ":", with: "")
+        guard let hours = Int(offset.dropFirst().prefix(2)), let minutes = Int(offset.suffix(2)) else { return nil }
+        let sign = offset.hasPrefix("-") ? -1 : 1
+        return TimeZone(secondsFromGMT: sign * (hours * 3600 + minutes * 60))
+    }
+
+    /// How long a Free or Premium story preview plays when the server hasn't said yet (apps/listen/usage.py sends
+    /// the real length as `preview_seconds`, and each preview's manifest as `preview.seconds`).
+    static let defaultPreviewSeconds: Double = 60
 }
 
 struct ListenParagraph: Equatable {

@@ -4763,6 +4763,31 @@ a.mention, a.mention-group {
     color: #93c5fd;
 }
 
+/* Premium Archive's 1 hour / 2 hours Listen toggle (reader.css) */
+.NB-dark .NB-listen-hours {
+    background: #161d22;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.NB-dark .NB-listen-hours-thumb {
+    background: #2f3b45;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(147, 197, 253, 0.18);
+}
+
+.NB-dark .NB-listen-hours-option {
+    color: #9ca3af;
+}
+
+.NB-dark .NB-listen-hours-option[aria-checked="true"] {
+    color: #bfdbfe;
+}
+
+.NB-dark .NB-listen-hours-option:focus-visible {
+    outline-color: #93c5fd;
+}
+
 .NB-dark .NB-premium-tier-pro .NB-premium-tier-features li.NB-premium-tier-includes {
     color: #fcd34d;
 }

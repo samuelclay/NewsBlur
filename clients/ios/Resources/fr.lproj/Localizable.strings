@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Dossier %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Dossier %1$@, réduit, %2$@";
 "%1$@ followed %2$@." = "%1$@ a suivi %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Il vous reste %1$@ sur %2$@ d’écoute ce mois-ci";
 "%1$@ of %2$@ of listening left this week" = "Il vous reste %1$@ sur %2$@ d’écoute cette semaine";
 "%1$@ of %2$@ sites indexed" = "%1$@ sites indexés sur %2$@";
 "%1$@ of %2$@ story previews used today" = "%1$@ aperçus d’articles sur %2$@ utilisés aujourd’hui";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2 000 articles";
 "20 stories" = "20 articles";
 "2x daily" = "2 fois par jour";
-"30s preview" = "Aperçu de 30 s";
 "3x daily" = "3 fois par jour";
 "5 stories" = "5 articles";
 "5,000 stories" = "5 000 articles";
@@ -536,7 +536,6 @@
 "List style" = "Style de liste";
 "Listen" = "Écouter";
 "Listen Settings" = "Paramètres d’écoute";
-"Listen to 1 hour of stories read aloud a week" = "Écoutez 1 heure d’articles lus à voix haute par semaine";
 "Listen to 10 hours of stories read aloud a week" = "Écoutez 10 heures d’articles lus à voix haute par semaine";
 "Listen to story" = "Écouter l’article";
 "Listening isn't available right now." = "L’écoute n’est pas disponible pour le moment.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Texte d’hier";
 "Text view" = "Vue texte";
 "Text view conveniently extracts the story" = "La vue texte extrait facilement l’article";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Cet aperçu durait 30 secondes. Premium Archive donne accès aux articles complets.";
 "The audio couldn't be loaded. Try again in a moment." = "Impossible de charger l’audio. Réessayez dans un instant.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "La vue Texte intégral est une fonctionnalité <a href=\"http://ios.newsblur.com/premium\">premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Le simulateur iOS n’a pas pu modifier l’icône de l’écran d’accueil. Essayez sur un appareil.";

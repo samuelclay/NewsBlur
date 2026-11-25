@@ -1475,7 +1475,6 @@
     <string name="listen_resume">استئناف</string>
     <string name="listen_pause">إيقاف مؤقت</string>
     <string name="listen_play">تشغيل</string>
-    <string name="listen_preview_pill">معاينة لمدة 30 ثانية</string>
     <string name="listen_open_player">فتح المشغّل</string>
     <string name="listen_close">إغلاق المشغّل</string>
     <string name="listen_loading">جارٍ تجهيز القصة…</string>
@@ -1539,7 +1538,6 @@
     <string name="listen_speed_exact">سرعة التشغيل الدقيقة</string>
     <string name="listen_speed_slider">شريط تمرير سرعة التشغيل</string>
     <string name="listen_speed_button">سرعة التشغيل %1$s×</string>
-    <string name="listen_preview_banner">معاينة لمدة 30 ثانية. يتيح Premium Archive القصص كاملة.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">تبقّت %1$d ثوانٍ</item>
         <item quantity="many">تبقّى %1$d ثانية</item>
@@ -1652,7 +1650,6 @@
     <string name="settings_listen_voices_summary">اختر صوتًا لكل لغة وطريقة قراءته</string>
     <string name="settings_listen_delivery">طريقة العرض</string>
     <string name="settings_listen_speed">سرعة التشغيل</string>
-    <string name="archive_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا</string>
     <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d 3 قصص جديدة</item>

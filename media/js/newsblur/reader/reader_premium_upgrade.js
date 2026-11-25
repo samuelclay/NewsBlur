@@ -29,11 +29,24 @@ NEWSBLUR.ReaderPremiumUpgrade.prototype.constructor = NEWSBLUR.ReaderPremiumUpgr
 _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
 
     runner: function () {
+        this.listen_hours = this.initial_listen_hours();
         this.make_modal();
+        this.apply_listen_hours();
         this.highlight_feature();
         this.make_paypal_button();
         this.open_modal();
         this.$modal.bind('mousedown', $.rescope(this.handle_mousedown, this));
+        // Click rather than mousedown, so Enter and Space on a focused option choose it too.
+        this.$modal.on('click', '.NB-listen-hours-option', _.bind(function (e) {
+            e.preventDefault();
+            this.choose_listen_hours($(e.currentTarget).data('hours'));
+        }, this));
+        this.$modal.on('keydown', '.NB-listen-hours', _.bind(function (e) {
+            if (!_.contains(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'], e.key)) return;
+            e.preventDefault();
+            this.choose_listen_hours(this.listen_hours == 10 ? 1 : 10);
+            this.$modal.find('.NB-listen-hours-option[aria-checked=true]').focus();
+        }, this));
     },
 
     // reader_premium_upgrade.js: Highlight the feature line that prompted this
@@ -125,9 +138,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 // Archive Tier
                 $.make('div', { className: 'NB-premium-tier NB-premium-tier-archive' }, [
                     $.make('div', { className: 'NB-premium-tier-header' }, [
-                        $.make('div', { className: 'NB-premium-tier-name' }, gettext('Premium Archive')),
+                        $.make('div', { className: 'NB-premium-tier-name NB-premium-archive-name' }, gettext('Premium Archive')),
                         $.make('div', { className: 'NB-premium-tier-price' }, [
-                            $.make('span', { className: 'NB-premium-tier-price-amount' }, '$99'),
+                            $.make('span', { className: 'NB-premium-tier-price-amount NB-premium-archive-price' }, '$99'),
                             $.make('span', { className: 'NB-premium-tier-price-period' }, gettext('/year'))
                         ])
                     ]),
@@ -141,10 +154,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Web Feeds from any website, even without RSS')
                         ]),
-                        $.make('li', { className: 'NB-19 NB-feature-listen' }, [
-                            $.make('div', { className: 'NB-premium-bullet-image' }),
-                            gettext('Listen to 1 hour of stories read aloud a week')
-                        ]),
+                        this.make_archive_listen_feature(),
                         $.make('li', { className: 'NB-14 NB-feature-ask-ai' }, [
                             $.make('div', { className: 'NB-premium-bullet-image' }),
                             gettext('Ask AI questions about stories')
@@ -210,8 +220,13 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                             gettext('Connect AI agents with MCP server and CLI')
                         ])
                     ]),
-                    $.make('div', { className: 'NB-premium-tier-actions' }, [
-                        this.make_tier_buttons('archive', $creditcards.clone())
+                    $.make('div', { className: 'NB-premium-tier-actions NB-premium-archive-actions' }, [
+                        $.make('div', { className: 'NB-premium-archive-plan', 'data-plan': 'archive' }, [
+                            this.make_tier_buttons('archive', $creditcards.clone())
+                        ]),
+                        (this.offers_archive_extra() && $.make('div', { className: 'NB-premium-archive-plan', 'data-plan': 'archive_extra' }, [
+                            this.make_tier_buttons('archive_extra', $creditcards.clone())
+                        ]))
                     ])
                 ]),
                 // Pro Tier
@@ -331,6 +346,94 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         ]);
     },
 
+    // ============================================
+    // = Premium Archive: 1 or 10 hours of Listen =
+    // ============================================
+
+    // reader_premium_upgrade.js: Premium Archive Extra is Premium Archive with 10 hours of Listen a month instead
+    // of 1, so it is a toggle on the Archive card rather than its own card. Pro already includes more, so a Pro
+    // subscriber sees the Archive card without it.
+    offers_archive_extra: function () {
+        return !NEWSBLUR.Globals.is_pro;
+    },
+
+    initial_listen_hours: function () {
+        if (NEWSBLUR.Globals.is_archive_extra) return 10;
+        // An Archive subscriber who came here from Listen has used up their hour, so start on 10 hours.
+        if (NEWSBLUR.Globals.is_archive && this.options.highlight_feature == 'listen') return 10;
+        return 1;
+    },
+
+    make_archive_listen_feature: function () {
+        if (!this.offers_archive_extra()) {
+            return $.make('li', { className: 'NB-19 NB-feature-listen' }, [
+                $.make('div', { className: 'NB-premium-bullet-image' }),
+                gettext('Listen to 1 hour of stories read aloud a month')
+            ]);
+        }
+        var make_option = _.bind(function (hours, plan, label, price) {
+            var is_current = this.is_current_plan(plan) && !NEWSBLUR.Globals.is_premium_trial;
+            return $.make('button', {
+                type: 'button',
+                role: 'radio',
+                className: 'NB-listen-hours-option',
+                'data-hours': hours
+            }, [
+                $.make('span', { className: 'NB-listen-hours-option-label' }, label),
+                $.make('span', { className: 'NB-listen-hours-option-price' },
+                    is_current ? gettext('Current plan') : interpolate(gettext('%(price)s/year'), { price: price }, true))
+            ]);
+        }, this);
+        return $.make('li', { className: 'NB-19 NB-feature-listen NB-feature-listen-hours' }, [
+            $.make('div', { className: 'NB-premium-bullet-image' }),
+            $.make('div', { className: 'NB-listen-hours-title' }, gettext('Listen to 1 hour of stories read aloud a month')),
+            $.make('div', {
+                className: 'NB-listen-hours',
+                role: 'radiogroup',
+                'aria-label': gettext('Monthly listening')
+            }, [
+                $.make('div', { className: 'NB-listen-hours-thumb' }),
+                make_option(1, 'archive', gettext('1 hour'), '$99'),
+                make_option(10, 'archive_extra', gettext('10 hours'), '$159')
+            ])
+        ]);
+    },
+
+    apply_listen_hours: function () {
+        if (!this.offers_archive_extra()) return;
+        var extra = this.listen_hours == 10;
+        var $card = this.$modal.find('.NB-premium-tier-archive');
+        $card.toggleClass('NB-premium-archive-extra', extra);
+        $card.find('.NB-premium-archive-name').text(extra ? gettext('Premium Archive Extra') : gettext('Premium Archive'));
+        $card.find('.NB-premium-archive-price').text(extra ? '$159' : '$99');
+        $card.find('.NB-listen-hours-title').text(extra ?
+            gettext('Listen to 10 hours of stories read aloud a month') :
+            gettext('Listen to 1 hour of stories read aloud a month'));
+        $card.find('.NB-listen-hours-option').each(_.bind(function (i, option) {
+            var selected = $(option).data('hours') == this.listen_hours;
+            $(option).attr('aria-checked', selected ? 'true' : 'false').attr('tabindex', selected ? '0' : '-1');
+        }, this));
+        $card.find('.NB-premium-archive-plan').each(function () {
+            var plan = $(this).data('plan');
+            $(this).toggleClass('NB-premium-archive-plan-hidden', (plan == 'archive_extra') != extra);
+        });
+    },
+
+    choose_listen_hours: function (hours) {
+        if (hours == this.listen_hours) return;
+        this.listen_hours = hours;
+        this.apply_listen_hours();
+        _.defer(_.bind(this.resize_modal, this));
+    },
+
+    is_current_plan: function (plan) {
+        if (plan === 'premium') return NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro;
+        if (plan === 'archive') return NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_archive_extra && !NEWSBLUR.Globals.is_pro;
+        if (plan === 'archive_extra') return NEWSBLUR.Globals.is_archive_extra && !NEWSBLUR.Globals.is_pro;
+        if (plan === 'pro') return NEWSBLUR.Globals.is_pro;
+        return false;
+    },
+
     make_tier_buttons: function (plan, $creditcards) {
         var is_trial = NEWSBLUR.Globals.is_premium_trial;
         var has_renewal = NEWSBLUR.Globals.premium_renewal;
@@ -339,9 +442,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         var user_tier = this.get_user_tier();
         var plan_tier = this.get_plan_tier(plan);
 
-        var is_current_plan = (plan === 'premium' && NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) ||
-            (plan === 'archive' && NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) ||
-            (plan === 'pro' && NEWSBLUR.Globals.is_pro);
+        var is_current_plan = this.is_current_plan(plan);
 
         // Current plan with active renewal - show status
         if (is_current_plan && !is_trial && has_renewal) {
@@ -409,16 +510,18 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     get_user_tier: function () {
-        // Returns user's current tier level: 0=free/trial, 1=premium, 2=archive, 3=pro
+        // Returns user's current tier level: 0=free/trial, 1=premium, 2=archive, 2.5=archive extra, 3=pro
         if (NEWSBLUR.Globals.is_pro) return 3;
+        if (NEWSBLUR.Globals.is_archive_extra) return 2.5;
         if (NEWSBLUR.Globals.is_archive) return 2;
         if (NEWSBLUR.Globals.is_premium && !NEWSBLUR.Globals.is_premium_trial) return 1;
         return 0;
     },
 
     get_plan_tier: function (plan) {
-        // Returns tier level for a plan: 1=premium, 2=archive, 3=pro
+        // Returns tier level for a plan: 1=premium, 2=archive, 2.5=archive extra, 3=pro
         if (plan === 'pro') return 3;
+        if (plan === 'archive_extra') return 2.5;
         if (plan === 'archive') return 2;
         if (plan === 'premium') return 1;
         return 0;
@@ -426,6 +529,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
 
     get_plan_name_from_tier: function (tier) {
         if (tier === 3) return 'pro';
+        if (tier === 2.5) return 'archive_extra';
         if (tier === 2) return 'archive';
         if (tier === 1) return 'premium';
         return 'free';
@@ -434,11 +538,29 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     plan_name: function (plan) {
         if (plan === 'premium') return gettext('Premium');
         if (plan === 'archive') return gettext('Premium Archive');
+        if (plan === 'archive_extra') return gettext('Premium Archive Extra');
         if (plan === 'pro') return gettext('Premium Pro');
         return plan;
     },
 
+    paypal_plan_id: function (plan) {
+        if (NEWSBLUR.Globals.debug) {
+            if (plan == 'premium') return "P-4RV31836YD8080909MHZROJY";
+            if (plan == 'archive') return "P-2EG40290653242115MHZROQQ";
+            if (plan == 'pro') return "P-1AE0908250058421JM565SVY";
+        } else {
+            if (plan == 'premium') return "P-48R22630SD810553FMHZONIY";
+            if (plan == 'archive') return "P-5JM46230U31841226MHZOMZY";
+            if (plan == 'archive_extra') return "P-42M09399PN6032344NMDG2LI";
+            if (plan == 'pro') return "P-1AE0908250058421JM565SVY";
+        }
+        // reader_premium_upgrade.js: Archive Extra has no PayPal sandbox plan, so in development it has no
+        // PayPal button.
+        return null;
+    },
+
     make_paypal_alternate: function (plan) {
+        if (!this.paypal_plan_id(plan)) return;
         if (NEWSBLUR.Globals.active_provider === 'paypal') {
             return $.make('div', { className: 'NB-provider-alternate' }, [
                 $.make('div', {
@@ -497,16 +619,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             $buttons.each(function () {
                 var $button = $(this);
                 var plan = $button.data('plan');
-                var plan_id;
-                if (NEWSBLUR.Globals.debug) {
-                    if (plan == 'premium') plan_id = "P-4RV31836YD8080909MHZROJY";
-                    else if (plan == 'archive') plan_id = "P-2EG40290653242115MHZROQQ";
-                    else if (plan == 'pro') plan_id = "P-1AE0908250058421JM565SVY";
-                } else {
-                    if (plan == 'premium') plan_id = "P-48R22630SD810553FMHZONIY";
-                    else if (plan == 'archive') plan_id = "P-5JM46230U31841226MHZOMZY";
-                    else if (plan == 'pro') plan_id = "P-1AE0908250058421JM565SVY";
-                }
+                var plan_id = self.paypal_plan_id(plan);
                 var random_id = 'paypal-' + Math.round(Math.random() * 100000);
                 $button.attr('id', random_id);
                 paypal.Buttons({
@@ -531,7 +644,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
 
                     onApprove: function (data, actions) {
                         console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
-                        if (plan == "archive") {
+                        if (plan == "archive" || plan == "archive_extra") {
                             actions.redirect(NEWSBLUR.URLs.paypal_archive_return);
                         } else if (plan == "pro") {
                             actions.redirect(NEWSBLUR.URLs.paypal_pro_return);
@@ -616,6 +729,12 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             this.open_stripe_checkout('pro', $t);
         }, this));
 
+        $.targetIs(e, { tagSelector: '.NB-stripe-button-switch-archive_extra' }, _.bind(function ($t, $p) {
+            e.preventDefault();
+            this.open_stripe_checkout('archive_extra', $t);
+        }, this));
+
+
         $.targetIs(e, { tagSelector: '.NB-provider-button-change' }, _.bind(function ($t, $p) {
             e.preventDefault();
             if (NEWSBLUR.Globals.active_provider == "stripe") {
@@ -640,6 +759,15 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                 this.open_stripe_checkout('archive', $t);
             } else if (NEWSBLUR.Globals.active_provider == "paypal") {
                 this.open_paypal_checkout('archive', $t);
+            }
+        }, this));
+
+        $.targetIs(e, { tagSelector: '.NB-provider-button-archive_extra' }, _.bind(function ($t, $p) {
+            e.preventDefault();
+            if (!NEWSBLUR.Globals.active_provider || NEWSBLUR.Globals.active_provider == "stripe") {
+                this.open_stripe_checkout('archive_extra', $t);
+            } else if (NEWSBLUR.Globals.active_provider == "paypal") {
+                this.open_paypal_checkout('archive_extra', $t);
             }
         }, this));
 

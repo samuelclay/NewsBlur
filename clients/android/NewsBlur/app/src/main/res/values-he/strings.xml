@@ -1397,7 +1397,6 @@
     <string name="listen_resume">המשך</string>
     <string name="listen_pause">השהיה</string>
     <string name="listen_play">הפעלה</string>
-    <string name="listen_preview_pill">תצוגה מקדימה של 30 שניות</string>
     <string name="listen_open_player">פתיחת הנגן</string>
     <string name="listen_close">סגירת הנגן</string>
     <string name="listen_loading">מכינים את הכתבה…</string>
@@ -1455,7 +1454,6 @@
     <string name="listen_speed_exact">מהירות השמעה מדויקת</string>
     <string name="listen_speed_slider">מחוון מהירות ההשמעה</string>
     <string name="listen_speed_button">מהירות ההשמעה %1$s×</string>
-    <string name="listen_preview_banner">תצוגה מקדימה של 30 שניות. Premium Archive פותח גישה לכתבות המלאות.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">נותרה %1$d שנייה</item>
         <item quantity="other">נותרו %1$d שניות</item>
@@ -1550,7 +1548,6 @@
     <string name="settings_listen_voices_summary">בחירת קול לכל שפה ואופן ההקראה</string>
     <string name="settings_listen_delivery">אופן ההקראה</string>
     <string name="settings_listen_speed">מהירות ההשמעה</string>
-    <string name="archive_listen">האזנה להקראה של כתבות במשך שעה בשבוע</string>
     <string name="pro_listen">האזנה להקראה של כתבות במשך 10 שעות בשבוע</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d כתבה חדשה</item>

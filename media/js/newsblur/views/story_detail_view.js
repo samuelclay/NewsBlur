@@ -317,6 +317,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
             show_sideoption_ask_ai: NEWSBLUR.assets.preference("show_sideoption_ask_ai"),
             show_sideoption_listen: NEWSBLUR.assets.preference("show_sideoption_listen") !== false,
             listen_is_preview: !NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro,
+            listen_preview_seconds: this.listen_preview_seconds(),
             listen_state: this.listen_state(),
             listen_queue_state: NEWSBLUR.app.media_player ? NEWSBLUR.app.media_player.listen_queue_state(this.model.get('story_hash')) : null,
             sharing_services: NEWSBLUR.assets.third_party_sharing_services,
@@ -552,7 +553,7 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
                             <div class="NB-sideoption-icon NB-sideoption-icon-listen">&nbsp;</div>\
                             <div class="NB-sideoption-listen-queue" role="button" title="<%- listen_queue_state == "queued" ? gettext("Queued. Click to remove from Up Next") : gettext("Add to Up Next") %>"></div>\
                             <% if (listen_is_preview) { %>\
-                                <div class="NB-sideoption-listen-preview-pill"><%- gettext("30s preview") %></div>\
+                                <div class="NB-sideoption-listen-preview-pill"><%- interpolate(gettext("%(seconds)ss preview"), { seconds: listen_preview_seconds }, true) %></div>\
                             <% } %>\
                         </div>\
                     <% } %>\
@@ -2243,12 +2244,21 @@ NEWSBLUR.Views.StoryDetailView = Backbone.View.extend({
         if (NEWSBLUR.app.media_player) NEWSBLUR.app.media_player.toggle_listen_queue(this.model);
     },
 
+    // story_detail_view.js: How long a Free or Premium preview lasts, from the server's Listen usage once the
+    // player has it (apps/listen/usage.py SAMPLE_SECONDS), else its current length.
+    listen_preview_seconds: function () {
+        var usage = NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.listen_usage;
+        return (usage && usage.preview_seconds) || 60;
+    },
+
     listen_tooltip: function () {
         if (NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.is_listening_to(this.model.get('story_hash'))) {
             return gettext('Pause or resume reading aloud (y)');
         }
         if (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro) {
-            return gettext('Hear the first 30 seconds read aloud. Premium Archive reads whole stories.');
+            var seconds = this.listen_preview_seconds();
+            return interpolate(ngettext('Hear the first %(count)s second read aloud. Premium Archive reads whole stories.',
+                'Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories.', seconds), { count: seconds }, true);
         }
         return gettext('Read this story aloud (y)');
     },

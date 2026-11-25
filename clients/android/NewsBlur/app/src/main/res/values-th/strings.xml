@@ -1345,7 +1345,6 @@
     <string name="listen_resume">เล่นต่อ</string>
     <string name="listen_pause">หยุดชั่วคราว</string>
     <string name="listen_play">เล่น</string>
-    <string name="listen_preview_pill">ตัวอย่าง 30 วินาที</string>
     <string name="listen_open_player">เปิดเครื่องเล่น</string>
     <string name="listen_close">ปิดเครื่องเล่น</string>
     <string name="listen_loading">กำลังเตรียมบทความ…</string>
@@ -1399,7 +1398,6 @@
     <string name="listen_speed_exact">ความเร็วในการเล่นแบบละเอียด</string>
     <string name="listen_speed_slider">แถบเลื่อนความเร็วในการเล่น</string>
     <string name="listen_speed_button">ความเร็วในการเล่น %1$s×</string>
-    <string name="listen_preview_banner">กำลังฟังตัวอย่าง 30 วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">เหลือ %1$d วินาที</item>
     </plurals>
@@ -1482,7 +1480,6 @@
     <string name="settings_listen_voices_summary">เลือกเสียงสำหรับแต่ละภาษาและรูปแบบการอ่าน</string>
     <string name="settings_listen_delivery">การนำเสนอ</string>
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
-    <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์</string>
     <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
     <plurals name="new_stories_pill">
         <item quantity="other">บทความใหม่ %d รายการ</item>

@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ फ़ोल्डर, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ फ़ोल्डर, समेटा हुआ, %2$@";
 "%1$@ followed %2$@." = "%1$@ ने %2$@ को फ़ॉलो किया।";
+"%1$@ of %2$@ of listening left this month" = "इस महीने सुनने के शेष समय में से %1$@, %2$@";
 "%1$@ of %2$@ of listening left this week" = "इस सप्ताह सुनने के %2$@ में से %1$@ शेष";
 "%1$@ of %2$@ sites indexed" = "%2$@ में से %1$@ साइटें अनुक्रमित हुईं";
 "%1$@ of %2$@ story previews used today" = "आज %2$@ में से %1$@ लेख पूर्वावलोकन इस्तेमाल किए गए";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2,000 लेख";
 "20 stories" = "20 लेख";
 "2x daily" = "दिन में 2 बार";
-"30s preview" = "30 सेकंड का प्रीव्यू";
 "3x daily" = "दिन में 3 बार";
 "5 stories" = "5 लेख";
 "5,000 stories" = "5,000 लेख";
@@ -536,7 +536,6 @@
 "List style" = "सूची शैली";
 "Listen" = "सुनें";
 "Listen Settings" = "सुनने की सेटिंग्स";
-"Listen to 1 hour of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें";
 "Listen to 10 hours of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें";
 "Listen to story" = "लेख सुनें";
 "Listening isn't available right now." = "अभी सुनने की सुविधा उपलब्ध नहीं है।";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "कल का टेक्स्ट";
 "Text view" = "पाठ दृश्य";
 "Text view conveniently extracts the story" = "टेक्स्ट दृश्य लेख को सुविधाजनक रूप से निकालता है";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "यह 30 सेकंड का पूर्वावलोकन था। Premium Archive में पूरे लेख अनलॉक होते हैं।";
 "The audio couldn't be loaded. Try again in a moment." = "ऑडियो लोड नहीं हो सका। थोड़ी देर बाद फिर कोशिश करें।";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "पूरा टेक्स्ट दृश्य एक <a href=\"http://ios.newsblur.com/premium\">प्रीमियम सुविधा</a> है";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS सिम्युलेटर होम स्क्रीन का आइकन नहीं बदल सका। इसे किसी डिवाइस पर आज़माएँ।";

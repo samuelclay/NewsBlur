@@ -22937,9 +22937,19 @@ h5.NB-classifier-section-header {
 }
 
 .NB-modal-admin .NB-account-payments,
+.NB-modal-admin .NB-admin-listen,
 .NB-modal-admin .NB-admin-actions {
     overflow: hidden;
     padding: 12px 24px;
+}
+
+.NB-modal-admin .NB-admin-listen-line {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.NB-modal-admin .NB-admin-listen .NB-modal-submit-button {
+    margin-top: 8px;
 }
 
 .NB-modal-admin .NB-modal-submit-button {
@@ -26361,6 +26371,109 @@ h5.NB-classifier-section-header {
     background-image: url('/media/embed/icons/nouns/mcp-agent.svg');
     filter: invert(25%) sepia(70%) saturate(2500%) hue-rotate(230deg) brightness(90%) contrast(105%);
     /* indigo */
+}
+
+/* reader.css: Premium Archive's Listen line is a two-position toggle between 1 hour a week (Premium Archive)
+   and 2 hours a week (Premium Archive Extra). The thumb slides under the chosen option; inset-inline-start keeps
+   it on the right side in right-to-left languages. */
+.NB-premium-tier-features li.NB-feature-listen-hours {
+    padding-bottom: 8px;
+}
+
+.NB-listen-hours-title {
+    margin-bottom: 7px;
+}
+
+.NB-listen-hours {
+    position: relative;
+    display: flex;
+    padding: 3px;
+    border-radius: 10px;
+    background: #eef2f7;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+.NB-listen-hours-thumb {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    inset-inline-start: 3px;
+    width: calc(50% - 3px);
+    border-radius: 7px;
+    background: #ffffff;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.12),
+        0 2px 6px rgba(37, 99, 235, 0.12);
+    transition: inset-inline-start 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.NB-premium-archive-extra .NB-listen-hours-thumb {
+    inset-inline-start: 50%;
+}
+
+.NB-listen-hours-option {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 6px 4px 5px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    font: inherit;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.NB-listen-hours-option:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+}
+
+.NB-listen-hours-option[aria-checked="true"] {
+    color: #1d4ed8;
+    cursor: default;
+}
+
+.NB-listen-hours-option-label {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-hours-option-price {
+    font-size: 11px;
+    opacity: 0.8;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The header price and plan name change with the toggle; a short fade makes the change noticeable. */
+.NB-premium-archive-name,
+.NB-premium-archive-price {
+    transition: opacity 0.2s ease;
+}
+
+/* The plan not chosen keeps its full width but takes no space, so its PayPal button renders at the right size. */
+.NB-premium-archive-actions {
+    position: relative;
+}
+
+.NB-premium-archive-plan-hidden {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-listen-hours-thumb,
+    .NB-listen-hours-option {
+        transition: none;
+    }
 }
 
 .NB-premium-tier-features-archive li.NB-19 .NB-premium-bullet-image {

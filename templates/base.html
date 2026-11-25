@@ -41,6 +41,7 @@
       'is_anonymous'            : {{ user.is_anonymous|yesno:"true,false" }},
       'is_premium'              : {{ user_profile.is_premium|yesno:"true,false" }},
       'is_archive'              : {{ user_profile.is_archive|yesno:"true,false" }},
+      'is_archive_extra'        : {{ user_profile.is_archive_extra|yesno:"true,false,false" }},
       'is_pro'                  : {{ user_profile.is_pro|yesno:"true,false" }},
       'can_register_oauth_app'   : {{ user_profile.can_register_oauth_application|yesno:"true,false,false" }},
       'is_usage_billing'        : {{ user_profile.is_usage_billing|yesno:"true,false,false" }},

@@ -539,6 +539,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Nog %(duration)s over deze week"
 
@@ -589,6 +593,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -984,11 +996,17 @@ msgstr "/maand"
 msgid "/year"
 msgstr "/jaar"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1 maand"
 
 msgid "1 year"
 msgstr "1 jaar"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
@@ -998,9 +1016,6 @@ msgstr "2 keer per dag"
 
 msgid "30 second preview"
 msgstr "Voorbeeld van 30 seconden"
-
-msgid "30s preview"
-msgstr "Preview van 30 s"
 
 msgid "3x daily"
 msgstr "3 keer per dag"
@@ -2184,6 +2199,9 @@ msgstr "Je applicaties konden niet worden geladen. Probeer de pagina te vernieuw
 msgid "Couldn't load audio for this story."
 msgstr "Audio voor dit artikel laden is niet gelukt."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "Tellen is lastig"
 
@@ -2228,6 +2246,9 @@ msgstr "Creatief"
 
 msgid "Credit"
 msgstr "Tegoed"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "Huidige stem"
@@ -3553,8 +3574,11 @@ msgstr "Koppen"
 msgid "Health"
 msgstr "Gezondheid"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "Luister naar de eerste 30 seconden. Met Premium Archive kun je hele artikelen beluisteren."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Hearts"
 msgstr "Hartjes"
@@ -3911,6 +3935,10 @@ msgstr "Laatste update"
 msgid "Last activity"
 msgstr "Laatste activiteit"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "Laatst gezien:"
 
@@ -3975,8 +4003,11 @@ msgstr "Luisteren"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Luisteren duurde te lang. Probeer het zo opnieuw."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
@@ -4272,6 +4303,9 @@ msgstr "ma"
 msgid "Monday"
 msgstr "maandag"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "Maandelijkse uitgavenlimiet"
 
@@ -4438,6 +4472,9 @@ msgstr "Verloopt nooit"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "Verloopt nooit. Gefeliciteerd!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "Nieuw binnen"
@@ -5195,6 +5232,18 @@ msgstr "Kies welke taal NewsBlur moet gebruiken. Je kunt dit op elk moment wijzi
 msgid "Places"
 msgstr "Plaatsen"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "Platform"
 
@@ -5293,6 +5342,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Met Premium Archive worden volledige artikelen voorgelezen."
@@ -5769,6 +5821,9 @@ msgstr "Vereist Premium Archive"
 
 msgid "Reset"
 msgstr "Opnieuw instellen"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "Terugzetten naar het oorspronkelijke favicon"
@@ -7874,6 +7929,10 @@ msgstr "Visueel"
 
 msgid "Voice"
 msgstr "Stem"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "Spraakopname mislukt. Probeer het opnieuw."

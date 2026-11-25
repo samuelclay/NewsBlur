@@ -41,6 +41,7 @@ public class FeedFolderResponse {
 	public boolean isAuthenticated;
     public boolean isPremium;
     public boolean isArchive;
+    public boolean isArchiveExtra;
     public boolean isPro;
     public long premiumExpire;
     // Natural language classifier billing, null when the server doesn't send it yet.
@@ -78,6 +79,9 @@ public class FeedFolderResponse {
             this.premiumExpire = profile.get("premium_expire").getAsLong();
             if (profile.has("is_archive")) {
                 this.isArchive = profile.get("is_archive").getAsBoolean();
+            }
+            if (profile.has("is_archive_extra")) {
+                this.isArchiveExtra = profile.get("is_archive_extra").getAsBoolean();
             }
             if (profile.has("is_pro")) {
                 this.isPro = profile.get("is_pro").getAsBoolean();

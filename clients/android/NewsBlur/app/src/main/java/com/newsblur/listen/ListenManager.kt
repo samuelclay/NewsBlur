@@ -63,6 +63,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.roundToInt
 
 /** A story Listen can play, with what the player and lock screen show about it. */
 data class ListenStory(
@@ -122,6 +123,15 @@ data class ListenUiState(
     val skipBackSeconds: Int = ListenMediaSettings.DEFAULT_SKIP_BACK_SECONDS,
     val skipForwardSeconds: Int = ListenMediaSettings.DEFAULT_SKIP_FORWARD_SECONDS,
 ) {
+    /** How long a preview plays: this story's own limit once its manifest arrives, else the server's last usage report. */
+    val previewSeconds: Int
+        get() =
+            if (previewLimitMs > 0L) {
+                (previewLimitMs / 1000.0).roundToInt()
+            } else {
+                (usage?.previewSeconds ?: ListenPreviewInfo.DEFAULT_SECONDS).roundToInt()
+            }
+
     /** Whether a story is queued to be read aloud; its podcast episode queued on its own doesn't count. */
     fun isQueued(storyHash: String?): Boolean = storyHash != null && queued.any { it.media == null && it.storyHash == storyHash }
 
@@ -460,7 +470,7 @@ class ListenManager
 
         /**
          * A seek outside the segments ExoPlayer holds needs /listen/segment, and every segment asked for counts
-         * against the weekly cap, so scrubbing or skipping across the story asks only for where it settles.
+         * against the listening allowance, so scrubbing or skipping across the story asks only for where it settles.
          * The scrubber shows the new position right away while the old audio holds.
          */
         private fun seekToUnloaded(
@@ -1819,7 +1829,7 @@ class ListenManager
             val loadedManifest = manifest ?: return 0L
             if (!loadedManifest.isPreview) return 0L
             val seconds =
-                loadedManifest.preview?.seconds ?: usage?.previewSeconds ?: DEFAULT_PREVIEW_SECONDS
+                loadedManifest.preview?.seconds ?: usage?.previewSeconds ?: ListenPreviewInfo.DEFAULT_SECONDS
             return ListenTimeline.secondsToMs(seconds)
         }
 
@@ -1995,7 +2005,6 @@ class ListenManager
             private const val MANIFEST_REFRESH_MARGIN_SECONDS = 60.0
             private const val URL_LIFETIME_MS = 5L * 60L * 60L * 1000L
             private const val HTTP_TIMEOUT_MS = 30_000
-            private const val DEFAULT_PREVIEW_SECONDS = 30.0
             private const val UP_NEXT_LIMIT = 10
 
             // Auto-continue starts the next story within a moment, so the other app's music stays lowered between.

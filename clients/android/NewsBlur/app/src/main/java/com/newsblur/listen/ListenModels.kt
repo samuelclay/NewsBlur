@@ -26,6 +26,8 @@ data class ListenVoice(
 data class ListenUsage(
     @SerializedName("tier") val tier: String? = null,
     @SerializedName("is_archive_tier") val isArchiveTier: Boolean = false,
+    /** "month" for Premium Archive and Archive Extra, "week" for Pro, null for plans that only get previews. */
+    @SerializedName("period") val period: String? = null,
     @SerializedName("seconds_used") val secondsUsed: Double = 0.0,
     @SerializedName("seconds_limit") val secondsLimit: Double? = null,
     @SerializedName("seconds_remaining") val secondsRemaining: Double? = null,
@@ -36,7 +38,25 @@ data class ListenUsage(
     @SerializedName("previews_used") val previewsUsed: Int = 0,
     @SerializedName("previews_limit") val previewsLimit: Int? = null,
     @SerializedName("upgrade_message") val upgradeMessage: String? = null,
-)
+) {
+    /**
+     * Premium Archive and Archive Extra listen against a monthly allowance and Pro against a weekly one; everyone
+     * else gets previews.
+     */
+    val hasTimeAllowance: Boolean
+        get() = isArchiveTier || tier in ALLOWANCE_TIERS
+
+    val isMonthly: Boolean
+        get() = period == PERIOD_MONTH
+
+    companion object {
+        const val TIER_ARCHIVE = "archive"
+        const val TIER_ARCHIVE_EXTRA = "archive_extra"
+        const val TIER_PRO = "pro"
+        const val PERIOD_MONTH = "month"
+        private val ALLOWANCE_TIERS = setOf(TIER_ARCHIVE, TIER_ARCHIVE_EXTRA, TIER_PRO)
+    }
+}
 
 data class ListenParagraph(
     @SerializedName("index") val index: Int = 0,
@@ -62,10 +82,15 @@ data class ListenSegment(
 
 data class ListenPreviewInfo(
     @SerializedName("is_preview") val isPreview: Boolean = false,
-    @SerializedName("seconds") val seconds: Double = 30.0,
+    @SerializedName("seconds") val seconds: Double = DEFAULT_SECONDS,
     @SerializedName("samples_used") val samplesUsed: Int = 0,
     @SerializedName("samples_limit") val samplesLimit: Int? = null,
-)
+) {
+    companion object {
+        /** A preview's length until the server says otherwise (preview.seconds or usage.preview_seconds). */
+        const val DEFAULT_SECONDS = 60.0
+    }
+}
 
 data class ListenManifest(
     @SerializedName("code") val code: Int = 0,

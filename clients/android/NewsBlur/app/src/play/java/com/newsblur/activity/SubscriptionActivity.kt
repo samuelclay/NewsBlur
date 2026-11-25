@@ -7,8 +7,15 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.text.util.Linkify
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
@@ -20,9 +27,15 @@ import com.newsblur.databinding.ViewSubscriptionFeatureRowBinding
 import com.newsblur.databinding.ViewSubscriptionTierBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.network.UserApi
+import com.newsblur.subscription.ArchiveCardPlan
+import com.newsblur.subscription.ArchiveCardStatus
+import com.newsblur.subscription.ArchiveHoursToggle
+import com.newsblur.subscription.ArchiveHoursToggleColors
+import com.newsblur.subscription.ArchiveListenHours
 import com.newsblur.subscription.SubscriptionManager
 import com.newsblur.subscription.SubscriptionManagerImpl
 import com.newsblur.subscription.SubscriptionsListener
+import com.newsblur.subscription.archiveCardPlan
 import com.newsblur.util.AppConstants
 import com.newsblur.util.BetterLinkMovementMethod
 import com.newsblur.util.EdgeToEdgeUtil.applyView
@@ -43,6 +56,8 @@ private data class SubscriptionFeature(
     val iconRes: Int,
     val colorRes: Int,
     val upcoming: Boolean = false,
+    /** The Listen line that carries the Premium Archive card's one or ten hours toggle (ArchiveHoursToggle.kt). */
+    val listenHoursToggle: Boolean = false,
 )
 
 private data class SubscriptionTierConfig(
@@ -60,6 +75,7 @@ private data class ActiveSubscriptionState(
     val renewalMessage: String? = null,
     val isPremium: Boolean = false,
     val isArchive: Boolean = false,
+    val isArchiveExtra: Boolean = false,
     val isPro: Boolean = false,
 ) {
     val hasAnySubscription: Boolean
@@ -107,6 +123,14 @@ class SubscriptionActivity : NbActivity() {
     private var availableSubscriptions: Map<String, ProductDetails> = emptyMap()
     private var activeSubscriptionState = ActiveSubscriptionState()
 
+    private var archiveListenTitle: TextView? = null
+    private var archiveHoursToggle: ComposeView? = null
+    private val archiveHoursShown = mutableStateOf(ArchiveListenHours.ONE)
+    private val archiveHoursCaptions = mutableStateOf<Map<ArchiveListenHours, String>>(emptyMap())
+
+    /** Null until the toggle is touched, so the card follows the account's own plan as it loads. */
+    private var chosenArchiveHours: ArchiveListenHours? = null
+
     private val premiumTier =
         SubscriptionTierConfig(
             headerTitleRes = R.string.premium_subscription_header,
@@ -145,7 +169,7 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.archive_everything_premium, R.drawable.ic_burst, R.color.premium_feature_yellow),
                     SubscriptionFeature(R.string.archive_enable_sites, R.drawable.ic_sheets, R.color.premium_feature_blue),
                     SubscriptionFeature(R.string.archive_web_feeds, R.drawable.ic_web_feed, R.color.premium_feature_purple),
-                    SubscriptionFeature(R.string.archive_listen, R.drawable.ic_listen, R.color.premium_feature_cyan),
+                    SubscriptionFeature(R.string.archive_listen, R.drawable.ic_listen, R.color.premium_feature_cyan, listenHoursToggle = true),
                     SubscriptionFeature(R.string.archive_ask_ai, android.R.drawable.ic_menu_help, R.color.premium_feature_ai),
                     SubscriptionFeature(R.string.archive_train_folder, R.drawable.ic_folder, R.color.premium_feature_mint),
                     SubscriptionFeature(R.string.archive_train_globally, R.drawable.ic_world, R.color.premium_feature_indigo),
@@ -163,6 +187,13 @@ class SubscriptionActivity : NbActivity() {
                     SubscriptionFeature(R.string.archive_filter_by_date_range, R.drawable.ic_calendar, R.color.premium_feature_pink),
                     SubscriptionFeature(R.string.archive_mcp, R.drawable.ic_mcp_agent, R.color.premium_feature_indigo),
                 ),
+        )
+
+    private val archiveExtraTier =
+        archiveTier.copy(
+            headerTitleRes = R.string.archive_extra_subscription_header,
+            purchaseTitleRes = R.string.archive_extra_subscription_title,
+            productId = AppConstants.PREMIUM_ARCHIVE_EXTRA_SUB_ID,
         )
 
     private val proTier =
@@ -192,6 +223,7 @@ class SubscriptionActivity : NbActivity() {
                 renewalMessage: String?,
                 isPremium: Boolean,
                 isArchive: Boolean,
+                isArchiveExtra: Boolean,
                 isPro: Boolean,
             ) {
                 runOnUiThread {
@@ -200,6 +232,7 @@ class SubscriptionActivity : NbActivity() {
                             renewalMessage = renewalMessage,
                             isPremium = isPremium,
                             isArchive = isArchive,
+                            isArchiveExtra = isArchiveExtra,
                             isPro = isPro,
                         )
                     renderSubscriptionTiers()
@@ -233,10 +266,22 @@ class SubscriptionActivity : NbActivity() {
         bindingArchive = ViewSubscriptionTierBinding.bind(binding.containerArchiveSubscription.root)
         bindingPro = ViewSubscriptionTierBinding.bind(binding.containerProSubscription.root)
         palette = buildPalette()
+        chosenArchiveHours =
+            savedInstanceState?.getString(STATE_ARCHIVE_HOURS)?.let { name ->
+                ArchiveListenHours.entries.firstOrNull { it.name == name }
+            }
         applyView(binding)
         setupUI()
+        populateFeatureRows(bindingPremium, premiumTier.features)
+        populateFeatureRows(bindingArchive, archiveTier.features)
+        populateFeatureRows(bindingPro, proTier.features)
         renderSubscriptionTiers()
         setupBilling()
+    }
+
+    override fun onSaveInstanceState(outState: android.os.Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_ARCHIVE_HOURS, chosenArchiveHours?.name)
     }
 
     private fun setupUI() {
@@ -300,8 +345,22 @@ class SubscriptionActivity : NbActivity() {
     }
 
     private fun renderSubscriptionTiers() {
+        val archivePlan =
+            archiveCardPlan(
+                isPremium = activeSubscriptionState.isPremium,
+                isArchive = activeSubscriptionState.isArchive,
+                isArchiveExtra = activeSubscriptionState.isArchiveExtra,
+                isPro = activeSubscriptionState.isPro,
+                extraOffered = isPurchasable(AppConstants.PREMIUM_ARCHIVE_EXTRA_SUB_ID),
+                chosenHours = chosenArchiveHours,
+            )
         renderTier(bindingPremium, premiumTier, premiumUiState())
-        renderTier(bindingArchive, archiveTier, archiveUiState())
+        renderArchiveListenLine(archivePlan)
+        renderTier(
+            bindingArchive,
+            if (archivePlan.hours == ArchiveListenHours.TEN) archiveExtraTier else archiveTier,
+            archiveUiState(archivePlan),
+        )
         renderTier(bindingPro, proTier, proUiState())
 
         binding.textNoSubscriptions.isVisible =
@@ -314,7 +373,6 @@ class SubscriptionActivity : NbActivity() {
         uiState: TierUiState,
     ) {
         styleTierCard(tierBinding, config)
-        populateFeatureRows(tierBinding, config.features)
 
         if (config.showDogImage) {
             iconLoader.displayImage(AppConstants.LYRIC_PHOTO_URL, tierBinding.imgDog)
@@ -375,6 +433,7 @@ class SubscriptionActivity : NbActivity() {
                     alphaFraction = if (feature.upcoming) 0.08f else 0.15f,
                 )
             featureBinding.root.alpha = if (feature.upcoming) 0.6f else 1f
+            if (feature.listenHoursToggle) attachArchiveHoursToggle(featureBinding)
 
             tierBinding.containerFeatures.addView(featureBinding.root)
 
@@ -382,6 +441,52 @@ class SubscriptionActivity : NbActivity() {
                 tierBinding.containerFeatures.addView(createDivider())
             }
         }
+    }
+
+    private fun attachArchiveHoursToggle(row: ViewSubscriptionFeatureRowBinding) {
+        val toggleColors = archiveHoursToggleColors()
+        archiveListenTitle = row.textTitle
+        archiveHoursToggle =
+            ComposeView(this).apply {
+                isVisible = false
+                layoutParams =
+                    LinearLayout
+                        .LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                        .apply { topMargin = dp(10) }
+                setContent {
+                    ArchiveHoursToggle(
+                        selected = archiveHoursShown.value,
+                        captions = archiveHoursCaptions.value,
+                        colors = toggleColors,
+                        onSelect = ::chooseArchiveHours,
+                    )
+                }
+            }
+        row.containerText.addView(archiveHoursToggle)
+    }
+
+    private fun chooseArchiveHours(hours: ArchiveListenHours) {
+        if (hours == archiveHoursShown.value) return
+        chosenArchiveHours = hours
+        TransitionManager.beginDelayedTransition(binding.container, AutoTransition().setDuration(220))
+        renderSubscriptionTiers()
+    }
+
+    private fun renderArchiveListenLine(plan: ArchiveCardPlan) {
+        archiveListenTitle?.setText(if (plan.hours == ArchiveListenHours.TEN) R.string.archive_extra_listen else R.string.archive_listen)
+        archiveHoursToggle?.isVisible = plan.showsHoursToggle
+        archiveHoursShown.value = plan.hours
+        archiveHoursCaptions.value =
+            ArchiveListenHours.entries
+                .mapNotNull { hours ->
+                    val caption =
+                        if (hours == plan.ownedHours) {
+                            getString(R.string.subscription_current_plan)
+                        } else {
+                            firstPricingPhase(hours.productId)?.let(::formatShortPricing)
+                        }
+                    caption?.let { hours to it }
+                }.toMap()
     }
 
     private fun createDivider(): View =
@@ -472,6 +577,12 @@ class SubscriptionActivity : NbActivity() {
                     showManage = false,
                 )
 
+            activeSubscriptionState.isArchiveExtra ->
+                TierUiState.Active(
+                    messageRes = R.string.premium_archive_extra_includes_above,
+                    showManage = false,
+                )
+
             activeSubscriptionState.isArchive ->
                 TierUiState.Active(
                     messageRes = R.string.premium_archive_includes_above,
@@ -488,27 +599,43 @@ class SubscriptionActivity : NbActivity() {
             else -> TierUiState.Purchase()
         }
 
-    private fun archiveUiState(): TierUiState =
-        when {
-            activeSubscriptionState.isPro ->
+    private fun archiveUiState(plan: ArchiveCardPlan): TierUiState =
+        when (plan.status) {
+            ArchiveCardStatus.OWNED ->
+                TierUiState.Active(
+                    messageRes =
+                        if (plan.hours == ArchiveListenHours.TEN) {
+                            R.string.archive_extra_subscription_active
+                        } else {
+                            R.string.archive_subscription_active
+                        },
+                    showManage = true,
+                    manageProductId = plan.hours.productId,
+                )
+
+            ArchiveCardStatus.INCLUDED_IN_PRO ->
                 TierUiState.Active(
                     messageRes = R.string.premium_pro_includes_above,
                     showManage = false,
                 )
 
-            activeSubscriptionState.isArchive ->
+            ArchiveCardStatus.INCLUDED_IN_ARCHIVE_EXTRA ->
                 TierUiState.Active(
-                    messageRes = R.string.archive_subscription_active,
-                    showManage = true,
-                    manageProductId = AppConstants.PREMIUM_ARCHIVE_SUB_ID,
+                    messageRes = R.string.premium_archive_extra_includes_above,
+                    showManage = false,
                 )
 
-            activeSubscriptionState.isPremium ->
+            ArchiveCardStatus.UPGRADE_FROM_ARCHIVE ->
+                TierUiState.Purchase(
+                    subtitleRes = R.string.subscription_upgrade_from_archive,
+                )
+
+            ArchiveCardStatus.UPGRADE_FROM_PREMIUM ->
                 TierUiState.Purchase(
                     subtitleRes = R.string.subscription_upgrade_from_premium,
                 )
 
-            else -> TierUiState.Purchase()
+            ArchiveCardStatus.PURCHASE -> TierUiState.Purchase()
         }
 
     private fun proUiState(): TierUiState =
@@ -546,6 +673,24 @@ class SubscriptionActivity : NbActivity() {
                 }.build()
         UIUtils.handleUri(this, prefsRepo, uri)
     }
+
+    private fun firstPricingPhase(productId: String): ProductDetails.PricingPhase? =
+        availableSubscriptions[productId]
+            ?.subscriptionOfferDetails
+            ?.firstOrNull()
+            ?.pricingPhases
+            ?.pricingPhaseList
+            ?.firstOrNull()
+
+    private fun isPurchasable(productId: String): Boolean = firstPricingPhase(productId) != null
+
+    /** "$159.00/year", short enough for a toggle segment's caption. */
+    private fun formatShortPricing(pricing: ProductDetails.PricingPhase): String =
+        when (pricing.billingPeriod) {
+            "P1Y" -> getString(R.string.subscription_price_per_year, pricing.formattedPrice)
+            "P1M" -> getString(R.string.subscription_price_monthly, pricing.formattedPrice)
+            else -> getString(R.string.subscription_price_generic, pricing.formattedPrice, readableBillingPeriod(pricing.billingPeriod))
+        }
 
     private fun formatProductPricing(pricing: ProductDetails.PricingPhase): String {
         val formattedPrice = pricing.formattedPrice
@@ -633,7 +778,22 @@ class SubscriptionActivity : NbActivity() {
         }
     }
 
+    /** The toggle sits on the card's secondary surface, and its selected pill wears the Archive gradient. */
+    private fun archiveHoursToggleColors(): ArchiveHoursToggleColors =
+        ArchiveHoursToggleColors(
+            track = ComposeColor(palette.secondaryBackground),
+            border = ComposeColor(palette.border),
+            text = ComposeColor(palette.secondaryText),
+            selectedText = ComposeColor(ContextCompat.getColor(this, R.color.white)),
+            thumbStart = ComposeColor(ContextCompat.getColor(this, archiveTier.gradientStartRes)),
+            thumbEnd = ComposeColor(ContextCompat.getColor(this, archiveTier.gradientEndRes)),
+        )
+
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).roundToInt()
 
     private fun dpF(value: Int): Float = value * resources.displayMetrics.density
+
+    private companion object {
+        const val STATE_ARCHIVE_HOURS = "archive_hours"
+    }
 }

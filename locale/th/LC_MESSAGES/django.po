@@ -3200,6 +3200,9 @@ msgstr "ฟังบนเว็บ, iPad, iPhone และ Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "ฟังกำลังเล่นบน MacBook, iPad, iPhone และโทรศัพท์ Android"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
 
@@ -4256,6 +4259,9 @@ msgstr ""
 msgid "Only premium users can share multiple stories per day from the same site."
 msgstr "เฉพาะผู้ใช้ Premium เท่านั้นที่แชร์บทความจากเว็บไซต์เดียวกันได้หลายบทความต่อวัน"
 
+msgid "Only staff can see or reset another account's listening."
+msgstr ""
+
 msgid "Open NewsBlur to register your application."
 msgstr "เปิด NewsBlur เพื่อลงทะเบียนแอปพลิเคชัน"
 
@@ -4471,6 +4477,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - ราคา NewsBlur"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr "Premium Archive เก็บบทความทั้งหมดจากทุกเว็บไซต์ที่คุณติดตามไว้ตลอดไป รับทุกอย่างจาก Premium พร้อมกับ:"
 
@@ -4487,8 +4496,8 @@ msgid "Premium Archive subscription"
 msgstr "การสมัครสมาชิก Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Premium Archive ปลดล็อกการอ่านบทความฉบับเต็มออกเสียงได้สูงสุด %(limit)s ต่อสัปดาห์"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive ปลดล็อกการอ่านบทความฉบับเต็มออกเสียงได้สูงสุด %(limit)s ต่อเดือน"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -5753,6 +5762,9 @@ msgstr "ขอบคุณที่ทดลองใช้ NewsBlur! หวั�
 
 msgid "Thanks!"
 msgstr "ขอบคุณ!"
+
+msgid "That account doesn't exist."
+msgstr ""
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "โฟลเดอร์นี้มีการเปลี่ยนแปลง โปรดรีเฟรชฟีดแล้วเลือกโฟลเดอร์อีกครั้ง"
@@ -7198,23 +7210,27 @@ msgstr "คุณได้รับสิทธิ์ใช้ %(tier_name)s ฟ
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
+msgstr ""
+
+#, python-format
+msgid ""
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"สัปดาห์นี้คุณฟังบทความไปแล้ว %(limit)s การฟังจะรีเซ็ตในวันที่ %(day)s หรืออัปเกรดเป็น Premium Pro "
-"เพื่อฟังได้ %(pro_limit)s ต่อสัปดาห์"
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
 msgstr "สัปดาห์นี้คุณฟังบทความไปแล้ว %(limit)s การฟังจะรีเซ็ตในวันที่ %(day)s"
 
+msgid ""
+"You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
+"listen to full stories."
+msgstr ""
+
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "คุณลองฟังเสียงทั้งหมดที่มีให้ลองวันนี้แล้ว ระบบจะรีเซ็ตตอนเที่ยงคืน"
-
-#, python-format
-msgid "You've previewed %(count)d story today. Upgrade to Premium Archive to listen to full stories."
-msgid_plural "You've previewed %(count)d stories today. Upgrade to Premium Archive to listen to full stories."
-msgstr[0] "วันนี้คุณลองฟังบทความไปแล้ว %(count)d รายการ อัปเกรดเป็น Premium Archive เพื่อฟังบทความฉบับเต็ม"
 
 msgid ""
 "You've recently been on NewsBlur, so maybe you didn't mean to transition back to the free account? Maybe "

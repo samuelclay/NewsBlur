@@ -475,6 +475,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "이번 주에 %(duration)s 남음"
 
@@ -523,6 +527,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -914,11 +926,17 @@ msgstr "/월"
 msgid "/year"
 msgstr "/년"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "1개월"
 
 msgid "1 year"
 msgstr "1년"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할 수 있습니다."
@@ -928,9 +946,6 @@ msgstr "하루 2회"
 
 msgid "30 second preview"
 msgstr "30초 미리 듣기"
-
-msgid "30s preview"
-msgstr "30초 미리보기"
 
 msgid "3x daily"
 msgstr "하루 3회"
@@ -2072,6 +2087,9 @@ msgstr "애플리케이션을 불러오지 못했습니다. 새로고침해 보�
 msgid "Couldn't load audio for this story."
 msgstr "이 스토리의 오디오를 불러오지 못했습니다."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "개수 세기는 어렵습니다"
 
@@ -2116,6 +2134,9 @@ msgstr "크리에이티브"
 
 msgid "Credit"
 msgstr "크레딧"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "현재 음성"
@@ -3420,8 +3441,10 @@ msgstr "헤드라인"
 msgid "Health"
 msgstr "건강"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "처음 30초를 소리 내어 들어보세요. 프리미엄 아카이브에서는 스토리 전체를 읽어줍니다."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
 
 msgid "Hearts"
 msgstr "하트"
@@ -3771,6 +3794,10 @@ msgstr "마지막 업데이트"
 msgid "Last activity"
 msgstr "마지막 활동"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "마지막 확인:"
 
@@ -3833,8 +3860,11 @@ msgstr "듣기"
 msgid "Listen timed out. Try again in a moment."
 msgstr "듣기 시간이 초과되었습니다. 잠시 후 다시 시도하세요."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
@@ -4120,6 +4150,9 @@ msgstr "월"
 msgid "Monday"
 msgstr "월요일"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "월간 지출 한도"
 
@@ -4282,6 +4315,9 @@ msgstr "만료 안 함"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "만료되지 않습니다. 축하합니다!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "새로 도착한 항목"
@@ -5017,6 +5053,18 @@ msgstr "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제
 msgid "Places"
 msgstr "장소"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "플랫폼"
 
@@ -5113,6 +5161,9 @@ msgstr "프리미엄"
 
 msgid "Premium Archive"
 msgstr "프리미엄 아카이브"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "프리미엄 아카이브는 스토리 전체를 소리 내어 읽어 줍니다."
@@ -5574,6 +5625,9 @@ msgstr "프리미엄 아카이브 필요"
 
 msgid "Reset"
 msgstr "초기화"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "기본 파비콘으로 재설정"
@@ -7608,6 +7662,10 @@ msgstr "시각"
 
 msgid "Voice"
 msgstr "음성"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "음성 녹음에 실패했습니다. 다시 시도해 주세요."

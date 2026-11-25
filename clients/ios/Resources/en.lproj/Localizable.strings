@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ folder, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ folder, collapsed, %2$@";
 "%1$@ followed %2$@." = "%1$@ followed %2$@.";
+"%1$@ of %2$@ of listening left this month" = "%1$@ of %2$@ of listening left this month";
 "%1$@ of %2$@ of listening left this week" = "%1$@ of %2$@ of listening left this week";
 "%1$@ of %2$@ sites indexed" = "%1$@ of %2$@ sites indexed";
 "%1$@ of %2$@ story previews used today" = "%1$@ of %2$@ story previews used today";
@@ -44,6 +45,7 @@
 "%@ image filters" = "%@ image filters";
 "%@ is now following you." = "%@ is now following you.";
 "%@ left in this preview" = "%@ left in this preview";
+"%@ left this month" = "%@ left this month";
 "%@ left this week" = "%@ left this week";
 "%@ match" = "%@ match";
 "%@ new stories" = "%@ new stories";
@@ -61,6 +63,8 @@
 "%@ unread stories" = "%@ unread stories";
 "%@ voice previews left" = "%@ voice previews left";
 "%@/story" = "%@/story";
+"%@/year" = "%@/year";
+"%@s preview" = "%@s preview";
 "%@×" = "%@×";
 "%ldd ago" = "%ldd ago";
 "%ldh ago" = "%ldh ago";
@@ -73,7 +77,9 @@
 "/mo" = "/mo";
 "/month" = "/month";
 "1 Widget Site" = "1 Widget Site";
+"1 hour" = "1 hour";
 "1,000 stories" = "1,000 stories";
+"10 hours" = "10 hours";
 "10 stories" = "10 stories";
 "10,000 stories" = "10,000 stories";
 "100 stories" = "100 stories";
@@ -82,7 +88,6 @@
 "2,000 stories" = "2,000 stories";
 "20 stories" = "20 stories";
 "2x daily" = "2x daily";
-"30s preview" = "30s preview";
 "3x daily" = "3x daily";
 "5 stories" = "5 stories";
 "5,000 stories" = "5,000 stories";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Create a new account instead";
 "Create account" = "Create account";
 "Create an account" = "Create an account";
+"Current plan" = "Current plan";
 "Custom" = "Custom";
 "Custom Domain" = "Custom Domain";
 "Custom RSS feeds for saved stories" = "Custom RSS feeds for saved stories";
@@ -536,7 +542,8 @@
 "List style" = "List style";
 "Listen" = "Listen";
 "Listen Settings" = "Listen Settings";
-"Listen to 1 hour of stories read aloud a week" = "Listen to 1 hour of stories read aloud a week";
+"Listen to 1 hour of stories read aloud a month" = "Listen to 1 hour of stories read aloud a month";
+"Listen to 10 hours of stories read aloud a month" = "Listen to 10 hours of stories read aloud a month";
 "Listen to 10 hours of stories read aloud a week" = "Listen to 10 hours of stories read aloud a week";
 "Listen to story" = "Listen to story";
 "Listening isn't available right now." = "Listening isn't available right now.";
@@ -625,6 +632,7 @@
 "Medium [theme]" = "Medium";
 "Model" = "Model";
 "Monday" = "Monday";
+"Monthly listening" = "Monthly listening";
 "Monthly spending limit" = "Monthly spending limit";
 "Monthly spending limit reached. " = "Monthly spending limit reached. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "More stories take more disk space, but otherwise have no noticeable effect on performance.";
@@ -808,6 +816,7 @@
 "Preferred time" = "Preferred time";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium Subscription";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants.";
@@ -888,6 +897,7 @@
 "Replying" = "Replying";
 "Reset" = "Reset";
 "Resets %@" = "Resets %@";
+"Resets on %@" = "Resets on %@";
 "Resize sidebar" = "Resize sidebar";
 "Restore" = "Restore";
 "Resume" = "Resume";
@@ -1129,7 +1139,7 @@
 "Text from yesterday" = "Text from yesterday";
 "Text view" = "Text view";
 "Text view conveniently extracts the story" = "Text view conveniently extracts the story";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "That was a 30 second preview. Premium Archive unlocks full stories.";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "That was a %@ second preview. Premium Archive unlocks full stories.";
 "The audio couldn't be loaded. Try again in a moment." = "The audio couldn't be loaded. Try again in a moment.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "The iOS simulator could not change the Home Screen icon. Try this on a device.";
@@ -1301,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Your chosen voice isn't available right now, so %@ is reading this story.";
 "Your identity is verified" = "Your identity is verified";
+"Your premium archive extra subscription includes everything above" = "Your premium archive extra subscription includes everything above";
+"Your premium archive extra subscription is active" = "Your premium archive extra subscription is active";
 "Your premium archive subscription includes everything above" = "Your premium archive subscription includes everything above";
 "Your premium archive subscription is active" = "Your premium archive subscription is active";
 "Your premium pro subscription includes everything above" = "Your premium pro subscription includes everything above";

@@ -2746,6 +2746,20 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/profile/never_expire_premium', data, callback, error_callback);
     },
 
+    // assetmodel.js: staff only. GET shows an account's Listen usage, POST starts it over with a manual reset
+    // (apps/listen/views.py listen_staff_usage).
+    fetch_listen_staff_usage: function (user_id, callback, error_callback) {
+        this.make_request('/listen/staff_usage', {
+            user_id: user_id
+        }, callback, error_callback, { request_type: 'GET' });
+    },
+
+    reset_listen_usage: function (user_id, callback, error_callback) {
+        this.make_request('/listen/staff_usage', {
+            user_id: user_id
+        }, callback, error_callback);
+    },
+
     delete_saved_stories: function (timestamp, callback, error_callback) {
         var self = this;
         var pre_callback = function (data) {

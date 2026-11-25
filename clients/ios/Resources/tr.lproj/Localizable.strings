@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ klasörü, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ klasörü, daraltılmış, %2$@";
 "%1$@ followed %2$@." = "%1$@, %2$@ kişisini takip etti.";
+"%1$@ of %2$@ of listening left this month" = "Bu ayki dinleme hakkınızdan %2$@ üzerinden %1$@ kaldı";
 "%1$@ of %2$@ of listening left this week" = "Bu hafta dinleme sürenizin %1$@ / %2$@ kadarı kaldı";
 "%1$@ of %2$@ sites indexed" = "%2$@ siteden %1$@ tanesi dizine eklendi";
 "%1$@ of %2$@ story previews used today" = "Bugün kullanılan haber önizlemelerinin %1$@ / %2$@ kadarı";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2.000 haber";
 "20 stories" = "20 haber";
 "2x daily" = "Günde 2 kez";
-"30s preview" = "30 sn önizleme";
 "3x daily" = "Günde 3 kez";
 "5 stories" = "5 haber";
 "5,000 stories" = "5.000 haber";
@@ -536,7 +536,6 @@
 "List style" = "Liste stili";
 "Listen" = "Dinle";
 "Listen Settings" = "Dinleme Ayarları";
-"Listen to 1 hour of stories read aloud a week" = "Haftada 1 saat haberleri sesli dinleyin";
 "Listen to 10 hours of stories read aloud a week" = "Haftada 10 saat haberleri sesli dinleyin";
 "Listen to story" = "Haberi dinle";
 "Listening isn't available right now." = "Dinleme şu anda kullanılamıyor.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Dünden kalan metin";
 "Text view" = "Metin görünümü";
 "Text view conveniently extracts the story" = "Metin görünümü, haberin içeriğini kolayca ayıklar";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Bu, 30 saniyelik bir önizlemeydi. Premium Archive tüm haberlerin kilidini açar.";
 "The audio couldn't be loaded. Try again in a moment." = "Ses yüklenemedi. Birazdan tekrar deneyin.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tam Metin görünümü bir <a href=\"http://ios.newsblur.com/premium\">premium özelliktir</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS simülatörü Ana Ekran simgesini değiştiremedi. Bunu bir aygıtta deneyin.";

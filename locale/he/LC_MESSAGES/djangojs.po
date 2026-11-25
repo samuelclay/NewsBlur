@@ -537,6 +537,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "נותרו %(duration)s השבוע"
 
@@ -587,6 +591,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone, iPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -982,11 +994,17 @@ msgstr "לחודש"
 msgid "/year"
 msgstr "/שנה"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "חודש אחד"
 
 msgid "1 year"
 msgstr "שנה אחת"
+
+msgid "10 hours"
+msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ולגילוי."
@@ -995,9 +1013,6 @@ msgid "2x daily"
 msgstr "פעמיים ביום"
 
 msgid "30 second preview"
-msgstr "תצוגה מקדימה של 30 שניות"
-
-msgid "30s preview"
 msgstr "תצוגה מקדימה של 30 שניות"
 
 msgid "3x daily"
@@ -2172,6 +2187,9 @@ msgstr "טעינת היישומים שלך נכשלה. נסו לרענן."
 msgid "Couldn't load audio for this story."
 msgstr "לא ניתן לטעון את השמע של הכתבה הזו."
 
+msgid "Couldn't load listening."
+msgstr ""
+
 msgid "Counting is difficult"
 msgstr "קשה לספור"
 
@@ -2216,6 +2234,9 @@ msgstr "יצירתי"
 
 msgid "Credit"
 msgstr "קרדיט"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "הקול הנוכחי"
@@ -3532,8 +3553,11 @@ msgstr "כותרות"
 msgid "Health"
 msgstr "בריאות"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "האזינו ל־30 השניות הראשונות בהקראה. Premium Archive מקריא כתבות שלמות."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Hearts"
 msgstr "לבבות"
@@ -3890,6 +3914,10 @@ msgstr "עדכון אחרון"
 msgid "Last activity"
 msgstr "פעילות אחרונה"
 
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
+
 msgid "Last seen:"
 msgstr "נראה לאחרונה:"
 
@@ -3954,8 +3982,11 @@ msgstr "האזנה"
 msgid "Listen timed out. Try again in a moment."
 msgstr "תם הזמן להאזנה. כדאי לנסות שוב בעוד רגע."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "האזנה להקראה של כתבות במשך שעה בשבוע"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "האזנה להקראה של כתבות במשך 10 שעות בשבוע"
@@ -4249,6 +4280,9 @@ msgstr "ב׳"
 msgid "Monday"
 msgstr "יום שני"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "מגבלת הוצאות חודשית"
 
@@ -4415,6 +4449,9 @@ msgstr "לעולם לא יפוג"
 
 msgid "Never gonna expire. Congrats!"
 msgstr "המינוי לעולם לא יפוג. כל הכבוד!"
+
+msgid "Never reset."
+msgstr ""
 
 msgid "New Arrivals"
 msgstr "חדשים שהגיעו"
@@ -5162,6 +5199,18 @@ msgstr "בחרו את השפה שבה תרצו ש־NewsBlur יפעל. אפשר �
 msgid "Places"
 msgstr "מקומות"
 
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
+
 msgid "Platform"
 msgstr "פלטפורמה"
 
@@ -5258,6 +5307,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive מקריא כתבות שלמות בקול."
@@ -5726,6 +5778,9 @@ msgstr "נדרש Premium Archive"
 
 msgid "Reset"
 msgstr "איפוס"
+
+msgid "Reset Listen usage"
+msgstr ""
 
 msgid "Reset to original favicon"
 msgstr "איפוס לסמל האתר המקורי"
@@ -7798,6 +7853,10 @@ msgstr "חזותי"
 
 msgid "Voice"
 msgstr "קול"
+
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
 
 msgid "Voice recording failed. Please try again."
 msgstr "הקלטת הקול נכשלה. נסו שוב."

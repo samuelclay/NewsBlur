@@ -85,6 +85,8 @@ public class AppConstants {
     // Subscription SKU
     public final static String PREMIUM_SUB_ID = "nb.premium.36";
     public final static String PREMIUM_ARCHIVE_SUB_ID = "nb.premium.archive.99";
+    // Premium Archive with ten hours of Listen a month instead of one; SubscriptionActivity.kt offers it from the Archive card.
+    public final static String PREMIUM_ARCHIVE_EXTRA_SUB_ID = "nb.premium.archive.extra.159";
     public final static String PREMIUM_PRO_SUB_ID = "nb.premium.pro.299";
 
     // Free standard account sites limit

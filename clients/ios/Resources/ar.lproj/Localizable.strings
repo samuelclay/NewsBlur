@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "مجلد %1$@، %2$@";
 "%1$@ folder, collapsed, %2$@" = "مجلد %1$@، مطوي، %2$@";
 "%1$@ followed %2$@." = "بدأ %1$@ بمتابعة %2$@.";
+"%1$@ of %2$@ of listening left this month" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الشهر";
 "%1$@ of %2$@ of listening left this week" = "تبقّى %1$@ من %2$@ من وقت الاستماع هذا الأسبوع";
 "%1$@ of %2$@ sites indexed" = "تمت فهرسة %1$@ من أصل %2$@ موقعًا";
 "%1$@ of %2$@ story previews used today" = "تم استخدام %1$@ من أصل %2$@ معاينة قصة اليوم";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2,000 قصة";
 "20 stories" = "20 قصة";
 "2x daily" = "مرتان يوميًا";
-"30s preview" = "معاينة لمدة 30 ثانية";
 "3x daily" = "3 مرات يوميًا";
 "5 stories" = "5 قصص";
 "5,000 stories" = "5,000 قصة";
@@ -536,7 +536,6 @@
 "List style" = "نمط القائمة";
 "Listen" = "استمع";
 "Listen Settings" = "إعدادات الاستماع";
-"Listen to 1 hour of stories read aloud a week" = "استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا";
 "Listen to 10 hours of stories read aloud a week" = "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا";
 "Listen to story" = "استمع إلى القصة";
 "Listening isn't available right now." = "الاستماع غير متاح الآن.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "نص من الأمس";
 "Text view" = "عرض نصي";
 "Text view conveniently extracts the story" = "يستخرج عرض النص القصة كاملةً بسهولة";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "كانت تلك معاينة مدتها 30 ثانية. يتيح Premium Archive القصص كاملة.";
 "The audio couldn't be loaded. Try again in a moment." = "تعذّر تحميل الصوت. حاول مرة أخرى بعد قليل.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "عرض النص الكامل هو <a href=\"http://ios.newsblur.com/premium\">ميزة مدفوعة</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "تعذّر على محاكي iOS تغيير أيقونة الشاشة الرئيسية. جرّب ذلك على جهاز فعلي.";

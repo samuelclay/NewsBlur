@@ -1397,7 +1397,6 @@ a personas para hablar del mundo.</string>
     <string name="listen_resume">Reanudar</string>
     <string name="listen_pause">Pausar</string>
     <string name="listen_play">Reproducir</string>
-    <string name="listen_preview_pill">Vista previa de 30 s</string>
     <string name="listen_open_player">Abrir reproductor</string>
     <string name="listen_close">Cerrar reproductor</string>
     <string name="listen_loading">Preparando el artículo…</string>
@@ -1455,7 +1454,6 @@ a personas para hablar del mundo.</string>
     <string name="listen_speed_exact">Velocidad de reproducción exacta</string>
     <string name="listen_speed_slider">Control deslizante de velocidad de reproducción</string>
     <string name="listen_speed_button">Velocidad de reproducción %1$s×</string>
-    <string name="listen_preview_banner">Vista previa de 30 segundos. Premium Archive permite escuchar los artículos completos.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="many">Quedan %1$d segundos</item>
         <item quantity="one">Queda %1$d segundo</item>
@@ -1550,7 +1548,6 @@ a personas para hablar del mundo.</string>
     <string name="settings_listen_voices_summary">Elige una voz para cada idioma y cómo lo lee</string>
     <string name="settings_listen_delivery">Reproducción</string>
     <string name="settings_listen_speed">Velocidad de reproducción</string>
-    <string name="archive_listen">Escucha 1 hora de artículos en voz alta a la semana</string>
     <string name="pro_listen">Escucha 10 horas de artículos en voz alta a la semana</string>
     <plurals name="new_stories_pill">
         <item quantity="many">%d artículos nuevos</item>

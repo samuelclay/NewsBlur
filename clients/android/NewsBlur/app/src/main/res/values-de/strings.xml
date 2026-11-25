@@ -1371,7 +1371,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_resume">Fortsetzen</string>
     <string name="listen_pause">Pausieren</string>
     <string name="listen_play">Abspielen</string>
-    <string name="listen_preview_pill">30-Sekunden-Vorschau</string>
     <string name="listen_open_player">Player öffnen</string>
     <string name="listen_close">Player schließen</string>
     <string name="listen_loading">Artikel wird vorbereitet …</string>
@@ -1427,7 +1426,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_speed_exact">Exakte Wiedergabegeschwindigkeit</string>
     <string name="listen_speed_slider">Regler für die Wiedergabegeschwindigkeit</string>
     <string name="listen_speed_button">Wiedergabegeschwindigkeit %1$s×</string>
-    <string name="listen_preview_banner">30-Sekunden-Vorschau. Mit Premium Archive kannst du ganze Artikel anhören.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">Noch %1$d Sekunde</item>
         <item quantity="other">Noch %1$d Sekunden</item>
@@ -1516,7 +1514,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_listen_voices_summary">Wähle für jede Sprache eine Stimme und deren Vorlesestil aus</string>
     <string name="settings_listen_delivery">Wiedergabe</string>
     <string name="settings_listen_speed">Wiedergabegeschwindigkeit</string>
-    <string name="archive_listen">Pro Woche 1 Stunde lang Artikel vorlesen lassen</string>
     <string name="pro_listen">Pro Woche 10 Stunden lang Artikel vorlesen lassen</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d neuer Artikel</item>

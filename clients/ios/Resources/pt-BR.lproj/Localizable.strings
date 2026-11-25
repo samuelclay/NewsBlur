@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Pasta %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Pasta %1$@, recolhida, %2$@";
 "%1$@ followed %2$@." = "%1$@ começou a seguir %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Restam %1$@ de %2$@ de tempo de escuta neste mês";
 "%1$@ of %2$@ of listening left this week" = "Restam %1$@ de %2$@ de escuta nesta semana";
 "%1$@ of %2$@ sites indexed" = "%1$@ de %2$@ sites indexados";
 "%1$@ of %2$@ story previews used today" = "%1$@ de %2$@ prévias de artigos usadas hoje";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2.000 artigos";
 "20 stories" = "20 artigos";
 "2x daily" = "2 vezes ao dia";
-"30s preview" = "Prévia de 30 s";
 "3x daily" = "3 vezes ao dia";
 "5 stories" = "5 artigos";
 "5,000 stories" = "5.000 artigos";
@@ -536,7 +536,6 @@
 "List style" = "Estilo da lista";
 "Listen" = "Ouvir";
 "Listen Settings" = "Configurações de áudio";
-"Listen to 1 hour of stories read aloud a week" = "Ouça artigos narrados por até 1 hora por semana";
 "Listen to 10 hours of stories read aloud a week" = "Ouça artigos narrados por até 10 horas por semana";
 "Listen to story" = "Ouvir artigo";
 "Listening isn't available right now." = "A leitura em voz alta não está disponível no momento.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Texto de ontem";
 "Text view" = "Visualização em texto";
 "Text view conveniently extracts the story" = "A visualização de texto extrai o artigo com praticidade";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Esta foi uma prévia de 30 segundos. O Premium Archive libera os artigos completos.";
 "The audio couldn't be loaded. Try again in a moment." = "Não foi possível carregar o áudio. Tente novamente em instantes.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "A visualização de texto completo é um <a href=\"http://ios.newsblur.com/premium\">recurso premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "O simulador do iOS não conseguiu alterar o ícone da Tela de Início. Tente fazer isso em um dispositivo.";

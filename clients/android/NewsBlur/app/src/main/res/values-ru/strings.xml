@@ -1423,7 +1423,6 @@
     <string name="listen_resume">Продолжить</string>
     <string name="listen_pause">Приостановить</string>
     <string name="listen_play">Воспроизвести</string>
-    <string name="listen_preview_pill">Предпрослушивание — 30 с</string>
     <string name="listen_open_player">Открыть плеер</string>
     <string name="listen_close">Закрыть плеер</string>
     <string name="listen_loading">Подготовка статьи…</string>
@@ -1483,7 +1482,6 @@
     <string name="listen_speed_exact">Точная скорость воспроизведения</string>
     <string name="listen_speed_slider">Ползунок скорости воспроизведения</string>
     <string name="listen_speed_button">Скорость воспроизведения %1$s×</string>
-    <string name="listen_preview_banner">Предпрослушивание: 30 секунд. Premium Archive открывает полный доступ к статьям.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Осталось %1$d секунды</item>
         <item quantity="many">Осталось %1$d секунд</item>
@@ -1584,7 +1582,6 @@
     <string name="settings_listen_voices_summary">Выберите голос для каждого языка и способ чтения</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Скорость воспроизведения</string>
-    <string name="archive_listen">Слушайте озвученные статьи до 1 часа в неделю</string>
     <string name="pro_listen">Слушайте озвученные статьи до 10 часов в неделю</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d новые статьи</item>

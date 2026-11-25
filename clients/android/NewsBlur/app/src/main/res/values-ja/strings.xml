@@ -1345,7 +1345,6 @@
     <string name="listen_resume">再開</string>
     <string name="listen_pause">一時停止</string>
     <string name="listen_play">再生</string>
-    <string name="listen_preview_pill">30秒プレビュー</string>
     <string name="listen_open_player">プレーヤーを開く</string>
     <string name="listen_close">プレーヤーを閉じる</string>
     <string name="listen_loading">記事を準備しています…</string>
@@ -1399,7 +1398,6 @@
     <string name="listen_speed_exact">正確な再生速度</string>
     <string name="listen_speed_slider">再生速度スライダー</string>
     <string name="listen_speed_button">再生速度 %1$s×</string>
-    <string name="listen_preview_banner">30秒のプレビューを再生中です。プレミアムアーカイブに登録すると、記事全文を利用できます。</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">残り%1$d秒</item>
     </plurals>
@@ -1482,7 +1480,6 @@
     <string name="settings_listen_voices_summary">言語ごとに音声と読み上げ方を選択</string>
     <string name="settings_listen_delivery">話し方</string>
     <string name="settings_listen_speed">再生速度</string>
-    <string name="archive_listen">読み上げ記事を週1時間聴取</string>
     <string name="pro_listen">読み上げ記事を週10時間聴取</string>
     <plurals name="new_stories_pill">
         <item quantity="other">新着記事：%d件</item>

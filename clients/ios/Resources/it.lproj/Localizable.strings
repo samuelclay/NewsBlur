@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Cartella %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Cartella %1$@, compressa, %2$@";
 "%1$@ followed %2$@." = "%1$@ ha iniziato a seguire %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Sono rimasti %1$@ su %2$@ di ascolto questo mese";
 "%1$@ of %2$@ of listening left this week" = "Ti restano %1$@ di %2$@ di ascolto questa settimana";
 "%1$@ of %2$@ sites indexed" = "%1$@ siti indicizzati su %2$@";
 "%1$@ of %2$@ story previews used today" = "%1$@ di %2$@ anteprime di articoli utilizzate oggi";
@@ -82,7 +83,6 @@
 "2,000 stories" = "2.000 articoli";
 "20 stories" = "20 articoli";
 "2x daily" = "2 volte al giorno";
-"30s preview" = "Anteprima di 30 s";
 "3x daily" = "3 volte al giorno";
 "5 stories" = "5 articoli";
 "5,000 stories" = "5.000 articoli";
@@ -536,7 +536,6 @@
 "List style" = "Stile elenco";
 "Listen" = "Ascolta";
 "Listen Settings" = "Impostazioni di ascolto";
-"Listen to 1 hour of stories read aloud a week" = "Ascolta 1 ora di articoli letti ad alta voce a settimana";
 "Listen to 10 hours of stories read aloud a week" = "Ascolta 10 ore di articoli letti ad alta voce a settimana";
 "Listen to story" = "Ascolta l’articolo";
 "Listening isn't available right now." = "L’ascolto non è disponibile al momento.";
@@ -1129,7 +1128,6 @@
 "Text from yesterday" = "Testo di ieri";
 "Text view" = "Visualizzazione testo";
 "Text view conveniently extracts the story" = "La vista Testo estrae comodamente il contenuto dell'articolo";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Questa era un'anteprima di 30 secondi. Premium Archive sblocca gli articoli completi.";
 "The audio couldn't be loaded. Try again in a moment." = "Impossibile caricare l'audio. Riprova tra qualche istante.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "La vista Testo completo è una <a href=\"http://ios.newsblur.com/premium\">funzionalità Premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Il simulatore iOS non è riuscito a cambiare l'icona della schermata Home. Prova su un dispositivo.";

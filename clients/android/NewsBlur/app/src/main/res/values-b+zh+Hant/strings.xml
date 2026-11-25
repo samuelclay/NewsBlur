@@ -1345,7 +1345,6 @@
     <string name="listen_resume">繼續播放</string>
     <string name="listen_pause">暫停</string>
     <string name="listen_play">播放</string>
-    <string name="listen_preview_pill">30 秒預覽</string>
     <string name="listen_open_player">開啟播放器</string>
     <string name="listen_close">關閉播放器</string>
     <string name="listen_loading">正在準備文章…</string>
@@ -1399,7 +1398,6 @@
     <string name="listen_speed_exact">精確播放速度</string>
     <string name="listen_speed_slider">播放速度滑桿</string>
     <string name="listen_speed_button">播放速度 %1$s×</string>
-    <string name="listen_preview_banner">正在預覽 30 秒。Premium Archive 可解鎖完整文章。</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">還剩 %1$d 秒</item>
     </plurals>
@@ -1482,7 +1480,6 @@
     <string name="settings_listen_voices_summary">為每種語言選擇語音及朗讀方式</string>
     <string name="settings_listen_delivery">語音表現</string>
     <string name="settings_listen_speed">播放速度</string>
-    <string name="archive_listen">每週聆聽朗讀文章最多 1 小時</string>
     <string name="pro_listen">每週聆聽朗讀文章最多 10 小時</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d 篇新文章</item>
