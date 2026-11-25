@@ -130,7 +130,18 @@ def apply_verified_apple_transaction(transaction_data, now=None):
 
     # Commit the durable receipt before apps/profile/models.py sends activation
     # tasks. A failed activation can be retried even when the receipt exists.
-    getattr(profile, "activate_%s" % tier)()
+    if tier == "archive":
+        # Archive and Archive Extra share a rank, so a replayed or late notification for an older Archive
+        # transaction also gets here. Only an Archive purchase newer than every Archive Extra purchase takes
+        # Extra away, which is what an App Store crossgrade back to Archive produces.
+        latest_extra = (
+            PaymentHistory.objects.filter(user_id=user_id, payment_provider="ios-archive-extra-subscription")
+            .exclude(refunded=True)
+            .aggregate(latest=Max("payment_date"))["latest"]
+        )
+        profile.activate_archive(downgrade_extra=not latest_extra or purchase > latest_extra)
+    else:
+        getattr(profile, "activate_%s" % tier)()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user_id=user_id)
         fresh_rank = 3 if profile.is_pro else 2 if profile.is_archive else 1

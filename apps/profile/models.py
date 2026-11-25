@@ -938,11 +938,13 @@ class Profile(models.Model):
     def activate_archive_extra(self, never_expire=False):
         return self.activate_archive(never_expire=never_expire, extra=True)
 
-    def activate_archive(self, never_expire=False, extra=False):
+    def activate_archive(self, never_expire=False, extra=False, downgrade_extra=False):
         """Premium Archive, or with extra=True Premium Archive Extra (10 hours of Listen a month instead of 1).
 
         The two share everything else, so switching between them on an account that is already Archive only
-        flips is_archive_extra and skips the archive setup below.
+        flips is_archive_extra and skips the archive setup below. A plain Archive call means "at least Archive"
+        and leaves Archive Extra in place; callers pass downgrade_extra=True only once the provider confirms the
+        subscription is on plain Archive now, since gifts, replayed notifications and late webhooks call it too.
         """
         tier = "archive_extra" if extra else "archive"
         logging.user(
@@ -968,8 +970,9 @@ class Profile(models.Model):
         # Atomically check archive to prevent duplicate processing from concurrent webhooks
         with transaction.atomic():
             fresh = Profile.objects.select_for_update().get(pk=self.pk)
-            if fresh.is_pro or (fresh.is_archive and bool(fresh.is_archive_extra) == extra):
-                logging.user(self.user, "~FMactivate_%s: already %s, skipping" % (tier, tier))
+            keeps_extra = fresh.is_archive_extra and not extra and not downgrade_extra
+            if fresh.is_pro or (fresh.is_archive and (bool(fresh.is_archive_extra) == extra or keeps_extra)):
+                logging.user(self.user, "~FMactivate_%s: already %s or higher, skipping" % (tier, tier))
                 return True
             if fresh.is_archive:
                 Profile.objects.filter(pk=self.pk).update(is_archive_extra=extra)
@@ -1876,8 +1879,8 @@ class Profile(models.Model):
         elif active_plan and active_plan in archive_extra_plans and not self.is_archive_extra:
             self.activate_archive_extra()
         elif active_plan and active_plan in archive_plans and (not self.is_archive or self.is_archive_extra):
-            # Also covers an Archive Extra subscriber whose subscription went back to plain Archive.
-            self.activate_archive()
+            # Also covers an Archive Extra subscriber whose live subscription went back to plain Archive.
+            self.activate_archive(downgrade_extra=True)
 
     def preference_value(self, key, default=None):
         preferences = json.decode(self.preferences)
@@ -4999,21 +5002,25 @@ def stripe_current_plan_id(subscription_id):
 
 
 def stripe_confirmed_plan_id(profile, subscription_id, plan_id):
-    """The plan a webhook should act on. When an event would switch an account between Archive and Archive
-    Extra, ask Stripe which one the subscription is on now, since events can arrive out of order. If Stripe can't
-    say, a downgrade to Archive waits for the history sync (None leaves the tier alone) and an upgrade to Archive
-    Extra goes ahead."""
+    """(plan_id, confirmed): the plan a webhook should act on, and whether Stripe itself just confirmed it.
+
+    When an event would switch an account between Archive and Archive Extra, ask Stripe which one the
+    subscription is on now, since events can arrive out of order. If Stripe can't say, a downgrade to Archive
+    waits for the history sync (None leaves the tier alone) and an upgrade to Archive Extra goes ahead. Only a
+    confirmed Archive plan may take Archive Extra away (activate_archive downgrade_extra), which also covers a
+    concurrent Extra upgrade landing after this snapshot of the profile.
+    """
     archive_price = Profile.plan_to_stripe_price("archive")
     extra_price = Profile.plan_to_stripe_price("archive_extra")
     if plan_id not in (archive_price, extra_price) or not profile.is_archive or profile.is_pro:
-        return plan_id
+        return plan_id, False
     current_price = extra_price if profile.is_archive_extra else archive_price
     if plan_id == current_price:
-        return plan_id
+        return plan_id, False
     live_plan_id = stripe_current_plan_id(subscription_id)
     if live_plan_id:
-        return live_plan_id
-    return None if plan_id == archive_price else plan_id
+        return live_plan_id, True
+    return (None if plan_id == archive_price else plan_id), False
 
 
 def stripe_signup(sender, full_json, **kwargs):
@@ -5029,7 +5036,7 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
-        plan_id = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
+        plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
@@ -5043,7 +5050,7 @@ def stripe_signup(sender, full_json, **kwargs):
             profile.activate_premium()
             MReferral.award_credit(profile.user.pk, 36, "premium")
         elif plan_id == Profile.plan_to_stripe_price("archive"):
-            profile.activate_archive()
+            profile.activate_archive(downgrade_extra=confirmed)
             MReferral.award_credit(profile.user.pk, 99, "archive")
         elif plan_id == Profile.plan_to_stripe_price("archive_extra"):
             profile.activate_archive_extra()
@@ -5080,7 +5087,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
-        plan_id = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
+        plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )
@@ -5103,7 +5110,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
             if plan_id == Profile.plan_to_stripe_price("premium"):
                 profile.activate_premium()
             elif plan_id == Profile.plan_to_stripe_price("archive"):
-                profile.activate_archive()
+                profile.activate_archive(downgrade_extra=confirmed)
             elif plan_id == Profile.plan_to_stripe_price("archive_extra"):
                 profile.activate_archive_extra()
             elif plan_id == Profile.plan_to_stripe_price("pro"):

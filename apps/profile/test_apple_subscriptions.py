@@ -165,6 +165,39 @@ class Test_AppleSubscriptions(TestCase):
         self.assertNotEqual(result.get("reason"), "cross-tier")
         self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
 
+    def test_an_old_archive_replay_after_extra_keeps_extra_and_a_newer_archive_downgrades(self):
+        def stamp(moment):
+            return int(moment.timestamp() * 1000)
+
+        Profile.objects.filter(user=self.user).update(
+            is_premium=False, is_archive=False, is_archive_extra=False, is_pro=False
+        )
+        old_archive = {
+            "productId": "newsblur_premium_archive",
+            "transactionId": "archive-1",
+            "purchaseDate": stamp(self.now - datetime.timedelta(days=20)),
+            "expiresDate": stamp(self.now + datetime.timedelta(days=345)),
+        }
+        self.apply(**old_archive)
+        self.apply(
+            productId="newsblur_premium_archive_extra",
+            transactionId="extra-1",
+            purchaseDate=stamp(self.now - datetime.timedelta(days=2)),
+        )
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
+
+        self.apply(**old_archive)
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra, "a replayed Archive kept Extra")
+
+        self.apply(
+            productId="newsblur_premium_archive",
+            transactionId="archive-2",
+            purchaseDate=stamp(self.now - datetime.timedelta(days=1)),
+        )
+        self.assertFalse(
+            Profile.objects.get(user=self.user).is_archive_extra, "a newer Archive is a crossgrade"
+        )
+
     def test_lifetime_entitlement_is_preserved(self):
         Profile.objects.filter(user=self.user).update(is_premium=True, premium_expire=None)
         self.assertEqual(self.apply()["reason"], "lifetime")

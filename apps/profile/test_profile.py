@@ -403,7 +403,12 @@ class Test_UpgradePaths(TestCase):
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
+        # A plain Archive activation (an Archive gift, a late notification) keeps the Extra hours someone paid for.
         self.profile.activate_archive()
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+        self.profile.activate_archive(downgrade_extra=True)
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive)
         self.assertFalse(self.profile.is_archive_extra)
@@ -2337,6 +2342,20 @@ class Test_StripeWebhookOrdering(TestCase):
         # When Stripe can't be asked, an upgrade goes ahead: granting the extra hours early beats withholding them.
         with patch("stripe.Subscription.retrieve", side_effect=stripe.error.APIConnectionError("down")):
             stripe_subscription_updated(None, self._event(stale_extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
+    def test_a_stale_archive_snapshot_does_not_undo_a_concurrent_extra_upgrade(self):
+        """An Archive webhook that read the profile before an Extra upgrade landed must not take Extra away."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        stale = Profile.objects.get(pk=self.profile.pk)
+        Profile.objects.filter(pk=self.profile.pk).update(is_archive_extra=True)
+
+        with patch("apps.profile.models.Profile.objects.get", return_value=stale):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
