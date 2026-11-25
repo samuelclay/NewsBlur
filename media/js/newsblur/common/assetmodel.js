@@ -1914,7 +1914,7 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback);
     },
 
-    move_folder_to_folder: function (folder_name, in_folder_path, to_folder, callback, error_callback) {
+    move_folder_to_folder: function (folder_name, in_folder_path, to_folder_path, callback, error_callback) {
         var pre_callback = _.bind(function (data) {
             this.folders.reset(_.compact(data.folders), { parse: true });
             callback();
@@ -1925,7 +1925,8 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
             'folder_name': folder_name,
             'in_folder': in_folder_path[in_folder_path.length - 1] || '',
             'in_folder_path': JSON.stringify(in_folder_path),
-            'to_folder': to_folder
+            'to_folder': to_folder_path[to_folder_path.length - 1] || '',
+            'to_folder_path': JSON.stringify(to_folder_path)
         }, pre_callback, error_callback);
     },
 
