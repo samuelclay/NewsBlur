@@ -4978,24 +4978,26 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
 zebra_webhook_checkout_session_completed.connect(stripe_checkout_session_completed)
 
 
-def stripe_current_plan_id(subscription_id, event_plan_id):
-    """The price a Stripe subscription is on now. Webhooks can arrive out of order, so an older Archive event
-    mustn't move an account that has since switched to Archive Extra back down to Archive."""
+def stripe_current_plan_id(subscription_id):
+    """The price a Stripe subscription is on now, or None when Stripe can't say. Webhooks can arrive out of
+    order, so an older Archive event mustn't move an account that has since switched to Archive Extra back down
+    to Archive. On None the caller leaves the tier alone, and the periodic Stripe history sync
+    (setup_premium_history) settles it from the live subscription."""
     if not subscription_id:
-        return event_plan_id
+        return None
     stripe.api_key = settings.STRIPE_SECRET
     try:
         subscription = stripe.Subscription.retrieve(subscription_id)
     except stripe.error.StripeError as e:
         logging.debug(
-            " ---> Couldn't fetch Stripe subscription %s, using the event's plan: %s" % (subscription_id, e)
+            " ---> Couldn't fetch Stripe subscription %s, keeping the tier: %s" % (subscription_id, e)
         )
-        return event_plan_id
+        return None
     plan = subscription.get("plan")
     if not plan:
         items = (subscription.get("items") or {}).get("data") or []
         plan = (items[0].get("plan") or items[0].get("price")) if items else None
-    return plan["id"] if plan else event_plan_id
+    return plan["id"] if plan else None
 
 
 def stripe_signup(sender, full_json, **kwargs):
@@ -5012,7 +5014,7 @@ def stripe_signup(sender, full_json, **kwargs):
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
         if plan_id == Profile.plan_to_stripe_price("archive") and profile.is_archive_extra:
-            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"), plan_id)
+            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"))
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
@@ -5064,7 +5066,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         if plan_id == Profile.plan_to_stripe_price("archive") and profile.is_archive_extra:
-            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"), plan_id)
+            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"))
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )

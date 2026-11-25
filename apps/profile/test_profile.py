@@ -2333,6 +2333,12 @@ class Test_StripeWebhookOrdering(TestCase):
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
+        # When Stripe can't be asked, the account keeps the tier it has rather than trusting the old event.
+        with patch("stripe.Subscription.retrieve", side_effect=stripe.error.APIConnectionError("down")):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
 
 @override_settings(
     STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
