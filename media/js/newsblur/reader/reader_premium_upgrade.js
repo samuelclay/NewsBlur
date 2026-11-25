@@ -386,7 +386,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         }, this);
         return $.make('li', { className: 'NB-19 NB-feature-listen NB-feature-listen-hours' }, [
             $.make('div', { className: 'NB-premium-bullet-image' }),
-            $.make('div', { className: 'NB-listen-hours-title' }, gettext('Listen to stories read aloud each week')),
+            $.make('div', { className: 'NB-listen-hours-title' }, gettext('Listen to 1 hour of stories read aloud a week')),
             $.make('div', {
                 className: 'NB-listen-hours',
                 role: 'radiogroup',
@@ -406,6 +406,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         $card.toggleClass('NB-premium-archive-extra', extra);
         $card.find('.NB-premium-archive-name').text(extra ? gettext('Premium Archive Extra') : gettext('Premium Archive'));
         $card.find('.NB-premium-archive-price').text(extra ? '$159' : '$99');
+        $card.find('.NB-listen-hours-title').text(extra ?
+            gettext('Listen to 2 hours of stories read aloud a week') :
+            gettext('Listen to 1 hour of stories read aloud a week'));
         $card.find('.NB-listen-hours-option').each(_.bind(function (i, option) {
             var selected = $(option).data('hours') == this.listen_hours;
             $(option).attr('aria-checked', selected ? 'true' : 'false').attr('tabindex', selected ? '0' : '-1');
