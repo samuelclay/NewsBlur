@@ -10,7 +10,10 @@ from apps.discover.models import PopularFeed
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed, MStory
 from apps.search.models import DiscoverStory, MUserSearch
-from apps.search.tasks import IndexSubscriptionsChunkForDiscover
+from apps.search.tasks import (
+    FinishIndexSubscriptionsForDiscover,
+    IndexSubscriptionsChunkForDiscover,
+)
 
 
 class Test_DiscoverViews(TestCase):
@@ -112,6 +115,53 @@ class Test_DiscoveryIndex(TestCase):
             retried = self.client.post("/discover/index/", scope).json()
         self.assertCountEqual(retried["indexed_feed_ids"], [failing.pk, empty.pk])
         self.assertEqual(retried["pending_feed_ids"], [])
+
+    def test_folder_click_during_automatic_indexing_shares_the_queued_work(self):
+        feed = self.feed("already-queued")
+        scope = {"feed_ids": [feed.pk]}
+        user_search = MUserSearch.get_user(self.user.pk)
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"), patch(
+            "apps.search.models.celery.chord"
+        ) as chord:
+            user_search.index_subscriptions_for_discover()
+            queued = chord.call_args.args[0]
+
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            status = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+            clicked = self.client.post("/discover/index/", scope).json()
+        for task in queued:
+            task.apply(throw=True)
+
+        self.assertTrue(status["indexing"])
+        self.assertTrue(clicked["indexing"])
+        publish.assert_not_called()
+        after = self.client.post("/discover/index/", {**scope, "status_only": 1}).json()
+        self.assertFalse(after["indexing"])
+        self.assertEqual(after["indexed_feed_ids"], [feed.pk])
+
+    def test_automatic_completion_waits_for_a_feed_queued_by_the_popover(self):
+        from celery.exceptions import Retry
+
+        feed = self.feed("queued-by-reader")
+        user_search = MUserSearch.get_user(self.user.pk)
+        user_search.update(set__discover_indexed=False, set__discover_indexing=True)
+        with patch.object(IndexSubscriptionsChunkForDiscover, "apply_async") as publish:
+            self.client.post("/discover/index/", {"feed_ids": [feed.pk]})
+        args, kwargs = publish.call_args.args[:2]
+        with patch.object(DiscoverStory, "create_elasticsearch_mapping"), patch(
+            "apps.search.models.celery.chord"
+        ) as chord:
+            user_search.index_subscriptions_for_discover()
+        finish = chord.return_value.call_args.args[0]
+        with patch.object(FinishIndexSubscriptionsForDiscover, "retry", side_effect=Retry), self.assertRaises(
+            Retry
+        ):
+            finish.type.run([], **finish.kwargs)
+        self.assertFalse(user_search.reload().discover_indexed)
+
+        IndexSubscriptionsChunkForDiscover.run(*args, **kwargs)
+        finish.type.run([], **finish.kwargs)
+        self.assertTrue(user_search.reload().discover_indexed)
 
 
 class Test_FeedAutocompleteUrlTerm(TestCase):

@@ -77,10 +77,15 @@ def FinishIndexSubscriptionsForSearch(results, user_id, start):
     user_search.finish_index_subscriptions_for_search(start)
 
 
-@app.task()
-def FinishIndexSubscriptionsForDiscover(results, user_id, start, total, notify_only=False):
-    logging.debug(" ---> Indexing finished for %s" % (user_id))
+@app.task(bind=True, max_retries=None)
+def FinishIndexSubscriptionsForDiscover(
+    self, results, user_id, start, total, notify_only=False, feed_ids=None
+):
     from apps.search.models import MUserSearch
 
+    if feed_ids and MUserSearch.claimed_discover_feeds(feed_ids):
+        raise self.retry(countdown=15)
+
+    logging.debug(" ---> Indexing finished for %s" % (user_id))
     user_search = MUserSearch.get_user(user_id)
     user_search.finish_index_subscriptions_for_discover(start, total, notify_only=notify_only)

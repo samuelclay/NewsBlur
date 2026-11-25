@@ -172,11 +172,12 @@ class MUserSearch(mongo.Document):
 
     @classmethod
     def update_discover_claims(cls, feed_ids, expected, owner=None):
-        # apps/search/tasks.py takes ownership at worker start. A failed dispatch can
-        # then cancel queued work without releasing a running worker's claim.
+        # A delayed delivery from apps/search/tasks.py can reclaim an expired queue slot.
+        # Only its current owner can release it, so a late cleanup cannot cancel newer work.
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         change = r.register_script(
-            """if redis.call('get', KEYS[1]) ~= ARGV[1] then return 0 end
+            """local current = redis.call('get', KEYS[1])
+               if current ~= ARGV[1] and (current or ARGV[2] == '') then return 0 end
                if ARGV[2] == '' then return redis.call('del', KEYS[1]) end
                redis.call('set', KEYS[1], ARGV[2], 'EX', ARGV[3])
                return 1"""
@@ -190,8 +191,8 @@ class MUserSearch(mongo.Document):
             )
         return [feed_id for feed_id, changed in zip(feed_ids, pipe.execute()) if changed]
 
-    def schedule_remaining_discover_feeds(self, feed_ids, notify_done=False):
-        """Queue only missing feeds from apps/discover/views.py, even after a full-account run."""
+    def schedule_remaining_discover_feeds(self, feed_ids, *, notify_done=False, account_run=False):
+        """Share feed claims between automatic indexing and requests from apps/discover/views.py."""
         r = redis.Redis(connection_pool=settings.REDIS_FEED_UPDATE_POOL)
         claim_id = uuid.uuid4().hex
         limit = settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH
@@ -201,17 +202,20 @@ class MUserSearch(mongo.Document):
         claimed = [feed_id for feed_id, acquired in zip(feed_ids, pipe.execute()) if acquired]
         tasks = [
             IndexSubscriptionsChunkForDiscover.s(chunk, self.user_id, claim_id).set(
-                queue="discover_indexer", expires=limit, soft_time_limit=limit - 60, time_limit=limit
+                queue="discover_indexer", soft_time_limit=limit - 60, time_limit=limit
             )
             for chunk in chunks(claimed, 6)
         ]
         published = 0
         try:
-            if notify_done:
-                # Older readers wait for an account-wide "done" socket event. A manual run
-                # doesn't set the account flag used by automatic discovery in apps/search/models.py.
+            if notify_done or account_run:
+                # apps/search/tasks.py waits for feeds already owned by another run before sending "done".
                 finish = FinishIndexSubscriptionsForDiscover.s(
-                    user_id=self.user_id, start=time.time(), total=len(claimed), notify_only=True
+                    user_id=self.user_id,
+                    start=time.time(),
+                    total=len(feed_ids),
+                    notify_only=not account_run,
+                    feed_ids=feed_ids,
                 ).set(queue="discover_indexer")
                 celery.chord(tasks)(finish)
             else:
@@ -245,6 +249,10 @@ class MUserSearch(mongo.Document):
         r.publish(user.username, f"{search_type}_index_complete:start")
 
         subscriptions = UserSubscription.objects.filter(user=user).only("feed")
+        if search_type == "discover":
+            pending = subscriptions.exclude(feed__discover_indexed=True).values_list("feed_id", flat=True)
+            self.schedule_remaining_discover_feeds(list(pending), account_run=True)
+            return
         total = subscriptions.count()
 
         feed_ids = []
@@ -274,20 +282,6 @@ class MUserSearch(mongo.Document):
                 queue="search_indexer"
             )
             celery.chord(search_chunks)(finish_search)
-        elif search_type == "discover":
-            # Create discover indexing tasks
-            discover_chunks = [
-                IndexSubscriptionsChunkForDiscover.s(feed_ids=feed_id_chunk, user_id=self.user_id).set(
-                    queue="discover_indexer",
-                    soft_time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH - 60,
-                    time_limit=settings.MAX_SECONDS_COMPLETE_ARCHIVE_FETCH,
-                )
-                for feed_id_chunk in feed_id_chunks
-            ]
-            finish_discover = FinishIndexSubscriptionsForDiscover.s(
-                user_id=self.user_id, start=start, total=total
-            ).set(queue="discover_indexer")
-            celery.chord(discover_chunks)(finish_discover)
 
     def finish_index_subscriptions_for_search(self, start):
         from apps.reader.models import UserSubscription
