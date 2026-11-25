@@ -3,7 +3,7 @@ import XCTest
 @testable import NewsBlur
 
 /// PremiumArchiveCardTests.swift: what the Premium Archive card sells on the premium screen (PremiumView.swift) once
-/// the 1 hour / 2 hours Listen toggle can turn it into Premium Archive Extra.
+/// the 1 hour / 10 hours Listen toggle can turn it into Premium Archive Extra.
 final class Test_PremiumArchiveCard: XCTestCase {
     func test_withoutTheExtraProductTheCardStaysPlainPremiumArchive() {
         // A choice left on the toggle must not sell a product StoreKit didn't return.
@@ -19,7 +19,7 @@ final class Test_PremiumArchiveCard: XCTestCase {
         XCTAssertEqual(archive.status, .active)
     }
 
-    func test_archiveSubscriberPickingTwoHoursIsOfferedTheExtraUpgrade() {
+    func test_archiveSubscriberPickingExtraIsOfferedTheUpgrade() {
         var card = PremiumArchiveCard(isPremium: true, isArchive: true, storeSellsArchiveExtra: true)
         XCTAssertTrue(card.showsListenToggle)
         XCTAssertEqual(card.plan, .archive)
@@ -29,7 +29,7 @@ final class Test_PremiumArchiveCard: XCTestCase {
         XCTAssertEqual(card.status, .purchase(.archiveExtra, upgradeFrom: .archive))
     }
 
-    func test_extraSubscriberStartsOnTwoHoursAndIsNeverSoldPremiumArchive() {
+    func test_extraSubscriberStartsOnExtraAndIsNeverSoldPremiumArchive() {
         // The account's tier comes from the server, so the toggle shows even when StoreKit returned nothing.
         for storeSellsArchiveExtra in [true, false] {
             var card = PremiumArchiveCard(isPremium: true, isArchive: true, isArchiveExtra: true,

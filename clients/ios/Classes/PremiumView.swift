@@ -98,7 +98,7 @@ struct PremiumFeature: Identifiable {
     let iconColor: Color
     let isCustomImage: Bool
     let isUpcoming: Bool
-    /// The Premium Archive card's Listen row, which carries the 1 hour / 2 hours toggle (PremiumView.swift).
+    /// The Premium Archive card's Listen row, which carries the 1 hour / 10 hours toggle (PremiumView.swift).
     let isArchiveListenAllowance: Bool
 
     init(title: String, icon: String, iconColor: Color, isCustomImage: Bool = false, isUpcoming: Bool = false,
@@ -115,7 +115,7 @@ struct PremiumFeature: Identifiable {
 // MARK: - Premium Archive Card
 
 /// The Listen allowance on the Premium Archive card (PremiumView.swift): Premium Archive reads stories aloud for
-/// 1 hour a week, Premium Archive Extra for 2 hours.
+/// 1 hour a month, Premium Archive Extra for 10 hours.
 enum ArchiveListenPlan: Equatable {
     case archive
     case archiveExtra
@@ -210,7 +210,7 @@ struct PremiumView: View {
         PremiumFeature(title: NBLocalization.text("Everything in the premium subscription, of course"), icon: "sparkles", iconColor: .yellow),
         PremiumFeature(title: NBLocalization.text("Follow up to 4,096 sites"), icon: "square.stack.3d.up.fill", iconColor: .blue),
         PremiumFeature(title: NBLocalization.text("Web Feeds from any website, even without RSS"), icon: "web-feed-100", iconColor: .purple, isCustomImage: true),
-        PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a week"), icon: "headphones", iconColor: .purple,
+        PremiumFeature(title: NBLocalization.text("Listen to 1 hour of stories read aloud a month"), icon: "headphones", iconColor: .purple,
                        isArchiveListenAllowance: true),
         PremiumFeature(title: NBLocalization.text("Ask AI questions about stories"), icon: "icons8-prompt-100", iconColor: Color(red: 0.85, green: 0.45, blue: 0.37), isCustomImage: true),
         PremiumFeature(title: NBLocalization.text("Apply training across a folder"), icon: "folder.fill", iconColor: .mint),
@@ -488,13 +488,13 @@ struct PremiumView: View {
     // MARK: - Archive Listen Row
 
     /// The Premium Archive card's Listen row once StoreKit sells Premium Archive Extra: the allowance reads from the
-    /// plan picked on the toggle, and picking 2 hours turns the whole card into Premium Archive Extra.
+    /// plan picked on the toggle, and picking 10 hours turns the whole card into Premium Archive Extra.
     private func archiveListenRow(_ feature: PremiumFeature, card: PremiumArchiveCard) -> some View {
         HStack(alignment: .top, spacing: 14) {
             featureIcon(feature)
 
             VStack(alignment: .leading, spacing: 10) {
-                Text(card.plan == .archiveExtra ? NBLocalization.text("Listen to 2 hours of stories read aloud a week")
+                Text(card.plan == .archiveExtra ? NBLocalization.text("Listen to 10 hours of stories read aloud a month")
                                                 : feature.title)
                     .font(.system(size: 15, weight: .medium))
                     .foregroundColor(PremiumColors.textPrimary)
@@ -836,7 +836,7 @@ struct PremiumView: View {
 
 // MARK: - Archive Listen Toggle
 
-/// PremiumView.swift's 1 hour / 2 hours choice on the Premium Archive card: two segments with a sliding purple thumb,
+/// PremiumView.swift's 1 hour / 10 hours choice on the Premium Archive card: two segments with a sliding purple thumb,
 /// each with a caption (a price or "Current plan") under its allowance.
 @available(iOS 15.0, *)
 private struct ArchiveListenToggle: View {
@@ -850,7 +850,7 @@ private struct ArchiveListenToggle: View {
         let showsCaptions = archiveCaption != nil || archiveExtraCaption != nil
         HStack(spacing: 0) {
             segment(.archive, title: NBLocalization.text("1 hour"), caption: archiveCaption, showsCaption: showsCaptions)
-            segment(.archiveExtra, title: NBLocalization.text("2 hours"), caption: archiveExtraCaption,
+            segment(.archiveExtra, title: NBLocalization.text("10 hours"), caption: archiveExtraCaption,
                     showsCaption: showsCaptions)
         }
         .padding(3)
@@ -864,7 +864,7 @@ private struct ArchiveListenToggle: View {
         )
         .frame(maxWidth: 280)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel(NBLocalization.text("Weekly listening"))
+        .accessibilityLabel(NBLocalization.text("Monthly listening"))
     }
 
     private func segment(_ value: ArchiveListenPlan, title: String, caption: String?, showsCaption: Bool) -> some View {
