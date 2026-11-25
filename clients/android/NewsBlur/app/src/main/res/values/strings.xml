@@ -422,13 +422,16 @@ people together to talk about the world.</string>
     <string name="premium_policies"><![CDATA[See NewsBlur\'s <a href="https://newsblur.com/privacy">privacy policy</a> and <a href="https://newsblur.com/tos">terms of use</a> for details.]]></string>
     <string name="premium_subscription_header">Premium Subscription</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium Subscription</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 per year ($3.00/month)</string>
     <string name="premium_subscription_active">Your premium subscription is active</string>
     <string name="archive_subscription_active">Your premium archive subscription is active</string>
+    <string name="archive_extra_subscription_active">Your premium archive extra subscription is active</string>
     <string name="pro_subscription_active">Your premium pro subscription is active</string>
     <string name="subscription_manage">Manage Subscription</string>
     <string name="subscription_details_error">Error retrieving subscription details</string>
@@ -1757,6 +1760,8 @@ people together to talk about the world.</string>
     <string name="settings_listen_delivery">Delivery</string>
     <string name="settings_listen_speed">Playback speed</string>
     <string name="archive_listen">Listen to 1 hour of stories read aloud a week</string>
+    <!-- SubscriptionActivity.kt: the Premium Archive card's Listen line when a 1 hour or 2 hours toggle sits under it. -->
+    <string name="archive_listen_weekly">Listen to stories read aloud each week</string>
     <string name="pro_listen">Listen to 10 hours of stories read aloud a week</string>
     <!-- NewStoriesPill.kt: stories that arrived for the open story list while it was on screen. -->
     <plurals name="new_stories_pill">
