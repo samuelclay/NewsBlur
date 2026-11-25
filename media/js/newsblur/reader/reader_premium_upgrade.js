@@ -44,7 +44,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         this.$modal.on('keydown', '.NB-listen-hours', _.bind(function (e) {
             if (!_.contains(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'], e.key)) return;
             e.preventDefault();
-            this.choose_listen_hours(this.listen_hours == 2 ? 1 : 2);
+            this.choose_listen_hours(this.listen_hours == 10 ? 1 : 10);
             this.$modal.find('.NB-listen-hours-option[aria-checked=true]').focus();
         }, this));
     },
@@ -346,11 +346,11 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         ]);
     },
 
-    // =========================================
-    // = Premium Archive: 1 or 2 hours of Listen =
-    // =========================================
+    // ============================================
+    // = Premium Archive: 1 or 10 hours of Listen =
+    // ============================================
 
-    // reader_premium_upgrade.js: Premium Archive Extra is Premium Archive with 2 hours of Listen a week instead
+    // reader_premium_upgrade.js: Premium Archive Extra is Premium Archive with 10 hours of Listen a month instead
     // of 1, so it is a toggle on the Archive card rather than its own card. Pro already includes more, so a Pro
     // subscriber sees the Archive card without it.
     offers_archive_extra: function () {
@@ -358,9 +358,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     initial_listen_hours: function () {
-        if (NEWSBLUR.Globals.is_archive_extra) return 2;
-        // An Archive subscriber who came here from Listen has used up their hour, so start on 2 hours.
-        if (NEWSBLUR.Globals.is_archive && this.options.highlight_feature == 'listen') return 2;
+        if (NEWSBLUR.Globals.is_archive_extra) return 10;
+        // An Archive subscriber who came here from Listen has used up their hour, so start on 10 hours.
+        if (NEWSBLUR.Globals.is_archive && this.options.highlight_feature == 'listen') return 10;
         return 1;
     },
 
@@ -368,7 +368,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         if (!this.offers_archive_extra()) {
             return $.make('li', { className: 'NB-19 NB-feature-listen' }, [
                 $.make('div', { className: 'NB-premium-bullet-image' }),
-                gettext('Listen to 1 hour of stories read aloud a week')
+                gettext('Listen to 1 hour of stories read aloud a month')
             ]);
         }
         var make_option = _.bind(function (hours, plan, label, price) {
@@ -386,29 +386,29 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
         }, this);
         return $.make('li', { className: 'NB-19 NB-feature-listen NB-feature-listen-hours' }, [
             $.make('div', { className: 'NB-premium-bullet-image' }),
-            $.make('div', { className: 'NB-listen-hours-title' }, gettext('Listen to 1 hour of stories read aloud a week')),
+            $.make('div', { className: 'NB-listen-hours-title' }, gettext('Listen to 1 hour of stories read aloud a month')),
             $.make('div', {
                 className: 'NB-listen-hours',
                 role: 'radiogroup',
-                'aria-label': gettext('Weekly listening')
+                'aria-label': gettext('Monthly listening')
             }, [
                 $.make('div', { className: 'NB-listen-hours-thumb' }),
                 make_option(1, 'archive', gettext('1 hour'), '$99'),
-                make_option(2, 'archive_extra', gettext('2 hours'), '$159')
+                make_option(10, 'archive_extra', gettext('10 hours'), '$159')
             ])
         ]);
     },
 
     apply_listen_hours: function () {
         if (!this.offers_archive_extra()) return;
-        var extra = this.listen_hours == 2;
+        var extra = this.listen_hours == 10;
         var $card = this.$modal.find('.NB-premium-tier-archive');
         $card.toggleClass('NB-premium-archive-extra', extra);
         $card.find('.NB-premium-archive-name').text(extra ? gettext('Premium Archive Extra') : gettext('Premium Archive'));
         $card.find('.NB-premium-archive-price').text(extra ? '$159' : '$99');
         $card.find('.NB-listen-hours-title').text(extra ?
-            gettext('Listen to 2 hours of stories read aloud a week') :
-            gettext('Listen to 1 hour of stories read aloud a week'));
+            gettext('Listen to 10 hours of stories read aloud a month') :
+            gettext('Listen to 1 hour of stories read aloud a month'));
         $card.find('.NB-listen-hours-option').each(_.bind(function (i, option) {
             var selected = $(option).data('hours') == this.listen_hours;
             $(option).attr('aria-checked', selected ? 'true' : 'false').attr('tabindex', selected ? '0' : '-1');
