@@ -6,7 +6,7 @@ import WebKit
 @MainActor final class Test_AuthenticationReset: XCTestCase {
     func test_returningNetworkRetriesOfflineFeedListOnce() {
         let app = AuthenticationAppDelegate()
-        let feeds = FeedsViewController()
+        let feeds = AuthenticationFeedsController()
         app.feedsViewController = feeds
         feeds.appDelegate = app
         app.activeUsername = "recovery-fixture"
@@ -19,6 +19,11 @@ import WebKit
         networkChanged()
         XCTAssertTrue(app.getRequests.isEmpty)
         feeds.isOffline = true
+        networkChanged()
+        XCTAssertTrue(app.getRequests.isEmpty, "An unrelated failure such as marking a story read should not reload every feed.")
+        feeds.fetchFeedList(false)
+        app.getRequests.last?.failure(nil, URLError(.notConnectedToInternet))
+        app.getRequests.removeAll()
         reachable.isReachable = false
         networkChanged()
         XCTAssertTrue(app.getRequests.isEmpty)

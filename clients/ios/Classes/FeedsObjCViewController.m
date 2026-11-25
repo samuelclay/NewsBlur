@@ -118,6 +118,7 @@ static BOOL NBBoolPreferenceValue(id value) {
 @property (atomic) NSUInteger feedListRequestGeneration;
 @property (nonatomic) BOOL loadingFeedList;
 @property (nonatomic) BOOL networkReturnedDuringFeedListRequest;
+@property (nonatomic) BOOL feedListFailedWithoutNetwork;
 @property (nonatomic) BOOL awaitingAuthenticatedFeedList;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -1333,6 +1334,7 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.feedListRequestGeneration++;
     self.loadingFeedList = NO;
     self.networkReturnedDuringFeedListRequest = NO;
+    self.feedListFailedWithoutNetwork = NO;
     [[OnboardingFeedLoading shared] reset];
     self.awaitingAuthenticatedFeedList = YES;
     [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
@@ -1368,11 +1370,11 @@ static BOOL NBBoolPreferenceValue(id value) {
 }
 
 - (void)retryOfflineFeedList {
-    if (!self.isOffline || appDelegate.loginViewController.viewIfLoaded.window) return;
+    if (appDelegate.loginViewController.viewIfLoaded.window) return;
     if (!appDelegate.activeUsername.length && !self.awaitingAuthenticatedFeedList) return;
     if (self.loadingFeedList) {
         self.networkReturnedDuringFeedListRequest = YES;
-    } else {
+    } else if (self.feedListFailedWithoutNetwork) {
         [self fetchFeedList:NO];
     }
 }
@@ -1403,14 +1405,16 @@ static BOOL NBBoolPreferenceValue(id value) {
     [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = NO;
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = !httpResponse && [error.domain isEqualToString:NSURLErrorDomain] &&
+            error.code != NSURLErrorCancelled;
         // Reachability.m can report recovery before the old request delivers its transport error.
-        if (self.networkReturnedDuringFeedListRequest && [error.domain isEqualToString:NSURLErrorDomain] &&
-            error.code != NSURLErrorCancelled && !httpResponse) {
+        if (self.networkReturnedDuringFeedListRequest && self.feedListFailedWithoutNetwork) {
             [self fetchFeedList:NO];
             return;
         }
