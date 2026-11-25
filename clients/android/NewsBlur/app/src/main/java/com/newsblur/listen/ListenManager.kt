@@ -470,7 +470,7 @@ class ListenManager
 
         /**
          * A seek outside the segments ExoPlayer holds needs /listen/segment, and every segment asked for counts
-         * against the weekly cap, so scrubbing or skipping across the story asks only for where it settles.
+         * against the listening allowance, so scrubbing or skipping across the story asks only for where it settles.
          * The scrubber shows the new position right away while the old audio holds.
          */
         private fun seekToUnloaded(

@@ -56,7 +56,7 @@ private data class SubscriptionFeature(
     val iconRes: Int,
     val colorRes: Int,
     val upcoming: Boolean = false,
-    /** The Listen line that carries the Premium Archive card's one or two hours toggle (ArchiveHoursToggle.kt). */
+    /** The Listen line that carries the Premium Archive card's one or ten hours toggle (ArchiveHoursToggle.kt). */
     val listenHoursToggle: Boolean = false,
 )
 
@@ -358,7 +358,7 @@ class SubscriptionActivity : NbActivity() {
         renderArchiveListenLine(archivePlan)
         renderTier(
             bindingArchive,
-            if (archivePlan.hours == ArchiveListenHours.TWO) archiveExtraTier else archiveTier,
+            if (archivePlan.hours == ArchiveListenHours.TEN) archiveExtraTier else archiveTier,
             archiveUiState(archivePlan),
         )
         renderTier(bindingPro, proTier, proUiState())
@@ -473,7 +473,7 @@ class SubscriptionActivity : NbActivity() {
     }
 
     private fun renderArchiveListenLine(plan: ArchiveCardPlan) {
-        archiveListenTitle?.setText(if (plan.hours == ArchiveListenHours.TWO) R.string.archive_extra_listen else R.string.archive_listen)
+        archiveListenTitle?.setText(if (plan.hours == ArchiveListenHours.TEN) R.string.archive_extra_listen else R.string.archive_listen)
         archiveHoursToggle?.isVisible = plan.showsHoursToggle
         archiveHoursShown.value = plan.hours
         archiveHoursCaptions.value =
@@ -604,7 +604,7 @@ class SubscriptionActivity : NbActivity() {
             ArchiveCardStatus.OWNED ->
                 TierUiState.Active(
                     messageRes =
-                        if (plan.hours == ArchiveListenHours.TWO) {
+                        if (plan.hours == ArchiveListenHours.TEN) {
                             R.string.archive_extra_subscription_active
                         } else {
                             R.string.archive_subscription_active

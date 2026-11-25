@@ -49,7 +49,7 @@ data class ArchiveHoursToggleColors(
 )
 
 /**
- * The "1 hour | 2 hours" switch on the Premium Archive card's Listen line. Both segments take the width of the
+ * The "1 hour | 10 hours" switch on the Premium Archive card's Listen line. Both segments take the width of the
  * wider one, and the selected one is a pill in the card's own gradient that slides across when it changes. Each
  * segment can carry a caption, its yearly price or "Current plan", since the buy button is far down the card.
  */

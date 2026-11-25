@@ -60,22 +60,22 @@ class Test_ListenApiParsing {
     }
 
     @Test
-    fun test_archive_extra_usage_counts_down_the_weekly_allowance() {
-        // The tier alone marks Premium Archive Extra as a weekly plan, whatever is_archive_tier says.
+    fun test_archive_extra_usage_counts_down_its_listening_allowance() {
+        // The tier alone marks Premium Archive Extra as a plan with listening time, whatever is_archive_tier says.
         val extra =
             Gson().fromJson(
-                """{"code": 1, "usage": {"tier": "archive_extra", "seconds_used": 600, "seconds_limit": 7200,
-                    "seconds_remaining": 6600, "samples_limit": null, "preview_seconds": null}}""",
+                """{"code": 1, "usage": {"tier": "archive_extra", "period": "month", "seconds_used": 600,
+                    "seconds_limit": 36000, "seconds_remaining": 35400, "samples_limit": null, "preview_seconds": null}}""",
                 ListenUsageResponse::class.java,
             )
-        assertTrue(extra.usage!!.hasWeeklyAllowance)
+        assertTrue(extra.usage!!.hasTimeAllowance)
         val premium =
             Gson().fromJson(
                 """{"code": 1, "usage": {"tier": "premium", "is_archive_tier": false, "samples_limit": null,
                     "preview_seconds": 60}}""",
                 ListenUsageResponse::class.java,
             )
-        assertFalse(premium.usage!!.hasWeeklyAllowance)
+        assertFalse(premium.usage!!.hasTimeAllowance)
     }
 
     @Test

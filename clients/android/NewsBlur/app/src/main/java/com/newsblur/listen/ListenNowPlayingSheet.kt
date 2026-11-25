@@ -479,7 +479,7 @@ private fun upgradeButtonText(state: ListenUiState): String? {
     val usage = error.usage ?: state.usage
     return when {
         usage?.tier == ListenUsage.TIER_PRO -> null
-        usage?.hasWeeklyAllowance == true ->
+        usage?.hasTimeAllowance == true ->
             stringResource(
                 R.string.listen_upgrade_pro,
             )
