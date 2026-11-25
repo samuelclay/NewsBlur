@@ -2334,6 +2334,12 @@ class Test_StripeWebhookOrdering(TestCase):
         self.assertTrue(self.profile.is_archive)
         self.assertFalse(self.profile.is_archive_extra)
 
+        # When Stripe can't be asked, an upgrade goes ahead: granting the extra hours early beats withholding them.
+        with patch("stripe.Subscription.retrieve", side_effect=stripe.error.APIConnectionError("down")):
+            stripe_subscription_updated(None, self._event(stale_extra))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
+
     def test_a_late_archive_event_keeps_archive_extra(self):
         """Stripe can deliver the Archive update from before an Extra upgrade after the upgrade itself."""
         self._start_patches()
