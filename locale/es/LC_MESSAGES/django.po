@@ -2272,6 +2272,11 @@ msgstr "Enfoque"
 msgid "Focus/hide with color indicators"
 msgstr "Enfocar/ocultar con indicadores de color"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Se ha movido la carpeta, pero es posible que algunas reglas de entrenamiento sigan usando su ubicación "
+"anterior."
+
 msgid "Folder title and photo required"
 msgstr "Se requieren el título y la foto de la carpeta"
 
@@ -3103,6 +3108,9 @@ msgstr "feed_id no válido"
 
 msgid "Invalid feed_id."
 msgstr "feed_id no válido."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "La ruta de la carpeta no es válida. Vuelve a elegir la carpeta."
 
 msgid "Invalid gift tier."
 msgstr "Nivel de regalo no válido."
@@ -5917,6 +5925,9 @@ msgstr "¡Gracias por probar NewsBlur! Espero que NewsBlur haga que tu lectura d
 
 msgid "Thanks!"
 msgstr "¡Gracias!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Esa carpeta ha cambiado. Actualiza tus feeds y vuelve a elegirla."
 
 msgid "That item isn't playing"
 msgstr "Ese elemento no se está reproduciendo"

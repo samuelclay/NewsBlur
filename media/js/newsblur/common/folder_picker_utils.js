@@ -22,42 +22,46 @@
         });
     }
 
-    // tree is [{title, children: [...]}, ...]. Top Level is the root (value '') and every
-    // other folder is listed beneath it in sidebar order with its nesting depth.
+    function inside_moving_folder(moving_path, target_path) {
+        return !!moving_path && moving_path.every(function (title, index) {
+            return target_path[index] === title;
+        });
+    }
+
+    // folder_picker_utils.js uses JSON paths for folder moves and titles for feed moves.
     function build_rows(tree, options) {
         options = options || {};
         var selected = options.selected || [];
         var disabled = options.disabled || [];
+        var moving_path = options.moving_folder_path;
+        var root_value = moving_path ? JSON.stringify([]) : '';
         var rows = [{
-            value: '',
+            value: root_value,
             title: options.top_level_title || 'Top Level',
             depth: 0,
             ancestors: [],
-            selected: contains(selected, ''),
-            disabled: contains(disabled, '')
+            selected: contains(selected, root_value),
+            disabled: contains(disabled, root_value)
         }];
 
-        function walk(items, depth, ancestors) {
+        function walk(items, parent_path, ancestors) {
             items.forEach(function (item) {
+                var path = parent_path.concat([item.title]);
+                var value = moving_path ? JSON.stringify(path) : item.title;
                 rows.push({
-                    value: item.title,
+                    value: value,
                     title: item.title,
-                    depth: depth,
+                    depth: path.length,
                     ancestors: ancestors,
-                    selected: contains(selected, item.title),
-                    disabled: contains(disabled, item.title)
+                    selected: contains(selected, value),
+                    disabled: contains(disabled, value) || inside_moving_folder(moving_path, path)
                 });
-                walk(item.children || [], depth + 1, ancestors.concat([item.title]));
+                walk(item.children || [], path, ancestors.concat([value]));
             });
         }
-        walk(tree, 1, []);
+        walk(tree, [], []);
 
         return rows;
-    }
-
-    // A folder can't move into itself or into any of its own subfolders.
-    function disabled_folder_targets(folder_title, child_folder_names) {
-        return [folder_title].concat(child_folder_names || []);
     }
 
     // Clicking a folder's name moves the feed there, replacing every other folder.
@@ -101,16 +105,16 @@
         var matching = rows.filter(function (row) {
             return row.title.toLowerCase().indexOf(needle) !== -1;
         });
-        var shown = {};
+        var shown = new Set();
         matching.forEach(function (row) {
-            shown[row.value] = true;
+            shown.add(row.value);
             row.ancestors.forEach(function (ancestor) {
-                shown[ancestor] = true;
+                shown.add(ancestor);
             });
         });
 
         return rows.filter(function (row) {
-            return shown[row.value];
+            return shown.has(row.value);
         }).map(function (row) {
             return Object.assign({}, row, { matches: contains(matching, row) });
         });
@@ -164,7 +168,7 @@
     return {
         build_rows: build_rows,
         choose_folder: choose_folder,
-        disabled_folder_targets: disabled_folder_targets,
+        inside_moving_folder: inside_moving_folder,
         filter_rows: filter_rows,
         first_match: first_match,
         list_height: list_height,

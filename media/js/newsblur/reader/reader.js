@@ -6540,24 +6540,21 @@
                     feed_id: feed_id,
                     multiple: true,
                     original: in_folders,
-                    selected: in_folders,
-                    disabled: []
+                    selected: in_folders
                 };
             } else {
                 // reader.js: a folder view's collection holds its children, so its parent is
                 // the collection that holds the folder's own model.
                 var folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
                     this.active_folder.folder_view;
-                var parent_folder = folder_view.model.collection.options.title;
+                var parent_path = folder_view.model.parent_path();
+                var parent_value = JSON.stringify(parent_path);
                 this.folder_picker = {
                     feed_id: null,
                     multiple: false,
-                    original: [parent_folder],
-                    selected: [parent_folder],
-                    disabled: NEWSBLUR.folder_picker_utils.disabled_folder_targets(
-                        folder_view.options.folder_title,
-                        folder_view.collection.child_folder_names()
-                    )
+                    original: [parent_value],
+                    selected: [parent_value],
+                    moving_folder_path: parent_path.concat([folder_view.model.get('folder_title')])
                 };
             }
             this.folder_picker.query = '';
@@ -6621,7 +6618,7 @@
             var picker = this.folder_picker;
             var rows = NEWSBLUR.folder_picker_utils.build_rows(this.folder_picker_tree(NEWSBLUR.assets.get_folders()), {
                 selected: picker.selected,
-                disabled: picker.disabled,
+                moving_folder_path: picker.moving_folder_path,
                 top_level_title: gettext('Top Level')
             });
             return NEWSBLUR.folder_picker_utils.filter_rows(rows, picker.query);
@@ -6643,7 +6640,7 @@
                 style: '--nb-folder-depth: ' + row.depth
             }, [
                 $.make('div', { className: 'NB-folder-option-check' }),
-                $.make('div', { className: 'NB-folder-option-icon' }, [row.value && $.favicon_el('river:' + row.value)]),
+                $.make('div', { className: 'NB-folder-option-icon' }, [row.depth > 0 && $.favicon_el('river:' + row.title)]),
                 $.make('div', { className: 'NB-folder-option-title', dir: 'auto' }, row.title),
                 (picker.feed_id && $.make('div', { className: 'NB-icon-add' }))
             ]).data('folder', row.value).data('depth', row.depth);
@@ -6677,8 +6674,9 @@
             } else if (state.action == 'unchanged') {
                 label = picker.multiple ? gettext('Select folders') : gettext('Select a folder');
             } else if (state.action == 'move') {
+                var destination = picker.multiple ? state.folder : JSON.parse(state.folder).join(' › ');
                 label = interpolate(gettext('Move to %(folder)s'), {
-                    folder: state.folder || gettext('Top Level')
+                    folder: destination || gettext('Top Level')
                 }, true);
             } else {
                 label = interpolate(ngettext("Save %(count)s folder", "Save %(count)s folders", state.count), { count: state.count }, true);
@@ -6800,7 +6798,9 @@
 
         choose_folder_picker_folder: function (folder_value) {
             var picker = this.folder_picker;
-            if (_.contains(picker.disabled, folder_value)) return;
+            if (!picker.multiple && NEWSBLUR.folder_picker_utils.inside_moving_folder(
+                picker.moving_folder_path, JSON.parse(folder_value)
+            )) return;
 
             picker.selected = NEWSBLUR.folder_picker_utils.choose_folder(picker.selected, folder_value);
             picker.highlighted = folder_value;
@@ -6898,19 +6898,28 @@
             var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
                 this.active_folder.folder_view;
 
-            if (_.isUndefined(to_folder) ||
-                to_folder == picker.original[0] ||
-                _.contains(picker.disabled, to_folder)) {
+            if (_.isUndefined(to_folder) || to_folder === picker.original[0]) {
                 return this.hide_confirm_move_menu_item();
             }
 
-            var moved = folder_view.model.move_to_folder(to_folder, { view: folder_view });
-            this.hide_confirm_move_menu_item(moved);
-            if (moved) {
-                _.delay(_.bind(function () {
-                    this.hide_manage_menu('folder', $folder, true);
-                }, this), 500);
-            }
+            var to_folder_path = JSON.parse(to_folder);
+            if (NEWSBLUR.folder_picker_utils.inside_moving_folder(picker.moving_folder_path, to_folder_path)) return;
+            if (picker.moving) return;
+            var self = this;
+            picker.moving = folder_view.model.move_to_folder(to_folder_path, {
+                success: function () {
+                    picker.moving = false;
+                    if (self.folder_picker !== picker || !self.flags['showing_confirm_input_on_manage_menu']) return;
+                    self.hide_confirm_move_menu_item(true);
+                    _.delay(function () {
+                        if (self.folder_picker === picker) self.hide_manage_menu('folder', $folder, true);
+                    }, 500);
+                },
+                error: function (response) {
+                    picker.moving = false;
+                    window.alert(response.message || gettext('An error occurred. Please try again.'));
+                }
+            });
         },
 
         hide_confirm_move_menu_item: function (moved) {

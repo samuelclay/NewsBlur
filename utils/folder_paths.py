@@ -3,6 +3,11 @@
 import json
 from functools import wraps
 
+from django.utils.translation import gettext_lazy
+
+INVALID_FOLDER_PATH = gettext_lazy("Invalid folder path. Please choose the folder again.")
+FOLDER_PATH_CHANGED = gettext_lazy("That folder has changed. Refresh your feeds and choose it again.")
+
 
 class InvalidFolderPath(ValueError):
     pass
@@ -10,7 +15,7 @@ class InvalidFolderPath(ValueError):
 
 def validate_folder_path(path):
     if not isinstance(path, list) or any(not isinstance(part, str) or not part for part in path):
-        raise InvalidFolderPath("Invalid folder path. Please choose the folder again.")
+        raise InvalidFolderPath(INVALID_FOLDER_PATH)
     return path
 
 
@@ -21,7 +26,7 @@ def parse_folder_path(request, key):
     try:
         return validate_folder_path(json.loads(value))
     except (ValueError, TypeError) as exc:
-        raise InvalidFolderPath("Invalid folder path. Please choose the folder again.") from exc
+        raise InvalidFolderPath(INVALID_FOLDER_PATH) from exc
 
 
 def parse_folder_paths(request, key):
@@ -43,9 +48,25 @@ def resolve_folder_path(folders, path):
     for name in path:
         matches = [item[name] for item in children if isinstance(item, dict) and name in item]
         if len(matches) != 1:
-            raise InvalidFolderPath("That folder has changed. Refresh your feeds and choose it again.")
+            raise InvalidFolderPath(FOLDER_PATH_CHANGED)
         children = matches[0]
     return children
+
+
+def iter_folder_paths(folders, parent=()):
+    for item in folders:
+        if isinstance(item, dict):
+            for name, children in item.items():
+                path = (*parent, name)
+                yield path
+                yield from iter_folder_paths(children, path)
+
+
+def unique_folder_path(paths):
+    matches = list(paths)
+    if len(matches) != 1:
+        raise InvalidFolderPath(FOLDER_PATH_CHANGED)
+    return list(matches[0])
 
 
 def folder_path_errors(view):

@@ -2089,6 +2089,9 @@ msgstr "聚焦"
 msgid "Focus/hide with color indicators"
 msgstr "使用颜色指示来聚焦/隐藏"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "文件夹已移动，但部分训练规则可能仍指向原来的位置。"
+
 msgid "Folder title and photo required"
 msgstr "必须填写文件夹标题并上传照片"
 
@@ -2827,6 +2830,9 @@ msgstr "feed_id 无效"
 
 msgid "Invalid feed_id."
 msgstr "feed_id 无效。"
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "文件夹路径无效。请重新选择文件夹。"
 
 msgid "Invalid gift tier."
 msgstr "礼品等级无效。"
@@ -5394,6 +5400,9 @@ msgstr "感谢试用 NewsBlur！希望 NewsBlur 能让你的日常阅读更加�
 
 msgid "Thanks!"
 msgstr "谢谢！"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "此文件夹已更改。请刷新订阅源，然后重新选择此文件夹。"
 
 msgid "That item isn't playing"
 msgstr "该项目未在播放"

@@ -2305,6 +2305,11 @@ msgstr "Prioritaires"
 msgid "Focus/hide with color indicators"
 msgstr "Mettre en évidence/masquer avec des indicateurs de couleur"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Le dossier a été déplacé, mais certaines règles d’entraînement peuvent encore utiliser son ancien "
+"emplacement."
+
 msgid "Folder title and photo required"
 msgstr "Le titre du dossier et la photo sont requis"
 
@@ -3142,6 +3147,9 @@ msgstr "feed_id invalide"
 
 msgid "Invalid feed_id."
 msgstr "feed_id invalide."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Le chemin du dossier est invalide. Sélectionnez à nouveau le dossier."
 
 msgid "Invalid gift tier."
 msgstr "Niveau de cadeau invalide."
@@ -6002,6 +6010,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Merci !"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Ce dossier a changé. Actualisez vos flux et sélectionnez-le à nouveau."
 
 msgid "That item isn't playing"
 msgstr "Cet élément n’est pas en cours de lecture"

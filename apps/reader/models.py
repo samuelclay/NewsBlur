@@ -61,7 +61,13 @@ from apps.rss_feeds.tasks import NewFeeds
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import add_object_to_folder, chunks
-from utils.folder_paths import InvalidFolderPath, resolve_folder_path
+from utils.folder_paths import (
+    INVALID_FOLDER_PATH,
+    InvalidFolderPath,
+    iter_folder_paths,
+    resolve_folder_path,
+    unique_folder_path,
+)
 
 # apps/reader/models.py: An archive backfill starts one feed's walk this many seconds apart, queuing
 # a batch at a time so no countdown waits anywhere near the broker's one hour visibility timeout
@@ -1070,9 +1076,7 @@ class UserSubscription(models.Model):
             MActivity.new_feed_subscription(user_id=user.pk, feed_id=feed.pk, feed_title=feed.title)
 
             if subscription_created:
-                from apps.statistics.rtrending_subscriptions import (
-                    RTrendingSubscription,
-                )
+                from apps.statistics.rtrending_subscriptions import RTrendingSubscription
 
                 RTrendingSubscription.add_subscription(feed_id=feed.pk)
 
@@ -3281,17 +3285,54 @@ class UserSubscriptionFolders(models.Model):
         return self
 
     def move_folder_to_folder(self, folder_name, in_folder=None, to_folder=None):
+        """Return the old and new paths for updating classifiers, or None for a same-parent move."""
         logging.user(
             self.user, "~FBMoving folder '~SB%s~SN' in '%s' to: ~SB%s" % (folder_name, in_folder, to_folder)
         )
         user_sub_folders = json.decode(self.folders)
-        deleted_folder = self.delete_folder(folder_name, in_folder, [], commit_delete=False)
-        user_sub_folders = json.decode(self.folders)
-        user_sub_folders = add_object_to_folder(deleted_folder, to_folder, user_sub_folders)
-        self.folders = json.encode(user_sub_folders)
-        self.save()
+        if isinstance(in_folder, list):
+            source_path = in_folder + [folder_name]
+        else:
+            source_path = unique_folder_path(
+                path
+                for path in iter_folder_paths(user_sub_folders)
+                if path[-1] == folder_name
+                and (in_folder is None or (path[-2] if len(path) > 1 else "") == in_folder)
+            )
 
-        return self
+        if isinstance(to_folder, list):
+            destination_path = to_folder
+        else:
+            destination_name = (to_folder or "").removeprefix("river:")
+            destination_path = []
+            if destination_name not in ("", " "):
+                destination_path = unique_folder_path(
+                    path
+                    for path in iter_folder_paths(user_sub_folders)
+                    if path[-1].lower() == destination_name.lower()
+                )
+
+        source = resolve_folder_path(user_sub_folders, source_path)
+        destination = resolve_folder_path(user_sub_folders, destination_path)
+        if destination_path == source_path[:-1]:
+            return None
+        if destination_path[: len(source_path)] == source_path or any(
+            isinstance(item, dict) and any(name.lower() == folder_name.lower() for name in item)
+            for item in destination
+        ):
+            raise InvalidFolderPath(INVALID_FOLDER_PATH)
+
+        parent = resolve_folder_path(user_sub_folders, source_path[:-1])
+        for index, item in enumerate(parent):
+            if isinstance(item, dict) and folder_name in item:
+                del item[folder_name]
+                if not item:
+                    parent.pop(index)
+                break
+        destination.append({folder_name: source})
+        self.folders = json.encode(user_sub_folders)
+        self.save(update_fields=["folders"])
+        return source_path, destination_path + [folder_name]
 
     def move_feeds_by_folder_to_folder(self, feeds_by_folder, to_folder):
         logging.user(

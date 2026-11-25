@@ -2318,6 +2318,9 @@ msgstr "التركيز"
 msgid "Focus/hide with color indicators"
 msgstr "التركيز/الإخفاء باستخدام مؤشرات الألوان"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "نُقل المجلد، لكن بعض قواعد التدريب قد تظل مرتبطة بموقعه السابق."
+
 msgid "Folder title and photo required"
 msgstr "يلزم عنوان المجلد وصورته"
 
@@ -3124,6 +3127,9 @@ msgstr "معرّف الخلاصة feed_id غير صالح"
 
 msgid "Invalid feed_id."
 msgstr "معرّف الخلاصة غير صالح."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "مسار المجلد غير صالح. يُرجى اختيار المجلد مرة أخرى."
 
 msgid "Invalid gift tier."
 msgstr "فئة الهدية غير صالحة."
@@ -5899,6 +5905,9 @@ msgstr "شكرًا لتجربة NewsBlur! آمل أن يساعدك NewsBlur عل
 
 msgid "Thanks!"
 msgstr "شكرًا!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "تغيّر هذا المجلد. حدّث خلاصاتك واختر المجلد مرة أخرى."
 
 msgid "That item isn't playing"
 msgstr "هذا العنصر لا يعمل الآن"

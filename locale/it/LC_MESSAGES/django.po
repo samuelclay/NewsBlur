@@ -2283,6 +2283,11 @@ msgstr "In evidenza"
 msgid "Focus/hide with color indicators"
 msgstr "Metti in evidenza/nascondi con indicatori colorati"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"La cartella è stata spostata, ma alcune regole di addestramento potrebbero ancora usare la posizione "
+"precedente."
+
 msgid "Folder title and photo required"
 msgstr "Sono necessari il titolo e la foto della cartella"
 
@@ -3109,6 +3114,9 @@ msgstr "feed_id non valido"
 
 msgid "Invalid feed_id."
 msgstr "feed_id non valido."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Il percorso della cartella non è valido. Seleziona di nuovo la cartella."
 
 msgid "Invalid gift tier."
 msgstr "Livello del regalo non valido."
@@ -5918,6 +5926,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Grazie!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "La cartella è cambiata. Aggiorna i tuoi feed e selezionala di nuovo."
 
 msgid "That item isn't playing"
 msgstr "Questo elemento non è in riproduzione"

@@ -2080,6 +2080,9 @@ msgstr "フォーカス"
 msgid "Focus/hide with color indicators"
 msgstr "色のインジケーターでフォーカス／非表示"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "フォルダーを移動しましたが、一部の学習ルールは移動前の場所を参照している可能性があります。"
+
 msgid "Folder title and photo required"
 msgstr "フォルダー名と写真が必要です"
 
@@ -2816,6 +2819,9 @@ msgstr "無効なfeed_id"
 
 msgid "Invalid feed_id."
 msgstr "feed_idが無効です。"
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "フォルダーのパスが無効です。フォルダーをもう一度選んでください。"
 
 msgid "Invalid gift tier."
 msgstr "ギフトのプランが無効です。"
@@ -5343,6 +5349,9 @@ msgstr "NewsBlurをお試しいただきありがとうございます！NewsBlu
 
 msgid "Thanks!"
 msgstr "ありがとうございます！"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "このフォルダーは変更されました。フィードを更新してからフォルダーを選び直してください。"
 
 msgid "That item isn't playing"
 msgstr "その項目は再生中ではありません"

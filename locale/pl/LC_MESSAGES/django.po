@@ -2309,6 +2309,11 @@ msgstr "Wyróżnione"
 msgid "Focus/hide with color indicators"
 msgstr "Wyróżnianie/ukrywanie za pomocą kolorowych wskaźników"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Folder został przeniesiony, ale niektóre reguły trenowania mogą nadal odwoływać się do jego poprzedniej "
+"lokalizacji."
+
 msgid "Folder title and photo required"
 msgstr "Wymagany tytuł folderu i zdjęcie"
 
@@ -3143,6 +3148,9 @@ msgstr "Nieprawidłowy feed_id"
 
 msgid "Invalid feed_id."
 msgstr "Nieprawidłowy feed_id."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Nieprawidłowa ścieżka folderu. Wybierz folder ponownie."
 
 msgid "Invalid gift tier."
 msgstr "Nieprawidłowy poziom prezentu."
@@ -5974,6 +5982,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Dziękujemy!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Ten folder uległ zmianie. Odśwież kanały i wybierz go ponownie."
 
 msgid "That item isn't playing"
 msgstr "Ten element nie jest odtwarzany"

@@ -2240,6 +2240,9 @@ msgstr "Tập trung"
 msgid "Focus/hide with color indicators"
 msgstr "Làm nổi bật/ẩn bằng chỉ báo màu"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Thư mục đã được di chuyển, nhưng một số quy tắc huấn luyện có thể vẫn tham chiếu đến vị trí cũ."
+
 msgid "Folder title and photo required"
 msgstr "Cần có tiêu đề và ảnh cho thư mục"
 
@@ -3053,6 +3056,9 @@ msgstr "feed_id không hợp lệ"
 
 msgid "Invalid feed_id."
 msgstr "feed_id không hợp lệ."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Đường dẫn thư mục không hợp lệ. Vui lòng chọn lại thư mục."
 
 msgid "Invalid gift tier."
 msgstr "Hạng quà tặng không hợp lệ."
@@ -5833,6 +5839,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Cảm ơn!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Thư mục này đã thay đổi. Hãy làm mới các nguồn cấp rồi chọn lại thư mục."
 
 msgid "That item isn't playing"
 msgstr "Mục đó không phát"

@@ -2209,6 +2209,9 @@ msgstr "מיקוד"
 msgid "Focus/hide with color indicators"
 msgstr "מיקוד/הסתרה באמצעות מחווני צבע"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "התיקייה הועברה, אך ייתכן שחלק מכללי האימון עדיין מתייחסים למיקום הקודם שלה."
+
 msgid "Folder title and photo required"
 msgstr "נדרשים כותרת ותמונה לתיקייה"
 
@@ -2994,6 +2997,9 @@ msgstr "feed_id לא תקין"
 
 msgid "Invalid feed_id."
 msgstr "מזהה feed_id לא תקין."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "הנתיב לתיקייה אינו תקין. יש לבחור את התיקייה שוב."
 
 msgid "Invalid gift tier."
 msgstr "דרגת המתנה שגויה."
@@ -5699,6 +5705,9 @@ msgstr "תודה שניסית את NewsBlur! מקווה ש־NewsBlur יהפוך 
 
 msgid "Thanks!"
 msgstr "תודה!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "התיקייה השתנתה. יש לרענן את הפידים ולבחור בה שוב."
 
 msgid "That item isn't playing"
 msgstr "הפריט הזה לא מתנגן"

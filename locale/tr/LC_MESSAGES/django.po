@@ -2256,6 +2256,9 @@ msgstr "Odak"
 msgid "Focus/hide with color indicators"
 msgstr "Renk göstergeleriyle öne çıkarma/gizleme"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Klasör taşındı ancak bazı eğitim kuralları hâlâ eski konumunu kullanıyor olabilir."
+
 msgid "Folder title and photo required"
 msgstr "Klasör başlığı ve fotoğraf gerekli"
 
@@ -3068,6 +3071,9 @@ msgstr "Geçersiz feed_id"
 
 msgid "Invalid feed_id."
 msgstr "Geçersiz feed_id."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Klasör yolu geçersiz. Lütfen klasörü yeniden seçin."
 
 msgid "Invalid gift tier."
 msgstr "Geçersiz hediye kademesi."
@@ -5861,6 +5867,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Teşekkürler!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Bu klasör değişti. Akışlarınızı yenileyip klasörü yeniden seçin."
 
 msgid "That item isn't playing"
 msgstr "Bu öğe çalmıyor"

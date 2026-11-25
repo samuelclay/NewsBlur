@@ -33,7 +33,7 @@ from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_email
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.db.utils import DatabaseError
 from django.http import (
@@ -53,6 +53,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
 from pymongo import ReadPreference
+from pymongo.errors import PyMongoError
 
 from apps.analyzer.models import (
     SCOPED_CLASSIFIER_CLASSES,
@@ -4426,30 +4427,42 @@ def move_feed_to_folder(request):
 @ajax_login_required
 @json.json_view
 def move_folder_to_folder(request):
-    folder_name = request.POST["folder_name"]
-    in_folder = request.POST.get("in_folder", "")
-    to_folder = request.POST.get("to_folder", "")
+    folder_name = request.POST.get("folder_name", "")
+    with transaction.atomic():
+        user_sub_folders = get_object_or_404(
+            UserSubscriptionFolders.objects.select_for_update(), user=request.user
+        )
+        try:
+            in_folder = parse_folder_path(request, "in_folder_path")
+            to_folder = parse_folder_path(request, "to_folder_path")
+            moved = user_sub_folders.move_folder_to_folder(
+                folder_name,
+                in_folder=in_folder if in_folder is not None else request.POST.get("in_folder", ""),
+                to_folder=to_folder if to_folder is not None else request.POST.get("to_folder", ""),
+            )
+        except InvalidFolderPath as exc:
+            return dict(code=-1, message=str(exc), folders=json.decode(user_sub_folders.folders))
 
-    user_sub_folders = get_object_or_404(UserSubscriptionFolders, user=request.user)
-    # Find the full flattened path before moving so we can update classifiers
-    old_flat = user_sub_folders.flatten_folders()
-    old_path = _find_full_folder_path(old_flat, folder_name, in_folder)
+        response = dict(code=1, folders=json.decode(user_sub_folders.folders))
+        if moved:
+            old_path, new_path = moved
+            try:
+                _update_classifiers_for_folder_path_change(
+                    request.user.pk, " - ".join(old_path), " - ".join(new_path)
+                )
+            except (OperationError, PyMongoError):
+                response["message"] = gettext(
+                    "Folder moved, but some training rules may still use its old location."
+                )
+                logging.getlogger().exception(
+                    "Could not move folder classifiers for user %s", request.user.pk
+                )
 
-    user_sub_folders = user_sub_folders.move_folder_to_folder(
-        folder_name, in_folder=in_folder, to_folder=to_folder
-    )
+    if moved:
+        r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
+        r.publish(request.user.username, "reload:feeds")
 
-    # Update folder-scoped classifiers with new folder paths
-    if old_path:
-        new_flat = user_sub_folders.flatten_folders()
-        new_path = _find_full_folder_path(new_flat, folder_name, to_folder)
-        if new_path and old_path != new_path:
-            _update_classifiers_for_folder_path_change(request.user.pk, old_path, new_path)
-
-    r = redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL)
-    r.publish(request.user.username, "reload:feeds")
-
-    return dict(code=1, folders=json.decode(user_sub_folders.folders))
+    return response
 
 
 @required_params("feeds_by_folder", "to_folder")

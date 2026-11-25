@@ -2306,6 +2306,9 @@ msgstr "Фокус"
 msgid "Focus/hide with color indicators"
 msgstr "Выделение/скрытие с помощью цветовых индикаторов"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Папка перемещена, но некоторые правила обучения могут по-прежнему ссылаться на её прежнее расположение."
+
 msgid "Folder title and photo required"
 msgstr "Необходимо указать название папки и добавить фото"
 
@@ -3136,6 +3139,9 @@ msgstr "Недопустимый feed_id"
 
 msgid "Invalid feed_id."
 msgstr "Недопустимый feed_id."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Недопустимый путь к папке. Выберите папку ещё раз."
 
 msgid "Invalid gift tier."
 msgstr "Недопустимый уровень подарка."
@@ -5958,6 +5964,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Спасибо!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Эта папка изменилась. Обновите ленты и выберите её ещё раз."
 
 msgid "That item isn't playing"
 msgstr "Этот элемент не воспроизводится"

@@ -2215,6 +2215,9 @@ msgstr "โฟกัส"
 msgid "Focus/hide with color indicators"
 msgstr "เน้น/ซ่อนด้วยตัวบ่งชี้สี"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "ย้ายโฟลเดอร์แล้ว แต่กฎการฝึกบางข้ออาจยังอ้างอิงตำแหน่งเดิม"
+
 msgid "Folder title and photo required"
 msgstr "ต้องระบุชื่อและรูปภาพของโฟลเดอร์"
 
@@ -3018,6 +3021,9 @@ msgstr "feed_id ไม่ถูกต้อง"
 
 msgid "Invalid feed_id."
 msgstr "feed_id ไม่ถูกต้อง"
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "เส้นทางโฟลเดอร์ไม่ถูกต้อง โปรดเลือกโฟลเดอร์อีกครั้ง"
 
 msgid "Invalid gift tier."
 msgstr "ระดับแพ็กเกจของขวัญไม่ถูกต้อง"
@@ -5747,6 +5753,9 @@ msgstr "ขอบคุณที่ทดลองใช้ NewsBlur! หวั�
 
 msgid "Thanks!"
 msgstr "ขอบคุณ!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "โฟลเดอร์นี้มีการเปลี่ยนแปลง โปรดรีเฟรชฟีดแล้วเลือกโฟลเดอร์อีกครั้ง"
 
 msgid "That item isn't playing"
 msgstr "รายการนี้ไม่ได้กำลังเล่นอยู่"

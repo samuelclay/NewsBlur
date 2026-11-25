@@ -25,6 +25,9 @@ jobs:
       - name: Test account settings request ordering
         run: node --test node/tests/account_settings_save.test.js
 
+      - name: Test reader folder moves
+        run: node --test node/tests/folder_move.test.js
+
       - name: Test reader keyboard shortcuts
         run: node --test node/tests/reader_hotkeys.test.js
 

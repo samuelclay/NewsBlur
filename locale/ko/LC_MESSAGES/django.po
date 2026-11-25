@@ -2126,6 +2126,9 @@ msgstr "집중"
 msgid "Focus/hide with color indicators"
 msgstr "색상 표시로 집중하거나 숨기기"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "폴더를 이동했지만 일부 학습 규칙은 여전히 이전 위치를 참조할 수 있습니다."
+
 msgid "Folder title and photo required"
 msgstr "폴더 제목과 사진이 필요합니다"
 
@@ -2887,6 +2890,9 @@ msgstr "잘못된 feed_id"
 
 msgid "Invalid feed_id."
 msgstr "잘못된 feed_id입니다."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "폴더 경로가 잘못되었습니다. 폴더를 다시 선택하세요."
 
 msgid "Invalid gift tier."
 msgstr "유효하지 않은 선물 등급입니다."
@@ -5505,6 +5511,9 @@ msgstr "NewsBlur를 사용해 주셔서 감사합니다! NewsBlur가 매일의 �
 
 msgid "Thanks!"
 msgstr "감사합니다!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "이 폴더가 변경되었습니다. 피드를 새로고침한 후 폴더를 다시 선택하세요."
 
 msgid "That item isn't playing"
 msgstr "해당 항목이 재생 중이 아닙니다"

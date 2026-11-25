@@ -2285,6 +2285,11 @@ msgstr "Fokus"
 msgid "Focus/hide with color indicators"
 msgstr "Mit Farbanzeigen hervorheben/ausblenden"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Der Ordner wurde verschoben. Einige Trainingsregeln verweisen möglicherweise noch auf seinen alten "
+"Speicherort."
+
 msgid "Folder title and photo required"
 msgstr "Ordnername und Foto erforderlich"
 
@@ -3116,6 +3121,9 @@ msgstr "Ungültige feed_id"
 
 msgid "Invalid feed_id."
 msgstr "Ungültige feed_id."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Der Ordnerpfad ist ungültig. Bitte wähle den Ordner erneut aus."
 
 msgid "Invalid gift tier."
 msgstr "Ungültige Geschenkstufe."
@@ -5946,6 +5954,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Danke!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Dieser Ordner hat sich geändert. Aktualisiere deine Feeds und wähle ihn erneut aus."
 
 msgid "That item isn't playing"
 msgstr "Dieser Eintrag wird nicht abgespielt"

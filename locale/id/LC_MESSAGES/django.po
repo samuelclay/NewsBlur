@@ -2266,6 +2266,9 @@ msgstr "Fokus"
 msgid "Focus/hide with color indicators"
 msgstr "Sorot/sembunyikan dengan indikator warna"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "Folder telah dipindahkan, tetapi beberapa aturan pelatihan mungkin masih menggunakan lokasi sebelumnya."
+
 msgid "Folder title and photo required"
 msgstr "Judul dan foto folder wajib diisi"
 
@@ -3091,6 +3094,9 @@ msgstr "feed_id tidak valid"
 
 msgid "Invalid feed_id."
 msgstr "feed_id tidak valid."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Jalur folder tidak valid. Silakan pilih kembali foldernya."
 
 msgid "Invalid gift tier."
 msgstr "Tingkat hadiah tidak valid."
@@ -5889,6 +5895,9 @@ msgstr ""
 
 msgid "Thanks!"
 msgstr "Terima kasih!"
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Folder ini telah berubah. Muat ulang feed Anda dan pilih kembali foldernya."
 
 msgid "That item isn't playing"
 msgstr "Item itu tidak sedang diputar"
