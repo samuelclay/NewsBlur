@@ -1967,6 +1967,16 @@ class Test_PremiumExpireBillingPeriod(TestCase):
         self.assertGreater(days_out, 300)
         self.assertLess(days_out, 400)
 
+    def test_monthly_pro_switching_to_archive_extra_gets_a_year(self):
+        """$159 Archive Extra is billed yearly, so it buys a year even after months of $29 Pro charges."""
+        for month in range(3):
+            self._pay(days_ago=90 - (30 * month))
+        self._pay(days_ago=1, amount=159)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+
+        self.assertGreater((expiration - datetime.datetime.now()).days, 300)
+
     def test_annual_switching_to_monthly_reads_as_monthly(self):
         """Régis's case: a $36 annual charge that has since aged out of the trailing year, the
         prorated $8.39 that the mid-cycle switch to Premium Pro billed, then monthly $29
@@ -2228,6 +2238,7 @@ class Test_StripeWebhookOrdering(TestCase):
 
     def _subscription_object(self):
         return {
+            "id": "sub_webhookorder",
             "customer": self.STRIPE_ID,
             "plan": {"id": self.archive_price, "active": True},
             "cancel_at": None,
@@ -2298,10 +2309,29 @@ class Test_StripeWebhookOrdering(TestCase):
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive_extra)
 
-        stripe_subscription_updated(None, self._event(self._subscription_object()))
+        live_archive = {"plan": {"id": self.archive_price}}
+        with patch("stripe.Subscription.retrieve", return_value=live_archive):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
         self.profile.refresh_from_db()
         self.assertTrue(self.profile.is_archive)
         self.assertFalse(self.profile.is_archive_extra)
+
+    def test_a_late_archive_event_keeps_archive_extra(self):
+        """Stripe can deliver the Archive update from before an Extra upgrade after the upgrade itself."""
+        self._start_patches()
+        from apps.profile.models import stripe_checkout_session_completed, stripe_subscription_updated
+
+        stripe_checkout_session_completed(None, self._event(self._checkout_object()))
+        extra_price = Profile.plan_to_stripe_price("archive_extra")
+        stripe_subscription_updated(
+            None, self._event(dict(self._subscription_object(), plan={"id": extra_price}))
+        )
+
+        live_extra = {"plan": {"id": extra_price}}
+        with patch("stripe.Subscription.retrieve", return_value=live_extra):
+            stripe_subscription_updated(None, self._event(self._subscription_object()))
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.is_archive_extra)
 
 
 @override_settings(

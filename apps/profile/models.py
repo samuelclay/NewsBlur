@@ -128,7 +128,7 @@ class Profile(models.Model):
     # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
     # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
     # price absent here, which is what makes a charge at any of these mean a full year.
-    ANNUAL_PRICES = {12, 24, 36, 99, 299}
+    ANNUAL_PRICES = {12, 24, 36, 99, 159, 299}
     # A same-identifier store receipt arriving within this window is a duplicate
     # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
     # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
@@ -4978,6 +4978,26 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
 zebra_webhook_checkout_session_completed.connect(stripe_checkout_session_completed)
 
 
+def stripe_current_plan_id(subscription_id, event_plan_id):
+    """The price a Stripe subscription is on now. Webhooks can arrive out of order, so an older Archive event
+    mustn't move an account that has since switched to Archive Extra back down to Archive."""
+    if not subscription_id:
+        return event_plan_id
+    stripe.api_key = settings.STRIPE_SECRET
+    try:
+        subscription = stripe.Subscription.retrieve(subscription_id)
+    except stripe.error.StripeError as e:
+        logging.debug(
+            " ---> Couldn't fetch Stripe subscription %s, using the event's plan: %s" % (subscription_id, e)
+        )
+        return event_plan_id
+    plan = subscription.get("plan")
+    if not plan:
+        items = (subscription.get("items") or {}).get("data") or []
+        plan = (items[0].get("plan") or items[0].get("price")) if items else None
+    return plan["id"] if plan else event_plan_id
+
+
 def stripe_signup(sender, full_json, **kwargs):
     stripe_id = full_json["data"]["object"]["customer"]
     plan = full_json["data"]["object"].get("plan")
@@ -4991,6 +5011,8 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
+        if plan_id == Profile.plan_to_stripe_price("archive") and profile.is_archive_extra:
+            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"), plan_id)
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
             profile.refund_prorated_paypal_for_provider_switch()
@@ -5041,6 +5063,8 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
+        if plan_id == Profile.plan_to_stripe_price("archive") and profile.is_archive_extra:
+            plan_id = stripe_current_plan_id(full_json["data"]["object"].get("id"), plan_id)
         logging.user(
             profile.user, "~BC~SB~FBStripe subscription updated: %s" % "active" if active else "cancelled"
         )

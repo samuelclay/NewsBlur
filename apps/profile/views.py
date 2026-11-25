@@ -2020,8 +2020,6 @@ def ios_subscription_status(request):
 
     from apps.profile.apple_notifications import process_apple_notification
 
-    from apps.profile.apple_notifications import process_apple_notification
-
     try:
         if len(request.body) > 128 * 1024:
             raise ValueError("Oversized notification")
