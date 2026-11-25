@@ -1480,7 +1480,6 @@
     <string name="settings_listen_voices_summary">เลือกเสียงสำหรับแต่ละภาษาและรูปแบบการอ่าน</string>
     <string name="settings_listen_delivery">การนำเสนอ</string>
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
-    <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์</string>
     <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
     <plurals name="new_stories_pill">
         <item quantity="other">บทความใหม่ %d รายการ</item>

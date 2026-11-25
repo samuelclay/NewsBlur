@@ -1480,7 +1480,6 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_voices_summary">Pilih suara untuk setiap bahasa dan cara membacakannya</string>
     <string name="settings_listen_delivery">Penyampaian</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
-    <string name="archive_listen">Dengarkan artikel yang dibacakan hingga 1 jam per minggu</string>
     <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d artikel baru</item>

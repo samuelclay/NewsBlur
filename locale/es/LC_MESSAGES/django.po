@@ -3292,6 +3292,9 @@ msgstr "Escuchar en la web, iPad, iPhone y Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Escuchar en reproducción en un MacBook, un iPad, un iPhone y un teléfono Android"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "Escucha 1 hora de artículos en voz alta a la semana"
 
@@ -4624,8 +4627,8 @@ msgid "Premium Archive subscription"
 msgstr "Suscripción a Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Premium Archive desbloquea artículos completos leídos en voz alta, hasta %(limit)s a la semana."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive permite escuchar artículos completos en voz alta, hasta %(limit)s al mes."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7431,17 +7434,15 @@ msgstr "Te has ganado <b>%(credit_text)s</b> de %(tier_name)s gratis como agrade
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
-"Archive Extra for %(extra_limit)s a week."
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
 msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"Has escuchado %(limit)s de artículos esta semana. El tiempo de escucha se restablece el %(day)s, o pásate a"
-" Premium Pro por %(pro_limit)s a la semana."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."

@@ -537,6 +537,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Sisa %(duration)s minggu ini"
 
@@ -999,7 +1003,7 @@ msgstr "1 bulan"
 msgid "1 year"
 msgstr "1 tahun"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3997,14 +4001,14 @@ msgstr "Dengarkan"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Waktu untuk mendengarkan habis. Coba lagi sebentar lagi."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "Dengarkan artikel"
@@ -4296,6 +4300,9 @@ msgstr "Sen"
 
 msgid "Monday"
 msgstr "Senin"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "Batas pengeluaran bulanan"
@@ -7984,9 +7991,6 @@ msgstr "Rabu"
 
 msgid "Weekly"
 msgstr "Mingguan"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Selamat datang di NewsBlur"

@@ -3194,6 +3194,9 @@ msgstr "ฟังบนเว็บ, iPad, iPhone และ Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "ฟังกำลังเล่นบน MacBook, iPad, iPhone และโทรศัพท์ Android"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
 
@@ -4484,8 +4487,8 @@ msgid "Premium Archive subscription"
 msgstr "การสมัครสมาชิก Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Premium Archive ปลดล็อกการอ่านบทความฉบับเต็มออกเสียงได้สูงสุด %(limit)s ต่อสัปดาห์"
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive ปลดล็อกการอ่านบทความฉบับเต็มออกเสียงได้สูงสุด %(limit)s ต่อเดือน"
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7195,17 +7198,15 @@ msgstr "คุณได้รับสิทธิ์ใช้ %(tier_name)s ฟ
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
-"Archive Extra for %(extra_limit)s a week."
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
 msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"สัปดาห์นี้คุณฟังบทความไปแล้ว %(limit)s การฟังจะรีเซ็ตในวันที่ %(day)s หรืออัปเกรดเป็น Premium Pro "
-"เพื่อฟังได้ %(pro_limit)s ต่อสัปดาห์"
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."

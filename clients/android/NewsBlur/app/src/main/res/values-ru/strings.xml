@@ -1582,7 +1582,6 @@
     <string name="settings_listen_voices_summary">Выберите голос для каждого языка и способ чтения</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Скорость воспроизведения</string>
-    <string name="archive_listen">Слушайте озвученные статьи до 1 часа в неделю</string>
     <string name="pro_listen">Слушайте озвученные статьи до 10 часов в неделю</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d новые статьи</item>

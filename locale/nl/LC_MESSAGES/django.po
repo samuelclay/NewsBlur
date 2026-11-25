@@ -3274,6 +3274,9 @@ msgstr "Luisteren op het web, iPad, iPhone en Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Luisteren afgespeeld op een MacBook, iPad, iPhone en Android-telefoon"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
 
@@ -4594,8 +4597,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive-abonnement"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Met Premium Archive kun je volledige artikelen laten voorlezen, tot %(limit)s per week."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Met Premium Archive kun je volledige artikelen laten voorlezen, tot %(limit)s per maand."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7396,17 +7399,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
-"Archive Extra for %(extra_limit)s a week."
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
 msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"Je hebt deze week %(limit)s naar artikelen geluisterd. Je luistert weer vanaf %(day)s, of upgrade naar "
-"Premium Pro voor %(pro_limit)s per week."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."

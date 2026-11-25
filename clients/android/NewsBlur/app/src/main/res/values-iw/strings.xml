@@ -1548,7 +1548,6 @@
     <string name="settings_listen_voices_summary">בחירת קול לכל שפה ואופן ההקראה</string>
     <string name="settings_listen_delivery">אופן ההקראה</string>
     <string name="settings_listen_speed">מהירות ההשמעה</string>
-    <string name="archive_listen">האזנה להקראה של כתבות במשך שעה בשבוע</string>
     <string name="pro_listen">האזנה להקראה של כתבות במשך 10 שעות בשבוע</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d כתבה חדשה</item>

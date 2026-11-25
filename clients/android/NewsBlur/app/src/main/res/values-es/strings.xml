@@ -1548,7 +1548,6 @@ a personas para hablar del mundo.</string>
     <string name="settings_listen_voices_summary">Elige una voz para cada idioma y cómo lo lee</string>
     <string name="settings_listen_delivery">Reproducción</string>
     <string name="settings_listen_speed">Velocidad de reproducción</string>
-    <string name="archive_listen">Escucha 1 hora de artículos en voz alta a la semana</string>
     <string name="pro_listen">Escucha 10 horas de artículos en voz alta a la semana</string>
     <plurals name="new_stories_pill">
         <item quantity="many">%d artículos nuevos</item>

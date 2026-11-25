@@ -1514,7 +1514,6 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_listen_voices_summary">Her dil için bir ses ve okuma biçimini seçin</string>
     <string name="settings_listen_delivery">Sunum</string>
     <string name="settings_listen_speed">Oynatma hızı</string>
-    <string name="archive_listen">Haftada 1 saat haberleri sesli dinleyin</string>
     <string name="pro_listen">Haftada 10 saat haberleri sesli dinleyin</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d yeni haber</item>

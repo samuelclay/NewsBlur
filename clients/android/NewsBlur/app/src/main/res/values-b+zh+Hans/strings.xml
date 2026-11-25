@@ -1480,7 +1480,6 @@
     <string name="settings_listen_voices_summary">为每种语言选择语音及朗读方式</string>
     <string name="settings_listen_delivery">表达方式</string>
     <string name="settings_listen_speed">播放速度</string>
-    <string name="archive_listen">每周可收听 1 小时文章朗读</string>
     <string name="pro_listen">每周可收听 10 小时文章朗读</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d 篇新文章</item>

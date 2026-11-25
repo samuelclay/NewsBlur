@@ -537,6 +537,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "נותרו %(duration)s השבוע"
 
@@ -995,7 +999,7 @@ msgstr "חודש אחד"
 msgid "1 year"
 msgstr "שנה אחת"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3968,14 +3972,14 @@ msgstr "האזנה"
 msgid "Listen timed out. Try again in a moment."
 msgstr "תם הזמן להאזנה. כדאי לנסות שוב בעוד רגע."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "האזנה להקראה של כתבות במשך שעה בשבוע"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "האזנה להקראה של כתבות במשך 10 שעות בשבוע"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "האזנה לכתבה"
@@ -4265,6 +4269,9 @@ msgstr "ב׳"
 
 msgid "Monday"
 msgstr "יום שני"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "מגבלת הוצאות חודשית"
@@ -7898,9 +7905,6 @@ msgstr "יום רביעי"
 
 msgid "Weekly"
 msgstr "שבועי"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "ברוכים הבאים ל-NewsBlur"

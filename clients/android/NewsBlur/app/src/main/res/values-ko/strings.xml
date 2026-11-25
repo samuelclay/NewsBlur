@@ -1480,7 +1480,6 @@
     <string name="settings_listen_voices_summary">언어별 음성과 읽기 방식을 선택하세요</string>
     <string name="settings_listen_delivery">전달 방식</string>
     <string name="settings_listen_speed">재생 속도</string>
-    <string name="archive_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용</string>
     <string name="pro_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d개의 새 스토리</item>

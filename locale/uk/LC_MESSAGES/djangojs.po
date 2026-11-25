@@ -600,6 +600,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Цього тижня залишилося %(duration)s"
 
@@ -1068,7 +1072,7 @@ msgstr "1 місяць"
 msgid "1 year"
 msgstr "1 рік"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -4089,14 +4093,14 @@ msgstr "Прослухати"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Час очікування прослуховування вичерпано. Спробуйте ще раз трохи пізніше."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Слухайте озвучення статей до 1 години на тиждень"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Слухайте озвучення статей до 10 годин на тиждень"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "Прослухати статтю"
@@ -4394,6 +4398,9 @@ msgstr "Пн"
 
 msgid "Monday"
 msgstr "Понеділок"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "Місячний ліміт витрат"
@@ -8105,9 +8112,6 @@ msgstr "Середа"
 
 msgid "Weekly"
 msgstr "Щотижня"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Ласкаво просимо до NewsBlur"

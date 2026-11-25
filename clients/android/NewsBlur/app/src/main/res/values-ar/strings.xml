@@ -1650,7 +1650,6 @@
     <string name="settings_listen_voices_summary">اختر صوتًا لكل لغة وطريقة قراءته</string>
     <string name="settings_listen_delivery">طريقة العرض</string>
     <string name="settings_listen_speed">سرعة التشغيل</string>
-    <string name="archive_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا</string>
     <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d 3 قصص جديدة</item>

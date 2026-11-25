@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 資料夾，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 資料夾，已收合，%2$@";
 "%1$@ followed %2$@." = "%1$@ 追蹤了 %2$@。";
+"%1$@ of %2$@ of listening left this month" = "本月剩餘聆聽時間：%1$@／%2$@";
 "%1$@ of %2$@ of listening left this week" = "本週聆聽時間剩餘 %1$@／共 %2$@";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 個網站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@／%2$@ 次文章預覽";
@@ -535,7 +536,6 @@
 "List style" = "清單樣式";
 "Listen" = "聆聽";
 "Listen Settings" = "聆聽設定";
-"Listen to 1 hour of stories read aloud a week" = "每週聆聽朗讀文章最多 1 小時";
 "Listen to 10 hours of stories read aloud a week" = "每週聆聽朗讀文章最多 10 小時";
 "Listen to story" = "聆聽文章";
 "Listening isn't available right now." = "目前無法使用聆聽功能。";

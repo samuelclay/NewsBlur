@@ -3279,6 +3279,9 @@ msgstr "Dengarkan di web, iPad, iPhone, dan Android"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Fitur Dengarkan diputar di MacBook, iPad, iPhone, dan ponsel Android"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
 
@@ -4597,8 +4600,8 @@ msgid "Premium Archive subscription"
 msgstr "Langganan Premium Archive"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Premium Archive membuka akses ke artikel lengkap yang dibacakan, hingga %(limit)s per minggu."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive membuka akses ke artikel lengkap yang dibacakan, hingga %(limit)s per bulan."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7398,17 +7401,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
-"Archive Extra for %(extra_limit)s a week."
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
 msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"Anda telah mendengarkan %(limit)s artikel minggu ini. Waktu mendengarkan direset pada %(day)s, atau "
-"tingkatkan ke Premium Pro untuk %(pro_limit)s per minggu."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."

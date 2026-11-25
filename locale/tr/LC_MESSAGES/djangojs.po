@@ -477,6 +477,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Bu hafta %(duration)s kaldı"
 
@@ -931,7 +935,7 @@ msgstr "1 ay"
 msgid "1 year"
 msgstr "1 yıl"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3911,14 +3915,14 @@ msgstr "Dinle"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Dinleme zaman aşımına uğradı. Birazdan yeniden deneyin."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Haftada 1 saat haberleri sesli dinleyin"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "Haberi dinle"
@@ -4204,6 +4208,9 @@ msgstr "Pzt"
 
 msgid "Monday"
 msgstr "Pazartesi"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "Aylık harcama limiti"
@@ -7851,9 +7858,6 @@ msgstr "Çarşamba"
 
 msgid "Weekly"
 msgstr "Haftalık"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur'a hoş geldiniz"

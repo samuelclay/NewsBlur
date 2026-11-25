@@ -475,6 +475,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "เหลือ %(duration)s ในสัปดาห์นี้"
 
@@ -927,7 +931,7 @@ msgstr "1 เดือน"
 msgid "1 year"
 msgstr "1 ปี"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3879,14 +3883,14 @@ msgstr "ฟัง"
 msgid "Listen timed out. Try again in a moment."
 msgstr "หมดเวลาในการฟัง โปรดลองอีกครั้งในอีกสักครู่"
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "ฟังบทความ"
@@ -4170,6 +4174,9 @@ msgstr "จ."
 
 msgid "Monday"
 msgstr "วันจันทร์"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "วงเงินใช้จ่ายรายเดือน"
@@ -7778,9 +7785,6 @@ msgstr "วันพุธ"
 
 msgid "Weekly"
 msgstr "รายสัปดาห์"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "ยินดีต้อนรับสู่ NewsBlur"

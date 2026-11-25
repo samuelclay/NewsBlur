@@ -3248,6 +3248,9 @@ msgstr "Web'de, iPad, iPhone ve Android'de dinleyin"
 msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Dinle, MacBook, iPad, iPhone ve Android telefonda çalışırken"
 
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
 msgid "Listen to 1 hour of stories read aloud a week"
 msgstr "Haftada 1 saat haberleri sesli dinleyin"
 
@@ -4568,8 +4571,8 @@ msgid "Premium Archive subscription"
 msgstr "Premium Archive aboneliği"
 
 #, python-format
-msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a week."
-msgstr "Premium Archive, haftada %(limit)s kadar haberi sesli dinlemenizi sağlar."
+msgid "Premium Archive unlocks full stories read aloud, up to %(limit)s a month."
+msgstr "Premium Archive, ayda %(limit)s'a kadar haberin tamamının sesli okunmasını sağlar."
 
 msgid "Premium Pro"
 msgstr "Premium Pro"
@@ -7365,17 +7368,15 @@ msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or switch to Premium "
-"Archive Extra for %(extra_limit)s a week."
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
+"Archive Extra for %(extra_limit)s a month."
 msgstr ""
 
 #, python-format
 msgid ""
-"You've listened to %(limit)s of stories this week. Listening resets on %(day)s, or upgrade to Premium Pro "
+"You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
-"Bu hafta %(limit)s haber dinlediniz. Dinleme süreniz %(day)s tarihinde sıfırlanır veya haftada "
-"%(pro_limit)s karşılığında Premium Pro'ya yükseltin."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."

@@ -537,6 +537,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "इस सप्ताह %(duration)s शेष"
 
@@ -995,7 +999,7 @@ msgstr "1 महीना"
 msgid "1 year"
 msgstr "1 वर्ष"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3980,14 +3984,14 @@ msgstr "सुनें"
 msgid "Listen timed out. Try again in a moment."
 msgstr "सुनने का समय समाप्त हो गया। थोड़ी देर में फिर से कोशिश करें।"
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "लेख सुनें"
@@ -4279,6 +4283,9 @@ msgstr "सोम"
 
 msgid "Monday"
 msgstr "सोमवार"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "मासिक खर्च सीमा"
@@ -7946,9 +7953,6 @@ msgstr "बुधवार"
 
 msgid "Weekly"
 msgstr "साप्ताहिक"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "NewsBlur में आपका स्वागत है"

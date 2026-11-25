@@ -475,6 +475,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Còn %(duration)s trong tuần này"
 
@@ -929,7 +933,7 @@ msgstr "1 tháng"
 msgid "1 year"
 msgstr "1 năm"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3900,14 +3904,14 @@ msgstr "Nghe"
 msgid "Listen timed out. Try again in a moment."
 msgstr "Đã hết thời gian chờ khi nghe. Hãy thử lại sau ít phút."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "Nghe bài viết"
@@ -4193,6 +4197,9 @@ msgstr "T2"
 
 msgid "Monday"
 msgstr "Thứ Hai"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "Giới hạn chi tiêu hàng tháng"
@@ -7835,9 +7842,6 @@ msgstr "Thứ Tư"
 
 msgid "Weekly"
 msgstr "Hàng tuần"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Chào mừng bạn đến với NewsBlur"

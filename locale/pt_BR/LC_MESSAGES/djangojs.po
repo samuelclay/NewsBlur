@@ -539,6 +539,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "Restam %(duration)s nesta semana"
 
@@ -997,7 +1001,7 @@ msgstr "1 mês"
 msgid "1 year"
 msgstr "1 ano"
 
-msgid "2 hours"
+msgid "10 hours"
 msgstr ""
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
@@ -3994,14 +3998,14 @@ msgstr "Ouvir"
 msgid "Listen timed out. Try again in a moment."
 msgstr "A escuta expirou. Tente novamente em instantes."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Ouça artigos narrados por até 1 hora por semana"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Ouça artigos narrados por até 10 horas por semana"
-
-msgid "Listen to 2 hours of stories read aloud a week"
-msgstr ""
 
 msgid "Listen to story"
 msgstr "Ouvir artigo"
@@ -4293,6 +4297,9 @@ msgstr "Seg"
 
 msgid "Monday"
 msgstr "Segunda-feira"
+
+msgid "Monthly listening"
+msgstr ""
 
 msgid "Monthly spending limit"
 msgstr "Limite mensal de gastos"
@@ -7982,9 +7989,6 @@ msgstr "Quarta-feira"
 
 msgid "Weekly"
 msgstr "Semanal"
-
-msgid "Weekly listening"
-msgstr ""
 
 msgid "Welcome to NewsBlur"
 msgstr "Boas-vindas ao NewsBlur"

@@ -1514,7 +1514,6 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
-    <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
     <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d nieuw artikel</item>
