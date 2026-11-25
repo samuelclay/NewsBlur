@@ -397,6 +397,7 @@ people together to talk about the world.</string>
     <string name="main_menu_upgrade_premium">Upgrade to Premium</string>
     <string name="main_menu_upgrade_archive">Upgrade to Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Support Forum</string>
 
@@ -440,6 +441,7 @@ people together to talk about the world.</string>
     <string name="subscription_price_monthly">%1$s/month</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
     <string name="premium_archive_includes_above">Your premium archive subscription includes everything above</string>
+    <string name="premium_archive_extra_includes_above">Your premium archive extra subscription includes everything above</string>
     <string name="premium_pro_includes_above">Your premium pro subscription includes everything above</string>
 
     <string name="premium_enable_sites">Follow up to 1,024 sites</string>

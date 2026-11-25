@@ -60,6 +60,7 @@ private data class ActiveSubscriptionState(
     val renewalMessage: String? = null,
     val isPremium: Boolean = false,
     val isArchive: Boolean = false,
+    val isArchiveExtra: Boolean = false,
     val isPro: Boolean = false,
 ) {
     val hasAnySubscription: Boolean
@@ -192,6 +193,7 @@ class SubscriptionActivity : NbActivity() {
                 renewalMessage: String?,
                 isPremium: Boolean,
                 isArchive: Boolean,
+                isArchiveExtra: Boolean,
                 isPro: Boolean,
             ) {
                 runOnUiThread {
@@ -200,6 +202,7 @@ class SubscriptionActivity : NbActivity() {
                             renewalMessage = renewalMessage,
                             isPremium = isPremium,
                             isArchive = isArchive,
+                            isArchiveExtra = isArchiveExtra,
                             isPro = isPro,
                         )
                     renderSubscriptionTiers()
@@ -469,6 +472,12 @@ class SubscriptionActivity : NbActivity() {
             activeSubscriptionState.isPro ->
                 TierUiState.Active(
                     messageRes = R.string.premium_pro_includes_above,
+                    showManage = false,
+                )
+
+            activeSubscriptionState.isArchiveExtra ->
+                TierUiState.Active(
+                    messageRes = R.string.premium_archive_extra_includes_above,
                     showManage = false,
                 )
 

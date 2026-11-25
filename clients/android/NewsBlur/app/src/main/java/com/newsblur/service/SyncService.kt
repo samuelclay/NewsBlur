@@ -498,6 +498,7 @@ open class SyncService :
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
+            prefsRepo.setArchiveExtra(feedResponse.isArchiveExtra)
             prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
             feedResponse.usageBillingState?.let(prefsRepo::setUsageBillingState)
             prefsRepo.setIsStaff(feedResponse.isStaff)

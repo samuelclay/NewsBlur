@@ -28,6 +28,8 @@ public class PrefConstants {
 
 	public static final String IS_PREMIUM = "is_premium";
 	public static final String IS_ARCHIVE = "is_archive";
+    // True only for Premium Archive Extra, whose accounts also have is_archive.
+    public static final String IS_ARCHIVE_EXTRA = "is_archive_extra";
     public static final String IS_PRO = "is_pro";
     public static final String IS_STAFF = "is_staff";
     // Natural language classifier billing from /reader/feeds user_profile, see UsageBilling.kt.

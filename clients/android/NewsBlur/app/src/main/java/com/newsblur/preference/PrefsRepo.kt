@@ -1091,6 +1091,13 @@ class PrefsRepo(
 
     fun getIsArchive() = prefs.getBoolean(PrefConstants.IS_ARCHIVE, false)
 
+    fun setArchiveExtra(isArchiveExtra: Boolean) {
+        prefs.edit { putBoolean(PrefConstants.IS_ARCHIVE_EXTRA, isArchiveExtra) }
+    }
+
+    /** PrefsRepo.kt: Premium Archive Extra, which getIsArchive() also reports as Archive. */
+    fun getIsArchiveExtra() = prefs.getBoolean(PrefConstants.IS_ARCHIVE_EXTRA, false)
+
     fun isClusterMarkReadEnabled(): Boolean = getIsArchive() && prefs.getBoolean(PrefConstants.CLUSTER_MARK_READ, false)
 
     fun setPro(
