@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 
 # Production owner ID, username, and one of their verified registered application IDs.
+WINBLUR_OWNER = (179699, "amittere", 128)
 READER_OWNERS = (
     (13, "samuel", 5),
     (320840, "prendio2", 7),
@@ -12,14 +13,15 @@ READER_OWNERS = (
     (93498, "mehlkelm", 33),
     (593941, "Richasy", 32),
     (764146, "sered", 127),
+    WINBLUR_OWNER,
 )
 
 
-def grant_reader_accounts(apps, database, apply, report):
+def grant_reader_accounts(apps, database, apply, report, owners=None):
     application = apps.get_model("oauth2_provider", "Application").objects.using(database)
     profiles = apps.get_model("profile", "Profile").objects.using(database)
     payments = apps.get_model("profile", "PaymentHistory").objects.using(database)
-    for user_id, username, app_id in READER_OWNERS:
+    for user_id, username, app_id in READER_OWNERS if owners is None else owners:
         with transaction.atomic(using=database):
             if not application.filter(pk=app_id, user_id=user_id, user__username=username).exists():
                 continue

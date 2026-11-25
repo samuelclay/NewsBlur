@@ -12,6 +12,7 @@ from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily
 from prometheus_client.exposition import CONTENT_TYPE_LATEST
 
+from apps.oauth.access import SELF_SERVICE_LAUNCH, owner_has_active_pro
 from apps.oauth.traffic import application_usage, recorded_application_ids
 
 
@@ -43,6 +44,30 @@ class ApplicationMetrics:
             requests.add_metric([app_id], usage[pk]["requests"])
             if (usage[pk]["last_used"] or 0) >= int(cutoff.timestamp()):
                 active += 1
+        inventory = GaugeMetricFamily(
+            "newsblur_oauth_legacy_application_needs_pro",
+            "Pre-launch applications that would lose access if their owners needed active Premium Pro.",
+            labels=["app_id", "app_name", "owner"],
+        )
+        legacy_apps = (
+            applications.filter(created__lt=SELF_SERVICE_LAUNCH, user__is_active=True)
+            .select_related("user__profile")
+            .only(
+                "pk",
+                "name",
+                "created",
+                "user__username",
+                "user__is_active",
+                "user__profile__is_pro",
+                "user__profile__is_premium",
+                "user__profile__is_premium_trial",
+                "user__profile__premium_expire",
+            )
+        )
+        for app in legacy_apps:
+            if not owner_has_active_pro(app):
+                inventory.add_metric([str(app.pk), app.name, app.user.username], 1)
+        yield inventory
         yield names
         yield readers
         yield requests

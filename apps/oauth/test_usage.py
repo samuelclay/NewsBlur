@@ -10,6 +10,7 @@ from oauth2_provider.models import AccessToken, Application
 from prometheus_client.parser import text_string_to_metric_families
 
 from apps.oauth import traffic
+from apps.oauth.access import SELF_SERVICE_LAUNCH
 
 
 @override_settings(OAUTH_METRICS_TOKEN="test-scraper")
@@ -59,3 +60,29 @@ class Test_OAuthUsage(TestCase):
             self.assertEqual(
                 next(s.value for s in samples if s.name.endswith("created_24h")), existing_new + 2
             )
+
+    def test_inventory_includes_idle_legacy_apps_until_the_owner_qualifies(self):
+        owner = User.objects.create_user("legacy-owner")
+        old = Application.objects.create(user=owner, name="Old reader")
+        new = Application.objects.create(user=owner, name="New reader")
+        Application.objects.filter(pk=old.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1))
+        Application.objects.filter(pk=new.pk).update(created=SELF_SERVICE_LAUNCH)
+
+        def inventory():
+            result = self.client.get("/monitor/oauth-usage", HTTP_AUTHORIZATION="OAuthMetrics test-scraper")
+            return [
+                sample.labels
+                for family in text_string_to_metric_families(result.content.decode())
+                for sample in family.samples
+                if sample.name == "newsblur_oauth_legacy_application_needs_pro"
+                and sample.labels["owner"] == owner.username
+            ]
+
+        self.assertEqual(
+            inventory(), [{"app_id": str(old.pk), "app_name": old.name, "owner": owner.username}]
+        )
+        profile = owner.profile
+        profile.is_pro = profile.is_premium = True
+        profile.is_premium_trial = False
+        profile.save()
+        self.assertEqual(inventory(), [])

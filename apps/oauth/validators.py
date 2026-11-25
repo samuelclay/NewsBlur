@@ -5,17 +5,8 @@ from oauth2_provider.models import get_access_token_model
 from oauthlib.oauth2 import InvalidClientError
 
 from apps.mcp.validators import RFC8252OAuth2Validator
+from apps.oauth.access import application_is_active
 from apps.oauth.applications import owner_subscription_error
-
-
-def application_is_active(application):
-    if not application:
-        return False
-    if application.user_id is None:
-        # Registered by migrations in apps/mcp and apps/archive_extension.
-        return application.client_id in ("newsblur-cli", "newsblur-mcp-server", "newsblur-archive-extension")
-    profile = getattr(application.user, "profile", None)
-    return profile and profile.can_register_oauth_application
 
 
 class InactiveApplication(Exception):
