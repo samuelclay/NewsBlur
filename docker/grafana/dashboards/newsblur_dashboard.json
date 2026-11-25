@@ -23760,7 +23760,7 @@
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "Pre-launch apps that can still connect under the temporary exception. Lists the owner of every app that would lose access under Premium Pro enforcement, including apps with no recorded requests.",
+   "description": "Pre-launch apps that would lose access under Premium Pro enforcement. Requests count authenticated API calls since tracking began. Readers are estimated over the current and previous six UTC days. Apps with no recorded traffic are included.",
    "gridPos": {
     "x": 0,
     "y": 897,
@@ -23774,7 +23774,29 @@
       "type": "prometheus",
       "uid": "U1-fPO3Mk"
      },
-     "expr": "newsblur_oauth_legacy_application_needs_pro == 1",
+     "expr": "(max by (app_id, app_name, owner) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_requests_total)) or (max by (app_id, app_name, owner) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)",
+     "format": "table",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "(max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_readers_week)) or (max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)",
+     "format": "table",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "((max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_last_request_timestamp_seconds)) or (max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)) * 1000",
      "format": "table",
      "instant": true,
      "range": false
@@ -23782,23 +23804,44 @@
    ],
    "transformations": [
     {
+     "id": "joinByField",
+     "options": {
+      "byField": "app_id",
+      "mode": "outerTabular"
+     }
+    },
+    {
+     "id": "filterFieldsByName",
+     "options": {
+      "include": {
+       "names": [
+        "app_name",
+        "owner",
+        "Value #A",
+        "Value #B",
+        "Value #C",
+        "app_id"
+       ]
+      }
+     }
+    },
+    {
      "id": "organize",
      "options": {
-      "excludeByName": {
-       "Time": true,
-       "__name__": true,
-       "Value": true,
-       "job": true,
-       "instance": true
-      },
       "indexByName": {
-       "owner": 0,
-       "app_name": 1,
-       "app_id": 2
+       "app_name": 0,
+       "owner": 1,
+       "Value #A": 2,
+       "Value #B": 3,
+       "Value #C": 4,
+       "app_id": 5
       },
       "renameByName": {
-       "owner": "Owner",
        "app_name": "Application",
+       "owner": "Owner",
+       "Value #A": "Total requests",
+       "Value #B": "Readers · 7 days",
+       "Value #C": "Last request",
        "app_id": "App ID"
       }
      }
@@ -23808,8 +23851,38 @@
     "showHeader": true,
     "sortBy": [
      {
-      "displayName": "Owner",
-      "desc": false
+      "displayName": "Total requests",
+      "desc": true
+     }
+    ]
+   },
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Last request"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "dateTimeAsLocal"
+       },
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "0": {
+            "text": "No recorded use"
+           }
+          }
+         }
+        ]
+       }
+      ]
      }
     ]
    }
@@ -23886,6 +23959,6 @@
  "timezone": "",
  "title": "NewsBlur",
  "uid": "T86VjXrG2",
- "version": 132,
+ "version": 133,
  "weekStart": ""
 }

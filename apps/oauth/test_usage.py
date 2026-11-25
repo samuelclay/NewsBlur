@@ -56,6 +56,10 @@ class Test_OAuthUsage(TestCase):
             self.assertEqual(counted.labels, {"app_id": str(app.pk)})
             self.assertEqual(app_samples["newsblur_oauth_application_info"].labels["app_name"], app.name)
             self.assertEqual(counted.value, 2)
+            self.assertEqual(
+                app_samples["newsblur_oauth_last_request_timestamp_seconds"].value,
+                int(connection.hget(traffic.LAST_USED_KEY, app.pk)),
+            )
             self.assertEqual(next(s.value for s in samples if s.name.endswith("active_24h")), 1)
             self.assertEqual(
                 next(s.value for s in samples if s.name.endswith("created_24h")), existing_new + 2

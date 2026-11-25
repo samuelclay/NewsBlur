@@ -28,6 +28,11 @@ class ApplicationMetrics:
             "Estimated distinct readers in the current and previous six UTC days.",
             labels=["app_id"],
         )
+        last_used = GaugeMetricFamily(
+            "newsblur_oauth_last_request_timestamp_seconds",
+            "Unix timestamp of the last authenticated request by the application.",
+            labels=["app_id"],
+        )
         names = GaugeMetricFamily(
             "newsblur_oauth_application_info", "Current application name.", labels=["app_id", "app_name"]
         )
@@ -42,7 +47,10 @@ class ApplicationMetrics:
             names.add_metric([app_id, name], 1)
             readers.add_metric([app_id], usage[pk]["readers"])
             requests.add_metric([app_id], usage[pk]["requests"])
-            if (usage[pk]["last_used"] or 0) >= int(cutoff.timestamp()):
+            last_request = usage[pk]["last_used"]
+            if last_request is not None:
+                last_used.add_metric([app_id], last_request)
+            if (last_request or 0) >= int(cutoff.timestamp()):
                 active += 1
         inventory = GaugeMetricFamily(
             "newsblur_oauth_legacy_application_needs_pro",
@@ -69,6 +77,7 @@ class ApplicationMetrics:
                 inventory.add_metric([str(app.pk), app.name, app.user.username], 1)
         yield inventory
         yield names
+        yield last_used
         yield readers
         yield requests
         yield GaugeMetricFamily(
