@@ -483,6 +483,30 @@ class Test_UpgradePaths(TestCase):
         m["email_staff"].assert_not_called()
 
 
+class Test_ArchiveExtraReferralCredit(TestCase):
+    def test_archive_extra_referrer_is_credited_against_159(self):
+        """A $99 referral is 99/159 of an Archive Extra year, so the referrer gets 7 months, not the 12 the
+        $99 Archive price would give."""
+        from apps.profile.models import MReferral
+
+        referrer = User.objects.create_user(
+            username="extrareferrer", password="password", email="xr@test.com"
+        )
+        Profile.objects.filter(user=referrer).update(is_premium=True, is_archive=True, is_archive_extra=True)
+        referred = User.objects.create_user(
+            username="extrareferred", password="password", email="xd@test.com"
+        )
+        MReferral.objects(referred_user_id=referred.pk).delete()
+        MReferral(referrer_user_id=referrer.pk, referred_user_id=referred.pk, status="pending").save()
+
+        with patch.object(Profile, "extend_premium_by_days") as extend, patch(
+            "apps.profile.tasks.EmailReferralCredit.delay"
+        ):
+            MReferral.award_credit(referred.pk, 99, "archive")
+
+        extend.assert_called_once_with(210, tier="archive_extra")
+
+
 class Test_ConcurrentArchiveActivation(TestCase):
     """Four PayPal webhooks for one archive upgrade each ran setup_premium_history and
     activate_archive at once on 2026-10-10, and every one of them scheduled the archive

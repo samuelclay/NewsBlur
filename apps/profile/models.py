@@ -842,6 +842,8 @@ class Profile(models.Model):
             self.activate_pro()
         elif tier == "archive" and not self.is_archive:
             self.activate_archive()
+        elif tier == "archive_extra" and not self.is_archive_extra:
+            self.activate_archive_extra()
         elif not self.is_premium:
             self.activate_premium()
 
@@ -5895,6 +5897,7 @@ class MReferral(mongo.Document):
     TIER_YEARLY_COST = {
         "premium": 36,
         "archive": 99,
+        "archive_extra": 159,
         "pro": 299,
     }
 
@@ -5963,6 +5966,8 @@ class MReferral(mongo.Document):
         profile = referrer.profile
         if profile.is_pro:
             referrer_tier = "pro"
+        elif profile.is_archive and profile.is_archive_extra:
+            referrer_tier = "archive_extra"
         elif profile.is_archive:
             referrer_tier = "archive"
         elif profile.is_premium:
