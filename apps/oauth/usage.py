@@ -1,7 +1,6 @@
 """Registered application traffic for the NewsBlur OAuth Grafana dashboard."""
 
 import hmac
-import time
 from datetime import timedelta
 from pathlib import Path
 
@@ -13,7 +12,7 @@ from prometheus_client import CollectorRegistry, generate_latest
 from prometheus_client.core import CounterMetricFamily, GaugeMetricFamily
 from prometheus_client.exposition import CONTENT_TYPE_LATEST
 
-from apps.oauth.traffic import application_usage
+from apps.oauth.traffic import application_usage, recorded_application_ids
 
 
 class ApplicationMetrics:
@@ -21,26 +20,30 @@ class ApplicationMetrics:
         requests = CounterMetricFamily(
             "newsblur_oauth_requests",
             "Requests authenticated using an application access token.",
-            labels=["app_id", "app_name"],
+            labels=["app_id"],
         )
-        cutoff = timezone.now() - timedelta(days=1)
-        now = int(time.time())
-        active = new = 0
-        apps = list(get_application_model().objects.values_list("pk", "name", "created"))
         readers = GaugeMetricFamily(
             "newsblur_oauth_readers_week",
             "Estimated distinct readers in the current and previous six UTC days.",
-            labels=["app_id", "app_name"],
+            labels=["app_id"],
         )
-        usage = application_usage([pk for pk, _, _ in apps])
-        for pk, name, created in apps:
+        names = GaugeMetricFamily(
+            "newsblur_oauth_application_info", "Current application name.", labels=["app_id", "app_name"]
+        )
+        applications = get_application_model().objects
+        cutoff = timezone.now() - timedelta(days=1)
+        new = applications.filter(created__gte=cutoff).count()
+        apps = dict(applications.filter(pk__in=recorded_application_ids()).values_list("pk", "name"))
+        usage = application_usage(list(apps))
+        active = 0
+        for pk, name in apps.items():
             app_id = str(pk)
-            readers.add_metric([app_id, name], usage[pk]["readers"])
-            requests.add_metric([app_id, name], usage[pk]["requests"])
-            if created >= cutoff:
-                new += 1
-            if (usage[pk]["last_used"] or 0) >= now - 86400:
+            names.add_metric([app_id, name], 1)
+            readers.add_metric([app_id], usage[pk]["readers"])
+            requests.add_metric([app_id], usage[pk]["requests"])
+            if (usage[pk]["last_used"] or 0) >= int(cutoff.timestamp()):
                 active += 1
+        yield names
         yield readers
         yield requests
         yield GaugeMetricFamily(

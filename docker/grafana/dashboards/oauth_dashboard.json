@@ -22,7 +22,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "rate(newsblur_oauth_requests_total[$__rate_interval]) * 60",
+          "expr": "rate(newsblur_oauth_requests_total[$__rate_interval]) * 60 * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info",
           "legendFormat": "{{app_name}} (#{{app_id}})",
           "instant": false
         }
@@ -94,7 +94,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sort_desc(newsblur_oauth_requests_total)",
+          "expr": "sort_desc(newsblur_oauth_requests_total * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info)",
           "legendFormat": "{{app_name}} (#{{app_id}})",
           "instant": true
         }
@@ -123,7 +123,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sort_desc(newsblur_oauth_readers_week)",
+          "expr": "sort_desc(newsblur_oauth_readers_week * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info)",
           "legendFormat": "{{app_name}} (#{{app_id}})",
           "instant": true
         }

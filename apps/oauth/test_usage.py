@@ -19,7 +19,9 @@ class Test_OAuthUsage(TestCase):
         user.profile.is_pro = user.profile.is_premium = True
         user.profile.is_premium_trial = False
         user.profile.save(update_fields=["is_premium", "is_pro", "is_premium_trial"])
+        existing_new = Application.objects.filter(created__gte=timezone.now() - timedelta(days=1)).count()
         app = Application.objects.create(name='A "reader"', user=user)
+        unused = Application.objects.create(name="Unused registration", user=user)
         token = AccessToken.objects.create(
             application=app, user=user, token="metrics-test", expires=timezone.now() + timedelta(hours=1)
         )
@@ -46,10 +48,14 @@ class Test_OAuthUsage(TestCase):
                 for family in text_string_to_metric_families(response.content.decode())
                 for s in family.samples
             ]
+            self.assertFalse(any(s.labels.get("app_id") == str(unused.pk) for s in samples))
             app_samples = {s.name: s for s in samples if s.labels.get("app_id") == str(app.pk)}
             counted = app_samples["newsblur_oauth_requests_total"]
             self.assertEqual(app_samples["newsblur_oauth_readers_week"].value, 1)
-            self.assertEqual(counted.labels["app_name"], app.name)
+            self.assertEqual(counted.labels, {"app_id": str(app.pk)})
+            self.assertEqual(app_samples["newsblur_oauth_application_info"].labels["app_name"], app.name)
             self.assertEqual(counted.value, 2)
             self.assertEqual(next(s.value for s in samples if s.name.endswith("active_24h")), 1)
-            self.assertGreaterEqual(next(s.value for s in samples if s.name.endswith("created_24h")), 1)
+            self.assertEqual(
+                next(s.value for s in samples if s.name.endswith("created_24h")), existing_new + 2
+            )

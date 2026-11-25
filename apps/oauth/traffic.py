@@ -13,6 +13,11 @@ def readers_key(application_id, utc_day):
     return f"{REQUESTS_KEY}:readers:{application_id}:{utc_day}"
 
 
+def recorded_application_ids():
+    connection = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+    return [int(app_id) for app_id in connection.hkeys(REQUESTS_KEY)]
+
+
 def record_request(application_id, user_id):
     try:
         pipe = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL).pipeline()
