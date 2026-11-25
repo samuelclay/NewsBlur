@@ -52,6 +52,8 @@ class MListenUsage(mongo.Document):
             {"fields": ["user_id", "-created_at"]},
             {"fields": ["-created_at"]},
             {"fields": ["kind", "-created_at"]},
+            # apps/listen/usage.py last_reset: finds an account's latest reset without walking its history.
+            {"fields": ["user_id", "kind", "-created_at"]},
         ],
         "allow_inheritance": False,
     }

@@ -44,6 +44,8 @@ class ListenUsageTracker:
     def __init__(self, user):
         self.user = user
         self.profile = user.profile
+        self._last_reset = None
+        self._last_reset_loaded = False
 
     # Plan ---------------------------------------------------------------------
     @property
@@ -122,7 +124,13 @@ class ListenUsageTracker:
 
     # Resets -------------------------------------------------------------------
     def last_reset(self):
-        return MListenUsage.objects(user_id=self.user.pk, kind="reset").order_by("-created_at").first()
+        """Looked up once per tracker, since every counter in a request asks for it."""
+        if not self._last_reset_loaded:
+            self._last_reset = (
+                MListenUsage.objects(user_id=self.user.pk, kind="reset").order_by("-created_at").first()
+            )
+            self._last_reset_loaded = True
+        return self._last_reset
 
     def _since_reset(self, start):
         """A window's start, moved up to the latest staff reset if that came later."""
@@ -134,7 +142,11 @@ class ListenUsageTracker:
     def reset_usage(self, staff_user=None):
         """Start this account's listening allowance and daily limits over from now. The usage rows themselves are
         kept; the "reset" row marks where counting starts again (apps/listen/views.py listen_reset_usage)."""
-        MListenUsage(user_id=self.user.pk, kind="reset", reason="manual", plan_tier=self.tier).save()
+        self._last_reset = MListenUsage(
+            user_id=self.user.pk, kind="reset", reason="manual", plan_tier=self.tier
+        )
+        self._last_reset.save()
+        self._last_reset_loaded = True
         logging.user(
             self.user,
             "~FMListen usage reset manually%s" % (" by ~SB%s~SN" % staff_user.username if staff_user else ""),
