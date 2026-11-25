@@ -54,6 +54,31 @@ static UIImage *NBImageFromColor(UIColor *color) {
 
 static NSArray<NSString *> *NewsBlurTopSectionNames;
 
+static BOOL NBFeedListFailedForConnectivity(NSError *error, NSHTTPURLResponse *response) {
+    if (response.statusCode >= 400 || ![error.domain isEqualToString:NSURLErrorDomain]) return NO;
+    switch (error.code) {
+        case NSURLErrorTimedOut:
+        case NSURLErrorCannotFindHost:
+        case NSURLErrorCannotConnectToHost:
+        case NSURLErrorNetworkConnectionLost:
+        case NSURLErrorDNSLookupFailed:
+        case NSURLErrorNotConnectedToInternet:
+        case NSURLErrorInternationalRoamingOff:
+        case NSURLErrorCallIsActive:
+        case NSURLErrorDataNotAllowed:
+        // A captive network can interrupt TLS or present its own certificate. FeedsObjCViewController.m
+        // retries the normal HTTPS request so the new connection validates the server again.
+        case NSURLErrorSecureConnectionFailed:
+        case NSURLErrorServerCertificateHasBadDate:
+        case NSURLErrorServerCertificateUntrusted:
+        case NSURLErrorServerCertificateHasUnknownRoot:
+        case NSURLErrorServerCertificateNotYetValid:
+            return YES;
+        default:
+            return NO;
+    }
+}
+
 static BOOL NBBriefingEnabledFromResults(NSDictionary *results) {
     id explicitFlag = results[@"briefing_enabled"];
     if (explicitFlag && explicitFlag != [NSNull null]) {
@@ -116,6 +141,9 @@ static BOOL NBBoolPreferenceValue(id value) {
 
 @property (atomic) NSUInteger feedListAccountGeneration;
 @property (atomic) NSUInteger feedListRequestGeneration;
+@property (nonatomic) BOOL loadingFeedList;
+@property (nonatomic) BOOL networkReturnedDuringFeedListRequest;
+@property (nonatomic) BOOL feedListFailedWithoutNetwork;
 @property (nonatomic) BOOL awaitingAuthenticatedFeedList;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictSocialFeeds_;
 @property (nonatomic, strong) NSMutableDictionary *updatedDictFeeds_;
@@ -1329,6 +1357,9 @@ static BOOL NBBoolPreferenceValue(id value) {
     [appDelegate resetFeedSubscriptionForAccountChange];
     self.feedListAccountGeneration++;
     self.feedListRequestGeneration++;
+    self.loadingFeedList = NO;
+    self.networkReturnedDuringFeedListRequest = NO;
+    self.feedListFailedWithoutNetwork = NO;
     [[OnboardingFeedLoading shared] reset];
     self.awaitingAuthenticatedFeedList = YES;
     [(FeedsViewController *)self cancelPendingFeedListWorkForAccountChange];
@@ -1363,9 +1394,21 @@ static BOOL NBBoolPreferenceValue(id value) {
     self.inPullToRefresh_ = NO;
 }
 
+- (void)retryOfflineFeedList {
+    if (appDelegate.loginViewController.viewIfLoaded.window) return;
+    if (!appDelegate.activeUsername.length && !self.awaitingAuthenticatedFeedList) return;
+    if (self.loadingFeedList) {
+        self.networkReturnedDuringFeedListRequest = YES;
+    } else if (self.feedListFailedWithoutNetwork) {
+        [self fetchFeedList:NO];
+    }
+}
+
 -(void)fetchFeedList:(BOOL)showLoader {
     NSUInteger accountGeneration = self.feedListAccountGeneration;
     NSUInteger requestGeneration = ++self.feedListRequestGeneration;
+    self.loadingFeedList = YES;
+    self.networkReturnedDuringFeedListRequest = NO;
     NSString *urlFeedList;
     NSLog(@"Fetching feed list");
     [appDelegate cancelOfflineQueue];
@@ -1386,10 +1429,19 @@ static BOOL NBBoolPreferenceValue(id value) {
     
     [appDelegate GET:urlFeedList parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
+        self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = NO;
         [self finishLoadingFeedList:responseObject];
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
+        self.loadingFeedList = NO;
+        self.feedListFailedWithoutNetwork = NBFeedListFailedForConnectivity(error, httpResponse);
+        // Reachability.m can report recovery before the old request delivers its transport error.
+        if (self.networkReturnedDuringFeedListRequest && self.feedListFailedWithoutNetwork) {
+            [self fetchFeedList:NO];
+            return;
+        }
         [[OnboardingFeedLoading shared] refreshDidFinish];
         [self finishedWithError:error statusCode:httpResponse.statusCode];
     }];
@@ -1916,6 +1968,8 @@ static BOOL NBBoolPreferenceValue(id value) {
     [self showRefreshNotifier];
     NSString *accountUsername = [appDelegate.activeUsername copy];
 
+    // FeedsObjCViewController.m issues the network request after publishing its cache. Let that load finish first.
+    if (appDelegate.database) self.loadingFeedList = YES;
     [appDelegate.database inDatabase:^(FMDatabase *db) {
         if (accountGeneration != self.feedListAccountGeneration || requestGeneration != self.feedListRequestGeneration) return;
         NSDictionary *results;

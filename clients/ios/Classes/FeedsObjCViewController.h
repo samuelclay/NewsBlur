@@ -103,6 +103,7 @@ UIGestureRecognizerDelegate, UITextFieldDelegate> {
 - (void)layoutForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 - (void)returnToApp;
 - (void)fetchFeedList:(BOOL)showLoader;
+- (void)retryOfflineFeedList;
 @property (atomic, readonly) NSUInteger feedListAccountGeneration;
 - (void)resetForAccountChange;
 - (void)finishLoadingFeedListWithDict:(NSDictionary *)results finished:(BOOL)finished;

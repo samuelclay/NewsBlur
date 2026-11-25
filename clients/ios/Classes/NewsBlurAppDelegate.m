@@ -874,7 +874,7 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reachabilityChanged:)
                                                  name:kReachabilityChangedNotification
-                                               object:nil];
+                                               object:reach];
     reach.reachableBlock = ^(Reachability *reach) {
         NSLog(@"Reachable: %@", reach);
     };
@@ -887,15 +887,9 @@ static NSString *NBNormalizedServerURLString(NSString *rawURLString) {
     [reach startNotifier];
 }
 
-- (void)reachabilityChanged:(id)something {
-    NSLog(@"Reachability changed: %@", something);
-    //    Reachability* reach = [Reachability reachabilityWithHostname:self.host];
-    
-    //    if (reach.isReachable && feedsViewController.isOffline) {
-    //        [feedsViewController loadOfflineFeeds:NO];
-    ////    } else {
-    ////        [feedsViewController loadOfflineFeeds:NO];
-    //    }
+- (void)reachabilityChanged:(NSNotification *)notification {
+    Reachability *reach = notification.object;
+    if (reach.isReachable) [self.feedsViewController retryOfflineFeedList];
 }
 
 - (NSString *)url {

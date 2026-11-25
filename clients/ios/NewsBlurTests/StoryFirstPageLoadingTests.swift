@@ -2063,6 +2063,57 @@ import XCTest
         XCTAssertEqual(fixture.app.requests.first?.url, firstURL)
     }
 
+    func test_liveRiverResponseRetriesFeedListAfterNetworkLossButStopsOnMaintenance() async throws {
+        let fixture = makeFixture()
+        fixture.app.riverFeeds = [1]
+        func loadRiverFromNetwork() async {
+            fixture.app.requests.removeAll()
+            fixture.openRiver()
+            fixture.app.releaseReadFlush()
+            fixture.app.releaseSavedFlush()
+            await settle()
+            fixture.app.reply(to: 0, with: response())
+        }
+        await loadRiverFromNetwork()
+        await settle()
+        fixture.app.requests.removeAll()
+
+        let feeds = FirstPageSelectionFeeds()
+        feeds.appDelegate = fixture.app
+        fixture.app.feedsViewController = feeds
+        feeds.fetchFeedList(false)
+        fixture.app.fail(to: 0)
+        fixture.app.requests.removeAll()
+        fixture.openRiver()
+        await settle()
+        XCTAssertEqual(fixture.hashes.count, 12)
+        XCTAssertTrue(fixture.app.requests.isEmpty, "Showing a cached page cannot confirm connectivity.")
+        fixture.app.releaseReadFlush()
+        fixture.app.releaseSavedFlush()
+        await settle()
+        fixture.app.reply(to: 0, with: response())
+        XCTAssertEqual(fixture.app.requests.dropFirst().compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"],
+                       "Opening a cached river leaves the sidebar offline until its network response triggers feed recovery.")
+        let retry = try XCTUnwrap(fixture.app.requests.last)
+        retry.failure(FeedListResponseTask(statusCode: 503), URLError(.networkConnectionLost) as NSError)
+        XCTAssertTrue(feeds.isOffline)
+        await loadRiverFromNetwork()
+        XCTAssertEqual(fixture.app.requests.count, 1, "Opening another river during maintenance must only request its stories.")
+
+        feeds.fetchFeedList(false)
+        let invalidResponse = try XCTUnwrap(fixture.app.requests.last)
+        invalidResponse.failure(FeedListResponseTask(statusCode: 200), URLError(.cannotParseResponse) as NSError)
+        await loadRiverFromNetwork()
+        XCTAssertEqual(fixture.app.requests.count, 1, "A malformed response cannot be fixed by recovering network connectivity.")
+
+        feeds.fetchFeedList(false)
+        let interrupted = try XCTUnwrap(fixture.app.requests.last)
+        interrupted.failure(FeedListResponseTask(statusCode: 200), URLError(.networkConnectionLost) as NSError)
+        await loadRiverFromNetwork()
+        XCTAssertEqual(fixture.app.requests.dropFirst().compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"],
+                       "Losing the connection while downloading the feed list must re-enable recovery even after 200 headers.")
+    }
+
     // NewStoriesNewestPage.swift: past the new stories pill's cap, a tap shows the newest stories and the river pages on
     // below them. Widening the folder to every feed the pill took stories from changes the river's page URL, and the
     // next page must still land rather than be dropped as the old first page's.
@@ -2638,6 +2689,18 @@ private final class FirstPageLoadingStories: StoriesCollection {
     var useProductionReadFilter = false
     override var activeReadFilter: String! { useProductionReadFilter ? super.activeReadFilter : readFilter }
     override var activeOrder: String! { order }
+}
+
+private final class FeedListResponseTask: URLSessionDataTask, @unchecked Sendable {
+    private let statusCode: Int
+    init(statusCode: Int) {
+        self.statusCode = statusCode
+        super.init()
+    }
+
+    override var response: URLResponse? {
+        HTTPURLResponse(url: URL(string: "https://example.test/reader/feeds")!, statusCode: statusCode, httpVersion: nil, headerFields: nil)
+    }
 }
 
 @MainActor private final class FirstPageSelectionFeeds: FeedsViewController {
