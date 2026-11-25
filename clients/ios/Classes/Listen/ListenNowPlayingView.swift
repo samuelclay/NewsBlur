@@ -158,7 +158,7 @@ struct ListenNowPlayingView: View {
                 .font(.system(size: 18))
             VStack(alignment: .leading, spacing: 2) {
                 Text(String(format: NBLocalization.text("Previewing %@ seconds. Premium Archive unlocks full stories"),
-                            ListenPreferences.numberString(player.previewLimit ?? 30)))
+                            ListenPreferences.numberString(player.previewLimit ?? ListenUsage.defaultPreviewSeconds)))
                     .font(.system(size: 13, weight: .medium))
                     .fixedSize(horizontal: false, vertical: true)
                 Text(String(format: NBLocalization.text("%@ left in this preview"), ListenFormat.clock(remaining)))
@@ -200,7 +200,9 @@ struct ListenNowPlayingView: View {
     }
 
     private var usageUpgradeMessage: String {
-        player.usage?.upgradeMessage ?? NBLocalization.text("That was a 30 second preview. Premium Archive unlocks full stories.")
+        player.usage?.upgradeMessage ?? String(
+            format: NBLocalization.text("That was a %@ second preview. Premium Archive unlocks full stories."),
+            ListenPreferences.numberString(player.previewLimit ?? ListenUsage.defaultPreviewSeconds))
     }
 
     private func upgradeButton(_ upgrade: ListenPlaybackError.Upgrade) -> some View {

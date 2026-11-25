@@ -33,8 +33,11 @@ import WebKit
         }
         let appDelegate = NewsBlurAppDelegate.shared()
         let isArchiveTier = (appDelegate?.isPremiumArchive ?? false) || (appDelegate?.isPremiumPro ?? false)
+        // ListenStoryBridge.swift labels the pill with the preview length the server last reported.
+        let previewSeconds = player.usage?.previewSeconds ?? ListenUsage.defaultPreviewSeconds
+        let pillText = String(format: NBLocalization.text("%@s preview"), ListenPreferences.numberString(previewSeconds))
         let pill = isArchiveTier ? "" :
-            "<span class=\"NB-listen-pill\">\(escape(NBLocalization.text("30s preview")))</span>"
+            "<span class=\"NB-listen-pill\">\(escape(pillText))</span>"
         if !isArchiveTier {
             classes += " NB-listen-has-pill"
         }

@@ -168,6 +168,10 @@ struct ListenUsage: Equatable {
     }
 
     var isPro: Bool { tier == "pro" }
+
+    /// How long a Free or Premium story preview plays when the server hasn't said yet (apps/listen/usage.py sends
+    /// the real length as `preview_seconds`, and each preview's manifest as `preview.seconds`).
+    static let defaultPreviewSeconds: Double = 60
 }
 
 struct ListenParagraph: Equatable {

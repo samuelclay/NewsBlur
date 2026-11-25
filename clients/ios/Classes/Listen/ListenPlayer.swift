@@ -184,7 +184,7 @@ final class ListenPlayer: NSObject, ObservableObject {
     /// Seconds of audio a preview may play, or nil for full stories.
     var previewLimit: TimeInterval? {
         guard let manifest, manifest.preview.isPreview else { return nil }
-        return manifest.preview.seconds ?? usage?.previewSeconds ?? 30
+        return manifest.preview.seconds ?? usage?.previewSeconds ?? ListenUsage.defaultPreviewSeconds
     }
 
     /// Seconds left in a preview: the preview's limit, or its audio when that's shorter.
