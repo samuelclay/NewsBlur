@@ -23572,6 +23572,320 @@
     }
    ],
    "description": "Rolling 24-hour requests per kind. The poller sets aside the scheduled and one-off pace through month end before budgeting each hour."
+  },
+  {
+   "id": 398,
+   "type": "row",
+   "title": "OAuth applications",
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 847
+   },
+   "panels": []
+  },
+  {
+   "id": 399,
+   "title": "Authenticated requests per minute",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 848,
+    "w": 24,
+    "h": 9
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "rate(newsblur_oauth_requests_total[$__rate_interval]) * 60 * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info",
+     "legendFormat": "{{app_name}} (#{{app_id}})",
+     "instant": false,
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "stacking": {
+       "mode": "normal",
+       "group": "A"
+      },
+      "fillOpacity": 35
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 400,
+   "title": "Applications used in the past 24 hours",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 857,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "newsblur_oauth_applications_active_24h",
+     "legendFormat": "Active applications",
+     "instant": false,
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     }
+    }
+   ]
+  },
+  {
+   "id": 401,
+   "title": "Applications created in the past 24 hours",
+   "type": "timeseries",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 857,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "newsblur_oauth_applications_created_24h",
+     "legendFormat": "New applications",
+     "instant": false,
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     }
+    }
+   ]
+  },
+  {
+   "id": 402,
+   "title": "Requests per application since counting began",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 865,
+    "w": 24,
+    "h": 16
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sort_desc(newsblur_oauth_requests_total * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info)",
+     "legendFormat": "{{app_name}} (#{{app_id}})",
+     "instant": true,
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     }
+    }
+   ],
+   "options": {
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "values": false
+    }
+   }
+  },
+  {
+   "id": 403,
+   "title": "Distinct readers per application over seven UTC days",
+   "type": "bargauge",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 881,
+    "w": 24,
+    "h": 16
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sort_desc(newsblur_oauth_readers_week * ignoring(app_name) group_left(app_name) newsblur_oauth_application_info)",
+     "legendFormat": "{{app_name}} (#{{app_id}})",
+     "instant": true,
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     }
+    }
+   ],
+   "options": {
+    "orientation": "horizontal",
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ],
+     "values": false
+    }
+   },
+   "description": "Estimated unique NewsBlur accounts from today and the six preceding UTC days."
+  },
+  {
+   "id": 404,
+   "title": "Legacy OAuth applications that would be blocked",
+   "type": "table",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "description": "Pre-launch apps that would lose access under Premium Pro enforcement. Requests count authenticated API calls since tracking began. Readers are estimated over the current and previous six UTC days. Apps with no recorded traffic are included.",
+   "gridPos": {
+    "x": 0,
+    "y": 897,
+    "w": 24,
+    "h": 12
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "(max by (app_id, app_name, owner) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_requests_total)) or (max by (app_id, app_name, owner) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)",
+     "format": "table",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "B",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "(max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_readers_week)) or (max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)",
+     "format": "table",
+     "instant": true,
+     "range": false
+    },
+    {
+     "refId": "C",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "((max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * on (app_id) group_left max by (app_id) (newsblur_oauth_last_request_timestamp_seconds)) or (max by (app_id) (newsblur_oauth_legacy_application_needs_pro == 1) * 0)) * 1000",
+     "format": "table",
+     "instant": true,
+     "range": false
+    }
+   ],
+   "transformations": [
+    {
+     "id": "joinByField",
+     "options": {
+      "byField": "app_id",
+      "mode": "outerTabular"
+     }
+    },
+    {
+     "id": "filterFieldsByName",
+     "options": {
+      "include": {
+       "names": [
+        "app_name",
+        "owner",
+        "Value #A",
+        "Value #B",
+        "Value #C",
+        "app_id"
+       ]
+      }
+     }
+    },
+    {
+     "id": "organize",
+     "options": {
+      "indexByName": {
+       "app_name": 0,
+       "owner": 1,
+       "Value #A": 2,
+       "Value #B": 3,
+       "Value #C": 4,
+       "app_id": 5
+      },
+      "renameByName": {
+       "app_name": "Application",
+       "owner": "Owner",
+       "Value #A": "Total requests",
+       "Value #B": "Readers · 7 days",
+       "Value #C": "Last request",
+       "app_id": "App ID"
+      }
+     }
+    }
+   ],
+   "options": {
+    "showHeader": true,
+    "sortBy": [
+     {
+      "displayName": "Total requests",
+      "desc": true
+     }
+    ]
+   },
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "Last request"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "dateTimeAsLocal"
+       },
+       {
+        "id": "mappings",
+        "value": [
+         {
+          "type": "value",
+          "options": {
+           "0": {
+            "text": "No recorded use"
+           }
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ],
  "refresh": "5s",
@@ -23645,6 +23959,6 @@
  "timezone": "",
  "title": "NewsBlur",
  "uid": "T86VjXrG2",
- "version": 131,
+ "version": 133,
  "weekStart": ""
 }

@@ -10,7 +10,7 @@
   <link href="/feed-page-2.xml" rel="next" type="application/atom+xml" />
   
 
-  <updated>2026-11-24T23:42:16-05:00</updated>
+  <updated>2026-11-25T11:47:25-05:00</updated>
   <id>https://blog.newsblur.com/feed.xml</id>
   <title type="html">The NewsBlur Blog</title>
   
@@ -28,7 +28,7 @@ A new sound of an old instrument.
     <updated>2026-11-25T03:00:00-05:00</updated>
     <id>https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth</id>
     <content type="html" xml:base="https://blog.newsblur.com/2026/11/25/connect-your-app-to-newsblur-with-self-serve-oauth/">
-      <![CDATA[<p>For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from <strong>Account → OAuth applications</strong> on the web. You need Premium Pro to run an app. The people who connect to it can use any NewsBlur plan.</p>
+      <![CDATA[<p>For years, if you wanted a “Connect to NewsBlur” button in your app, you had to email me your app’s name and redirect URL. I’d open the admin, register it by hand, and send the credentials back. Now you can do that yourself from <strong>Account → OAuth applications</strong> on the web. You need Premium Pro to register and run a new app. The people who connect to it can use any NewsBlur plan.</p>
 
 <h3 id="what-your-readers-will-see">What your readers will see</h3>
 
@@ -48,7 +48,7 @@ A new sound of an old instrument.
 
 <p><strong>Connected accounts</strong> counts people whose access tokens are still valid. <strong>Active readers</strong> estimates how many different people your app made requests for over the last seven days. If one reader refreshes ten times, that’s ten requests and one reader. You can also see total requests since tracking began and when the last one came in.</p>
 
-<p>Existing apps need an active Premium Pro owner to keep working, too. I’m giving lifetime Premium Pro to the developers of the existing feed readers listed in Goodies so people who use those readers can keep syncing.</p>
+<p>If I registered your app before this launch, it can keep syncing on your current plan for now. I’ve also given lifetime Premium Pro to the developers of the feed readers listed in Goodies.</p>
 
 <p>What are you building with your NewsBlur stories? I’d love to see it on the <a href="https://forum.newsblur.com">NewsBlur forum</a>.</p>
 ]]>

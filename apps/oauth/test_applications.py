@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.html import escape
 from oauth2_provider.models import Application
 
+from apps.oauth.access import SELF_SERVICE_LAUNCH
 from apps.oauth.models import ApplicationWebsite
 from apps.profile.models import Profile
 
@@ -212,6 +213,18 @@ class Test_ApplicationRegistration(TestCase):
         self.assertContains(api.get("/reader/feeds", **bearer), "Premium Pro", status_code=403)
         self.set_pro(premium_expire=timezone.now() + timedelta(days=1))
         self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
+        self.set_pro(premium_expire=timezone.now() - timedelta(seconds=1))
+        # The original launch is an exclusive cutoff, including for previously issued tokens.
+        Application.objects.filter(pk=app.pk).update(created=SELF_SERVICE_LAUNCH)
+        self.assertEqual(api.get("/oauth/user/info/", **bearer).status_code, 403)
+        Application.objects.filter(pk=app.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1))
+        self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
+        self.assertEqual(exchange(authorize()).status_code, 200)
+        refresh = self.client.post(
+            "/account/token/",
+            {**credentials, "grant_type": "refresh_token", "refresh_token": tokens["refresh_token"]},
+        )
+        self.assertEqual(refresh.status_code, 200)
 
 
 class Test_ReaderGrants(TestCase):

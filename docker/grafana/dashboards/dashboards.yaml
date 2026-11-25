@@ -37,7 +37,3 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/postgres_dashboard.json
       foldersFromFilesStructure: true
-  - name: OAuth applications
-    type: file
-    options:
-      path: /etc/grafana/provisioning/dashboards/oauth_dashboard.json
