@@ -2265,6 +2265,9 @@ msgstr "Focus"
 msgid "Focus/hide with color indicators"
 msgstr "Uitlichten/verbergen met kleuraanduidingen"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "De map is verplaatst, maar sommige trainingsregels verwijzen mogelijk nog naar de oude locatie."
+
 msgid "Folder title and photo required"
 msgstr "Maptitel en foto zijn verplicht"
 
@@ -3088,6 +3091,9 @@ msgstr "Ongeldige feed_id"
 
 msgid "Invalid feed_id."
 msgstr "Ongeldige feed_id."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "Het mappad is ongeldig. Kies de map opnieuw."
 
 msgid "Invalid gift tier."
 msgstr "Ongeldig cadeauniveau."
@@ -4579,6 +4585,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - prijzen van NewsBlur"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
 "Premium Archive bewaart voor altijd elk artikel van elke site die je volgt. Je krijgt alles van Premium, "
@@ -5897,6 +5906,9 @@ msgstr "Bedankt!"
 
 msgid "That account doesn't exist."
 msgstr ""
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Deze map is gewijzigd. Vernieuw je feeds en kies de map opnieuw."
 
 msgid "That item isn't playing"
 msgstr "Dit item wordt niet afgespeeld"

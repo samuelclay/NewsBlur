@@ -2089,6 +2089,9 @@ msgstr "聚焦"
 msgid "Focus/hide with color indicators"
 msgstr "使用颜色指示来聚焦/隐藏"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "文件夹已移动，但部分训练规则可能仍指向原来的位置。"
+
 msgid "Folder title and photo required"
 msgstr "必须填写文件夹标题并上传照片"
 
@@ -2827,6 +2830,9 @@ msgstr "feed_id 无效"
 
 msgid "Invalid feed_id."
 msgstr "feed_id 无效。"
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "文件夹路径无效。请重新选择文件夹。"
 
 msgid "Invalid gift tier."
 msgstr "礼品等级无效。"
@@ -4164,6 +4170,9 @@ msgstr "高级归档版（每年 99 美元）可永久归档并搜索所有文�
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "高级归档版 - NewsBlur 价格"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr "高级归档版会永久保存你关注的每个网站上的所有文章。你可以享有高级版的所有功能，此外还包括："
 
@@ -5403,6 +5412,9 @@ msgstr "谢谢！"
 
 msgid "That account doesn't exist."
 msgstr ""
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "此文件夹已更改。请刷新订阅源，然后重新选择此文件夹。"
 
 msgid "That item isn't playing"
 msgstr "该项目未在播放"

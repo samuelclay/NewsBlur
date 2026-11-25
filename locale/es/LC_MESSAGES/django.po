@@ -2272,6 +2272,11 @@ msgstr "Enfoque"
 msgid "Focus/hide with color indicators"
 msgstr "Enfocar/ocultar con indicadores de color"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr ""
+"Se ha movido la carpeta, pero es posible que algunas reglas de entrenamiento sigan usando su ubicación "
+"anterior."
+
 msgid "Folder title and photo required"
 msgstr "Se requieren el título y la foto de la carpeta"
 
@@ -3103,6 +3108,9 @@ msgstr "feed_id no válido"
 
 msgid "Invalid feed_id."
 msgstr "feed_id no válido."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "La ruta de la carpeta no es válida. Vuelve a elegir la carpeta."
 
 msgid "Invalid gift tier."
 msgstr "Nivel de regalo no válido."
@@ -4609,6 +4617,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Precios de NewsBlur"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
 "Premium Archive conserva para siempre todos los artículos de todos los sitios que sigues. Incluye todo lo "
@@ -5926,6 +5937,9 @@ msgstr "¡Gracias!"
 
 msgid "That account doesn't exist."
 msgstr ""
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Esa carpeta ha cambiado. Actualiza tus feeds y vuelve a elegirla."
 
 msgid "That item isn't playing"
 msgstr "Ese elemento no se está reproduciendo"

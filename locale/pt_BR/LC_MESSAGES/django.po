@@ -2266,6 +2266,9 @@ msgstr "Foco"
 msgid "Focus/hide with color indicators"
 msgstr "Colocar em foco/ocultar com indicadores de cor"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "A pasta foi movida, mas algumas regras de treinamento ainda podem usar o local anterior."
+
 msgid "Folder title and photo required"
 msgstr "Título e foto da pasta obrigatórios"
 
@@ -3088,6 +3091,9 @@ msgstr "feed_id inválido"
 
 msgid "Invalid feed_id."
 msgstr "feed_id inválido."
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "O caminho da pasta é inválido. Selecione a pasta novamente."
 
 msgid "Invalid gift tier."
 msgstr "Nível de presente inválido."
@@ -4587,6 +4593,9 @@ msgstr ""
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - Preços do NewsBlur"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
 "O Premium Archive mantém para sempre todos os artigos de todos os sites que você segue. Você recebe tudo do"
@@ -5905,6 +5914,9 @@ msgstr "Obrigado!"
 
 msgid "That account doesn't exist."
 msgstr ""
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "Essa pasta mudou. Atualize seus feeds e selecione a pasta novamente."
 
 msgid "That item isn't playing"
 msgstr "Esse item não está sendo reproduzido"

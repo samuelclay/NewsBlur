@@ -2092,6 +2092,9 @@ msgstr "焦點"
 msgid "Focus/hide with color indicators"
 msgstr "以顏色指示焦點／隱藏"
 
+msgid "Folder moved, but some training rules may still use its old location."
+msgstr "資料夾已移動，但部分訓練規則可能仍指向原本的位置。"
+
 msgid "Folder title and photo required"
 msgstr "必須提供資料夾標題和照片"
 
@@ -2830,6 +2833,9 @@ msgstr "feed_id 無效"
 
 msgid "Invalid feed_id."
 msgstr "feed_id 無效。"
+
+msgid "Invalid folder path. Please choose the folder again."
+msgstr "資料夾路徑無效。請重新選擇資料夾。"
 
 msgid "Invalid gift tier."
 msgstr "禮物方案層級無效。"
@@ -4164,6 +4170,9 @@ msgstr "Premium Archive（每年 $99）提供永久封存並可搜尋的所有�
 msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur 價格"
 
+msgid "Premium Archive Extra"
+msgstr ""
+
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr "Premium Archive 會永久保留你追蹤的每個網站上的所有文章。你可享有 Premium 的所有功能，另外還有："
 
@@ -5401,6 +5410,9 @@ msgstr "謝謝！"
 
 msgid "That account doesn't exist."
 msgstr ""
+
+msgid "That folder has changed. Refresh your feeds and choose it again."
+msgstr "此資料夾已變更。請重新整理訂閱來源，再重新選擇此資料夾。"
 
 msgid "That item isn't playing"
 msgstr "該項目目前未播放"

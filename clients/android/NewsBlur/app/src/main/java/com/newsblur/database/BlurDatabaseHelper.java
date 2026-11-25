@@ -849,6 +849,21 @@ public class BlurDatabaseHelper {
         }
     }
 
+    public void markStoryStarredFromRealtime(@NonNull String hash, boolean starred, long observedAt) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseConstants.STORY_STARRED, starred);
+        if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, observedAt);
+        String selection = DatabaseConstants.STORY_HASH + " = ?";
+        if (starred) {
+            // RealtimeUpdates.kt can echo a local save or repeat an event after the server supplied its date.
+            selection += " AND (" + DatabaseConstants.STORY_STARRED + " IS NOT 1 OR COALESCE("
+                    + DatabaseConstants.STORY_STARRED_DATE + ", 0) = 0)";
+        }
+        synchronized (RW_MUTEX) {
+            dbRW.update(DatabaseConstants.STORY_TABLE, values, selection, new String[]{hash});
+        }
+    }
+
     public void setFeedsActive(@NonNull Set<String> feedIds, boolean active) {
         synchronized (RW_MUTEX) {
             dbRW.beginTransaction();
@@ -1193,7 +1208,8 @@ public class BlurDatabaseHelper {
             String hash,
             @NonNull List<String> highlights,
             @NonNull List<String> userTags,
-            boolean starred
+            boolean starred,
+            long actionTime
     ) {
         // check the story's starting state and the desired state and adjust it as an atom so we
         // know if it truly changed or not and thus whether to update counts
@@ -1227,6 +1243,7 @@ public class BlurDatabaseHelper {
                 // fix the state
                 ContentValues values = new ContentValues();
                 values.put(DatabaseConstants.STORY_STARRED, starred);
+                if (starred) values.put(DatabaseConstants.STORY_STARRED_DATE, actionTime);
                 values.put(DatabaseConstants.STORY_HIGHLIGHTS, TextUtils.join(",", highlights));
                 values.put(DatabaseConstants.STORY_USER_TAGS, TextUtils.join(",", userTags));
                 dbRW.update(DatabaseConstants.STORY_TABLE, values, DatabaseConstants.STORY_HASH + " = ?", new String[]{hash});
@@ -1442,7 +1459,45 @@ public class BlurDatabaseHelper {
     }
 
     @NonNull
-    public Cursor getActiveStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+    public Cursor getStoryListCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
+        if (fs.isUnfilteredSavedList()) {
+            // An open Saved Stories list follows saves and removals made after reading_session was populated.
+            String sql = DatabaseConstants.STORY_QUERY_BASE_1 + DatabaseConstants.STORY_STARRED + " = 1 ORDER BY "
+                    + DatabaseConstants.getSavedStoriesSortOrder(cursorFilters.getStoryOrder());
+            return rawQuery(sql, null, cancellationSignal);
+        }
+
+        return getReadingStoriesCursor(fs, cursorFilters, cancellationSignal);
+    }
+
+    public long prepareSavedReadingSession(@NonNull FeedSet fs, long previousVersion, boolean restoringReader) {
+        if (!fs.isUnfilteredSavedList()) return previousVersion;
+        synchronized (RW_MUTEX) {
+            long version = readingSessionVersion.get();
+            if (previousVersion == version || !isFeedSetReady(fs)) return previousVersion;
+            String insert = "INSERT INTO " + DatabaseConstants.READING_SESSION_TABLE + " (" + DatabaseConstants.READING_SESSION_STORY_HASH + ")"
+                    + " SELECT " + DatabaseConstants.STORY_HASH + " FROM " + DatabaseConstants.STORY_TABLE
+                    + " WHERE " + DatabaseConstants.STORY_STARRED + " = 1";
+            dbRW.beginTransaction();
+            try {
+                if (previousVersion < 0 && !restoringReader) {
+                    // A new reader starts with the list as it is now, including saves and removals since it opened.
+                    dbRW.execSQL("DELETE FROM " + DatabaseConstants.READING_SESSION_TABLE);
+                } else {
+                    // Reading.kt can restore a pager whose open article the reader has since unsaved.
+                    insert += " EXCEPT SELECT " + DatabaseConstants.READING_SESSION_STORY_HASH + " FROM " + DatabaseConstants.READING_SESSION_TABLE;
+                }
+                dbRW.execSQL(insert);
+                dbRW.setTransactionSuccessful();
+            } finally {
+                dbRW.endTransaction();
+            }
+            return version;
+        }
+    }
+
+    @NonNull
+    public Cursor getReadingStoriesCursor(@NonNull FeedSet fs, @NonNull CursorFilters cursorFilters, @NonNull CancellationSignal cancellationSignal) {
         // get the stories for this FS
         Cursor result = getActiveStoriesCursorNoPrep(fs, cursorFilters.getStoryOrder(), cancellationSignal);
         // if the result is blank, try to prime the session table with existing stories, in case we

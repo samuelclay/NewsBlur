@@ -11,14 +11,17 @@ import re
 import threading
 import unicodedata
 from collections import defaultdict
+from contextlib import contextmanager
 
 import mongoengine as mongo
 import redis
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db import models
+from django.db import models, transaction
 from django.template.loader import render_to_string
+from mongoengine.errors import NotUniqueError
+from pymongo import ReadPreference
 
 from apps.analyzer.tasks import EmailPopularityQuery
 from apps.rss_feeds.models import Feed
@@ -355,6 +358,113 @@ class MClassifierFeed(mongo.Document):
         else:
             feed = User.objects.get(pk=self.social_user_id)
         return "%s - %s/%s: (%s) %s" % (user, self.feed_id, self.social_user_id, self.score, feed)
+
+
+@contextmanager
+def classifier_write_lock(user_id):
+    """Serialize training edits across app servers, including first saves where no Mongo row exists."""
+    with transaction.atomic():
+        User.objects.select_for_update().only("pk").get(pk=user_id)
+        yield
+
+
+def matching_classifiers(model, identity):
+    # Older Mongo documents lack fields now supplied by the trainer in views.py.
+    # Include the missing representation only when looking for that field's default.
+    defaults = {
+        "feed_id": 0,
+        "social_user_id": 0,
+        "scope": "feed",
+        "folder_name": "",
+        "is_regex": False,
+        "folder_id": "",
+        "include_images": False,
+    }
+    lookup = identity.copy()
+    for field, default in defaults.items():
+        if field in model._fields and lookup.get(field, default) == default:
+            lookup.pop(field, None)
+            lookup[field + "__in"] = [default, None]
+    return model.objects(**lookup).read_preference(ReadPreference.PRIMARY)
+
+
+def save_classifier_score(model, identity, score):
+    """Apply an explicit trainer choice to every representation of the same rule."""
+    with classifier_write_lock(identity["user_id"]):
+        matches = matching_classifiers(model, identity)
+        if score == 0:
+            matches.delete()
+            return
+
+        # The feed scorer in apps/reader/models.py requires explicit numeric IDs. Prefer the copy
+        # with both IDs already set so normalizing the keeper cannot collide with its own duplicate.
+        ids = list(matches.order_by("-feed_id", "-social_user_id", "id").scalar("id"))
+        if not ids:
+            model.objects.create(**identity, score=score)
+            return
+
+        model.objects(id=ids[0]).update_one(
+            set__feed_id=identity["feed_id"], set__social_user_id=identity["social_user_id"], set__score=score
+        )
+        if len(ids) > 1:
+            model.objects(id__in=ids[1:]).delete()
+
+
+def move_classifier(classifier, location, destination):
+    """Move a rule under the caller's classifier_write_lock, keeping any existing destination rule."""
+    if getattr(classifier, location) == destination:
+        return
+    model = type(classifier)
+    identity = {
+        field: getattr(classifier, field)
+        for field in (
+            "user_id",
+            "feed_id",
+            "social_user_id",
+            "title",
+            "text",
+            "url",
+            "tag",
+            "author",
+            "scope",
+            "folder_name",
+            "is_regex",
+            "prompt",
+            "folder_id",
+            "include_images",
+        )
+        if field in model._fields
+    }
+    if "social_user_id" in identity:
+        identity["social_user_id"] = classifier.social_user_id or 0
+    identity[location] = destination
+    if matching_classifiers(model, identity).only("id").first():
+        if isinstance(classifier, MClassifierPrompt):
+            MClassifierPrompt.invalidate_cache(classifier.user_id, str(classifier.pk))
+        classifier.delete()
+        return
+
+    setattr(classifier, location, destination)
+    if "social_user_id" in identity:
+        classifier.social_user_id = identity["social_user_id"]
+    try:
+        classifier.save()
+    except NotUniqueError:
+        # A narrower legacy Mongo index can reject two distinct rules (e.g. plain and regex authors).
+        # Leave the source rule intact rather than deleting a different preference in models.py.
+        logging.info(
+            " ---> Could not move %s %s due to a conflicting unique index" % (model.__name__, classifier.pk)
+        )
+
+
+def move_feed_classifiers(user_id, old_feed_id, new_feed_id):
+    with classifier_write_lock(user_id):
+        for model in (MClassifierAuthor, MClassifierFeed, MClassifierTag, MClassifierText, MClassifierTitle):
+            rules = model.objects(user_id=user_id, feed_id=old_feed_id).read_preference(
+                ReadPreference.PRIMARY
+            )
+            for rule in rules:
+                move_classifier(rule, "feed_id", new_feed_id)
 
 
 def classifier_matches_story_feed(classifier, story_feed_id, folder_feed_ids=None):
@@ -896,6 +1006,46 @@ class MClassifierPrompt(mongo.Document):
 
     CACHE_KEY_PREFIX = "AIC"
     CACHE_TTL_DEFAULT = settings.DAYS_OF_UNREAD * 24 * 60 * 60  # 30 days in seconds
+
+    @classmethod
+    def set_training(cls, user_id, feed_id, prompt, include_images, classifier_type, folder_id=""):
+        identity = dict(
+            user_id=user_id,
+            feed_id=feed_id,
+            folder_id=folder_id,
+            prompt=prompt,
+            include_images=include_images,
+        )
+        with classifier_write_lock(user_id):
+            matches = list(matching_classifiers(cls, identity).order_by("id"))
+            if classifier_type is not None:
+                if not matches:
+                    cls.objects.create(**identity, classifier_type=classifier_type)
+                    return
+                keeper = matches.pop(0)
+                if keeper.classifier_type != classifier_type:
+                    keeper.update(set__classifier_type=classifier_type)
+                    cls.invalidate_cache(user_id, str(keeper.pk))
+            cls._delete_training_rules(matches)
+
+    @classmethod
+    def delete_training_by_id(cls, user_id, prompt_id):
+        with classifier_write_lock(user_id):
+            rule = cls.objects.read_preference(ReadPreference.PRIMARY).get(id=prompt_id, user_id=user_id)
+            identity = dict(
+                user_id=user_id,
+                feed_id=rule.feed_id,
+                folder_id=rule.folder_id,
+                prompt=rule.prompt,
+                include_images=rule.include_images,
+            )
+            cls._delete_training_rules(matching_classifiers(cls, identity))
+
+    @classmethod
+    def _delete_training_rules(cls, rules):
+        for rule in rules:
+            cls.invalidate_cache(rule.user_id, str(rule.pk))
+            rule.delete()
 
     def __str__(self):
         user = User.objects.get(pk=self.user_id)
