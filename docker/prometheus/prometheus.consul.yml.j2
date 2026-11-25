@@ -132,6 +132,17 @@ scrape_configs:
       relabel_configs:
         - target_label: instance
           replacement: '{{ monitor_server }}:443'
+    - job_name: 'oauth_usage'
+      static_configs:
+        - targets: ['{{ monitor_server }}']
+      authorization:
+        type: OAuthMetrics
+        credentials_file: /etc/prometheus/oauth-metrics-token
+      metrics_path: /monitor/oauth-usage
+      scheme: https
+      relabel_configs:
+        - target_label: instance
+          replacement: '{{ monitor_server }}:443'
     - job_name: 'llm_costs'
       static_configs:
         - targets: ['{{ monitor_server }}']

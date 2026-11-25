@@ -1,0 +1,143 @@
+{
+  "uid": "newsblur-oauth",
+  "title": "OAuth applications",
+  "schemaVersion": 38,
+  "refresh": "1m",
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Authenticated requests per minute",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(newsblur_oauth_requests_total[$__rate_interval]) * 60",
+          "legendFormat": "{{app_name}} (#{{app_id}})",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "stacking": {
+              "mode": "normal",
+              "group": "A"
+            },
+            "fillOpacity": 35
+          }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Applications used in the past 24 hours",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "newsblur_oauth_applications_active_24h",
+          "legendFormat": "Active applications",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Applications created in the past 24 hours",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "newsblur_oauth_applications_created_24h",
+          "legendFormat": "New applications",
+          "instant": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Requests per application since counting began",
+      "type": "bargauge",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 17,
+        "w": 24,
+        "h": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sort_desc(newsblur_oauth_requests_total)",
+          "legendFormat": "{{app_name}} (#{{app_id}})",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Distinct readers per application over seven UTC days",
+      "type": "bargauge",
+      "datasource": "Prometheus",
+      "gridPos": {
+        "x": 0,
+        "y": 33,
+        "w": 24,
+        "h": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sort_desc(newsblur_oauth_readers_week)",
+          "legendFormat": "{{app_name}} (#{{app_id}})",
+          "instant": true
+        }
+      ],
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      },
+      "description": "Estimated unique NewsBlur accounts from today and the six preceding UTC days."
+    }
+  ]
+}

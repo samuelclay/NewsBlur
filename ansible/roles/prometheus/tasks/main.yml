@@ -6,6 +6,14 @@
     version: main
     force: yes
 
+- name: Install OAuth metrics scrape credential
+  become: yes
+  copy:
+    content: "{{ lookup('ansible.builtin.password', '/srv/secrets-newsblur/keys/oauth-metrics-token length=48 chars=ascii_letters,digits') }}"
+    dest: /etc/newsblur-oauth-metrics-token
+    mode: "0600"
+  no_log: true
+
 - name: Template file for prometheus
   vars:
     monitor_server: "{{ 'staging.newsblur.com' if disable_consul_services_ie_staging is defined else 'newsblur.com' }}"
@@ -45,4 +53,5 @@
     volumes:
       - /srv/newsblur/docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - /srv/newsblur/docker/prometheus/rules.yml:/etc/prometheus/rules.yml
+      - /etc/newsblur-oauth-metrics-token:/etc/prometheus/oauth-metrics-token:ro
       - /mnt/metrics/prometheus_data:/prometheus
