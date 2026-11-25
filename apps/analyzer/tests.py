@@ -1,7 +1,10 @@
 import datetime
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User
+from django.db import connections
 from django.test import TestCase, TransactionTestCase
 from django.test.client import Client
 from django.urls import reverse
@@ -56,6 +59,44 @@ class Test_Classifiers(TransactionTestCase):
         MClassifierTag.objects(user_id=self.user.pk).delete()
         MClassifierFeed.objects(user_id=self.user.pk).delete()
         MClassifierUrl.objects(user_id=self.user.pk).delete()
+        MClassifierPrompt.objects(user_id=self.user.pk).delete()
+
+    def test_changing_prompt_opinion_keeps_one_rule_and_expires_its_old_scores(self):
+        self.client.force_login(self.user)
+        params = {"feed_id": self.feed.pk, "prompt": "holiday deals"}
+        added = self.client.post("/classifier/save_prompt", dict(params, classifier_type="focus"))
+        prompt_id = json.decode(added.content)["prompt_classifiers"][0]["id"]
+        MClassifierPrompt.set_cached_scores(self.user.pk, prompt_id, self.feed.pk, {"1:holiday": 1})
+        self.addCleanup(MClassifierPrompt.invalidate_cache, self.user.pk, prompt_id, [self.feed.pk])
+        self.assertEqual(
+            MClassifierPrompt.get_cached_scores(self.user.pk, prompt_id, self.feed.pk, ["1:holiday"]),
+            {"1:holiday": 1},
+        )
+
+        updated = self.client.post("/classifier/save_prompt", dict(params, classifier_type="hidden"))
+
+        prompts = json.decode(updated.content)["prompt_classifiers"]
+        self.assertEqual([(p["id"], p["classifier_type"]) for p in prompts], [(prompt_id, "hidden")])
+        self.assertEqual(
+            MClassifierPrompt.get_cached_scores(self.user.pk, prompt_id, self.feed.pk, ["1:holiday"]), {}
+        )
+
+    def test_deleting_prompt_by_id_removes_only_equivalent_training(self):
+        self.client.force_login(self.user)
+        prompts = MClassifierPrompt._get_collection()
+        identity = dict(user_id=self.user.pk, feed_id=0, prompt="holiday deals")
+        legacy, _, folder, image = prompts.insert_many(
+            [
+                dict(identity, classifier_type="focus"),
+                dict(identity, folder_id="", include_images=False, classifier_type="hidden"),
+                dict(identity, folder_id="Shopping", include_images=False, classifier_type="hidden"),
+                dict(identity, folder_id="", include_images=True, classifier_type="focus"),
+            ]
+        ).inserted_ids
+
+        self.client.post("/classifier/save_prompt", {"action": "delete", "prompt_id": str(legacy)})
+
+        self.assertEqual({p["_id"] for p in prompts.find(identity)}, {folder, image})
 
     def test_create_classifier_title(self):
         classifier = MClassifierTitle.objects.create(
@@ -1463,6 +1504,136 @@ class Test_Classifiers(TransactionTestCase):
         self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "remove_like_title": "old phrase"})
 
         self.assertEqual(MClassifierTitle.objects(user_id=self.user.pk, title="old phrase").count(), 0)
+
+    def test_story_trainer_reconciles_conflicting_legacy_titles(self):
+        identity = {
+            "user_id": self.user.pk,
+            "feed_id": self.feed.pk,
+            "social_user_id": 0,
+            "title": "Black Friday",
+        }
+        titles = MClassifierTitle._get_collection()
+        titles.insert_many([dict(identity, score=1), dict(identity, score=-1)])
+        self.client.force_login(self.user)
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "dislike_title": "Black Friday"})
+
+        self.assertEqual([doc["score"] for doc in titles.find(identity)], [-1])
+
+    def test_retraining_duplicate_feed_ratings_keeps_the_new_rating_visible(self):
+        identity = {"user_id": self.user.pk, "feed_id": self.feed.pk}
+        feeds = MClassifierFeed._get_collection()
+        feeds.insert_many([dict(identity, score=1), dict(identity, social_user_id=0, score=-1)])
+        self.client.force_login(self.user)
+
+        self.client.post("/classifier/save/", {"feed_id": self.feed.pk, "super_dislike_feed": self.feed.pk})
+
+        self.assertEqual(
+            get_classifiers_for_user(self.user, feed_id=self.feed.pk)["feeds"], {self.feed.pk: -2}
+        )
+        self.assertEqual(feeds.count_documents(identity), 1)
+
+    def test_manage_training_removes_legacy_and_current_copies_of_a_title(self):
+        identity = {
+            "user_id": self.user.pk,
+            "feed_id": self.feed.pk,
+            "social_user_id": 0,
+            "title": "Black Friday",
+        }
+        titles = MClassifierTitle._get_collection()
+        titles.insert_many(
+            [
+                dict(identity, score=1),
+                dict(identity, score=-1, is_regex=False, scope="feed", folder_name=""),
+                dict(identity, score=1, is_regex=True, scope="feed", folder_name=""),
+            ]
+        )
+        self.client.force_login(self.user)
+
+        self.client.post(
+            "/classifier/save_all",
+            json.encode({"classifiers": {str(self.feed.pk): {"remove_dislike_title": ["Black Friday"]}}}),
+            content_type="application/json",
+        )
+
+        self.assertEqual([(doc.get("is_regex"), doc["score"]) for doc in titles.find(identity)], [(True, 1)])
+
+    def test_concurrent_first_saves_leave_one_title_rule(self):
+        self.client.force_login(self.user)
+        worker_count = 8
+        start = Barrier(worker_count)
+
+        def train_title(worker):
+            client = Client()
+            client.cookies = self.client.cookies.copy()
+            opinion = "like_title" if worker % 2 else "dislike_title"
+            try:
+                start.wait(timeout=15)
+                response = client.post(
+                    "/classifier/save/", {"feed_id": self.feed.pk, opinion: "Black Friday"}
+                )
+                return json.decode(response.content)["code"]
+            finally:
+                connections.close_all()
+
+        with ThreadPoolExecutor(max_workers=worker_count) as workers:
+            self.assertEqual(list(workers.map(train_title, range(worker_count))), [0] * worker_count)
+
+        rules = MClassifierTitle.objects(user_id=self.user.pk, feed_id=self.feed.pk, title="Black Friday")
+        self.assertEqual(rules.count(), 1)
+
+    def test_merging_feeds_keeps_destination_training_and_moves_distinct_titles(self):
+        destination = Feed.objects.exclude(pk=self.feed.pk).first()
+        UserSubscription.objects.create(user=self.user, feed=destination)
+        training = MClassifierTitle.objects(user_id=self.user.pk)
+        for feed, title, score in [
+            (self.feed, "Black Friday", 1),
+            (destination, "Black Friday", -1),
+            (self.feed, "new albums", 1),
+        ]:
+            MClassifierTitle.objects.create(
+                user_id=self.user.pk, social_user_id=0, feed_id=feed.pk, title=title, score=score
+            )
+
+        UserSubscription.objects.get(user=self.user, feed=self.feed).switch_feed(destination, self.feed)
+
+        self.assertEqual(
+            sorted((rule.feed_id, rule.title, rule.score) for rule in training),
+            [(destination.pk, "Black Friday", -1), (destination.pk, "new albums", 1)],
+        )
+
+    def test_renaming_folder_keeps_existing_training_at_the_destination(self):
+        self.client.force_login(self.user)
+        UserSubscriptionFolders.objects.update_or_create(
+            user=self.user, defaults={"folders": json.encode([{"Offers": [self.feed.pk]}, {"Deals": []}])}
+        )
+        for folder, title, score in [
+            ("Offers", "Black Friday", 1),
+            ("Deals", "Black Friday", -1),
+            ("Offers", "new albums", 1),
+        ]:
+            MClassifierTitle.objects.create(
+                user_id=self.user.pk,
+                feed_id=0,
+                social_user_id=0,
+                scope="folder",
+                folder_name=folder,
+                title=title,
+                score=score,
+            )
+
+        response = self.client.post(
+            reverse("rename-folder"), {"folder_name": "Offers", "new_folder_name": "Deals", "in_folder": ""}
+        )
+
+        self.assertEqual(json.decode(response.content)["code"], 1)
+        self.assertEqual(
+            sorted(
+                (rule.folder_name, rule.title, rule.score)
+                for rule in MClassifierTitle.objects(user_id=self.user.pk)
+            ),
+            [("Deals", "Black Friday", -1), ("Deals", "new albums", 1)],
+        )
 
     def test_bulk_save_applies_and_removes_super_dislikes(self):
         """

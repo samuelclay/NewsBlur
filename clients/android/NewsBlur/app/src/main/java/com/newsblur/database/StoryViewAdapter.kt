@@ -473,7 +473,9 @@ class StoryViewAdapter(
         skip: Boolean,
         pinnedStoryHashes: Set<String>,
     ): List<Story> {
-        if (!skip) return incoming
+        // ItemSetFragment.java enables backfill suppression on pause. Saved Stories is ordered by save time,
+        // so a publication-date cutoff can hide a new save indefinitely after returning from the reader.
+        if (!skip || fs?.isUnfilteredSavedList == true) return incoming
 
         val currentHashes = getStoryHashes(stories)
         // StoryViewAdapter.kt measures the list's date range without the stories NewStoriesPill.kt pinned to

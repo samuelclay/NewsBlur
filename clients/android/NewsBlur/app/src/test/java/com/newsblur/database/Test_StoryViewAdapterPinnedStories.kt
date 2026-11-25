@@ -1,6 +1,7 @@
 package com.newsblur.database
 
 import com.newsblur.domain.Story
+import com.newsblur.util.FeedSet
 import com.newsblur.util.StoryOrder
 import io.mockk.every
 import io.mockk.mockk
@@ -24,6 +25,17 @@ class Test_StoryViewAdapterPinnedStories {
         assertEquals(listed.map { it.storyHash } + nextPage.storyHash, shown.map { it.storyHash })
     }
 
+    @Test
+    fun test_allSavedShowsANewSaveAfterReturningFromTheReader() {
+        val previous = story("1:previous", 3_000)
+        val incoming = story("1:just-saved", 4_000)
+        val adapter = adapter(listOf(previous), StoryOrder.NEWEST, FeedSet.allSaved())
+
+        val shown = skipBackfill(adapter, listOf(incoming, previous), emptySet())
+
+        assertEquals(listOf(incoming.storyHash, previous.storyHash), shown.map { it.storyHash })
+    }
+
     private fun story(
         hash: String,
         timestamp: Long,
@@ -36,6 +48,7 @@ class Test_StoryViewAdapterPinnedStories {
     private fun adapter(
         listed: List<Story>,
         order: StoryOrder,
+        feedSet: FeedSet = FeedSet.singleFeed("1"),
     ): StoryViewAdapter {
         val adapter = mockk<StoryViewAdapter>(relaxed = true)
         fun field(
@@ -46,6 +59,7 @@ class Test_StoryViewAdapterPinnedStories {
         }
         field("stories", listed.toMutableList())
         field("storyOrder", order)
+        field("fs", feedSet)
         every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>(), any<Set<String>>()) } answers { callOriginal() }
         return adapter
     }

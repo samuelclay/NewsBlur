@@ -1,6 +1,7 @@
 package com.newsblur.realtime
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.text.TextUtils
 import com.newsblur.database.BlurDatabase
@@ -20,6 +21,8 @@ import com.newsblur.service.DefaultSyncServiceState
 import com.newsblur.service.NbSyncManager.UPDATE_STORY
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.FeedSet
+import com.newsblur.util.ReadingAction
+import com.newsblur.util.doLocal
 import com.newsblur.util.ReadFilter
 import com.newsblur.util.StateFilter
 import com.newsblur.util.StoryOrder
@@ -46,6 +49,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.sql.DriverManager
 import kotlin.random.Random
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -659,6 +663,72 @@ class Test_RealtimeUpdates {
                 verify(exactly = 3) { sqlite.insert(DatabaseConstants.READING_SESSION_TABLE, any(), any()) }
             }
         }
+
+    @Test
+    fun test_offline_save_and_realtime_save_sort_by_save_time_even_after_replay() = runTest {
+        withSessionDatabase { helper, sqlite ->
+            DriverManager.getConnection("jdbc:sqlite::memory:").use { db ->
+                db.createStatement().use { sql ->
+                    sql.execute("CREATE TABLE stories (story_hash TEXT, starred INTEGER, starred_date INTEGER, highlights TEXT, user_tags TEXT)")
+                    sql.execute("INSERT INTO stories VALUES ('1:old',1,10,'',''),('1:local',0,0,'',''),('1:remote',0,0,'','')")
+                }
+                // Exercise ReadingAction.kt and RealtimeUpdates.kt against the same saved rows and SQLite ordering.
+                val values = mutableMapOf<String, Any>()
+                every { anyConstructed<ContentValues>().put(any<String>(), any<String>()) } answers { values[firstArg()] = secondArg<String>() }
+                every { anyConstructed<ContentValues>().put(any<String>(), any<Boolean>()) } answers { values[firstArg()] = secondArg<Boolean>() }
+                every { anyConstructed<ContentValues>().put(any<String>(), any<Long>()) } answers { values[firstArg()] = secondArg<Long>() }
+                every { TextUtils.join(any(), any<Iterable<*>>()) } answers { secondArg<Iterable<*>>().joinToString(",") }
+                every { sqlite.update("stories", any(), any(), any()) } answers {
+                    db.prepareStatement("UPDATE stories SET ${values.keys.joinToString { "$it=?" }} WHERE ${thirdArg<String>()}").use { update ->
+                        (values.values + arg<Array<String>>(3).toList()).forEachIndexed { i, v -> update.setObject(i + 1, v) }
+                        values.clear()
+                        update.executeUpdate()
+                    }
+                }
+                every { sqlite.query("stories", any(), any(), any(), any(), any(), any()) } answers {
+                    db.prepareStatement("SELECT starred FROM stories WHERE story_hash=?").use { query ->
+                        query.setString(1, arg<Array<String>>(3).single())
+                        query.executeQuery().use { rows ->
+                            check(rows.next())
+                            val starred = rows.getInt(1)
+                            mockk<Cursor>(relaxed = true) {
+                                every { moveToFirst() } returns true
+                                every { getInt(0) } returns starred
+                            }
+                        }
+                    }
+                }
+                fun hashesInSavedOrder(savedOnly: Boolean = true): List<String> =
+                    db.createStatement().use { query ->
+                        val order = DatabaseConstants.getSavedStoriesSortOrder(StoryOrder.NEWEST)
+                        val filter = if (savedOnly) " WHERE starred=1" else ""
+                        query.executeQuery("SELECT story_hash FROM stories$filter ORDER BY $order").use { rows ->
+                            buildList { while (rows.next()) add(rows.getString(1)) }
+                        }
+                    }
+
+                val realtime = realtime(dbHelper = helper)
+                val localSave = ReadingAction.SaveStory("1:local", emptyList(), emptyList(), time = EPOCH - 1_000)
+                localSave.doLocal(helper, prefs)
+                assertEquals(listOf("1:local", "1:old"), hashesInSavedOrder())
+                realtime.send("user:update", "sam", "story:starred:1:remote")
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder())
+
+                // A sync replay and socket echo of the first save must keep its original place.
+                localSave.doLocal(helper, prefs, isFollowup = true)
+                realtime.send("user:update", "sam", "story:starred:1:local")
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder())
+
+                ReadingAction.UnsaveStory("1:local").doLocal(helper, prefs)
+                assertEquals(listOf("1:remote", "1:old"), hashesInSavedOrder())
+                realtime.send("user:update", "sam", "story:unstarred:1:local")
+                // The reader's existing session still has this article; its neighbours must keep their positions.
+                assertEquals(listOf("1:remote", "1:local", "1:old"), hashesInSavedOrder(savedOnly = false))
+                ReadingAction.SaveStory("1:local", emptyList(), emptyList(), time = EPOCH + 1_000).doLocal(helper, prefs)
+                assertEquals(listOf("1:local", "1:remote", "1:old"), hashesInSavedOrder())
+            }
+        }
+    }
 
     // FeedUtils.kt's new reading session for a list it wasn't showing.
     private fun openList(

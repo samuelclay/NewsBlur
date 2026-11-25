@@ -307,6 +307,10 @@ public class FeedSet implements Serializable {
         return ((savedTags != null) && (savedTags.size() < 1));
     }
 
+    public boolean isUnfilteredSavedList() {
+        return isAllSaved() && (searchQuery == null || searchQuery.isEmpty());
+    }
+
     public boolean isSingleSavedTag() {
         return ((savedTags != null) && (savedTags.size() == 1));
     }

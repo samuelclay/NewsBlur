@@ -52,8 +52,10 @@ from django.utils.translation import gettext, gettext_lazy, ngettext
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from mongoengine.queryset import NotUniqueError, OperationError
+from pymongo import ReadPreference
 
 from apps.analyzer.models import (
+    SCOPED_CLASSIFIER_CLASSES,
     MClassifierAuthor,
     MClassifierFeed,
     MClassifierPrompt,
@@ -72,8 +74,10 @@ from apps.analyzer.models import (
     apply_classifier_url_regex,
     apply_classifier_urls,
     classifier_title_matches,
+    classifier_write_lock,
     get_classifiers_for_user,
     load_scoped_classifiers,
+    move_classifier,
     sort_classifiers_by_feed,
 )
 from apps.notifications.models import MUserFeedNotification
@@ -4319,24 +4323,17 @@ def _find_full_folder_path(flat_folders, folder_leaf_name, parent_leaf_name):
 
 
 def _update_classifiers_for_folder_path_change(user_id, old_path, new_path):
-    """Update folder-scoped classifiers when a folder's full path changes (move or rename).
-
-    Updates the moved/renamed folder itself and all of its subfolders.
-    """
-    # Update standard classifiers (exact match on the folder itself)
-    for Cls in [MClassifierTitle, MClassifierText, MClassifierUrl, MClassifierAuthor, MClassifierTag]:
-        Cls.objects(user_id=user_id, scope="folder", folder_name=old_path).update(folder_name=new_path)
-        # Update subfolder classifiers (paths starting with old_path + " - ")
-        old_prefix = old_path + " - "
-        for classifier in Cls.objects(user_id=user_id, scope="folder", folder_name__startswith=old_prefix):
-            classifier.folder_name = new_path + classifier.folder_name[len(old_path) :]
-            classifier.save()
-    # Update prompt classifiers (use folder_id instead of folder_name)
-    MClassifierPrompt.objects(user_id=user_id, folder_id=old_path).update(folder_id=new_path)
-    old_prefix = old_path + " - "
-    for prompt in MClassifierPrompt.objects(user_id=user_id, folder_id__startswith=old_prefix):
-        prompt.folder_id = new_path + prompt.folder_id[len(old_path) :]
-        prompt.save()
+    with classifier_write_lock(user_id):
+        for model in [*SCOPED_CLASSIFIER_CLASSES, MClassifierPrompt]:
+            field = "folder_id" if model is MClassifierPrompt else "folder_name"
+            lookup = {"user_id": user_id, field + "__startswith": old_path}
+            if model is not MClassifierPrompt:
+                lookup["scope"] = "folder"
+            rules = model.objects(**lookup).read_preference(ReadPreference.PRIMARY)
+            for rule in list(rules):
+                folder = getattr(rule, field)
+                if folder == old_path or folder.startswith(old_path + " - "):
+                    move_classifier(rule, field, new_path + folder[len(old_path) :])
 
 
 @ajax_login_required

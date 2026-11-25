@@ -23,7 +23,6 @@ from django.core.cache import cache
 from django.db import IntegrityError, models, transaction
 from django.db.models import Count, Q
 from django.template.defaultfilters import slugify
-from mongoengine.queryset import NotUniqueError, OperationError
 from redis.exceptions import LockError
 
 from apps.analyzer.models import (
@@ -43,6 +42,7 @@ from apps.analyzer.models import (
     apply_classifier_titles,
     apply_classifier_url_regex,
     apply_classifier_urls,
+    move_feed_classifiers,
 )
 from apps.analyzer.tfidf import tfidf
 from apps.reader.managers import UserSubscriptionManager
@@ -1599,24 +1599,7 @@ class UserSubscription(models.Model):
 
             # Move classifiers
             if old_feed_id:
-                classifier_count = 0
-                for classifier_type in (
-                    MClassifierAuthor,
-                    MClassifierFeed,
-                    MClassifierTag,
-                    MClassifierText,
-                    MClassifierTitle,
-                ):
-                    classifiers = classifier_type.objects.filter(user_id=user_id, feed_id=old_feed_id)
-                    classifier_count += classifiers.count()
-                    for classifier in classifiers:
-                        classifier.feed_id = new_feed_id
-                        try:
-                            classifier.save()
-                        except NotUniqueError:
-                            continue
-                    if classifier_count:
-                        print(" Moved %s classifiers for %s" % (classifier_count, user.username))
+                move_feed_classifiers(user_id, old_feed_id, new_feed_id)
 
     def trim_read_stories(self, r=None):
         if not r:
@@ -2383,26 +2366,7 @@ class UserSubscription(models.Model):
         RUserStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk, new_feed_id=new_feed.pk)
         RUserUnreadStory.switch_feed(user_id=self.user_id, old_feed_id=old_feed.pk, new_feed_id=new_feed.pk)
 
-        def switch_feed_for_classifier(model):
-            duplicates = model.objects(feed_id=old_feed.pk, user_id=self.user_id)
-            if duplicates.count():
-                logging.info(" ---> Switching %s %s" % (duplicates.count(), model))
-            for duplicate in duplicates:
-                duplicate.feed_id = new_feed.pk
-                if duplicate.social_user_id is None:
-                    duplicate.social_user_id = 0
-                try:
-                    duplicate.save()
-                    pass
-                except (IntegrityError, OperationError):
-                    logging.info("      !!!!> %s already exists" % duplicate)
-                    duplicate.delete()
-
-        switch_feed_for_classifier(MClassifierTitle)
-        switch_feed_for_classifier(MClassifierAuthor)
-        switch_feed_for_classifier(MClassifierFeed)
-        switch_feed_for_classifier(MClassifierTag)
-        switch_feed_for_classifier(MClassifierText)
+        move_feed_classifiers(self.user_id, old_feed.pk, new_feed.pk)
 
         # Folders first, then the subscription row: if the merge stops between the two, the
         # reader is still found under the old feed on the next run and the rewrite repeats

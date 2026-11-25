@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CancellationSignal
+import android.os.OperationCanceledException
 import android.text.TextUtils
 import android.view.View
 import android.widget.RemoteViews
@@ -193,6 +194,9 @@ class WidgetRemoteViewsFactory(
                 }
             } catch (_: TimeoutCancellationException) {
                 Log.d(this.javaClass.name, "onDataSetChanged - timeout")
+            } catch (cancelled: OperationCanceledException) {
+                // onDestroy() can cancel the feed cursor while the launcher is refreshing its rows.
+                if (!cancellationSignal.isCanceled) throw cancelled
             } catch (_: InterruptedException) {
                 // WidgetRemoteViewsFactory.kt runs on a launcher worker that can be cancelled.
                 Thread.currentThread().interrupt()

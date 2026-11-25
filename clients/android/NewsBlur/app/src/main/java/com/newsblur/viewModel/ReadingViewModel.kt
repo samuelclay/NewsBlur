@@ -1,7 +1,7 @@
 package com.newsblur.viewModel
 
 import android.os.CancellationSignal
-import android.os.OperationCanceledException
+import androidx.annotation.MainThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,70 +13,91 @@ import com.newsblur.util.CursorFilters
 import com.newsblur.util.FeedSet
 import com.newsblur.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicLong
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import javax.inject.Inject
 
 @HiltViewModel
 class ReadingViewModel
-    @Inject
-    constructor(
+    internal constructor(
         private val dbHelper: BlurDatabaseHelper,
+        private val queryDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
-        private val cancellationSignal = CancellationSignal()
+        @Inject
+        constructor(dbHelper: BlurDatabaseHelper) : this(dbHelper, Dispatchers.IO)
 
         private val _activeStories = MutableLiveData<StoryBatch>()
         val activeStories: LiveData<StoryBatch> = _activeStories
 
-        private val loadSeq = AtomicLong(0)
+        private var loadSeq = 0L
+        private var preparedSavedSession = -1L
+        private val loader =
+            LatestStoryLoadRunner(
+                scope = viewModelScope,
+                queryDispatcher = queryDispatcher,
+                load = ::readStories,
+                cancel = { request: LoadRequest -> request.signal.cancel() },
+                publish = { batch: StoryBatch -> _activeStories.value = batch },
+                sameQuery = { first, second -> first.feedSet == second.feedSet && first.filters == second.filters },
+                onError = { error -> Log.e(javaClass.name, "Caught ${error.javaClass.name} in loadActiveStories.", error) },
+            )
 
+        @MainThread
         fun loadStories(
             fs: FeedSet,
             cursorFilters: CursorFilters,
+            restoringReader: Boolean = false,
         ) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val currentLoadId = loadSeq.incrementAndGet()
-                try {
-                    dbHelper.getActiveStoriesCursor(fs, cursorFilters, cancellationSignal).use { c ->
-                        val stories = mutableListOf<Story>()
-                        val feedIds = mutableSetOf<String>()
-                        var indexOfLastUnread = -1
-                        if (c.moveToFirst()) {
-                            var pos = 0
-                            do {
-                                val s = Story.fromCursor(c)
-                                s.bindExternValues(c)
-                                stories.add(s)
-                                feedIds.add(s.feedId)
-                                if (indexOfLastUnread == -1 && !s.read) indexOfLastUnread = pos
-                                pos++
-                            } while (c.moveToNext())
-                        }
+            loader.submit(
+                LoadRequest(
+                    feedSet = FeedSet.fromCompactSerial(fs.toCompactSerial()),
+                    filters = cursorFilters,
+                    restoringReader = restoringReader,
+                    signal = CancellationSignal(),
+                    loadId = ++loadSeq,
+                ),
+            )
+        }
 
-                        val classifiers = feedIds.associateWith { id -> dbHelper.getClassifierForFeed(id) }
-
-                        _activeStories.postValue(
-                            StoryBatch(
-                                stories = stories,
-                                indexOfLastUnread = indexOfLastUnread,
-                                loadId = currentLoadId,
-                                classifiers = classifiers,
-                            ),
-                        )
-                    }
-                } catch (e: OperationCanceledException) {
-                    Log.d(this.javaClass.name, "Load canceled.")
-                } catch (e: Exception) {
-                    Log.e(this.javaClass.name, "Caught ${e.javaClass.name} in loadActiveStories.", e)
+        private suspend fun readStories(request: LoadRequest): StoryBatch {
+            val context = currentCoroutineContext()
+            val stories = mutableListOf<Story>()
+            val feedIds = mutableSetOf<String>()
+            var indexOfLastUnread = -1
+            preparedSavedSession = dbHelper.prepareSavedReadingSession(request.feedSet, preparedSavedSession, request.restoringReader)
+            dbHelper.getReadingStoriesCursor(request.feedSet, request.filters, request.signal).use { cursor ->
+                if (cursor.moveToFirst()) {
+                    do {
+                        context.ensureActive()
+                        val story = Story.fromCursor(cursor)
+                        story.bindExternValues(cursor)
+                        stories.add(story)
+                        feedIds.add(story.feedId)
+                        if (indexOfLastUnread == -1 && !story.read) indexOfLastUnread = stories.lastIndex
+                    } while (cursor.moveToNext())
                 }
             }
+            val classifiers = feedIds.associateWith { feedId ->
+                context.ensureActive()
+                dbHelper.getClassifierForFeed(feedId)
+            }
+            return StoryBatch(stories, indexOfLastUnread, request.loadId, classifiers)
         }
 
         override fun onCleared() {
-            cancellationSignal.cancel()
+            loader.close()
             super.onCleared()
         }
+
+        private data class LoadRequest(
+            val feedSet: FeedSet,
+            val filters: CursorFilters,
+            val restoringReader: Boolean,
+            val signal: CancellationSignal,
+            val loadId: Long,
+        )
 
         data class StoryBatch(
             val stories: List<Story>,

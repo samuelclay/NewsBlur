@@ -74,7 +74,7 @@ class StoriesViewModel
             val context = currentCoroutineContext()
             // StoryViewAdapter.kt measures the list's dates without the stories NewStoriesPill.kt pinned to its edge.
             val pinnedStoryHashes = dbHelper.getPinnedSessionStoryHashes()
-            return dbHelper.getActiveStoriesCursor(request.feedSet, request.cursorFilters, request.cancellationSignal).use { cursor ->
+            return dbHelper.getStoryListCursor(request.feedSet, request.cursorFilters, request.cancellationSignal).use { cursor ->
                 val stories = mutableListOf<Story>()
                 var indexOfLastUnread = -1
                 if (cursor.moveToFirst()) {

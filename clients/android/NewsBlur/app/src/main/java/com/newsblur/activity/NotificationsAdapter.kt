@@ -42,7 +42,8 @@ class NotificationsAdapter(
     fun refreshFeeds(feeds: Collection<Feed>) {
         this.feeds.clear()
         this.feeds.addAll(feeds)
-        this.notifyItemRangeInserted(0, feeds.size)
+        // NotificationsActivity.kt replays a complete snapshot whenever collection restarts.
+        notifyDataSetChanged()
     }
 
     class ViewHolder(

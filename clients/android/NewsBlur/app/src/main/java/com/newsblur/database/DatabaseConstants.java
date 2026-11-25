@@ -19,6 +19,7 @@ public class DatabaseConstants {
     // the largest value that can be queried from an Android DB (config_cursorWindowSize and worst-case encoding overhead)
     public static final int MAX_TEXT_SIZE = 1024 * 2048 / 4;
 
+	private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS ";
 	private static final String TEXT = " TEXT";
 	private static final String INTEGER = " INTEGER";
 
@@ -187,7 +188,7 @@ public class DatabaseConstants {
     public static final String CUSTOM_ICON_COLOR = "icon_color";     // hex color
     public static final String CUSTOM_ICON_SET = "icon_set";         // lucide or heroicons-solid
 
-	static final String FOLDER_SQL = "CREATE TABLE " + FOLDER_TABLE + " (" +
+	static final String FOLDER_SQL = CREATE_TABLE + FOLDER_TABLE + " (" +
         FOLDER_KEY + TEXT + " PRIMARY KEY, " +
         FOLDER_PATH + TEXT + ", " +
         FOLDER_NAME + TEXT + ", " +
@@ -196,7 +197,7 @@ public class DatabaseConstants {
         FOLDER_FEED_IDS + TEXT +
 		")";
 
-	static final String FEED_SQL = "CREATE TABLE " + FEED_TABLE + " (" +
+	static final String FEED_SQL = CREATE_TABLE + FEED_TABLE + " (" +
 		FEED_ID + INTEGER + " PRIMARY KEY, " +
 		FEED_ACTIVE + TEXT + ", " +
 		FEED_ADDRESS + TEXT + ", " + 
@@ -221,14 +222,14 @@ public class DatabaseConstants {
         FEED_STORIES_LAST_MONTH + INTEGER +
 		")";
 	
-	static final String USER_SQL = "CREATE TABLE " + USER_TABLE + " (" + 
+	static final String USER_SQL = CREATE_TABLE + USER_TABLE + " (" +
 		USER_PHOTO_URL + TEXT + ", " + 
 		USER_USERID + INTEGER + " PRIMARY KEY, " +
 		USER_USERNAME + TEXT + ", " +
         USER_LOCATION + TEXT + 
         ")";
 	
-	static final String SOCIAL_FEED_SQL = "CREATE TABLE " + SOCIALFEED_TABLE + " (" +
+	static final String SOCIAL_FEED_SQL = CREATE_TABLE + SOCIALFEED_TABLE + " (" +
 		SOCIAL_FEED_ID + INTEGER + " PRIMARY KEY, " +
 		SOCIAL_FEED_POSITIVE_COUNT + INTEGER + ", " +
 		SOCIAL_FEED_NEGATIVE_COUNT + INTEGER + ", " +
@@ -238,7 +239,7 @@ public class DatabaseConstants {
 		SOCIAL_FEED_USERNAME + TEXT +
 		")";
 
-	static final String COMMENT_SQL = "CREATE TABLE " + COMMENT_TABLE + " (" +
+	static final String COMMENT_SQL = CREATE_TABLE + COMMENT_TABLE + " (" +
 		COMMENT_DATE + TEXT + ", " +
 		COMMENT_SHAREDDATE + TEXT + ", " +
 		COMMENT_SOURCE_USERID + TEXT + ", " +
@@ -252,7 +253,7 @@ public class DatabaseConstants {
         COMMENT_ISPLACEHOLDER + TEXT +
 		")";
 	
-	static final String REPLY_SQL = "CREATE TABLE " + REPLY_TABLE + " (" +
+	static final String REPLY_SQL = CREATE_TABLE + REPLY_TABLE + " (" +
 		REPLY_DATE + TEXT + ", " +
 		REPLY_SHORTDATE + TEXT + ", " +
 		REPLY_ID + TEXT + " PRIMARY KEY, " +
@@ -262,7 +263,7 @@ public class DatabaseConstants {
         REPLY_ISPLACEHOLDER + TEXT +
 		")";
 	
-	static final String STORY_SQL = "CREATE TABLE " + STORY_TABLE + " (" + 
+	static final String STORY_SQL = CREATE_TABLE + STORY_TABLE + " (" +
 		STORY_HASH + TEXT + " PRIMARY KEY, " +
 		STORY_AUTHORS + TEXT + ", " +
 		STORY_CONTENT + TEXT + ", " +
@@ -298,42 +299,42 @@ public class DatabaseConstants {
         STORY_PROMPT_CLASSIFIERS + TEXT +
         ")";
 
-    static final String READING_SESSION_SQL = "CREATE TABLE " + READING_SESSION_TABLE + " (" +
+    static final String READING_SESSION_SQL = CREATE_TABLE + READING_SESSION_TABLE + " (" +
         READING_SESSION_STORY_HASH + TEXT +
         ")";
 
-    static final String STORY_TEXT_SQL = "CREATE TABLE " + STORY_TEXT_TABLE + " (" +
+    static final String STORY_TEXT_SQL = CREATE_TABLE + STORY_TEXT_TABLE + " (" +
         STORY_TEXT_STORY_HASH + TEXT + ", " +
         STORY_TEXT_STORY_TEXT + TEXT +
         ")";
 
-	static final String CLASSIFIER_SQL = "CREATE TABLE " + CLASSIFIER_TABLE + " (" +
+	static final String CLASSIFIER_SQL = CREATE_TABLE + CLASSIFIER_TABLE + " (" +
 		CLASSIFIER_ID + TEXT + ", " +
 		CLASSIFIER_KEY + TEXT + ", " + 
 		CLASSIFIER_TYPE + TEXT + ", " +
 		CLASSIFIER_VALUE + TEXT +
 		")";
 
-	static final String SOCIALFEED_STORIES_SQL = "CREATE TABLE " + SOCIALFEED_STORY_MAP_TABLE + " (" +
+	static final String SOCIALFEED_STORIES_SQL = CREATE_TABLE + SOCIALFEED_STORY_MAP_TABLE + " (" +
 		SOCIALFEED_STORY_STORYID  + TEXT + " NOT NULL, " +
 		SOCIALFEED_STORY_USER_ID  + INTEGER + " NOT NULL, " +
 		"PRIMARY KEY (" + SOCIALFEED_STORY_STORYID  + ", " + SOCIALFEED_STORY_USER_ID + ") " + 
 	    ")";
 
-    static final String ACTION_SQL = "CREATE TABLE " + ACTION_TABLE + " (" +
+    static final String ACTION_SQL = CREATE_TABLE + ACTION_TABLE + " (" +
         ACTION_ID + INTEGER + " PRIMARY KEY AUTOINCREMENT, " +
         ACTION_TIME + INTEGER + " NOT NULL, " +
         ACTION_TRIED + INTEGER + ", " +
         ACTION_PARAMS + TEXT +
         ")";
 
-	static final String STARREDCOUNTS_SQL = "CREATE TABLE " + STARREDCOUNTS_TABLE + " (" +
+	static final String STARREDCOUNTS_SQL = CREATE_TABLE + STARREDCOUNTS_TABLE + " (" +
         STARREDCOUNTS_COUNT + INTEGER + " NOT NULL, " +
 	    STARREDCOUNTS_TAG + TEXT + ", " +
 	    STARREDCOUNTS_FEEDID + TEXT +
         ")";
 
-	static final String SAVED_SEARCH_SQL = "CREATE TABLE " + SAVED_SEARCH_TABLE + " (" +
+	static final String SAVED_SEARCH_SQL = CREATE_TABLE + SAVED_SEARCH_TABLE + " (" +
 			SAVED_SEARCH_FEED_TITLE + TEXT + ", " +
 			SAVED_SEARCH_FAVICON + TEXT + ", " +
 			SAVED_SEARCH_ADDRESS + TEXT + ", " +
@@ -341,27 +342,27 @@ public class DatabaseConstants {
 			SAVED_SEARCH_FEED_ID +
 			")";
 
-    static final String NOTIFY_DISMISS_SQL = "CREATE TABLE " + NOTIFY_DISMISS_TABLE + " (" +
+    static final String NOTIFY_DISMISS_SQL = CREATE_TABLE + NOTIFY_DISMISS_TABLE + " (" +
         NOTIFY_DISMISS_STORY_HASH + TEXT + ", " +
         NOTIFY_DISMISS_TIME + INTEGER + " NOT NULL " +
         ")";
 
-    static final String FEED_TAGS_SQL = "CREATE TABLE " + FEED_TAGS_TABLE + " (" +
+    static final String FEED_TAGS_SQL = CREATE_TABLE + FEED_TAGS_TABLE + " (" +
         FEED_TAGS_FEEDID + TEXT + ", " +
         FEED_TAGS_TAG + TEXT +
         ")";
 
-    static final String FEED_AUTHORS_SQL = "CREATE TABLE " + FEED_AUTHORS_TABLE + " (" +
+    static final String FEED_AUTHORS_SQL = CREATE_TABLE + FEED_AUTHORS_TABLE + " (" +
         FEED_AUTHORS_FEEDID + TEXT + ", " +
         FEED_AUTHORS_AUTHOR + TEXT +
         ")";
 
-    static final String SYNC_METADATA_SQL = "CREATE TABLE " + SYNC_METADATA_TABLE + " (" +
+    static final String SYNC_METADATA_SQL = CREATE_TABLE + SYNC_METADATA_TABLE + " (" +
         SYNC_METADATA_KEY + TEXT + " PRIMARY KEY, " +
         SYNC_METADATA_VALUE + TEXT +
         ")";
 
-    static final String CUSTOM_ICON_SQL = "CREATE TABLE IF NOT EXISTS " + CUSTOM_ICON_TABLE + " (" +
+    static final String CUSTOM_ICON_SQL = CREATE_TABLE + CUSTOM_ICON_TABLE + " (" +
         CUSTOM_ICON_ID + TEXT + ", " +
         CUSTOM_ICON_IS_FEED + INTEGER + ", " +
         CUSTOM_ICON_TYPE + TEXT + ", " +
