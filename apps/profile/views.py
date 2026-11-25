@@ -683,7 +683,10 @@ def handle_google_play_notification(user, notification_type, purchase_token, sub
             # recorded this order, and only on Google's word, since a late notification can name an old product.
             # Extra that Stripe or PayPal bills for stays, even while an old Play Archive keeps renewing.
             user.profile.activate_archive(downgrade_extra=True)
-        user.profile.active_provider = "google-play"
+        if not (billed_elsewhere and user.profile.is_archive_extra):
+            # Leaving the other store's claim in place keeps the guard above working when Google retries this
+            # notification, since a duplicate order skips the history sync that set it.
+            user.profile.active_provider = "google-play"
         user.profile.premium_renewal = True
         user.profile.save()
 

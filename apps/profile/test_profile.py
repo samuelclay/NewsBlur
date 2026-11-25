@@ -854,7 +854,8 @@ class Test_AndroidSubscriptionActivation(TestCase):
 
     @patch.object(Profile, "setup_premium_history")
     def test_a_play_archive_renewal_keeps_extra_that_stripe_bills_for(self, mock_setup):
-        """An old Play Archive subscription can keep renewing after the account upgraded on the web."""
+        """An old Play Archive subscription can keep renewing after the account upgraded on the web, and Google
+        can deliver the same renewal again."""
         self._make_archive_extra()
         Profile.objects.filter(pk=self.profile.pk).update(active_provider="stripe")
         live_archive = {
@@ -862,14 +863,9 @@ class Test_AndroidSubscriptionActivation(TestCase):
             "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
             "lineItems": [{"productId": "nb.premium.archive.99"}],
         }
-        with patch("apps.profile.views.get_google_play_subscription", return_value=live_archive):
-            from apps.profile.views import handle_google_play_notification
-
-            handle_google_play_notification(
-                User.objects.get(pk=self.user.pk), 2, "play-token", "nb.premium.archive.99"
-            )
-        self.profile.refresh_from_db()
-        self.assertTrue(self.profile.is_archive_extra)
+        for _ in range(2):
+            self._play_notification("nb.premium.archive.99", live_archive)
+            self.assertTrue(self.profile.is_archive_extra)
 
     @patch.object(Profile, "setup_premium_history")
     def test_an_unsigned_ios_archive_receipt_keeps_extra(self, mock_setup):
