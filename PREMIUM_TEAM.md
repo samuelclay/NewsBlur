@@ -43,17 +43,20 @@ Decided on 2026-11-26:
 - [x] When someone who pays for their own plan joins a team, their Stripe or PayPal renewal is cancelled automatically and they keep what they already paid for until it runs out. App Store and Play subscriptions cannot be cancelled by us, so those teammates get a notice with a link
 - [x] A removed teammate keeps Premium Pro on their private feeds for 14 days, with an email on day 1 and day 10
 - [x] No free trial
-
-How the shared site limit is counted is my reading, not yet confirmed: 10,000 distinct sites across the team's folders and every teammate's private feeds, so a site ten teammates follow counts once.
+- [x] The shared site limit counts distinct sites: every different site in team folders or in any teammate's private feeds counts once, however many teammates follow it
+- [x] An owner can hand the team to another teammate without contacting support. The new owner accepts and enters a card, the team's shared read status and training move to their account, and the old owner's team plan ends
+- [x] Monthly billing only. No annual price
+- [x] Dropped from the extensions: the onboarding call, priority support with a response time, security and privacy documents, the nonprofit, school and newsroom discount, SMS alerts, Apple Watch alerts, the lock screen Live Activity, and critical alerts through Do Not Disturb. Everything else in part 2 is built
+- [x] White label branding is only available on Premium Team Enterprise
+- [x] Also only on Premium Team Enterprise: audit log export and SIEM streaming, the IP allow list, session length limits and sign in history, groups synced from the identity provider, and the data retention setting with full export. The activity log itself is on both tiers
+- [x] Read status follows the site. Once a site is in a team folder with shared read status or read receipts, it is a team site wherever it appears in a teammate's feed list. A private copy of it shows the team badge and says reads are shared, and the join screen says so. Reading on sites that are in no team folder is never shown to anyone
+- [x] An account is in one team at a time, as owner or member. Agencies separate clients inside one team with folders shared to chosen teammates. No team switcher
+- [x] "More than 10 teammates? Get in touch" opens a short form (team name, seats wanted, a note) that emails Sam with the account attached
 
 Still open. Each has a recommendation further down under "Open decisions":
 
-- [ ] What else belongs in the $129 tier
 - [ ] Who owns an account when single sign-on is required and a teammate is removed
-- [ ] Whether ownership can be transferred, now that the owner's account is the one that pays
-- [ ] Annual billing
 - [ ] Price above 10 seats
-- [ ] Which extension features to drop
 
 ## The upgrade dialog
 
@@ -89,6 +92,9 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Require single sign-on for everyone on your domain
 - [ ] Single sign-on in the iOS and Android apps
 - [ ] Removing a teammate signs them out everywhere
+- [ ] White label reports, digests and public pages with your own branding
+- [ ] Audit log export, IP allow list and session limits
+- [ ] Data retention and full export
 
 **Screenshots**
 
@@ -99,7 +105,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 
 ### 1. Seats and accounts
 
-- [ ] Up to 10 teammates on one plan, with a contact link for larger teams
+- [ ] Up to 10 teammates on one plan
+- [ ] "More than 10 teammates? Get in touch" opens a short form that emails staff with the team name, seats wanted, a note and the account
 - [ ] Every teammate gets every Premium Pro feature: feeds fetched every 5 to 15 minutes, archive, Ask AI, regular expressions, MCP and CLI
 - [ ] The team shares one Premium Pro account's allowances: 10,000 sites across team folders and everyone's private feeds
 - [ ] The team shares 10 hours of Listen a week
@@ -110,9 +117,10 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Invite with a join link
 - [ ] Three roles: owner, manager, member
 - [ ] One bill on the owner's account, with invoices
-- [ ] An account can own one team and be a member of others
-- [ ] Leave or be removed and the account drops back to its own plan with its private feeds intact
-- [ ] Transfer ownership to another teammate, who takes over the bill (open decision)
+- [ ] An account is in one team at a time, as owner or member
+- [ ] Leave or be removed and, after 14 days of grace, the account drops back to its own plan with its private feeds intact
+- [ ] Transfer ownership to another teammate, who accepts, enters a card and takes over the bill
+- [ ] On transfer the team's shared read status and training move to the new owner's account
 
 **Screenshots**
 
@@ -132,6 +140,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Team folders are marked so nobody confuses them with their own
 - [ ] Members cannot rename or delete team folders. They see "Managed by your team"
 - [ ] A site can be in a team folder and in a private folder at the same time
+- [ ] A private copy of a site that is in a shared or read receipt team folder shows the team badge and says its reads are shared
 - [ ] Newsletters and briefing feeds stay personal and cannot be placed in a team folder
 
 **Screenshots**
@@ -152,7 +161,10 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A teammate who joins a shared folder later starts from the team's read state
 - [ ] "Mark all as read" in a shared folder asks first and says how many teammates it affects
 - [ ] Undo a team wide mark all as read
-- [ ] Reading in private feeds is never shown to anyone
+- [ ] Read status follows the site: a site in a shared or read receipt team folder is a team site wherever a teammate reads it
+- [ ] A site in two team folders takes the most shared of their read modes, and the folder dialog says so
+- [ ] Reading on sites that are in no team folder is never shown to anyone
+- [ ] The join screen says which reading the team can see
 
 **Screenshots**
 
@@ -257,6 +269,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Single sign-on in the Android app
 - [ ] Deactivating a teammate signs them out of every device at once
 - [ ] Session length limit for the team
+- [ ] Everything marked Enterprise only in section 17 is refused on the $79 tier by the server, not only hidden
 
 **Screenshots**
 
@@ -341,8 +354,6 @@ Where an idea comes from a competitor, the competitor is named.
 - [ ] Telegram (Feeder)
 - [ ] Google Chat (Visualping)
 - [ ] PagerDuty and Opsgenie for critical keywords
-- [ ] SMS for critical alerts (Distill)
-- [ ] iOS critical alerts that break through Do Not Disturb for the on duty teammate
 - [ ] Signed webhooks with retries and a delivery log
 - [ ] Different channels per folder or per client (Syften)
 - [ ] Alert rules on a schedule, such as business hours only
@@ -363,7 +374,7 @@ Where an idea comes from a competitor, the competitor is named.
 - [ ] Open and click stats per digest recipient (Feedly)
 - [ ] AI written daily team briefing across team folders
 - [ ] Weekly report as PDF or spreadsheet (Brand24, Awario)
-- [ ] White label reports for agencies (Awario)
+- [ ] White label branding, on Premium Team Enterprise only: reports, digests, public pages and widgets carry the team's name and logo and none of NewsBlur's (Awario)
 - [ ] RSS and JSON output feed for every team folder (Inoreader)
 - [ ] Public read only page for a team folder
 - [ ] Embeddable widget of a team folder for an intranet
@@ -377,7 +388,7 @@ Where an idea comes from a competitor, the competitor is named.
 
 ### 15. Sources
 
-- [ ] A team library of every site any teammate follows, with one click to add it to a team folder (Feeder)
+- [ ] A team library of the sites in team folders plus sites teammates choose to submit, with one click to add one to a team folder. A teammate's private feeds never appear in it (Feeder)
 - [ ] Members suggest a site and a manager approves it
 - [ ] A team newsletter address, so email newsletters land in a team folder
 - [ ] Shared Web Feeds for sites without RSS
@@ -417,35 +428,30 @@ Where an idea comes from a competitor, the competitor is named.
 
 - [ ] More roles: folder editor, billing only, read only viewer (Feedly)
 - [ ] Free viewer seats that can read team folders and receive digests but not change anything
-- [ ] Groups of teammates, synced from the identity provider, used to share folders
-- [ ] More than one team per account, with a switcher
-- [ ] Separate workspaces per client for agencies (Syften, Meltwater)
+- [ ] Groups of teammates, used to share folders
+- [ ] Groups synced from the identity provider (Premium Team Enterprise only)
+- [ ] Client workspaces inside one team: a named set of folders, channels and teammates per client (Syften, Meltwater)
 - [ ] Sign in with Google or Microsoft for the $79 tier
 - [ ] Two factor sign in required for teams without SSO
-- [ ] Audit log export as CSV
-- [ ] Audit log streaming to a SIEM
-- [ ] Sign in history per teammate
-- [ ] IP allow list
-- [ ] Data retention setting for the team
-- [ ] Full team export
+- [ ] Audit log export as CSV (Premium Team Enterprise only)
+- [ ] Audit log streaming to a SIEM (Premium Team Enterprise only)
+- [ ] Sign in history per teammate (Premium Team Enterprise only)
+- [ ] IP allow list (Premium Team Enterprise only)
+- [ ] Data retention setting for the team (Premium Team Enterprise only)
+- [ ] Full team export (Premium Team Enterprise only)
 - [ ] Usage dashboard: active teammates, most read sites, sites nobody reads (Inoreader)
 - [ ] Preselect folders at invite time (Feedly)
-- [ ] Priority support with a response time (not code: needs Sam)
-- [ ] Security and privacy documents for procurement (not code: needs Sam)
 
 **Screenshots**
 
 - [ ] The usage dashboard
-- [ ] The team switcher
+- [ ] A client workspace
 - [ ] The audit log export
 
 ### 18. More billing
 
-- [ ] Annual billing (open decision)
 - [ ] Pay by invoice or purchase order
 - [ ] Tax IDs on invoices
-- [ ] Discount for nonprofits, schools and newsrooms
-- [ ] Free trial for a team (open decision)
 - [ ] Self serve seat packs above 10
 
 **Screenshots**
@@ -475,8 +481,6 @@ Where an idea comes from a competitor, the competitor is named.
 - [ ] The team dialog and folder dialog in the iOS app
 - [ ] The team dialog and folder dialog in the Android app
 - [ ] Home screen widget for a team folder
-- [ ] Lock screen Live Activity for a breaking alert
-- [ ] Apple Watch alerts with mark read and claim
 - [ ] Team folders in the Mac app's menu bar
 
 **Screenshots**
@@ -484,7 +488,6 @@ Where an idea comes from a competitor, the competitor is named.
 - [ ] A team folder on iPhone
 - [ ] A team folder on Android
 - [ ] The widget
-- [ ] The Live Activity
 
 ### 21. Self hosted
 
@@ -598,13 +601,15 @@ There is no team, organization or seat concept in the repo today. The nearest th
 All new tables, which the migration rules treat as always safe. Nothing is added to `profile_profile`, `auth_user` or `reader_usersubscription`.
 
 - [ ] `Team`: name, slug, owner (one team per owner), plan (`team` or `team_enterprise`), seat_limit, status
-- [ ] `TeamMember`: team, user, role, status (invited, active, suspended, removed)
+- [ ] `TeamMember`: team, user, role, status (active, suspended, removed). One active membership per user across all teams
 - [ ] `TeamInvite`: team, email, token, role, expiry
 - [ ] `TeamFolder`: team, parent, title, position, read_mode, audience (everyone or chosen members)
 - [ ] `TeamFeed`: team_folder, feed, position, added_by
 - [ ] `TeamFolderMember`: team_folder, user, kind (audience or assigned)
 - [ ] `TeamNotificationRule`: team_folder or feed, trigger, channels, audience, required
 - [ ] `TeamChannel`: team, kind (slack, teams, webhook), URL or credentials
+- [ ] Every channel and webhook URL is checked with `validate_public_url` when it is saved and again when it is sent, and is posted with a short timeout, so a manager cannot point task servers at an internal address or hang a worker
+- [ ] Channel URLs and the OIDC client secret are credentials: stored encrypted, never logged, and never returned whole by an endpoint
 - [ ] `TeamDomain`: team, domain, verification token, verified_at, require_sso
 - [ ] `TeamSSOConfig`: team, protocol, provider metadata, SCIM token hash
 - [ ] `TeamActivity`: team, actor, action, target, timestamp
@@ -615,7 +620,7 @@ Everything in NewsBlur is keyed by user id (subscriptions, read state, classifie
 What that means in practice:
 
 - The owner's read state in a shared folder is the team's read state.
-- The owner's training on a team folder is the team's training. A manager who trains a team folder writes to it.
+- Team training is folder training on a team folder. It is kept separate from the owner's own training on a site, so what the owner trained privately before a site joined a team folder stays private.
 - Listen, Ask AI and AI filter usage by any teammate is counted against the owner's account, with the teammate recorded for the breakdown.
 - Slack, Teams and webhook posts are scored with the owner's training.
 - The owner sees team folders the same way every teammate does, under the team's top level folder, and keeps private folders beside it.
@@ -639,6 +644,7 @@ The collision: a user's folders are one JSON blob (`UserSubscriptionFolders` in 
 Read state is keyed by user id everywhere: the Redis `RS:{user}` sets, `mark_read_date` on the subscription, and every reader of them (`calculate_feed_scores`, clustering, `trim_user_read_stories`). A team read set that all of those readers merge would touch the hottest paths in the codebase. Applying each read to every teammate changes nothing on the read side, and with 10 seats it is nine small writes.
 
 - [ ] Hooks on `mark_story_hashes_read`, `mark_feed_read` and mark unread (`apps/reader/models.py`), with a flag so a fanned out write does not fan out again
+- [ ] The hook decides by site, not by folder: a read fans out when the site is in any team folder the reader has whose mode is shared, and writes a receipt when any is shared or read receipts
 - [ ] A Celery task applies the read to each other teammate and publishes `story:read:<hash>` on their channel. The web client, iOS (`RealtimeUpdates.swift`) and Android (`RealtimeMessage.kt`) already apply that message
 - [ ] The owner's read state is the team's canonical read state, which a late joiner copies
 - [ ] Read receipts are a Redis hash per story, user id to timestamp, with a TTL
@@ -660,6 +666,16 @@ The premium code recomputes tier from payment history (`setup_premium_history` i
 - [ ] Feed fetch priority follows: a team feed counts its teammates as Pro subscribers
 
 This is the riskiest integration in the plan. That code handles Stripe, PayPal, App Store and Play history and has a lot of special cases.
+
+### Team training: fan out on write
+
+The apps and the web client score stories themselves from the classifiers the server sends them, and the server scores unread counts from the same per user classifiers. Merging a second user's classifiers in at score time would touch every one of those paths. Copying team training to each teammate touches none of them, the same reasoning as read status.
+
+- [ ] Team training is stored as folder scoped classifiers on the team folder's path, the scope Premium Archive already has (`scope` and `folder_name` on the classifiers in `apps/analyzer/models.py`). No new fields
+- [ ] A manager's change to team training is written to the owner's classifiers and copied to every teammate who has the folder
+- [ ] A teammate who joins or is given the folder later gets a copy of the team's training
+- [ ] Members cannot change classifiers scoped to a team folder. Their own training on a site stays feed scoped and personal
+- [ ] The owner's feed scoped training on a site is personal like anyone else's, including training from before the site joined a team folder
 
 ### Notifications
 
@@ -736,7 +752,7 @@ Extensions, in the order of the sections above, each on all three platforms wher
 
 Launch:
 
-- [ ] 27. Widgets, Live Activity, Apple Watch, Mac menu bar (section 20)
+- [ ] 27. The home screen widget and the Mac menu bar (section 20)
 - [ ] 28. Translations for every new string
 - [ ] 29. Screenshots for every section
 - [ ] 30. The feature page and the welcome page section
@@ -753,6 +769,8 @@ Written before any code. Each one is a test.
 - [ ] A teammate already follows a team feed privately, then leaves the team, and loses the feed
 - [ ] A teammate already follows a team feed privately and has it muted
 - [ ] A manager renames a team folder and a teammate's folder scoped training stops applying
+- [ ] The owner's private training on a site starts applying to every teammate when the site joins a team folder
+- [ ] A member changes team training through the existing classifier endpoint
 - [ ] A member calls the rename or delete endpoint directly on a team folder
 - [ ] A team feed pushes a member over their personal site limit and gets muted
 - [ ] A folder is shared with some teammates and another teammate can still load its stories
@@ -763,8 +781,9 @@ Written before any code. Each one is a test.
 - [ ] Mark all as read in a shared folder from an old app version clears the team with no way back
 - [ ] Two teammates mark and unmark the same story at the same moment
 - [ ] A teammate joins a shared folder and sees thousands of unread stories the team already cleared
-- [ ] A teammate's read in a private feed shows up in someone's read receipts
-- [ ] A story in two team folders with different read modes
+- [ ] A read on a site that is in no team folder shows up in someone's read receipts
+- [ ] A read in the private copy of a site that is also in a shared team folder is not shared
+- [ ] A site in two team folders with different read modes does not take the most shared one
 
 **Seats and billing**
 
@@ -773,7 +792,8 @@ Written before any code. Each one is a test.
 - [ ] A team's payment fails and teammates lose Pro before the grace period ends
 - [ ] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
 - [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
-- [ ] One account ends up owning two teams
+- [ ] One account ends up owning two teams, or active in two teams at once
+- [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [ ] A teammate's own Stripe renewal keeps charging after they join
 
 **Notifications**
@@ -783,6 +803,9 @@ Written before any code. Each one is a test.
 - [ ] Removing a rule wipes a teammate's own earlier setting
 - [ ] A required rule is turned off through the existing notifications endpoint
 - [ ] The checkup shows green for a device whose token was revoked
+- [ ] A webhook URL that points at an internal address is saved or called
+- [ ] A slow webhook holds up a Celery worker
+- [ ] A channel URL shows up whole in a log line or an API response
 
 **Single sign-on**
 
@@ -796,16 +819,17 @@ Written before any code. Each one is a test.
 - [x] **Listen hours.** Decided 2026-11-26: the team shares Pro's 10 hours a week. Worst case about $94 a month per team at $2.16 per generated hour, the same exposure as one Pro subscriber.
 - [x] **Sites per teammate.** Decided 2026-11-26: the team shares Pro's 10,000 sites.
 - [x] **Splitting a team plan among strangers.** Decided 2026-11-26: accepted. Anyone the team invites can join.
-- [ ] **The $129 tier against Inoreader.** Inoreader's 10 seat plan is $119.99 and includes SAML. What we have that they do not: SCIM, SSO in the mobile apps, shared read status, pushed folders and the notification checkup. Worth considering: move the audit log export and session length limit into $129 so it reads as the security tier.
+- [x] **What else belongs in the $129 tier.** Decided 2026-11-26: white label branding, audit log export and SIEM streaming, the IP allow list, session limits and sign in history, groups synced from the identity provider, and data retention with full export. For comparison, Inoreader's 10 seat plan is $119.99 and includes SAML but none of those and no SCIM.
 - [ ] **Who owns an account.** Recommended: the person always does. A team can remove someone but never delete or read their account. With "Require SSO" on, a removed teammate regains password login by confirming a personal email address.
 - [x] **Teammates who already pay.** Decided 2026-11-26: their Stripe or PayPal renewal is cancelled automatically when they join and they keep what they paid for until it runs out. App Store and Play subscribers get a notice with a link, since only the subscriber can cancel those.
 - [x] **Grace period on removal.** Decided 2026-11-26: 14 days, with an email on day 1 and day 10.
 - [x] **Free trial.** Decided 2026-11-26: none.
 - [x] **Name of the $129 tier.** Decided 2026-11-26: Premium Team Enterprise.
-- [ ] **Transferring ownership.** The owner's account is the one that pays and the one the team's shared state falls under. A transfer means the new owner takes over the bill and the team's read state and training move to their account. Options: build that, or leave it out and have teams ask support.
-- [ ] **Annual billing.** Inoreader has no annual team price.
+- [x] **Transferring ownership.** Decided 2026-11-26: self serve. The new owner accepts and enters a card, the team's shared read status and training are copied to their account, and the old owner's team plan ends.
+- [x] **Annual billing.** Decided 2026-11-26: monthly only.
+- [x] **How shared sites are counted.** Decided 2026-11-26: distinct sites across the team.
 - [ ] **Price above 10 seats.** Inoreader charges $224.99 for 20 and $374.99 for 50.
-- [ ] **Which extension features to drop.**
+- [x] **Which extension features to drop.** Decided 2026-11-26: the onboarding call, priority support, security documents, the nonprofit discount, SMS alerts, Apple Watch alerts, the Live Activity and critical alerts. White label branding stays, on Premium Team Enterprise only.
 
 ## Marketing
 
