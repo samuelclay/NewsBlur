@@ -33,20 +33,26 @@ Decided on 2026-11-26:
 - [x] No onboarding call
 - [x] Team dialogs follow the redesigned Preferences dialog: tabs, grouped rows, illustrated option cards, changes saved as they are made
 - [x] The feature page lives on the welcome page, with screenshots for every section
+- [x] A team is one Premium Pro account that happens to have up to 10 people using it. Everything Pro meters is shared across the team: 10,000 sites in total, 10 hours of Listen a week in total, and the same for any other Pro allowance
+- [x] Anyone the team invites can join. No work email or shared domain is required
+- [x] Every step is finished on the web, iOS and Android before the next one starts
+- [x] The PR is ready for review from the start, and the review bots review every push
+
+- [x] The team is the owner's account. The owner is the one who pays, and everything the team shares falls under the owner's user id: billing, shared read status, team training and metered usage. There are no hidden accounts
+- [x] The $129 tier is called Premium Team Enterprise
+- [x] When someone who pays for their own plan joins a team, their Stripe or PayPal renewal is cancelled automatically and they keep what they already paid for until it runs out. App Store and Play subscriptions cannot be cancelled by us, so those teammates get a notice with a link
+- [x] A removed teammate keeps Premium Pro on their private feeds for 14 days, with an email on day 1 and day 10
+- [x] No free trial
+
+How the shared site limit is counted is my reading, not yet confirmed: 10,000 distinct sites across the team's folders and every teammate's private feeds, so a site ten teammates follow counts once.
 
 Still open. Each has a recommendation further down under "Open decisions":
 
-- [ ] Listen hours for teammates
-- [ ] Sites per teammate
-- [ ] Whether strangers can split a team plan
 - [ ] What else belongs in the $129 tier
-- [ ] Who owns an account when a teammate is removed
-- [ ] What happens to a teammate's own paid subscription
-- [ ] Grace period on removal
-- [ ] Free trial
+- [ ] Who owns an account when single sign-on is required and a teammate is removed
+- [ ] Whether ownership can be transferred, now that the owner's account is the one that pays
 - [ ] Annual billing
 - [ ] Price above 10 seats
-- [ ] Name of the $129 tier (this file uses "Premium Team SSO" as a placeholder)
 - [ ] Which extension features to drop
 
 ## The upgrade dialog
@@ -61,7 +67,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A callout in the folder menu: "Share this folder with a team"
 - [ ] A callout in the account dialog for anyone not on a team
 
-**Premium Team, $79/month.** Up to 10 teammates. Everything in Premium Pro for every teammate, plus:
+**Premium Team, $79/month.** Up to 10 teammates. Everything in Premium Pro, shared by the whole team, plus:
 
 - [ ] Team folders that appear in every teammate's feed list
 - [ ] Add a site once and the whole team is following it
@@ -74,7 +80,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Train a folder once for everybody
 - [ ] One bill, with invoices
 
-**Premium Team SSO, $129/month.** Everything in Premium Team, plus:
+**Premium Team Enterprise, $129/month.** Everything in Premium Team, plus:
 
 - [ ] Single sign-on with SAML or OIDC
 - [ ] Works with Okta, Microsoft Entra ID, Google Workspace and OneLogin
@@ -94,15 +100,19 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 ### 1. Seats and accounts
 
 - [ ] Up to 10 teammates on one plan, with a contact link for larger teams
-- [ ] Every teammate gets a full Premium Pro account: 10,000 sites, feeds fetched every 5 to 15 minutes, archive, Ask AI, regular expressions, MCP and CLI
+- [ ] Every teammate gets every Premium Pro feature: feeds fetched every 5 to 15 minutes, archive, Ask AI, regular expressions, MCP and CLI
+- [ ] The team shares one Premium Pro account's allowances: 10,000 sites across team folders and everyone's private feeds
+- [ ] The team shares 10 hours of Listen a week
+- [ ] Every other Pro allowance (Ask AI, AI filters) is shared the same way
 - [ ] Every teammate keeps private feeds and folders that the team cannot see
 - [ ] Join with an existing NewsBlur account and keep everything in it
 - [ ] Invite by email
 - [ ] Invite with a join link
 - [ ] Three roles: owner, manager, member
-- [ ] One bill on the team's own card, with invoices and a billing contact
+- [ ] One bill on the owner's account, with invoices
+- [ ] An account can own one team and be a member of others
 - [ ] Leave or be removed and the account drops back to its own plan with its private feeds intact
-- [ ] Transfer ownership to another teammate
+- [ ] Transfer ownership to another teammate, who takes over the bill (open decision)
 
 **Screenshots**
 
@@ -231,7 +241,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] The activity log
 - [ ] The team dialog in each theme
 
-### 9. Single sign-on and provisioning (Premium Team SSO)
+### 9. Single sign-on and provisioning (Premium Team Enterprise)
 
 - [ ] SAML 2.0 single sign-on, set up by the owner without a sales call
 - [ ] OIDC single sign-on
@@ -258,7 +268,9 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 ### 10. Billing
 
 - [ ] Stripe only, on the web
-- [ ] The team has its own Stripe customer, separate from the owner's personal one
+- [ ] The owner's account pays. Premium Team and Premium Team Enterprise are plans on the owner's own NewsBlur account, bought the same way as Premium Pro
+- [ ] An owner who already pays for Premium, Archive or Pro is switched to the team plan with the difference prorated
+- [ ] A teammate's own Stripe or PayPal renewal is cancelled when they join. App Store and Play subscribers get a notice with a link
 - [ ] Two monthly prices, $79 and $129, and switching between them prorates
 - [ ] Invoices and card changes through the Stripe customer portal
 - [ ] If payment fails: retries, an email to the owner, a grace period, then read only, then inactive
@@ -585,7 +597,7 @@ There is no team, organization or seat concept in the repo today. The nearest th
 
 All new tables, which the migration rules treat as always safe. Nothing is added to `profile_profile`, `auth_user` or `reader_usersubscription`.
 
-- [ ] `Team`: name, slug, owner, plan (`team` or `team_sso`), seat_limit, status, Stripe customer and subscription ids, service_user
+- [ ] `Team`: name, slug, owner (one team per owner), plan (`team` or `team_enterprise`), seat_limit, status
 - [ ] `TeamMember`: team, user, role, status (invited, active, suspended, removed)
 - [ ] `TeamInvite`: team, email, token, role, expiry
 - [ ] `TeamFolder`: team, parent, title, position, read_mode, audience (everyone or chosen members)
@@ -596,10 +608,17 @@ All new tables, which the migration rules treat as always safe. Nothing is added
 - [ ] `TeamDomain`: team, domain, verification token, verified_at, require_sso
 - [ ] `TeamSSOConfig`: team, protocol, provider metadata, SCIM token hash
 - [ ] `TeamActivity`: team, actor, action, target, timestamp
-- [ ] A service user per team: a hidden `User` row that holds the team's canonical read state, training and channel notifications
-- [ ] The service user is excluded from stats, emails and premium counts
+- [ ] The team is anchored on its owner. One helper answers "whose account does this teammate's team usage fall under" and returns the owner's user id
 
-Everything in NewsBlur is keyed by user id (subscriptions, read state, classifiers, notifications), so giving the team a user id lets it reuse that machinery.
+Everything in NewsBlur is keyed by user id (subscriptions, read state, classifiers, notifications, usage). The team reuses that machinery through its owner's user id, the account that pays. There are no hidden accounts.
+
+What that means in practice:
+
+- The owner's read state in a shared folder is the team's read state.
+- The owner's training on a team folder is the team's training. A manager who trains a team folder writes to it.
+- Listen, Ask AI and AI filter usage by any teammate is counted against the owner's account, with the teammate recorded for the breakdown.
+- Slack, Teams and webhook posts are scored with the owner's training.
+- The owner sees team folders the same way every teammate does, under the team's top level folder, and keeps private folders beside it.
 
 ### Team folders: merge at read time, real subscriptions underneath
 
@@ -621,7 +640,7 @@ Read state is keyed by user id everywhere: the Redis `RS:{user}` sets, `mark_rea
 
 - [ ] Hooks on `mark_story_hashes_read`, `mark_feed_read` and mark unread (`apps/reader/models.py`), with a flag so a fanned out write does not fan out again
 - [ ] A Celery task applies the read to each other teammate and publishes `story:read:<hash>` on their channel. The web client, iOS (`RealtimeUpdates.swift`) and Android (`RealtimeMessage.kt`) already apply that message
-- [ ] The service user takes part as a silent member, so its state is the team's canonical read state
+- [ ] The owner's read state is the team's canonical read state, which a late joiner copies
 - [ ] Read receipts are a Redis hash per story, user id to timestamp, with a TTL
 - [ ] Receipts are returned inside the story payload for team feeds, not through a new endpoint
 - [ ] Each fan out records what it changed, so it can be undone
@@ -631,6 +650,10 @@ Read state is keyed by user id everywhere: the Redis `RS:{user}` sets, `mark_rea
 The premium code recomputes tier from payment history (`setup_premium_history` in `apps/profile/models.py`) and expires accounts on a schedule, so a team grant has to be a source that code respects. `has_oauth_reader_grant` already protects lifetime Pro grants the same way.
 
 - [ ] An active `TeamMember` grants Pro. The effective tier is the higher of the team's grant and whatever the person pays for
+- [ ] The site limit is counted across the team: distinct sites in team folders plus every teammate's private feeds, against Pro's 10,000 (`max_feed_limit` in `apps/profile/models.py`)
+- [ ] Listen usage is counted across the team against Pro's 10 hours a week (`apps/listen/usage.py`)
+- [ ] Ask AI and AI filter usage are counted across the team against Pro's limits (`apps/ask_ai/usage.py`)
+- [ ] When the team hits a shared limit, the teammate who hit it is told it is the team's limit and who to ask
 - [ ] A `has_team_grant` check wherever premium is recomputed or expired
 - [ ] When a seat ends, the account re-runs its premium history and falls back to its own plan or to free
 - [ ] `deactivate_premium` mutes sites over the free limit, so a removed teammate gets a warning email and a grace period first
@@ -656,8 +679,13 @@ This is the riskiest integration in the plan. That code handles Stripe, PayPal, 
 
 ### Billing
 
-- [ ] Stripe Checkout with two prices and the Stripe customer portal
-- [ ] The webhook handlers (`stripe_checkout_session_completed`, `stripe_subscription_updated` in `apps/profile/models.py`) look up a `Profile`. Team subscriptions carry a `team_id` in metadata and branch to the team models
+The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing Stripe code already buys, switches, renews and expires plans for a `Profile`, and its webhooks already find the owner.
+
+- [ ] Two more plans, `team` and `team_enterprise`, in `plan_to_stripe_price` (`apps/profile/models.py`), with their Stripe prices in settings
+- [ ] Activating either plan gives the owner Pro and creates or reactivates the owner's `Team`
+- [ ] Switching to or from a team plan goes through `switch_stripe_subscription`, prorated
+- [ ] When the owner's plan lapses or is cancelled, the team goes through its grace period and then inactive, and every teammate's grant ends with it
+- [ ] Joining a team cancels the new teammate's own Stripe or PayPal renewal
 - [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team section: seat limit, plan, comp
 
 ### Rules from CLAUDE.md that apply to every step
@@ -672,28 +700,28 @@ This is the riskiest integration in the plan. That code handles Stripe, PayPal, 
 
 ## Build order
 
-One step at a time, each by one agent, each ending in passing tests and a commit. Web comes first so every step can be looked at on localhost before the next one starts.
+One step at a time, one agent at a time, each ending in passing tests and a commit. A step with screens is built on the server, then the web, then iOS, then Android, and is finished on all three before the next step starts. The web version goes on localhost first so it can be looked at before the apps copy it.
 
 Core:
 
-- [ ] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log, service user
-- [ ] 2. Premium Pro for teammates, fallback when a seat ends, grace period
-- [ ] 3. Stripe billing for teams: checkout, webhooks, portal, plan switch, failed payments, staff controls
-- [ ] 4. Shared dialog pieces from Preferences, the team dialog shell, Members and Billing tabs, join screen, upgrade dialog row and callouts
+- [ ] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
+- [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, fallback when a seat ends, grace period
+- [ ] 3. Billing: the two team plans on the owner's account, plan switches, lapses, cancelling a new teammate's own renewal, staff controls
+- [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
-- [ ] 6. Team folders on the web: badges, manager editing, Folders tab, team folder dialog
+- [ ] 6. Team folders on screen: badges, manager editing, Folders tab, team folder dialog (web, iOS, Android)
 - [ ] 7. Read status on the server: modes, fan out, receipts, late joiners, undo
-- [ ] 8. Read status on the web: banner, pills, "Read by", mode cards, mark all as read confirmation
-- [ ] 9. Assignments and the coverage view
+- [ ] 8. Read status on screen: banner, pills, "Read by", mode cards, mark all as read confirmation (web, iOS, Android)
+- [ ] 9. Assignments and the coverage view (web, iOS, Android)
 - [ ] 10. Web Push and the other notification groundwork
-- [ ] 11. Team notification rules, the checkup grid, test notifications
+- [ ] 11. Team notification rules, the checkup grid, test notifications (web, iOS, Android)
 - [ ] 12. Slack, Microsoft Teams and webhook channels
-- [ ] 13. Team training and notifications on team training
+- [ ] 13. Team training and notifications on team training (web, iOS, Android)
 - [ ] 14. Single sign-on: domains, SAML, OIDC, account linking, require SSO, sessions
 - [ ] 15. SCIM provisioning
-- [ ] 16. The Security tab and the SSO login flow on the web
+- [ ] 16. The Security tab and the SSO login flow (web, iOS, Android)
 
-Extensions, in the order of the sections above:
+Extensions, in the order of the sections above, each on all three platforms where it has a screen:
 
 - [ ] 17. Reading together (section 11)
 - [ ] 18. Coverage and schedules (section 12)
@@ -706,15 +734,13 @@ Extensions, in the order of the sections above:
 - [ ] 25. Integrations (section 19)
 - [ ] 26. Self hosted (section 21)
 
-Apps and launch:
+Launch:
 
-- [ ] 27. iOS: team folders polish, badges, banners, "Read by", dialogs, single sign-on
-- [ ] 28. Android: the same, in light, dark and black
-- [ ] 29. Widgets, Live Activity, Apple Watch, Mac menu bar
-- [ ] 30. Translations for every new string
-- [ ] 31. Screenshots for every section
-- [ ] 32. The feature page and the welcome page section
-- [ ] 33. Blog post
+- [ ] 27. Widgets, Live Activity, Apple Watch, Mac menu bar (section 20)
+- [ ] 28. Translations for every new string
+- [ ] 29. Screenshots for every section
+- [ ] 30. The feature page and the welcome page section
+- [ ] 31. Blog post
 
 ## Tests: ways this can fail
 
@@ -746,7 +772,9 @@ Written before any code. Each one is a test.
 - [ ] A teammate with a personal Premium Archive subscription leaves the team and drops to free
 - [ ] A team's payment fails and teammates lose Pro before the grace period ends
 - [ ] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
-- [ ] The service user receives emails, appears in stats or counts as a premium subscriber
+- [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
+- [ ] One account ends up owning two teams
+- [ ] A teammate's own Stripe renewal keeps charging after they join
 
 **Notifications**
 
@@ -765,17 +793,18 @@ Written before any code. Each one is a test.
 
 ## Open decisions
 
-- [ ] **Listen hours.** Pro includes 10 hours of Listen a week per person. At about $2.16 per generated hour that is up to $94 a month per teammate, or about $935 a month for a full team paying $79. Recommended: one pool of 10 hours a week for the whole team, worst case about $94 a month per team, the same exposure as one Pro subscriber. Alternatives: a pool of 10 hours a month (worst case about $22), or 1 hour a month per teammate (worst case about $22 for 10 seats).
-- [ ] **Sites per teammate.** Pro gives each person 10,000 sites fetched every 5 to 15 minutes. Ten seats is up to 100,000 sites for $79. Recommended: keep Pro's limit per person, since few accounts come near it, and watch it. Inoreader moved to one pool of 10,000 for the whole team in April 2026, which is the fallback.
-- [ ] **Splitting a team plan among strangers.** Ten Pro seats for $79 is $7.90 a seat against $29 for Pro on its own. Options: accept it, require teammates to share a verified email domain, or require work email addresses.
+- [x] **Listen hours.** Decided 2026-11-26: the team shares Pro's 10 hours a week. Worst case about $94 a month per team at $2.16 per generated hour, the same exposure as one Pro subscriber.
+- [x] **Sites per teammate.** Decided 2026-11-26: the team shares Pro's 10,000 sites.
+- [x] **Splitting a team plan among strangers.** Decided 2026-11-26: accepted. Anyone the team invites can join.
 - [ ] **The $129 tier against Inoreader.** Inoreader's 10 seat plan is $119.99 and includes SAML. What we have that they do not: SCIM, SSO in the mobile apps, shared read status, pushed folders and the notification checkup. Worth considering: move the audit log export and session length limit into $129 so it reads as the security tier.
 - [ ] **Who owns an account.** Recommended: the person always does. A team can remove someone but never delete or read their account. With "Require SSO" on, a removed teammate regains password login by confirming a personal email address.
-- [ ] **Teammates who already pay.** A Premium, Archive or Pro subscriber who joins a team keeps paying for a plan they no longer need. Options: say nothing, show a notice with a link to cancel, or credit the unused time. App Store and Play subscriptions can only be cancelled by the subscriber.
-- [ ] **Grace period on removal.** Recommended: 14 days, with an email on day 1 and day 10.
-- [ ] **Free trial.** Inoreader has no self serve team trial.
+- [x] **Teammates who already pay.** Decided 2026-11-26: their Stripe or PayPal renewal is cancelled automatically when they join and they keep what they paid for until it runs out. App Store and Play subscribers get a notice with a link, since only the subscriber can cancel those.
+- [x] **Grace period on removal.** Decided 2026-11-26: 14 days, with an email on day 1 and day 10.
+- [x] **Free trial.** Decided 2026-11-26: none.
+- [x] **Name of the $129 tier.** Decided 2026-11-26: Premium Team Enterprise.
+- [ ] **Transferring ownership.** The owner's account is the one that pays and the one the team's shared state falls under. A transfer means the new owner takes over the bill and the team's read state and training move to their account. Options: build that, or leave it out and have teams ask support.
 - [ ] **Annual billing.** Inoreader has no annual team price.
 - [ ] **Price above 10 seats.** Inoreader charges $224.99 for 20 and $374.99 for 50.
-- [ ] **Name of the $129 tier.**
 - [ ] **Which extension features to drop.**
 
 ## Marketing
