@@ -275,11 +275,14 @@ NEWSBLUR.utils = {
     }),
 
     attach_loading_gradient: function ($elem, percentage) {
-        var theme = NEWSBLUR.assets.theme();;
+        var theme = NEWSBLUR.assets.theme();
 
-        if (theme == 'dark') {
+        if (NEWSBLUR.assets.is_dark_theme()) {
             var color1 = '#315681';
             var color2 = '#214a7b';
+        } else if (theme == 'sepia') {
+            var color1 = '#faf5ed';
+            var color2 = '#e3c9a3';
         } else {
             var color1 = '#fcfcfc';
             var color2 = '#b1d2f9';
