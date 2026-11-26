@@ -120,3 +120,22 @@ test('a new language reloads the page only after a change made meanwhile is save
     fixture.respond(1, { code: 1 });
     assert.equal(fixture.reloads(), 1);
 });
+
+test('a new language does not reload the page over a change that failed to save', () => {
+    const fixture = preferences_fixture({ language: 'en', feed_order: 'ALPHABETICAL' });
+
+    fixture.form.language = 'fr';
+    fixture.dialog.save_preferences();
+    fixture.form.feed_order = 'MOSTUSED';
+    fixture.dialog.save_preferences();
+    fixture.respond(0, { code: 1 });
+    fixture.respond(1, { message: 'Sorry, there was an unhandled error.', status_code: 500 });
+
+    // Reloading here would drop the feed order and hide that it was never saved.
+    assert.equal(fixture.reloads(), 0);
+    assert.equal(fixture.statuses.at(-1), 'error');
+    fixture.dialog.save_preferences();
+    fixture.respond(2, { code: 1 });
+    assert.deepEqual(fixture.sent()[2], { feed_order: 'MOSTUSED' });
+    assert.equal(fixture.reloads(), 1);
+});

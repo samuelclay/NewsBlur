@@ -1413,8 +1413,9 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
 
     // reader_preferences.js: a new language needs the page loaded again, once nothing is left to send.
+    // A change that failed to save keeps the page, so its error shows and it can be sent again.
     finish_saving: function (status) {
-        if (this.reload_when_saved) {
+        if (this.reload_when_saved && status == 'saved') {
             window.location.reload();
             return;
         }
