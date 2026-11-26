@@ -35,6 +35,7 @@ import com.newsblur.preference.ListenPrefKeys
 import com.newsblur.preference.ListenPreferences
 import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.push.PushMessaging
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
@@ -330,6 +331,8 @@ class SettingsFragment : Fragment() {
 
     private fun updateNotificationsPreference(enabled: Boolean) {
         prefsRepo.putBoolean(PrefConstants.ENABLE_NOTIFICATIONS, enabled)
+        // PushMessaging.kt registers this device for pushes, or forgets it when notifications go off.
+        PushMessaging.sync(requireContext())
         refreshUiState()
     }
 

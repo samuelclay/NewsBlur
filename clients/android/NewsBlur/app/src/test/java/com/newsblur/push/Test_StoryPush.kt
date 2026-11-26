@@ -1,0 +1,112 @@
+package com.newsblur.push
+
+import android.content.Context
+import com.newsblur.database.BlurDatabaseHelper
+import com.newsblur.network.FeedApi
+import com.newsblur.network.StoryApi
+import com.newsblur.network.domain.NewsBlurResponse
+import com.newsblur.network.domain.StoriesResponse
+import com.newsblur.preference.PrefsRepo
+import com.newsblur.util.DeviceNotifications
+import com.newsblur.util.Log
+import com.newsblur.util.NotificationUtils
+import com.newsblur.util.PrefConstants
+import com.newsblur.util.StateFilter
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.unmockkStatic
+import io.mockk.verify
+import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+class Test_StoryPush {
+    private val context = mockk<Context>(relaxed = true)
+    private val dbHelper = mockk<BlurDatabaseHelper>(relaxed = true)
+    private val storyApi = mockk<StoryApi>()
+    private val feedApi = mockk<FeedApi>()
+    private val prefsRepo = mockk<PrefsRepo>(relaxed = true)
+    private val storyPush = StoryPush(context, { dbHelper }, storyApi, feedApi, prefsRepo, mockk(relaxed = true))
+    private val push = mapOf("story_hash" to "42:abc", "story_feed_id" to "42", "user_id" to "13")
+
+    @Before fun setUp() {
+        mockkStatic(NotificationUtils::class, Log::class, DeviceNotifications::class)
+        every { NotificationUtils.notifyUnreadStories(any(), any(), any()) } just runs
+        every { Log.e(any<Any>(), any()) } just runs
+        every { DeviceNotifications.isOn(any(), any()) } returns true
+        every { prefsRepo.getUserId() } returns "13"
+        every { prefsRepo.getStateFilter() } returns StateFilter.SOME
+        every { prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") } returns ""
+    }
+
+    @After fun tearDown() {
+        unmockkStatic(NotificationUtils::class, Log::class, DeviceNotifications::class)
+    }
+
+    @Test fun test_pushed_story_is_fetched_and_notified() = runTest {
+        val stories = StoriesResponse().apply { stories = arrayOf() }
+        coEvery { storyApi.getStoriesByHash(listOf("42:abc")) } returns stories
+
+        assertTrue(storyPush.handle(push))
+
+        verify { dbHelper.insertStories(stories, StateFilter.SOME, false) }
+        verify { NotificationUtils.notifyUnreadStories(context, dbHelper, any()) }
+    }
+
+    @Test fun test_push_for_another_account_or_a_silenced_device_is_dropped() = runTest {
+        // The token outlives a sign-out, so the previous account's push can land on the next account's session.
+        assertFalse(storyPush.handle(push + ("user_id" to "99")))
+        every { prefsRepo.getUserId() } returns null
+        assertFalse(storyPush.handle(push))
+
+        every { prefsRepo.getUserId() } returns "13"
+        every { DeviceNotifications.isOn(any(), any()) } returns false
+        assertFalse(storyPush.handle(push))
+
+        coVerify(exactly = 0) { storyApi.getStoriesByHash(any()) }
+        verify(exactly = 0) { NotificationUtils.notifyUnreadStories(any(), any(), any()) }
+    }
+
+    @Test fun test_failed_story_fetch_posts_nothing() = runTest {
+        coEvery { storyApi.getStoriesByHash(any()) } returns StoriesResponse().apply { isProtocolError = true }
+        assertFalse(storyPush.handle(push))
+        coEvery { storyApi.getStoriesByHash(any()) } returns null
+        assertFalse(storyPush.handle(push))
+
+        verify(exactly = 0) { dbHelper.insertStories(any(), any(), any()) }
+        verify(exactly = 0) { NotificationUtils.notifyUnreadStories(any(), any(), any()) }
+    }
+
+    @Test fun test_token_is_registered_once_and_retried_after_a_failure() = runTest {
+        // apps/notifications/views.py answers a saved token with a message, which NewsBlurResponse.isError reads as an error.
+        val saved = NewsBlurResponse().apply { message = "Token saved." }
+        coEvery { feedApi.registerPushToken("token-1") } returns NewsBlurResponse().apply { isProtocolError = true } andThen saved
+
+        assertFalse(storyPush.registerToken("token-1"))
+        verify(exactly = 0) { prefsRepo.putString(PrefConstants.PUSH_TOKEN_REGISTERED, any()) }
+
+        assertTrue(storyPush.registerToken("token-1"))
+        verify(exactly = 1) { prefsRepo.putString(PrefConstants.PUSH_TOKEN_REGISTERED, "token-1") }
+
+        every { prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") } returns "token-1"
+        assertTrue(storyPush.registerToken("token-1"))
+        coVerify(exactly = 2) { feedApi.registerPushToken("token-1") }
+    }
+
+    @Test fun test_token_stays_on_the_device_while_notifications_are_off() = runTest {
+        every { DeviceNotifications.isOn(any(), any()) } returns false
+
+        assertFalse(storyPush.wantsPushes())
+        assertFalse(storyPush.registerToken("token-1"))
+
+        coVerify(exactly = 0) { feedApi.registerPushToken(any()) }
+    }
+}

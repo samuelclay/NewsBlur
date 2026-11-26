@@ -1,7 +1,8 @@
 # F-Droid builds and Android release tags
 
-The default build uses Google Play billing, review prompts and ML Kit onboarding
-language checks. Pass `-Pfdroid` to select the free distribution instead:
+The default build uses Google Play billing, review prompts, ML Kit onboarding
+language checks and Firebase Cloud Messaging pushes for story notifications. Pass
+`-Pfdroid` to select the free distribution instead:
 
 ```sh
 ./gradlew -Pfdroid -Pci :app:testDebugUnitTest :app:assembleRelease
@@ -12,6 +13,16 @@ Existing task names and the `com.newsblur` application ID are unchanged. F-Droid
 upgrades open NewsBlur's website, review prompts and billing synchronization are
 disabled, and onboarding retains its feed quality checks without rejecting feeds
 based on language. Play builds retain their existing behavior.
+
+## Story notifications
+
+Play builds receive story notifications as Firebase Cloud Messaging pushes
+(`app/src/play/java/com/newsblur/push`). F-Droid builds post the same notifications
+from the periodic background sync instead. The Firebase project's
+`google-services.json` is not in this repository: `app/src/play/dependencies.gradle`
+reads it from `/srv/secrets-newsblur/android/google-services.json`, or from the path
+given with `-PgoogleServicesJson=`. A Play build made without the file still compiles
+and falls back to the background sync, like F-Droid.
 
 ## Source scanning
 

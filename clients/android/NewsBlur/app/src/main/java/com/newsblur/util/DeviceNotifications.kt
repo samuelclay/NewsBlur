@@ -17,6 +17,7 @@ import com.newsblur.R
 import com.newsblur.activity.NbActivity
 import com.newsblur.compose.LanguageChooserDialog
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.push.PushMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -56,6 +57,7 @@ object DeviceNotifications {
         if (isOn(context, prefsRepo)) return
         if (NotificationUtils.hasPermissions(context)) {
             prefsRepo.putBoolean(PrefConstants.ENABLE_NOTIFICATIONS, true)
+            PushMessaging.sync(context)
             return
         }
         val activity = context as? Activity ?: return
@@ -81,6 +83,7 @@ object DeviceNotifications {
         if (requestCode != PERMISSION_REQUEST_CODE || grantResults.isEmpty()) return
         val granted = grantResults[0] == PackageManager.PERMISSION_GRANTED
         prefsRepo.putBoolean(PrefConstants.ENABLE_NOTIFICATIONS, granted)
+        PushMessaging.sync(activity)
         if (!granted) {
             Toast.makeText(activity, R.string.notification_permissions_context, Toast.LENGTH_SHORT).show()
         }

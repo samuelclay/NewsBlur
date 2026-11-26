@@ -20,6 +20,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
+import com.newsblur.push.PushMessaging
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.SyncService
@@ -222,6 +223,9 @@ class PrefsRepo(
         SubscriptionSyncService.cancel(context)
 
         NotificationUtils.clear(context)
+
+        // PrefsRepo.kt forgets this device's push token so the signed-out account's stories stop arriving here.
+        PushMessaging.forgetDevice(context)
 
         // PrefsRepo.kt retains only onboarding history across logout, never account data or credentials.
         val onboardingHistory = prefs.all.filterKeys { it == "last_auth_provider" || it.startsWith("onboarding_complete_") }

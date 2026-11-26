@@ -40,6 +40,7 @@ android {
         manifestPlaceholders["defaultLauncherEnabled"] = "true"
         manifestPlaceholders["socialCallbackScheme"] = "newsblur-auth-android"
         manifestPlaceholders["playBillingEnabled"] = (!fdroid).toString()
+        manifestPlaceholders["playPushEnabled"] = (!fdroid).toString()
     }
 
     buildTypes {

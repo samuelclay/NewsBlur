@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat
 import com.newsblur.activity.NbActivity
 import com.newsblur.domain.Feed
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.push.PushMessaging
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -38,7 +39,9 @@ class Test_DeviceNotifications {
         )
 
     @Before fun setUp() {
-        mockkStatic(NotificationUtils::class, ActivityCompat::class, Toast::class)
+        // PushMessaging.kt talks to Firebase in the Play build; DeviceNotifications.kt only tells it the switch moved.
+        mockkStatic(NotificationUtils::class, ActivityCompat::class, Toast::class, PushMessaging::class)
+        every { PushMessaging.sync(any()) } just runs
         // FeedUtils.kt saves the feed's setting to the server on a background scope, which a unit test must not start.
         every { feedUtils.updateFeedNotifications(any(), any()) } just runs
         every { ActivityCompat.requestPermissions(any(), any(), any()) } just runs
@@ -47,7 +50,8 @@ class Test_DeviceNotifications {
         every { prefsRepo.isEnableNotifications() } returns false
     }
 
-    @After fun tearDown() = unmockkStatic(NotificationUtils::class, ActivityCompat::class, Toast::class)
+    @After fun tearDown() =
+        unmockkStatic(NotificationUtils::class, ActivityCompat::class, Toast::class, PushMessaging::class)
 
     @Test fun test_setting_a_feed_to_notify_turns_on_this_devices_switch() {
         every { NotificationUtils.hasPermissions(any()) } returns true

@@ -1047,11 +1047,7 @@ open class SyncService :
         // don't slow down active story loading
         if (syncServiceState.pendingFeed != null) return
 
-        val cFocus = dbHelper.notifyFocusStoriesCursor
-        val cUnread = dbHelper.notifyUnreadStoriesCursor
-        NotificationUtils.notifyStories(this, cFocus, cUnread, iconCache, dbHelper)
-        BlurDatabaseHelper.closeQuietly(cFocus)
-        BlurDatabaseHelper.closeQuietly(cUnread)
+        NotificationUtils.notifyUnreadStories(this, dbHelper, iconCache)
     }
 
     fun isOrphanFeed(feedId: String): Boolean = orphanFeedIds.contains(feedId)

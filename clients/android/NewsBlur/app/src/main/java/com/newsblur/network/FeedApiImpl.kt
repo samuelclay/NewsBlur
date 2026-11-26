@@ -360,6 +360,14 @@ class FeedApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
+    override suspend fun registerPushToken(token: String): NewsBlurResponse? {
+        val values = ValueMultimap()
+        values.put(APIConstants.PARAMETER_TOKEN, token)
+        val urlString = APIConstants.buildUrl(APIConstants.PATH_SET_ANDROID_TOKEN)
+        val response: APIResponse = networkClient.post(urlString, values)
+        return response.getResponse(gson, NewsBlurResponse::class.java)
+    }
+
     override suspend fun instaFetch(feedId: String?): NewsBlurResponse? {
         val values = ValueMultimap()
         values.put(APIConstants.PARAMETER_FEEDID, feedId)

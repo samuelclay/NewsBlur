@@ -89,6 +89,15 @@ public class NotificationUtils {
         }
     }
 
+    /** NotificationUtils.java: SyncService.kt and StoryPush.kt both refresh notifications from the local stories. */
+    public static void notifyUnreadStories(Context context, BlurDatabaseHelper dbHelper, FileCache iconCache) {
+        Cursor storiesFocus = dbHelper.getNotifyFocusStoriesCursor();
+        Cursor storiesUnread = dbHelper.getNotifyUnreadStoriesCursor();
+        notifyStories(context, storiesFocus, storiesUnread, iconCache, dbHelper);
+        BlurDatabaseHelper.closeQuietly(storiesFocus);
+        BlurDatabaseHelper.closeQuietly(storiesUnread);
+    }
+
     /**
      * creates notification channels necessary for 26+, if applicable
      */

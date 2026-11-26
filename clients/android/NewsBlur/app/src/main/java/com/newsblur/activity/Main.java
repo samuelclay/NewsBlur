@@ -137,6 +137,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
 
         // make sure the interval sync is scheduled, since we are the root Activity
         BootReceiver.scheduleSyncService(this);
+        // PushMessaging.kt keeps the server's push token for this device current.
+        com.newsblur.push.PushMessaging.sync(this);
 
         setUserImageAndName();
 
