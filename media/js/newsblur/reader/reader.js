@@ -5513,18 +5513,21 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
+                        // reader.js: Auto, then each theme as a circle of its own color, as the iOS menus
+                        // draw it (clients/ios/Classes/MenuViewController.m). The names stay as tooltips (reader_utils.js show_tip).
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Light')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, gettext('Auto')),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button", 'data-tip': gettext('Light'), 'aria-label': gettext('Light') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-light' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Dark')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-sepia', role: "button", 'data-tip': pgettext('theme', 'Warm'), 'aria-label': pgettext('theme', 'Warm') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-sepia' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Auto')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-gray', role: "button", 'data-tip': pgettext('theme', 'Gray'), 'aria-label': pgettext('theme', 'Gray') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-gray' })
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button", 'data-tip': gettext('Dark'), 'aria-label': gettext('Dark') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-dark' })
                             ])
                         ])
                     ])
@@ -5532,6 +5535,8 @@
                 $manage_menu.addClass('NB-menu-manage-notop');
                 var theme = this.model.preference('theme');
                 $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
+                $(".NB-options-theme-sepia", $manage_menu).toggleClass('NB-active', theme == 'sepia');
+                $(".NB-options-theme-gray", $manage_menu).toggleClass('NB-active', theme == 'gray');
                 $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
                 $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
                 var feed_font = this.model.preference('feed_font');
@@ -10168,6 +10173,14 @@
             $.targetIs(e, { tagSelector: '.NB-options-theme-light' }, function ($t, $p) {
                 e.preventDefault();
                 self.switch_theme('light');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-sepia' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('sepia');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-gray' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('gray');
             });
             $.targetIs(e, { tagSelector: '.NB-options-theme-dark' }, function ($t, $p) {
                 e.preventDefault();

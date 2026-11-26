@@ -20005,6 +20005,45 @@ h5.NB-classifier-section-header {
     padding: 4px 8px;
 }
 
+/* reader.css: the theme row leads with Auto and then shows each theme as a circle of its own color,
+ * the way the iOS menus do (clients/ios/Classes/MenuViewController.m, theme_color_*.png). Five equal
+ * segments, with the selected one filled like any other segmented control. */
+.NB-menu-manage .NB-options-theme .NB-theme-option {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 18px;
+}
+
+.NB-theme-swatch {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-theme-swatch {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.NB-theme-swatch-light {
+    background-color: #FAFAF8;
+}
+
+.NB-theme-swatch-sepia {
+    background-color: #F3E2CB;
+}
+
+.NB-theme-swatch-gray {
+    background-color: #5A5A5C;
+}
+
+.NB-theme-swatch-dark {
+    background-color: #1C1C1E;
+}
+
 .NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/font.svg") no-repeat center center;
     background-size: 18px;
