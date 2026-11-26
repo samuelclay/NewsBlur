@@ -2606,6 +2606,10 @@ msgstr "הבנתי!<br>ההודעה אמורה להישלח בתוך כמה דק
 msgid "Graceful iFrame Busting"
 msgstr "עקיפה אלגנטית של iFrame"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "אפור"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "חדשות נהדרות, %(username)s!"
@@ -6390,6 +6394,10 @@ msgstr "רוצה לקבל גישה לעוד יותר?"
 
 msgid "Warm"
 msgstr "חמים"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "חם"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "וורן רובינט כתב מפרש BASIC ב-64 בתים של RAM. מקסימום 9 שורות, 64 סמלים, מספרים שלמים 0&ndash;99."

@@ -240,6 +240,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            NEWSBLUR.utils.watch_tips();
             this.setup_read_time_tracker();
             this.setup_classifier_filter_popstate();
         },
@@ -5231,7 +5232,30 @@
         },
 
         switch_theme: function (theme) {
-            this.model.preference('theme', theme);
+            // reader.js: Auto switches between the last light pick and the last dark pick
+            // (assetmodel.js theme), so each side's variant is saved along with the theme itself.
+            var preferences = { 'theme': theme };
+            if (theme == 'light' || theme == 'sepia') {
+                preferences['theme_light'] = theme;
+            } else if (theme == 'dark' || theme == 'gray') {
+                preferences['theme_dark'] = theme;
+            }
+            var changed = _.any(preferences, function (value, preference) {
+                return NEWSBLUR.Preferences[preference] != value;
+            });
+            if (changed && NEWSBLUR.Globals.is_authenticated) {
+                this.model.save_preferences(preferences);
+            } else {
+                _.extend(NEWSBLUR.Preferences, preferences);
+            }
+            this.apply_story_styling();
+        },
+
+        // reader.js: choose which light theme or which dark theme Auto switches to, without leaving
+        // whatever theme is showing now (reader_preferences.js make_theme_chooser).
+        switch_auto_theme: function (theme) {
+            var preference = (theme == 'light' || theme == 'sepia') ? 'theme_light' : 'theme_dark';
+            this.model.preference(preference, theme);
             this.apply_story_styling();
         },
 
@@ -5277,11 +5301,11 @@
 
             $("body").addClass('NB-theme-transitioning');
 
-            if (theme == 'dark') {
-                $("body").addClass('NB-dark');
-            } else {
-                $("body").removeClass('NB-dark');
-            }
+            // reader.js: gray is the dark theme with its palette swapped (css/reader/graymode.css), so it
+            // carries NB-dark too. Sepia restyles the light theme (css/reader/sepiamode.css).
+            $("body").toggleClass('NB-dark', theme == 'dark' || theme == 'gray')
+                .toggleClass('NB-gray', theme == 'gray')
+                .toggleClass('NB-sepia', theme == 'sepia');
 
             _.delay(function () {
                 $("body").removeClass("NB-theme-transitioning");
@@ -5489,18 +5513,21 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
+                        // reader.js: Auto, then each theme as a circle of its own color, as the iOS menus
+                        // draw it (clients/ios/Classes/MenuViewController.m). The names stay as tooltips (reader_utils.js show_tip).
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Light')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, gettext('Auto')),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button", 'data-tip': gettext('Light'), 'aria-label': gettext('Light') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-light' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Dark')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-sepia', role: "button", 'data-tip': pgettext('theme', 'Warm'), 'aria-label': pgettext('theme', 'Warm') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-sepia' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Auto')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-gray', role: "button", 'data-tip': pgettext('theme', 'Gray'), 'aria-label': pgettext('theme', 'Gray') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-gray' })
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button", 'data-tip': gettext('Dark'), 'aria-label': gettext('Dark') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-dark' })
                             ])
                         ])
                     ])
@@ -5508,6 +5535,8 @@
                 $manage_menu.addClass('NB-menu-manage-notop');
                 var theme = this.model.preference('theme');
                 $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
+                $(".NB-options-theme-sepia", $manage_menu).toggleClass('NB-active', theme == 'sepia');
+                $(".NB-options-theme-gray", $manage_menu).toggleClass('NB-active', theme == 'gray');
                 $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
                 $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
                 var feed_font = this.model.preference('feed_font');
@@ -10144,6 +10173,14 @@
             $.targetIs(e, { tagSelector: '.NB-options-theme-light' }, function ($t, $p) {
                 e.preventDefault();
                 self.switch_theme('light');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-sepia' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('sepia');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-gray' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('gray');
             });
             $.targetIs(e, { tagSelector: '.NB-options-theme-dark' }, function ($t, $p) {
                 e.preventDefault();

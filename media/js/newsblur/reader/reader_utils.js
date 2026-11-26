@@ -274,12 +274,58 @@ NEWSBLUR.utils = {
         return "" + feed.id + '-' + type;
     }),
 
-    attach_loading_gradient: function ($elem, percentage) {
-        var theme = NEWSBLUR.assets.theme();;
+    // reader_utils.js: an element carrying data-tip explains itself in this tooltip instead of the
+    // browser's title, which waits a second and looks different in every browser. Used by the
+    // Preferences cards (reader_preferences.js) and the theme circles (reader.js, manage_module.xhtml).
+    // One element is shared. It sits on the body so nothing clips it and moves to whatever the
+    // pointer or the keyboard focus is on.
+    watch_tips: function () {
+        var self = this;
+        $(document).on('mouseenter focusin', '[data-tip]', function () {
+            self.show_tip($(this));
+        }).on('mouseleave focusout', '[data-tip]', function () {
+            self.hide_tip();
+        }).on('mousedown keydown', function () {
+            // reader_utils.js: a click or key can remove what the tooltip points at, such as a menu closing.
+            self.hide_tip();
+        });
+    },
 
-        if (theme == 'dark') {
+    show_tip: function ($target) {
+        var $tip = $('.NB-tip');
+        if (!$tip.length) {
+            $tip = $.make('div', { className: 'NB-tip', role: 'tooltip' }, [
+                $.make('div', { className: 'NB-tip-text' }),
+                $.make('div', { className: 'NB-tip-arrow' })
+            ]).appendTo('body');
+        }
+        var $art = $target.find('.NB-pref-art');
+        var rect = ($art.length ? $art : $target)[0].getBoundingClientRect();
+        $tip.find('.NB-tip-text').text($target.attr('data-tip'));
+        $tip.addClass('NB-visible');
+        var width = $tip.outerWidth();
+        var height = $tip.outerHeight();
+        var center = rect.left + rect.width / 2;
+        var left = Math.max(8, Math.min(window.innerWidth - width - 8, center - width / 2));
+        // reader_utils.js: above its target, or under it when there is no room above.
+        var below = rect.top - height - 10 < 8;
+        $tip.toggleClass('NB-below', below).css({ left: left, top: below ? rect.bottom + 10 : rect.top - height - 10 });
+        $tip.find('.NB-tip-arrow').css({ left: center - left });
+    },
+
+    hide_tip: function () {
+        $('.NB-tip').removeClass('NB-visible');
+    },
+
+    attach_loading_gradient: function ($elem, percentage) {
+        var theme = NEWSBLUR.assets.theme();
+
+        if (NEWSBLUR.assets.is_dark_theme()) {
             var color1 = '#315681';
             var color2 = '#214a7b';
+        } else if (theme == 'sepia') {
+            var color1 = '#faf5ed';
+            var color2 = '#e3c9a3';
         } else {
             var color1 = '#fcfcfc';
             var color2 = '#b1d2f9';

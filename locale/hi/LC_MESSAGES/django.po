@@ -2668,6 +2668,10 @@ msgstr "समझ गया!<br>ईमेल अगले कुछ मिनट
 msgid "Graceful iFrame Busting"
 msgstr "सुरक्षित iFrame बस्टिंग"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "धूसर"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "बहुत अच्छी ख़बर, %(username)s!"
@@ -6563,6 +6567,10 @@ msgstr "क्या आप और भी सुविधाएँ पाना 
 
 msgid "Warm"
 msgstr "गर्मजोशी भरा"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "गर्म"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "वॉरेन रॉबिनेट ने 64 बाइट RAM में BASIC इंटरप्रेटर लिखा। अधिकतम 9 पंक्तियाँ, 64 चिह्न, पूर्णांक 0&ndash;99।"

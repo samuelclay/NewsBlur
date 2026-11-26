@@ -2714,6 +2714,10 @@ msgstr "Готово!<br>Лист має надійти протягом кіл�
 msgid "Graceful iFrame Busting"
 msgstr "Коректне блокування iFrame"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Сіра"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Чудові новини, %(username)s!"
@@ -6667,6 +6671,10 @@ msgstr "Хочете отримати ще більше можливостей?"
 
 msgid "Warm"
 msgstr "Теплий"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "Тепла"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""

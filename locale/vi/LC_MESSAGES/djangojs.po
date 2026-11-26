@@ -940,6 +940,12 @@ msgstr "1 năm"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 giờ"
+
+msgid "24-hour"
+msgstr "24 giờ"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Có 28 công cụ, hỗ trợ đọc, thao tác, huấn luyện và khám phá."
 
@@ -992,6 +998,9 @@ msgstr "Blurblog gồm các bài viết được chia sẻ"
 msgid "A clearer, closer sound"
 msgstr "Âm thanh rõ và gần hơn"
 
+msgid "A folder"
+msgstr "Một thư mục"
+
 msgid "A folder of feeds read as one stream"
 msgstr "Một thư mục gồm các nguồn cấp dữ liệu được đọc như một luồng"
 
@@ -1005,11 +1014,23 @@ msgstr "Quà tặng từ %(value_1)s đã được áp dụng cho tài khoản c
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Lượt thứ hai sẽ dùng gợi ý của bạn để tìm mẫu phù hợp trên trang."
 
+msgid "A short list of titles above the open story"
+msgstr "Danh sách tiêu đề ngắn phía trên bài viết đang mở"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "Một lượt thích sẽ ghi đè mọi số lượt không thích"
 
 msgid "A story diff with additions and deletions"
 msgstr "Bản so sánh bài viết hiển thị phần thêm và phần xóa"
+
+msgid "A story is read as soon as it is selected"
+msgstr "Bài viết được đánh dấu là đã đọc ngay khi bạn chọn"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "Bài viết được đánh dấu là đã đọc sau khi mở trong khoảng thời gian được đặt bên dưới"
+
+msgid "A to Z"
+msgstr "A đến Z"
 
 msgid "AI Filter"
 msgstr "Bộ lọc AI"
@@ -1172,6 +1193,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "Sau %(slider)s %(count)s giây."
 
+msgid "After a delay"
+msgstr "Sau một khoảng trễ"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "Sau khi người đọc cấp quyền cho ứng dụng của bạn, NewsBlur sẽ chuyển họ đến URL này cùng với mã ủy quyền."
 
@@ -1180,6 +1204,9 @@ msgstr "Sau khi đánh dấu nguồn cấp dữ liệu/thư mục là đã đọ
 
 msgid "Afternoon"
 msgstr "Buổi trưa"
+
+msgid "Afterwards"
+msgstr "Sau đó"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1315,9 +1342,6 @@ msgstr "Thông báo Android yêu cầu Premium Archive"
 msgid "Animals"
 msgstr "Động vật"
 
-msgid "Animations"
-msgstr "Hiệu ứng động"
-
 msgid "Any"
 msgstr "Bất kỳ"
 
@@ -1392,6 +1416,9 @@ msgstr "Các ứng dụng có miễn phí không?"
 msgid "Are the apps open source?"
 msgstr "Các ứng dụng có mã nguồn mở không?"
 
+msgid "Arrow keys"
+msgstr "Phím mũi tên"
+
 msgid "Arrows"
 msgstr "Mũi tên"
 
@@ -1430,6 +1457,9 @@ msgstr "Đặt câu hỏi..."
 
 msgid "Ask about your browsing history..."
 msgstr "Hỏi về lịch sử duyệt web của bạn..."
+
+msgid "Ask first"
+msgstr "Hỏi trước"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1478,6 +1508,9 @@ msgstr "Tự động"
 
 msgid "Auto Mark as Read"
 msgstr "Tự động đánh dấu đã đọc"
+
+msgid "Auto follows system appearance"
+msgstr "Tự động theo giao diện hệ thống"
 
 msgid "Auto mark as read"
 msgstr "Tự động đánh dấu là đã đọc"
@@ -1550,6 +1583,15 @@ msgstr "Dựa trên sở thích của bạn"
 msgid "Begin Training"
 msgstr "Bắt đầu huấn luyện"
 
+msgid "Behavior"
+msgstr "Hành vi"
+
+msgid "Below the story"
+msgstr "Bên dưới bài viết"
+
+msgid "Beside the story"
+msgstr "Bên cạnh bài viết"
+
 msgid "Bio"
 msgstr "Tiểu sử"
 
@@ -1598,6 +1640,9 @@ msgstr "Tiêu đề Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog, bài viết đã chia sẻ và bình luận"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -1665,16 +1710,25 @@ msgstr "Trình duyệt"
 msgid "Browser Extensions"
 msgstr "Tiện ích mở rộng trình duyệt"
 
+msgid "Browser menu"
+msgstr "Menu trình duyệt"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr ""
 "Bạn đang xây dựng một trình đọc RSS công khai mà ai cũng có thể sử dụng? Bạn có thể đủ điều kiện nhận tài "
 "khoản NewsBlur Premium Pro miễn phí."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "Danh sách bài viết tích hợp ở thanh bên"
 
 msgid "Bullet points"
 msgstr "Gạch đầu dòng"
 
 msgid "Bullets"
 msgstr "Gạch đầu dòng"
+
+msgid "Buttons"
+msgstr "Nút"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1840,9 +1894,6 @@ msgstr "Chọn mô hình AI viết bản tóm lược cho bạn"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "Chọn những nguồn cấp sẽ được dùng để tạo bản tin tóm tắt"
 
-msgid "Choose which feeds to include"
-msgstr "Chọn các nguồn cấp dữ liệu muốn đưa vào"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "Chọn những mục sẽ xuất hiện trong bản tin tóm tắt của bạn"
 
@@ -1920,11 +1971,17 @@ msgstr "Nhấp vào bất kỳ nguồn nào để đọc phiên bản đó, ho�
 msgid "Click to block"
 msgstr "Nhấp để chặn"
 
+msgid "Clicks"
+msgstr "Lượt nhấp"
+
 msgid "Client ID"
 msgstr "ID ứng dụng"
 
 msgid "Client secret"
 msgstr "Mã bí mật ứng dụng"
+
+msgid "Clock"
+msgstr "Đồng hồ"
 
 msgid "Close"
 msgstr "Đóng"
@@ -1965,6 +2022,9 @@ msgstr "Thu gọn bài viết"
 msgid "Collapsed"
 msgstr "Đã thu gọn"
 
+msgid "Collapsed folders"
+msgstr "Thư mục đã thu gọn"
+
 msgid "Color"
 msgstr "Màu sắc"
 
@@ -1983,8 +2043,8 @@ msgstr "Các lệnh xuất JSON để bạn có thể chuyển thẳng vào jq."
 msgid "Comment"
 msgstr "Bình luận"
 
-msgid "Comment on stories"
-msgstr "Bình luận về bài viết"
+msgid "Comments"
+msgstr "Bình luận"
 
 msgid "Comments:"
 msgstr "Bình luận:"
@@ -2204,9 +2264,6 @@ msgstr "Khoảng ngày tùy chỉnh"
 msgid "Custom icon"
 msgstr "Biểu tượng tùy chỉnh"
 
-msgid "Customizable writing style and length"
-msgstr "Có thể tùy chỉnh văn phong và độ dài"
-
 msgid "Customize auto-read by site or folder"
 msgstr "Tùy chỉnh việc tự động đánh dấu đã đọc theo trang web hoặc thư mục"
 
@@ -2245,6 +2302,9 @@ msgstr "Phân bố bài viết trong ngày"
 msgid "Dark"
 msgstr "Tối"
 
+msgid "Dark appearance"
+msgstr "Giao diện tối"
+
 msgid "Dark mode and reading customization"
 msgstr "Chế độ tối và tùy chỉnh cách đọc"
 
@@ -2275,9 +2335,6 @@ msgstr "Mặc định"
 
 msgid "Default Blocklist"
 msgstr "Danh sách chặn mặc định"
-
-msgid "Default folder"
-msgstr "Thư mục mặc định"
 
 msgid "Default layout"
 msgstr "Bố cục mặc định"
@@ -2361,15 +2418,6 @@ msgstr "Chi tiết"
 
 msgid "Devices"
 msgstr "Thiết bị"
-
-msgid "Disable daily briefings"
-msgstr "Tắt bản tin hằng ngày"
-
-msgid "Disable social features"
-msgstr "Tắt các tính năng xã hội"
-
-msgid "Disable story clustering"
-msgstr "Tắt tính năng nhóm bài viết"
 
 msgid "Disable the highlighter"
 msgstr "Tắt chức năng tô sáng"
@@ -2475,6 +2523,9 @@ msgstr "Xong!"
 
 msgid "Double-clicking a site"
 msgstr "Nhấp đúp vào một trang web"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "Nhấp đúp vào số bài chưa đọc của trang web để đánh dấu toàn bộ trang web là đã đọc"
 
 msgid "Double-clicking an unread count"
 msgstr "Nhấp đúp vào số bài chưa đọc"
@@ -2610,17 +2661,11 @@ msgstr "Bật phụ đề cho video YouTube"
 msgid "Enable daily briefings"
 msgstr "Bật bản tin hằng ngày"
 
-msgid "Enable highlighting"
-msgstr "Bật tô sáng"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "Bật micrô trong cài đặt trình duyệt để dùng tính năng nhập bằng giọng nói"
 
 msgid "Enable social features"
 msgstr "Bật các tính năng mạng xã hội"
-
-msgid "Enable story clustering"
-msgstr "Bật nhóm bài viết"
 
 msgid "Enable the sites you want"
 msgstr "Bật các trang web bạn muốn"
@@ -2705,6 +2750,9 @@ msgstr "Buổi chiều"
 msgid "Every"
 msgstr "Mỗi"
 
+msgid "Every folder"
+msgstr "Mọi thư mục"
+
 msgid "Every new story is archived permanently"
 msgstr "Mọi bài viết mới đều được lưu trữ vĩnh viễn"
 
@@ -2717,10 +2765,19 @@ msgstr "Mọi bài viết đều được lưu trữ và có thể tìm kiếm m
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Mọi bài viết đều được lưu trữ và có thể tìm kiếm mãi mãi. Kho kiến thức cá nhân của bạn."
 
+msgid "Every story as the site published it in its feed"
+msgstr "Mỗi bài viết đúng như cách trang web đăng trong nguồn cấp của họ"
+
+msgid "Every story in full, one after another"
+msgstr "Toàn bộ bài viết, phát lần lượt từng bài"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "Mỗi thẻ có nguồn cấp RSS riêng. Chia sẻ liên kết hoặc chuyển tiếp nguồn đó vào IFTTT hay Zapier."
 
 msgid "Everybody"
+msgstr "Mọi người"
+
+msgid "Everyone"
 msgstr "Mọi người"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3101,6 +3158,9 @@ msgstr "Số bài chưa đọc trong thư mục"
 msgid "Folders"
 msgstr "Thư mục"
 
+msgid "Folders only"
+msgstr "Chỉ thư mục"
+
 msgid "Folders, feeds, and story titles"
 msgstr "Thư mục, nguồn cấp dữ liệu và tiêu đề bài viết"
 
@@ -3264,6 +3324,9 @@ msgstr "Bạn bè &amp; người theo dõi"
 
 msgid "Friends and Followers"
 msgstr "Bạn bè và người theo dõi"
+
+msgid "Friends only"
+msgstr "Chỉ bạn bè"
 
 msgctxt "date range"
 msgid "From"
@@ -3455,6 +3518,10 @@ msgstr "Tiện ích &amp; Ứng dụng di động"
 msgid "Google News"
 msgstr "Google News"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Xám"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "Màu xanh lá đánh dấu nội dung được thêm, màu đỏ đánh dấu nội dung bị xóa."
 
@@ -3472,6 +3539,9 @@ msgstr "Nhóm các bài viết trùng lặp trên các nguồn cấp của bạn
 
 msgid "Group stories that share:"
 msgstr "Nhóm các bài viết có chung:"
+
+msgid "Grouped"
+msgstr "Đã nhóm"
 
 msgid "Groups similar stories from different feeds"
 msgstr "Gộp các bài viết tương tự từ nhiều nguồn cấp dữ liệu"
@@ -3544,6 +3614,9 @@ msgstr "Tô sáng đoạn đang được đọc"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Tô sáng các từ trong tiêu đề để huấn luyện theo những cụm từ cụ thể."
 
+msgid "Highlighter"
+msgstr "Tô sáng"
+
 msgid "History"
 msgstr "Lịch sử"
 
@@ -3579,6 +3652,9 @@ msgstr "Mức độ cảm xúc"
 
 msgid "How often"
 msgstr "Tần suất"
+
+msgid "How panes and stories move"
+msgstr "Cách di chuyển giữa các khung và bài viết"
 
 msgid "I'm Following"
 msgstr "Tôi đang theo dõi"
@@ -3662,6 +3738,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "Trong cửa sổ mới"
+
+msgid "In a pill"
+msgstr "Dạng viên thuốc"
 
 msgid "In rotation"
 msgstr "Đang trong vòng luân phiên"
@@ -3798,6 +3877,9 @@ msgstr "Giữ các nút bên phải luôn hiển thị khi đọc"
 msgid "Keep stories separate"
 msgstr "Giữ các bài viết riêng biệt"
 
+msgid "Keep unread counts out of the window title"
+msgstr "Không hiển thị số bài chưa đọc trên tiêu đề cửa sổ"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Theo dõi tin tức mới về NewsBlur"
 
@@ -3823,11 +3905,20 @@ msgstr "Các mục theo từ khóa"
 msgid "Language"
 msgstr "Ngôn ngữ"
 
+msgid "Language and time"
+msgstr "Ngôn ngữ và thời gian"
+
 msgid "Large image thumbnail on the left"
 msgstr "Hình thu nhỏ lớn ở bên trái"
 
 msgid "Large image thumbnail on the right"
 msgstr "Hình thu nhỏ lớn ở bên phải"
+
+msgid "Large, left"
+msgstr "Lớn, bên trái"
+
+msgid "Large, right"
+msgstr "Lớn, bên phải"
 
 msgid "Last 30 Days"
 msgstr "30 ngày qua"
@@ -3872,6 +3963,9 @@ msgstr "Hãy tìm một vài trang web để đọc."
 msgid "Light"
 msgstr "Sáng"
 
+msgid "Light appearance"
+msgstr "Giao diện sáng"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3899,6 +3993,12 @@ msgstr "Liên kết trực tiếp đến bài viết gốc"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Liên kết đến blurblog và bình luận được chia sẻ của tôi"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "Liên kết trong bài viết mở trong cửa sổ hoặc thẻ mới"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "Liên kết trong bài viết thay thế NewsBlur trong cửa sổ này"
 
 msgid "List"
 msgstr "Danh sách"
@@ -3998,9 +4098,6 @@ msgstr "Để truy cập máy chủ MCP, cần có Premium Archive hoặc Premiu
 
 msgid "Magazine"
 msgstr "Tạp chí"
-
-msgid "Make changes above..."
-msgstr "Thực hiện các thay đổi ở trên..."
 
 msgid "Manage Categories"
 msgstr "Quản lý danh mục"
@@ -4117,9 +4214,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "Đánh dấu bài viết trong <b>%(value_1)s ngày gần đây</b> là chưa đọc"
 
-msgid "Mark stories read on scroll"
-msgstr "Đánh dấu bài viết là đã đọc khi cuộn"
-
 msgid "Mark the site as read"
 msgstr "Đánh dấu trang web là đã đọc"
 
@@ -4131,6 +4225,12 @@ msgstr "Đang đánh dấu là đã đọc..."
 
 msgid "Marking as unread..."
 msgstr "Đang đánh dấu là chưa đọc..."
+
+msgid "Marking sites as read"
+msgstr "Đánh dấu trang web là đã đọc"
+
+msgid "Marking stories as read"
+msgstr "Đánh dấu bài viết là đã đọc"
 
 msgid "Match"
 msgstr "Khớp"
@@ -4248,6 +4348,12 @@ msgstr "Các nguồn cấp được đăng ký nhiều nhất tuần này"
 msgid "Most used at top, then alphabetical"
 msgstr "Dùng nhiều nhất ở trên, sau đó theo thứ tự bảng chữ cái"
 
+msgid "Most used first"
+msgstr "Dùng nhiều nhất trước"
+
+msgid "Motion"
+msgstr "Chuyển động"
+
 msgid "Move"
 msgstr "Di chuyển"
 
@@ -4320,6 +4426,9 @@ msgstr "KHÔNG BAO GIỜ"
 
 msgid "Name"
 msgstr "Tên"
+
+msgid "Name only"
+msgstr "Chỉ tên"
 
 msgid "Native Apps"
 msgstr "Ứng dụng gốc"
@@ -4411,11 +4520,20 @@ msgstr "Mật khẩu mới"
 msgid "New posts from feeds you recently read"
 msgstr "Bài đăng mới từ các nguồn cấp bạn vừa đọc"
 
+msgid "New stories"
+msgstr "Bài viết mới"
+
 msgid "New tag name"
 msgstr "Tên thẻ mới"
 
 msgid "New to me"
 msgstr "Mới đối với tôi"
+
+msgid "New window"
+msgstr "Cửa sổ mới"
+
+msgid "New window, marked read"
+msgstr "Cửa sổ mới, đã đánh dấu là đã đọc"
 
 msgid "Newer:"
 msgstr "Mới hơn ngày:"
@@ -4441,6 +4559,9 @@ msgstr "NewsBlur hiện không hoạt động. <br> Hãy thử lại sau."
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur đang ở chế độ bảo trì. <br> Hãy thử lại sau."
+
+msgid "NewsBlur menu"
+msgstr "Menu NewsBlur"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur tự động theo dõi trang để phát hiện thay đổi"
@@ -4480,6 +4601,12 @@ msgstr "Bài viết tiếp theo"
 
 msgid "Next unread"
 msgstr "Bài viết chưa đọc tiếp theo"
+
+msgid "Next unread at the end"
+msgstr "Bài chưa đọc tiếp theo ở cuối"
+
+msgid "Next unread halfway"
+msgstr "Bài chưa đọc tiếp theo ở giữa"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
@@ -4830,6 +4957,9 @@ msgstr ""
 "Với Premium, bạn có thể tìm kiếm các bài viết gần đây. Với Premium Archive, bạn có thể tìm kiếm mọi bài "
 "viết từng được lưu trữ."
 
+msgid "On reload"
+msgstr "Khi tải lại"
+
 msgid "One command with Docker"
 msgstr "Một lệnh với Docker"
 
@@ -4962,6 +5092,12 @@ msgstr "Mở menu nguồn cấp và tiêu đề bài viết"
 msgid "Open the first story"
 msgstr "Mở bài viết đầu tiên"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "Mở thư mục được chọn bên dưới khi tải NewsBlur"
+
+msgid "Open the next one"
+msgstr "Mở bài tiếp theo"
+
 msgid "Open the next site/folder"
 msgstr "Mở trang web/thư mục tiếp theo"
 
@@ -4982,6 +5118,12 @@ msgstr "Mở Bản tin hằng ngày"
 
 msgid "Open your saved stories"
 msgstr "Mở các bài viết đã lưu"
+
+msgid "Opening a site also opens its first story"
+msgstr "Mở trang web cũng mở bài viết đầu tiên"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "Mở trang web sẽ hiển thị bài viết và chờ bạn chọn một bài"
 
 msgid "Opens"
 msgstr "Lượt mở"
@@ -5123,6 +5265,9 @@ msgstr "Chọn gói và thanh toán."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "Chọn ngôn ngữ bạn muốn NewsBlur sử dụng. Bạn có thể thay đổi điều này bất cứ lúc nào trong phần Tùy chọn."
 
+msgid "Placement"
+msgstr "Vị trí"
+
 msgid "Places"
 msgstr "Địa điểm"
 
@@ -5146,6 +5291,9 @@ msgstr "Phát sau cùng"
 
 msgid "Play Next"
 msgstr "Phát tiếp theo"
+
+msgid "Play YouTube videos without captions"
+msgstr "Phát video YouTube không có phụ đề"
 
 msgid "Play in Mini Media Player"
 msgstr "Phát trong trình phát mini"
@@ -5367,9 +5515,6 @@ msgstr "Được bảo vệ:"
 msgid "Public blurblog sharing"
 msgstr "Chia sẻ blurblog công khai"
 
-msgid "Public comments"
-msgstr "Bình luận công khai"
-
 msgid "Public:"
 msgstr "Công khai:"
 
@@ -5463,6 +5608,9 @@ msgstr ""
 
 msgid "Read aloud"
 msgstr "Đọc thành tiếng"
+
+msgid "Read and unread stories are both listed"
+msgstr "Cả bài viết đã đọc và chưa đọc đều được liệt kê"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5567,11 +5715,8 @@ msgstr "Đã đổi"
 msgid "Redirect URL"
 msgstr "URL chuyển hướng"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "Giảm bớt sự lộn xộn trong dòng tin của bạn"
-
-msgid "Reduce motion"
-msgstr "Giảm chuyển động"
+msgid "Reduced"
+msgstr "Đã giảm"
 
 msgid "Refer"
 msgstr "Giới thiệu"
@@ -5613,6 +5758,9 @@ msgstr "Liên quan"
 
 msgid "Related Sites"
 msgstr "Các trang web liên quan"
+
+msgid "Related sites above the story titles"
+msgstr "Trang web liên quan phía trên tiêu đề bài viết"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "Chỉ người đăng ký Premium mới xem được các bài viết liên quan."
@@ -5759,6 +5907,12 @@ msgstr "Dòng tin tức"
 msgid "River of News (reading by folder)"
 msgstr "Dòng tin (đọc theo thư mục)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "Hàng bài viết rộng rãi, có ảnh và bản xem trước"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "Các hàng trong thanh bên và danh sách bài viết"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "Chạy newsblur auth login để xác thực qua OAuth"
 
@@ -5813,9 +5967,6 @@ msgstr "Lưu cài đặt Blurblog"
 
 msgid "Save My Profile"
 msgstr "Lưu hồ sơ của tôi"
-
-msgid "Save Preferences"
-msgstr "Lưu tùy chọn"
 
 msgid "Save Search"
 msgstr "Lưu tìm kiếm"
@@ -5897,15 +6048,21 @@ msgstr ""
 "Lịch trình bản tin tóm tắt yêu cầu gói Premium Archive. Với gói của bạn, bản tin chỉ được tạo khi bạn nhấn "
 "nút Tạo."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "Gửi theo lịch (hằng ngày hoặc hai lần mỗi ngày)"
-
 msgid "Science"
 msgstr "Khoa học"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Bộ phân loại theo phạm vi chỉ dành cho người đăng ký %(plan)s."
+
+msgid "Scroll only"
+msgstr "Chỉ cuộn"
+
+msgid "Scroll the story"
+msgstr "Cuộn qua bài viết"
+
+msgid "Scroll the story by the distance set below"
+msgstr "Cuộn bài viết theo khoảng cách được đặt bên dưới"
 
 msgid "Scroll to comments"
 msgstr "Cuộn đến phần bình luận"
@@ -6042,14 +6199,8 @@ msgstr ""
 "Xem diễn biến của một bài viết sau khi được đăng lần đầu. NewsBlur theo dõi các lần chỉnh sửa và hiển thị "
 "phần khác biệt, tô sáng nội dung thay đổi bằng màu xanh lá và đỏ."
 
-msgid "See shared stories"
-msgstr "Xem các bài viết được chia sẻ"
-
 msgid "See the story title and a short content preview"
 msgstr "Xem tiêu đề bài viết và bản xem trước nội dung ngắn"
-
-msgid "See which feeds cover the same story"
-msgstr "Xem những nguồn cấp nào cùng đăng một bài viết"
 
 msgid "Select"
 msgstr "Chọn"
@@ -6108,6 +6259,9 @@ msgstr "Gửi bài viết này"
 msgid "Sending…"
 msgstr "Đang gửi…"
 
+msgid "Separate"
+msgstr "Tách riêng"
+
 msgid "September"
 msgstr "Tháng Chín"
 
@@ -6152,9 +6306,6 @@ msgstr ""
 
 msgid "Share on NewsBlur"
 msgstr "Chia sẻ trên NewsBlur"
-
-msgid "Share stories"
-msgstr "Chia sẻ bài viết"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6220,35 +6371,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "Thấp"
 
+msgid "Shorten all"
+msgstr "Rút gọn tất cả"
+
+msgid "Shorten shared"
+msgstr "Thu gọn mục đã chia sẻ"
+
+msgid "Shortened stories open with a click"
+msgstr "Bài viết rút gọn mở ra khi nhấp"
+
 msgid "Show"
 msgstr "Hiển thị"
 
 msgid "Show Folders"
 msgstr "Hiện thư mục"
 
-msgid "Show Global Shared Stories"
-msgstr "Hiển thị bài viết được chia sẻ toàn cầu"
-
-msgid "Show Good Reads"
-msgstr "Hiển thị bài đọc hay"
-
-msgid "Show Infrequent Site Stories"
-msgstr "Hiển thị bài viết từ trang ít cập nhật"
-
-msgid "Show Long Reads"
-msgstr "Hiển thị bài đọc dài"
-
-msgid "Show Widely Read Stories"
-msgstr "Hiển thị bài viết được đọc nhiều"
-
 msgid "Show a preview of the story"
 msgstr "Hiển thị bản xem trước bài viết"
 
 msgid "Show all animations"
 msgstr "Hiện tất cả hiệu ứng động"
-
-msgid "Show all comments"
-msgstr "Hiện tất cả bình luận"
 
 msgid "Show all stories"
 msgstr "Hiển thị tất cả bài viết"
@@ -6279,6 +6421,9 @@ msgstr "Hiện công cụ tô sáng khi chọn văn bản"
 
 msgid "Show history"
 msgstr "Hiển thị lịch sử"
+
+msgid "Show in full"
+msgstr "Hiển thị đầy đủ"
 
 msgid "Show more related stories"
 msgstr "Hiển thị thêm bài viết liên quan"
@@ -6323,6 +6468,9 @@ msgstr "Đang hiển thị bài viết vào <b>%(date)s</b>"
 msgid "Shows a toolbar button with your unread count"
 msgstr "Hiển thị nút trên thanh công cụ kèm số bài chưa đọc"
 
+msgid "Sidebar"
+msgstr "Thanh bên"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Đăng nhập để đồng bộ tức thì các nguồn cấp, dữ liệu huấn luyện và bài viết đã lưu"
 
@@ -6359,17 +6507,20 @@ msgstr "URL trang web hoặc tìm kiếm theo tên..."
 msgid "Site by Site"
 msgstr "Theo từng trang web"
 
+msgid "Site order"
+msgstr "Thứ tự trang web"
+
 msgid "Site settings"
 msgstr "Cài đặt trang web"
-
-msgid "Site sidebar order"
-msgstr "Thứ tự trang web ở thanh bên"
 
 msgid "Site stats"
 msgstr "Thống kê trang web"
 
 msgid "Sites"
 msgstr "Trang web"
+
+msgid "Sites and folders"
+msgstr "Trang web và thư mục"
 
 msgid "Sites updated up to 5x more often"
 msgstr "Các trang web được cập nhật thường xuyên hơn tới 5 lần"
@@ -6392,6 +6543,12 @@ msgstr "Hình thu nhỏ cỡ nhỏ ở bên trái"
 msgid "Small image thumbnail on the right"
 msgstr "Hình thu nhỏ cỡ nhỏ ở bên phải"
 
+msgid "Small, left"
+msgstr "Nhỏ, bên trái"
+
+msgid "Small, right"
+msgstr "Nhỏ, bên phải"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Thời gian thì nhiều mà việc làm chẳng có bao nhiêu. Khoan đã! Đảo ngược lại đi."
 
@@ -6400,6 +6557,9 @@ msgstr "Mạng xã hội"
 
 msgid "Social Connections"
 msgstr "Kết nối mạng xã hội"
+
+msgid "Social features"
+msgstr "Tính năng mạng xã hội"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6451,8 +6611,11 @@ msgstr "Tùy chọn sắp xếp, lọc và hiển thị"
 msgid "Source feeds"
 msgstr "Nguồn cấp dữ liệu"
 
-msgid "Spacing between feeds and story titles"
-msgstr "Khoảng cách giữa nguồn cấp và tiêu đề bài viết"
+msgid "Space bar"
+msgstr "Phím cách"
+
+msgid "Spacing"
+msgstr "Khoảng cách"
 
 msgid "Spanish"
 msgstr "Tiếng Tây Ban Nha"
@@ -6555,6 +6718,9 @@ msgstr "Trạng thái"
 msgid "Stay on the same feed/folder"
 msgstr "Ở lại nguồn cấp dữ liệu/thư mục hiện tại"
 
+msgid "Stay put"
+msgstr "Giữ nguyên vị trí"
+
 msgid "Steadier or more varied"
 msgstr "Đều đặn hơn hoặc đa dạng hơn"
 
@@ -6583,6 +6749,9 @@ msgstr "Bài viết được tô xanh lá (thích) hoặc ẩn đi (không thíc
 
 msgid "Stories arrive in real-time"
 msgstr "Bài viết được cập nhật theo thời gian thực"
+
+msgid "Stories as cards in a grid"
+msgstr "Bài viết dạng thẻ trong lưới"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Bài viết được lưu vào bộ nhớ đệm để đọc ngoại tuyến và tự động làm mới trong nền."
@@ -6641,6 +6810,12 @@ msgstr "Số bài viết mỗi tháng"
 msgid "Stories readers finished, saved, and shared"
 msgstr "Các bài viết mà độc giả đã đọc xong, lưu và chia sẻ"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "Bài viết đã cuộn qua trong tiêu đề bài viết"
+
+msgid "Stories shown"
+msgstr "Số bài viết hiển thị"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "Các bài viết thu hút nhiều sự chú ý nhất trên NewsBlur."
 
@@ -6649,6 +6824,9 @@ msgstr "Bài viết <b>sẽ không bao giờ</b> tự động được đánh d�
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Bài viết <b>sẽ không bao giờ</b> được đánh dấu là đã đọc"
+
+msgid "Stories you have read are left out"
+msgstr "Các bài viết bạn đã đọc sẽ bị loại khỏi danh sách"
 
 msgid "Story"
 msgstr "Bài viết"
@@ -6683,6 +6861,9 @@ msgstr "Kiểu chữ bài viết"
 msgid "Story URL"
 msgstr "URL bài viết"
 
+msgid "Story buttons"
+msgstr "Nút bài viết"
+
 msgid "Story cards open on their own screen"
 msgstr "Thẻ bài viết mở trên màn hình riêng"
 
@@ -6701,23 +6882,20 @@ msgstr "Ngôn ngữ bài viết"
 msgid "Story layout"
 msgstr "Bố cục bài viết"
 
+msgid "Story list"
+msgstr "Danh sách bài viết"
+
 msgid "Story preview"
 msgstr "Bản xem trước bài viết"
 
 msgid "Story shows in Focus view"
 msgstr "Bài viết xuất hiện trong chế độ xem Tập trung"
 
-msgid "Story side options"
-msgstr "Tùy chọn bên bài viết"
-
-msgid "Story side options buttons"
-msgstr "Các nút tùy chọn bên cạnh bài viết"
-
-msgid "Story side options placement"
-msgstr "Vị trí tùy chọn bên cạnh bài viết"
-
 msgid "Story title styling"
 msgstr "Kiểu tiêu đề bài viết"
+
+msgid "Story titles beside the open story"
+msgstr "Tiêu đề bài viết bên cạnh bài đang mở"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Luồng bị gián đoạn. Không nhận được phản hồi trong 10 giây."
@@ -6899,6 +7077,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "Cao"
 
+msgid "Tall stories"
+msgstr "Bài viết dài"
+
 msgid "Target category name"
 msgstr "Tên danh mục đích"
 
@@ -6964,6 +7145,9 @@ msgstr "Cảm ơn bạn! Bạn có %(bold_start)stài khoản Premium Archive%(b
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Cảm ơn bạn! Bạn có %(bold_start)stài khoản Premium Pro%(bold_end)s."
 
+msgid "That change could not be saved"
+msgstr "Không thể lưu thay đổi đó"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Dịch vụ AI phản hồi quá lâu. Vui lòng thử lại."
 
@@ -7015,6 +7199,9 @@ msgstr "Dòng tin đầy đủ là một %(link_start)stính năng cao cấp%(li
 msgid "The full shortcut list"
 msgstr "Danh sách đầy đủ các phím tắt"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "Toàn văn bài viết, được tải từ trang web"
+
 msgid "The gift has been applied to your account."
 msgstr "Quà tặng đã được áp dụng cho tài khoản của bạn."
 
@@ -7036,16 +7223,31 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "Những bài viết quan trọng nhất từ các nguồn cấp của bạn"
 
+msgid "The most recent stories come first"
+msgstr "Bài viết mới nhất được hiển thị trước"
+
+msgid "The oldest stories come first"
+msgstr "Bài viết cũ nhất được hiển thị trước"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "Nhà xuất bản đã vô hiệu hóa trang gốc."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML của trang được tải và phân tích để trích xuất cấu trúc nội dung."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "Bản thân trang web, như bạn sẽ thấy trên trình duyệt"
+
+msgid "The story on its own page on the site"
+msgstr "Bài viết trên trang riêng của nó trên trang web"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
 "Chế độ xem bạn chọn được ghi nhớ riêng cho từng trang web, vì vậy các nguồn cấp chỉ có bản tóm tắt có thể "
 "mặc định ở chế độ Văn bản."
+
+msgid "Theme"
+msgstr "Giao diện"
 
 msgid "Themes & Customization"
 msgstr "Giao diện & Tùy chỉnh"
@@ -7256,6 +7458,9 @@ msgstr "Cụm từ trong tiêu đề"
 msgid "Title Regex"
 msgstr "Biểu thức chính quy tiêu đề"
 
+msgid "Title and preview"
+msgstr "Tiêu đề và bản xem trước"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "Bộ lọc tiêu đề không tìm thấy bài viết nào trong %(context)s."
@@ -7330,9 +7535,6 @@ msgstr "Công cụ"
 msgid "Tooltips"
 msgstr "Chú giải công cụ"
 
-msgid "Tooltips like this"
-msgstr "Các chú giải như thế này"
-
 msgid "Top"
 msgstr "Đầu trang"
 
@@ -7392,6 +7594,9 @@ msgstr "Huấn luyện bằng bài viết này"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Huấn luyện các nguồn cấp dữ liệu để lọc những bài viết bạn thích và không thích."
 
+msgid "Train, Save, Share and the rest"
+msgstr "Huấn luyện, Lưu, Chia sẻ và các thao tác khác"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Huấn luyện, gắn thẻ, tìm kiếm và sắp xếp bản tin như mọi nguồn cấp dữ liệu khác"
 
@@ -7415,9 +7620,6 @@ msgstr "Xu hướng"
 
 msgid "Trending Sites"
 msgstr "Các trang web thịnh hành"
-
-msgid "Truncate stories"
-msgstr "Rút gọn bài viết"
 
 msgid "Try"
 msgstr "Dùng thử"
@@ -7546,6 +7748,9 @@ msgstr "Đã bật tiếng"
 
 msgid "Unread"
 msgstr "Chưa đọc"
+
+msgid "Unread count"
+msgstr "Số bài chưa đọc"
 
 msgid "Unread only"
 msgstr "Chỉ chưa đọc"
@@ -7804,6 +8009,10 @@ msgstr "Cài đặt giọng đọc"
 msgid "Voices"
 msgstr "Giọng đọc"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "Ấm"
+
 msgid "Warning: This is actually permanent"
 msgstr "Cảnh báo: Thao tác này thực sự không thể hoàn tác"
 
@@ -7905,8 +8114,14 @@ msgstr "Bối cảnh và thông tin nền là gì?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI và MCP khác nhau như thế nào?"
 
+msgid "When NewsBlur opens"
+msgstr "Khi NewsBlur mở"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "Khi một nguồn cấp cập nhật, NewsBlur sẽ kiểm tra nội dung trùng lặp trên tất cả các nguồn bạn đã đăng ký"
+
+msgid "When clicked"
+msgstr "Khi được nhấp"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr ""
@@ -7934,6 +8149,9 @@ msgstr "Khi bạn đăng ký một nguồn cấp dữ liệu mới, lịch sử 
 
 msgid "Which AI models are available?"
 msgstr "Có những mô hình AI nào?"
+
+msgid "While scrolling"
+msgstr "Trong khi cuộn"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "Ối! Đã xảy ra lỗi. Hãy thử lại."
@@ -7964,6 +8182,9 @@ msgstr "Tiêu đề cửa sổ"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "Bằng bàn phím"
 
 msgid "Word Matching"
 msgstr "So khớp từ"

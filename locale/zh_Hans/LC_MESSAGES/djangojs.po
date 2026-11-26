@@ -938,6 +938,12 @@ msgstr "1 年"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 小时"
+
+msgid "24-hour"
+msgstr "24 小时"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 种工具，涵盖阅读、操作、训练和发现。"
 
@@ -988,6 +994,9 @@ msgstr "由分享文章组成的 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "声音更清晰、更贴近"
 
+msgid "A folder"
+msgstr "一个文件夹"
+
 msgid "A folder of feeds read as one stream"
 msgstr "将多个订阅源合并为一个信息流的文件夹"
 
@@ -1001,11 +1010,23 @@ msgstr "来自 %(value_1)s 的礼品已添加到你的账户。"
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "第二轮会根据你的提示，在页面上找到正确的模式。"
 
+msgid "A short list of titles above the open story"
+msgstr "显示在打开文章上方的标题简表"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "一次“喜欢”胜过任意数量的“不喜欢”"
 
 msgid "A story diff with additions and deletions"
 msgstr "显示新增和删除内容的文章差异"
+
+msgid "A story is read as soon as it is selected"
+msgstr "选中文章后会立即标记为已读"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "文章打开达到下方设定的时长后，即标记为已读"
+
+msgid "A to Z"
+msgstr "A 到 Z"
 
 msgid "AI Filter"
 msgstr "AI 筛选器"
@@ -1166,6 +1187,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s 秒后"
 
+msgid "After a delay"
+msgstr "延迟后"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "读者授权你的应用后，NewsBlur 会将他们重定向到此 URL，并附上授权码。"
 
@@ -1174,6 +1198,9 @@ msgstr "将订阅源/文件夹标记为已读后"
 
 msgid "Afternoon"
 msgstr "下午"
+
+msgid "Afterwards"
+msgstr "之后"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1303,9 +1330,6 @@ msgstr "Android 通知需要高级归档版"
 msgid "Animals"
 msgstr "动物"
 
-msgid "Animations"
-msgstr "动画"
-
 msgid "Any"
 msgstr "任意"
 
@@ -1378,6 +1402,9 @@ msgstr "这些应用是免费的吗？"
 msgid "Are the apps open source?"
 msgstr "这些应用是开源的吗？"
 
+msgid "Arrow keys"
+msgstr "方向键"
+
 msgid "Arrows"
 msgstr "箭头"
 
@@ -1416,6 +1443,9 @@ msgstr "提个问题……"
 
 msgid "Ask about your browsing history..."
 msgstr "询问有关你浏览记录的问题…"
+
+msgid "Ask first"
+msgstr "先询问"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1464,6 +1494,9 @@ msgstr "自动"
 
 msgid "Auto Mark as Read"
 msgstr "自动标记为已读"
+
+msgid "Auto follows system appearance"
+msgstr "自动跟随系统外观设置"
 
 msgid "Auto mark as read"
 msgstr "自动标记为已读"
@@ -1536,6 +1569,15 @@ msgstr "根据你的兴趣"
 msgid "Begin Training"
 msgstr "开始训练"
 
+msgid "Behavior"
+msgstr "行为"
+
+msgid "Below the story"
+msgstr "文章下方"
+
+msgid "Beside the story"
+msgstr "文章旁边"
+
 msgid "Bio"
 msgstr "简介"
 
@@ -1584,6 +1626,9 @@ msgstr "Blurblog 标题"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog、分享的文章和评论"
 
 msgid "Bookmarklet"
 msgstr "书签工具"
@@ -1649,14 +1694,23 @@ msgstr "浏览器"
 msgid "Browser Extensions"
 msgstr "浏览器扩展"
 
+msgid "Browser menu"
+msgstr "浏览器菜单"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr "正在开发任何人都能使用的公共 RSS 阅读器？你可能有资格免费获得 NewsBlur Premium Pro 账户。"
+
+msgid "Built-in story lists in the sidebar"
+msgstr "侧边栏内置文章列表"
 
 msgid "Bullet points"
 msgstr "要点"
 
 msgid "Bullets"
 msgstr "要点"
+
+msgid "Buttons"
+msgstr "按钮"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1822,9 +1876,6 @@ msgstr "选择用于撰写简报的 AI 模型"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "选择用于生成简报的订阅源"
 
-msgid "Choose which feeds to include"
-msgstr "选择要包含的订阅源"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "选择简报中显示的版块"
 
@@ -1900,11 +1951,17 @@ msgstr "点击任意来源以改读该版本，或一次性将所有重复项标
 msgid "Click to block"
 msgstr "点击以屏蔽"
 
+msgid "Clicks"
+msgstr "点击次数"
+
 msgid "Client ID"
 msgstr "客户端 ID"
 
 msgid "Client secret"
 msgstr "客户端密钥"
+
+msgid "Clock"
+msgstr "时钟"
 
 msgid "Close"
 msgstr "关闭"
@@ -1945,6 +2002,9 @@ msgstr "折叠文章"
 msgid "Collapsed"
 msgstr "已折叠"
 
+msgid "Collapsed folders"
+msgstr "已折叠的文件夹"
+
 msgid "Color"
 msgstr "颜色"
 
@@ -1963,8 +2023,8 @@ msgstr "命令会输出 JSON，可直接通过管道传给 jq。"
 msgid "Comment"
 msgstr "评论"
 
-msgid "Comment on stories"
-msgstr "评论文章"
+msgid "Comments"
+msgstr "评论"
 
 msgid "Comments:"
 msgstr "评论："
@@ -2174,9 +2234,6 @@ msgstr "自定义日期范围"
 msgid "Custom icon"
 msgstr "自定义图标"
 
-msgid "Customizable writing style and length"
-msgstr "可自定义的写作风格和长度"
-
 msgid "Customize auto-read by site or folder"
 msgstr "按网站或文件夹自定义自动标记为已读"
 
@@ -2212,6 +2269,9 @@ msgstr "文章每日分布"
 msgid "Dark"
 msgstr "深色"
 
+msgid "Dark appearance"
+msgstr "深色外观"
+
 msgid "Dark mode and reading customization"
 msgstr "深色模式和阅读自定义"
 
@@ -2242,9 +2302,6 @@ msgstr "默认"
 
 msgid "Default Blocklist"
 msgstr "默认屏蔽列表"
-
-msgid "Default folder"
-msgstr "默认文件夹"
 
 msgid "Default layout"
 msgstr "默认布局"
@@ -2326,15 +2383,6 @@ msgstr "详细"
 
 msgid "Devices"
 msgstr "设备"
-
-msgid "Disable daily briefings"
-msgstr "停用每日简报"
-
-msgid "Disable social features"
-msgstr "禁用社交功能"
-
-msgid "Disable story clustering"
-msgstr "停用文章聚类"
 
 msgid "Disable the highlighter"
 msgstr "停用高亮"
@@ -2440,6 +2488,9 @@ msgstr "完成！"
 
 msgid "Double-clicking a site"
 msgstr "双击网站"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "双击网站的未读数，将该网站的文章全部标记为已读"
 
 msgid "Double-clicking an unread count"
 msgstr "双击未读数量"
@@ -2567,17 +2618,11 @@ msgstr "为 YouTube 视频启用字幕"
 msgid "Enable daily briefings"
 msgstr "启用每日简报"
 
-msgid "Enable highlighting"
-msgstr "启用高亮"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "请在浏览器设置中启用麦克风以使用语音输入"
 
 msgid "Enable social features"
 msgstr "启用社交功能"
-
-msgid "Enable story clustering"
-msgstr "启用文章聚类"
 
 msgid "Enable the sites you want"
 msgstr "启用你想要的网站"
@@ -2662,6 +2707,9 @@ msgstr "晚上"
 msgid "Every"
 msgstr "每"
 
+msgid "Every folder"
+msgstr "每个文件夹"
+
 msgid "Every new story is archived permanently"
 msgstr "每篇新文章都会永久存档"
 
@@ -2674,10 +2722,19 @@ msgstr "每篇文章都会永久归档并可供搜索"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "所有文章永久归档并可搜索。你的个人知识库。"
 
+msgid "Every story as the site published it in its feed"
+msgstr "显示网站在订阅源中发布的原始文章"
+
+msgid "Every story in full, one after another"
+msgstr "依次朗读每篇文章全文"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "每个标签都有自己的 RSS 订阅源。分享链接，或将其接入 IFTTT 或 Zapier。"
 
 msgid "Everybody"
+msgstr "所有人"
+
+msgid "Everyone"
 msgstr "所有人"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3052,6 +3109,9 @@ msgstr "文件夹未读数"
 msgid "Folders"
 msgstr "文件夹"
 
+msgid "Folders only"
+msgstr "仅文件夹"
+
 msgid "Folders, feeds, and story titles"
 msgstr "文件夹、订阅源和文章标题"
 
@@ -3215,6 +3275,9 @@ msgstr "好友 &amp; 关注者"
 
 msgid "Friends and Followers"
 msgstr "好友和关注者"
+
+msgid "Friends only"
+msgstr "仅好友可见"
 
 msgctxt "date range"
 msgid "From"
@@ -3402,6 +3465,10 @@ msgstr "实用工具 &amp; 移动应用"
 msgid "Google News"
 msgstr "Google 新闻"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "灰色"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "绿色表示新增，红色表示删除。"
 
@@ -3419,6 +3486,9 @@ msgstr "跨订阅源合并重复文章"
 
 msgid "Group stories that share:"
 msgstr "按以下内容对文章分组："
+
+msgid "Grouped"
+msgstr "分组"
 
 msgid "Groups similar stories from different feeds"
 msgstr "将不同订阅源中的相似文章归为一组"
@@ -3491,6 +3561,9 @@ msgstr "高亮显示正在朗读的段落"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "在标题中突出显示词语，以针对特定短语进行训练。"
 
+msgid "Highlighter"
+msgstr "荧光笔"
+
 msgid "History"
 msgstr "历史记录"
 
@@ -3526,6 +3599,9 @@ msgstr "情感表达程度"
 
 msgid "How often"
 msgstr "频率"
+
+msgid "How panes and stories move"
+msgstr "窗格和文章的移动方式"
 
 msgid "I'm Following"
 msgstr "我关注的人"
@@ -3605,6 +3681,9 @@ msgstr "在新标签页中打开<b>%(config_page)s</b>，搜索<b>%(setting)s</b
 
 msgid "In a new window"
 msgstr "在新窗口中"
+
+msgid "In a pill"
+msgstr "胶囊形"
 
 msgid "In rotation"
 msgstr "已加入轮换"
@@ -3737,6 +3816,9 @@ msgstr "阅读时保持右侧按钮可见"
 msgid "Keep stories separate"
 msgstr "将文章分开显示"
 
+msgid "Keep unread counts out of the window title"
+msgstr "在窗口标题中隐藏未读数"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "通过 NewsBlur 随时掌握最新动态"
 
@@ -3762,11 +3844,20 @@ msgstr "关键词分区"
 msgid "Language"
 msgstr "语言"
 
+msgid "Language and time"
+msgstr "语言和时间"
+
 msgid "Large image thumbnail on the left"
 msgstr "左侧显示大尺寸图片缩略图"
 
 msgid "Large image thumbnail on the right"
 msgstr "右侧显示大尺寸图片缩略图"
+
+msgid "Large, left"
+msgstr "大号，左侧"
+
+msgid "Large, right"
+msgstr "大，靠右"
 
 msgid "Last 30 Days"
 msgstr "最近 30 天"
@@ -3811,6 +3902,9 @@ msgstr "来添加一些网站阅读吧。"
 msgid "Light"
 msgstr "浅色"
 
+msgid "Light appearance"
+msgstr "浅色外观"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3836,6 +3930,12 @@ msgstr "直接链接到原文"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "链接到我的 Blurblog 和分享的评论"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "文章中的链接在新窗口或标签页中打开"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "文章中的链接会在此窗口中替换 NewsBlur"
 
 msgid "List"
 msgstr "列表"
@@ -3935,9 +4035,6 @@ msgstr "访问 MCP 服务器需要高级归档版或高级专业版。"
 
 msgid "Magazine"
 msgstr "杂志"
-
-msgid "Make changes above..."
-msgstr "修改上方内容…"
 
 msgid "Manage Categories"
 msgstr "管理分类"
@@ -4052,9 +4149,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "将最近 <b>%(value_1)s 天</b>的文章标记为未读"
 
-msgid "Mark stories read on scroll"
-msgstr "滚动时将文章标记为已读"
-
 msgid "Mark the site as read"
 msgstr "将网站标记为已读"
 
@@ -4066,6 +4160,12 @@ msgstr "正在标记为已读……"
 
 msgid "Marking as unread..."
 msgstr "正在标记为未读…"
+
+msgid "Marking sites as read"
+msgstr "将网站标记为已读"
+
+msgid "Marking stories as read"
+msgstr "将文章标记为已读"
 
 msgid "Match"
 msgstr "匹配"
@@ -4181,6 +4281,12 @@ msgstr "本周订阅量最高的订阅源"
 msgid "Most used at top, then alphabetical"
 msgstr "最常用的排在顶部，其余按字母顺序排列"
 
+msgid "Most used first"
+msgstr "按使用频率从高到低"
+
+msgid "Motion"
+msgstr "动效"
+
 msgid "Move"
 msgstr "移动"
 
@@ -4253,6 +4359,9 @@ msgstr "永不"
 
 msgid "Name"
 msgstr "名称"
+
+msgid "Name only"
+msgstr "仅名称"
 
 msgid "Native Apps"
 msgstr "原生应用"
@@ -4342,11 +4451,20 @@ msgstr "新密码"
 msgid "New posts from feeds you recently read"
 msgstr "你最近阅读过的订阅源有新文章"
 
+msgid "New stories"
+msgstr "新文章"
+
 msgid "New tag name"
 msgstr "新标签名称"
 
 msgid "New to me"
 msgstr "未订阅的"
+
+msgid "New window"
+msgstr "新窗口"
+
+msgid "New window, marked read"
+msgstr "新窗口，标记为已读"
 
 msgid "Newer:"
 msgstr "晚于："
@@ -4372,6 +4490,9 @@ msgstr "NewsBlur 当前不可用。<br> 请稍后重试。"
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur 正在维护中。<br> 请稍后再试。"
+
+msgid "NewsBlur menu"
+msgstr "NewsBlur 菜单"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur 会自动监测页面变化"
@@ -4411,6 +4532,12 @@ msgstr "下一篇文章"
 
 msgid "Next unread"
 msgstr "下一篇未读文章"
+
+msgid "Next unread at the end"
+msgstr "到末尾时转到下一篇未读文章"
+
+msgid "Next unread halfway"
+msgstr "下一篇未读文章显示一半"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接下来，创建一个包含所有新闻简报的筛选器，将它们转发到 NewsBlur 上的自定义地址。"
@@ -4757,6 +4884,9 @@ msgstr "在高级归档版中，搜索可以查找所有已归档的文章，而
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "高级版可搜索近期文章。高级归档版则可搜索所有已归档的文章。"
 
+msgid "On reload"
+msgstr "重新加载时"
+
 msgid "One command with Docker"
 msgstr "使用 Docker 一条命令即可"
 
@@ -4883,6 +5013,12 @@ msgstr "打开订阅源和文章标题菜单"
 msgid "Open the first story"
 msgstr "打开第一篇文章"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "加载 NewsBlur 时打开下方选择的文件夹"
+
+msgid "Open the next one"
+msgstr "打开下一篇"
+
 msgid "Open the next site/folder"
 msgstr "打开下一个网站/文件夹"
 
@@ -4903,6 +5039,12 @@ msgstr "打开每日简报"
 
 msgid "Open your saved stories"
 msgstr "打开已保存的文章"
+
+msgid "Opening a site also opens its first story"
+msgstr "打开网站时，同时打开第一篇文章"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "打开网站后显示文章列表，等待你选择一篇"
 
 msgid "Opens"
 msgstr "打开次数"
@@ -5042,6 +5184,9 @@ msgstr "选择套餐并付款。"
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "选择你希望 NewsBlur 使用的语言。你可以随时在“偏好设置”中更改。"
 
+msgid "Placement"
+msgstr "位置"
+
 msgid "Places"
 msgstr "地点"
 
@@ -5065,6 +5210,9 @@ msgstr "最后播放"
 
 msgid "Play Next"
 msgstr "接下来播放"
+
+msgid "Play YouTube videos without captions"
+msgstr "播放 YouTube 视频时不显示字幕"
 
 msgid "Play in Mini Media Player"
 msgstr "在迷你媒体播放器中播放"
@@ -5286,9 +5434,6 @@ msgstr "受保护："
 msgid "Public blurblog sharing"
 msgstr "公开分享 Blurblog"
 
-msgid "Public comments"
-msgstr "公开评论"
-
 msgid "Public:"
 msgstr "公开："
 
@@ -5378,6 +5523,9 @@ msgstr "按时间顺序，将文件夹中的所有订阅源作为一个可滚动
 
 msgid "Read aloud"
 msgstr "朗读"
+
+msgid "Read and unread stories are both listed"
+msgstr "同时列出已读和未读文章"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5482,11 +5630,8 @@ msgstr "已兑换"
 msgid "Redirect URL"
 msgstr "重定向 URL"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "精简你的文章流"
-
-msgid "Reduce motion"
-msgstr "减少动态效果"
+msgid "Reduced"
+msgstr "减少"
 
 msgid "Refer"
 msgstr "推荐"
@@ -5528,6 +5673,9 @@ msgstr "相关文章"
 
 msgid "Related Sites"
 msgstr "相关网站"
+
+msgid "Related sites above the story titles"
+msgstr "文章标题上方的相关网站"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "相关文章仅面向高级订阅用户开放。"
@@ -5674,6 +5822,12 @@ msgstr "新闻流"
 msgid "River of News (reading by folder)"
 msgstr "新闻流（按文件夹阅读）"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "宽松行距，带图片和预览"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "侧边栏和文章列表中的行"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "运行 newsblur auth login，通过 OAuth 授权"
 
@@ -5726,9 +5880,6 @@ msgstr "保存我的 Blurblog 设置"
 
 msgid "Save My Profile"
 msgstr "保存我的个人资料"
-
-msgid "Save Preferences"
-msgstr "保存偏好设置"
 
 msgid "Save Search"
 msgstr "保存搜索"
@@ -5806,15 +5957,21 @@ msgid ""
 " you use the Generate button."
 msgstr "定时简报需要高级归档版订阅。你当前的套餐仅在点击“生成”按钮时生成简报。"
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "定时发送（每天一次或两次）"
-
 msgid "Science"
 msgstr "科学"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "范围限定分类器仅对 %(plan)s 订阅用户开放。"
+
+msgid "Scroll only"
+msgstr "仅滚动"
+
+msgid "Scroll the story"
+msgstr "滚动文章"
+
+msgid "Scroll the story by the distance set below"
+msgstr "按下方设置的距离滚动文章"
 
 msgid "Scroll to comments"
 msgstr "滚动至评论"
@@ -5949,14 +6106,8 @@ msgid ""
 "changed, highlighted in green and red."
 msgstr "查看文章首次发布后如何演变。NewsBlur 会追踪修订记录，并以差异对比展示更改之处，用绿色和红色标出。"
 
-msgid "See shared stories"
-msgstr "查看分享的文章"
-
 msgid "See the story title and a short content preview"
 msgstr "查看文章标题和简短内容预览"
-
-msgid "See which feeds cover the same story"
-msgstr "查看哪些订阅源报道了同一条新闻"
 
 msgid "Select"
 msgstr "选择"
@@ -6015,6 +6166,9 @@ msgstr "发送这篇文章"
 msgid "Sending…"
 msgstr "正在发送…"
 
+msgid "Separate"
+msgstr "分开"
+
 msgid "September"
 msgstr "九月"
 
@@ -6057,9 +6211,6 @@ msgstr "分享文章并附上评论，它就会发布到你的 Blurblog 上，�
 
 msgid "Share on NewsBlur"
 msgstr "分享到 NewsBlur"
-
-msgid "Share stories"
-msgstr "分享文章"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6123,35 +6274,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "矮"
 
+msgid "Shorten all"
+msgstr "全部缩短"
+
+msgid "Shorten shared"
+msgstr "缩短分享内容"
+
+msgid "Shortened stories open with a click"
+msgstr "点击即可打开缩短的文章"
+
 msgid "Show"
 msgstr "显示"
 
 msgid "Show Folders"
 msgstr "显示文件夹"
 
-msgid "Show Global Shared Stories"
-msgstr "显示全局分享的文章"
-
-msgid "Show Good Reads"
-msgstr "显示优质阅读"
-
-msgid "Show Infrequent Site Stories"
-msgstr "显示低频网站文章"
-
-msgid "Show Long Reads"
-msgstr "显示长篇阅读"
-
-msgid "Show Widely Read Stories"
-msgstr "显示广受阅读的文章"
-
 msgid "Show a preview of the story"
 msgstr "显示文章预览"
 
 msgid "Show all animations"
 msgstr "显示所有动画"
-
-msgid "Show all comments"
-msgstr "显示所有评论"
 
 msgid "Show all stories"
 msgstr "显示所有文章"
@@ -6182,6 +6324,9 @@ msgstr "选择文本时显示荧光笔"
 
 msgid "Show history"
 msgstr "显示历史记录"
+
+msgid "Show in full"
+msgstr "完整显示"
 
 msgid "Show more related stories"
 msgstr "显示更多相关文章"
@@ -6226,6 +6371,9 @@ msgstr "正在显示 <b>%(date)s</b> 的文章"
 msgid "Shows a toolbar button with your unread count"
 msgstr "显示带有未读数量的工具栏按钮"
 
+msgid "Sidebar"
+msgstr "侧边栏"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "登录后，你的订阅源、训练设置和已保存文章会立即同步"
 
@@ -6262,17 +6410,20 @@ msgstr "网站 URL 或按名称搜索…"
 msgid "Site by Site"
 msgstr "逐个网站"
 
+msgid "Site order"
+msgstr "网站顺序"
+
 msgid "Site settings"
 msgstr "网站设置"
-
-msgid "Site sidebar order"
-msgstr "网站侧边栏顺序"
 
 msgid "Site stats"
 msgstr "网站统计"
 
 msgid "Sites"
 msgstr "网站"
+
+msgid "Sites and folders"
+msgstr "网站和文件夹"
 
 msgid "Sites updated up to 5x more often"
 msgstr "网站更新频率最高可提升 5 倍"
@@ -6295,6 +6446,12 @@ msgstr "左侧小型图片缩略图"
 msgid "Small image thumbnail on the right"
 msgstr "右侧显示小缩略图"
 
+msgid "Small, left"
+msgstr "小，靠左"
+
+msgid "Small, right"
+msgstr "小，靠右"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "时间这么多，要做的事却这么少。等等！说反了。"
 
@@ -6303,6 +6460,9 @@ msgstr "社交"
 
 msgid "Social Connections"
 msgstr "社交关系"
+
+msgid "Social features"
+msgstr "社交功能"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6354,8 +6514,11 @@ msgstr "排序、筛选和显示选项"
 msgid "Source feeds"
 msgstr "来源订阅源"
 
-msgid "Spacing between feeds and story titles"
-msgstr "订阅源与文章标题之间的间距"
+msgid "Space bar"
+msgstr "空格键"
+
+msgid "Spacing"
+msgstr "间距"
 
 msgid "Spanish"
 msgstr "西班牙语"
@@ -6456,6 +6619,9 @@ msgstr "状态"
 msgid "Stay on the same feed/folder"
 msgstr "停留在同一订阅源/文件夹"
 
+msgid "Stay put"
+msgstr "保持原位"
+
 msgid "Steadier or more varied"
 msgstr "更平稳或更多变化"
 
@@ -6484,6 +6650,9 @@ msgstr "喜欢的文章会以绿色高亮显示，不喜欢的文章会被隐藏
 
 msgid "Stories arrive in real-time"
 msgstr "文章实时送达"
+
+msgid "Stories as cards in a grid"
+msgstr "以网格卡片形式显示文章"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "缓存文章以供离线阅读，并在后台自动刷新。"
@@ -6542,6 +6711,12 @@ msgstr "每月文章数"
 msgid "Stories readers finished, saved, and shared"
 msgstr "读者读完、保存并分享的文章"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "滚过文章标题时"
+
+msgid "Stories shown"
+msgstr "显示的文章"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "在 NewsBlur 中最受关注的文章。"
 
@@ -6550,6 +6725,9 @@ msgstr "文章将<b>永不</b>自动标记为已读"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "文章将<b>永远不会</b>被标记为已读"
+
+msgid "Stories you have read are left out"
+msgstr "已读文章会被排除"
 
 msgid "Story"
 msgstr "文章"
@@ -6584,6 +6762,9 @@ msgstr "文章字体排版"
 msgid "Story URL"
 msgstr "文章 URL"
 
+msgid "Story buttons"
+msgstr "文章按钮"
+
 msgid "Story cards open on their own screen"
 msgstr "文章卡片在独立页面中打开"
 
@@ -6602,23 +6783,20 @@ msgstr "文章语言"
 msgid "Story layout"
 msgstr "文章布局"
 
+msgid "Story list"
+msgstr "文章列表"
+
 msgid "Story preview"
 msgstr "文章预览"
 
 msgid "Story shows in Focus view"
 msgstr "文章显示在聚焦视图中"
 
-msgid "Story side options"
-msgstr "文章侧边选项"
-
-msgid "Story side options buttons"
-msgstr "文章侧边选项按钮"
-
-msgid "Story side options placement"
-msgstr "文章侧边选项位置"
-
 msgid "Story title styling"
 msgstr "文章标题样式"
+
+msgid "Story titles beside the open story"
+msgstr "文章标题显示在打开的文章旁边"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "数据流中断。10 秒内未收到响应。"
@@ -6798,6 +6976,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "高"
 
+msgid "Tall stories"
+msgstr "长篇文章"
+
 msgid "Target category name"
 msgstr "目标分类名称"
 
@@ -6863,6 +7044,9 @@ msgstr "谢谢！你拥有一个%(bold_start)s高级归档版账户%(bold_end)s�
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "谢谢！你拥有一个%(bold_start)s高级专业版账户%(bold_end)s。"
 
+msgid "That change could not be saved"
+msgstr "无法保存此更改"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 服务响应超时，请重试。"
 
@@ -6906,6 +7090,9 @@ msgstr "完整新闻流是%(link_start)s高级功能%(link_end)s。"
 msgid "The full shortcut list"
 msgstr "完整快捷键列表"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "从网站获取的文章全文"
+
 msgid "The gift has been applied to your account."
 msgstr "礼品已应用到你的账户。"
 
@@ -6925,14 +7112,29 @@ msgstr "登录命令会打开浏览器进行 OAuth 授权。你的令牌会保�
 msgid "The most important stories from your feeds"
 msgstr "订阅源中最重要的文章"
 
+msgid "The most recent stories come first"
+msgstr "最新的文章排在最前面"
+
+msgid "The oldest stories come first"
+msgstr "最早的文章排在最前面"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "发布者已禁用原始页面。"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "抓取并解析页面 HTML，以提取内容结构。"
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "在浏览器中查看的网站原貌"
+
+msgid "The story on its own page on the site"
+msgstr "文章在网站上的独立页面"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "所选视图会按网站分别记住，因此仅显示摘要的订阅源可以默认使用文本视图。"
+
+msgid "Theme"
+msgstr "主题"
 
 msgid "Themes & Customization"
 msgstr "主题与自定义"
@@ -7129,6 +7331,9 @@ msgstr "标题短语"
 msgid "Title Regex"
 msgstr "标题正则表达式"
 
+msgid "Title and preview"
+msgstr "标题和预览"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "标题筛选器在 %(context)s 中未找到文章。"
@@ -7201,9 +7406,6 @@ msgstr "工具"
 msgid "Tooltips"
 msgstr "工具提示"
 
-msgid "Tooltips like this"
-msgstr "这类工具提示"
-
 msgid "Top"
 msgstr "顶部"
 
@@ -7261,6 +7463,9 @@ msgstr "训练此文章"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "训练订阅源，以筛选你喜欢和不喜欢的文章。"
 
+msgid "Train, Save, Share and the rest"
+msgstr "训练、保存、分享等"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "像管理任何订阅源一样训练、标记、搜索和整理邮件简报"
 
@@ -7284,9 +7489,6 @@ msgstr "趋势"
 
 msgid "Trending Sites"
 msgstr "热门网站"
-
-msgid "Truncate stories"
-msgstr "截断文章"
 
 msgid "Try"
 msgstr "试读"
@@ -7413,6 +7615,9 @@ msgstr "已取消屏蔽"
 
 msgid "Unread"
 msgstr "未读"
+
+msgid "Unread count"
+msgstr "未读数量"
 
 msgid "Unread only"
 msgstr "仅未读"
@@ -7667,6 +7872,10 @@ msgstr "语音设置"
 msgid "Voices"
 msgstr "语音"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "暖色"
+
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作无法撤销"
 
@@ -7764,8 +7973,14 @@ msgstr "背景和上下文是什么？"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI 和 MCP 有什么区别？"
 
+msgid "When NewsBlur opens"
+msgstr "打开 NewsBlur 时"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "订阅源更新时，NewsBlur 会检查你所有订阅中是否有重复内容"
+
+msgid "When clicked"
+msgstr "点击时"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "当多个订阅源报道同一篇文章时，NewsBlur 会将它们归为一组，让你只看到一次。"
@@ -7789,6 +8004,9 @@ msgstr "订阅新订阅源时，系统会补齐其历史内容"
 
 msgid "Which AI models are available?"
 msgstr "有哪些可用的 AI 模型？"
+
+msgid "While scrolling"
+msgstr "滚动时"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "哎呀！出了点问题。请重试。"
@@ -7819,6 +8037,9 @@ msgstr "窗口标题"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "使用键盘时"
 
 msgid "Word Matching"
 msgstr "词语匹配"

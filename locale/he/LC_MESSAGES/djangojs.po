@@ -1006,6 +1006,12 @@ msgstr "שנה אחת"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 שעות"
+
+msgid "24-hour"
+msgstr "24 שעות"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ולגילוי."
 
@@ -1059,6 +1065,9 @@ msgstr "בלוג שיתופים של כתבות"
 msgid "A clearer, closer sound"
 msgstr "צליל ברור וקרוב יותר"
 
+msgid "A folder"
+msgstr "תיקייה אחת"
+
 msgid "A folder of feeds read as one stream"
 msgstr "תיקיית פידים שנקראת כזרם אחד"
 
@@ -1072,11 +1081,23 @@ msgstr "מתנה מאת %(value_1)s הוחלה על החשבון שלך."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "במעבר נוסף נעשה שימוש ברמז שלך כדי למצוא את התבנית המתאימה בדף."
 
+msgid "A short list of titles above the open story"
+msgstr "רשימה קצרה של כותרות מעל הכתבה הפתוחה"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "לייק אחד גובר על כל מספר של סימוני לא אהבתי"
 
 msgid "A story diff with additions and deletions"
 msgstr "השוואת כתבה עם תוספות ומחיקות"
+
+msgid "A story is read as soon as it is selected"
+msgstr "כתבה מסומנת כנקראה מיד עם בחירתה"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "כתבה נחשבת לנקראה לאחר שהיא פתוחה במשך הזמן שיוגדר למטה"
+
+msgid "A to Z"
+msgstr "א׳ עד ת׳"
 
 msgid "AI Filter"
 msgstr "מסנן AI"
@@ -1241,6 +1262,9 @@ msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "לאחר %(slider)s %(count)s שנייה."
 msgstr[1] "לאחר %(slider)s %(count)s שניות."
 
+msgid "After a delay"
+msgstr "לאחר השהיה"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "לאחר שקוראי היישום מאשרים את הגישה, NewsBlur מפנה אותם לכתובת ה-URL הזו עם קוד הרשאה."
 
@@ -1249,6 +1273,9 @@ msgstr "לאחר סימון הפיד/התיקייה כנקראו"
 
 msgid "Afternoon"
 msgstr "צהריים"
+
+msgid "Afterwards"
+msgstr "אחר כך"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1388,9 +1415,6 @@ msgstr "התראות Android דורשות Premium Archive"
 msgid "Animals"
 msgstr "בעלי חיים"
 
-msgid "Animations"
-msgstr "אנימציות"
-
 msgid "Any"
 msgstr "כלשהו"
 
@@ -1467,6 +1491,9 @@ msgstr "האם האפליקציות חינמיות?"
 msgid "Are the apps open source?"
 msgstr "האם האפליקציות הן בקוד פתוח?"
 
+msgid "Arrow keys"
+msgstr "מקשי החצים"
+
 msgid "Arrows"
 msgstr "חצים"
 
@@ -1505,6 +1532,9 @@ msgstr "שאל שאלה..."
 
 msgid "Ask about your browsing history..."
 msgstr "שאלו על היסטוריית הגלישה שלכם..."
+
+msgid "Ask first"
+msgstr "לבקש אישור תחילה"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1553,6 +1583,9 @@ msgstr "אוטומטי"
 
 msgid "Auto Mark as Read"
 msgstr "סימון אוטומטי כנקראו"
+
+msgid "Auto follows system appearance"
+msgstr "אוטומטי: בהתאם למראה המערכת"
 
 msgid "Auto mark as read"
 msgstr "סמן כנקרא אוטומטית"
@@ -1626,6 +1659,15 @@ msgstr "על סמך תחומי העניין שלך"
 msgid "Begin Training"
 msgstr "התחלת אימון"
 
+msgid "Behavior"
+msgstr "התנהגות"
+
+msgid "Below the story"
+msgstr "מתחת לכתבה"
+
+msgid "Beside the story"
+msgstr "לצד הכתבה"
+
 msgid "Bio"
 msgstr "ביוגרפיה"
 
@@ -1674,6 +1716,9 @@ msgstr "כותרת Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblogs, כתבות ששותפו ותגובות"
 
 msgid "Bookmarklet"
 msgstr "סימנייה"
@@ -1741,14 +1786,23 @@ msgstr "דפדפן"
 msgid "Browser Extensions"
 msgstr "תוספי דפדפן"
 
+msgid "Browser menu"
+msgstr "תפריט הדפדפן"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr "בונים קורא RSS ציבורי שפתוח לכולם? ייתכן שתוכלו לקבל חשבון NewsBlur Premium Pro בחינם."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "רשימות כתבות מובנות בסרגל הצד"
 
 msgid "Bullet points"
 msgstr "תבליטים"
 
 msgid "Bullets"
 msgstr "תבליטים"
+
+msgid "Buttons"
+msgstr "לחצנים"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1917,9 +1971,6 @@ msgstr "בחר איזה מודל AI יכתוב את התדריך שלך"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "בחר אילו פידים ישמשו ליצירת התדריך שלך"
 
-msgid "Choose which feeds to include"
-msgstr "בחירת הפידים שייכללו"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "בחר אילו מקטעים יופיעו בתדריך שלך"
 
@@ -1996,11 +2047,17 @@ msgstr "לחצו על מקור כלשהו כדי לקרוא את הגרסה של
 msgid "Click to block"
 msgstr "לחץ כדי לחסום"
 
+msgid "Clicks"
+msgstr "לחיצות"
+
 msgid "Client ID"
 msgstr "מזהה לקוח"
 
 msgid "Client secret"
 msgstr "סוד לקוח"
+
+msgid "Clock"
+msgstr "שעון"
 
 msgid "Close"
 msgstr "סגירה"
@@ -2041,6 +2098,9 @@ msgstr "כווץ כתבה"
 msgid "Collapsed"
 msgstr "ממוזער"
 
+msgid "Collapsed folders"
+msgstr "תיקיות מכווצות"
+
 msgid "Color"
 msgstr "צבע"
 
@@ -2059,8 +2119,8 @@ msgstr "הפקודות מפיקות JSON שאפשר להעביר ישירות ל
 msgid "Comment"
 msgstr "תגובה"
 
-msgid "Comment on stories"
-msgstr "הגיבו על כתבות"
+msgid "Comments"
+msgstr "תגובות"
 
 msgid "Comments:"
 msgstr "תגובות:"
@@ -2278,9 +2338,6 @@ msgstr "טווח תאריכים מותאם אישית"
 msgid "Custom icon"
 msgstr "סמל מותאם אישית"
 
-msgid "Customizable writing style and length"
-msgstr "סגנון ואורך כתיבה הניתנים להתאמה אישית"
-
 msgid "Customize auto-read by site or folder"
 msgstr "התאימו אישית קריאה אוטומטית לפי אתר או תיקייה"
 
@@ -2318,6 +2375,9 @@ msgstr "התפלגות הכתבות היומית"
 msgid "Dark"
 msgstr "כהה"
 
+msgid "Dark appearance"
+msgstr "מראה כהה"
+
 msgid "Dark mode and reading customization"
 msgstr "מצב כהה והתאמה אישית של הקריאה"
 
@@ -2348,9 +2408,6 @@ msgstr "ברירת מחדל"
 
 msgid "Default Blocklist"
 msgstr "רשימת חסימה כברירת מחדל"
-
-msgid "Default folder"
-msgstr "תיקיית ברירת מחדל"
 
 msgid "Default layout"
 msgstr "פריסת ברירת מחדל"
@@ -2433,15 +2490,6 @@ msgstr "מפורט"
 
 msgid "Devices"
 msgstr "מכשירים"
-
-msgid "Disable daily briefings"
-msgstr "השבתת תדריכים יומיים"
-
-msgid "Disable social features"
-msgstr "השבתת התכונות החברתיות"
-
-msgid "Disable story clustering"
-msgstr "השבתת קיבוץ כתבות"
 
 msgid "Disable the highlighter"
 msgstr "השבת את כלי ההדגשה"
@@ -2547,6 +2595,9 @@ msgstr "בוצע!"
 
 msgid "Double-clicking a site"
 msgstr "לחיצה כפולה על אתר"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "לחיצה כפולה על מספר הכתבות שלא נקראו באתר מסמנת את כל הכתבות בו כנקראו"
 
 msgid "Double-clicking an unread count"
 msgstr "לחיצה כפולה על מספר הפריטים שלא נקראו"
@@ -2675,17 +2726,11 @@ msgstr "הפעלת כתוביות לסרטוני YouTube"
 msgid "Enable daily briefings"
 msgstr "הפעלת תדריכים יומיים"
 
-msgid "Enable highlighting"
-msgstr "הפעלת הדגשה"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "כדי להשתמש בקלט קולי, יש להפעיל את המיקרופון בהגדרות הדפדפן"
 
 msgid "Enable social features"
 msgstr "הפעלת תכונות חברתיות"
-
-msgid "Enable story clustering"
-msgstr "הפעל קיבוץ כתבות"
 
 msgid "Enable the sites you want"
 msgstr "יש להפעיל את האתרים הרצויים"
@@ -2770,6 +2815,9 @@ msgstr "ערב"
 msgid "Every"
 msgstr "כל"
 
+msgid "Every folder"
+msgstr "כל התיקיות"
+
 msgid "Every new story is archived permanently"
 msgstr "כל כתבה חדשה נשמרת בארכיון לצמיתות"
 
@@ -2782,10 +2830,19 @@ msgstr "כל כתבה נשמרת בארכיון וניתנת לחיפוש לנצ
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "כל כתבה נשמרת בארכיון וניתנת לחיפוש לתמיד. בסיס הידע האישי שלכם."
 
+msgid "Every story as the site published it in its feed"
+msgstr "כל כתבה כפי שהאתר פרסם אותה בפיד שלו"
+
+msgid "Every story in full, one after another"
+msgstr "כל כתבה במלואה, אחת אחרי השנייה"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "לכל תג יש פיד RSS משלו. שתפו את הקישור או העבירו אותו ל-IFTTT או Zapier."
 
 msgid "Everybody"
+msgstr "כולם"
+
+msgid "Everyone"
 msgstr "כולם"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3164,6 +3221,9 @@ msgstr "מספר הכתבות שלא נקראו בתיקיות"
 msgid "Folders"
 msgstr "תיקיות"
 
+msgid "Folders only"
+msgstr "תיקיות בלבד"
+
 msgid "Folders, feeds, and story titles"
 msgstr "תיקיות, פידים וכותרות כתבות"
 
@@ -3329,6 +3389,9 @@ msgstr "חברים &amp; עוקבים"
 
 msgid "Friends and Followers"
 msgstr "חברים ועוקבים"
+
+msgid "Friends only"
+msgstr "חברים בלבד"
 
 msgctxt "date range"
 msgid "From"
@@ -3520,6 +3583,10 @@ msgstr "הטבות &amp; אפליקציות לנייד"
 msgid "Google News"
 msgstr "Google News"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "אפור"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "ירוק מציין תוספות, אדום מציין מחיקות."
 
@@ -3537,6 +3604,9 @@ msgstr "קיבוץ כתבות כפולות מכל הפידים שלך"
 
 msgid "Group stories that share:"
 msgstr "קבץ כתבות שיש להן במשותף:"
+
+msgid "Grouped"
+msgstr "מקובצים"
 
 msgid "Groups similar stories from different feeds"
 msgstr "מקבץ כתבות דומות מפידים שונים"
@@ -3610,6 +3680,9 @@ msgstr "הדגשת הפסקה שמוקראת"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "הדגש מילים בכותרת כדי לאמן על ביטויים מסוימים."
 
+msgid "Highlighter"
+msgstr "הדגשה"
+
 msgid "History"
 msgstr "היסטוריה"
 
@@ -3645,6 +3718,9 @@ msgstr "מידת הרגש"
 
 msgid "How often"
 msgstr "באיזו תדירות"
+
+msgid "How panes and stories move"
+msgstr "איך החלוניות והכתבות זזות"
 
 msgid "I'm Following"
 msgstr "אני עוקב/ת"
@@ -3729,6 +3805,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "בחלון חדש"
+
+msgid "In a pill"
+msgstr "בתוך גלולה"
 
 msgid "In rotation"
 msgstr "בסבב"
@@ -3865,6 +3944,9 @@ msgstr "השאירו את הכפתורים בצד ימין גלויים במהל
 msgid "Keep stories separate"
 msgstr "להשאיר כתבות נפרדות"
 
+msgid "Keep unread counts out of the window title"
+msgstr "לא לכלול את מספר הכתבות שלא נקראו בכותרת החלון"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "הישארו מעודכנים עם NewsBlur"
 
@@ -3890,11 +3972,20 @@ msgstr "מקטעי מילות מפתח"
 msgid "Language"
 msgstr "שפה"
 
+msgid "Language and time"
+msgstr "שפה ושעה"
+
 msgid "Large image thumbnail on the left"
 msgstr "תמונה ממוזערת גדולה משמאל"
 
 msgid "Large image thumbnail on the right"
 msgstr "תמונה ממוזערת גדולה מימין"
+
+msgid "Large, left"
+msgstr "גדול, משמאל"
+
+msgid "Large, right"
+msgstr "גדול, מימין"
 
 msgid "Last 30 Days"
 msgstr "30 הימים האחרונים"
@@ -3939,6 +4030,9 @@ msgstr "בואו נמצא לכם אתרים לקריאה."
 msgid "Light"
 msgstr "בהיר"
 
+msgid "Light appearance"
+msgstr "מראה בהיר"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3966,6 +4060,12 @@ msgstr "קישור ישירות לכתבה המקורית"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "קישור לבלוג השיתופים שלי ולתגובות המשותפות"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "קישורים בכתבות נפתחים בחלון או בכרטיסייה חדשים"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "קישורים בכתבות מחליפים את NewsBlur בחלון הזה"
 
 msgid "List"
 msgstr "רשימה"
@@ -4065,9 +4165,6 @@ msgstr "הגישה לשרת MCP דורשת Premium Archive או Premium Pro."
 
 msgid "Magazine"
 msgstr "מגזין"
-
-msgid "Make changes above..."
-msgstr "בצעו את השינויים למעלה..."
 
 msgid "Manage Categories"
 msgstr "ניהול קטגוריות"
@@ -4188,9 +4285,6 @@ msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "לסמן כתבות מהיום האחרון, <b>%(value_1)s יום</b>, כלא נקראו"
 msgstr[1] "סמן כתבות מ־<b>%(value_1)s הימים האחרונים</b> כלא נקראו"
 
-msgid "Mark stories read on scroll"
-msgstr "סמן כתבות כנקראות בעת גלילה"
-
 msgid "Mark the site as read"
 msgstr "סמן את האתר כנקרא"
 
@@ -4202,6 +4296,12 @@ msgstr "סימון כנקרא..."
 
 msgid "Marking as unread..."
 msgstr "מסמן כלא נקרא..."
+
+msgid "Marking sites as read"
+msgstr "סימון אתרים כנקראו"
+
+msgid "Marking stories as read"
+msgstr "סימון כתבות כנקראו"
 
 msgid "Match"
 msgstr "התאמה"
@@ -4319,6 +4419,12 @@ msgstr "הפידים הפופולריים ביותר השבוע"
 msgid "Most used at top, then alphabetical"
 msgstr "הנפוצים ביותר בראש, ואז לפי סדר אלפביתי"
 
+msgid "Most used first"
+msgstr "הנפוצים ביותר קודם"
+
+msgid "Motion"
+msgstr "תנועה"
+
 msgid "Move"
 msgstr "העבר"
 
@@ -4393,6 +4499,9 @@ msgstr "לעולם לא"
 
 msgid "Name"
 msgstr "שם"
+
+msgid "Name only"
+msgstr "שם בלבד"
 
 msgid "Native Apps"
 msgstr "אפליקציות מקוריות"
@@ -4484,11 +4593,20 @@ msgstr "סיסמה חדשה"
 msgid "New posts from feeds you recently read"
 msgstr "פוסטים חדשים מפידים שקראת לאחרונה"
 
+msgid "New stories"
+msgstr "כתבות חדשות"
+
 msgid "New tag name"
 msgstr "שם תג חדש"
 
 msgid "New to me"
 msgstr "חדש עבורי"
+
+msgid "New window"
+msgstr "חלון חדש"
+
+msgid "New window, marked read"
+msgstr "חלון חדש, סומן כנקרא"
 
 msgid "Newer:"
 msgstr "אחרי:"
@@ -4514,6 +4632,9 @@ msgstr "NewsBlur לא זמין כרגע. <br> כדאי לנסות שוב בקר�
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur נמצא במצב תחזוקה. <br> נסו שוב בקרוב."
+
+msgid "NewsBlur menu"
+msgstr "תפריט NewsBlur"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur עוקב אוטומטית אחר שינויים בדף"
@@ -4553,6 +4674,12 @@ msgstr "הכתבה הבאה"
 
 msgid "Next unread"
 msgstr "הכתבה הבאה שלא נקראה"
+
+msgid "Next unread at the end"
+msgstr "הכתבה הבאה שלא נקראה בסוף"
+
+msgid "Next unread halfway"
+msgstr "חצי הדרך לכתבה הבאה שלא נקראה"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "כעת צרו מסנן שיכלול את כל הניוזלטרים שלכם, כך שהם יועברו לכתובת המותאמת אישית ב-NewsBlur."
@@ -4901,6 +5028,9 @@ msgstr "ב־Premium Archive, החיפוש מגיע לכל כתבה שאי פעם
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "ב־Premium אפשר לחפש בכתבות האחרונות שלכם. ב־Premium Archive אפשר לחפש בכל כתבה שאי פעם הועברה לארכיון."
 
+msgid "On reload"
+msgstr "בעת טעינה מחדש"
+
 msgid "One command with Docker"
 msgstr "פקודה אחת עם Docker"
 
@@ -5035,6 +5165,12 @@ msgstr "פתיחת תפריט הפיד וכותרת הכתבה"
 msgid "Open the first story"
 msgstr "פתח את הכתבה הראשונה"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "בעת טעינת NewsBlur, לפתוח את התיקייה שנבחרה למטה"
+
+msgid "Open the next one"
+msgstr "פתיחת הכתבה הבאה"
+
 msgid "Open the next site/folder"
 msgstr "פתיחת האתר/התיקייה הבאים"
 
@@ -5055,6 +5191,12 @@ msgstr "פתיחת התדריך היומי"
 
 msgid "Open your saved stories"
 msgstr "פתיחת הכתבות השמורות שלכם"
+
+msgid "Opening a site also opens its first story"
+msgstr "פתיחת אתר פותחת גם את הכתבה הראשונה שלו"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "פתיחת אתר מציגה את הכתבות שבו וממתינה לבחירה שלך"
 
 msgid "Opens"
 msgstr "פתיחות"
@@ -5196,6 +5338,9 @@ msgstr "בחרו מסלול ושלמו."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "בחרו את השפה שבה תרצו ש־NewsBlur יפעל. אפשר לשנות זאת בכל עת בהעדפות."
 
+msgid "Placement"
+msgstr "מיקום"
+
 msgid "Places"
 msgstr "מקומות"
 
@@ -5219,6 +5364,9 @@ msgstr "הפעל בסוף התור"
 
 msgid "Play Next"
 msgstr "הפעל כבא בתור"
+
+msgid "Play YouTube videos without captions"
+msgstr "הפעלת סרטוני YouTube ללא כתוביות"
 
 msgid "Play in Mini Media Player"
 msgstr "הפעל בנגן מדיה מוקטן"
@@ -5442,9 +5590,6 @@ msgstr "מוגן:"
 msgid "Public blurblog sharing"
 msgstr "שיתוף ציבורי של Blurblog"
 
-msgid "Public comments"
-msgstr "תגובות ציבוריות"
-
 msgid "Public:"
 msgstr "ציבורי:"
 
@@ -5538,6 +5683,9 @@ msgstr ""
 
 msgid "Read aloud"
 msgstr "הקראה"
+
+msgid "Read and unread stories are both listed"
+msgstr "כתבות שנקראו ושלא נקראו מוצגות ברשימה"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5642,11 +5790,8 @@ msgstr "נוצל"
 msgid "Redirect URL"
 msgstr "כתובת להפניה מחדש"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "לצמצם את העומס בזרם הכתבות שלך"
-
-msgid "Reduce motion"
-msgstr "הפחתת תנועה"
+msgid "Reduced"
+msgstr "מופחת"
 
 msgid "Refer"
 msgstr "הפנה"
@@ -5688,6 +5833,9 @@ msgstr "קשורות"
 
 msgid "Related Sites"
 msgstr "אתרים קשורים"
+
+msgid "Related sites above the story titles"
+msgstr "אתרים קשורים מעל כותרות הכתבות"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "כתבות קשורות זמינות רק למנויי Premium."
@@ -5835,6 +5983,12 @@ msgstr "זרם החדשות"
 msgid "River of News (reading by folder)"
 msgstr "זרם חדשות (קריאה לפי תיקייה)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "שורות מרווחות עם תמונה ותצוגה מקדימה"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "שורות בסרגל הצד וברשימת הכתבות"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "הפעילו newsblur auth login כדי לאשר באמצעות OAuth"
 
@@ -5891,9 +6045,6 @@ msgstr "שמירת הגדרות הבלוג שלי"
 
 msgid "Save My Profile"
 msgstr "שמירת הפרופיל שלי"
-
-msgid "Save Preferences"
-msgstr "שמירת העדפות"
 
 msgid "Save Search"
 msgstr "שמירת החיפוש"
@@ -5975,15 +6126,21 @@ msgstr ""
 "תדריכים מתוזמנים דורשים מינוי Premium Archive. במסגרת התוכנית שלכם, תדריכים נוצרים רק כשלוחצים על כפתור "
 "היצירה."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "שליחה מתוזמנת (פעם ביום או פעמיים ביום)"
-
 msgid "Science"
 msgstr "מדע"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "מסווגים ממוקדים זמינים רק למנויי %(plan)s."
+
+msgid "Scroll only"
+msgstr "גלילה בלבד"
+
+msgid "Scroll the story"
+msgstr "גלילה לאורך הכתבה"
+
+msgid "Scroll the story by the distance set below"
+msgstr "גלילה בכתבה לפי המרחק שנקבע למטה"
 
 msgid "Scroll to comments"
 msgstr "גלילה לתגובות"
@@ -6120,14 +6277,8 @@ msgstr ""
 "ראו כיצד כתבה מתפתחת לאחר פרסומה הראשוני. NewsBlur עוקב אחר גרסאות ומציג הבדלים בין השינויים, המודגשים "
 "בירוק ובאדום."
 
-msgid "See shared stories"
-msgstr "הצגת כתבות משותפות"
-
 msgid "See the story title and a short content preview"
 msgstr "הצגת כותרת הכתבה ותצוגה מקדימה קצרה של התוכן"
-
-msgid "See which feeds cover the same story"
-msgstr "ראו אילו פידים מסקרים את אותה כתבה"
 
 msgid "Select"
 msgstr "בחר"
@@ -6186,6 +6337,9 @@ msgstr "שליחת הכתבה הזו"
 msgid "Sending…"
 msgstr "שולח…"
 
+msgid "Separate"
+msgstr "נפרד"
+
 msgid "September"
 msgstr "ספטמבר"
 
@@ -6228,9 +6382,6 @@ msgstr "שתפו כתבה עם תגובה והיא תפורסם בבלוג הש�
 
 msgid "Share on NewsBlur"
 msgstr "שיתוף ב-NewsBlur"
-
-msgid "Share stories"
-msgstr "שיתוף כתבות"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6295,35 +6446,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "נמוך"
 
+msgid "Shorten all"
+msgstr "קיצור הכול"
+
+msgid "Shorten shared"
+msgstr "קיצור כתבות משותפות"
+
+msgid "Shortened stories open with a click"
+msgstr "כתבות מקוצרות נפתחות בלחיצה"
+
 msgid "Show"
 msgstr "הצג"
 
 msgid "Show Folders"
 msgstr "הצג תיקיות"
 
-msgid "Show Global Shared Stories"
-msgstr "הצג כתבות משותפות גלובליות"
-
-msgid "Show Good Reads"
-msgstr "הצגת קריאות מומלצות"
-
-msgid "Show Infrequent Site Stories"
-msgstr "הצגת כתבות מאתרים שמתעדכנים לעיתים רחוקות"
-
-msgid "Show Long Reads"
-msgstr "הצגת כתבות ארוכות"
-
-msgid "Show Widely Read Stories"
-msgstr "הצגת כתבות שנקראו רבות"
-
 msgid "Show a preview of the story"
 msgstr "הצגת תצוגה מקדימה של הכתבה"
 
 msgid "Show all animations"
 msgstr "הצגת כל ההנפשות"
-
-msgid "Show all comments"
-msgstr "הצגת כל התגובות"
 
 msgid "Show all stories"
 msgstr "הצג את כל הכתבות"
@@ -6354,6 +6496,9 @@ msgstr "הצגת סימון בעת בחירת טקסט"
 
 msgid "Show history"
 msgstr "הצג היסטוריה"
+
+msgid "Show in full"
+msgstr "הצגה מלאה"
 
 msgid "Show more related stories"
 msgstr "הצג כתבות קשורות נוספות"
@@ -6398,6 +6543,9 @@ msgstr "הצגת כתבות בתאריך <b>%(date)s</b>"
 msgid "Shows a toolbar button with your unread count"
 msgstr "מציג לחצן בסרגל הכלים עם מספר הפריטים שלא נקראו"
 
+msgid "Sidebar"
+msgstr "סרגל צד"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "התחברו והפידים, האימון והכתבות השמורות שלכם יסונכרנו מיד"
 
@@ -6434,17 +6582,20 @@ msgstr "כתובת אתר או חיפוש לפי שם..."
 msgid "Site by Site"
 msgstr "אתר אחר אתר"
 
+msgid "Site order"
+msgstr "סדר האתרים"
+
 msgid "Site settings"
 msgstr "הגדרות האתר"
-
-msgid "Site sidebar order"
-msgstr "סדר סרגל הצד של האתרים"
 
 msgid "Site stats"
 msgstr "נתוני האתר"
 
 msgid "Sites"
 msgstr "אתרים"
+
+msgid "Sites and folders"
+msgstr "אתרים ותיקיות"
 
 msgid "Sites updated up to 5x more often"
 msgstr "האתרים מתעדכנים בתדירות גבוהה עד פי 5"
@@ -6467,6 +6618,12 @@ msgstr "תמונה ממוזערת קטנה משמאל"
 msgid "Small image thumbnail on the right"
 msgstr "תמונה ממוזערת קטנה מימין"
 
+msgid "Small, left"
+msgstr "קטן, משמאל"
+
+msgid "Small, right"
+msgstr "קטן, מימין"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "כל כך הרבה זמן וכל כך מעט מה לעשות. רגע, להפך!"
 
@@ -6475,6 +6632,9 @@ msgstr "חברתי"
 
 msgid "Social Connections"
 msgstr "חיבורים חברתיים"
+
+msgid "Social features"
+msgstr "תכונות חברתיות"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6526,8 +6686,11 @@ msgstr "אפשרויות מיון, סינון ותצוגה"
 msgid "Source feeds"
 msgstr "פידי מקור"
 
-msgid "Spacing between feeds and story titles"
-msgstr "ריווח בין הפידים לכותרות הכתבות"
+msgid "Space bar"
+msgstr "מקש הרווח"
+
+msgid "Spacing"
+msgstr "מרווחים"
 
 msgid "Spanish"
 msgstr "ספרדית"
@@ -6631,6 +6794,9 @@ msgstr "סטטוס"
 msgid "Stay on the same feed/folder"
 msgstr "להישאר באותו פיד/תיקייה"
 
+msgid "Stay put"
+msgstr "להישאר במקום"
+
 msgid "Steadier or more varied"
 msgstr "יציב יותר או מגוון יותר"
 
@@ -6659,6 +6825,9 @@ msgstr "כתבות מסומנות בירוק (אהבתי) או מוסתרות (�
 
 msgid "Stories arrive in real-time"
 msgstr "כתבות מגיעות בזמן אמת"
+
+msgid "Stories as cards in a grid"
+msgstr "כתבות ככרטיסים ברשת"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "כתבות נשמרות במטמון לקריאה לא מקוונת, עם רענון אוטומטי ברקע."
@@ -6718,6 +6887,12 @@ msgstr "כתבות בחודש"
 msgid "Stories readers finished, saved, and shared"
 msgstr "כתבות שקוראים סיימו לקרוא, שמרו ושיתפו"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "כתבות שגללת מעבר להן בכותרות הכתבות"
+
+msgid "Stories shown"
+msgstr "כתבות מוצגות"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "כתבות שזכו לתשומת הלב הרבה ביותר ב־NewsBlur."
 
@@ -6726,6 +6901,9 @@ msgstr "כתבות <b>לעולם לא</b> יסומנו אוטומטית כנקר
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "כתבות <b>לעולם לא</b> יסומנו כנקראו"
+
+msgid "Stories you have read are left out"
+msgstr "כתבות שכבר קראת לא ייכללו"
 
 msgid "Story"
 msgstr "כתבה"
@@ -6760,6 +6938,9 @@ msgstr "טיפוגרפיית כתבות"
 msgid "Story URL"
 msgstr "כתובת URL של כתבה"
 
+msgid "Story buttons"
+msgstr "כפתורי כתבה"
+
 msgid "Story cards open on their own screen"
 msgstr "כרטיסי כתבות נפתחים במסך משלהם"
 
@@ -6778,23 +6959,20 @@ msgstr "שפת הכתבה"
 msgid "Story layout"
 msgstr "פריסת הכתבה"
 
+msgid "Story list"
+msgstr "רשימת הכתבות"
+
 msgid "Story preview"
 msgstr "תצוגה מקדימה של כתבה"
 
 msgid "Story shows in Focus view"
 msgstr "הכתבה מוצגת בתצוגת המיקוד"
 
-msgid "Story side options"
-msgstr "אפשרויות בצד הכתבה"
-
-msgid "Story side options buttons"
-msgstr "כפתורי אפשרויות בצד הכתבה"
-
-msgid "Story side options placement"
-msgstr "מיקום אפשרויות הצד של הכתבה"
-
 msgid "Story title styling"
 msgstr "עיצוב כותרת הכתבה"
+
+msgid "Story titles beside the open story"
+msgstr "כותרות הכתבות לצד הכתבה הפתוחה"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "הזרם נקטע. לא התקבלה תגובה במשך 10 שניות."
@@ -6975,6 +7153,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "גבוה"
 
+msgid "Tall stories"
+msgstr "כתבות גבוהות"
+
 msgid "Target category name"
 msgstr "שם קטגוריית היעד"
 
@@ -7040,6 +7221,9 @@ msgstr "תודה! יש לך %(bold_start)sחשבון Premium Archive%(bold_end)s
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "תודה! יש לך חשבון %(bold_start)sPremium Pro%(bold_end)s."
 
+msgid "That change could not be saved"
+msgstr "לא ניתן לשמור את השינוי"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "שירות הבינה המלאכותית השתהה בתגובה. נסו שוב."
 
@@ -7089,6 +7273,9 @@ msgstr "זרם החדשות המלא הוא %(link_start)sתכונת Premium%(li
 msgid "The full shortcut list"
 msgstr "רשימת כל קיצורי המקלדת"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "הטקסט המלא של הכתבה, שאוחזר מהאתר"
+
 msgid "The gift has been applied to your account."
 msgstr "המתנה הוחלה על חשבונך."
 
@@ -7108,14 +7295,29 @@ msgstr "פקודת ההתחברות פותחת את הדפדפן לאימות OA
 msgid "The most important stories from your feeds"
 msgstr "הכתבות החשובות ביותר מהפידים שלך"
 
+msgid "The most recent stories come first"
+msgstr "הכתבות החדשות ביותר מופיעות ראשונות"
+
+msgid "The oldest stories come first"
+msgstr "הכתבות הישנות ביותר מופיעות ראשונות"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "הדף המקורי הושבת על ידי המפרסם."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "קוד ה-HTML של הדף נטען ומנותח כדי לחלץ את מבנה התוכן."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "האתר עצמו, כפי שהוא נראה בדפדפן"
+
+msgid "The story on its own page on the site"
+msgstr "הכתבה בעמוד נפרד באתר"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "התצוגה שתבחרו נשמרת לכל אתר, כך שפידים שמציגים תקצירים בלבד יכולים להציג טקסט כברירת מחדל."
+
+msgid "Theme"
+msgstr "ערכת נושא"
 
 msgid "Themes & Customization"
 msgstr "ערכות נושא והתאמה אישית"
@@ -7322,6 +7524,9 @@ msgstr "ביטויים בכותרת"
 msgid "Title Regex"
 msgstr "ביטוי רגולרי לכותרת"
 
+msgid "Title and preview"
+msgstr "כותרת ותצוגה מקדימה"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "מסנני הכותרות לא מצאו כתבות ב־%(context)s."
@@ -7395,9 +7600,6 @@ msgstr "כלים"
 msgid "Tooltips"
 msgstr "הסברים קופצים"
 
-msgid "Tooltips like this"
-msgstr "הסברים קופצים כאלה"
-
 msgid "Top"
 msgstr "למעלה"
 
@@ -7455,6 +7657,9 @@ msgstr "אימון על הכתבה הזו"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "אמנו את הפידים שלכם כדי לסנן כתבות שאהבתם או לא אהבתם."
 
+msgid "Train, Save, Share and the rest"
+msgstr "אימון, שמירה, שיתוף והשאר"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "אמן, תייג, חפש וארגן ניוזלטרים כמו כל פיד אחר"
 
@@ -7478,9 +7683,6 @@ msgstr "במגמת עלייה"
 
 msgid "Trending Sites"
 msgstr "אתרים במגמת עלייה"
-
-msgid "Truncate stories"
-msgstr "לקצר כתבות"
 
 msgid "Try"
 msgstr "נסה"
@@ -7610,6 +7812,9 @@ msgstr "ההשתקה בוטלה"
 
 msgid "Unread"
 msgstr "לא נקרא"
+
+msgid "Unread count"
+msgstr "מספר כתבות שלא נקראו"
 
 msgid "Unread only"
 msgstr "לא נקראו בלבד"
@@ -7870,6 +8075,10 @@ msgstr "הגדרות קול"
 msgid "Voices"
 msgstr "קולות"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "חם"
+
 msgid "Warning: This is actually permanent"
 msgstr "אזהרה: הפעולה הזו בלתי הפיכה"
 
@@ -7967,8 +8176,14 @@ msgstr "מה ההקשר והרקע?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "מה ההבדל בין CLI ל-MCP?"
 
+msgid "When NewsBlur opens"
+msgstr "כש־NewsBlur נפתח"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "כשפיד מתעדכן, NewsBlur בודק כפילויות בכל המינויים שלכם"
+
+msgid "When clicked"
+msgstr "בעת לחיצה"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "כשכמה פידים כוללים את אותה כתבה, NewsBlur מקבץ אותם יחד כדי שתראו אותה רק פעם אחת."
@@ -7992,6 +8207,9 @@ msgstr "כשנרשמים לפיד חדש, ההיסטוריה שלו נטענת �
 
 msgid "Which AI models are available?"
 msgstr "אילו מודלים של בינה מלאכותית זמינים?"
+
+msgid "While scrolling"
+msgstr "במהלך הגלילה"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "אופס! משהו השתבש. נסו שוב."
@@ -8022,6 +8240,9 @@ msgstr "כותרת החלון"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "באמצעות המקלדת"
 
 msgid "Word Matching"
 msgstr "התאמת מילים"

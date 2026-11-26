@@ -1076,6 +1076,12 @@ msgstr "1 rok"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12-godzinny"
+
+msgid "24-hour"
+msgstr "24-godzinny"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Dostępnych jest 28 narzędzi do czytania, wykonywania działań, trenowania i odkrywania treści."
 
@@ -1132,6 +1138,9 @@ msgstr "Blurblog udostępnionych artykułów"
 msgid "A clearer, closer sound"
 msgstr "Czystszy, bardziej bezpośredni dźwięk"
 
+msgid "A folder"
+msgstr "Folder"
+
 msgid "A folder of feeds read as one stream"
 msgstr "Folder kanałów wyświetlanych jako jeden strumień"
 
@@ -1145,11 +1154,23 @@ msgstr "Prezent od %(value_1)s został dodany do Twojego konta."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Drugi etap wykorzystuje Twoją wskazówkę, by znaleźć na stronie odpowiedni wzorzec."
 
+msgid "A short list of titles above the open story"
+msgstr "Krótka lista tytułów nad otwartym artykułem"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "Jedno polubienie ma większą wagę niż dowolna liczba negatywnych ocen"
 
 msgid "A story diff with additions and deletions"
 msgstr "Porównanie wersji artykułu z dodanymi i usuniętymi fragmentami"
+
+msgid "A story is read as soon as it is selected"
+msgstr "Artykuł zostaje oznaczony jako przeczytany od razu po jego wybraniu"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "Artykuł zostaje oznaczony jako przeczytany po otwarciu go na czas ustawiony poniżej"
+
+msgid "A to Z"
+msgstr "Od A do Z"
 
 msgid "AI Filter"
 msgstr "Filtr AI"
@@ -1318,6 +1339,9 @@ msgstr[0] "Za %(slider)s %(count)s sekundę."
 msgstr[1] "Za %(slider)s %(count)s sekundy."
 msgstr[2] "Za %(slider)s %(count)s sekund."
 
+msgid "After a delay"
+msgstr "Po pewnym czasie"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr ""
 "Gdy czytelnik autoryzuje Twoją aplikację, NewsBlur przekierowuje go pod ten adres URL z kodem "
@@ -1328,6 +1352,9 @@ msgstr "Po oznaczeniu kanału/folderu jako przeczytanego"
 
 msgid "Afternoon"
 msgstr "Popołudnie"
+
+msgid "Afterwards"
+msgstr "Później"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1471,9 +1498,6 @@ msgstr "Powiadomienia na Androidzie wymagają Premium Archive"
 msgid "Animals"
 msgstr "Zwierzęta"
 
-msgid "Animations"
-msgstr "Animacje"
-
 msgid "Any"
 msgstr "Dowolny"
 
@@ -1552,6 +1576,9 @@ msgstr "Czy aplikacje są bezpłatne?"
 msgid "Are the apps open source?"
 msgstr "Czy aplikacje są open source?"
 
+msgid "Arrow keys"
+msgstr "Klawisze strzałek"
+
 msgid "Arrows"
 msgstr "Strzałki"
 
@@ -1592,6 +1619,9 @@ msgstr "Zadaj pytanie..."
 
 msgid "Ask about your browsing history..."
 msgstr "Zapytaj o historię przeglądania..."
+
+msgid "Ask first"
+msgstr "Najpierw zapytaj"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1640,6 +1670,9 @@ msgstr "Automatycznie"
 
 msgid "Auto Mark as Read"
 msgstr "Automatycznie oznaczaj jako przeczytane"
+
+msgid "Auto follows system appearance"
+msgstr "Automatycznie dopasowuje się do wyglądu systemu"
 
 msgid "Auto mark as read"
 msgstr "Automatycznie oznaczaj jako przeczytane"
@@ -1714,6 +1747,15 @@ msgstr "Na podstawie Twoich zainteresowań"
 msgid "Begin Training"
 msgstr "Rozpocznij trenowanie"
 
+msgid "Behavior"
+msgstr "Działanie"
+
+msgid "Below the story"
+msgstr "Pod artykułem"
+
+msgid "Beside the story"
+msgstr "Obok artykułu"
+
 msgid "Bio"
 msgstr "Biogram"
 
@@ -1762,6 +1804,9 @@ msgstr "Tytuł Blurbloga"
 
 msgid "Blurblogs"
 msgstr "Blurblogi"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblogi, udostępnione artykuły i komentarze"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -1829,16 +1874,25 @@ msgstr "Przeglądarka"
 msgid "Browser Extensions"
 msgstr "Rozszerzenia przeglądarki"
 
+msgid "Browser menu"
+msgstr "Menu przeglądarki"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr ""
 "Tworzysz publiczny czytnik RSS, z którego może korzystać każdy? Możesz otrzymać bezpłatne konto NewsBlur "
 "Premium Pro."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "Wbudowane listy artykułów na pasku bocznym"
 
 msgid "Bullet points"
 msgstr "Wypunktowanie"
 
 msgid "Bullets"
 msgstr "Punktory"
+
+msgid "Buttons"
+msgstr "Przyciski"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -2010,9 +2064,6 @@ msgstr "Wybierz model AI, który przygotuje Twój przegląd"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "Wybierz kanały używane do przygotowania przeglądu"
 
-msgid "Choose which feeds to include"
-msgstr "Wybierz kanały do uwzględnienia"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "Wybierz sekcje, które pojawią się w Twoim przeglądzie"
 
@@ -2092,11 +2143,17 @@ msgstr "Kliknij dowolne źródło, aby przeczytać tę wersję, lub od razu ozna
 msgid "Click to block"
 msgstr "Kliknij, aby zablokować"
 
+msgid "Clicks"
+msgstr "Kliknięcia"
+
 msgid "Client ID"
 msgstr "Identyfikator klienta"
 
 msgid "Client secret"
 msgstr "Tajny klucz klienta"
+
+msgid "Clock"
+msgstr "Zegar"
 
 msgid "Close"
 msgstr "Zamknij"
@@ -2137,6 +2194,9 @@ msgstr "Zwiń artykuł"
 msgid "Collapsed"
 msgstr "Zwinięte"
 
+msgid "Collapsed folders"
+msgstr "Zwinięte foldery"
+
 msgid "Color"
 msgstr "Kolor"
 
@@ -2155,8 +2215,8 @@ msgstr "Polecenia wyświetlają dane JSON, które możesz przekazać bezpośredn
 msgid "Comment"
 msgstr "Komentarz"
 
-msgid "Comment on stories"
-msgstr "Komentowanie artykułów"
+msgid "Comments"
+msgstr "Komentarze"
 
 msgid "Comments:"
 msgstr "Komentarze:"
@@ -2376,9 +2436,6 @@ msgstr "Niestandardowy zakres dat"
 msgid "Custom icon"
 msgstr "Własna ikona"
 
-msgid "Customizable writing style and length"
-msgstr "Możliwość dostosowania stylu i długości tekstu"
-
 msgid "Customize auto-read by site or folder"
 msgstr "Dostosuj automatyczne oznaczanie jako przeczytane dla witryny lub folderu"
 
@@ -2417,6 +2474,9 @@ msgstr "Dzienny rozkład artykułów"
 msgid "Dark"
 msgstr "Ciemny"
 
+msgid "Dark appearance"
+msgstr "Ciemny wygląd"
+
 msgid "Dark mode and reading customization"
 msgstr "Tryb ciemny i dostosowywanie czytania"
 
@@ -2447,9 +2507,6 @@ msgstr "Domyślny"
 
 msgid "Default Blocklist"
 msgstr "Domyślna lista blokowanych"
-
-msgid "Default folder"
-msgstr "Folder domyślny"
 
 msgid "Default layout"
 msgstr "Domyślny układ"
@@ -2535,15 +2592,6 @@ msgstr "Szczegółowe"
 
 msgid "Devices"
 msgstr "Urządzenia"
-
-msgid "Disable daily briefings"
-msgstr "Wyłącz codzienne przeglądy"
-
-msgid "Disable social features"
-msgstr "Wyłącz funkcje społecznościowe"
-
-msgid "Disable story clustering"
-msgstr "Wyłącz grupowanie artykułów"
 
 msgid "Disable the highlighter"
 msgstr "Wyłącz podświetlanie"
@@ -2649,6 +2697,11 @@ msgstr "Gotowe!"
 
 msgid "Double-clicking a site"
 msgstr "Dwukrotne kliknięcie witryny"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr ""
+"Dwukrotne kliknięcie liczby nieprzeczytanych artykułów w witrynie oznacza wszystkie jej artykuły jako "
+"przeczytane"
 
 msgid "Double-clicking an unread count"
 msgstr "Dwukrotne kliknięcie licznika nieprzeczytanych"
@@ -2788,17 +2841,11 @@ msgstr "Włącz napisy do filmów w YouTube"
 msgid "Enable daily briefings"
 msgstr "Włącz codzienne przeglądy"
 
-msgid "Enable highlighting"
-msgstr "Włącz podświetlanie"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "Aby używać wprowadzania głosowego, włącz mikrofon w ustawieniach przeglądarki"
 
 msgid "Enable social features"
 msgstr "Włącz funkcje społecznościowe"
-
-msgid "Enable story clustering"
-msgstr "Włącz grupowanie artykułów"
 
 msgid "Enable the sites you want"
 msgstr "Włącz wybrane witryny"
@@ -2885,6 +2932,9 @@ msgstr "Wieczór"
 msgid "Every"
 msgstr "Co"
 
+msgid "Every folder"
+msgstr "Każdy folder"
+
 msgid "Every new story is archived permanently"
 msgstr "Każdy nowy artykuł jest archiwizowany na stałe"
 
@@ -2897,10 +2947,19 @@ msgstr "Każdy artykuł zarchiwizowany i dostępny do wyszukiwania na zawsze"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Każdy artykuł jest archiwizowany na zawsze i można go przeszukiwać. Twoja osobista baza wiedzy."
 
+msgid "Every story as the site published it in its feed"
+msgstr "Każdy artykuł w takiej postaci, w jakiej witryna opublikowała go w swoim kanale"
+
+msgid "Every story in full, one after another"
+msgstr "Każdy pełny artykuł, odtwarzany jeden po drugim"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "Każdy tag ma własny kanał RSS. Udostępnij link lub przekaż go do IFTTT albo Zapier."
 
 msgid "Everybody"
+msgstr "Wszyscy"
+
+msgid "Everyone"
 msgstr "Wszyscy"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3281,6 +3340,9 @@ msgstr "Liczba nieprzeczytanych artykułów w folderach"
 msgid "Folders"
 msgstr "Foldery"
 
+msgid "Folders only"
+msgstr "Tylko foldery"
+
 msgid "Folders, feeds, and story titles"
 msgstr "Foldery, kanały i tytuły artykułów"
 
@@ -3450,6 +3512,9 @@ msgstr "Znajomi &amp; obserwujący"
 
 msgid "Friends and Followers"
 msgstr "Znajomi i obserwujący"
+
+msgid "Friends only"
+msgstr "Tylko znajomi"
 
 msgctxt "date range"
 msgid "From"
@@ -3642,6 +3707,10 @@ msgstr "Dodatki &amp; aplikacje mobilne"
 msgid "Google News"
 msgstr "Google News"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Szary"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "Zielony oznacza dodane elementy, czerwony — usunięte."
 
@@ -3659,6 +3728,9 @@ msgstr "Grupuj powtarzające się artykuły z różnych kanałów"
 
 msgid "Group stories that share:"
 msgstr "Grupuj artykuły, które mają wspólne:"
+
+msgid "Grouped"
+msgstr "Pogrupowane"
 
 msgid "Groups similar stories from different feeds"
 msgstr "Grupuje podobne artykuły z różnych kanałów"
@@ -3733,6 +3805,9 @@ msgstr "Podświetl czytany akapit"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Zaznacz słowa w tytule, aby trenować rozpoznawanie konkretnych fraz."
 
+msgid "Highlighter"
+msgstr "Podświetlacz"
+
 msgid "History"
 msgstr "Historia"
 
@@ -3768,6 +3843,9 @@ msgstr "Ile emocji"
 
 msgid "How often"
 msgstr "Jak często"
+
+msgid "How panes and stories move"
+msgstr "Poruszanie się między panelami i artykułami"
 
 msgid "I'm Following"
 msgstr "Obserwuję"
@@ -3853,6 +3931,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "W nowym oknie"
+
+msgid "In a pill"
+msgstr "W kapsułce"
 
 msgid "In rotation"
 msgstr "W rotacji"
@@ -3989,6 +4070,9 @@ msgstr "Pozostaw widoczne przyciski po prawej stronie podczas czytania"
 msgid "Keep stories separate"
 msgstr "Rozdzielaj artykuły"
 
+msgid "Keep unread counts out of the window title"
+msgstr "Nie pokazuj liczby nieprzeczytanych artykułów w tytule okna"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Bądź na bieżąco z NewsBlur"
 
@@ -4014,11 +4098,20 @@ msgstr "Sekcje słów kluczowych"
 msgid "Language"
 msgstr "Język"
 
+msgid "Language and time"
+msgstr "Język i czas"
+
 msgid "Large image thumbnail on the left"
 msgstr "Duża miniatura po lewej"
 
 msgid "Large image thumbnail on the right"
 msgstr "Duża miniatura obrazu po prawej"
+
+msgid "Large, left"
+msgstr "Duży, po lewej"
+
+msgid "Large, right"
+msgstr "Duży, po prawej"
 
 msgid "Last 30 Days"
 msgstr "Ostatnie 30 dni"
@@ -4063,6 +4156,9 @@ msgstr "Dodajmy kilka witryn do czytania."
 msgid "Light"
 msgstr "Jasny"
 
+msgid "Light appearance"
+msgstr "Jasny wygląd"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -4090,6 +4186,12 @@ msgstr "Linkuj bezpośrednio do oryginalnego artykułu"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Link do mojego blurbloga i udostępnionych komentarzy"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "Linki w artykułach otwierają się w nowym oknie lub karcie"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "Linki w artykułach zastępują NewsBlur w tym oknie"
 
 msgid "List"
 msgstr "Lista"
@@ -4189,9 +4291,6 @@ msgstr "Dostęp do serwera MCP wymaga planu Premium Archive lub Premium Pro."
 
 msgid "Magazine"
 msgstr "Magazyn"
-
-msgid "Make changes above..."
-msgstr "Wprowadź zmiany powyżej..."
 
 msgid "Manage Categories"
 msgstr "Zarządzaj kategoriami"
@@ -4316,9 +4415,6 @@ msgstr[0] "Oznacz artykuły z ostatniego <b>%(value_1)s dnia</b> jako nieprzeczy
 msgstr[1] "Oznacz artykuły z ostatnich <b>%(value_1)s dni</b> jako nieprzeczytane"
 msgstr[2] "Oznacz artykuły z ostatnich <b>%(value_1)s dni</b> jako nieprzeczytane"
 
-msgid "Mark stories read on scroll"
-msgstr "Oznaczaj artykuły jako przeczytane podczas przewijania"
-
 msgid "Mark the site as read"
 msgstr "Oznacz witrynę jako przeczytaną"
 
@@ -4330,6 +4426,12 @@ msgstr "Oznaczanie jako przeczytane..."
 
 msgid "Marking as unread..."
 msgstr "Oznaczanie jako nieprzeczytane..."
+
+msgid "Marking sites as read"
+msgstr "Oznaczanie witryn jako przeczytane"
+
+msgid "Marking stories as read"
+msgstr "Oznaczanie artykułów jako przeczytane"
 
 msgid "Match"
 msgstr "Dopasowanie"
@@ -4451,6 +4553,12 @@ msgstr "Najczęściej subskrybowane kanały w tym tygodniu"
 msgid "Most used at top, then alphabetical"
 msgstr "Najczęściej używane na górze, potem alfabetycznie"
 
+msgid "Most used first"
+msgstr "Najczęściej używane najpierw"
+
+msgid "Motion"
+msgstr "Ruch"
+
 msgid "Move"
 msgstr "Przenieś"
 
@@ -4527,6 +4635,9 @@ msgstr "NIGDY"
 
 msgid "Name"
 msgstr "Nazwa"
+
+msgid "Name only"
+msgstr "Tylko nazwa"
 
 msgid "Native Apps"
 msgstr "Aplikacje natywne"
@@ -4618,11 +4729,20 @@ msgstr "Nowe hasło"
 msgid "New posts from feeds you recently read"
 msgstr "Nowe wpisy z kanałów, które niedawno czytano"
 
+msgid "New stories"
+msgstr "Nowe artykuły"
+
 msgid "New tag name"
 msgstr "Nazwa nowego tagu"
 
 msgid "New to me"
 msgstr "Nowe dla mnie"
+
+msgid "New window"
+msgstr "Nowe okno"
+
+msgid "New window, marked read"
+msgstr "Nowe okno, oznaczone jako przeczytane"
 
 msgid "Newer:"
 msgstr "Nowsze niż:"
@@ -4648,6 +4768,9 @@ msgstr "NewsBlur jest teraz niedostępne. <br> Spróbuj ponownie za chwilę."
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur jest w trybie konserwacji. <br> Spróbuj ponownie wkrótce."
+
+msgid "NewsBlur menu"
+msgstr "Menu NewsBlur"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur automatycznie monitoruje stronę pod kątem zmian"
@@ -4687,6 +4810,12 @@ msgstr "Następny artykuł"
 
 msgid "Next unread"
 msgstr "Następny nieprzeczytany"
+
+msgid "Next unread at the end"
+msgstr "Przejdź do następnego nieprzeczytanego artykułu na końcu"
+
+msgid "Next unread halfway"
+msgstr "Połowa następnego nieprzeczytanego artykułu"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr ""
@@ -5041,6 +5170,9 @@ msgstr ""
 "W Premium możesz przeszukiwać najnowsze artykuły. W Premium Archive można przeszukiwać wszystkie artykuły "
 "kiedykolwiek zarchiwizowane."
 
+msgid "On reload"
+msgstr "Po ponownym wczytaniu"
+
 msgid "One command with Docker"
 msgstr "Jedno polecenie z Dockerem"
 
@@ -5185,6 +5317,12 @@ msgstr "Otwórz menu kanału i tytułu artykułu"
 msgid "Open the first story"
 msgstr "Otwórz pierwszy artykuł"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "Otwórz wybrany poniżej folder podczas wczytywania NewsBlur"
+
+msgid "Open the next one"
+msgstr "Otwórz następny"
+
 msgid "Open the next site/folder"
 msgstr "Otwórz następną witrynę/folder"
 
@@ -5205,6 +5343,12 @@ msgstr "Otwórz codzienny przegląd"
 
 msgid "Open your saved stories"
 msgstr "Otwórz zapisane artykuły"
+
+msgid "Opening a site also opens its first story"
+msgstr "Otwarcie witryny powoduje również otwarcie pierwszego artykułu"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "Otwarcie witryny pokazuje jej artykuły i czeka, aż wybierzesz jeden"
 
 msgid "Opens"
 msgstr "Otwarcia"
@@ -5350,6 +5494,9 @@ msgstr "Wybierz plan i zapłać."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "Wybierz język, którego NewsBlur ma używać. Możesz to zmienić w dowolnym momencie w Preferencjach."
 
+msgid "Placement"
+msgstr "Umiejscowienie"
+
 msgid "Places"
 msgstr "Miejsca"
 
@@ -5373,6 +5520,9 @@ msgstr "Odtwórz na końcu kolejki"
 
 msgid "Play Next"
 msgstr "Odtwórz jako następne"
+
+msgid "Play YouTube videos without captions"
+msgstr "Odtwarzaj filmy z YouTube bez napisów"
 
 msgid "Play in Mini Media Player"
 msgstr "Odtwórz w miniodtwarzaczu multimediów"
@@ -5600,9 +5750,6 @@ msgstr "Chronione:"
 msgid "Public blurblog sharing"
 msgstr "Publiczne udostępnianie Blurbloga"
 
-msgid "Public comments"
-msgstr "Komentarze publiczne"
-
 msgid "Public:"
 msgstr "Publiczne:"
 
@@ -5709,6 +5856,9 @@ msgstr ""
 msgid "Read aloud"
 msgstr "Czytaj na głos"
 
+msgid "Read and unread stories are both listed"
+msgstr "Wyświetlane są zarówno przeczytane, jak i nieprzeczytane artykuły"
+
 #, python-format
 msgid "Read by %(voice)s"
 msgstr "Czyta %(voice)s"
@@ -5812,11 +5962,8 @@ msgstr "Zrealizowano"
 msgid "Redirect URL"
 msgstr "Adres URL przekierowania"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "Uporządkuj strumień artykułów"
-
-msgid "Reduce motion"
-msgstr "Ogranicz ruch"
+msgid "Reduced"
+msgstr "Zmniejszone"
 
 msgid "Refer"
 msgstr "Poleć"
@@ -5858,6 +6005,9 @@ msgstr "Powiązane"
 
 msgid "Related Sites"
 msgstr "Powiązane witryny"
+
+msgid "Related sites above the story titles"
+msgstr "Powiązane witryny nad tytułami artykułów"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "Powiązane artykuły są dostępne tylko dla subskrybentów Premium."
@@ -6006,6 +6156,12 @@ msgstr "Strumień wiadomości"
 msgid "River of News (reading by folder)"
 msgstr "Strumień wiadomości (czytanie według folderów)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "Przestronne wiersze ze zdjęciem i podglądem"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "Wiersze na pasku bocznym i liście artykułów"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "Uruchom newsblur auth login, aby autoryzować przez OAuth"
 
@@ -6064,9 +6220,6 @@ msgstr "Zapisz ustawienia mojego Blurbloga"
 
 msgid "Save My Profile"
 msgstr "Zapisz mój profil"
-
-msgid "Save Preferences"
-msgstr "Zapisz ustawienia"
 
 msgid "Save Search"
 msgstr "Zapisz wyszukiwanie"
@@ -6150,15 +6303,21 @@ msgstr ""
 "Zaplanowane przeglądy wymagają subskrypcji Premium Archive. W Twoim planie przeglądy są generowane tylko po"
 " kliknięciu przycisku Generuj."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "Zaplanowana dostawa (raz lub dwa razy dziennie)"
-
 msgid "Science"
 msgstr "Nauka"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Klasyfikatory o ograniczonym zakresie są dostępne tylko dla subskrybentów %(plan)s."
+
+msgid "Scroll only"
+msgstr "Tylko przewijanie"
+
+msgid "Scroll the story"
+msgstr "Przewiń artykuł"
+
+msgid "Scroll the story by the distance set below"
+msgstr "Przewijaj artykuł o odległość ustawioną poniżej"
 
 msgid "Scroll to comments"
 msgstr "Przewiń do komentarzy"
@@ -6295,14 +6454,8 @@ msgstr ""
 "Zobacz, jak artykuł zmienia się po publikacji. NewsBlur śledzi kolejne wersje i pokazuje różnice — zmiany "
 "zaznacza na zielono i czerwono."
 
-msgid "See shared stories"
-msgstr "Przeglądanie udostępnionych artykułów"
-
 msgid "See the story title and a short content preview"
 msgstr "Zobacz tytuł artykułu i krótki podgląd treści"
-
-msgid "See which feeds cover the same story"
-msgstr "Zobacz, które kanały opisują tę samą historię"
 
 msgid "Select"
 msgstr "Wybierz"
@@ -6361,6 +6514,9 @@ msgstr "Wyślij ten artykuł"
 msgid "Sending…"
 msgstr "Wysyłanie…"
 
+msgid "Separate"
+msgstr "Oddzielnie"
+
 msgid "September"
 msgstr "wrzesień"
 
@@ -6407,9 +6563,6 @@ msgstr ""
 
 msgid "Share on NewsBlur"
 msgstr "Udostępnij w NewsBlur"
-
-msgid "Share stories"
-msgstr "Udostępnianie artykułów"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6477,35 +6630,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "Niski"
 
+msgid "Shorten all"
+msgstr "Zwiń wszystkie"
+
+msgid "Shorten shared"
+msgstr "Skróć udostępnione artykuły"
+
+msgid "Shortened stories open with a click"
+msgstr "Skrócone artykuły otwierają się po kliknięciu"
+
 msgid "Show"
 msgstr "Pokaż"
 
 msgid "Show Folders"
 msgstr "Pokaż foldery"
 
-msgid "Show Global Shared Stories"
-msgstr "Pokaż globalnie udostępnione artykuły"
-
-msgid "Show Good Reads"
-msgstr "Pokaż artykuły warte przeczytania"
-
-msgid "Show Infrequent Site Stories"
-msgstr "Pokaż artykuły z rzadko aktualizowanych witryn"
-
-msgid "Show Long Reads"
-msgstr "Pokaż długie artykuły"
-
-msgid "Show Widely Read Stories"
-msgstr "Pokaż najczęściej czytane artykuły"
-
 msgid "Show a preview of the story"
 msgstr "Pokaż podgląd artykułu"
 
 msgid "Show all animations"
 msgstr "Pokaż wszystkie animacje"
-
-msgid "Show all comments"
-msgstr "Pokaż wszystkie komentarze"
 
 msgid "Show all stories"
 msgstr "Pokaż wszystkie artykuły"
@@ -6536,6 +6680,9 @@ msgstr "Pokazuj podświetlenie przy zaznaczaniu tekstu"
 
 msgid "Show history"
 msgstr "Pokaż historię"
+
+msgid "Show in full"
+msgstr "Pokaż w całości"
 
 msgid "Show more related stories"
 msgstr "Pokaż więcej powiązanych artykułów"
@@ -6580,6 +6727,9 @@ msgstr "Wyświetlanie artykułów z dnia <b>%(date)s</b>"
 msgid "Shows a toolbar button with your unread count"
 msgstr "Wyświetla przycisk paska narzędzi z liczbą nieprzeczytanych artykułów"
 
+msgid "Sidebar"
+msgstr "Panel boczny"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Zaloguj się, aby natychmiast synchronizować swoje kanały, trening i zapisane artykuły"
 
@@ -6616,17 +6766,20 @@ msgstr "Adres URL witryny lub wyszukaj według nazwy..."
 msgid "Site by Site"
 msgstr "Witryna po witrynie"
 
+msgid "Site order"
+msgstr "Kolejność witryn"
+
 msgid "Site settings"
 msgstr "Ustawienia witryny"
-
-msgid "Site sidebar order"
-msgstr "Kolejność witryn na pasku bocznym"
 
 msgid "Site stats"
 msgstr "Statystyki witryny"
 
 msgid "Sites"
 msgstr "Witryny"
+
+msgid "Sites and folders"
+msgstr "Witryny i foldery"
 
 msgid "Sites updated up to 5x more often"
 msgstr "Witryny aktualizowane do 5 razy częściej"
@@ -6649,6 +6802,12 @@ msgstr "Mała miniatura po lewej stronie"
 msgid "Small image thumbnail on the right"
 msgstr "Mała miniatura po prawej"
 
+msgid "Small, left"
+msgstr "Mały, po lewej"
+
+msgid "Small, right"
+msgstr "Mały, po prawej"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Tak dużo czasu i tak mało do zrobienia. Nie, czekaj! Odwrotnie."
 
@@ -6657,6 +6816,9 @@ msgstr "Społeczność"
 
 msgid "Social Connections"
 msgstr "Kontakty społecznościowe"
+
+msgid "Social features"
+msgstr "Funkcje społecznościowe"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6708,8 +6870,11 @@ msgstr "Opcje sortowania, filtrowania i wyświetlania"
 msgid "Source feeds"
 msgstr "Źródłowe kanały"
 
-msgid "Spacing between feeds and story titles"
-msgstr "Odstęp między kanałami a tytułami artykułów"
+msgid "Space bar"
+msgstr "Spacja"
+
+msgid "Spacing"
+msgstr "Odstępy"
 
 msgid "Spanish"
 msgstr "Hiszpański"
@@ -6816,6 +6981,9 @@ msgstr "Status"
 msgid "Stay on the same feed/folder"
 msgstr "Pozostań w tym samym kanale/folderze"
 
+msgid "Stay put"
+msgstr "Pozostań w miejscu"
+
 msgid "Steadier or more varied"
 msgstr "Bardziej jednostajny lub bardziej zróżnicowany"
 
@@ -6844,6 +7012,9 @@ msgstr "Artykuły są wyróżniane na zielono (polubione) lub ukrywane (nielubia
 
 msgid "Stories arrive in real-time"
 msgstr "Artykuły pojawiają się w czasie rzeczywistym"
+
+msgid "Stories as cards in a grid"
+msgstr "Artykuły jako karty w siatce"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Artykuły są buforowane do czytania offline i automatycznie odświeżane w tle."
@@ -6904,6 +7075,12 @@ msgstr "Artykuły miesięcznie"
 msgid "Stories readers finished, saved, and shared"
 msgstr "Artykuły przeczytane do końca, zapisane i udostępnione przez czytelników"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "Artykuły przewinięte na liście tytułów"
+
+msgid "Stories shown"
+msgstr "Wyświetlane artykuły"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "Artykuły, które przyciągnęły najwięcej uwagi w całym NewsBlur."
 
@@ -6912,6 +7089,9 @@ msgstr "Artykuły <b>nigdy</b> nie będą automatycznie oznaczane jako przeczyta
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Artykuły <b>nigdy</b> nie będą oznaczane jako przeczytane"
+
+msgid "Stories you have read are left out"
+msgstr "Przeczytane artykuły są pomijane"
 
 msgid "Story"
 msgstr "Artykuł"
@@ -6946,6 +7126,9 @@ msgstr "Typografia artykułów"
 msgid "Story URL"
 msgstr "Adres URL artykułu"
 
+msgid "Story buttons"
+msgstr "Przyciski artykułów"
+
 msgid "Story cards open on their own screen"
 msgstr "Karty artykułów otwierają się na osobnym ekranie"
 
@@ -6964,23 +7147,20 @@ msgstr "Język artykułu"
 msgid "Story layout"
 msgstr "Układ artykułów"
 
+msgid "Story list"
+msgstr "Lista artykułów"
+
 msgid "Story preview"
 msgstr "Podgląd artykułu"
 
 msgid "Story shows in Focus view"
 msgstr "Artykuł pojawia się w widoku Wyróżnione"
 
-msgid "Story side options"
-msgstr "Opcje bocznego panelu artykułu"
-
-msgid "Story side options buttons"
-msgstr "Przyciski opcji po bokach artykułu"
-
-msgid "Story side options placement"
-msgstr "Położenie opcji z boku artykułu"
-
 msgid "Story title styling"
 msgstr "Stylizacja tytułu artykułu"
+
+msgid "Story titles beside the open story"
+msgstr "Tytuły artykułów obok otwartego artykułu"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Strumień przerwany. Brak odpowiedzi od 10 sekund."
@@ -7164,6 +7344,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "Wysoki"
 
+msgid "Tall stories"
+msgstr "Nieprawdopodobne historie"
+
 msgid "Target category name"
 msgstr "Nazwa kategorii docelowej"
 
@@ -7229,6 +7412,9 @@ msgstr "Dziękujemy! Masz konto %(bold_start)sPremium Archive%(bold_end)s."
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Dziękujemy! Masz konto %(bold_start)sPremium Pro%(bold_end)s."
 
+msgid "That change could not be saved"
+msgstr "Nie udało się zapisać tej zmiany"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Usługa AI zbyt długo nie odpowiadała. Spróbuj ponownie."
 
@@ -7280,6 +7466,9 @@ msgstr "Pełny strumień wiadomości to funkcja %(link_start)sPremium%(link_end)
 msgid "The full shortcut list"
 msgstr "Pełna lista skrótów"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "Pełna treść artykułu pobrana z witryny"
+
 msgid "The gift has been applied to your account."
 msgstr "Prezent został przypisany do Twojego konta."
 
@@ -7303,16 +7492,31 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "Najważniejsze artykuły z Twoich kanałów"
 
+msgid "The most recent stories come first"
+msgstr "Najnowsze artykuły są wyświetlane jako pierwsze"
+
+msgid "The oldest stories come first"
+msgstr "Najstarsze artykuły są wyświetlane jako pierwsze"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "Wydawca wyłączył oryginalną stronę."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Pobierany jest kod HTML strony i analizowany w celu wyodrębnienia struktury treści."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "Sama witryna, tak jak widzisz ją w przeglądarce"
+
+msgid "The story on its own page on the site"
+msgstr "Artykuł na osobnej stronie witryny"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
 "Wybrany widok jest zapamiętywany osobno dla każdej witryny, więc kanały z samymi podsumowaniami mogą "
 "domyślnie używać widoku Tekst."
+
+msgid "Theme"
+msgstr "Motyw"
 
 msgid "Themes & Customization"
 msgstr "Motywy i personalizacja"
@@ -7532,6 +7736,9 @@ msgstr "Frazy w tytułach"
 msgid "Title Regex"
 msgstr "Wyrażenie regularne tytułu"
 
+msgid "Title and preview"
+msgstr "Tytuł i podgląd"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "Filtry tytułów nie znalazły żadnych artykułów w %(context)s."
@@ -7608,9 +7815,6 @@ msgstr "Narzędzia"
 msgid "Tooltips"
 msgstr "Podpowiedzi"
 
-msgid "Tooltips like this"
-msgstr "Takie podpowiedzi"
-
 msgid "Top"
 msgstr "Góra"
 
@@ -7670,6 +7874,9 @@ msgstr "Trenuj na podstawie tego artykułu"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Trenuj kanały, aby filtrować artykuły, które lubisz lub których nie lubisz."
 
+msgid "Train, Save, Share and the rest"
+msgstr "Trenuj, Zapisz, Udostępnij i pozostałe"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Trenuj, taguj, wyszukuj i porządkuj newslettery tak jak każdy kanał"
 
@@ -7693,9 +7900,6 @@ msgstr "Popularne"
 
 msgid "Trending Sites"
 msgstr "Popularne witryny"
-
-msgid "Truncate stories"
-msgstr "Skracaj artykuły"
 
 msgid "Try"
 msgstr "Wypróbuj"
@@ -7827,6 +8031,9 @@ msgstr "Wyciszenie wyłączone"
 
 msgid "Unread"
 msgstr "Nieprzeczytane"
+
+msgid "Unread count"
+msgstr "Liczba nieprzeczytanych"
 
 msgid "Unread only"
 msgstr "Tylko nieprzeczytane"
@@ -8099,6 +8306,10 @@ msgstr "Ustawienia głosu"
 msgid "Voices"
 msgstr "Głosy"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "Ciepły"
+
 msgid "Warning: This is actually permanent"
 msgstr "Ostrzeżenie: tej operacji nie można cofnąć"
 
@@ -8200,8 +8411,14 @@ msgstr "Jaki jest kontekst i tło?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "Czym różnią się CLI i MCP?"
 
+msgid "When NewsBlur opens"
+msgstr "Po otwarciu NewsBlur"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "Po aktualizacji kanału NewsBlur sprawdza duplikaty we wszystkich Twoich subskrypcjach"
+
+msgid "When clicked"
+msgstr "Po kliknięciu"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "Gdy kilka kanałów publikuje tę samą historię, NewsBlur grupuje je, dzięki czemu widzisz ją tylko raz."
@@ -8227,6 +8444,9 @@ msgstr "Po zasubskrybowaniu nowego kanału jego wcześniejsze wpisy są uzupełn
 
 msgid "Which AI models are available?"
 msgstr "Jakie modele AI są dostępne?"
+
+msgid "While scrolling"
+msgstr "Podczas przewijania"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "Ups! Coś poszło nie tak. Spróbuj ponownie."
@@ -8257,6 +8477,9 @@ msgstr "Tytuł okna"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "Za pomocą klawiatury"
 
 msgid "Word Matching"
 msgstr "Dopasowywanie słów"

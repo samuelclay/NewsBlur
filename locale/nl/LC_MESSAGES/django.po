@@ -2682,6 +2682,10 @@ msgstr "Begrepen!<br>De e-mail wordt binnen enkele minuten verzonden."
 msgid "Graceful iFrame Busting"
 msgstr "iFrame-blokkering elegant afhandelen"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Grijs"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Goed nieuws, %(username)s!"
@@ -6598,6 +6602,10 @@ msgstr "Wil je meer MCP-functies?"
 msgid "Want to unlock even more?"
 msgstr "Wil je nog meer mogelijkheden?"
 
+msgid "Warm"
+msgstr "Warm"
+
+msgctxt "theme"
 msgid "Warm"
 msgstr "Warm"
 

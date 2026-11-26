@@ -14,15 +14,22 @@
 			<ul class="NB-menu-manage NB-menu-manage-notop">
 				<li class="NB-menu-item NB-menu-manage-theme">
 					<div class="NB-menu-manage-image"></div>
+					{# manage_module.xhtml: Auto, then each theme as a circle of its own color, as the iOS menus draw it. media/js/newsblur/reader/reader.js builds the same row for the manage menu. #}
 					<ul class="segmented-control NB-options-theme">
-						<li class="NB-taskbar-button NB-theme-option NB-options-theme-light">
-							<span class="NB-task-title">{% trans "Light" context "theme" %}</span>
-						</li>
-						<li class="NB-taskbar-button NB-theme-option NB-options-theme-dark">
-							<span class="NB-task-title">{% trans "Dark" context "theme" %}</span>
-						</li>
-						<li class="NB-taskbar-button NB-theme-option NB-options-theme-auto">
+						<li class="NB-taskbar-button NB-theme-option NB-options-theme-auto" role="button">
 							<span class="NB-task-title">{% trans "Auto" context "theme" %}</span>
+						</li>
+						<li class="NB-taskbar-button NB-theme-option NB-options-theme-light" role="button" data-tip="{% trans "Light" context "theme" %}" aria-label="{% trans "Light" context "theme" %}">
+							<span class="NB-theme-swatch NB-theme-swatch-light"></span>
+						</li>
+						<li class="NB-taskbar-button NB-theme-option NB-options-theme-sepia" role="button" data-tip="{% trans "Warm" context "theme" %}" aria-label="{% trans "Warm" context "theme" %}">
+							<span class="NB-theme-swatch NB-theme-swatch-sepia"></span>
+						</li>
+						<li class="NB-taskbar-button NB-theme-option NB-options-theme-gray" role="button" data-tip="{% trans "Gray" context "theme" %}" aria-label="{% trans "Gray" context "theme" %}">
+							<span class="NB-theme-swatch NB-theme-swatch-gray"></span>
+						</li>
+						<li class="NB-taskbar-button NB-theme-option NB-options-theme-dark" role="button" data-tip="{% trans "Dark" context "theme" %}" aria-label="{% trans "Dark" context "theme" %}">
+							<span class="NB-theme-swatch NB-theme-swatch-dark"></span>
 						</li>
 					</ul>
 				</li>

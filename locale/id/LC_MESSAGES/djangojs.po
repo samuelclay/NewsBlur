@@ -1010,6 +1010,12 @@ msgstr "1 tahun"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 jam"
+
+msgid "24-hour"
+msgstr "24 jam"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemukan konten."
 
@@ -1063,6 +1069,9 @@ msgstr "Blurblog berisi artikel yang dibagikan"
 msgid "A clearer, closer sound"
 msgstr "Suara yang lebih jernih dan dekat"
 
+msgid "A folder"
+msgstr "Sebuah folder"
+
 msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
 
@@ -1076,11 +1085,23 @@ msgstr "Hadiah dari %(value_1)s telah diterapkan ke akun Anda."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Tahap kedua menggunakan petunjuk Anda untuk menemukan pola yang tepat di halaman."
 
+msgid "A short list of titles above the open story"
+msgstr "Daftar singkat judul di atas artikel yang sedang dibuka"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "Satu suka mengalahkan jumlah tidak suka berapa pun"
 
 msgid "A story diff with additions and deletions"
 msgstr "Perbandingan artikel yang menampilkan penambahan dan penghapusan"
+
+msgid "A story is read as soon as it is selected"
+msgstr "Artikel ditandai sudah dibaca begitu dipilih"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "Artikel dianggap telah dibaca setelah dibuka selama waktu yang ditetapkan di bawah"
+
+msgid "A to Z"
+msgstr "A sampai Z"
 
 msgid "AI Filter"
 msgstr "Filter AI"
@@ -1245,6 +1266,9 @@ msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "Setelah %(slider)s %(count)s detik."
 msgstr[1] "Setelah %(slider)s %(count)s detik."
 
+msgid "After a delay"
+msgstr "Setelah jeda"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr ""
 "Setelah pembaca mengizinkan aplikasi Anda, NewsBlur akan mengarahkan mereka ke URL ini dengan kode "
@@ -1255,6 +1279,9 @@ msgstr "Setelah menandai feed/folder sebagai telah dibaca"
 
 msgid "Afternoon"
 msgstr "Siang"
+
+msgid "Afterwards"
+msgstr "Sesudahnya"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1394,9 +1421,6 @@ msgstr "Notifikasi Android memerlukan Premium Archive"
 msgid "Animals"
 msgstr "Hewan"
 
-msgid "Animations"
-msgstr "Animasi"
-
 msgid "Any"
 msgstr "Kapan saja"
 
@@ -1473,6 +1497,9 @@ msgstr "Apakah aplikasinya gratis?"
 msgid "Are the apps open source?"
 msgstr "Apakah aplikasi ini bersumber terbuka?"
 
+msgid "Arrow keys"
+msgstr "Tombol panah"
+
 msgid "Arrows"
 msgstr "Panah"
 
@@ -1511,6 +1538,9 @@ msgstr "Ajukan pertanyaan..."
 
 msgid "Ask about your browsing history..."
 msgstr "Tanyakan tentang riwayat penjelajahan Anda..."
+
+msgid "Ask first"
+msgstr "Tanyakan terlebih dahulu"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1561,6 +1591,9 @@ msgstr "Otomatis"
 
 msgid "Auto Mark as Read"
 msgstr "Tandai Otomatis sebagai Dibaca"
+
+msgid "Auto follows system appearance"
+msgstr "Otomatis mengikuti tampilan sistem"
 
 msgid "Auto mark as read"
 msgstr "Tandai otomatis sebagai telah dibaca"
@@ -1634,6 +1667,15 @@ msgstr "Berdasarkan minat Anda"
 msgid "Begin Training"
 msgstr "Mulai Pelatihan"
 
+msgid "Behavior"
+msgstr "Perilaku"
+
+msgid "Below the story"
+msgstr "Di bawah artikel"
+
+msgid "Beside the story"
+msgstr "Di samping artikel"
+
 msgid "Bio"
 msgstr "Bio"
 
@@ -1682,6 +1724,9 @@ msgstr "Judul Blurblog"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog, artikel yang dibagikan, dan komentar"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
@@ -1749,16 +1794,25 @@ msgstr "Browser"
 msgid "Browser Extensions"
 msgstr "Ekstensi Browser"
 
+msgid "Browser menu"
+msgstr "Menu browser"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr ""
 "Sedang membuat pembaca RSS publik yang bisa digunakan siapa saja? Anda mungkin memenuhi syarat untuk "
 "mendapatkan akun NewsBlur Premium Pro gratis."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "Daftar artikel bawaan di bilah sisi"
 
 msgid "Bullet points"
 msgstr "Poin-poin"
 
 msgid "Bullets"
 msgstr "Poin-poin"
+
+msgid "Buttons"
+msgstr "Tombol"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1927,9 +1981,6 @@ msgstr "Pilih model AI yang menulis ringkasan Anda"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "Pilih feed yang digunakan untuk menyusun ringkasan Anda"
 
-msgid "Choose which feeds to include"
-msgstr "Pilih feed yang akan disertakan"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "Pilih bagian yang ditampilkan dalam ringkasan Anda"
 
@@ -2008,11 +2059,17 @@ msgstr "Klik sumber mana pun untuk membaca versi tersebut, atau tandai semua dup
 msgid "Click to block"
 msgstr "Klik untuk memblokir"
 
+msgid "Clicks"
+msgstr "Klik"
+
 msgid "Client ID"
 msgstr "ID Klien"
 
 msgid "Client secret"
 msgstr "Rahasia klien"
+
+msgid "Clock"
+msgstr "Jam"
 
 msgid "Close"
 msgstr "Tutup"
@@ -2053,6 +2110,9 @@ msgstr "Ciutkan artikel"
 msgid "Collapsed"
 msgstr "Diciutkan"
 
+msgid "Collapsed folders"
+msgstr "Folder yang diciutkan"
+
 msgid "Color"
 msgstr "Warna"
 
@@ -2071,8 +2131,8 @@ msgstr "Perintah menghasilkan JSON yang bisa langsung Anda teruskan ke jq."
 msgid "Comment"
 msgstr "Komentar"
 
-msgid "Comment on stories"
-msgstr "Komentari artikel"
+msgid "Comments"
+msgstr "Komentar"
 
 msgid "Comments:"
 msgstr "Komentar:"
@@ -2290,9 +2350,6 @@ msgstr "Rentang tanggal khusus"
 msgid "Custom icon"
 msgstr "Ikon khusus"
 
-msgid "Customizable writing style and length"
-msgstr "Gaya dan panjang tulisan yang dapat disesuaikan"
-
 msgid "Customize auto-read by site or folder"
 msgstr "Sesuaikan baca otomatis berdasarkan situs atau folder"
 
@@ -2331,6 +2388,9 @@ msgstr "Distribusi artikel harian"
 msgid "Dark"
 msgstr "Gelap"
 
+msgid "Dark appearance"
+msgstr "Tampilan gelap"
+
 msgid "Dark mode and reading customization"
 msgstr "Mode gelap dan penyesuaian tampilan baca"
 
@@ -2361,9 +2421,6 @@ msgstr "Default"
 
 msgid "Default Blocklist"
 msgstr "Daftar Blokir Default"
-
-msgid "Default folder"
-msgstr "Folder default"
 
 msgid "Default layout"
 msgstr "Tata letak default"
@@ -2448,15 +2505,6 @@ msgstr "Terperinci"
 
 msgid "Devices"
 msgstr "Perangkat"
-
-msgid "Disable daily briefings"
-msgstr "Nonaktifkan ringkasan harian"
-
-msgid "Disable social features"
-msgstr "Nonaktifkan fitur sosial"
-
-msgid "Disable story clustering"
-msgstr "Nonaktifkan pengelompokan artikel"
 
 msgid "Disable the highlighter"
 msgstr "Nonaktifkan penyorot"
@@ -2562,6 +2610,9 @@ msgstr "Selesai!"
 
 msgid "Double-clicking a site"
 msgstr "Klik dua kali pada situs"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "Klik dua kali jumlah artikel belum dibaca di suatu situs untuk menandai seluruh situs sebagai sudah dibaca"
 
 msgid "Double-clicking an unread count"
 msgstr "Klik dua kali jumlah yang belum dibaca"
@@ -2700,17 +2751,11 @@ msgstr "Aktifkan teks/subtitel untuk video YouTube"
 msgid "Enable daily briefings"
 msgstr "Aktifkan ringkasan harian"
 
-msgid "Enable highlighting"
-msgstr "Aktifkan sorotan"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "Aktifkan mikrofon di pengaturan browser untuk menggunakan input suara"
 
 msgid "Enable social features"
 msgstr "Aktifkan fitur sosial"
-
-msgid "Enable story clustering"
-msgstr "Aktifkan pengelompokan artikel"
 
 msgid "Enable the sites you want"
 msgstr "Aktifkan situs yang Anda inginkan"
@@ -2797,6 +2842,9 @@ msgstr "Sore"
 msgid "Every"
 msgstr "Setiap"
 
+msgid "Every folder"
+msgstr "Setiap folder"
+
 msgid "Every new story is archived permanently"
 msgstr "Setiap artikel baru diarsipkan secara permanen"
 
@@ -2809,10 +2857,19 @@ msgstr "Semua artikel diarsipkan dan dapat dicari selamanya"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Setiap artikel diarsipkan dan dapat ditelusuri selamanya. Basis pengetahuan pribadi Anda."
 
+msgid "Every story as the site published it in its feed"
+msgstr "Setiap artikel seperti yang diterbitkan situs di feed-nya"
+
+msgid "Every story in full, one after another"
+msgstr "Setiap artikel secara lengkap, satu demi satu"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "Setiap tag memiliki feed RSS sendiri. Bagikan tautannya atau hubungkan ke IFTTT atau Zapier."
 
 msgid "Everybody"
+msgstr "Semua orang"
+
+msgid "Everyone"
 msgstr "Semua orang"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3193,6 +3250,9 @@ msgstr "Jumlah artikel belum dibaca di folder"
 msgid "Folders"
 msgstr "Folder"
 
+msgid "Folders only"
+msgstr "Hanya folder"
+
 msgid "Folders, feeds, and story titles"
 msgstr "Folder, feed, dan judul artikel"
 
@@ -3360,6 +3420,9 @@ msgstr "Teman &amp; Pengikut"
 
 msgid "Friends and Followers"
 msgstr "Teman dan Pengikut"
+
+msgid "Friends only"
+msgstr "Hanya teman"
 
 msgctxt "date range"
 msgid "From"
@@ -3551,6 +3614,10 @@ msgstr "Ekstra &amp; Aplikasi Seluler"
 msgid "Google News"
 msgstr "Google News"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Abu-abu"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "Hijau menandai penambahan, merah menandai penghapusan."
 
@@ -3568,6 +3635,9 @@ msgstr "Kelompokkan artikel duplikat dari semua feed Anda"
 
 msgid "Group stories that share:"
 msgstr "Kelompokkan artikel yang memiliki kesamaan:"
+
+msgid "Grouped"
+msgstr "Dikelompokkan"
 
 msgid "Groups similar stories from different feeds"
 msgstr "Mengelompokkan artikel serupa dari feed yang berbeda"
@@ -3641,6 +3711,9 @@ msgstr "Sorot paragraf yang sedang dibacakan"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Sorot kata dalam judul untuk melatih frasa tertentu."
 
+msgid "Highlighter"
+msgstr "Penyorot"
+
 msgid "History"
 msgstr "Riwayat"
 
@@ -3676,6 +3749,9 @@ msgstr "Seberapa banyak emosi"
 
 msgid "How often"
 msgstr "Seberapa sering"
+
+msgid "How panes and stories move"
+msgstr "Cara panel dan artikel berpindah"
 
 msgid "I'm Following"
 msgstr "Saya Mengikuti"
@@ -3760,6 +3836,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "Di jendela baru"
+
+msgid "In a pill"
+msgstr "Dalam kapsul"
 
 msgid "In rotation"
 msgstr "Dalam rotasi"
@@ -3896,6 +3975,9 @@ msgstr "Tetap tampilkan tombol di sisi kanan saat membaca"
 msgid "Keep stories separate"
 msgstr "Pisahkan artikel"
 
+msgid "Keep unread counts out of the window title"
+msgstr "Jangan tampilkan jumlah artikel belum dibaca di judul jendela"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "Ikuti perkembangan terbaru NewsBlur"
 
@@ -3921,11 +4003,20 @@ msgstr "Bagian kata kunci"
 msgid "Language"
 msgstr "Bahasa"
 
+msgid "Language and time"
+msgstr "Bahasa dan waktu"
+
 msgid "Large image thumbnail on the left"
 msgstr "Gambar mini besar di sebelah kiri"
 
 msgid "Large image thumbnail on the right"
 msgstr "Gambar mini besar di sebelah kanan"
+
+msgid "Large, left"
+msgstr "Besar, kiri"
+
+msgid "Large, right"
+msgstr "Besar, kanan"
 
 msgid "Last 30 Days"
 msgstr "30 Hari Terakhir"
@@ -3970,6 +4061,9 @@ msgstr "Mari cari beberapa situs untuk dibaca."
 msgid "Light"
 msgstr "Terang"
 
+msgid "Light appearance"
+msgstr "Tampilan terang"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3997,6 +4091,12 @@ msgstr "Tautkan langsung ke artikel asli"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Tautkan ke blurblog dan komentar yang saya bagikan"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "Tautan dalam artikel terbuka di jendela atau tab baru"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "Tautan dalam artikel menggantikan NewsBlur di jendela ini"
 
 msgid "List"
 msgstr "Daftar"
@@ -4096,9 +4196,6 @@ msgstr "Akses server MCP memerlukan Premium Archive atau Premium Pro."
 
 msgid "Magazine"
 msgstr "Majalah"
-
-msgid "Make changes above..."
-msgstr "Buat perubahan di atas..."
 
 msgid "Manage Categories"
 msgstr "Kelola Kategori"
@@ -4219,9 +4316,6 @@ msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "Tandai artikel dari <b>%(value_1)s hari</b> terakhir sebagai belum dibaca"
 msgstr[1] "Tandai artikel dari <b>%(value_1)s hari terakhir</b> sebagai belum dibaca"
 
-msgid "Mark stories read on scroll"
-msgstr "Tandai artikel telah dibaca saat menggulir"
-
 msgid "Mark the site as read"
 msgstr "Tandai situs sebagai telah dibaca"
 
@@ -4233,6 +4327,12 @@ msgstr "Menandai sebagai telah dibaca..."
 
 msgid "Marking as unread..."
 msgstr "Menandai sebagai belum dibaca..."
+
+msgid "Marking sites as read"
+msgstr "Menandai situs sebagai sudah dibaca"
+
+msgid "Marking stories as read"
+msgstr "Menandai artikel sudah dibaca"
 
 msgid "Match"
 msgstr "Cocok"
@@ -4352,6 +4452,12 @@ msgstr "Feed dengan pelanggan terbanyak minggu ini"
 msgid "Most used at top, then alphabetical"
 msgstr "Yang paling sering digunakan di atas, lalu berdasarkan abjad"
 
+msgid "Most used first"
+msgstr "Paling sering digunakan terlebih dahulu"
+
+msgid "Motion"
+msgstr "Gerakan"
+
 msgid "Move"
 msgstr "Pindahkan"
 
@@ -4426,6 +4532,9 @@ msgstr "TIDAK PERNAH"
 
 msgid "Name"
 msgstr "Nama"
+
+msgid "Name only"
+msgstr "Hanya nama"
 
 msgid "Native Apps"
 msgstr "Aplikasi Native"
@@ -4517,11 +4626,20 @@ msgstr "Kata sandi baru"
 msgid "New posts from feeds you recently read"
 msgstr "Postingan baru dari feed yang baru-baru ini Anda baca"
 
+msgid "New stories"
+msgstr "Artikel baru"
+
 msgid "New tag name"
 msgstr "Nama tag baru"
 
 msgid "New to me"
 msgstr "Baru bagi saya"
+
+msgid "New window"
+msgstr "Jendela baru"
+
+msgid "New window, marked read"
+msgstr "Jendela baru, ditandai sudah dibaca"
 
 msgid "Newer:"
 msgstr "Setelah:"
@@ -4547,6 +4665,9 @@ msgstr "NewsBlur sedang tidak berfungsi. <br> Coba lagi nanti."
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur sedang dalam mode pemeliharaan. <br> Coba lagi sebentar lagi."
+
+msgid "NewsBlur menu"
+msgstr "Menu NewsBlur"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur otomatis memantau perubahan pada halaman"
@@ -4586,6 +4707,12 @@ msgstr "Artikel berikutnya"
 
 msgid "Next unread"
 msgstr "Berikutnya yang belum dibaca"
+
+msgid "Next unread at the end"
+msgstr "Artikel belum dibaca berikutnya di akhir"
+
+msgid "Next unread halfway"
+msgstr "Setengah jalan ke artikel belum dibaca berikutnya"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Selanjutnya, buat filter untuk semua buletin Anda agar diteruskan ke alamat khusus di NewsBlur."
@@ -4940,6 +5067,9 @@ msgstr ""
 "Dengan Premium, Anda dapat mencari artikel terbaru. Dengan Premium Archive, semua artikel yang pernah "
 "diarsipkan dapat dicari."
 
+msgid "On reload"
+msgstr "Saat dimuat ulang"
+
 msgid "One command with Docker"
 msgstr "Satu perintah dengan Docker"
 
@@ -5078,6 +5208,12 @@ msgstr "Buka menu feed dan judul artikel"
 msgid "Open the first story"
 msgstr "Buka artikel pertama"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "Buka folder yang dipilih di bawah saat memuat NewsBlur"
+
+msgid "Open the next one"
+msgstr "Buka artikel berikutnya"
+
 msgid "Open the next site/folder"
 msgstr "Buka situs/folder berikutnya"
 
@@ -5098,6 +5234,12 @@ msgstr "Buka Ringkasan Harian Anda"
 
 msgid "Open your saved stories"
 msgstr "Buka artikel tersimpan Anda"
+
+msgid "Opening a site also opens its first story"
+msgstr "Membuka situs juga membuka artikel pertamanya"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "Membuka situs menampilkan artikelnya dan menunggu Anda memilih salah satunya"
 
 msgid "Opens"
 msgstr "Dibuka"
@@ -5237,6 +5379,9 @@ msgstr "Pilih paket & bayar."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "Pilih bahasa yang ingin digunakan NewsBlur. Anda dapat mengubahnya kapan saja di Preferensi."
 
+msgid "Placement"
+msgstr "Penempatan"
+
 msgid "Places"
 msgstr "Tempat"
 
@@ -5260,6 +5405,9 @@ msgstr "Putar Terakhir"
 
 msgid "Play Next"
 msgstr "Putar Berikutnya"
+
+msgid "Play YouTube videos without captions"
+msgstr "Putar video YouTube tanpa teks takarir"
 
 msgid "Play in Mini Media Player"
 msgstr "Putar di Pemutar Media Mini"
@@ -5485,9 +5633,6 @@ msgstr "Dilindungi:"
 msgid "Public blurblog sharing"
 msgstr "Berbagi blurblog publik"
 
-msgid "Public comments"
-msgstr "Komentar publik"
-
 msgid "Public:"
 msgstr "Publik:"
 
@@ -5585,6 +5730,9 @@ msgstr ""
 
 msgid "Read aloud"
 msgstr "Bacakan"
+
+msgid "Read and unread stories are both listed"
+msgstr "Artikel yang sudah dan belum dibaca sama-sama ditampilkan"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5689,11 +5837,8 @@ msgstr "Telah ditukarkan"
 msgid "Redirect URL"
 msgstr "URL pengalihan"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "Kurangi kepadatan di aliran artikel Anda"
-
-msgid "Reduce motion"
-msgstr "Kurangi gerakan"
+msgid "Reduced"
+msgstr "Dikurangi"
 
 msgid "Refer"
 msgstr "Ajak Teman"
@@ -5735,6 +5880,9 @@ msgstr "Terkait"
 
 msgid "Related Sites"
 msgstr "Situs Terkait"
+
+msgid "Related sites above the story titles"
+msgstr "Situs terkait di atas judul artikel"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "Artikel terkait hanya tersedia bagi pelanggan premium."
@@ -5882,6 +6030,12 @@ msgstr "Aliran Berita"
 msgid "River of News (reading by folder)"
 msgstr "Aliran Berita (membaca berdasarkan folder)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "Baris lega dengan gambar dan pratinjau"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "Baris di bilah sisi dan daftar artikel"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "Jalankan newsblur auth login untuk mengotorisasi melalui OAuth"
 
@@ -5938,9 +6092,6 @@ msgstr "Simpan Pengaturan Blurblog Saya"
 
 msgid "Save My Profile"
 msgstr "Simpan Profil Saya"
-
-msgid "Save Preferences"
-msgstr "Simpan Preferensi"
 
 msgid "Save Search"
 msgstr "Simpan Pencarian"
@@ -6022,15 +6173,21 @@ msgstr ""
 "Ringkasan terjadwal memerlukan langganan Premium Archive. Dengan paket Anda, ringkasan hanya dibuat saat "
 "Anda menggunakan tombol Buat."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "Pengiriman terjadwal (harian atau dua kali sehari)"
-
 msgid "Science"
 msgstr "Sains"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Pengklasifikasi dengan cakupan folder atau global hanya tersedia bagi pelanggan %(plan)s."
+
+msgid "Scroll only"
+msgstr "Hanya gulir"
+
+msgid "Scroll the story"
+msgstr "Gulir artikel"
+
+msgid "Scroll the story by the distance set below"
+msgstr "Gulir artikel sejauh jarak yang ditetapkan di bawah"
 
 msgid "Scroll to comments"
 msgstr "Gulir ke komentar"
@@ -6167,14 +6324,8 @@ msgstr ""
 "Lihat bagaimana sebuah berita berubah setelah pertama kali diterbitkan. NewsBlur melacak revisi dan "
 "menampilkan perbedaan yang berubah, disorot dengan warna hijau dan merah."
 
-msgid "See shared stories"
-msgstr "Lihat artikel yang dibagikan"
-
 msgid "See the story title and a short content preview"
 msgstr "Lihat judul artikel dan pratinjau singkat kontennya"
-
-msgid "See which feeds cover the same story"
-msgstr "Lihat feed mana yang membahas artikel yang sama"
 
 msgid "Select"
 msgstr "Pilih"
@@ -6233,6 +6384,9 @@ msgstr "Kirim artikel ini"
 msgid "Sending…"
 msgstr "Mengirim…"
 
+msgid "Separate"
+msgstr "Terpisah"
+
 msgid "September"
 msgstr "September"
 
@@ -6277,9 +6431,6 @@ msgstr ""
 
 msgid "Share on NewsBlur"
 msgstr "Bagikan di NewsBlur"
-
-msgid "Share stories"
-msgstr "Bagikan artikel"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6348,35 +6499,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "Pendek"
 
+msgid "Shorten all"
+msgstr "Persingkat semua"
+
+msgid "Shorten shared"
+msgstr "Ringkas artikel yang dibagikan"
+
+msgid "Shortened stories open with a click"
+msgstr "Artikel yang dipersingkat terbuka dengan sekali klik"
+
 msgid "Show"
 msgstr "Tampilkan"
 
 msgid "Show Folders"
 msgstr "Tampilkan Folder"
 
-msgid "Show Global Shared Stories"
-msgstr "Tampilkan Artikel yang Dibagikan Secara Global"
-
-msgid "Show Good Reads"
-msgstr "Tampilkan Bacaan Bagus"
-
-msgid "Show Infrequent Site Stories"
-msgstr "Tampilkan Cerita Situs yang Jarang Diperbarui"
-
-msgid "Show Long Reads"
-msgstr "Tampilkan Bacaan Panjang"
-
-msgid "Show Widely Read Stories"
-msgstr "Tampilkan Cerita yang Banyak Dibaca"
-
 msgid "Show a preview of the story"
 msgstr "Tampilkan pratinjau artikel"
 
 msgid "Show all animations"
 msgstr "Tampilkan semua animasi"
-
-msgid "Show all comments"
-msgstr "Tampilkan semua komentar"
 
 msgid "Show all stories"
 msgstr "Tampilkan semua artikel"
@@ -6407,6 +6549,9 @@ msgstr "Tampilkan penyorot saat memilih teks"
 
 msgid "Show history"
 msgstr "Tampilkan riwayat"
+
+msgid "Show in full"
+msgstr "Tampilkan secara penuh"
 
 msgid "Show more related stories"
 msgstr "Tampilkan lebih banyak artikel terkait"
@@ -6451,6 +6596,9 @@ msgstr "Menampilkan artikel pada <b>%(date)s</b>"
 msgid "Shows a toolbar button with your unread count"
 msgstr "Menampilkan tombol bilah alat dengan jumlah artikel belum dibaca"
 
+msgid "Sidebar"
+msgstr "Bilah sisi"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Masuk agar feed, pelatihan, dan artikel tersimpan Anda langsung disinkronkan"
 
@@ -6487,17 +6635,20 @@ msgstr "URL situs atau cari berdasarkan nama..."
 msgid "Site by Site"
 msgstr "Situs per Situs"
 
+msgid "Site order"
+msgstr "Urutan situs"
+
 msgid "Site settings"
 msgstr "Pengaturan situs"
-
-msgid "Site sidebar order"
-msgstr "Urutan bilah samping situs"
 
 msgid "Site stats"
 msgstr "Statistik situs"
 
 msgid "Sites"
 msgstr "Situs"
+
+msgid "Sites and folders"
+msgstr "Situs dan folder"
 
 msgid "Sites updated up to 5x more often"
 msgstr "Situs diperbarui hingga 5 kali lebih sering"
@@ -6520,6 +6671,12 @@ msgstr "Gambar mini kecil di sebelah kiri"
 msgid "Small image thumbnail on the right"
 msgstr "Gambar mini kecil di sebelah kanan"
 
+msgid "Small, left"
+msgstr "Kecil, kiri"
+
+msgid "Small, right"
+msgstr "Kecil, kanan"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Begitu banyak waktu dan begitu sedikit yang bisa dilakukan. Ralat! Dibalik saja."
 
@@ -6528,6 +6685,9 @@ msgstr "Sosial"
 
 msgid "Social Connections"
 msgstr "Koneksi Sosial"
+
+msgid "Social features"
+msgstr "Fitur sosial"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6579,8 +6739,11 @@ msgstr "Opsi urutkan, filter, dan tampilan"
 msgid "Source feeds"
 msgstr "Feed sumber"
 
-msgid "Spacing between feeds and story titles"
-msgstr "Jarak antara feed dan judul artikel"
+msgid "Space bar"
+msgstr "Tombol spasi"
+
+msgid "Spacing"
+msgstr "Jarak"
 
 msgid "Spanish"
 msgstr "Bahasa Spanyol"
@@ -6684,6 +6847,9 @@ msgstr "Status"
 msgid "Stay on the same feed/folder"
 msgstr "Tetap di feed/folder yang sama"
 
+msgid "Stay put"
+msgstr "Tetap di tempat"
+
 msgid "Steadier or more varied"
 msgstr "Lebih stabil atau lebih bervariasi"
 
@@ -6712,6 +6878,9 @@ msgstr "Artikel disorot hijau (suka) atau disembunyikan (tidak suka)"
 
 msgid "Stories arrive in real-time"
 msgstr "Artikel masuk secara real-time"
+
+msgid "Stories as cards in a grid"
+msgstr "Artikel ditampilkan sebagai kartu dalam kisi"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Artikel disimpan dalam cache untuk dibaca offline, dengan penyegaran otomatis di latar belakang."
@@ -6771,6 +6940,12 @@ msgstr "Artikel per bulan"
 msgid "Stories readers finished, saved, and shared"
 msgstr "Artikel yang selesai dibaca, disimpan, dan dibagikan pembaca"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "Artikel yang digulir melewati judulnya"
+
+msgid "Stories shown"
+msgstr "Artikel yang ditampilkan"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "Artikel yang paling menarik perhatian di NewsBlur."
 
@@ -6779,6 +6954,9 @@ msgstr "Artikel <b>tidak akan pernah</b> otomatis ditandai telah dibaca"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Artikel <b>tidak akan pernah</b> ditandai telah dibaca"
+
+msgid "Stories you have read are left out"
+msgstr "Artikel yang sudah Anda baca tidak disertakan"
 
 msgid "Story"
 msgstr "Artikel"
@@ -6813,6 +6991,9 @@ msgstr "Tipografi artikel"
 msgid "Story URL"
 msgstr "URL artikel"
 
+msgid "Story buttons"
+msgstr "Tombol artikel"
+
 msgid "Story cards open on their own screen"
 msgstr "Kartu artikel terbuka di layar tersendiri"
 
@@ -6831,23 +7012,20 @@ msgstr "Bahasa artikel"
 msgid "Story layout"
 msgstr "Tata letak artikel"
 
+msgid "Story list"
+msgstr "Daftar artikel"
+
 msgid "Story preview"
 msgstr "Pratinjau artikel"
 
 msgid "Story shows in Focus view"
 msgstr "Artikel ditampilkan dalam tampilan Fokus"
 
-msgid "Story side options"
-msgstr "Opsi di samping artikel"
-
-msgid "Story side options buttons"
-msgstr "Tombol opsi di sisi artikel"
-
-msgid "Story side options placement"
-msgstr "Posisi opsi di samping artikel"
-
 msgid "Story title styling"
 msgstr "Gaya judul artikel"
+
+msgid "Story titles beside the open story"
+msgstr "Judul artikel di samping artikel yang sedang dibuka"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Aliran terputus. Tidak ada respons selama 10 detik."
@@ -7032,6 +7210,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "Tinggi"
 
+msgid "Tall stories"
+msgstr "Artikel panjang"
+
 msgid "Target category name"
 msgstr "Nama kategori tujuan"
 
@@ -7097,6 +7278,9 @@ msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Archive%(bold_end
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Pro%(bold_end)s."
 
+msgid "That change could not be saved"
+msgstr "Perubahan tersebut tidak dapat disimpan"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Layanan AI terlalu lama merespons. Silakan coba lagi."
 
@@ -7149,6 +7333,9 @@ msgstr "Aliran Berita lengkap adalah %(link_start)sfitur premium%(link_end)s."
 msgid "The full shortcut list"
 msgstr "Daftar lengkap pintasan"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "Teks lengkap artikel yang diambil dari situs"
+
 msgid "The gift has been applied to your account."
 msgstr "Hadiah telah diterapkan ke akun Anda."
 
@@ -7172,16 +7359,31 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "Artikel terpenting dari feed Anda"
 
+msgid "The most recent stories come first"
+msgstr "Artikel terbaru ditampilkan terlebih dahulu"
+
+msgid "The oldest stories come first"
+msgstr "Artikel terlama ditampilkan terlebih dahulu"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "Halaman asli telah dinonaktifkan oleh penerbit."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML halaman diambil dan diurai untuk mengekstrak struktur konten."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "Situs itu sendiri, seperti yang Anda lihat di browser"
+
+msgid "The story on its own page on the site"
+msgstr "Artikel di halaman tersendiri pada situs"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
 "Tampilan yang Anda pilih akan diingat untuk setiap situs, jadi feed yang hanya berisi ringkasan dapat "
 "menggunakan Teks sebagai tampilan default."
+
+msgid "Theme"
+msgstr "Tema"
 
 msgid "Themes & Customization"
 msgstr "Tema & Kustomisasi"
@@ -7395,6 +7597,9 @@ msgstr "Frasa Judul"
 msgid "Title Regex"
 msgstr "Regex Judul"
 
+msgid "Title and preview"
+msgstr "Judul dan pratinjau"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "Filter judul tidak menemukan artikel di %(context)s."
@@ -7472,9 +7677,6 @@ msgstr "Alat"
 msgid "Tooltips"
 msgstr "Tooltip"
 
-msgid "Tooltips like this"
-msgstr "Tooltip seperti ini"
-
 msgid "Top"
 msgstr "Atas"
 
@@ -7534,6 +7736,9 @@ msgstr "Latih artikel ini"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Latih feed Anda untuk menyaring artikel yang Anda sukai dan tidak sukai."
 
+msgid "Train, Save, Share and the rest"
+msgstr "Latih, Simpan, Bagikan, dan lainnya"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Latih, beri tag, cari, dan atur buletin seperti feed lainnya"
 
@@ -7557,9 +7762,6 @@ msgstr "Sedang tren"
 
 msgid "Trending Sites"
 msgstr "Situs Tren"
-
-msgid "Truncate stories"
-msgstr "Pangkas artikel"
 
 msgid "Try"
 msgstr "Coba"
@@ -7690,6 +7892,9 @@ msgstr "Tidak lagi dibisukan"
 
 msgid "Unread"
 msgstr "Belum dibaca"
+
+msgid "Unread count"
+msgstr "Jumlah belum dibaca"
 
 msgid "Unread only"
 msgstr "Hanya yang belum dibaca"
@@ -7954,6 +8159,10 @@ msgstr "Pengaturan suara"
 msgid "Voices"
 msgstr "Suara"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "Hangat"
+
 msgid "Warning: This is actually permanent"
 msgstr "Peringatan: Tindakan ini benar-benar permanen"
 
@@ -8055,8 +8264,14 @@ msgstr "Apa konteks dan latar belakangnya?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "Apa perbedaan antara CLI dan MCP?"
 
+msgid "When NewsBlur opens"
+msgstr "Saat NewsBlur dibuka"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "Saat feed diperbarui, NewsBlur memeriksa duplikat di semua langganan Anda"
+
+msgid "When clicked"
+msgstr "Saat diklik"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "Jika beberapa feed memuat artikel yang sama, NewsBlur mengelompokkannya agar Anda hanya melihatnya sekali."
@@ -8082,6 +8297,9 @@ msgstr "Saat Anda berlangganan feed baru, riwayatnya akan diisi secara surut"
 
 msgid "Which AI models are available?"
 msgstr "Model AI apa saja yang tersedia?"
+
+msgid "While scrolling"
+msgstr "Saat menggulir"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "Ups! Terjadi kesalahan. Coba lagi."
@@ -8112,6 +8330,9 @@ msgstr "Judul jendela"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "Dengan keyboard"
 
 msgid "Word Matching"
 msgstr "Pencocokan kata"

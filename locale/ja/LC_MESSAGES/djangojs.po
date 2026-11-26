@@ -938,6 +938,12 @@ msgstr "1年"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12時間"
+
+msgid "24-hour"
+msgstr "24時間"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "記事の閲覧、操作、学習、検索などに使える28個のツールがあります。"
 
@@ -988,6 +994,9 @@ msgstr "共有した記事のBlurblog"
 msgid "A clearer, closer sound"
 msgstr "より明瞭で近くに感じる音声"
 
+msgid "A folder"
+msgstr "フォルダー"
+
 msgid "A folder of feeds read as one stream"
 msgstr "複数のフィードを1つのストリームとして読むフォルダー"
 
@@ -1001,11 +1010,23 @@ msgstr "%(value_1)sからのギフトがアカウントに適用されました�
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "2回目の処理では、ヒントを使ってページ上の適切なパターンを見つけます。"
 
+msgid "A short list of titles above the open story"
+msgstr "開いている記事の上に表示する短いタイトル一覧"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "「いいね」が1つあれば、「低評価」がいくつあっても優先されます"
 
 msgid "A story diff with additions and deletions"
 msgstr "追加・削除箇所を表示する記事の差分"
+
+msgid "A story is read as soon as it is selected"
+msgstr "記事を選択するとすぐに既読になります"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "記事を下記の時間開くと、既読になります"
+
+msgid "A to Z"
+msgstr "AからZ"
 
 msgid "AI Filter"
 msgstr "AIフィルター"
@@ -1166,6 +1187,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s秒後"
 
+msgid "After a delay"
+msgstr "遅延後"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "読者がアプリを認証すると、NewsBlurは認証コードを付けてこのURLにリダイレクトします。"
 
@@ -1174,6 +1198,9 @@ msgstr "フィード／フォルダーを既読にした後"
 
 msgid "Afternoon"
 msgstr "午後"
+
+msgid "Afterwards"
+msgstr "その後"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1303,9 +1330,6 @@ msgstr "Android通知にはプレミアムアーカイブが必要です"
 msgid "Animals"
 msgstr "動物"
 
-msgid "Animations"
-msgstr "アニメーション"
-
 msgid "Any"
 msgstr "すべて"
 
@@ -1378,6 +1402,9 @@ msgstr "アプリは無料ですか？"
 msgid "Are the apps open source?"
 msgstr "アプリはオープンソースですか？"
 
+msgid "Arrow keys"
+msgstr "矢印キー"
+
 msgid "Arrows"
 msgstr "矢印"
 
@@ -1416,6 +1443,9 @@ msgstr "質問する…"
 
 msgid "Ask about your browsing history..."
 msgstr "閲覧履歴について質問する..."
+
+msgid "Ask first"
+msgstr "最初に確認"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1464,6 +1494,9 @@ msgstr "自動"
 
 msgid "Auto Mark as Read"
 msgstr "自動で既読にする"
+
+msgid "Auto follows system appearance"
+msgstr "システムの外観設定に自動で合わせる"
 
 msgid "Auto mark as read"
 msgstr "自動で既読にする"
@@ -1536,6 +1569,15 @@ msgstr "興味に基づく"
 msgid "Begin Training"
 msgstr "学習を開始"
 
+msgid "Behavior"
+msgstr "動作"
+
+msgid "Below the story"
+msgstr "記事の下"
+
+msgid "Beside the story"
+msgstr "記事の横"
+
 msgid "Bio"
 msgstr "自己紹介"
 
@@ -1584,6 +1626,9 @@ msgstr "Blurblogのタイトル"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog、共有記事、コメント"
 
 msgid "Bookmarklet"
 msgstr "ブックマークレット"
@@ -1649,14 +1694,23 @@ msgstr "ブラウザー"
 msgid "Browser Extensions"
 msgstr "ブラウザー拡張機能"
 
+msgid "Browser menu"
+msgstr "ブラウザメニュー"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr "誰でも使える公開 RSS リーダーを開発していますか？ NewsBlur Premium Pro のアカウントを無料で利用できる場合があります。"
+
+msgid "Built-in story lists in the sidebar"
+msgstr "サイドバーの組み込み記事リスト"
 
 msgid "Bullet points"
 msgstr "箇条書き"
 
 msgid "Bullets"
 msgstr "箇条書き"
+
+msgid "Buttons"
+msgstr "ボタン"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1822,9 +1876,6 @@ msgstr "ブリーフィングを作成するAIモデルを選択"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "ブリーフィングの作成に使うフィードを選択"
 
-msgid "Choose which feeds to include"
-msgstr "含めるフィードを選択"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "ブリーフィングに表示するセクションを選択"
 
@@ -1900,11 +1951,17 @@ msgstr "ソースをクリックすると、そのバージョンの記事を読
 msgid "Click to block"
 msgstr "クリックしてブロック"
 
+msgid "Clicks"
+msgstr "クリック"
+
 msgid "Client ID"
 msgstr "クライアントID"
 
 msgid "Client secret"
 msgstr "クライアントシークレット"
+
+msgid "Clock"
+msgstr "時計"
 
 msgid "Close"
 msgstr "閉じる"
@@ -1945,6 +2002,9 @@ msgstr "記事を折りたたむ"
 msgid "Collapsed"
 msgstr "折りたたみ済み"
 
+msgid "Collapsed folders"
+msgstr "折りたたまれたフォルダー"
+
 msgid "Color"
 msgstr "色"
 
@@ -1963,8 +2023,8 @@ msgstr "コマンドは、jqにそのまま渡せるJSONを出力します。"
 msgid "Comment"
 msgstr "コメント"
 
-msgid "Comment on stories"
-msgstr "記事にコメントする"
+msgid "Comments"
+msgstr "コメント"
 
 msgid "Comments:"
 msgstr "コメント："
@@ -2174,9 +2234,6 @@ msgstr "日付範囲を指定"
 msgid "Custom icon"
 msgstr "カスタムアイコン"
 
-msgid "Customizable writing style and length"
-msgstr "文体と長さをカスタマイズ"
-
 msgid "Customize auto-read by site or folder"
 msgstr "サイトまたはフォルダーごとに自動既読をカスタマイズ"
 
@@ -2212,6 +2269,9 @@ msgstr "記事の日別配信状況"
 msgid "Dark"
 msgstr "ダーク"
 
+msgid "Dark appearance"
+msgstr "ダーク表示"
+
 msgid "Dark mode and reading customization"
 msgstr "ダークモードと表示設定"
 
@@ -2242,9 +2302,6 @@ msgstr "デフォルト"
 
 msgid "Default Blocklist"
 msgstr "デフォルトのブロックリスト"
-
-msgid "Default folder"
-msgstr "デフォルトのフォルダー"
 
 msgid "Default layout"
 msgstr "デフォルトのレイアウト"
@@ -2326,15 +2383,6 @@ msgstr "詳細"
 
 msgid "Devices"
 msgstr "デバイス"
-
-msgid "Disable daily briefings"
-msgstr "デイリーブリーフィングを無効にする"
-
-msgid "Disable social features"
-msgstr "ソーシャル機能を無効にする"
-
-msgid "Disable story clustering"
-msgstr "記事のクラスタリングを無効にする"
 
 msgid "Disable the highlighter"
 msgstr "ハイライトを無効にする"
@@ -2440,6 +2488,9 @@ msgstr "完了！"
 
 msgid "Double-clicking a site"
 msgstr "サイトをダブルクリック"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "サイトの未読件数をダブルクリックすると、そのサイト全体を既読にできます"
 
 msgid "Double-clicking an unread count"
 msgstr "未読数をダブルクリック"
@@ -2567,17 +2618,11 @@ msgstr "YouTube動画の字幕を有効にする"
 msgid "Enable daily briefings"
 msgstr "デイリーブリーフィングを有効にする"
 
-msgid "Enable highlighting"
-msgstr "ハイライトを有効にする"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "音声入力を使用するには、ブラウザーの設定でマイクを有効にしてください"
 
 msgid "Enable social features"
 msgstr "ソーシャル機能を有効にする"
-
-msgid "Enable story clustering"
-msgstr "記事のクラスタリングを有効にする"
 
 msgid "Enable the sites you want"
 msgstr "利用したいサイトを有効にする"
@@ -2662,6 +2707,9 @@ msgstr "夕方"
 msgid "Every"
 msgstr "更新間隔"
 
+msgid "Every folder"
+msgstr "すべてのフォルダー"
+
 msgid "Every new story is archived permanently"
 msgstr "新着記事はすべて永久にアーカイブされます"
 
@@ -2674,11 +2722,20 @@ msgstr "すべての記事を永久に保存・検索"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "すべての記事を永久に保存し、いつでも検索できます。あなただけのナレッジベースです。"
 
+msgid "Every story as the site published it in its feed"
+msgstr "フィードでサイトが公開したとおりの記事"
+
+msgid "Every story in full, one after another"
+msgstr "すべての記事を全文で順番に読み上げ"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "各タグに専用のRSSフィードが用意されます。リンクを共有するか、IFTTTやZapierに連携できます。"
 
 msgid "Everybody"
 msgstr "全員"
+
+msgid "Everyone"
+msgstr "すべてのユーザー"
 
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlurでできることと、その試し方"
@@ -3052,6 +3109,9 @@ msgstr "フォルダーの未読数"
 msgid "Folders"
 msgstr "フォルダー"
 
+msgid "Folders only"
+msgstr "フォルダーのみ"
+
 msgid "Folders, feeds, and story titles"
 msgstr "フォルダー、フィード、記事タイトル"
 
@@ -3215,6 +3275,9 @@ msgstr "友達 &amp; フォロワー"
 
 msgid "Friends and Followers"
 msgstr "友達とフォロワー"
+
+msgid "Friends only"
+msgstr "友達のみ"
 
 msgctxt "date range"
 msgid "From"
@@ -3402,6 +3465,10 @@ msgstr "便利な機能 &amp; モバイルアプリ"
 msgid "Google News"
 msgstr "Google ニュース"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "グレー"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "追加箇所は緑、削除箇所は赤で表示されます。"
 
@@ -3419,6 +3486,9 @@ msgstr "フィード間で重複する記事をグループ化"
 
 msgid "Group stories that share:"
 msgstr "次の項目が共通する記事をグループ化:"
+
+msgid "Grouped"
+msgstr "グループ化"
 
 msgid "Groups similar stories from different feeds"
 msgstr "異なるフィードの類似した記事をまとめる"
@@ -3491,6 +3561,9 @@ msgstr "読み上げ中の段落をハイライト"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "タイトル内の単語をハイライトして、特定のフレーズを学習させましょう。"
 
+msgid "Highlighter"
+msgstr "ハイライト"
+
 msgid "History"
 msgstr "履歴"
 
@@ -3526,6 +3599,9 @@ msgstr "感情の強さ"
 
 msgid "How often"
 msgstr "頻度"
+
+msgid "How panes and stories move"
+msgstr "ペインと記事の移動方法"
 
 msgid "I'm Following"
 msgstr "フォロー中"
@@ -3605,6 +3681,9 @@ msgstr "新しいタブで<b>%(config_page)s</b>を開き、<b>%(setting)s</b>�
 
 msgid "In a new window"
 msgstr "新しいウィンドウで開く"
+
+msgid "In a pill"
+msgstr "ピル型"
 
 msgid "In rotation"
 msgstr "ローテーションに追加済み"
@@ -3737,6 +3816,9 @@ msgstr "閲覧中も右側のボタンを表示する"
 msgid "Keep stories separate"
 msgstr "記事を分けて表示"
 
+msgid "Keep unread counts out of the window title"
+msgstr "未読数をウィンドウタイトルに表示しない"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "NewsBlurの最新情報をチェック"
 
@@ -3762,11 +3844,20 @@ msgstr "キーワードセクション"
 msgid "Language"
 msgstr "言語"
 
+msgid "Language and time"
+msgstr "言語と時刻"
+
 msgid "Large image thumbnail on the left"
 msgstr "左側に大きな画像サムネイル"
 
 msgid "Large image thumbnail on the right"
 msgstr "右側に大きな画像サムネイル"
+
+msgid "Large, left"
+msgstr "大きく、左側"
+
+msgid "Large, right"
+msgstr "大きく、右"
 
 msgid "Last 30 Days"
 msgstr "過去30日間"
@@ -3811,6 +3902,9 @@ msgstr "読めるサイトを追加しましょう。"
 msgid "Light"
 msgstr "ライト"
 
+msgid "Light appearance"
+msgstr "ライトテーマ"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3836,6 +3930,12 @@ msgstr "元の記事に直接リンクする"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "自分のBlurblogと共有コメントへのリンク"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "記事内のリンクを新しいウィンドウまたはタブで開く"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "記事内のリンクをクリックすると、このウィンドウでNewsBlurを置き換えます"
 
 msgid "List"
 msgstr "リスト"
@@ -3935,9 +4035,6 @@ msgstr "MCPサーバーへのアクセスにはプレミアムアーカイブま
 
 msgid "Magazine"
 msgstr "マガジン"
-
-msgid "Make changes above..."
-msgstr "上記を変更..."
 
 msgid "Manage Categories"
 msgstr "カテゴリーを管理"
@@ -4052,9 +4149,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "過去<b>%(value_1)s日間</b>の記事を未読にする"
 
-msgid "Mark stories read on scroll"
-msgstr "スクロール時に記事を既読にする"
-
 msgid "Mark the site as read"
 msgstr "サイトを既読にする"
 
@@ -4066,6 +4160,12 @@ msgstr "既読にしています…"
 
 msgid "Marking as unread..."
 msgstr "未読に設定中..."
+
+msgid "Marking sites as read"
+msgstr "サイトを既読にする"
+
+msgid "Marking stories as read"
+msgstr "記事を既読にする"
 
 msgid "Match"
 msgstr "一致"
@@ -4181,6 +4281,12 @@ msgstr "今週最も購読されたフィード"
 msgid "Most used at top, then alphabetical"
 msgstr "使用頻度順、その後アルファベット順"
 
+msgid "Most used first"
+msgstr "使用頻度の高い順"
+
+msgid "Motion"
+msgstr "動き"
+
 msgid "Move"
 msgstr "移動"
 
@@ -4253,6 +4359,9 @@ msgstr "無期限"
 
 msgid "Name"
 msgstr "名前"
+
+msgid "Name only"
+msgstr "名前のみ"
 
 msgid "Native Apps"
 msgstr "ネイティブアプリ"
@@ -4342,11 +4451,20 @@ msgstr "新しいパスワード"
 msgid "New posts from feeds you recently read"
 msgstr "最近読んだフィードの新着記事"
 
+msgid "New stories"
+msgstr "新着記事"
+
 msgid "New tag name"
 msgstr "新しいタグ名"
 
 msgid "New to me"
 msgstr "未購読のサイト"
+
+msgid "New window"
+msgstr "新しいウィンドウ"
+
+msgid "New window, marked read"
+msgstr "新しいウィンドウで開き、既読にする"
 
 msgid "Newer:"
 msgstr "この日以降："
@@ -4372,6 +4490,9 @@ msgstr "NewsBlurは現在ダウンしています。<br>しばらくしてから
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlurはメンテナンス中です。<br> しばらくしてからもう一度お試しください。"
+
+msgid "NewsBlur menu"
+msgstr "NewsBlurメニュー"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlurがページの変更を自動で監視します"
@@ -4411,6 +4532,12 @@ msgstr "次の記事"
 
 msgid "Next unread"
 msgstr "次の未読記事"
+
+msgid "Next unread at the end"
+msgstr "最後に未読の記事へ"
+
+msgid "Next unread halfway"
+msgstr "次の未読記事を画面中央に表示"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "次に、すべてのニュースレターをカスタムNewsBlurアドレスに転送するフィルタを作成します。"
@@ -4757,6 +4884,9 @@ msgstr "プレミアムアーカイブでは、最近の記事だけでなく、
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "プレミアムでは最近の記事を検索できます。プレミアムアーカイブでは、アーカイブ済みのすべての記事を検索できます。"
 
+msgid "On reload"
+msgstr "再読み込み時"
+
 msgid "One command with Docker"
 msgstr "Dockerならコマンド1つ"
 
@@ -4883,6 +5013,12 @@ msgstr "フィードと記事タイトルのメニューを開く"
 msgid "Open the first story"
 msgstr "最初の記事を開く"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "NewsBlurを読み込むときに、下記で選択したフォルダーを開く"
+
+msgid "Open the next one"
+msgstr "次の記事を開く"
+
 msgid "Open the next site/folder"
 msgstr "次のサイト／フォルダーを開く"
 
@@ -4903,6 +5039,12 @@ msgstr "デイリーブリーフィングを開く"
 
 msgid "Open your saved stories"
 msgstr "保存した記事を開く"
+
+msgid "Opening a site also opens its first story"
+msgstr "サイトを開くと、最初の記事も開く"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "サイトを開くと記事が表示され、記事を選ぶまで待機"
 
 msgid "Opens"
 msgstr "開いた回数"
@@ -5042,6 +5184,9 @@ msgstr "プランを選んでお支払いください。"
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "NewsBlurで使用する言語を選択してください。この設定はいつでも「設定」で変更できます。"
 
+msgid "Placement"
+msgstr "配置"
+
 msgid "Places"
 msgstr "場所"
 
@@ -5065,6 +5210,9 @@ msgstr "最後に再生"
 
 msgid "Play Next"
 msgstr "次を再生"
+
+msgid "Play YouTube videos without captions"
+msgstr "字幕なしでYouTube動画を再生"
 
 msgid "Play in Mini Media Player"
 msgstr "ミニメディアプレーヤーで再生"
@@ -5286,9 +5434,6 @@ msgstr "保護済み："
 msgid "Public blurblog sharing"
 msgstr "公開Blurblog共有"
 
-msgid "Public comments"
-msgstr "公開コメント"
-
 msgid "Public:"
 msgstr "公開："
 
@@ -5378,6 +5523,9 @@ msgstr "フォルダー内のすべてのフィードを、時系列順のスク
 
 msgid "Read aloud"
 msgstr "読み上げ"
+
+msgid "Read and unread stories are both listed"
+msgstr "既読と未読の記事を両方表示"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5482,11 +5630,8 @@ msgstr "引き換え済み"
 msgid "Redirect URL"
 msgstr "リダイレクトURL"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "記事の流れをすっきり整理"
-
-msgid "Reduce motion"
-msgstr "動きを減らす"
+msgid "Reduced"
+msgstr "縮小"
 
 msgid "Refer"
 msgstr "紹介"
@@ -5528,6 +5673,9 @@ msgstr "関連"
 
 msgid "Related Sites"
 msgstr "関連サイト"
+
+msgid "Related sites above the story titles"
+msgstr "記事タイトルの上に関連サイトを表示"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "関連記事はプレミアム会員のみご利用いただけます。"
@@ -5674,6 +5822,12 @@ msgstr "ニュースの流れ"
 msgid "River of News (reading by folder)"
 msgstr "ニュース一覧（フォルダー別に読む）"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "画像とプレビュー付きのゆったりした行"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "サイドバーと記事一覧の行"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "newsblur auth loginを実行してOAuthで認証"
 
@@ -5726,9 +5880,6 @@ msgstr "Blurblogの設定を保存"
 
 msgid "Save My Profile"
 msgstr "プロフィールを保存"
-
-msgid "Save Preferences"
-msgstr "設定を保存"
 
 msgid "Save Search"
 msgstr "検索を保存"
@@ -5806,15 +5957,21 @@ msgid ""
 " you use the Generate button."
 msgstr "定期ブリーフィングにはプレミアムアーカイブの購読が必要です。現在のプランでは、「生成」ボタンを使ったときのみブリーフィングが作成されます。"
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "配信スケジュール（毎日または1日2回）"
-
 msgid "Science"
 msgstr "科学"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "適用範囲を指定した分類器は%(plan)sの購読者のみご利用いただけます。"
+
+msgid "Scroll only"
+msgstr "スクロールのみ"
+
+msgid "Scroll the story"
+msgstr "記事をスクロール"
+
+msgid "Scroll the story by the distance set below"
+msgstr "下で設定した距離だけ記事をスクロール"
 
 msgid "Scroll to comments"
 msgstr "コメントまでスクロール"
@@ -5949,14 +6106,8 @@ msgid ""
 "changed, highlighted in green and red."
 msgstr "記事が最初に公開されてからどのように変化したかを確認できます。NewsBlurは改訂履歴を記録し、変更箇所を緑と赤で強調して差分を表示します。"
 
-msgid "See shared stories"
-msgstr "共有された記事を見る"
-
 msgid "See the story title and a short content preview"
 msgstr "記事のタイトルと短い内容のプレビューを表示"
-
-msgid "See which feeds cover the same story"
-msgstr "同じ記事を取り上げているフィードを確認"
 
 msgid "Select"
 msgstr "選択"
@@ -6015,6 +6166,9 @@ msgstr "この記事を送信"
 msgid "Sending…"
 msgstr "送信中…"
 
+msgid "Separate"
+msgstr "分ける"
+
 msgid "September"
 msgstr "9月"
 
@@ -6057,9 +6211,6 @@ msgstr "コメントを添えて記事を共有すると、Blurblogに公開さ�
 
 msgid "Share on NewsBlur"
 msgstr "NewsBlurで共有"
-
-msgid "Share stories"
-msgstr "記事を共有"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6123,35 +6274,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "低"
 
+msgid "Shorten all"
+msgstr "すべて短縮"
+
+msgid "Shorten shared"
+msgstr "共有記事を短縮"
+
+msgid "Shortened stories open with a click"
+msgstr "短縮表示の記事をクリックして開く"
+
 msgid "Show"
 msgstr "表示"
 
 msgid "Show Folders"
 msgstr "フォルダーを表示"
 
-msgid "Show Global Shared Stories"
-msgstr "全体共有の記事を表示"
-
-msgid "Show Good Reads"
-msgstr "おすすめ記事を表示"
-
-msgid "Show Infrequent Site Stories"
-msgstr "更新頻度の低いサイトの記事を表示"
-
-msgid "Show Long Reads"
-msgstr "長文記事を表示"
-
-msgid "Show Widely Read Stories"
-msgstr "よく読まれている記事を表示"
-
 msgid "Show a preview of the story"
 msgstr "記事のプレビューを表示"
 
 msgid "Show all animations"
 msgstr "すべてのアニメーションを表示"
-
-msgid "Show all comments"
-msgstr "すべてのコメントを表示"
 
 msgid "Show all stories"
 msgstr "すべての記事を表示"
@@ -6182,6 +6324,9 @@ msgstr "テキスト選択時にハイライトを表示"
 
 msgid "Show history"
 msgstr "履歴を表示"
+
+msgid "Show in full"
+msgstr "全文を表示"
 
 msgid "Show more related stories"
 msgstr "関連する記事をもっと表示"
@@ -6226,6 +6371,9 @@ msgstr "<b>%(date)s</b>の記事を表示中"
 msgid "Shows a toolbar button with your unread count"
 msgstr "未読件数を表示するツールバーボタン"
 
+msgid "Sidebar"
+msgstr "サイドバー"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "サインインすると、フィード、学習内容、保存した記事がすぐに同期されます"
 
@@ -6262,17 +6410,20 @@ msgstr "サイトURLまたは名前で検索..."
 msgid "Site by Site"
 msgstr "サイトごと"
 
+msgid "Site order"
+msgstr "サイトの順序"
+
 msgid "Site settings"
 msgstr "サイト設定"
-
-msgid "Site sidebar order"
-msgstr "サイトサイドバーの順序"
 
 msgid "Site stats"
 msgstr "サイト統計"
 
 msgid "Sites"
 msgstr "サイト"
+
+msgid "Sites and folders"
+msgstr "サイトとフォルダー"
 
 msgid "Sites updated up to 5x more often"
 msgstr "サイトの更新頻度が最大5倍に"
@@ -6295,6 +6446,12 @@ msgstr "左側に小さなサムネイルを表示"
 msgid "Small image thumbnail on the right"
 msgstr "右側に小さなサムネイル画像"
 
+msgid "Small, left"
+msgstr "小さく、左"
+
+msgid "Small, right"
+msgstr "小、右"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "時間はたっぷり、やることはほんの少し。いや、取り消し！逆だ。"
 
@@ -6303,6 +6460,9 @@ msgstr "ソーシャル"
 
 msgid "Social Connections"
 msgstr "ソーシャル接続"
+
+msgid "Social features"
+msgstr "ソーシャル機能"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6354,8 +6514,11 @@ msgstr "並べ替え、フィルター、表示オプション"
 msgid "Source feeds"
 msgstr "ソースフィード"
 
-msgid "Spacing between feeds and story titles"
-msgstr "フィードと記事タイトルの間隔"
+msgid "Space bar"
+msgstr "スペースキー"
+
+msgid "Spacing"
+msgstr "間隔"
 
 msgid "Spanish"
 msgstr "スペイン語"
@@ -6456,6 +6619,9 @@ msgstr "ステータス"
 msgid "Stay on the same feed/folder"
 msgstr "同じフィード／フォルダーにとどまる"
 
+msgid "Stay put"
+msgstr "そのままにする"
+
 msgid "Steadier or more varied"
 msgstr "より安定／より変化に富む"
 
@@ -6484,6 +6650,9 @@ msgstr "高評価の記事は緑色で強調表示され、低評価の記事は
 
 msgid "Stories arrive in real-time"
 msgstr "記事がリアルタイムで届きます"
+
+msgid "Stories as cards in a grid"
+msgstr "記事をカード形式でグリッド表示"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "記事はオフラインで読めるようキャッシュされ、バックグラウンドで自動更新されます。"
@@ -6542,6 +6711,12 @@ msgstr "月ごとの記事数"
 msgid "Stories readers finished, saved, and shared"
 msgstr "読者が読み終えた記事、保存した記事、共有した記事"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "記事タイトルをスクロールして通り過ぎた記事"
+
+msgid "Stories shown"
+msgstr "表示する記事"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "NewsBlurで最も注目を集めた記事。"
 
@@ -6550,6 +6725,9 @@ msgstr "記事が<b>決して</b>自動で既読になることはありませ�
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "記事が既読になることは<b>ありません</b>"
+
+msgid "Stories you have read are left out"
+msgstr "既読の記事は除外されます"
 
 msgid "Story"
 msgstr "記事"
@@ -6584,6 +6762,9 @@ msgstr "記事の文字設定"
 msgid "Story URL"
 msgstr "記事のURL"
 
+msgid "Story buttons"
+msgstr "記事のボタン"
+
 msgid "Story cards open on their own screen"
 msgstr "記事カードを個別の画面で開く"
 
@@ -6602,23 +6783,20 @@ msgstr "記事の言語"
 msgid "Story layout"
 msgstr "記事のレイアウト"
 
+msgid "Story list"
+msgstr "記事一覧"
+
 msgid "Story preview"
 msgstr "記事のプレビュー"
 
 msgid "Story shows in Focus view"
 msgstr "記事がフォーカスビューに表示されます"
 
-msgid "Story side options"
-msgstr "記事のサイドオプション"
-
-msgid "Story side options buttons"
-msgstr "記事サイドのオプションボタン"
-
-msgid "Story side options placement"
-msgstr "記事サイドオプションの配置"
-
 msgid "Story title styling"
 msgstr "記事タイトルのスタイル"
+
+msgid "Story titles beside the open story"
+msgstr "開いている記事の横に記事タイトルを表示"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "ストリームが中断されました。10秒間応答がありません。"
@@ -6798,6 +6976,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "高"
 
+msgid "Tall stories"
+msgstr "長文記事"
+
 msgid "Target category name"
 msgstr "統合先のカテゴリ名"
 
@@ -6863,6 +7044,9 @@ msgstr "ありがとうございます！%(bold_start)sプレミアムアーカ�
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "ありがとうございます！%(bold_start)sプレミアム Proアカウント%(bold_end)sをご利用中です。"
 
+msgid "That change could not be saved"
+msgstr "変更を保存できませんでした"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AIサービスからの応答に時間がかかりすぎています。もう一度お試しください。"
 
@@ -6908,6 +7092,9 @@ msgstr "ニュースの流れの全表示は%(link_start)sプレミアム機能%
 msgid "The full shortcut list"
 msgstr "ショートカット一覧"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "サイトから取得した記事の全文"
+
 msgid "The gift has been applied to your account."
 msgstr "ギフトがアカウントに適用されました。"
 
@@ -6927,14 +7114,29 @@ msgstr "loginコマンドを実行すると、ブラウザーが開いてOAuth�
 msgid "The most important stories from your feeds"
 msgstr "フィードの中で特に重要な記事"
 
+msgid "The most recent stories come first"
+msgstr "新しい記事から表示"
+
+msgid "The oldest stories come first"
+msgstr "古い記事から表示"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "配信元により元のページが無効化されています。"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "ページのHTMLを取得・解析し、コンテンツの構造を抽出します。"
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "ブラウザーで見るサイトそのもの"
+
+msgid "The story on its own page on the site"
+msgstr "サイト上の記事専用ページ"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "選択した表示形式はサイトごとに記憶されるため、要約のみのフィードではテキスト表示をデフォルトにできます。"
+
+msgid "Theme"
+msgstr "テーマ"
 
 msgid "Themes & Customization"
 msgstr "テーマとカスタマイズ"
@@ -7131,6 +7333,9 @@ msgstr "タイトルのフレーズ"
 msgid "Title Regex"
 msgstr "タイトルの正規表現"
 
+msgid "Title and preview"
+msgstr "タイトルとプレビュー"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "タイトルフィルターにより、%(context)sに該当する記事が見つかりませんでした。"
@@ -7203,9 +7408,6 @@ msgstr "ツール"
 msgid "Tooltips"
 msgstr "ツールチップ"
 
-msgid "Tooltips like this"
-msgstr "このようなツールチップ"
-
 msgid "Top"
 msgstr "上部"
 
@@ -7263,6 +7465,9 @@ msgstr "この記事を学習させる"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "フィードを学習させて、好みの記事や好みでない記事を絞り込みましょう。"
 
+msgid "Train, Save, Share and the rest"
+msgstr "学習、保存、共有など"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "ニュースレターも通常のフィードと同じように、学習・タグ付け・検索・整理できます"
 
@@ -7286,9 +7491,6 @@ msgstr "トレンド"
 
 msgid "Trending Sites"
 msgstr "トレンドのサイト"
-
-msgid "Truncate stories"
-msgstr "記事を省略表示"
 
 msgid "Try"
 msgstr "試す"
@@ -7415,6 +7617,9 @@ msgstr "ミュート解除"
 
 msgid "Unread"
 msgstr "未読"
+
+msgid "Unread count"
+msgstr "未読数"
 
 msgid "Unread only"
 msgstr "未読のみ"
@@ -7669,6 +7874,10 @@ msgstr "音声設定"
 msgid "Voices"
 msgstr "音声"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "暖色"
+
 msgid "Warning: This is actually permanent"
 msgstr "警告：この操作は本当に取り消せません"
 
@@ -7766,8 +7975,14 @@ msgstr "背景や状況を教えてください。"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLIとMCPの違いは何ですか？"
 
+msgid "When NewsBlur opens"
+msgstr "NewsBlurを開いたとき"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "フィードが更新されると、NewsBlurは登録中のすべてのフィードを対象に重複を確認します"
+
+msgid "When clicked"
+msgstr "クリック時"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "複数のフィードに同じ記事が掲載されている場合、NewsBlurがまとめるので、記事は一度だけ表示されます。"
@@ -7791,6 +8006,9 @@ msgstr "新しいフィードを登録すると、過去の記事もさかのぼ
 
 msgid "Which AI models are available?"
 msgstr "どのAIモデルが利用できますか？"
+
+msgid "While scrolling"
+msgstr "スクロール中"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "エラーが発生しました。もう一度お試しください。"
@@ -7821,6 +8039,9 @@ msgstr "ウィンドウタイトル"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "キーボードで操作"
 
 msgid "Word Matching"
 msgstr "単語マッチング"

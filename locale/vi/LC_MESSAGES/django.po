@@ -2653,6 +2653,10 @@ msgstr "Đã hiểu!<br>Email sẽ được gửi trong vài phút tới."
 msgid "Graceful iFrame Busting"
 msgstr "Chống thoát khỏi iFrame một cách an toàn"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Xám"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Tin vui, %(username)s!"
@@ -6539,6 +6543,10 @@ msgstr "Bạn muốn mở khóa thêm tính năng nữa không?"
 
 msgid "Warm"
 msgstr "Ấm áp"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "Ấm"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""
