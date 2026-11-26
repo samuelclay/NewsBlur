@@ -17,15 +17,17 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * StoryPush.kt: this device's side of the pushes that apps/notifications/models.py send_android sends through
- * Firebase Cloud Messaging. A push carries only a story hash. The device fetches that story and posts the
- * notification NotificationUtils.java already builds for the background sync, so read state, dismissals and the
- * feed's Android setting still decide what shows. PushMessaging.kt holds the Firebase calls and only exists in
- * the Play build; F-Droid keeps relying on the background sync in SyncService.kt.
+ * Firebase Cloud Messaging. A push carries only a story hash. The server has already decided the story is for
+ * this account's Android devices, by a feed's setting or by a classifier match. The device fetches the story and
+ * posts the notification NotificationUtils.java builds for the background sync, unless the story was read or
+ * dismissed since. PushMessaging.kt holds the Firebase calls and only exists in the Play build; F-Droid keeps
+ * relying on the background sync in SyncService.kt.
  */
 @Singleton
 class StoryPush
@@ -70,20 +72,41 @@ class StoryPush
             prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") == token &&
                 clock() - prefsRepo.getLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, 0L) < REGISTRATION_FRESH_MILLIS
 
-        /** Returns whether the pushed story was fetched and this device's notifications were refreshed. */
+        /**
+         * PushMessagingService.kt calls this for each push. Firebase keeps the device awake for about 20 seconds per
+         * message, and the requests in [handle] are the cancellable kind, so this deadline really ends them.
+         */
+        suspend fun deliver(data: Map<String, String>): Boolean = withTimeoutOrNull(DELIVERY_DEADLINE_MILLIS) { handle(data) } ?: false
+
+        /** Returns whether the pushed story was fetched and handed to NotificationUtils.java. */
         suspend fun handle(data: Map<String, String>): Boolean {
             val storyHash = data[KEY_STORY_HASH]
-            if (storyHash.isNullOrEmpty()) return false
+            val feedId = data[KEY_STORY_FEED_ID]
+            if (storyHash.isNullOrEmpty() || feedId.isNullOrEmpty()) return false
             // A token outlives a sign-out until Firebase forgets it, so the previous account's push can land here.
             val userId = prefsRepo.getUserId() ?: return false
             if (data[KEY_USER_ID] != userId) return false
             if (!DeviceNotifications.isOn(context, prefsRepo)) return false
 
-            val response = storyApi.getStoriesByHash(listOf(storyHash))
+            // A push can wait at Firebase for hours, and a lookup by hash cannot say whether the story was read since
+            // (StoryApiImpl.kt). It is only shown while the server still lists it among the feed's unread stories.
+            val unread = storyApi.getUnreadStoryHashes(listOf(feedId), cancellable = true)
+            if (unread.isError || !unread.authenticated) return false
+            if (unread.unreadHashes?.get(feedId)?.any { it.firstOrNull() == storyHash } != true) return false
+
+            val response = storyApi.getStoriesByHash(listOf(storyHash), cancellable = true)
             if (!SyncServiceUtil.isStoryResponseGood(response) || response!!.isProtocolError) return false
+
             val database = dbHelper.get()
-            database.insertStories(response, prefsRepo.getStateFilter(), false)
-            NotificationUtils.notifyUnreadStories(context, database, iconCache)
+            // PrefsRepo.kt clears the account before it wipes the database, and the wipe takes this same lock. A story
+            // fetched for an account that signed out meanwhile is therefore never written, or is wiped right after.
+            synchronized(BlurDatabaseHelper.RW_MUTEX) {
+                if (prefsRepo.getUserId() != userId) return false
+                database.insertStories(response, prefsRepo.getStateFilter(), false)
+            }
+            NotificationUtils.notifyPushedStory(context, database, iconCache, storyHash)
+            // The sign-out clears every notification too, possibly a moment before this one was posted.
+            if (prefsRepo.getUserId() != userId) NotificationUtils.clear(context)
             return true
         }
 
@@ -96,9 +119,11 @@ class StoryPush
         companion object {
             // Keys of the data message built by apps/notifications/models.py send_android.
             const val KEY_STORY_HASH = "story_hash"
+            const val KEY_STORY_FEED_ID = "story_feed_id"
             const val KEY_USER_ID = "user_id"
 
             private const val REGISTRATION_FRESH_MILLIS = 24 * 60 * 60 * 1000L
+            private const val DELIVERY_DEADLINE_MILLIS = 15_000L
 
             @JvmStatic
             fun from(context: Context): StoryPush =

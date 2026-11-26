@@ -190,7 +190,10 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun getUnreadStoryHashes(feedIds: Collection<String>?): UnreadStoryHashesResponse {
+    override suspend fun getUnreadStoryHashes(
+        feedIds: Collection<String>?,
+        cancellable: kotlin.Boolean,
+    ): UnreadStoryHashesResponse {
         val values =
             ValueMultimap().apply {
                 put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
@@ -198,9 +201,15 @@ class StoryApiImpl(
                 feedIds?.forEach { put(APIConstants.PARAMETER_FEEDID, it) }
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNREAD_HASHES)
-        val response: APIResponse = networkClient.get(urlString, values)
+        val response: APIResponse = get(urlString, values, cancellable)
         return response.getResponse(gson, UnreadStoryHashesResponse::class.java)
     }
+
+    private suspend fun get(
+        urlString: String,
+        values: ValueMultimap,
+        cancellable: kotlin.Boolean,
+    ): APIResponse = if (cancellable) networkClient.getCancellable(urlString, values) else networkClient.get(urlString, values)
 
     override suspend fun getStarredStoryHashes(): StarredStoryHashesResponse {
         val urlString = APIConstants.buildUrl(APIConstants.PATH_STARRED_STORY_HASHES)
@@ -208,7 +217,10 @@ class StoryApiImpl(
         return response.getResponse(gson, StarredStoryHashesResponse::class.java)
     }
 
-    override suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse? {
+    override suspend fun getStoriesByHash(
+        storyHashes: List<String>,
+        cancellable: kotlin.Boolean,
+    ): StoriesResponse? {
         val values =
             ValueMultimap().apply {
                 for (hash in storyHashes) {
@@ -217,7 +229,7 @@ class StoryApiImpl(
                 put(APIConstants.PARAMETER_INCLUDE_HIDDEN, APIConstants.VALUE_TRUE)
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_RIVER_STORIES)
-        val response: APIResponse = networkClient.get(urlString, values)
+        val response: APIResponse = get(urlString, values, cancellable)
         return response.getResponse(gson, StoriesResponse::class.java)?.apply {
             // StoryApiImpl.kt hash lookups return placeholder top-level unread flags from the server.
             readStatusAuthoritative = false

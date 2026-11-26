@@ -1441,6 +1441,11 @@ public class BlurDatabaseHelper {
         return rawQuery(DatabaseConstants.NOTIFY_UNREAD_STORY_QUERY, null, null);
     }
 
+    @Nullable
+    public Cursor getNotifyPushedStoryCursor(@NonNull String storyHash) {
+        return rawQuery(DatabaseConstants.NOTIFY_PUSHED_STORY_QUERY, new String[]{storyHash}, null);
+    }
+
     @NonNull
     public Set<String> getNotifyFeeds() {
         String q = "SELECT " + DatabaseConstants.FEED_ID + " FROM " + DatabaseConstants.FEED_TABLE +

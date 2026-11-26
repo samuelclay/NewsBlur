@@ -47,6 +47,17 @@ class Test_NotifyStoryQueries {
         }
     }
 
+    @Test fun test_pushed_story_is_found_whatever_its_feeds_channels_are() {
+        withNotificationFeeds { sql ->
+            // apps/notifications/models.py also pushes classifier matches, for feeds with no Android setting of their own.
+            sql.connection.prepareStatement(DatabaseConstants.NOTIFY_PUSHED_STORY_QUERY).use { query ->
+                query.setString(1, "1:story")
+                val hashes = query.executeQuery().use { rows -> buildList { while (rows.next()) add(rows.getString(DatabaseConstants.STORY_HASH)) } }
+                assertEquals(listOf("1:story"), hashes)
+            }
+        }
+    }
+
     /** Every feed has a filter, as the server sends for any channel. Only feeds 2 and 4 chose Android. */
     private fun withNotificationFeeds(block: (Statement) -> Unit) {
         val feeds =

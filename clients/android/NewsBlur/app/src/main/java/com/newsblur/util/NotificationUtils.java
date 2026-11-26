@@ -89,13 +89,28 @@ public class NotificationUtils {
         }
     }
 
-    /** NotificationUtils.java: SyncService.kt and StoryPush.kt both refresh notifications from the local stories. */
-    public static void notifyUnreadStories(Context context, BlurDatabaseHelper dbHelper, FileCache iconCache) {
-        Cursor storiesFocus = dbHelper.getNotifyFocusStoriesCursor();
-        Cursor storiesUnread = dbHelper.getNotifyUnreadStoriesCursor();
-        notifyStories(context, storiesFocus, storiesUnread, iconCache, dbHelper);
-        BlurDatabaseHelper.closeQuietly(storiesFocus);
-        BlurDatabaseHelper.closeQuietly(storiesUnread);
+    /**
+     * NotificationUtils.java: posts the one story a push named (StoryPush.kt). The server already chose it for this
+     * device, so the feed filter of the notify queries is not applied again. Read, dismissed and old stories are
+     * still left out, exactly as notifyStories leaves them out.
+     */
+    public static synchronized void notifyPushedStory(Context context, BlurDatabaseHelper dbHelper, FileCache iconCache, String storyHash) {
+        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+        Cursor cursor = dbHelper.getNotifyPushedStoryCursor(storyHash);
+        try {
+            if (cursor == null || !cursor.moveToFirst()) return;
+            Story story = Story.fromCursor(cursor);
+            if (story.read || dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+            } else if (StoryUtils.hasOldTimestamp(story.timestamp)) {
+                dbHelper.putStoryDismissed(story.storyHash);
+                nm.cancel(story.hashCode());
+            } else {
+                nm.notify(story.hashCode(), buildStoryNotification(story, cursor, context, iconCache));
+            }
+        } finally {
+            BlurDatabaseHelper.closeQuietly(cursor);
+        }
     }
 
     /**

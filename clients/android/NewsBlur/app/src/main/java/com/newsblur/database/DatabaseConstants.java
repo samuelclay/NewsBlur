@@ -452,6 +452,13 @@ public class DatabaseConstants {
         STORY_QUERY_BASE_2 +
         " ORDER BY " + STORY_TIMESTAMP + " DESC";
 
+    // DatabaseConstants.java: the one story a push named. The server chose it, by the feed's Android setting or by a
+    // classifier match on a feed with no setting at all, so no feed filter applies here.
+    public static String NOTIFY_PUSHED_STORY_QUERY =
+        STORY_QUERY_BASE_1 +
+        STORY_HASH + " = ?" +
+        STORY_QUERY_BASE_2;
+
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;
 
