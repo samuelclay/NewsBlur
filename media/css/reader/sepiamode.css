@@ -109,6 +109,26 @@ body:where(.NB-sepia) {
     color: var(--nb-sepia-link);
 }
 
+/* sepiamode.css: the "N new stories" row over the story titles, in the colors iOS gives its banner
+ * over the story list (FeedDetailObjCViewController.m) and Android its story_status_fetching_*_sepia. */
+.NB-sepia .NB-new-stories-row {
+    background: #F0E8D8;
+    color: #6B5A45;
+    border-bottom-color: #D8C8B0;
+}
+
+.NB-sepia .NB-new-stories-row.NB-at-bottom {
+    border-top-color: #D8C8B0;
+}
+
+.NB-sepia .NB-new-stories-row:hover {
+    background: #E9DECA;
+}
+
+.NB-sepia .NB-new-stories-row:focus-visible {
+    outline-color: #8B7B6B;
+}
+
 /* sepiamode.css: the page dimmed behind dialogs (css/reader/modals.css) and popovers is navy in the
  * light theme, which reads purple over warm paper. */
 .NB-sepia #simplemodal-overlay {
