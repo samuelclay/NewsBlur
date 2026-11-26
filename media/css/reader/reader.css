@@ -27948,6 +27948,103 @@ h5.NB-classifier-section-header {
     opacity: .7;
 }
 
+/* reader.css: the colors every drawing is made of. They follow the theme: css/reader/sepiamode.css
+ * and graymode.css set their own, and the dark theme's are below. */
+.NB-modal-preferences {
+    --nb-art-page: #FFFFFF;
+    --nb-art-panel: #EAECE5;
+    --nb-art-line: #CDD0C7;
+    --nb-art-ink: #9A9D94;
+    --nb-art-strong: #5E6267;
+    --nb-art-accent: #5C89C9;
+    --nb-art-select: #FFF3A8;
+    --nb-art-good: #6EA85E;
+    --nb-art-notice: #E0A33C;
+    --nb-art-bad: #CB5F58;
+    --nb-art-dark: #45474A;
+    --nb-art-white: #FFFFFF;
+}
+
+.NB-dark .NB-modal-preferences {
+    --nb-art-page: #171B20;
+    --nb-art-panel: #222A31;
+    --nb-art-line: #3E4954;
+    --nb-art-ink: #74828F;
+    --nb-art-strong: #C5CFD8;
+    --nb-art-accent: #8FBDE8;
+    --nb-art-select: #354D61;
+    --nb-art-good: #6DB37A;
+    --nb-art-notice: #D9A94E;
+    --nb-art-bad: #D0747A;
+    --nb-art-dark: #0D1013;
+    --nb-art-white: #F1F4F6;
+}
+
+.NB-pref-art-svg .ap { fill: var(--nb-art-page); }
+.NB-pref-art-svg .as { fill: var(--nb-art-panel); }
+.NB-pref-art-svg .al { fill: var(--nb-art-line); }
+.NB-pref-art-svg .ak { fill: var(--nb-art-ink); }
+.NB-pref-art-svg .ab { fill: var(--nb-art-strong); }
+.NB-pref-art-svg .aa { fill: var(--nb-art-accent); }
+.NB-pref-art-svg .ay { fill: var(--nb-art-select); }
+.NB-pref-art-svg .ag { fill: var(--nb-art-good); }
+.NB-pref-art-svg .ao { fill: var(--nb-art-notice); }
+.NB-pref-art-svg .ar { fill: var(--nb-art-bad); }
+.NB-pref-art-svg .ad { fill: var(--nb-art-dark); }
+.NB-pref-art-svg .aw { fill: var(--nb-art-white); }
+
+.NB-pref-art-svg text {
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.NB-pref-art-svg .astroke {
+    fill: none;
+    stroke: var(--nb-art-white);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aline,
+.NB-pref-art-svg .astrokeonly {
+    fill: none;
+    stroke: var(--nb-art-strong);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aarrow {
+    fill: none;
+    stroke: var(--nb-art-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .acur {
+    stroke: var(--nb-art-page);
+    stroke-width: 1;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aghost {
+    opacity: 0.4;
+}
+
+.NB-pref-art-svg .afade {
+    opacity: 0.55;
+}
+
+.NB-pref-art-svg .afadeup {
+    opacity: 0.82;
+}
+
+.NB-pref-art-svg .ashadow {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
 /* ============ */
 /* = Tooltips = */
 /* ============ */

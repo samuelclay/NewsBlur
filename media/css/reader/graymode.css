@@ -41,6 +41,19 @@ body.NB-dark.NB-gray {
     --nb-dark-link: #8fbde8;
 }
 
+/* graymode.css: the colors of the drawings on the Preferences cards (css/reader/reader.css,
+ * reader_preferences_art.js). */
+.NB-dark.NB-gray .NB-modal-preferences {
+    --nb-art-page: #2B2B2B;
+    --nb-art-panel: #474747;
+    --nb-art-line: #5A5A5A;
+    --nb-art-ink: #8E8E8E;
+    --nb-art-strong: #D6D6D6;
+    --nb-art-select: #586B82;
+    --nb-art-dark: #171717;
+    --nb-art-white: #F2F2F2;
+}
+
 .NB-dark.NB-gray {
     scrollbar-color: #6a6a6a #333333;
 }

@@ -109,6 +109,19 @@ body:where(.NB-sepia) {
     color: var(--nb-sepia-link);
 }
 
+/* sepiamode.css: the colors of the drawings on the Preferences cards (css/reader/reader.css,
+ * reader_preferences_art.js). */
+.NB-sepia .NB-modal-preferences {
+    --nb-art-page: #FAF5ED;
+    --nb-art-panel: #F3E2CB;
+    --nb-art-line: #DCCFBD;
+    --nb-art-ink: #A39281;
+    --nb-art-strong: #6B5A4B;
+    --nb-art-select: #F5D1A2;
+    --nb-art-dark: #554437;
+    --nb-art-white: #FAF5ED;
+}
+
 /* sepiamode.css: the "N new stories" row over the story titles, in the colors iOS gives its banner
  * over the story list (FeedDetailObjCViewController.m) and Android its story_status_fetching_*_sepia. */
 .NB-sepia .NB-new-stories-row {
