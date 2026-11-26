@@ -240,6 +240,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            NEWSBLUR.utils.watch_tips();
             this.setup_read_time_tracker();
             this.setup_classifier_filter_popstate();
         },

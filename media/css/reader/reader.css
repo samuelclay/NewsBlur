@@ -27909,6 +27909,57 @@ h5.NB-classifier-section-header {
     opacity: .7;
 }
 
+/* ============ */
+/* = Tooltips = */
+/* ============ */
+
+/* reader.css: the one tooltip reader_utils.js show_tip moves between elements that carry data-tip:
+ * the Preferences cards and the theme circles. It appears at once and looks the same in every
+ * browser and theme, unlike a title attribute. */
+.NB-tip {
+    position: fixed;
+    z-index: 100000;
+    top: 0;
+    left: 0;
+    max-width: 250px;
+    padding: 7px 11px 8px;
+    border-radius: 7px;
+    background-color: #1F2124;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    text-wrap: balance;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.NB-tip.NB-visible {
+    visibility: visible;
+}
+
+.NB-tip-arrow {
+    position: absolute;
+    bottom: -4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 1px;
+    background-color: inherit;
+    transform: rotate(45deg);
+}
+
+.NB-tip.NB-below .NB-tip-arrow {
+    top: -4px;
+    bottom: auto;
+}
+
+.NB-dark .NB-tip {
+    background-color: #0B0C0D;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
 .NB-modal-preferences .NB-preference-feedorder label img {
     vertical-align: middle;
     margin: -3px 6px 0 2px;
