@@ -120,6 +120,11 @@ open class SyncService :
     private var foregroundRequested = false
     private var metadataSubSyncPending = false
 
+    // SyncService.kt decides this once per run in syncForeground, before any step of the run reads it.
+    private var syncMode = SyncMode.FULL
+
+    val isNotificationsOnlySync: Boolean get() = syncMode == SyncMode.NOTIFICATIONS_ONLY
+
     override val coroutineContext: CoroutineContext =
         CoroutineName("SyncService") +
             Dispatchers.IO +
@@ -245,9 +250,19 @@ open class SyncService :
                 return@supervisorScope false
             }
 
-            if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
+            // SyncService.kt keeps notifications working on a network the Download using setting rules out.
+            syncMode =
+                SyncMode.decide(
+                    isAppForeground = isAppForeground,
+                    isBackgroundNetworkAllowed = prefsRepo.isBackgroundNetworkAllowed(this@SyncService),
+                    isEnableNotifications = prefsRepo.isEnableNotifications(),
+                )
+            if (syncMode == SyncMode.SKIP) {
                 Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
                 return@supervisorScope false
+            }
+            if (isNotificationsOnlySync) {
+                Log.d(this.javaClass.name, "Syncing notification feeds only: network type not appropriate for background sync.")
             }
 
             // first: catch up
@@ -275,7 +290,8 @@ open class SyncService :
     private suspend fun syncBackground() =
         supervisorScope {
             val subSyncJobs = mutableListOf<Job>()
-            if (metadataSubSyncPending) {
+            // SyncService.kt keeps the cleanup and saved story sub syncs pending until a full sync can run them.
+            if (metadataSubSyncPending && !isNotificationsOnlySync) {
                 subSyncJobs += cleanupSubService.launchIn(this)
                 subSyncJobs += starredSubService.launchIn(this)
             }
@@ -289,7 +305,7 @@ open class SyncService :
             pushNotifications()
 
             subSyncJobs.joinAll()
-            metadataSubSyncPending = false
+            if (!isNotificationsOnlySync) metadataSubSyncPending = false
 
             Log.d(this, "Finishing primary sync")
 
@@ -432,6 +448,16 @@ open class SyncService :
         val untriedActions = dbHelper.getUntriedActionCount()
         if (untriedActions > 0) {
             Log.i(this.javaClass.name, "$untriedActions outstanding actions, yielding metadata sync")
+            return
+        }
+
+        if (isNotificationsOnlySync) {
+            // SyncService.kt leaves the large feed list reload for an allowed network. UnreadsSubService.kt
+            // only refreshes the unread stories of notification feeds, on the unread download schedule below.
+            if (prefsRepo.isTimeToSyncUnreads()) {
+                prefsRepo.updateLastUnreadSyncTime()
+                unreadsSubService.doMetadata()
+            }
             return
         }
 

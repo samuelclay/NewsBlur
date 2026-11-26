@@ -190,10 +190,12 @@ class StoryApiImpl(
         return response.getResponse(gson, NewsBlurResponse::class.java)
     }
 
-    override suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse {
+    override suspend fun getUnreadStoryHashes(feedIds: Collection<String>?): UnreadStoryHashesResponse {
         val values =
             ValueMultimap().apply {
                 put(APIConstants.PARAMETER_INCLUDE_TIMESTAMPS, "1")
+                // StoryApiImpl.kt repeats feed_id, which apps/reader/views.py unread_story_hashes reads as a list.
+                feedIds?.forEach { put(APIConstants.PARAMETER_FEEDID, it) }
             }
         val urlString = APIConstants.buildUrl(APIConstants.PATH_UNREAD_HASHES)
         val response: APIResponse = networkClient.get(urlString, values)

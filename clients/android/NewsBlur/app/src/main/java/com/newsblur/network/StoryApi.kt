@@ -41,7 +41,9 @@ interface StoryApi {
 
     suspend fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse?
 
-    suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse
+    // StoryApi.kt asks for every feed when feedIds is null. apps/reader/views.py unread_story_hashes
+    // treats an empty list the same way, so a caller that wants no feeds must not call this.
+    suspend fun getUnreadStoryHashes(feedIds: Collection<String>? = null): UnreadStoryHashesResponse
 
     suspend fun getStarredStoryHashes(): StarredStoryHashesResponse
 
