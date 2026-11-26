@@ -12,10 +12,15 @@ object StoryNotificationLimit {
         val storyHash: String,
     )
 
-    /** The notifications to dismiss, oldest story first, so that one more fits under [limit]. */
+    /**
+     * The stories to dismiss, oldest first, so that [showing] and the [incoming] story fit under [limit]. The
+     * incoming story is a candidate too: an old story must not take the place of a newer one, which is the same
+     * newest-first rule NotificationUtils.java applies in the background sync.
+     */
     @JvmStatic
-    fun toDismissForOneMore(
+    fun toDismiss(
         showing: List<Showing>,
+        incoming: Showing,
         limit: Int,
-    ): List<Showing> = showing.sortedBy { it.storyTime }.take((showing.size - limit + 1).coerceAtLeast(0))
+    ): List<Showing> = (showing + incoming).sortedBy { it.storyTime }.take((showing.size + 1 - limit).coerceAtLeast(0))
 }

@@ -5,23 +5,29 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class Test_StoryNotificationLimit {
-    private fun showing(vararg storyTimes: Long) = storyTimes.map { Showing(id = it.toInt(), storyTime = it, storyHash = "1:$it") }
+    private fun story(time: Long) = Showing(id = time.toInt(), storyTime = time, storyHash = "1:$time")
+
+    private fun showing(vararg storyTimes: Long) = storyTimes.map { story(it) }
+
+    private fun dismissed(showing: List<Showing>, incoming: Long) =
+        StoryNotificationLimit.toDismiss(showing, story(incoming), limit = 5).map { it.storyHash }
 
     @Test fun test_sixth_story_takes_the_place_of_the_oldest_one_showing() {
         // NotificationUtils.java shows five stories at most; a pushed sixth must not pile up in the shade.
-        val overflow = StoryNotificationLimit.toDismissForOneMore(showing(30, 10, 50, 20, 40), limit = 5)
-
-        assertEquals(listOf("1:10"), overflow.map { it.storyHash })
+        assertEquals(listOf("1:10"), dismissed(showing(30, 10, 50, 20, 40), incoming = 60))
     }
 
     @Test fun test_nothing_is_dismissed_while_there_is_room() {
-        assertEquals(emptyList<Showing>(), StoryNotificationLimit.toDismissForOneMore(showing(30, 10, 50, 20), limit = 5))
+        assertEquals(emptyList<String>(), dismissed(showing(30, 10, 50, 20), incoming = 60))
     }
 
     @Test fun test_a_shade_already_over_the_limit_is_brought_back_under_it() {
         // Stories pushed for classifier matches are outside the background sync's own trimming, so more can be showing.
-        val overflow = StoryNotificationLimit.toDismissForOneMore(showing(70, 10, 50, 20, 40, 30, 60), limit = 5)
+        assertEquals(listOf("1:10", "1:20", "1:30"), dismissed(showing(70, 10, 50, 20, 40, 30, 60), incoming = 80))
+    }
 
-        assertEquals(listOf("1:10", "1:20", "1:30"), overflow.map { it.storyHash })
+    @Test fun test_an_old_pushed_story_does_not_take_the_place_of_a_newer_one() {
+        // A classifier match can be pushed for a story older than everything showing. It is the one left out.
+        assertEquals(listOf("1:5"), dismissed(showing(30, 10, 50, 20, 40), incoming = 5))
     }
 }

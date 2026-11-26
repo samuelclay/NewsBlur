@@ -110,8 +110,7 @@ public class NotificationUtils {
             } else if (StoryUtils.hasOldTimestamp(story.timestamp)) {
                 dbHelper.putStoryDismissed(story.storyHash);
                 nm.cancel(story.hashCode());
-            } else {
-                makeRoomFor(story, context, nm, dbHelper);
+            } else if (makeRoomFor(story, context, nm, dbHelper)) {
                 nm.notify(story.hashCode(), buildStoryNotification(story, cursor, context, iconCache));
             }
         } finally {
@@ -121,9 +120,10 @@ public class NotificationUtils {
 
     /**
      * NotificationUtils.java: notifyStories keeps to MAX_CONCUR_NOTIFY by walking its own list of stories. A pushed
-     * story arrives alone, so the oldest stories showing are dismissed to keep the same limit.
+     * story arrives alone, so the oldest stories are dismissed to keep the same limit. Returns false when the
+     * pushed story is itself one of the oldest and should not be shown.
      */
-    private static void makeRoomFor(Story story, Context context, NotificationManagerCompat nm, BlurDatabaseHelper dbHelper) {
+    private static boolean makeRoomFor(Story story, Context context, NotificationManagerCompat nm, BlurDatabaseHelper dbHelper) {
         NotificationManager manager = context.getSystemService(NotificationManager.class);
         List<StoryNotificationLimit.Showing> showing = new ArrayList<>();
         for (StatusBarNotification active : manager.getActiveNotifications()) {
@@ -133,10 +133,14 @@ public class NotificationUtils {
                 showing.add(new StoryNotificationLimit.Showing(active.getId(), active.getNotification().when, storyHash));
             }
         }
-        for (StoryNotificationLimit.Showing oldest : StoryNotificationLimit.toDismissForOneMore(showing, MAX_CONCUR_NOTIFY)) {
+        StoryNotificationLimit.Showing incoming = new StoryNotificationLimit.Showing(story.hashCode(), story.timestamp, story.storyHash);
+        boolean hasRoom = true;
+        for (StoryNotificationLimit.Showing oldest : StoryNotificationLimit.toDismiss(showing, incoming, MAX_CONCUR_NOTIFY)) {
             nm.cancel(oldest.getId());
             dbHelper.putStoryDismissed(oldest.getStoryHash());
+            if (oldest.getId() == incoming.getId()) hasRoom = false;
         }
+        return hasRoom;
     }
 
     /**
