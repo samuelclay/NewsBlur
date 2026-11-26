@@ -55,6 +55,14 @@ class NotificationsAdapter(
             binding.textTitle.text = feed.title
             imageLoader.displayImage(feed.faviconUrl, binding.imgIcon, binding.imgIcon.height, true)
 
+            // NotificationsAdapter.kt: a recycled row still has the previous feed's listeners and checked buttons.
+            // Showing this feed's buttons must not fire those listeners, which would save the previous feed again
+            // and turn the device's notifications on without a tap.
+            binding.groupFilter.clearOnButtonCheckedListeners()
+            binding.groupPlatform.clearOnButtonCheckedListeners()
+            binding.groupFilter.clearChecked()
+            binding.groupPlatform.clearChecked()
+
             with(binding.groupFilter) {
                 if (feed.isNotifyUnread()) {
                     check(binding.btnUnread.id)

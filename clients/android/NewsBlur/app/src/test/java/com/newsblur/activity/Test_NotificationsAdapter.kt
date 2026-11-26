@@ -78,6 +78,33 @@ class Test_NotificationsAdapter {
         assertEquals(listOf("ios"), feed.notificationTypes)
     }
 
+    @Test
+    fun test_rebinding_a_recycled_row_does_not_replay_the_previous_feeds_taps() {
+        val binding = notificationRow()
+        every { binding.btnIos.id } returns 3
+        every { binding.btnAndroid.id } returns 4
+        val attached = mutableListOf<MaterialButtonToggleGroup.OnButtonCheckedListener>()
+        every { binding.groupPlatform.addOnButtonCheckedListener(capture(attached)) } just runs
+        every { binding.groupPlatform.clearOnButtonCheckedListeners() } answers { attached.clear() }
+        // The real group reports every check() to its listeners, including the ones bind() makes to show a feed.
+        every { binding.groupPlatform.check(any()) } answers {
+            attached.toList().forEach { it.onButtonChecked(binding.groupPlatform, firstArg(), true) }
+        }
+        val listener = mockk<NotificationsAdapter.Listener>(relaxed = true)
+        val holder = NotificationsAdapter.ViewHolder(binding, mockk(relaxed = true))
+        val scrolledAway = Feed().apply { feedId = "1"; notificationTypes = mutableListOf("ios") }
+        val scrolledTo = Feed().apply { feedId = "2"; notificationTypes = mutableListOf("ios", "android") }
+
+        holder.bind(scrolledAway, listener)
+        holder.bind(scrolledTo, listener)
+
+        // Nobody tapped anything: the first feed keeps its channels and the device's notifications stay as they were.
+        assertEquals(listOf("ios"), scrolledAway.notificationTypes)
+        verify(exactly = 0) { listener.onFeedUpdated(any()) }
+        verify(exactly = 0) { listener.onAndroidNotificationsEnabled() }
+        verify(exactly = 2) { binding.groupPlatform.clearChecked() }
+    }
+
     /** ViewNotificationsItemBinding only has a private constructor, normally reached by inflating the layout. */
     private fun notificationRow(): ViewNotificationsItemBinding {
         val constructor = ViewNotificationsItemBinding::class.java.declaredConstructors.single()
