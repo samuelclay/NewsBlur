@@ -187,7 +187,7 @@ urlpatterns = [
     url(r"^account/redeem_code/?$", profile_views.redeem_code, name="redeem-code"),
     url(r"^account/login/?$", profile_views.login, name="login"),
     url(r"^account/signup/?$", profile_views.signup, name="signup"),
-    url(r"^account/logout/?$", LogoutView, {"next_page": "/"}, name="logout"),
+    url(r"^account/logout/?$", LogoutView.as_view(next_page="/"), name="logout"),
     url(r"^account/ifttt/v1/", include("apps.oauth.urls")),
     url(r"^account/", include("apps.oauth.account_urls", namespace="oauth2_provider")),
     url(r"^monitor/", include("apps.monitor.urls"), name="monitor"),

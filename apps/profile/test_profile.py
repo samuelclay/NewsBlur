@@ -3067,3 +3067,17 @@ class Test_DefaultSiteDomain(TestCase):
         call_command("migrate", verbosity=0)
 
         self.assertEqual(Site.objects.get(pk=settings.SITE_ID).domain, "reader.mydomain.net")
+
+
+class Test_AccountLogout(TestCase):
+    """GET /account/logout (newsblur_web/urls.py) ends the session and returns to the homepage."""
+
+    def test_account_logout_ends_the_session(self):
+        user = User.objects.create_user(username="account_logout", password="password")
+        self.client.force_login(user)
+
+        response = self.client.get("/account/logout")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/")
+        self.assertNotIn("_auth_user_id", self.client.session)
