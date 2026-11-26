@@ -35,6 +35,31 @@ body.NB-theme-transitioning {
         border-color 1s ease-out;
 }
 
+/* darkmode.css: where the browser has view transitions, a theme change fades the whole page as one
+ * picture and the rule above goes unused (reader_utils.js switch_theme_classes). NB-theme-fading is
+ * on the html element only during that fade, so no other view transition picks these up. */
+html.NB-theme-fading::view-transition-old(root),
+html.NB-theme-fading::view-transition-new(root) {
+    animation-duration: 0.35s;
+    animation-timing-function: ease;
+}
+
+/* darkmode.css: the fade is drawn over the page and would swallow a click on the next theme. */
+html.NB-theme-fading::view-transition {
+    pointer-events: none;
+}
+
+/* darkmode.css: the new theme is pictured live, so an element with a transition of its own would go
+ * on changing color inside the picture after the rest of the page had changed. Taking the duration
+ * away lets a transition that began before the fade finish as it was, which transition: none would
+ * cut off. */
+html.NB-theme-fading *,
+html.NB-theme-fading *::before,
+html.NB-theme-fading *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+}
+
 body.NB-dark {
     --nb-dark-canvas: #171b20;
     --nb-dark-surface: #222a31;

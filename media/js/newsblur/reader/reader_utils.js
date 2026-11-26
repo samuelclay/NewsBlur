@@ -317,6 +317,64 @@ NEWSBLUR.utils = {
         $('.NB-tip').removeClass('NB-visible');
     },
 
+    // reader_utils.js: put a theme's classes on the body (reader.js load_theme). Where the browser
+    // has view transitions the whole page fades from the old theme to the new one as one picture,
+    // so every part of it changes together. The browser takes the old picture first and only then
+    // calls back to change the classes. Without view transitions each element fades its own colors
+    // (css/reader/darkmode.css NB-theme-transitioning).
+    switch_theme_classes: function (classes, animate) {
+        var self = this;
+        var body = document.body.classList;
+        var html = document.documentElement.classList;
+
+        // reader_utils.js: a fade changes the classes a frame after it is asked to. A theme asked for
+        // in between takes the place of the one that fade is about to show. A second fade would
+        // cut the first short before it had drawn anything, and the page would jump.
+        if (this.pending_theme_classes) {
+            this.pending_theme_classes = classes;
+            return;
+        }
+
+        var is_changing = false;
+        _.each(classes, function (on, name) {
+            if (body.contains(name) != !!on) is_changing = true;
+        });
+        if (!is_changing) return;
+
+        this.pending_theme_classes = classes;
+        var apply = function () {
+            _.each(self.pending_theme_classes, function (on, name) {
+                body.toggle(name, !!on);
+            });
+            self.pending_theme_classes = null;
+        };
+
+        // reader_utils.js: a hidden tab has nothing to show, and the browser turns down a fade
+        // there with an error.
+        if (!animate || document.hidden) {
+            apply();
+        } else if (document.startViewTransition) {
+            // reader_utils.js: NB-theme-fading keeps the fade's styles (css/reader/darkmode.css) to
+            // this view transition. A newer fade ends the one before it early, so only the newest
+            // fade takes the class off again.
+            html.add('NB-theme-fading');
+            var fade = document.startViewTransition(apply);
+            var done = function () {
+                if (self.theme_fade !== fade) return;
+                self.theme_fade = null;
+                html.remove('NB-theme-fading');
+            };
+            this.theme_fade = fade;
+            fade.finished.then(done, done);
+        } else {
+            body.add('NB-theme-transitioning');
+            apply();
+            _.delay(function () {
+                body.remove('NB-theme-transitioning');
+            }, 2000);
+        }
+    },
+
     attach_loading_gradient: function ($elem, percentage) {
         var theme = NEWSBLUR.assets.theme();
 

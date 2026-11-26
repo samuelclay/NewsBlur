@@ -5299,17 +5299,18 @@
             $('.NB-density-option').removeClass('NB-active');
             $('.NB-options-density-' + density).addClass('NB-active');
 
-            $("body").addClass('NB-theme-transitioning');
+            // reader.js: the page fades from one theme to the next (reader_utils.js switch_theme_classes),
+            // except as it first loads and when animations are turned off.
+            var animate = !!this.flags['theme_loaded'] && !$("body").hasClass('NB-no-animations');
+            this.flags['theme_loaded'] = true;
 
             // reader.js: gray is the dark theme with its palette swapped (css/reader/graymode.css), so it
             // carries NB-dark too. Sepia restyles the light theme (css/reader/sepiamode.css).
-            $("body").toggleClass('NB-dark', theme == 'dark' || theme == 'gray')
-                .toggleClass('NB-gray', theme == 'gray')
-                .toggleClass('NB-sepia', theme == 'sepia');
-
-            _.delay(function () {
-                $("body").removeClass("NB-theme-transitioning");
-            }, 2000);
+            NEWSBLUR.utils.switch_theme_classes({
+                'NB-dark': theme == 'dark' || theme == 'gray',
+                'NB-gray': theme == 'gray',
+                'NB-sepia': theme == 'sepia'
+            }, animate);
         },
 
         close_interactions_popover: function () {

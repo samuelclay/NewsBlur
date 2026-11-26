@@ -37,6 +37,9 @@ jobs:
       - name: Test Preferences saving
         run: node --test node/tests/preferences_save.test.js
 
+      - name: Test theme switching
+        run: node --test node/tests/theme_switch.test.js
+
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 
