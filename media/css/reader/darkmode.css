@@ -4140,6 +4140,16 @@ a.mention, a.mention-group {
     color: #777;
 }
 
+/* darkmode.css: the folder and global groups in the trainer are divided by the same dashed line as
+ * the site group above (css/reader/reader.css). */
+.NB-dark .NB-classifier-this-story+.NB-classifier-folder-items,
+.NB-dark .NB-classifier-feed-items+.NB-classifier-folder-items,
+.NB-dark .NB-classifier-this-story+.NB-classifier-global-items,
+.NB-dark .NB-classifier-feed-items+.NB-classifier-global-items,
+.NB-dark .NB-classifier-folder-items+.NB-classifier-global-items {
+    border-top-color: #444;
+}
+
 /* Match type segmented control - dark mode */
 .NB-dark .NB-classifier-match-type-control {
     background: #3a3c3e;
