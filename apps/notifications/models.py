@@ -40,6 +40,7 @@ from pyapns_client import (
     IOSPayloadAlert,
     UnregisteredException,
 )
+from pymongo.errors import DuplicateKeyError
 
 from apps.analyzer.models import (
     MClassifierAuthor,
@@ -160,6 +161,7 @@ class MUserAndroidTokens(mongo.Document):
     # models.py: send_android posts to every token in turn, so a pile of stale ones slows each push. Only the
     # tokens seen most recently are kept (set_android_token in views.py); the app sends its token again every day.
     MAX_TOKENS_PER_USER = 10
+    REGISTER_ATTEMPTS = 5
 
     user_id = mongo.IntField()
     android_tokens = mongo.ListField(mongo.StringField(max_length=1024))
@@ -179,21 +181,39 @@ class MUserAndroidTokens(mongo.Document):
     def register_token(cls, user_id, token):
         """Stores a device's token as the most recently seen one and returns whether it was new.
 
-        notifications/models.py only uses atomic updates here. Loading the list, changing it and saving it would
-        erase a token that another of the user's devices registers at the same moment.
+        notifications/models.py writes the reordered list only if the stored list is still the one it read, and
+        reads again otherwise. A plain load, change and save would erase a token another of the user's devices
+        registers at the same moment, and separate $pull and $push updates would store a token twice when the
+        app sends it from two places at once.
         """
-        already_saved = cls.objects(user_id=user_id, android_tokens=token).count() > 0
-        # models.py: MongoDB refuses $pull and $push on one field in a single update, so moving the token to the
-        # end takes two. $slice keeps the tokens seen most recently.
-        move_to_end = {"$push": {"android_tokens": {"$each": [token], "$slice": -cls.MAX_TOKENS_PER_USER}}}
-        cls.objects(user_id=user_id).update_one(pull__android_tokens=token)
-        try:
-            cls.objects(user_id=user_id).update_one(upsert=True, __raw__=move_to_end)
-        except mongo.NotUniqueError:
-            # models.py: two first registrations raced to create the document, and this one lost. It exists now.
-            cls.objects(user_id=user_id).update_one(__raw__=move_to_end)
+        collection = cls._get_collection()
+        for _ in range(cls.REGISTER_ATTEMPTS):
+            saved = collection.find_one({"user_id": user_id}, {"android_tokens": 1})
+            if saved is None:
+                try:
+                    collection.insert_one({"user_id": user_id, "android_tokens": [token]})
+                except DuplicateKeyError:
+                    # models.py: another device created the user's document a moment earlier. Read it and go on.
+                    continue
+                return True
 
-        return not already_saved
+            saved_tokens = saved.get("android_tokens") or []
+            most_recent_last = [t for t in saved_tokens if t != token] + [token]
+            most_recent_last = most_recent_last[-cls.MAX_TOKENS_PER_USER :]
+            if most_recent_last == saved_tokens:
+                return False
+
+            unchanged_since_read = {"_id": saved["_id"], "android_tokens": saved_tokens}
+            result = collection.update_one(
+                unchanged_since_read, {"$set": {"android_tokens": most_recent_last}}
+            )
+            if result.matched_count:
+                return token not in saved_tokens
+
+        # models.py: every attempt lost to another registration. Store the token wherever it lands; the app
+        # sends it again within a day, which puts it back in order.
+        collection.update_one({"user_id": user_id}, {"$addToSet": {"android_tokens": token}}, upsert=True)
+        return True
 
 
 class MUserFeedNotification(mongo.Document):

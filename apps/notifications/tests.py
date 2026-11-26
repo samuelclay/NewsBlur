@@ -392,7 +392,9 @@ class Test_AndroidTokenEndpoint(TestCase):
         self.assertEqual(len(self.saved_tokens()), limit)
 
     def test_refreshing_a_token_keeps_a_registration_that_lands_meanwhile(self):
+        # tests.py: a second token is saved after the first, so sending the first again has to move it.
         self.register(token="token-pixel")
+        self.register(token="token-watch")
         update_one = Collection.update_one
         interleaved = []
 
@@ -408,7 +410,43 @@ class Test_AndroidTokenEndpoint(TestCase):
         with patch.object(Collection, "update_one", update_one_after_another_device):
             self.register(token="token-pixel")
 
-        self.assertEqual(sorted(self.saved_tokens()), ["token-pixel", "token-tablet"])
+        self.assertEqual(self.saved_tokens(), ["token-watch", "token-tablet", "token-pixel"])
+
+    def test_overlapping_registrations_of_one_token_store_it_once(self):
+        self.register(token="token-pixel")
+        self.register(token="token-tablet")
+        update_one = Collection.update_one
+        overlapping = []
+
+        def update_one_while_the_same_token_registers(collection, *args, **kwargs):
+            # tests.py: the app can send its token from two places at once. Here the other request runs in full
+            # just before each write of this one.
+            if collection.name == MUserAndroidTokens._get_collection_name() and not overlapping:
+                overlapping.append(True)
+                MUserAndroidTokens.register_token(self.user.pk, "token-pixel")
+                overlapping.pop()
+            return update_one(collection, *args, **kwargs)
+
+        with patch.object(Collection, "update_one", update_one_while_the_same_token_registers):
+            self.register(token="token-pixel")
+
+        self.assertEqual(self.saved_tokens(), ["token-tablet", "token-pixel"])
+
+    def test_two_first_registrations_at_once_are_both_kept(self):
+        insert_one = Collection.insert_one
+        raced = []
+
+        def insert_one_after_another_device(collection, document, *args, **kwargs):
+            # tests.py: a second device creates the user's token document a moment before this request does.
+            if collection.name == MUserAndroidTokens._get_collection_name() and not raced:
+                raced.append(True)
+                insert_one(collection, {"user_id": self.user.pk, "android_tokens": ["token-tablet"]})
+            return insert_one(collection, document, *args, **kwargs)
+
+        with patch.object(Collection, "insert_one", insert_one_after_another_device):
+            self.register(token="token-pixel")
+
+        self.assertEqual(self.saved_tokens(), ["token-tablet", "token-pixel"])
 
     def test_missing_token_is_refused_without_a_server_error(self):
         self.assertEqual(self.register()["code"], -1)
