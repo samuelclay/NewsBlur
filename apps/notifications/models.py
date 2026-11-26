@@ -700,6 +700,12 @@ class MUserFeedNotification(mongo.Document):
         if not self.is_email:
             return
 
+        # models.py: An account can have no email address (made through Sign in with Apple).
+        # Mailing "username <>" raises and fails the whole QueueNotifications task for the feed.
+        if not usersub.user.email:
+            logging.user(usersub.user, "~BMSkipping Story notification by email: ~FRno email address")
+            return
+
         # Increment the daily email counter for this user
         r = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
         emails_sent_date_key = f"emails_sent:{datetime.datetime.now().strftime('%Y%m%d')}"

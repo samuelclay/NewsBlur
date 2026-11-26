@@ -130,6 +130,29 @@ class Test_EmailNotifications(TestCase):
 
         return mock_email_cls.call_args[0][0]
 
+    def test_user_without_an_address_is_not_emailed(self):
+        """An account can have no email address (username "apple", made through Sign in with
+        Apple). Mailing "apple <>" failed the whole QueueNotifications task for the feed
+        (apps/notifications/models.py send_email)."""
+        self.user.email = ""
+        self.user.save()
+        feed = self.make_feed("https://example.com/no-address.xml", "No Address Feed")
+        usersub = UserSubscription.objects.create(user=self.user, feed=feed, active=True)
+        notification = MUserFeedNotification(user_id=self.user.pk, feed_id=feed.pk, is_email=True)
+        story = {"story_title": "A Story", "story_content": "<p>Summary</p>"}
+
+        with patch("apps.notifications.models.redis.Redis") as mock_redis_cls, patch(
+            "apps.notifications.models.render_to_string", return_value=""
+        ), patch("apps.notifications.models.Site.objects.get_current") as mock_get_current, patch(
+            "apps.notifications.models.EmailMultiAlternatives"
+        ) as mock_email_cls:
+            mock_redis_cls.return_value.hget.return_value = 1
+            mock_get_current.return_value.domain = "newsblur.com"
+
+            notification.send_email(story, usersub)
+
+        mock_email_cls.assert_not_called()
+
     def test_story_notification_subject_includes_feed_title(self):
         feed = self.make_feed("https://example.com/feed.xml", "Example Feed")
 
