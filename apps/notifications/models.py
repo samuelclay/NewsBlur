@@ -157,6 +157,10 @@ class MUserAndroidTokens(mongo.Document):
     out and after a rollback, which stops iOS pushes. The previous release never reads this collection.
     """
 
+    # models.py: send_android posts to every token in turn, so a pile of stale ones slows each push. Only the
+    # newest registrations are kept (set_android_token in views.py); the app sends its token again every day.
+    MAX_TOKENS_PER_USER = 10
+
     user_id = mongo.IntField()
     android_tokens = mongo.ListField(mongo.StringField(max_length=1024))
 

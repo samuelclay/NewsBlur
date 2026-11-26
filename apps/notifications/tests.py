@@ -368,6 +368,14 @@ class Test_AndroidTokenEndpoint(TestCase):
         self.register(token="token-tablet")
         self.assertEqual(self.saved_tokens(), ["token-pixel", "token-tablet"])
 
+    def test_only_the_newest_tokens_are_kept(self):
+        limit = MUserAndroidTokens.MAX_TOKENS_PER_USER
+        for number in range(limit + 1):
+            self.register(token="token-%s" % number)
+
+        # tests.py: send_android posts to every token, so the oldest registration makes room for the newest.
+        self.assertEqual(self.saved_tokens(), ["token-%s" % number for number in range(1, limit + 1)])
+
     def test_missing_token_is_refused_without_a_server_error(self):
         self.assertEqual(self.register()["code"], -1)
         self.assertEqual(self.register(token="")["code"], -1)

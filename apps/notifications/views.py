@@ -186,6 +186,7 @@ def set_android_token(request):
     logging.user(user, "~FCUpdating Android push token")
     if token not in tokens.android_tokens:
         tokens.android_tokens.append(token)
+        tokens.android_tokens = tokens.android_tokens[-MUserAndroidTokens.MAX_TOKENS_PER_USER :]
         tokens.save()
         return {"message": gettext("Token saved.")}
 
