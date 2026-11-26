@@ -5231,7 +5231,30 @@
         },
 
         switch_theme: function (theme) {
-            this.model.preference('theme', theme);
+            // reader.js: Auto switches between the last light pick and the last dark pick
+            // (assetmodel.js theme), so each side's variant is saved along with the theme itself.
+            var preferences = { 'theme': theme };
+            if (theme == 'light' || theme == 'sepia') {
+                preferences['theme_light'] = theme;
+            } else if (theme == 'dark' || theme == 'gray') {
+                preferences['theme_dark'] = theme;
+            }
+            var changed = _.any(preferences, function (value, preference) {
+                return NEWSBLUR.Preferences[preference] != value;
+            });
+            if (changed && NEWSBLUR.Globals.is_authenticated) {
+                this.model.save_preferences(preferences);
+            } else {
+                _.extend(NEWSBLUR.Preferences, preferences);
+            }
+            this.apply_story_styling();
+        },
+
+        // reader.js: choose which light theme or which dark theme Auto switches to, without leaving
+        // whatever theme is showing now (reader_preferences.js make_theme_chooser).
+        switch_auto_theme: function (theme) {
+            var preference = (theme == 'light' || theme == 'sepia') ? 'theme_light' : 'theme_dark';
+            this.model.preference(preference, theme);
             this.apply_story_styling();
         },
 
@@ -5277,11 +5300,11 @@
 
             $("body").addClass('NB-theme-transitioning');
 
-            if (theme == 'dark') {
-                $("body").addClass('NB-dark');
-            } else {
-                $("body").removeClass('NB-dark');
-            }
+            // reader.js: gray is the dark theme with its palette swapped (css/reader/graymode.css), so it
+            // carries NB-dark too. Sepia restyles the light theme (css/reader/sepiamode.css).
+            $("body").toggleClass('NB-dark', theme == 'dark' || theme == 'gray')
+                .toggleClass('NB-gray', theme == 'gray')
+                .toggleClass('NB-sepia', theme == 'sepia');
 
             _.delay(function () {
                 $("body").removeClass("NB-theme-transitioning");

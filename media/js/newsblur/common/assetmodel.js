@@ -211,20 +211,30 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.ajax['feed_page'].clear(true);
     },
 
+    // assetmodel.js: the theme in effect right now: light, sepia, gray or dark. Auto follows the system
+    // between the reader's last light pick (light or sepia) and last dark pick (dark or gray), which
+    // reader.js switch_theme keeps in theme_light and theme_dark. templates/reader/dashboard.xhtml
+    // resolves the same way before first paint.
     theme: function () {
         var theme = this.preference('theme');
         var is_auto = theme == 'auto';
 
         if (is_auto) {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                // dark mode
-                theme = "dark";
+                theme = this.preference('theme_dark') == 'gray' ? "gray" : "dark";
             } else {
-                theme = "light";
+                theme = this.preference('theme_light') == 'sepia' ? "sepia" : "light";
             }
         }
 
         return theme;
+    },
+
+    // assetmodel.js: gray is a dark theme and sepia a light one, for code that only needs to know
+    // which side to draw for.
+    is_dark_theme: function () {
+        var theme = this.theme();
+        return theme == 'dark' || theme == 'gray';
     },
 
     queue_read_time: function (story_hash, read_time_seconds) {
