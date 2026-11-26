@@ -1786,7 +1786,8 @@ body.NB-dark .NB-modal select,
     border-bottom: none !important;
 }
 
-.NB-dark .NB-modal-statistics .NB-statistics-stat {
+.NB-dark .NB-modal-statistics .NB-statistics-stat,
+.NB-dark .NB-modal-statistics .NB-statistics-classifiers {
     border-color: #404040;
 }
 
