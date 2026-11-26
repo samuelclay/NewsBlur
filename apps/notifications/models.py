@@ -158,7 +158,7 @@ class MUserAndroidTokens(mongo.Document):
     """
 
     # models.py: send_android posts to every token in turn, so a pile of stale ones slows each push. Only the
-    # newest registrations are kept (set_android_token in views.py); the app sends its token again every day.
+    # tokens seen most recently are kept (set_android_token in views.py); the app sends its token again every day.
     MAX_TOKENS_PER_USER = 10
 
     user_id = mongo.IntField()

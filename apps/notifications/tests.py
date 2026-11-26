@@ -376,6 +376,19 @@ class Test_AndroidTokenEndpoint(TestCase):
         # tests.py: send_android posts to every token, so the oldest registration makes room for the newest.
         self.assertEqual(self.saved_tokens(), ["token-%s" % number for number in range(1, limit + 1)])
 
+    def test_device_that_keeps_checking_in_outlives_the_cap(self):
+        limit = MUserAndroidTokens.MAX_TOKENS_PER_USER
+        for number in range(limit):
+            self.register(token="token-%s" % number)
+
+        # tests.py: the app sends its token again every day, so the first phone is still in use.
+        self.register(token="token-0")
+        self.register(token="token-new")
+
+        self.assertIn("token-0", self.saved_tokens())
+        self.assertNotIn("token-1", self.saved_tokens())
+        self.assertEqual(len(self.saved_tokens()), limit)
+
     def test_missing_token_is_refused_without_a_server_error(self):
         self.assertEqual(self.register()["code"], -1)
         self.assertEqual(self.register(token="")["code"], -1)

@@ -184,13 +184,16 @@ def set_android_token(request):
         return {"code": -1, "message": gettext("Missing token.")}
 
     logging.user(user, "~FCUpdating Android push token")
-    if token not in tokens.android_tokens:
-        tokens.android_tokens.append(token)
-        tokens.android_tokens = tokens.android_tokens[-MUserAndroidTokens.MAX_TOKENS_PER_USER :]
-        tokens.save()
-        return {"message": gettext("Token saved.")}
+    already_saved = token in tokens.android_tokens
+    if already_saved:
+        tokens.android_tokens.remove(token)
+    # views.py: the app sends its token again every day. Moving it to the end keeps the devices that still
+    # check in, so the cap trims the ones that stopped.
+    tokens.android_tokens.append(token)
+    tokens.android_tokens = tokens.android_tokens[-MUserAndroidTokens.MAX_TOKENS_PER_USER :]
+    tokens.save()
 
-    return {"message": gettext("Token already saved.")}
+    return {"message": gettext("Token already saved.") if already_saved else gettext("Token saved.")}
 
 
 @required_params(feed_id=int)
