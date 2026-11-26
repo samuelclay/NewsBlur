@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -22,6 +24,9 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationUtils {
 
@@ -106,10 +111,31 @@ public class NotificationUtils {
                 dbHelper.putStoryDismissed(story.storyHash);
                 nm.cancel(story.hashCode());
             } else {
+                makeRoomFor(story, context, nm, dbHelper);
                 nm.notify(story.hashCode(), buildStoryNotification(story, cursor, context, iconCache));
             }
         } finally {
             BlurDatabaseHelper.closeQuietly(cursor);
+        }
+    }
+
+    /**
+     * NotificationUtils.java: notifyStories keeps to MAX_CONCUR_NOTIFY by walking its own list of stories. A pushed
+     * story arrives alone, so the oldest stories showing are dismissed to keep the same limit.
+     */
+    private static void makeRoomFor(Story story, Context context, NotificationManagerCompat nm, BlurDatabaseHelper dbHelper) {
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
+        List<StoryNotificationLimit.Showing> showing = new ArrayList<>();
+        for (StatusBarNotification active : manager.getActiveNotifications()) {
+            // Only story notifications carry this extra; the Listen player and group summaries do not.
+            String storyHash = active.getNotification().extras.getString(Reading.EXTRA_STORY_HASH);
+            if (storyHash != null && active.getId() != story.hashCode()) {
+                showing.add(new StoryNotificationLimit.Showing(active.getId(), active.getNotification().when, storyHash));
+            }
+        }
+        for (StoryNotificationLimit.Showing oldest : StoryNotificationLimit.toDismissForOneMore(showing, MAX_CONCUR_NOTIFY)) {
+            nm.cancel(oldest.getId());
+            dbHelper.putStoryDismissed(oldest.getStoryHash());
         }
     }
 
@@ -179,6 +205,10 @@ public class NotificationUtils {
                 .addAction(0, strings.getString(R.string.save_this), savePendingIntent)
                 .addAction(0, strings.getString(R.string.share_this), sharePendingIntent)
                 .setColor(NOTIFY_COLOUR);
+        // NotificationUtils.java reads this back from the notifications showing, to know which stories they are.
+        Bundle extras = new Bundle();
+        extras.putString(Reading.EXTRA_STORY_HASH, story.storyHash);
+        nb.addExtras(extras);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);
         }
