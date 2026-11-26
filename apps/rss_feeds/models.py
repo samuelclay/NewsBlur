@@ -1156,10 +1156,13 @@ class Feed(models.Model):
         from apps.profile.tasks import FetchArchiveFeedsChunk
 
         logging.debug(f"~FC~SBScheduling fetch of archive feed ~SB{self.log_title}")
+        # models.py: A walk that outlasts the hard limit is SIGKILLed mid-page. The soft limit
+        # lets FeedFetcherWorker.process_feed_wrapper (utils/feed_fetcher.py) end it cleanly.
         FetchArchiveFeedsChunk.apply_async(
             kwargs=dict(feed_ids=[self.pk]),
             queue="search_indexer",
             time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
 
     def check_feed_link_for_feed_address(self):
