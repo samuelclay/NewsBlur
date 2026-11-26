@@ -55,7 +55,9 @@ def build_parser():
     parser.add_argument("--js", action="append", default=[], help="JavaScript to run after load, repeatable, in order")
     parser.add_argument("--wait", type=int, default=2500, help="Milliseconds to wait after load and after each --js")
     parser.add_argument("--selector", help="Screenshot only this CSS selector (first match)")
-    parser.add_argument("--theme", choices=["light", "dark", "auto"], help="Switch NewsBlur theme before capture")
+    parser.add_argument(
+        "--theme", choices=["light", "sepia", "gray", "dark", "auto"], help="Switch NewsBlur theme before capture"
+    )
     parser.add_argument("--width", type=int, default=1440)
     parser.add_argument("--height", type=int, default=900)
     parser.add_argument("--full-page", action="store_true")
