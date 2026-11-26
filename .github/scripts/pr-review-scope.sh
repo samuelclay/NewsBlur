@@ -83,27 +83,40 @@ find_previous_head() {
   esac
 }
 
-previous_head=$(find_previous_head)
+full_requested=$(jq -r --arg label "$full_review_label" 'index($label) != null' <<<"$PR_LABELS_JSON")
+if ! previous_head=$(find_previous_head); then
+  if [ "$full_requested" != "true" ]; then
+    echo "::error::Could not read the previous $reviewer_name review. Retry the workflow."
+    exit 1
+  fi
+  previous_head=""
+fi
 previous_short="${previous_head:0:7}"
 
 mode="full"
 reason=""
 diff_base="HEAD^1"
-if jq -e --arg label "$full_review_label" 'index($label) != null' <<<"$PR_LABELS_JSON" >/dev/null; then
+if [ "$full_requested" = "true" ]; then
   reason="the $full_review_label label asks for a full review"
 elif [ -z "$previous_head" ]; then
   reason="first $reviewer_name review of this PR"
 elif [ "$previous_head" = "$PR_HEAD_SHA" ]; then
   mode="skip"
   reason="commit $head_short was already reviewed"
-elif git fetch --quiet --no-tags --filter=blob:none origin "$previous_head" &&
-     previous_tree=$(git merge-tree --write-tree HEAD^1 "$previous_head"); then
-  # Compare both PR heads against today's base so merging main alone costs no review.
-  mode="incremental"
-  diff_base="$previous_tree"
 else
   reason="could not compare the previously reviewed commit $previous_short against the current base"
-  if [ "$REVIEWER" = "codex" ]; then
+  if git fetch --quiet --no-tags --filter=blob:none origin "$previous_head"; then
+    merge_status=0
+    merge_result=$(git merge-tree --write-tree HEAD^1 "$previous_head") || merge_status=$?
+    # On a conflict (exit 1), merge-tree still writes the auto-merged tree on its
+    # first line. Comparing that tree with HEAD includes the author's conflict
+    # resolutions and excludes unrelated changes from main.
+    if [ "$merge_status" -eq 0 ] || { [ "$merge_status" -eq 1 ] && [ "$REVIEWER" = "codex" ]; }; then
+      diff_base=${merge_result%%$'\n'*}
+      mode="incremental"
+    fi
+  fi
+  if [ "$mode" = "full" ] && [ "$REVIEWER" = "codex" ]; then
     echo "::error::$reason. Retry, or add $full_review_label and push or reopen for a full review."
     exit 1
   fi
