@@ -9,6 +9,7 @@ from django.core import mail
 from django.test import TestCase
 from django.test.utils import override_settings
 from google.auth import exceptions as google_auth_exceptions
+from pymongo.collection import Collection
 
 from apps.analyzer.models import MClassifierPrompt
 from apps.notifications import models as notification_models
@@ -358,7 +359,8 @@ class Test_AndroidTokenEndpoint(TestCase):
         return json.decode(response.content)
 
     def saved_tokens(self):
-        return list(MUserAndroidTokens.get_tokens_for_user(self.user.pk).android_tokens)
+        tokens = MUserAndroidTokens.objects(user_id=self.user.pk).first()
+        return list(tokens.android_tokens) if tokens else []
 
     def test_token_is_stored_once_per_device(self):
         self.register(token="token-pixel")
@@ -388,6 +390,25 @@ class Test_AndroidTokenEndpoint(TestCase):
         self.assertIn("token-0", self.saved_tokens())
         self.assertNotIn("token-1", self.saved_tokens())
         self.assertEqual(len(self.saved_tokens()), limit)
+
+    def test_refreshing_a_token_keeps_a_registration_that_lands_meanwhile(self):
+        self.register(token="token-pixel")
+        update_one = Collection.update_one
+        interleaved = []
+
+        def update_one_after_another_device(collection, *args, **kwargs):
+            # tests.py: a second device's registration lands just before this request's first write.
+            if collection.name == MUserAndroidTokens._get_collection_name() and not interleaved:
+                interleaved.append(True)
+                update_one(
+                    collection, {"user_id": self.user.pk}, {"$push": {"android_tokens": "token-tablet"}}
+                )
+            return update_one(collection, *args, **kwargs)
+
+        with patch.object(Collection, "update_one", update_one_after_another_device):
+            self.register(token="token-pixel")
+
+        self.assertEqual(sorted(self.saved_tokens()), ["token-pixel", "token-tablet"])
 
     def test_missing_token_is_refused_without_a_server_error(self):
         self.assertEqual(self.register()["code"], -1)

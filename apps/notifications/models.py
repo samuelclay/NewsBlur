@@ -176,13 +176,24 @@ class MUserAndroidTokens(mongo.Document):
     }
 
     @classmethod
-    def get_tokens_for_user(cls, user_id):
-        try:
-            tokens = cls.objects.get(user_id=user_id)
-        except cls.DoesNotExist:
-            tokens = cls.objects.create(user_id=user_id)
+    def register_token(cls, user_id, token):
+        """Stores a device's token as the most recently seen one and returns whether it was new.
 
-        return tokens
+        notifications/models.py only uses atomic updates here. Loading the list, changing it and saving it would
+        erase a token that another of the user's devices registers at the same moment.
+        """
+        already_saved = cls.objects(user_id=user_id, android_tokens=token).count() > 0
+        # models.py: MongoDB refuses $pull and $push on one field in a single update, so moving the token to the
+        # end takes two. $slice keeps the tokens seen most recently.
+        move_to_end = {"$push": {"android_tokens": {"$each": [token], "$slice": -cls.MAX_TOKENS_PER_USER}}}
+        cls.objects(user_id=user_id).update_one(pull__android_tokens=token)
+        try:
+            cls.objects(user_id=user_id).update_one(upsert=True, __raw__=move_to_end)
+        except mongo.NotUniqueError:
+            # models.py: two first registrations raced to create the document, and this one lost. It exists now.
+            cls.objects(user_id=user_id).update_one(__raw__=move_to_end)
+
+        return not already_saved
 
 
 class MUserFeedNotification(mongo.Document):
