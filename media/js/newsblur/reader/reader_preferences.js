@@ -4,7 +4,8 @@
 
 NEWSBLUR.ReaderPreferences = function (options) {
     var defaults = {
-        width: 700
+        // reader_preferences.js: half again as wide as other dialogs, or as wide as a smaller window allows.
+        width: Math.min(1050, $(window).width() - 48)
     };
 
     this.options = $.extend({}, defaults, options);
@@ -32,6 +33,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }, this);
         this.make_modal();
         this.select_preferences();
+        this.update_field_cards();
         this.handle_change();
         this.open_modal();
         this.original_preferences = this.serialize_preferences();
@@ -52,15 +54,22 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
 
     make_modal: function () {
-        var self = this;
+        var tabs = [
+            ['general', gettext('General')],
+            ['feeds', gettext('Feeds')],
+            ['stories', gettext('Stories')],
+            ['behavior', gettext('Behavior')],
+            ['keyboard', gettext('Keyboard')]
+        ];
 
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
+            // reader_preferences.js: nothing to press to save or close. The pill ahead of the tabs
+            // says when a change has been saved (set_status).
             $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-general' }, gettext('General')),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-feeds' }, gettext('Feeds')),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-stories' }, gettext('Stories')),
-                $.make('div', { className: 'NB-modal-tab NB-modal-tab-keyboard' }, gettext('Keyboard'))
-            ]),
+                $.make('div', { className: 'NB-preferences-status', role: 'status' })
+            ].concat(_.map(tabs, function (tab, i) {
+                return $.make('div', { className: 'NB-modal-tab NB-modal-tab-' + tab[0] + (i ? '' : ' NB-active') }, tab[1]);
+            }))),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
@@ -68,1110 +77,664 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
             $.make('form', { className: 'NB-preferences-form' }, [
-                $.make('div', { className: 'NB-tab NB-tab-general NB-active' }, [
-                    $.make('div', { className: 'NB-preference NB-preference-reduce-motion' }, [
-                        $.make('div', { className: 'NB-preference-label' }, gettext('Appearance')),
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('input', { id: 'NB-preference-reduce-motion', type: 'checkbox', name: 'reduce_motion' }),
-                            $.make('label', { 'for': 'NB-preference-reduce-motion' }, gettext('Reduce motion')),
-                            $.make('div', { className: 'NB-preference-description' }, gettext('Keep fades, without movement.'))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference' }, [
-                        $.make('label', { className: 'NB-preference-label', 'for': 'NB-preference-language' }, gettext('Language')),
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('select', { id: 'NB-preference-language', name: 'language' },
-                                [$.make('option', { value: 'auto', lang: NEWSBLUR.detected_language }, NEWSBLUR.language_auto_label)].concat(
-                                    NEWSBLUR.languages.map(function (language) {
-                                        return $.make('option', { value: language[0], lang: language[0] }, language[1]);
-                                    })
-                                ))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-daysofunread' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('ul', { className: 'segmented-control NB-preference-daysofunread-control' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-default', 'data-value': 'default', role: 'button' }, gettext('Default')),
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-days', 'data-value': 'days', role: 'button' }, gettext('Days')),
-                                $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-never', 'data-value': 'never', role: 'button' }, gettext('Never'))
-                            ]),
-                            $.make('div', { className: 'NB-daysofunread-slider-container' }, [
-                                $.make('input', {
-                                    type: 'range',
-                                    className: 'NB-daysofunread-slider',
-                                    name: 'days_of_unread',
-                                    min: '1',
-                                    max: '400',
-                                    value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
-                                    disabled: !NEWSBLUR.Globals.is_archive
-                                }),
-                                $.make('div', { className: 'NB-daysofunread-slider-value' })
-                            ]),
-                            (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' },
-                                NEWSBLUR.utils.interpolate_nodes(gettext('%(badge)s Customize days of unreads'), {
-                                    badge: $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
-                                })))
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Days of unreads')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('select', { id: 'NB-preference-timezone-1', name: 'timezone' }, [
-                                    $.make('option', { value: 'Pacific/Midway' }, gettext('(GMT-11:00) Midway Island, Samoa')),
-                                    $.make('option', { value: 'America/Adak' }, gettext('(GMT-10:00) Hawaii-Aleutian')),
-                                    $.make('option', { value: 'Etc/GMT+10' }, gettext('(GMT-10:00) Hawaii')),
-                                    $.make('option', { value: 'Pacific/Marquesas' }, gettext('(GMT-09:30) Marquesas Islands')),
-                                    $.make('option', { value: 'Pacific/Gambier' }, gettext('(GMT-09:00) Gambier Islands')),
-                                    $.make('option', { value: 'America/Anchorage' }, gettext('(GMT-09:00) Alaska')),
-                                    $.make('option', { value: 'America/Ensenada' }, gettext('(GMT-08:00) Tijuana, Baja California')),
-                                    $.make('option', { value: 'Etc/GMT+8' }, gettext('(GMT-08:00) Pitcairn Islands')),
-                                    $.make('option', { value: 'America/Los_Angeles' }, gettext('(GMT-08:00) Pacific Time (US & Canada)')),
-                                    $.make('option', { value: 'America/Denver' }, gettext('(GMT-07:00) Mountain Time (US & Canada)')),
-                                    $.make('option', { value: 'America/Chihuahua' }, gettext('(GMT-07:00) Chihuahua, La Paz, Mazatlan')),
-                                    $.make('option', { value: 'America/Dawson_Creek' }, gettext('(GMT-07:00) Arizona')),
-                                    $.make('option', { value: 'America/Belize' }, gettext('(GMT-06:00) Saskatchewan, Central America')),
-                                    $.make('option', { value: 'America/Cancun' }, gettext('(GMT-06:00) Guadalajara, Mexico City')),
-                                    $.make('option', { value: 'Chile/EasterIsland' }, gettext('(GMT-06:00) Easter Island')),
-                                    $.make('option', { value: 'America/Chicago' }, gettext('(GMT-06:00) Central Time (US & Canada)')),
-                                    $.make('option', { value: 'America/New_York' }, gettext('(GMT-05:00) Eastern Time (US & Canada)')),
-                                    $.make('option', { value: 'America/Havana' }, gettext('(GMT-05:00) Cuba')),
-                                    $.make('option', { value: 'America/Bogota' }, gettext('(GMT-05:00) Bogota, Lima, Quito, Rio Branco')),
-                                    $.make('option', { value: 'America/Caracas' }, gettext('(GMT-04:30) Caracas')),
-                                    $.make('option', { value: 'America/Santiago' }, gettext('(GMT-04:00) Santiago')),
-                                    $.make('option', { value: 'America/La_Paz' }, gettext('(GMT-04:00) La Paz')),
-                                    $.make('option', { value: 'Atlantic/Stanley' }, gettext('(GMT-04:00) Faukland Islands')),
-                                    $.make('option', { value: 'America/Campo_Grande' }, gettext('(GMT-04:00) Brazil')),
-                                    $.make('option', { value: 'America/Goose_Bay' }, gettext('(GMT-04:00) Atlantic Time (Goose Bay)')),
-                                    $.make('option', { value: 'America/Glace_Bay' }, gettext('(GMT-04:00) Atlantic Time (Canada)')),
-                                    $.make('option', { value: 'America/St_Johns' }, gettext('(GMT-03:30) Newfoundland')),
-                                    $.make('option', { value: 'America/Araguaina' }, gettext('(GMT-03:00) UTC-3')),
-                                    $.make('option', { value: 'America/Montevideo' }, gettext('(GMT-03:00) Montevideo')),
-                                    $.make('option', { value: 'America/Miquelon' }, gettext('(GMT-03:00) Miquelon, St. Pierre')),
-                                    $.make('option', { value: 'America/Godthab' }, gettext('(GMT-03:00) Greenland')),
-                                    $.make('option', { value: 'America/Argentina/Buenos_Aires' }, gettext('(GMT-03:00) Buenos Aires')),
-                                    $.make('option', { value: 'America/Sao_Paulo' }, gettext('(GMT-03:00) Brasilia')),
-                                    $.make('option', { value: 'America/Noronha' }, gettext('(GMT-02:00) Mid-Atlantic')),
-                                    $.make('option', { value: 'Atlantic/Cape_Verde' }, gettext('(GMT-01:00) Cape Verde Is.')),
-                                    $.make('option', { value: 'Atlantic/Azores' }, gettext('(GMT-01:00) Azores')),
-                                    $.make('option', { value: 'Europe/Belfast' }, gettext('(GMT) Greenwich Mean Time : Belfast')),
-                                    $.make('option', { value: 'Europe/Dublin' }, gettext('(GMT) Greenwich Mean Time : Dublin')),
-                                    $.make('option', { value: 'Europe/Lisbon' }, gettext('(GMT) Greenwich Mean Time : Lisbon')),
-                                    $.make('option', { value: 'Europe/London' }, gettext('(GMT) Greenwich Mean Time : London')),
-                                    $.make('option', { value: 'Africa/Abidjan' }, gettext('(GMT) Monrovia, Reykjavik')),
-                                    $.make('option', { value: 'Europe/Amsterdam' }, gettext('(GMT+01:00) Amsterdam, Berlin, Stockholm')),
-                                    $.make('option', { value: 'Europe/Belgrade' }, gettext('(GMT+01:00) Belgrade, Budapest, Prague')),
-                                    $.make('option', { value: 'Europe/Brussels' }, gettext('(GMT+01:00) Brussels, Copenhagen, Paris')),
-                                    $.make('option', { value: 'Africa/Algiers' }, gettext('(GMT+01:00) West Central Africa')),
-                                    $.make('option', { value: 'Africa/Windhoek' }, gettext('(GMT+01:00) Windhoek')),
-                                    $.make('option', { value: 'Asia/Beirut' }, gettext('(GMT+02:00) Beirut')),
-                                    $.make('option', { value: 'Africa/Cairo' }, gettext('(GMT+02:00) Cairo')),
-                                    $.make('option', { value: 'Asia/Gaza' }, gettext('(GMT+02:00) Gaza')),
-                                    $.make('option', { value: 'Africa/Blantyre' }, gettext('(GMT+02:00) Harare, Pretoria')),
-                                    $.make('option', { value: 'Asia/Jerusalem' }, gettext('(GMT+02:00) Jerusalem')),
-                                    $.make('option', { value: 'Europe/Minsk' }, gettext('(GMT+02:00) Minsk, Kyiv')),
-                                    $.make('option', { value: 'Asia/Damascus' }, gettext('(GMT+02:00) Syria')),
-                                    $.make('option', { value: 'Europe/Moscow' }, gettext('(GMT+03:00) Moscow, St. Petersburg')),
-                                    $.make('option', { value: 'Africa/Addis_Ababa' }, gettext('(GMT+03:00) Nairobi')),
-                                    $.make('option', { value: 'Asia/Tehran' }, gettext('(GMT+03:30) Tehran')),
-                                    $.make('option', { value: 'Asia/Dubai' }, gettext('(GMT+04:00) Abu Dhabi, Muscat')),
-                                    $.make('option', { value: 'Asia/Yerevan' }, gettext('(GMT+04:00) Yerevan')),
-                                    $.make('option', { value: 'Asia/Kabul' }, gettext('(GMT+04:30) Kabul')),
-                                    $.make('option', { value: 'Asia/Yekaterinburg' }, gettext('(GMT+05:00) Ekaterinburg')),
-                                    $.make('option', { value: 'Asia/Tashkent' }, gettext('(GMT+05:00) Tashkent')),
-                                    $.make('option', { value: 'Asia/Kolkata' }, gettext('(GMT+05:30) Chennai, Mumbai, New Delhi')),
-                                    $.make('option', { value: 'Asia/Katmandu' }, gettext('(GMT+05:45) Kathmandu')),
-                                    $.make('option', { value: 'Asia/Dhaka' }, gettext('(GMT+06:00) Astana, Dhaka')),
-                                    $.make('option', { value: 'Asia/Novosibirsk' }, gettext('(GMT+06:00) Novosibirsk')),
-                                    $.make('option', { value: 'Asia/Rangoon' }, gettext('(GMT+06:30) Yangon (Rangoon)')),
-                                    $.make('option', { value: 'Asia/Bangkok' }, gettext('(GMT+07:00) Bangkok, Hanoi, Jakarta')),
-                                    $.make('option', { value: 'Asia/Krasnoyarsk' }, gettext('(GMT+07:00) Krasnoyarsk')),
-                                    $.make('option', { value: 'Asia/Hong_Kong' }, gettext('(GMT+08:00) Beijing, Chongqing, Hong Kong')),
-                                    $.make('option', { value: 'Asia/Irkutsk' }, gettext('(GMT+08:00) Irkutsk, Ulaan Bataar')),
-                                    $.make('option', { value: 'Australia/Perth' }, gettext('(GMT+08:00) Perth')),
-                                    $.make('option', { value: 'Australia/Eucla' }, gettext('(GMT+08:45) Eucla')),
-                                    $.make('option', { value: 'Asia/Tokyo' }, gettext('(GMT+09:00) Osaka, Sapporo, Tokyo')),
-                                    $.make('option', { value: 'Asia/Seoul' }, gettext('(GMT+09:00) Seoul')),
-                                    $.make('option', { value: 'Asia/Yakutsk' }, gettext('(GMT+09:00) Yakutsk')),
-                                    $.make('option', { value: 'Australia/Adelaide' }, gettext('(GMT+09:30) Adelaide')),
-                                    $.make('option', { value: 'Australia/Darwin' }, gettext('(GMT+09:30) Darwin')),
-                                    $.make('option', { value: 'Australia/Brisbane' }, gettext('(GMT+10:00) Brisbane')),
-                                    $.make('option', { value: 'Australia/Sydney' }, gettext('(GMT+10:00) Sydney, Hobart')),
-                                    $.make('option', { value: 'Asia/Vladivostok' }, gettext('(GMT+10:00) Vladivostok')),
-                                    $.make('option', { value: 'Australia/Lord_Howe' }, gettext('(GMT+10:30) Lord Howe Island')),
-                                    $.make('option', { value: 'Etc/GMT-11' }, gettext('(GMT+11:00) Solomon Is., New Caledonia')),
-                                    $.make('option', { value: 'Asia/Magadan' }, gettext('(GMT+11:00) Magadan')),
-                                    $.make('option', { value: 'Pacific/Norfolk' }, gettext('(GMT+11:30) Norfolk Island')),
-                                    $.make('option', { value: 'Asia/Anadyr' }, gettext('(GMT+12:00) Anadyr, Kamchatka')),
-                                    $.make('option', { value: 'Pacific/Auckland' }, gettext('(GMT+12:00) Auckland, Wellington')),
-                                    $.make('option', { value: 'Etc/GMT-12' }, gettext('(GMT+12:00) Fiji, Kamchatka, Marshall Is.')),
-                                    $.make('option', { value: 'Pacific/Chatham' }, gettext('(GMT+12:45) Chatham Islands')),
-                                    $.make('option', { value: 'Pacific/Tongatapu' }, gettext('(GMT+13:00) Nuku\'alofa')),
-                                    $.make('option', { value: 'Pacific/Kiritimati' }, gettext('(GMT+14:00) Kiritimati'))
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-dateformat-1', type: 'radio', name: 'dateformat', value: '12' }),
-                                $.make('label', { 'for': 'NB-preference-dateformat-1' }, [
-                                    gettext('Use 12-hour clock')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-dateformat-2', type: 'radio', name: 'dateformat', value: '24' }),
-                                $.make('label', { 'for': 'NB-preference-dateformat-2' }, [
-                                    gettext('Use 24-hour clock')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Timezone')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showunreadcountsintitle' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showunreadcountsintitle-1', type: 'checkbox', name: 'title_counts', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showunreadcountsintitle-1' }, [
-                                    gettext('Show unread counts in the window title')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Window title')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showglobalsharedstories' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showglobalsharedstories-1', type: 'checkbox', name: 'show_global_shared_stories', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showglobalsharedstories-1' }, [
-                                    gettext('Show Global Shared Stories')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showinfrequentsitestories-1', type: 'checkbox', name: 'show_infrequent_site_stories', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showinfrequentsitestories-1' }, [
-                                    gettext('Show Infrequent Site Stories')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showwidelyreadstories-1', type: 'checkbox', name: 'show_widely_read_stories', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showwidelyreadstories-1' }, [
-                                    gettext('Show Widely Read Stories')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showlongreads-1', type: 'checkbox', name: 'show_long_reads', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showlongreads-1' }, [
-                                    gettext('Show Long Reads')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showgoodreads-1', type: 'checkbox', name: 'show_good_reads', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showgoodreads-1' }, [
-                                    gettext('Show Good Reads')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Special Folders')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-autoopenfolder' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-autoopenfolder-1', type: 'radio', name: 'autoopen_folder', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-autoopenfolder-1' }, [
-                                    gettext('Show the dashboard when loading NewsBlur')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-autoopenfolder-2', type: 'radio', name: 'autoopen_folder', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-autoopenfolder-2' }, [
-                                    this.make_autoopen_folders()
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Default folder')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-animations' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-animations-1', type: 'radio', name: 'animations', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-animations-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/arrow_in.png' }),
-                                    gettext('Show all animations')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-animations-2', type: 'radio', name: 'animations', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-animations-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/arrow_right.png' }),
-                                    gettext('Jump immediately with no animations')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Animations')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-feedorder' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-feedorder-1', type: 'radio', name: 'feed_order', value: 'ALPHABETICAL' }),
-                                $.make('label', { 'for': 'NB-preference-feedorder-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/pilcrow.png' }),
-                                    gettext('Alphabetical')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-feedorder-2', type: 'radio', name: 'feed_order', value: 'MOSTUSED' }),
-                                $.make('label', { 'for': 'NB-preference-feedorder-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/report_user.png' }),
-                                    gettext('Most used at top, then alphabetical')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Site sidebar order')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-folder-counts' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-folder-counts-1', type: 'radio', name: 'folder_counts', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-folder-counts-1' }, [
-                                    gettext('Only show counts on collapsed folders')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-folder-counts-2', type: 'radio', name: 'folder_counts', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-folder-counts-2' }, [
-                                    gettext('Always show unread counts on folders')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Folder unread counts')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-tooltips' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-tooltips-1', type: 'radio', name: 'show_tooltips', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-tooltips-1' }, [
-                                    gettext('Show tooltips')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-tooltips-2', type: 'radio', name: 'show_tooltips', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-tooltips-2' }, [
-                                    gettext('Don\'t bother showing tooltips')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Tooltips'),
-                            $.make('div', { className: 'tipsy tipsy-n' }, [
-                                $.make('div', { className: 'tipsy-arrow' }),
-                                $.make('div', { className: 'tipsy-inner' }, gettext('Tooltips like this'))
-                            ]).css({
-                                'display': 'block',
-                                'top': 24,
-                                'left': -5
-                            })
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-contextmenu' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-contextmenus-1', type: 'radio', name: 'show_contextmenus', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-contextmenus-1' }, [
-                                    gettext('Open the feed and story title menu')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-contextmenus-2', type: 'radio', name: 'show_contextmenus', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-contextmenus-2' }, [
-                                    gettext('Use the native browser context menu')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Right-clicking'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Folders, feeds, and story titles'))
-                        ])
-                    ]),
-                    ($.make('div', { className: 'NB-preference NB-preference-briefing-enabled' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
-                                $.make('input', { id: 'NB-preference-briefing-enabled-1', type: 'radio', name: 'briefing_enabled', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-briefing-enabled-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable daily briefings')),
-                                    $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('AI-curated summary of your top stories')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Customizable writing style and length')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Scheduled delivery (daily or twice daily)')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Choose which feeds to include')])
-                                    ])
-                                ])
-                            ]),
-                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
-                                $.make('input', { id: 'NB-preference-briefing-enabled-2', type: 'radio', name: 'briefing_enabled', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-briefing-enabled-2', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable daily briefings')),
-                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Turn off automatic briefing generation'))
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Daily Briefing')
-                        ])
-                    ])),
-                    ($.make('div', { className: 'NB-preference NB-preference-clustering-enabled' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
-                                $.make('input', { id: 'NB-preference-clustering-enabled-1', type: 'radio', name: 'story_clustering', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-clustering-enabled-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable story clustering')),
-                                    $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Group duplicate stories across your feeds')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('See which feeds cover the same story')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Reduce clutter in your river of stories')])
-                                    ]),
-                                    $.make('div', { className: 'NB-clustering-mark-read-option' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
-                                        $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true', disabled: !NEWSBLUR.Globals.is_archive }),
-                                        $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, gettext('Mark duplicates as read')),
-                                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link', 'data-feature': 'clustering' }, [
-                                            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
-                                        ]))
-                                    ])
-                                ])
-                            ]),
-                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
-                                $.make('input', { id: 'NB-preference-clustering-enabled-2', type: 'radio', name: 'story_clustering', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-clustering-enabled-2', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable story clustering')),
-                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Show every story individually without grouping'))
-                                ])
-                            ]),
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Story Clustering'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Groups similar stories from different feeds'))
-                        ])
-                    ])),
-                    $.make('div', { className: 'NB-preference NB-preference-opml' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, gettext('Download OPML'))
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Backup your sites'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Download this XML file as a backup'))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-email-settings' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('a', { className: 'NB-splash-link NB-link-account-email-settings', href: '#' }, gettext('Manage email settings')),
-                            $.make('div', { className: 'NB-preference-email-status' }, gettext('You are unsubscribed from all NewsBlur emails')).toggle(!NEWSBLUR.assets.preference('send_emails'))
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Emails'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Found in the Account dialog'))
-                        ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-tab NB-tab-feeds' }, [
-                    $.make('div', { className: 'NB-preference NB-preference-layout' }, [
-                        $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
-                            $.make('div', { className: "" }, [
-                                $.make('label', { 'for': 'NB-preference-layout-1' }, [
-                                    $.make('input', { id: 'NB-preference-layout-1', type: 'radio', name: 'story_layout', value: 'full' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_full_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, gettext("Full"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-layout-2' }, [
-                                    $.make('input', { id: 'NB-preference-layout-2', type: 'radio', name: 'story_layout', value: 'split' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_split_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, gettext("Split"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-layout-3' }, [
-                                    $.make('input', { id: 'NB-preference-layout-3', type: 'radio', name: 'story_layout', value: 'list' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_list_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, gettext("List"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-layout-4' }, [
-                                    $.make('input', { id: 'NB-preference-layout-4', type: 'radio', name: 'story_layout', value: 'grid' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_grid_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, gettext("Grid"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-layout-5' }, [
-                                    $.make('input', { id: 'NB-preference-layout-5', type: 'radio', name: 'story_layout', value: 'magazine' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_magazine_active.png' }),
-                                    $.make("div", { className: "NB-layout-title" }, gettext("Magazine"))
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Default layout'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site basis.')),
-                            $.make('div', { className: 'NB-clear-overrides-layout NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-view' }, [
-                        $.make('div', { className: 'NB-preference-options NB-view-settings' }, [
-                            $.make('div', { className: "NB-view-setting-original" }, [
-                                $.make('label', { 'for': 'NB-preference-view-1' }, [
-                                    $.make('input', { id: 'NB-preference-view-1', type: 'radio', name: 'default_view', value: 'page' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_original_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, gettext("Original"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-view-2' }, [
-                                    $.make('input', { id: 'NB-preference-view-2', type: 'radio', name: 'default_view', value: 'feed' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_feed_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, gettext("Feed"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-view-3' }, [
-                                    $.make('input', { id: 'NB-preference-view-3', type: 'radio', name: 'default_view', value: 'text' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_text_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, gettext("Text"))
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('label', { 'for': 'NB-preference-view-4' }, [
-                                    $.make('input', { id: 'NB-preference-view-4', type: 'radio', name: 'default_view', value: 'story' }),
-                                    $.make("img", { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/circular/nav_story_story_active.png' }),
-                                    $.make("div", { className: "NB-view-title" }, gettext("Story"))
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Default view'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site basis.')),
-                            $.make('div', { className: 'NB-clear-overrides-view NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-view-setting' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('ul', { className: 'segmented-control NB-preference-view-setting-order' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-order-newest NB-active' }, gettext('Newest first')),
-                                $.make('li', { className: 'NB-preference-view-setting-order-oldest' }, gettext('Oldest'))
-                            ]),
-                            $.make('ul', { className: 'segmented-control NB-preference-view-setting-read-filter' }, [
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-all  NB-active' }, gettext('All stories')),
-                                $.make('li', { className: 'NB-preference-view-setting-read-filter-unread' }, gettext('Unread only'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Default story order'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('You can override this on a per-site and per-folder basis.')),
-                            $.make('div', { className: 'NB-clear-overrides-order NB-preference-sublabel-link NB-splash-link' }, gettext("Clear all overrides"))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-openfeedaction' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-openfeedaction-1', type: 'radio', name: 'open_feed_action', value: 'newest' }),
-                                $.make('label', { 'for': 'NB-preference-openfeedaction-1' }, [
-                                    gettext('Open the first story')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-openfeedaction-0', type: 'radio', name: 'open_feed_action', value: 0, checked: true }),
-                                $.make('label', { 'for': 'NB-preference-openfeedaction-0' }, [
-                                    gettext('Show all stories')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('When opening a site')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-markreadstoryscroll' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadstoryscroll-1', type: 'radio', name: 'mark_read_on_scroll_titles', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-1' }, [
-                                    gettext('Mark stories as read when scrolled past')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadstoryscroll-0', type: 'radio', name: 'mark_read_on_scroll_titles', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-markreadstoryscroll-0' }, [
-                                    gettext('Don\'t automatically mark stories as read')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Mark stories read on scroll')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-realtimenewstories' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-realtimenewstories-1', type: 'radio', name: 'realtime_new_stories', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-realtimenewstories-1' }, [
-                                    gettext('Offer them in an "N new stories" pill')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-realtimenewstories-0', type: 'radio', name: 'realtime_new_stories', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-realtimenewstories-0' }, [
-                                    gettext('Only show them when the list reloads')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Show new stories as they arrive')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-density' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-density-compact', type: 'radio', name: 'density', value: "compact" }),
-                                $.make('label', { 'for': 'NB-preference-density-compact' }, [
-                                    gettext('Compact spacing: more dense')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-density-comfortable', type: 'radio', name: 'density', value: "comfortable" }),
-                                $.make('label', { 'for': 'NB-preference-density-comfortable' }, [
-                                    gettext('Comfortable spacing: less dense')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Spacing between feeds and story titles')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showcontentpreview' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showcontentpreview-1', type: 'radio', name: 'show_content_preview', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-showcontentpreview-1' }, [
-                                    gettext('Show a preview of the story')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showcontentpreview-0', type: 'radio', name: 'show_content_preview', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-showcontentpreview-0' }, [
-                                    gettext('Don\'t show a preview, only show the story title')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Story content preview')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showimagepreview' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-sl', type: 'radio', name: 'image_preview', value: "small-left" }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-sl' }, [
-                                    gettext('Small image thumbnail on the left')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-sr', type: 'radio', name: 'image_preview', value: "small-right" }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-sr' }, [
-                                    gettext('Small image thumbnail on the right')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-ll', type: 'radio', name: 'image_preview', value: "large-left" }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-ll' }, [
-                                    gettext('Large image thumbnail on the left')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-lr', type: 'radio', name: 'image_preview', value: "large-right" }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-lr' }, [
-                                    gettext('Large image thumbnail on the right')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showimagepreview-0', type: 'radio', name: 'image_preview', value: "none" }),
-                                $.make('label', { 'for': 'NB-preference-showimagepreview-0' }, [
-                                    gettext('Don\'t show a thumbnail')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Image preview')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-doubleclickfeed' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-doubleclickfeed-1', type: 'radio', name: 'doubleclick_feed', value: 'open' }),
-                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-1' }, [
-                                    gettext('Open the site in a new window')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-doubleclickfeed-0', type: 'radio', name: 'doubleclick_feed', value: 'open_and_read' }),
-                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-0' }, [
-                                    gettext('Open the site in a new window and mark it as read')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-doubleclickfeed-2', type: 'radio', name: 'doubleclick_feed', value: 'ignore' }),
-                                $.make('label', { 'for': 'NB-preference-doubleclickfeed-2' }, [
-                                    gettext('Don\'t do anything on double-clicks')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Double-clicking a site')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-doubleclickunread' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-doubleclickunread-1', type: 'radio', name: 'doubleclick_unread', value: 'markread' }),
-                                $.make('label', { 'for': 'NB-preference-doubleclickunread-1' }, [
-                                    gettext('Mark the site as read')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-doubleclickunread-0', type: 'radio', name: 'doubleclick_unread', value: "ignore" }),
-                                $.make('label', { 'for': 'NB-preference-doubleclickunread-0' }, [
-                                    gettext('Don\'t do anything on double-clicks')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Double-clicking an unread count')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-markreadconfirm' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadconfirm-1', type: 'radio', name: 'mark_read_river_confirm', value: 'feeds_folders' }),
-                                $.make('label', { 'for': 'NB-preference-markreadconfirm-1' }, [
-                                    gettext('Show confirmation when marking feeds or folders as read')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadconfirm-2', type: 'radio', name: 'mark_read_river_confirm', value: 'folders_only' }),
-                                $.make('label', { 'for': 'NB-preference-markreadconfirm-2' }, [
-                                    gettext('Show confirmation only when marking folders as read')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadconfirm-0', type: 'radio', name: 'mark_read_river_confirm', value: 'never' }),
-                                $.make('label', { 'for': 'NB-preference-markreadconfirm-0' }, [
-                                    gettext('Mark as read without confirmation')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Confirming mark as read')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-readstorydelay' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-readstorydelay-1', type: 'radio', name: 'read_story_delay', value: '0' }),
-                                $.make('label', { 'for': 'NB-preference-readstorydelay-1' }, [
-                                    gettext('Immediately')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-readstorydelay-2', type: 'radio', name: 'read_story_delay', value: '1' }),
-                                // reader_preferences.js: slide_read_story_delay_slider fills the
-                                // text on both sides of the slider from one translated sentence.
-                                $.make('label', { 'for': 'NB-preference-readstorydelay-2' }, [
-                                    $.make('span', { className: 'NB-preference-slider-before' }),
-                                    $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
-                                    $.make('span', { className: 'NB-preference-slider-after NB-tangle-seconds' })
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-readstorydelay-3', type: 'radio', name: 'read_story_delay', value: "-2" }),
-                                $.make('label', { 'for': 'NB-preference-readstorydelay-3' }, [
-                                    gettext('Manually or by clicking in the story')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-readstorydelay-0', type: 'radio', name: 'read_story_delay', value: "-1" }),
-                                $.make('label', { 'for': 'NB-preference-readstorydelay-0' },
-                                    NEWSBLUR.utils.interpolate_nodes(gettext('Manually by hitting %(first_key)s or %(second_key)s'), {
-                                        first_key: $.make('div', {
-                                            className: 'NB-keyboard-shortcut-key',
-                                            style: 'display: inline; float: none;margin: 0 4px'
-                                        }, [
-                                            'u'
-                                        ]),
-                                        second_key: $.make('div', {
-                                            className: 'NB-keyboard-shortcut-key',
-                                            style: 'display: inline; float: none;margin: 0 4px'
-                                        }, [
-                                            'm'
-                                        ])
-                                    }))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Mark a story as read'),
-                            $.make('div', { className: 'NB-preference-sublabel' }, gettext('Selecting a story in the story titles marks it as read.'))
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-markreadnextfeed' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadnextfeed-1', type: 'radio', name: 'markread_nextfeed', value: 'nextfeed' }),
-                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-1' }, [
-                                    gettext('Open the next site/folder')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-markreadnextfeed-0', type: 'radio', name: 'markread_nextfeed', value: "nothing" }),
-                                $.make('label', { 'for': 'NB-preference-markreadnextfeed-0' }, [
-                                    gettext('Stay on the same feed/folder')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('After marking feed/folder read')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-showdiscover' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showdiscover-1', type: 'radio', name: 'show_discover', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-showdiscover-1' }, [
-                                    gettext('Show discover sites popover above story titles')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-showdiscover-0', type: 'radio', name: 'show_discover', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-showdiscover-0' }, [
-                                    gettext('Hide discover sites popover')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Discover sites')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-disablesocial' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', { className: 'NB-social-card NB-social-card-enable' }, [
-                                $.make('input', { id: 'NB-preference-disablesocial-0', type: 'radio', name: 'disable_social', value: "false" }),
-                                $.make('label', { 'for': 'NB-preference-disablesocial-0', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Enable social features')),
-                                    $.make('ul', { className: 'NB-social-features-list' }, [
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Blurblogs')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Share stories')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Comment on stories')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('See shared stories')]),
-                                        $.make('li', [$.make('span', { className: 'NB-feature-check' }, '✓'), gettext('Public comments')])
-                                    ])
-                                ])
-                            ]),
-                            $.make('div', { className: 'NB-social-card NB-social-card-disable' }, [
-                                $.make('input', { id: 'NB-preference-disablesocial-1', type: 'radio', name: 'disable_social', value: "true" }),
-                                $.make('label', { 'for': 'NB-preference-disablesocial-1', className: 'NB-social-card-content' }, [
-                                    $.make('span', { className: 'NB-social-card-icon' }, ''),
-                                    $.make('span', { className: 'NB-social-card-title' }, gettext('Disable social features')),
-                                    $.make('span', { className: 'NB-social-card-desc' }, gettext('Hide all sharing, comments, and blurblog features'))
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Sharing')
-                        ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-tab NB-tab-stories' }, [
-                    $.make('div', { className: 'NB-preference NB-preference-story-share' }, [
-                        $.make('div', { className: 'NB-preference-options' }, _.map(NEWSBLUR.assets.third_party_sharing_services, function (label, key) {
-                            return $.make('div', { className: 'NB-preference-option', title: label }, [
-                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-share-' + key, name: 'story_share_' + key }),
-                                $.make('label', { 'for': 'NB-preference-story-share-' + key }, label)
-                            ])
-                        })),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Sharing services')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-window' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-window-1', type: 'radio', name: 'new_window', value: 0 }),
-                                $.make('label', { 'for': 'NB-preference-window-1' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_view_gallery.png' }),
-                                    gettext('In this window')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-window-2', type: 'radio', name: 'new_window', value: 1 }),
-                                $.make('label', { 'for': 'NB-preference-window-2' }, [
-                                    $.make('img', { src: NEWSBLUR.Globals.MEDIA_URL + '/img/icons/silk/application_side_expand.png' }),
-                                    gettext('In a new window')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Open links')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-truncatestory' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-truncatestory-1', type: 'radio', name: 'truncate_story', value: 'social' }),
-                                $.make('label', { 'for': 'NB-preference-truncatestory-1' }, [
-                                    gettext('Only truncate long shared stories in blurblogs')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-truncatestory-2', type: 'radio', name: 'truncate_story', value: 'all' }),
-                                $.make('label', { 'for': 'NB-preference-truncatestory-2' }, [
-                                    gettext('Force all tall stories to have a max height')
-                                ])
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-truncatestory-3', type: 'radio', name: 'truncate_story', value: 'none' }),
-                                $.make('label', { 'for': 'NB-preference-truncatestory-3' }, [
-                                    gettext('Show the entire story, even if really, really long')
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Truncate stories')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-public-comments' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-public-comments-1', type: 'radio', name: 'hide_public_comments', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-1' }, gettext('Show from both friends and the public'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-public-comments-2', type: 'radio', name: 'hide_public_comments', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-public-comments-2' }, gettext('Only show comments from friends'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Show all comments')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-story-button-placement' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-button-placement-1', type: 'radio', name: 'story_button_placement', value: 'bottom' }),
-                                $.make('label', { 'for': 'NB-preference-story-button-placement-1' }, gettext('Always show Train/Save/Share buttons below stories'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-button-placement-2', type: 'radio', name: 'story_button_placement', value: 'right' }),
-                                $.make('label', { 'for': 'NB-preference-story-button-placement-2' }, gettext('Show buttons on the right (when there is room)'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Story side options placement')
-                        ]),
-                        $.make('div', { className: 'NB-preference-options NB-preference-story-sideoption-sticky' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-story-sideoption-sticky', type: 'checkbox', name: 'sticky_story_sideoptions' }),
-                                $.make('label', { 'for': 'NB-preference-story-sideoption-sticky' }, gettext('Keep right-side buttons visible while reading'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label NB-preference-story-sideoption-sticky' }, [
-                            gettext('Story side options')
-                        ]),
-                        $.make('div', { className: 'NB-preference-options' }, _.map(["email", "save", "train", "share", "related", "ask_ai", "listen"], function (label) {
-                            var label_title = {
-                                email: gettext('Email'),
-                                save: gettext('Save'),
-                                train: gettext('Train'),
-                                share: gettext('Share'),
-                                related: gettext('Related'),
-                                ask_ai: gettext('Ask AI'),
-                                listen: gettext('Listen')
-                            }[label];
-                            return $.make('div', { className: 'NB-preference-option NB-preference-story-sideoption', title: label_title }, [
-                                $.make('input', { type: 'checkbox', id: 'NB-preference-story-sideoption-' + label, name: 'show_sideoption_' + label }),
-                                $.make('label', { 'for': 'NB-preference-story-sideoption-' + label }, label_title)
-                            ])
-                        })),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Story side options buttons')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-youtube-captions' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-youtube-captions', type: 'checkbox', name: 'youtube_captions' }),
-                                $.make('label', { 'for': 'NB-preference-youtube-captions' }, gettext('Enable captions/subtitles for YouTube videos'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('YouTube Captions')
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-highlights' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-highlights-1', type: 'radio', name: 'highlights', value: 'true' }),
-                                $.make('label', { 'for': 'NB-preference-highlights-1' }, gettext('Show highlighter when selecting text'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', { id: 'NB-preference-highlights-2', type: 'radio', name: 'highlights', value: 'false' }),
-                                $.make('label', { 'for': 'NB-preference-highlights-2' }, gettext('Disable the highlighter'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            gettext('Enable highlighting')
-                        ])
-                    ])
-                ]),
-                $.make('div', { className: 'NB-tab NB-tab-keyboard' }, [
-                    (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' },
-                        interpolate(_.escape(gettext('You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts.')), {
-                            link_start: '<span class="NB-splash-link NB-premium-link">',
-                            link_end: '</span>'
-                        }, true))),
-                    $.make('div', { className: 'NB-preference NB-preference-keyboard-horizontalarrows' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-horizontalarrows-1',
-                                    type: 'radio',
-                                    name: 'keyboard_horizontalarrows',
-                                    value: 'view',
-                                    disabled: !NEWSBLUR.Globals.is_premium
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-1' }, gettext('Switch between views (original, feed, text, story)'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-horizontalarrows-2',
-                                    type: 'radio',
-                                    name: 'keyboard_horizontalarrows',
-                                    value: 'site',
-                                    disabled: !NEWSBLUR.Globals.is_premium
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-horizontalarrows-2' }, gettext('Open the next site/folder'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2190;'
-                            ]),
-                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2192;'
-                            ])
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-keyboard-verticalarrows' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            $.make('div', [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-verticalarrows-1',
-                                    type: 'radio',
-                                    name: 'keyboard_verticalarrows',
-                                    value: 'story',
-                                    disabled: !NEWSBLUR.Globals.is_premium
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-1' }, gettext('Navigate between stories'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-verticalarrows-2',
-                                    type: 'radio',
-                                    name: 'keyboard_verticalarrows',
-                                    value: 'scroll',
-                                    disabled: !NEWSBLUR.Globals.is_premium
-                                }),
-                                // reader_preferences.js: slide_arrow_scroll_spacing_slider fills the
-                                // text on both sides of the slider from one translated sentence.
-                                $.make('label', { 'for': 'NB-preference-keyboard-verticalarrows-2' }, [
-                                    $.make('span', { className: 'NB-preference-slider-before' }),
-                                    $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
-                                    $.make('span', { className: 'NB-preference-slider-after NB-tangle-arrowscrollspacing' }),
-                                    $.make('input', { name: 'arrow_scroll_spacing', value: NEWSBLUR.Preferences.arrow_scroll_spacing, type: 'hidden' })
-                                ])
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2193;'
-                            ]),
-                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                '&#x2191;'
-                            ])
-                        ])
-                    ]),
-                    $.make('div', { className: 'NB-preference NB-preference-keyboard-spacebar' }, [
-                        $.make('div', { className: 'NB-preference-options' }, [
-                            // reader_preferences.js: slide_space_scroll_spacing_slider fills the
-                            // text on both sides of the slider from one translated sentence.
-                            $.make('div', [
-                                $.make('span', { className: 'NB-preference-slider-before' }),
-                                $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
-                                $.make('span', { className: 'NB-preference-slider-after NB-tangle-spacescrollspacing' }),
-                                $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
-                            ]),
-                            $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-spacebaraction-1',
-                                    type: 'radio',
-                                    name: 'space_bar_action',
-                                    value: 'next_unread'
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-1' }, gettext('Open next unread story when bottom of story is visible'))
-                            ]),
-                            $.make('div', { className: 'NB-preference-keyboard-spacebaraction' }, [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-spacebaraction-2',
-                                    type: 'radio',
-                                    name: 'space_bar_action',
-                                    value: 'next_unread_50'
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-2' }, gettext('Open next unread story when story is half-way up'))
-                            ]),
-                            $.make('div', [
-                                $.make('input', {
-                                    id: 'NB-preference-keyboard-spacebaraction-3',
-                                    type: 'radio',
-                                    name: 'space_bar_action',
-                                    value: 'scroll_only'
-                                }),
-                                $.make('label', { 'for': 'NB-preference-keyboard-spacebaraction-3' }, gettext('Only page down in story, do not open next unread story'))
-                            ])
-                        ]),
-                        $.make('div', { className: 'NB-preference-label' }, [
-                            $.make('div', { className: 'NB-keyboard-shortcut-key' }, [
-                                'space'
-                            ])
-                        ])
+                this.make_general_tab(),
+                this.make_feeds_tab(),
+                this.make_stories_tab(),
+                this.make_behavior_tab(),
+                this.make_keyboard_tab()
+            ])
+        ]);
+    },
+
+    // ============
+    // = Building =
+    // ============
+
+    // reader_preferences.js: a tab is a list of groups, a group is a titled panel of rows, and a row
+    // is one preference: its name and a line of explanation on the left, its control on the right.
+    make_tab: function (name, groups) {
+        return $.make('div', { className: 'NB-tab NB-tab-' + name + (name == 'general' ? ' NB-active' : '') }, _.compact(groups));
+    },
+
+    make_group: function (title, rows) {
+        return $.make('div', { className: 'NB-preference-group' }, [
+            $.make('div', { className: 'NB-preference-group-title' }, title),
+            $.make('div', { className: 'NB-preference-group-rows' }, _.compact(rows))
+        ]);
+    },
+
+    make_row: function (class_name, title, hint, controls, label_extras) {
+        return $.make('div', { className: 'NB-preference ' + class_name }, [
+            $.make('div', { className: 'NB-preference-label' }, _.compact([
+                $.make('div', { className: 'NB-preference-title' }, title),
+                hint && $.make('div', { className: 'NB-preference-sublabel' }, hint)
+            ].concat(label_extras || []))),
+            $.make('div', { className: 'NB-preference-options' }, _.compact(_.flatten([controls])))
+        ]);
+    },
+
+    make_art: function (name) {
+        return $.make('span', { className: 'NB-pref-art' }).html(NEWSBLUR.PreferencesArt.draw(name));
+    },
+
+    // reader_preferences.js: radio buttons drawn as cards, each a small picture of what the choice
+    // does over a short name. The inputs keep the names and values that select_preferences and
+    // serialize_preferences read, so a card is only a different face on the same field.
+    make_cards: function (name, options, disabled) {
+        return $.make('div', { className: 'NB-pref-cards', role: 'radiogroup' }, _.map(options, function (option, i) {
+            var id = 'NB-preference-' + name + '-' + i;
+            var attrs = { className: 'NB-pref-card', 'for': id };
+            if (option.tip) attrs['data-tip'] = option.tip;
+            return $.make('label', attrs, [
+                $.make('input', { type: 'radio', id: id, name: name, value: option.value, disabled: !!disabled }),
+                this.make_art(option.art),
+                $.make('span', { className: 'NB-pref-caption' }, option.caption)
+            ]);
+        }, this));
+    },
+
+    // reader_preferences.js: cards for a choice that is not a plain radio group. Each card carries
+    // data- attributes saying what picking it means, handle_click applies that to fields kept out of
+    // sight, and update_field_cards marks the card that matches those fields.
+    make_field_cards: function (options, class_name) {
+        return $.make('div', { className: 'NB-pref-cards ' + (class_name || ''), role: 'radiogroup' }, _.map(options, function (option) {
+            var attrs = _.extend({ className: 'NB-pref-card NB-pref-field-card ' + (option.class_name || ''), role: 'radio', tabindex: '0' }, option.data);
+            if (option.tip) attrs['data-tip'] = option.tip;
+            return $.make('div', attrs, [
+                this.make_art(option.art),
+                $.make('span', { className: 'NB-pref-caption' }, option.caption)
+            ]);
+        }, this));
+    },
+
+    // reader_preferences.js: an on or off preference stored as a checkbox, shown as two cards.
+    make_toggle_cards: function (name, on, off) {
+        return [
+            $.make('input', { type: 'checkbox', name: name, className: 'NB-pref-hidden', tabindex: '-1' }),
+            this.make_field_cards([
+                _.extend({ data: { 'data-field': name, 'data-checked': 'true' } }, on),
+                _.extend({ data: { 'data-field': name, 'data-checked': 'false' } }, off)
+            ])
+        ];
+    },
+
+    // reader_preferences.js: checkboxes drawn as chips, for lists where any number can be on.
+    make_chips: function (items) {
+        return $.make('div', { className: 'NB-pref-chips' }, _.map(items, function (item) {
+            return $.make('div', { className: 'NB-pref-chip' }, [
+                $.make('input', { type: 'checkbox', id: item.id, name: item.name }),
+                $.make('label', { 'for': item.id }, item.label)
+            ]);
+        }));
+    },
+
+    make_override_links: function (type, hint) {
+        return [
+            $.make('div', { className: 'NB-preference-sublabel' }, hint),
+            $.make('div', { className: 'NB-clear-overrides-' + type + ' NB-preference-sublabel-link NB-splash-link' }, gettext('Clear all overrides'))
+        ];
+    },
+
+    // ========
+    // = Tabs =
+    // ========
+
+    make_general_tab: function () {
+        return this.make_tab('general', [
+            this.make_group(gettext('Appearance'), [
+                this.make_row('NB-preference-appearance', gettext('Theme'), null, this.make_theme_chooser()),
+                this.make_row('NB-preference-density', gettext('Spacing'), gettext('Rows in the sidebar and the story list'), this.make_cards('density', [
+                    { value: 'compact', caption: gettext('Compact'), art: 'density-compact', tip: gettext('Compact spacing: more dense') },
+                    { value: 'comfortable', caption: gettext('Comfortable'), art: 'density-comfortable', tip: gettext('Comfortable spacing: less dense') }
+                ])),
+                // reader_preferences.js: Motion is two stored preferences, animations and reduce_motion.
+                // None turns animations off, Reduced keeps them with reduce_motion on, Full is neither.
+                this.make_row('NB-preference-motion', gettext('Motion'), gettext('How panes and stories move'), [
+                    $.make('input', { type: 'radio', name: 'animations', value: 'true', className: 'NB-pref-hidden', tabindex: '-1' }),
+                    $.make('input', { type: 'radio', name: 'animations', value: 'false', className: 'NB-pref-hidden', tabindex: '-1' }),
+                    $.make('input', { type: 'checkbox', name: 'reduce_motion', className: 'NB-pref-hidden', tabindex: '-1' }),
+                    this.make_field_cards([
+                        { data: { 'data-motion': 'full' }, caption: gettext('Full'), art: 'motion-full', tip: gettext('Show all animations') },
+                        { data: { 'data-motion': 'reduced' }, caption: gettext('Reduced'), art: 'motion-reduced', tip: gettext('Keep fades, without movement.') },
+                        { data: { 'data-motion': 'none' }, caption: gettext('None'), art: 'motion-none', tip: gettext('Jump immediately with no animations') }
                     ])
                 ])
             ]),
-            $.make('div', { className: 'NB-modal-submit NB-modal-submit-form' }, [
-                $.make('div', { disabled: 'true', className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled' }, gettext('Make changes above...'))
+            this.make_group(gettext('Language and time'), [
+                this.make_row('NB-preference-language', gettext('Language'), null,
+                    $.make('select', { id: 'NB-preference-language', name: 'language' },
+                        [$.make('option', { value: 'auto', lang: NEWSBLUR.detected_language }, NEWSBLUR.language_auto_label)].concat(
+                            NEWSBLUR.languages.map(function (language) {
+                                return $.make('option', { value: language[0], lang: language[0] }, language[1]);
+                            })
+                        ))),
+                this.make_row('NB-preference-timezone', gettext('Timezone'), null, this.make_timezone_select()),
+                this.make_row('NB-preference-dateformat', gettext('Clock'), null, this.make_cards('dateformat', [
+                    { value: '12', caption: gettext('12-hour'), art: 'clock-12', tip: gettext('Use 12-hour clock') },
+                    { value: '24', caption: gettext('24-hour'), art: 'clock-24', tip: gettext('Use 24-hour clock') }
+                ]))
+            ]),
+            this.make_group(gettext('Browser'), [
+                this.make_row('NB-preference-showunreadcountsintitle', gettext('Window title'), gettext('Show unread counts in the window title'),
+                    this.make_toggle_cards('title_counts',
+                        { caption: gettext('Unread count'), art: 'title-count', tip: gettext('Show unread counts in the window title') },
+                        { caption: gettext('Name only'), art: 'title-plain', tip: gettext('Keep unread counts out of the window title') })),
+                this.make_row('NB-preference-tooltips', gettext('Tooltips'), null, this.make_cards('show_tooltips', [
+                    { value: 1, caption: gettext('Show'), art: 'tooltip-on', tip: gettext('Show tooltips') },
+                    { value: 0, caption: gettext('Hide'), art: 'tooltip-off', tip: gettext('Don\'t bother showing tooltips') }
+                ])),
+                this.make_row('NB-preference-contextmenu', gettext('Right-clicking'), gettext('Folders, feeds, and story titles'), this.make_cards('show_contextmenus', [
+                    { value: 1, caption: gettext('NewsBlur menu'), art: 'menu-newsblur', tip: gettext('Open the feed and story title menu') },
+                    { value: 0, caption: gettext('Browser menu'), art: 'menu-browser', tip: gettext('Use the native browser context menu') }
+                ]))
+            ]),
+            this.make_group(gettext('Account'), [
+                this.make_row('NB-preference-opml', gettext('Backup your sites'), gettext('Download this XML file as a backup'),
+                    $.make('a', { className: 'NB-pref-action NB-splash-link', href: NEWSBLUR.URLs['opml-export'] }, gettext('Download OPML'))),
+                this.make_row('NB-preference-email-settings', gettext('Emails'), gettext('Found in the Account dialog'), [
+                    $.make('a', { className: 'NB-pref-action NB-splash-link NB-link-account-email-settings', href: '#' }, gettext('Manage email settings')),
+                    $.make('div', { className: 'NB-preference-email-status' }, gettext('You are unsubscribed from all NewsBlur emails')).toggle(!NEWSBLUR.assets.preference('send_emails'))
+                ])
             ])
         ]);
+    },
+
+    make_feeds_tab: function () {
+        return this.make_tab('feeds', [
+            this.make_group(gettext('Sidebar'), [
+                this.make_row('NB-preference-feedorder', gettext('Site order'), null, this.make_cards('feed_order', [
+                    { value: 'ALPHABETICAL', caption: gettext('A to Z'), art: 'order-alpha', tip: gettext('Alphabetical') },
+                    { value: 'MOSTUSED', caption: gettext('Most used first'), art: 'order-used', tip: gettext('Most used at top, then alphabetical') }
+                ])),
+                this.make_row('NB-preference-folder-counts', gettext('Folder unread counts'), null, this.make_cards('folder_counts', [
+                    { value: 'false', caption: gettext('Collapsed folders'), art: 'counts-collapsed', tip: gettext('Only show counts on collapsed folders') },
+                    { value: 'true', caption: gettext('Every folder'), art: 'counts-always', tip: gettext('Always show unread counts on folders') }
+                ])),
+                this.make_row('NB-preference-autoopenfolder', gettext('When NewsBlur opens'), null, [
+                    this.make_cards('autoopen_folder', [
+                        { value: 0, caption: gettext('Dashboard'), art: 'launch-dashboard', tip: gettext('Show the dashboard when loading NewsBlur') },
+                        { value: 1, caption: gettext('A folder'), art: 'launch-folder', tip: gettext('Open the folder chosen below when loading NewsBlur') }
+                    ]),
+                    $.make('div', { className: 'NB-pref-detail' }, this.make_autoopen_folders())
+                ]),
+                this.make_row('NB-preference-showglobalsharedstories', gettext('Special Folders'), gettext('Built-in story lists in the sidebar'), this.make_chips([
+                    { id: 'NB-preference-showglobalsharedstories-1', name: 'show_global_shared_stories', label: gettext('Global Shared Stories') },
+                    { id: 'NB-preference-showinfrequentsitestories-1', name: 'show_infrequent_site_stories', label: gettext('Infrequent Site Stories') },
+                    { id: 'NB-preference-showwidelyreadstories-1', name: 'show_widely_read_stories', label: gettext('Widely Read Stories') },
+                    { id: 'NB-preference-showlongreads-1', name: 'show_long_reads', label: gettext('Long Reads') },
+                    { id: 'NB-preference-showgoodreads-1', name: 'show_good_reads', label: gettext('Good Reads') }
+                ])),
+                this.make_row('NB-preference-briefing-enabled', gettext('Daily Briefing'), gettext('AI-curated summary of your top stories'), this.make_cards('briefing_enabled', [
+                    { value: 'true', caption: gettext('On'), art: 'briefing-on', tip: gettext('Enable daily briefings') },
+                    { value: 'false', caption: gettext('Off'), art: 'briefing-off', tip: gettext('Turn off automatic briefing generation') }
+                ]))
+            ]),
+            this.make_group(gettext('Story list'), [
+                this.make_row('NB-preference-layout', gettext('Default layout'), null, this.make_cards('story_layout', [
+                    { value: 'full', caption: gettext('Full'), art: 'layout-full', tip: gettext('Every story in full, one after another') },
+                    { value: 'split', caption: gettext('Split'), art: 'layout-split', tip: gettext('Story titles beside the open story') },
+                    { value: 'list', caption: gettext('List'), art: 'layout-list', tip: gettext('A short list of titles above the open story') },
+                    { value: 'grid', caption: gettext('Grid'), art: 'layout-grid', tip: gettext('Stories as cards in a grid') },
+                    { value: 'magazine', caption: gettext('Magazine'), art: 'layout-magazine', tip: gettext('Roomy rows with a picture and a preview') }
+                ]), this.make_override_links('layout', gettext('You can override this on a per-site basis.'))),
+                // reader_preferences.js: order and read filter are not form fields. change_view_setting
+                // moves NB-active between these cards and serialize_preferences reads it back.
+                this.make_row('NB-preference-view-setting', gettext('Default story order'), null, [
+                    $.make('ul', { className: 'NB-pref-cards NB-preference-view-setting-order' }, [
+                        $.make('li', { className: 'NB-pref-card NB-preference-view-setting-order-newest NB-active', role: 'radio', tabindex: '0', 'data-tip': gettext('The most recent stories come first') }, [
+                            this.make_art('sort-newest'), $.make('span', { className: 'NB-pref-caption' }, gettext('Newest first'))
+                        ]),
+                        $.make('li', { className: 'NB-pref-card NB-preference-view-setting-order-oldest', role: 'radio', tabindex: '0', 'data-tip': gettext('The oldest stories come first') }, [
+                            this.make_art('sort-oldest'), $.make('span', { className: 'NB-pref-caption' }, gettext('Oldest first'))
+                        ])
+                    ])
+                ], this.make_override_links('order', gettext('You can override this on a per-site and per-folder basis.'))),
+                this.make_row('NB-preference-view-setting NB-preference-read-filter', gettext('Stories shown'), null, [
+                    $.make('ul', { className: 'NB-pref-cards NB-preference-view-setting-read-filter' }, [
+                        $.make('li', { className: 'NB-pref-card NB-preference-view-setting-read-filter-all NB-active', role: 'radio', tabindex: '0', 'data-tip': gettext('Read and unread stories are both listed') }, [
+                            this.make_art('filter-all'), $.make('span', { className: 'NB-pref-caption' }, gettext('All stories'))
+                        ]),
+                        $.make('li', { className: 'NB-pref-card NB-preference-view-setting-read-filter-unread', role: 'radio', tabindex: '0', 'data-tip': gettext('Stories you have read are left out') }, [
+                            this.make_art('filter-unread'), $.make('span', { className: 'NB-pref-caption' }, gettext('Unread only'))
+                        ])
+                    ])
+                ]),
+                this.make_row('NB-preference-showcontentpreview', gettext('Story content preview'), null, this.make_cards('show_content_preview', [
+                    { value: 1, caption: gettext('Title and preview'), art: 'preview-on', tip: gettext('Show a preview of the story') },
+                    { value: 0, caption: gettext('Title only'), art: 'preview-off', tip: gettext('Don\'t show a preview, only show the story title') }
+                ])),
+                this.make_row('NB-preference-showimagepreview', gettext('Image preview'), null, this.make_cards('image_preview', [
+                    { value: 'small-left', caption: gettext('Small, left'), art: 'image-small-left', tip: gettext('Small image thumbnail on the left') },
+                    { value: 'small-right', caption: gettext('Small, right'), art: 'image-small-right', tip: gettext('Small image thumbnail on the right') },
+                    { value: 'large-left', caption: gettext('Large, left'), art: 'image-large-left', tip: gettext('Large image thumbnail on the left') },
+                    { value: 'large-right', caption: gettext('Large, right'), art: 'image-large-right', tip: gettext('Large image thumbnail on the right') },
+                    { value: 'none', caption: gettext('None'), art: 'image-none', tip: gettext('Don\'t show a thumbnail') }
+                ])),
+                this.make_row('NB-preference-realtimenewstories', gettext('New stories'), gettext('Show new stories as they arrive'), this.make_cards('realtime_new_stories', [
+                    { value: 'true', caption: gettext('In a pill'), art: 'pill-on', tip: gettext('Offer them in an "N new stories" pill') },
+                    { value: 'false', caption: gettext('On reload'), art: 'pill-off', tip: gettext('Only show them when the list reloads') }
+                ])),
+                this.make_row('NB-preference-clustering-enabled', gettext('Story Clustering'), gettext('Groups similar stories from different feeds'), [
+                    this.make_cards('story_clustering', [
+                        { value: 'true', caption: gettext('Grouped'), art: 'cluster-on', tip: gettext('Group duplicate stories across your feeds') },
+                        { value: 'false', caption: gettext('Separate'), art: 'cluster-off', tip: gettext('Show every story individually without grouping') }
+                    ]),
+                    $.make('div', { className: 'NB-pref-detail NB-clustering-mark-read-option' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
+                        $.make('input', { id: 'NB-preference-cluster-mark-read', type: 'checkbox', name: 'cluster_mark_read', value: 'true', disabled: !NEWSBLUR.Globals.is_archive }),
+                        $.make('label', { 'for': 'NB-preference-cluster-mark-read' }, gettext('Mark duplicates as read')),
+                        (!NEWSBLUR.Globals.is_archive && $.make('a', { href: '#', className: 'NB-premium-archive-upgrade-notice NB-premium-link', 'data-feature': 'clustering' }, [
+                            $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
+                        ]))
+                    ])
+                ]),
+                this.make_row('NB-preference-showdiscover', gettext('Discover sites'), gettext('Related sites above the story titles'), this.make_cards('show_discover', [
+                    { value: 'true', caption: gettext('Show'), art: 'discover-on', tip: gettext('Show discover sites popover above story titles') },
+                    { value: 'false', caption: gettext('Hide'), art: 'discover-off', tip: gettext('Hide discover sites popover') }
+                ]))
+            ])
+        ]);
+    },
+
+    make_stories_tab: function () {
+        var sideoptions = {
+            email: gettext('Email'), save: gettext('Save'), train: gettext('Train'), share: gettext('Share'),
+            related: gettext('Related'), ask_ai: gettext('Ask AI'), listen: gettext('Listen')
+        };
+
+        return this.make_tab('stories', [
+            this.make_group(gettext('Reading'), [
+                this.make_row('NB-preference-view', gettext('Default view'), null, this.make_cards('default_view', [
+                    { value: 'page', caption: gettext('Original'), art: 'view-page', tip: gettext('The site itself, as you would see it in a browser') },
+                    { value: 'feed', caption: gettext('Feed'), art: 'view-feed', tip: gettext('Every story as the site published it in its feed') },
+                    { value: 'text', caption: gettext('Text'), art: 'view-text', tip: gettext('The full text of the story, fetched from the site') },
+                    { value: 'story', caption: gettext('Story'), art: 'view-story', tip: gettext('The story on its own page on the site') }
+                ]), this.make_override_links('view', gettext('You can override this on a per-site basis.'))),
+                this.make_row('NB-preference-truncatestory', gettext('Tall stories'), gettext('Shortened stories open with a click'), this.make_cards('truncate_story', [
+                    { value: 'social', caption: gettext('Shorten shared'), art: 'truncate-social', tip: gettext('Only truncate long shared stories in blurblogs') },
+                    { value: 'all', caption: gettext('Shorten all'), art: 'truncate-all', tip: gettext('Force all tall stories to have a max height') },
+                    { value: 'none', caption: gettext('Show in full'), art: 'truncate-none', tip: gettext('Show the entire story, even if really, really long') }
+                ])),
+                this.make_row('NB-preference-window', gettext('Open links'), null, this.make_cards('new_window', [
+                    { value: 0, caption: gettext('In this window'), art: 'link-same', tip: gettext('Links in stories replace NewsBlur in this window') },
+                    { value: 1, caption: gettext('In a new window'), art: 'link-new', tip: gettext('Links in stories open in a new window or tab') }
+                ])),
+                this.make_row('NB-preference-highlights', gettext('Highlighter'), gettext('Show highlighter when selecting text'), this.make_cards('highlights', [
+                    { value: 'true', caption: gettext('On'), art: 'highlight-on', tip: gettext('Show highlighter when selecting text') },
+                    { value: 'false', caption: gettext('Off'), art: 'highlight-off', tip: gettext('Disable the highlighter') }
+                ])),
+                this.make_row('NB-preference-youtube-captions', gettext('YouTube Captions'), gettext('Enable captions/subtitles for YouTube videos'),
+                    this.make_toggle_cards('youtube_captions',
+                        { caption: gettext('On'), art: 'captions-on', tip: gettext('Enable captions/subtitles for YouTube videos') },
+                        { caption: gettext('Off'), art: 'captions-off', tip: gettext('Play YouTube videos without captions') }))
+            ]),
+            this.make_group(gettext('Story buttons'), [
+                this.make_row('NB-preference-story-button-placement', gettext('Placement'), gettext('Train, Save, Share and the rest'), [
+                    this.make_cards('story_button_placement', [
+                        { value: 'bottom', caption: gettext('Below the story'), art: 'buttons-bottom', tip: gettext('Always show Train/Save/Share buttons below stories') },
+                        { value: 'right', caption: gettext('Beside the story'), art: 'buttons-right', tip: gettext('Show buttons on the right (when there is room)') }
+                    ]),
+                    $.make('div', { className: 'NB-pref-detail NB-preference-story-sideoption-sticky' }, [
+                        $.make('input', { id: 'NB-preference-story-sideoption-sticky', type: 'checkbox', name: 'sticky_story_sideoptions' }),
+                        $.make('label', { 'for': 'NB-preference-story-sideoption-sticky' }, gettext('Keep right-side buttons visible while reading'))
+                    ])
+                ]),
+                this.make_row('NB-preference-story-sideoptions', gettext('Buttons'), null, this.make_chips(_.map(sideoptions, function (label, key) {
+                    return { id: 'NB-preference-story-sideoption-' + key, name: 'show_sideoption_' + key, label: label };
+                })))
+            ]),
+            this.make_group(gettext('Sharing'), [
+                this.make_row('NB-preference-disablesocial', gettext('Social features'), gettext('Blurblogs, shared stories and comments'), this.make_cards('disable_social', [
+                    { value: 'false', caption: gettext('On'), art: 'social-on', tip: gettext('Enable social features') },
+                    { value: 'true', caption: gettext('Off'), art: 'social-off', tip: gettext('Hide all sharing, comments, and blurblog features') }
+                ])),
+                this.make_row('NB-preference-public-comments', gettext('Comments'), null, this.make_cards('hide_public_comments', [
+                    { value: 'false', caption: gettext('Everyone'), art: 'comments-all', tip: gettext('Show from both friends and the public') },
+                    { value: 'true', caption: gettext('Friends only'), art: 'comments-friends', tip: gettext('Only show comments from friends') }
+                ])),
+                this.make_row('NB-preference-story-share', gettext('Sharing services'), null, this.make_chips(_.map(NEWSBLUR.assets.third_party_sharing_services, function (label, key) {
+                    return { id: 'NB-preference-story-share-' + key, name: 'story_share_' + key, label: label };
+                })))
+            ])
+        ]);
+    },
+
+    make_behavior_tab: function () {
+        return this.make_tab('behavior', [
+            this.make_group(gettext('Marking stories as read'), [
+                this.make_row('NB-preference-readstorydelay', gettext('Mark a story as read'), gettext('Selecting a story in the story titles marks it as read.'), [
+                    this.make_cards('read_story_delay', [
+                        { value: '0', caption: gettext('Immediately'), art: 'read-now', tip: gettext('A story is read as soon as it is selected') },
+                        { value: '1', caption: gettext('After a delay'), art: 'read-delay', tip: gettext('A story is read once it has been open for the time set below') },
+                        { value: '-2', caption: gettext('When clicked'), art: 'read-click', tip: gettext('Manually or by clicking in the story') },
+                        { value: '-1', caption: gettext('With the keyboard'), art: 'read-keys', tip: interpolate(gettext('Manually by hitting %(first_key)s or %(second_key)s'), { first_key: 'u', second_key: 'm' }, true) }
+                    ]),
+                    // reader_preferences.js: slide_read_story_delay_slider fills the
+                    // text on both sides of the slider from one translated sentence.
+                    $.make('label', { className: 'NB-pref-detail NB-pref-slider-line', 'for': 'NB-preference-read_story_delay-1' }, [
+                        $.make('span', { className: 'NB-preference-slider-before' }),
+                        $.make('span', { className: 'NB-tangle-readstorydelay', 'data-var': 'delay' }),
+                        $.make('span', { className: 'NB-preference-slider-after NB-tangle-seconds' })
+                    ])
+                ]),
+                this.make_row('NB-preference-markreadstoryscroll', gettext('While scrolling'), gettext('Stories scrolled past in the story titles'), this.make_cards('mark_read_on_scroll_titles', [
+                    { value: 'true', caption: gettext('Mark as read'), art: 'scroll-read', tip: gettext('Mark stories as read when scrolled past') },
+                    { value: 'false', caption: gettext('Leave unread'), art: 'scroll-keep', tip: gettext('Don\'t automatically mark stories as read') }
+                ])),
+                this.make_row('NB-preference-daysofunread', gettext('Days of unreads'), null, [
+                    $.make('ul', { className: 'segmented-control NB-preference-daysofunread-control' + (!NEWSBLUR.Globals.is_archive ? ' NB-disabled' : '') }, [
+                        $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-default', 'data-value': 'default', role: 'button' }, gettext('Default')),
+                        $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-days', 'data-value': 'days', role: 'button' }, gettext('Days')),
+                        $.make('li', { className: 'NB-daysofunread-option NB-daysofunread-never', 'data-value': 'never', role: 'button' }, gettext('Never'))
+                    ]),
+                    $.make('div', { className: 'NB-daysofunread-slider-container' }, [
+                        $.make('input', {
+                            type: 'range',
+                            className: 'NB-daysofunread-slider',
+                            name: 'days_of_unread',
+                            min: '1',
+                            max: '400',
+                            value: NEWSBLUR.Globals.is_archive ? NEWSBLUR.Preferences.days_of_unread : NEWSBLUR.Globals.default_days_of_unread,
+                            disabled: !NEWSBLUR.Globals.is_archive
+                        }),
+                        $.make('div', { className: 'NB-daysofunread-slider-value' })
+                    ]),
+                    (!NEWSBLUR.Globals.is_archive && $.make('a', { className: 'NB-premium-archive-upgrade-notice NB-premium-link', href: '#', 'data-feature': 'stay-unread' },
+                        NEWSBLUR.utils.interpolate_nodes(gettext('%(badge)s Customize days of unreads'), {
+                            badge: $.make('span', { className: 'NB-archive-badge' }, gettext('Premium Archive'))
+                        })))
+                ])
+            ]),
+            this.make_group(gettext('Marking sites as read'), [
+                this.make_row('NB-preference-markreadconfirm', gettext('Ask first'), gettext('Confirming mark as read'), this.make_cards('mark_read_river_confirm', [
+                    { value: 'feeds_folders', caption: gettext('Sites and folders'), art: 'confirm-all', tip: gettext('Show confirmation when marking feeds or folders as read') },
+                    { value: 'folders_only', caption: gettext('Folders only'), art: 'confirm-folders', tip: gettext('Show confirmation only when marking folders as read') },
+                    { value: 'never', caption: gettext('Never'), art: 'confirm-never', tip: gettext('Mark as read without confirmation') }
+                ])),
+                this.make_row('NB-preference-markreadnextfeed', gettext('Afterwards'), gettext('After marking feed/folder read'), this.make_cards('markread_nextfeed', [
+                    { value: 'nextfeed', caption: gettext('Open the next one'), art: 'after-next', tip: gettext('Open the next site/folder') },
+                    { value: 'nothing', caption: gettext('Stay put'), art: 'after-stay', tip: gettext('Stay on the same feed/folder') }
+                ]))
+            ]),
+            this.make_group(gettext('Clicks'), [
+                this.make_row('NB-preference-openfeedaction', gettext('When opening a site'), null, this.make_cards('open_feed_action', [
+                    { value: 'newest', caption: gettext('Open the first story'), art: 'open-first', tip: gettext('Opening a site also opens its first story') },
+                    { value: 0, caption: gettext('Show all stories'), art: 'open-list', tip: gettext('Opening a site shows its stories and waits for you to pick one') }
+                ])),
+                this.make_row('NB-preference-doubleclickfeed', gettext('Double-clicking a site'), null, this.make_cards('doubleclick_feed', [
+                    { value: 'open', caption: gettext('New window'), art: 'dbl-open', tip: gettext('Open the site in a new window') },
+                    { value: 'open_and_read', caption: gettext('New window, marked read'), art: 'dbl-open-read', tip: gettext('Open the site in a new window and mark it as read') },
+                    { value: 'ignore', caption: gettext('Nothing'), art: 'dbl-nothing', tip: gettext('Don\'t do anything on double-clicks') }
+                ])),
+                this.make_row('NB-preference-doubleclickunread', gettext('Double-clicking an unread count'), null, this.make_cards('doubleclick_unread', [
+                    { value: 'markread', caption: gettext('Mark the site as read'), art: 'dblcount-read', tip: gettext('Double-clicking a site\'s unread count marks the whole site as read') },
+                    { value: 'ignore', caption: gettext('Nothing'), art: 'dbl-nothing', tip: gettext('Don\'t do anything on double-clicks') }
+                ]))
+            ])
+        ]);
+    },
+
+    make_keyboard_tab: function () {
+        var make_keys = function (keys) {
+            return _.map(keys, function (key) {
+                return $.make('div', { className: 'NB-keyboard-shortcut-key' }, [key]);
+            });
+        };
+
+        return this.make_tab('keyboard', [
+            (!NEWSBLUR.Globals.is_premium && $.make('div', { className: 'NB-preferences-notpremium' },
+                interpolate(_.escape(gettext('You must have a %(link_start)spremium account%(link_end)s to change keyboard shortcuts.')), {
+                    link_start: '<span class="NB-splash-link NB-premium-link">',
+                    link_end: '</span>'
+                }, true))),
+            this.make_group(gettext('Arrow keys'), [
+                this.make_row('NB-preference-keyboard-horizontalarrows', make_keys(['&#x2190;', '&#x2192;']), null, this.make_cards('keyboard_horizontalarrows', [
+                    { value: 'view', caption: gettext('Switch views'), art: 'keys-views', tip: gettext('Switch between views (original, feed, text, story)') },
+                    { value: 'site', caption: gettext('Next site'), art: 'keys-sites', tip: gettext('Open the next site/folder') }
+                ], !NEWSBLUR.Globals.is_premium)),
+                this.make_row('NB-preference-keyboard-verticalarrows', make_keys(['&#x2193;', '&#x2191;']), null, [
+                    this.make_cards('keyboard_verticalarrows', [
+                        { value: 'story', caption: gettext('Next story'), art: 'keys-stories', tip: gettext('Navigate between stories') },
+                        { value: 'scroll', caption: gettext('Scroll the story'), art: 'keys-scroll', tip: gettext('Scroll the story by the distance set below') }
+                    ], !NEWSBLUR.Globals.is_premium),
+                    // reader_preferences.js: slide_arrow_scroll_spacing_slider fills the
+                    // text on both sides of the slider from one translated sentence.
+                    $.make('label', { className: 'NB-pref-detail NB-pref-slider-line', 'for': 'NB-preference-keyboard_verticalarrows-1' }, [
+                        $.make('span', { className: 'NB-preference-slider-before' }),
+                        $.make('span', { className: 'NB-tangle-arrowscrollspacing-control NB-preference-slider', 'data-var': 'arrow' }),
+                        $.make('span', { className: 'NB-preference-slider-after NB-tangle-arrowscrollspacing' }),
+                        $.make('input', { name: 'arrow_scroll_spacing', value: NEWSBLUR.Preferences.arrow_scroll_spacing, type: 'hidden' })
+                    ])
+                ])
+            ]),
+            this.make_group(gettext('Space bar'), [
+                this.make_row('NB-preference-keyboard-spacebar', make_keys(['space']), null, [
+                    this.make_cards('space_bar_action', [
+                        { value: 'next_unread', caption: gettext('Next unread at the end'), art: 'space-bottom', tip: gettext('Open next unread story when bottom of story is visible') },
+                        { value: 'next_unread_50', caption: gettext('Next unread halfway'), art: 'space-half', tip: gettext('Open next unread story when story is half-way up') },
+                        { value: 'scroll_only', caption: gettext('Scroll only'), art: 'space-scroll', tip: gettext('Only page down in story, do not open next unread story') }
+                    ]),
+                    // reader_preferences.js: slide_space_scroll_spacing_slider fills the
+                    // text on both sides of the slider from one translated sentence.
+                    $.make('div', { className: 'NB-pref-detail NB-pref-slider-line' }, [
+                        $.make('span', { className: 'NB-preference-slider-before' }),
+                        $.make('span', { className: 'NB-tangle-spacescrollspacing-control NB-preference-slider', 'data-var': 'space' }),
+                        $.make('span', { className: 'NB-preference-slider-after NB-tangle-spacescrollspacing' }),
+                        $.make('input', { name: 'space_scroll_spacing', value: NEWSBLUR.Preferences.space_scroll_spacing, type: 'hidden' })
+                    ])
+                ])
+            ])
+        ]);
+    },
+
+    make_timezone_select: function () {
+        return $.make('select', { id: 'NB-preference-timezone-1', name: 'timezone' }, [
+            $.make('option', { value: 'Pacific/Midway' }, gettext('(GMT-11:00) Midway Island, Samoa')),
+            $.make('option', { value: 'America/Adak' }, gettext('(GMT-10:00) Hawaii-Aleutian')),
+            $.make('option', { value: 'Etc/GMT+10' }, gettext('(GMT-10:00) Hawaii')),
+            $.make('option', { value: 'Pacific/Marquesas' }, gettext('(GMT-09:30) Marquesas Islands')),
+            $.make('option', { value: 'Pacific/Gambier' }, gettext('(GMT-09:00) Gambier Islands')),
+            $.make('option', { value: 'America/Anchorage' }, gettext('(GMT-09:00) Alaska')),
+            $.make('option', { value: 'America/Ensenada' }, gettext('(GMT-08:00) Tijuana, Baja California')),
+            $.make('option', { value: 'Etc/GMT+8' }, gettext('(GMT-08:00) Pitcairn Islands')),
+            $.make('option', { value: 'America/Los_Angeles' }, gettext('(GMT-08:00) Pacific Time (US & Canada)')),
+            $.make('option', { value: 'America/Denver' }, gettext('(GMT-07:00) Mountain Time (US & Canada)')),
+            $.make('option', { value: 'America/Chihuahua' }, gettext('(GMT-07:00) Chihuahua, La Paz, Mazatlan')),
+            $.make('option', { value: 'America/Dawson_Creek' }, gettext('(GMT-07:00) Arizona')),
+            $.make('option', { value: 'America/Belize' }, gettext('(GMT-06:00) Saskatchewan, Central America')),
+            $.make('option', { value: 'America/Cancun' }, gettext('(GMT-06:00) Guadalajara, Mexico City')),
+            $.make('option', { value: 'Chile/EasterIsland' }, gettext('(GMT-06:00) Easter Island')),
+            $.make('option', { value: 'America/Chicago' }, gettext('(GMT-06:00) Central Time (US & Canada)')),
+            $.make('option', { value: 'America/New_York' }, gettext('(GMT-05:00) Eastern Time (US & Canada)')),
+            $.make('option', { value: 'America/Havana' }, gettext('(GMT-05:00) Cuba')),
+            $.make('option', { value: 'America/Bogota' }, gettext('(GMT-05:00) Bogota, Lima, Quito, Rio Branco')),
+            $.make('option', { value: 'America/Caracas' }, gettext('(GMT-04:30) Caracas')),
+            $.make('option', { value: 'America/Santiago' }, gettext('(GMT-04:00) Santiago')),
+            $.make('option', { value: 'America/La_Paz' }, gettext('(GMT-04:00) La Paz')),
+            $.make('option', { value: 'Atlantic/Stanley' }, gettext('(GMT-04:00) Faukland Islands')),
+            $.make('option', { value: 'America/Campo_Grande' }, gettext('(GMT-04:00) Brazil')),
+            $.make('option', { value: 'America/Goose_Bay' }, gettext('(GMT-04:00) Atlantic Time (Goose Bay)')),
+            $.make('option', { value: 'America/Glace_Bay' }, gettext('(GMT-04:00) Atlantic Time (Canada)')),
+            $.make('option', { value: 'America/St_Johns' }, gettext('(GMT-03:30) Newfoundland')),
+            $.make('option', { value: 'America/Araguaina' }, gettext('(GMT-03:00) UTC-3')),
+            $.make('option', { value: 'America/Montevideo' }, gettext('(GMT-03:00) Montevideo')),
+            $.make('option', { value: 'America/Miquelon' }, gettext('(GMT-03:00) Miquelon, St. Pierre')),
+            $.make('option', { value: 'America/Godthab' }, gettext('(GMT-03:00) Greenland')),
+            $.make('option', { value: 'America/Argentina/Buenos_Aires' }, gettext('(GMT-03:00) Buenos Aires')),
+            $.make('option', { value: 'America/Sao_Paulo' }, gettext('(GMT-03:00) Brasilia')),
+            $.make('option', { value: 'America/Noronha' }, gettext('(GMT-02:00) Mid-Atlantic')),
+            $.make('option', { value: 'Atlantic/Cape_Verde' }, gettext('(GMT-01:00) Cape Verde Is.')),
+            $.make('option', { value: 'Atlantic/Azores' }, gettext('(GMT-01:00) Azores')),
+            $.make('option', { value: 'Europe/Belfast' }, gettext('(GMT) Greenwich Mean Time : Belfast')),
+            $.make('option', { value: 'Europe/Dublin' }, gettext('(GMT) Greenwich Mean Time : Dublin')),
+            $.make('option', { value: 'Europe/Lisbon' }, gettext('(GMT) Greenwich Mean Time : Lisbon')),
+            $.make('option', { value: 'Europe/London' }, gettext('(GMT) Greenwich Mean Time : London')),
+            $.make('option', { value: 'Africa/Abidjan' }, gettext('(GMT) Monrovia, Reykjavik')),
+            $.make('option', { value: 'Europe/Amsterdam' }, gettext('(GMT+01:00) Amsterdam, Berlin, Stockholm')),
+            $.make('option', { value: 'Europe/Belgrade' }, gettext('(GMT+01:00) Belgrade, Budapest, Prague')),
+            $.make('option', { value: 'Europe/Brussels' }, gettext('(GMT+01:00) Brussels, Copenhagen, Paris')),
+            $.make('option', { value: 'Africa/Algiers' }, gettext('(GMT+01:00) West Central Africa')),
+            $.make('option', { value: 'Africa/Windhoek' }, gettext('(GMT+01:00) Windhoek')),
+            $.make('option', { value: 'Asia/Beirut' }, gettext('(GMT+02:00) Beirut')),
+            $.make('option', { value: 'Africa/Cairo' }, gettext('(GMT+02:00) Cairo')),
+            $.make('option', { value: 'Asia/Gaza' }, gettext('(GMT+02:00) Gaza')),
+            $.make('option', { value: 'Africa/Blantyre' }, gettext('(GMT+02:00) Harare, Pretoria')),
+            $.make('option', { value: 'Asia/Jerusalem' }, gettext('(GMT+02:00) Jerusalem')),
+            $.make('option', { value: 'Europe/Minsk' }, gettext('(GMT+02:00) Minsk, Kyiv')),
+            $.make('option', { value: 'Asia/Damascus' }, gettext('(GMT+02:00) Syria')),
+            $.make('option', { value: 'Europe/Moscow' }, gettext('(GMT+03:00) Moscow, St. Petersburg')),
+            $.make('option', { value: 'Africa/Addis_Ababa' }, gettext('(GMT+03:00) Nairobi')),
+            $.make('option', { value: 'Asia/Tehran' }, gettext('(GMT+03:30) Tehran')),
+            $.make('option', { value: 'Asia/Dubai' }, gettext('(GMT+04:00) Abu Dhabi, Muscat')),
+            $.make('option', { value: 'Asia/Yerevan' }, gettext('(GMT+04:00) Yerevan')),
+            $.make('option', { value: 'Asia/Kabul' }, gettext('(GMT+04:30) Kabul')),
+            $.make('option', { value: 'Asia/Yekaterinburg' }, gettext('(GMT+05:00) Ekaterinburg')),
+            $.make('option', { value: 'Asia/Tashkent' }, gettext('(GMT+05:00) Tashkent')),
+            $.make('option', { value: 'Asia/Kolkata' }, gettext('(GMT+05:30) Chennai, Mumbai, New Delhi')),
+            $.make('option', { value: 'Asia/Katmandu' }, gettext('(GMT+05:45) Kathmandu')),
+            $.make('option', { value: 'Asia/Dhaka' }, gettext('(GMT+06:00) Astana, Dhaka')),
+            $.make('option', { value: 'Asia/Novosibirsk' }, gettext('(GMT+06:00) Novosibirsk')),
+            $.make('option', { value: 'Asia/Rangoon' }, gettext('(GMT+06:30) Yangon (Rangoon)')),
+            $.make('option', { value: 'Asia/Bangkok' }, gettext('(GMT+07:00) Bangkok, Hanoi, Jakarta')),
+            $.make('option', { value: 'Asia/Krasnoyarsk' }, gettext('(GMT+07:00) Krasnoyarsk')),
+            $.make('option', { value: 'Asia/Hong_Kong' }, gettext('(GMT+08:00) Beijing, Chongqing, Hong Kong')),
+            $.make('option', { value: 'Asia/Irkutsk' }, gettext('(GMT+08:00) Irkutsk, Ulaan Bataar')),
+            $.make('option', { value: 'Australia/Perth' }, gettext('(GMT+08:00) Perth')),
+            $.make('option', { value: 'Australia/Eucla' }, gettext('(GMT+08:45) Eucla')),
+            $.make('option', { value: 'Asia/Tokyo' }, gettext('(GMT+09:00) Osaka, Sapporo, Tokyo')),
+            $.make('option', { value: 'Asia/Seoul' }, gettext('(GMT+09:00) Seoul')),
+            $.make('option', { value: 'Asia/Yakutsk' }, gettext('(GMT+09:00) Yakutsk')),
+            $.make('option', { value: 'Australia/Adelaide' }, gettext('(GMT+09:30) Adelaide')),
+            $.make('option', { value: 'Australia/Darwin' }, gettext('(GMT+09:30) Darwin')),
+            $.make('option', { value: 'Australia/Brisbane' }, gettext('(GMT+10:00) Brisbane')),
+            $.make('option', { value: 'Australia/Sydney' }, gettext('(GMT+10:00) Sydney, Hobart')),
+            $.make('option', { value: 'Asia/Vladivostok' }, gettext('(GMT+10:00) Vladivostok')),
+            $.make('option', { value: 'Australia/Lord_Howe' }, gettext('(GMT+10:30) Lord Howe Island')),
+            $.make('option', { value: 'Etc/GMT-11' }, gettext('(GMT+11:00) Solomon Is., New Caledonia')),
+            $.make('option', { value: 'Asia/Magadan' }, gettext('(GMT+11:00) Magadan')),
+            $.make('option', { value: 'Pacific/Norfolk' }, gettext('(GMT+11:30) Norfolk Island')),
+            $.make('option', { value: 'Asia/Anadyr' }, gettext('(GMT+12:00) Anadyr, Kamchatka')),
+            $.make('option', { value: 'Pacific/Auckland' }, gettext('(GMT+12:00) Auckland, Wellington')),
+            $.make('option', { value: 'Etc/GMT-12' }, gettext('(GMT+12:00) Fiji, Kamchatka, Marshall Is.')),
+            $.make('option', { value: 'Pacific/Chatham' }, gettext('(GMT+12:45) Chatham Islands')),
+            $.make('option', { value: 'Pacific/Tongatapu' }, gettext('(GMT+13:00) Nuku\'alofa')),
+            $.make('option', { value: 'Pacific/Kiritimati' }, gettext('(GMT+14:00) Kiritimati'))
+        ]);
+    },
+
+    // =================
+    // = Theme chooser =
+    // =================
+
+    // reader_preferences.js: every theme choice in one place. A tile picks that theme outright and
+    // Auto follows the device. Below the tiles, Auto's light theme and dark theme are chosen
+    // separately, and the Auto tile is drawn as one half of each. Choices take effect at once,
+    // like the theme row in the manage menu (reader.js switch_theme), so there is nothing to save.
+    make_theme_chooser: function () {
+        var names = this.theme_names();
+        var make_preview = function (theme) {
+            return $.make('div', { className: 'NB-theme-preview NB-theme-preview-' + theme }, [
+                $.make('div', { className: 'NB-theme-preview-feeds' }, [
+                    $.make('div', { className: 'NB-theme-preview-feed' }),
+                    $.make('div', { className: 'NB-theme-preview-feed NB-selected' }),
+                    $.make('div', { className: 'NB-theme-preview-feed' }),
+                    $.make('div', { className: 'NB-theme-preview-feed' })
+                ]),
+                $.make('div', { className: 'NB-theme-preview-stories' }, [
+                    $.make('div', { className: 'NB-theme-preview-story' }),
+                    $.make('div', { className: 'NB-theme-preview-story NB-selected' }),
+                    $.make('div', { className: 'NB-theme-preview-story' }),
+                    $.make('div', { className: 'NB-theme-preview-story' })
+                ])
+            ]);
+        };
+        var make_auto_side = function (side, title, themes) {
+            return $.make('div', { className: 'NB-theme-auto-side NB-theme-auto-side-' + side }, [
+                $.make('div', { className: 'NB-theme-auto-side-title' }, title),
+                $.make('ul', { className: 'segmented-control NB-theme-auto-control', role: 'radiogroup', 'aria-label': title }, _.map(themes, function (theme) {
+                    return $.make('li', { className: 'NB-theme-auto-option', role: 'radio', tabindex: '0', 'data-theme': theme }, [
+                        $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-' + theme }),
+                        $.make('span', names[theme])
+                    ]);
+                }))
+            ]);
+        };
+
+        return $.make('div', { className: 'NB-theme-chooser' }, [
+            $.make('div', { className: 'NB-theme-choices', role: 'radiogroup', 'aria-label': gettext('Theme') }, _.map(['auto', 'light', 'sepia', 'gray', 'dark'], function (theme) {
+                return $.make('div', { className: 'NB-theme-choice NB-theme-choice-' + theme, role: 'radio', tabindex: '0', 'data-theme': theme }, [
+                    theme == 'auto' ? $.make('div', { className: 'NB-theme-preview-auto' }, [
+                        make_preview('light').addClass('NB-theme-preview-day'),
+                        make_preview('dark').addClass('NB-theme-preview-night')
+                    ]) : make_preview(theme),
+                    $.make('div', { className: 'NB-theme-choice-name' }, names[theme])
+                ]);
+            })),
+            $.make('div', { className: 'NB-theme-auto' }, [
+                $.make('div', { className: 'NB-theme-auto-title' }, gettext('Auto follows system appearance')),
+                $.make('div', { className: 'NB-theme-auto-sides' }, [
+                    make_auto_side('light', gettext('Light appearance'), ['light', 'sepia']),
+                    make_auto_side('dark', gettext('Dark appearance'), ['gray', 'dark'])
+                ])
+            ])
+        ]);
+    },
+
+    theme_names: function () {
+        return {
+            'auto': gettext('Auto'),
+            'light': gettext('Light'),
+            'sepia': pgettext('theme', 'Warm'),
+            'gray': pgettext('theme', 'Gray'),
+            'dark': gettext('Dark')
+        };
+    },
+
+    update_theme_chooser: function () {
+        var theme = NEWSBLUR.assets.preference('theme');
+        var in_effect = NEWSBLUR.assets.theme();
+        var auto_light = NEWSBLUR.assets.preference('theme_light') == 'sepia' ? 'sepia' : 'light';
+        var auto_dark = NEWSBLUR.assets.preference('theme_dark') == 'gray' ? 'gray' : 'dark';
+        var $chooser = $('.NB-theme-chooser', this.$modal);
+
+        $('.NB-theme-choice', $chooser).each(function () {
+            var active = $(this).data('theme') == theme;
+            $(this).toggleClass('NB-active', active).attr('aria-checked', active ? 'true' : 'false');
+        });
+        $('.NB-theme-auto-option', $chooser).each(function () {
+            var option = $(this).data('theme');
+            var active = option == auto_light || option == auto_dark;
+            $(this).toggleClass('NB-active', active).attr('aria-checked', active ? 'true' : 'false');
+        });
+        // reader_preferences.js: the Auto tile shows the two themes it switches between.
+        $('.NB-theme-preview-day', $chooser).removeClass('NB-theme-preview-light NB-theme-preview-sepia').addClass('NB-theme-preview-' + auto_light);
+        $('.NB-theme-preview-night', $chooser).removeClass('NB-theme-preview-gray NB-theme-preview-dark').addClass('NB-theme-preview-' + auto_dark);
+        // reader_preferences.js: under Auto, mark the side the device has NewsBlur on right now.
+        $('.NB-theme-auto', $chooser).toggleClass('NB-active', theme == 'auto');
+        $('.NB-theme-auto-side-light', $chooser).toggleClass('NB-in-effect', theme == 'auto' && (in_effect == 'light' || in_effect == 'sepia'));
+        $('.NB-theme-auto-side-dark', $chooser).toggleClass('NB-in-effect', theme == 'auto' && (in_effect == 'gray' || in_effect == 'dark'));
+    },
+
+    watch_system_theme: function () {
+        if (!window.matchMedia) return;
+        this.system_theme_query = window.matchMedia('(prefers-color-scheme: dark)');
+        // reader_preferences.js: reader.js load_theme reacts to the same change. Deferring lets it
+        // finish first, so the chooser marks the side that is now showing.
+        this.on_system_theme_change = _.bind(function () {
+            _.defer(_.bind(this.update_theme_chooser, this));
+        }, this);
+        this.system_theme_query.addEventListener('change', this.on_system_theme_change);
+    },
+
+    // reader_preferences.js: common/modal.js calls this as the dialog closes, while its fields can
+    // still be read, so a change made a moment before closing is saved too.
+    handle_modal_closed: function () {
+        if (this.save_timer) {
+            this.save_preferences();
+        }
+        NEWSBLUR.utils.hide_tip();
+        if (this.system_theme_query) {
+            this.system_theme_query.removeEventListener('change', this.on_system_theme_change);
+        }
     },
 
     make_autoopen_folders: function () {
@@ -1196,8 +759,26 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         }
     },
 
+    // reader_preferences.js: mark the card that matches each field kept out of sight (make_field_cards).
+    update_field_cards: function () {
+        var $modal = this.$modal;
+        var mark = function ($card, active) {
+            $card.toggleClass('NB-active', active).attr('aria-checked', active ? 'true' : 'false');
+        };
+        $('.NB-pref-field-card[data-field]', $modal).each(function () {
+            var checked = $('input[name=' + $(this).attr('data-field') + ']', $modal).is(':checked');
+            mark($(this), String(checked) == $(this).attr('data-checked'));
+        });
+        var animations = $('input[name=animations]:checked', $modal).val() != 'false';
+        var motion = !animations ? 'none' : ($('input[name=reduce_motion]', $modal).is(':checked') ? 'reduced' : 'full');
+        $('.NB-pref-field-card[data-motion]', $modal).each(function () {
+            mark($(this), $(this).attr('data-motion') == motion);
+        });
+    },
+
     select_preferences: function () {
         var $modal = this.$modal;
+        this.update_theme_chooser();
         $('select[name=language]', $modal).val(NEWSBLUR.language_preference || 'auto');
 
         if (NEWSBLUR.Preferences.timezone) {
@@ -1774,19 +1355,33 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         return preferences;
     },
 
+    // reader_preferences.js: there is no Save button. A change is saved a moment after it is made,
+    // and only the preferences that differ from the last save are sent.
     save_preferences: function () {
         var self = this;
+        clearTimeout(this.save_timer);
+        this.save_timer = null;
         var form = this.serialize_preferences();
+        var original = this.original_preferences || {};
+        var changed = {};
+        _.each(form, function (value, name) {
+            if (!_.isEqual(value, original[name])) changed[name] = value;
+        });
+        if (_.isEmpty(changed)) {
+            this.set_status('saved');
+            return;
+        }
         $('.NB-preference-error', this.$modal).text('');
-        $('.NB-modal-submit-button', this.$modal).text(gettext('Saving...')).attr('disabled', true).addClass('NB-disabled');
+        this.set_status('saving');
 
-        this.model.save_preferences(form, function (data) {
+        this.model.save_preferences(changed, function (data) {
             if (data && data.code < 0) {
-                // reader_preferences.js: Let the user retry instead of leaving the button stuck on Saving.
-                self.enable_save();
+                // reader_preferences.js: the next change tries these again, since they still differ.
+                self.set_status('error');
                 return;
             }
-            if (form.language !== NEWSBLUR.language_preference) { window.location.reload(); return; }
+            self.original_preferences = form;
+            if ('language' in changed) { window.location.reload(); return; }
             NEWSBLUR.reader.switch_feed_view_unread_view();
             NEWSBLUR.reader.apply_story_styling(true);
             NEWSBLUR.reader.apply_tipsy_titles();
@@ -1794,31 +1389,36 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             NEWSBLUR.reader.add_body_classes();
             NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
             NEWSBLUR.app.sidebar_header.count();
-            if (self.original_preferences['feed_order'] != form['feed_order'] ||
-                self.original_preferences['folder_counts'] != form['folder_counts']) {
+            if ('feed_order' in changed || 'folder_counts' in changed) {
                 NEWSBLUR.app.feed_list.make_feeds();
                 NEWSBLUR.app.feed_list.make_social_feeds();
             }
-            if (self.original_preferences['show_global_shared_stories'] != form['show_global_shared_stories'] ||
-                self.original_preferences['show_infrequent_site_stories'] != form['show_infrequent_site_stories'] ||
-                self.original_preferences['show_widely_read_stories'] != form['show_widely_read_stories'] ||
-                self.original_preferences['show_long_reads'] != form['show_long_reads'] ||
-                self.original_preferences['show_good_reads'] != form['show_good_reads'] ||
-                self.original_preferences['briefing_enabled'] != form['briefing_enabled']) {
+            if (_.any(['show_global_shared_stories', 'show_infrequent_site_stories', 'show_widely_read_stories',
+                       'show_long_reads', 'show_good_reads', 'briefing_enabled'], function (name) { return name in changed; })) {
                 NEWSBLUR.app.feed_list.toggle_filter_feeds();
             }
-            if (self.original_preferences['ssl'] != form['ssl']) {
+            if ('ssl' in changed) {
                 NEWSBLUR.reader.check_and_load_ssl();
             }
-            if (self.original_preferences['days_of_unread'] != form['days_of_unread']) {
+            if ('days_of_unread' in changed) {
                 NEWSBLUR.reader.force_feeds_refresh();
             }
-            if (form['realtime_new_stories'] === false) {
+            if (changed['realtime_new_stories'] === false) {
                 // reader_preferences.js: turning the pill off drops the stories it was holding.
                 NEWSBLUR.reader.clear_realtime_new_stories();
             }
-            self.close();
+            self.set_status('saved');
         });
+    },
+
+    set_status: function (status) {
+        var messages = {
+            'saving': gettext('Saving...'),
+            'saved': gettext('Saved'),
+            'error': gettext('That change could not be saved')
+        };
+        $('.NB-preferences-status', this.$modal).text(messages[status]).addClass('NB-visible')
+            .toggleClass('NB-saved', status == 'saved').toggleClass('NB-error', status == 'error');
     },
 
     close_and_load_account: function () {
@@ -1887,23 +1487,21 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
 
         $.targetIs(e, { tagSelector: '.NB-modal-tab' }, function ($t, $p) {
             e.preventDefault();
-            var newtab;
-            if ($t.hasClass('NB-modal-tab-general')) {
-                newtab = 'general';
-            } else if ($t.hasClass('NB-modal-tab-feeds')) {
-                newtab = 'feeds';
-            } else if ($t.hasClass('NB-modal-tab-stories')) {
-                newtab = 'stories';
-            } else if ($t.hasClass('NB-modal-tab-keyboard')) {
-                newtab = 'keyboard';
-            }
+            var newtab = $t.attr('class').match(/NB-modal-tab-(\w+)/)[1];
             self.resize_modal();
             self.switch_tab(newtab);
         });
-        $.targetIs(e, { tagSelector: '.NB-modal-submit-button' }, function ($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-pref-field-card' }, function ($t, $p) {
             e.preventDefault();
-
-            self.save_preferences();
+            var motion = $t.attr('data-motion');
+            if (motion) {
+                $('input[name=animations][value=' + (motion == 'none' ? 'false' : 'true') + ']', self.$modal).prop('checked', true);
+                $('input[name=reduce_motion]', self.$modal).prop('checked', motion == 'reduced');
+            } else {
+                $('input[name=' + $t.attr('data-field') + ']', self.$modal).prop('checked', $t.attr('data-checked') == 'true');
+            }
+            self.update_field_cards();
+            self.enable_save();
         });
 
         $.targetIs(e, { tagSelector: '.NB-add-url-submit' }, function ($t, $p) {
@@ -1936,12 +1534,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             self.flash_clustering_upgrade_notice();
         });
-        $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-order li' }, function ($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-preference-view-setting-order li' }, function ($t, $p) {
             e.preventDefault();
             var order = $t.hasClass('NB-preference-view-setting-order-oldest') ? 'oldest' : 'newest';
             self.change_view_setting('order', order);
         });
-        $.targetIs(e, { tagSelector: '.segmented-control.NB-preference-view-setting-read-filter li' }, function ($t, $p) {
+        $.targetIs(e, { tagSelector: '.NB-preference-view-setting-read-filter li' }, function ($t, $p) {
             e.preventDefault();
             var read_filter = $t.hasClass('NB-preference-view-setting-read-filter-unread') ? 'unread' : 'all';
             self.change_view_setting('read_filter', read_filter);
@@ -1962,6 +1560,16 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             e.preventDefault();
             self.handle_daysofunread_option_click($t);
         });
+        $.targetIs(e, { tagSelector: '.NB-theme-choice' }, function ($t, $p) {
+            e.preventDefault();
+            NEWSBLUR.reader.switch_theme($t.data('theme'));
+            self.update_theme_chooser();
+        });
+        $.targetIs(e, { tagSelector: '.NB-theme-auto-option' }, function ($t, $p) {
+            e.preventDefault();
+            NEWSBLUR.reader.switch_auto_theme($t.data('theme'));
+            self.update_theme_chooser();
+        });
     },
 
     handle_change: function () {
@@ -1971,6 +1579,20 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         $('input[name=story_button_placement]', this.$modal).bind('change', function () {
             self.update_story_sideoption_sticky_preference();
             self.resize_modal();
+        });
+
+        // reader_preferences.js: these cards are not form fields, so give them the keys a radio has.
+        $('.NB-theme-choice, .NB-theme-auto-option, .NB-pref-field-card, li.NB-pref-card', this.$modal).bind('keydown', function (e) {
+            if (e.which == 13 || e.which == 32) {
+                e.preventDefault();
+                $(this).click();
+            }
+        });
+        this.watch_system_theme();
+        // reader_preferences.js: a card's tooltip (reader_utils.js show_tip) would be left behind
+        // when the tab scrolls its card away.
+        $('.NB-tab', this.$modal).bind('scroll', function () {
+            NEWSBLUR.utils.hide_tip();
         });
 
         // Days of unread slider change handler
@@ -1984,12 +1606,12 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         });
     },
 
+    // reader_preferences.js: every control calls this when it changes. The short wait gathers a
+    // dragged slider or a quick run of clicks into one request.
     enable_save: function () {
-        $('.NB-modal-submit-button', this.$modal).removeAttr('disabled').removeClass('NB-disabled').text(gettext('Save Preferences'));
-    },
-
-    disable_save: function () {
-        $('.NB-modal-submit-button', this.$modal).attr('disabled', true).addClass('NB-disabled').text(gettext('Make changes above...'));
+        this.set_status('saving');
+        clearTimeout(this.save_timer);
+        this.save_timer = setTimeout(_.bind(this.save_preferences, this), 400);
     }
 
 });
