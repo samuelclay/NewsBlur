@@ -2671,6 +2671,10 @@ msgstr "Tamam!<br>E-posta önümüzdeki birkaç dakika içinde gönderilmeli."
 msgid "Graceful iFrame Busting"
 msgstr "Zarif iFrame engelleme"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Gri"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Harika haber, %(username)s!"
@@ -6571,6 +6575,10 @@ msgstr "Daha fazla MCP özelliği mi istiyorsunuz?"
 msgid "Want to unlock even more?"
 msgstr "Daha da fazlasının kilidini açmak ister misiniz?"
 
+msgid "Warm"
+msgstr "Sıcak"
+
+msgctxt "theme"
 msgid "Warm"
 msgstr "Sıcak"
 

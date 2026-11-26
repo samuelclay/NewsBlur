@@ -938,6 +938,12 @@ msgstr "1 年"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 小時"
+
+msgid "24-hour"
+msgstr "24 小時"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
 
@@ -988,6 +994,9 @@ msgstr "分享文章的 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "更清晰、更貼近的音質"
 
+msgid "A folder"
+msgstr "一個資料夾"
+
 msgid "A folder of feeds read as one stream"
 msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
 
@@ -1001,11 +1010,23 @@ msgstr "已將 %(value_1)s 贈送的禮物套用至你的帳戶。"
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "第二次掃描會使用你的提示，在頁面上找到正確的模式。"
 
+msgid "A short list of titles above the open story"
+msgstr "位於開啟文章上方的精簡標題清單"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "一個「喜歡」就能勝過任意數量的「不喜歡」"
 
 msgid "A story diff with additions and deletions"
 msgstr "顯示新增與刪除內容的文章差異"
+
+msgid "A story is read as soon as it is selected"
+msgstr "選取文章後，該文章會立即標記為已讀"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "文章開啟達下方設定的時間後，就會標記為已讀"
+
+msgid "A to Z"
+msgstr "A 到 Z"
 
 msgid "AI Filter"
 msgstr "AI 篩選器"
@@ -1166,6 +1187,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s 秒後"
 
+msgid "After a delay"
+msgstr "延遲後"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "讀者授權你的應用程式後，NewsBlur 會將他們導向此網址，並附上授權碼。"
 
@@ -1174,6 +1198,9 @@ msgstr "將訂閱來源／資料夾標記為已讀後"
 
 msgid "Afternoon"
 msgstr "下午"
+
+msgid "Afterwards"
+msgstr "之後"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1303,9 +1330,6 @@ msgstr "Android 通知需要 Premium Archive"
 msgid "Animals"
 msgstr "動物"
 
-msgid "Animations"
-msgstr "動畫"
-
 msgid "Any"
 msgstr "不限"
 
@@ -1378,6 +1402,9 @@ msgstr "這些應用程式免費嗎？"
 msgid "Are the apps open source?"
 msgstr "這些應用程式是開放原始碼嗎？"
 
+msgid "Arrow keys"
+msgstr "方向鍵"
+
 msgid "Arrows"
 msgstr "箭頭"
 
@@ -1416,6 +1443,9 @@ msgstr "提出問題……"
 
 msgid "Ask about your browsing history..."
 msgstr "詢問你的瀏覽記錄…"
+
+msgid "Ask first"
+msgstr "先詢問"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1464,6 +1494,9 @@ msgstr "自動"
 
 msgid "Auto Mark as Read"
 msgstr "自動標記為已讀"
+
+msgid "Auto follows system appearance"
+msgstr "自動跟隨系統外觀"
 
 msgid "Auto mark as read"
 msgstr "自動標記為已讀"
@@ -1536,6 +1569,15 @@ msgstr "根據你的興趣"
 msgid "Begin Training"
 msgstr "開始訓練"
 
+msgid "Behavior"
+msgstr "行為"
+
+msgid "Below the story"
+msgstr "文章下方"
+
+msgid "Beside the story"
+msgstr "在文章旁"
+
 msgid "Bio"
 msgstr "個人簡介"
 
@@ -1584,6 +1626,9 @@ msgstr "Blurblog 標題"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog、分享的文章和留言"
 
 msgid "Bookmarklet"
 msgstr "書籤小工具"
@@ -1649,14 +1694,23 @@ msgstr "瀏覽器"
 msgid "Browser Extensions"
 msgstr "瀏覽器擴充功能"
 
+msgid "Browser menu"
+msgstr "瀏覽器選單"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr "正在開發任何人都能使用的公開 RSS 閱讀器嗎？你可能有資格免費取得 NewsBlur Premium Pro 帳號。"
+
+msgid "Built-in story lists in the sidebar"
+msgstr "側邊欄中的內建文章清單"
 
 msgid "Bullet points"
 msgstr "條列式重點"
 
 msgid "Bullets"
 msgstr "重點條列"
+
+msgid "Buttons"
+msgstr "按鈕"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1822,9 +1876,6 @@ msgstr "選擇撰寫簡報的 AI 模型"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "選擇要用來製作簡報的訂閱來源"
 
-msgid "Choose which feeds to include"
-msgstr "選擇要納入的訂閱來源"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "選擇要顯示在簡報中的區段"
 
@@ -1900,11 +1951,17 @@ msgstr "點選任一來源即可改讀該版本，或一次將所有重複文章
 msgid "Click to block"
 msgstr "點擊以封鎖"
 
+msgid "Clicks"
+msgstr "點擊"
+
 msgid "Client ID"
 msgstr "用戶端 ID"
 
 msgid "Client secret"
 msgstr "用戶端密鑰"
+
+msgid "Clock"
+msgstr "時鐘"
 
 msgid "Close"
 msgstr "關閉"
@@ -1945,6 +2002,9 @@ msgstr "收合文章"
 msgid "Collapsed"
 msgstr "已收合"
 
+msgid "Collapsed folders"
+msgstr "已收合的資料夾"
+
 msgid "Color"
 msgstr "顏色"
 
@@ -1963,8 +2023,8 @@ msgstr "指令會輸出 JSON，可直接透過管線傳給 jq。"
 msgid "Comment"
 msgstr "留言"
 
-msgid "Comment on stories"
-msgstr "留言回覆文章"
+msgid "Comments"
+msgstr "留言"
 
 msgid "Comments:"
 msgstr "留言："
@@ -2174,9 +2234,6 @@ msgstr "自訂日期範圍"
 msgid "Custom icon"
 msgstr "自訂圖示"
 
-msgid "Customizable writing style and length"
-msgstr "可自訂的寫作風格和長度"
-
 msgid "Customize auto-read by site or folder"
 msgstr "依網站或資料夾自訂自動標記為已讀"
 
@@ -2212,6 +2269,9 @@ msgstr "每日文章分布"
 msgid "Dark"
 msgstr "深色"
 
+msgid "Dark appearance"
+msgstr "深色外觀"
+
 msgid "Dark mode and reading customization"
 msgstr "深色模式與閱讀自訂設定"
 
@@ -2242,9 +2302,6 @@ msgstr "預設"
 
 msgid "Default Blocklist"
 msgstr "預設封鎖清單"
-
-msgid "Default folder"
-msgstr "預設資料夾"
 
 msgid "Default layout"
 msgstr "預設版面配置"
@@ -2326,15 +2383,6 @@ msgstr "詳細"
 
 msgid "Devices"
 msgstr "裝置"
-
-msgid "Disable daily briefings"
-msgstr "停用每日簡報"
-
-msgid "Disable social features"
-msgstr "停用社交功能"
-
-msgid "Disable story clustering"
-msgstr "停用文章分群"
 
 msgid "Disable the highlighter"
 msgstr "停用醒目提示"
@@ -2440,6 +2488,9 @@ msgstr "完成！"
 
 msgid "Double-clicking a site"
 msgstr "按兩下網站"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "按兩下網站的未讀數量，即可將該網站全部標記為已讀"
 
 msgid "Double-clicking an unread count"
 msgstr "按兩下未讀數量"
@@ -2567,17 +2618,11 @@ msgstr "為 YouTube 影片啟用字幕"
 msgid "Enable daily briefings"
 msgstr "啟用每日簡報"
 
-msgid "Enable highlighting"
-msgstr "啟用醒目提示"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "請在瀏覽器設定中啟用麥克風，以使用語音輸入"
 
 msgid "Enable social features"
 msgstr "啟用社交功能"
-
-msgid "Enable story clustering"
-msgstr "啟用文章分群"
 
 msgid "Enable the sites you want"
 msgstr "啟用你想要的網站"
@@ -2662,6 +2707,9 @@ msgstr "晚上"
 msgid "Every"
 msgstr "每"
 
+msgid "Every folder"
+msgstr "每個資料夾"
+
 msgid "Every new story is archived permanently"
 msgstr "每篇新文章都會永久封存"
 
@@ -2674,10 +2722,19 @@ msgstr "每篇文章都會永久封存並可供搜尋"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "所有文章都會永久封存並可搜尋。你的個人知識庫。"
 
+msgid "Every story as the site published it in its feed"
+msgstr "網站在訂閱來源中發布的每篇文章"
+
+msgid "Every story in full, one after another"
+msgstr "依序聆聽每篇文章的完整內容"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "每個標籤都有專屬的 RSS 訂閱來源。分享連結，或將其傳送至 IFTTT 或 Zapier。"
 
 msgid "Everybody"
+msgstr "所有人"
+
+msgid "Everyone"
 msgstr "所有人"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3052,6 +3109,9 @@ msgstr "資料夾未讀數量"
 msgid "Folders"
 msgstr "資料夾"
 
+msgid "Folders only"
+msgstr "僅資料夾"
+
 msgid "Folders, feeds, and story titles"
 msgstr "資料夾、訂閱來源和文章標題"
 
@@ -3215,6 +3275,9 @@ msgstr "朋友 &amp; 追蹤者"
 
 msgid "Friends and Followers"
 msgstr "朋友與追蹤者"
+
+msgid "Friends only"
+msgstr "僅限朋友"
 
 msgctxt "date range"
 msgid "From"
@@ -3402,6 +3465,10 @@ msgstr "實用工具 &amp; 行動應用程式"
 msgid "Google News"
 msgstr "Google 新聞"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "灰色"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "綠色標示新增內容，紅色標示刪除內容。"
 
@@ -3419,6 +3486,9 @@ msgstr "將不同訂閱來源中的重複文章分群"
 
 msgid "Group stories that share:"
 msgstr "將符合以下條件的文章分組："
+
+msgid "Grouped"
+msgstr "群組"
 
 msgid "Groups similar stories from different feeds"
 msgstr "將不同訂閱來源中的相似文章分群"
@@ -3491,6 +3561,9 @@ msgstr "反白標示正在朗讀的段落"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "醒目標示標題中的詞語，以便針對特定詞組進行訓練。"
 
+msgid "Highlighter"
+msgstr "螢光標示"
+
 msgid "History"
 msgstr "歷史記錄"
 
@@ -3526,6 +3599,9 @@ msgstr "情感表現程度"
 
 msgid "How often"
 msgstr "頻率"
+
+msgid "How panes and stories move"
+msgstr "窗格與文章的移動方式"
 
 msgid "I'm Following"
 msgstr "我追蹤的人"
@@ -3605,6 +3681,9 @@ msgstr "在新分頁中開啟 <b>%(config_page)s</b>，搜尋 <b>%(setting)s</b>
 
 msgid "In a new window"
 msgstr "在新視窗中"
+
+msgid "In a pill"
+msgstr "膠囊狀"
 
 msgid "In rotation"
 msgstr "已加入輪替"
@@ -3737,6 +3816,9 @@ msgstr "閱讀時保持右側按鈕顯示"
 msgid "Keep stories separate"
 msgstr "分開顯示文章"
 
+msgid "Keep unread counts out of the window title"
+msgstr "視窗標題不顯示未讀數量"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "掌握 NewsBlur 的最新消息"
 
@@ -3762,11 +3844,20 @@ msgstr "關鍵字區段"
 msgid "Language"
 msgstr "語言"
 
+msgid "Language and time"
+msgstr "語言與時間"
+
 msgid "Large image thumbnail on the left"
 msgstr "左側顯示大型圖片縮圖"
 
 msgid "Large image thumbnail on the right"
 msgstr "右側顯示大型圖片縮圖"
+
+msgid "Large, left"
+msgstr "大型，靠左"
+
+msgid "Large, right"
+msgstr "大，靠右"
 
 msgid "Last 30 Days"
 msgstr "最近 30 天"
@@ -3811,6 +3902,9 @@ msgstr "來找些網站閱讀吧。"
 msgid "Light"
 msgstr "淺色"
 
+msgid "Light appearance"
+msgstr "淺色外觀"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3836,6 +3930,12 @@ msgstr "直接連結至原始文章"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "連結至我的 Blurblog 和分享的留言"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "文章中的連結會在新視窗或新分頁中開啟"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "文章中的連結會在此視窗開啟，取代 NewsBlur"
 
 msgid "List"
 msgstr "清單"
@@ -3935,9 +4035,6 @@ msgstr "MCP 伺服器存取需要 Premium Archive 或 Premium Pro。"
 
 msgid "Magazine"
 msgstr "雜誌"
-
-msgid "Make changes above..."
-msgstr "變更上方設定…"
 
 msgid "Manage Categories"
 msgstr "管理分類"
@@ -4052,9 +4149,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "將過去 <b>%(value_1)s 天</b>的文章標記為未讀"
 
-msgid "Mark stories read on scroll"
-msgstr "捲動時將文章標記為已讀"
-
 msgid "Mark the site as read"
 msgstr "將網站標記為已讀"
 
@@ -4066,6 +4160,12 @@ msgstr "正在標記為已讀…"
 
 msgid "Marking as unread..."
 msgstr "正在標記為未讀……"
+
+msgid "Marking sites as read"
+msgstr "將網站標記為已讀"
+
+msgid "Marking stories as read"
+msgstr "將文章標記為已讀"
 
 msgid "Match"
 msgstr "符合"
@@ -4181,6 +4281,12 @@ msgstr "本週訂閱數最多的訂閱來源"
 msgid "Most used at top, then alphabetical"
 msgstr "最常使用的排前面，其餘按字母排序"
 
+msgid "Most used first"
+msgstr "依使用頻率排序"
+
+msgid "Motion"
+msgstr "動態效果"
+
 msgid "Move"
 msgstr "移動"
 
@@ -4253,6 +4359,9 @@ msgstr "永不"
 
 msgid "Name"
 msgstr "名稱"
+
+msgid "Name only"
+msgstr "僅名稱"
 
 msgid "Native Apps"
 msgstr "原生應用程式"
@@ -4342,11 +4451,20 @@ msgstr "新密碼"
 msgid "New posts from feeds you recently read"
 msgstr "你最近閱讀的訂閱來源發布的新文章"
 
+msgid "New stories"
+msgstr "新文章"
+
 msgid "New tag name"
 msgstr "新標籤名稱"
 
 msgid "New to me"
 msgstr "未訂閱的網站"
+
+msgid "New window"
+msgstr "新視窗"
+
+msgid "New window, marked read"
+msgstr "新視窗，並標記為已讀"
 
 msgid "Newer:"
 msgstr "晚於："
@@ -4372,6 +4490,9 @@ msgstr "NewsBlur 目前無法使用。<br> 請稍後再試。"
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur 正在維護中。<br> 請稍後再試。"
+
+msgid "NewsBlur menu"
+msgstr "NewsBlur 選單"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur 會自動監控頁面是否有變更"
@@ -4411,6 +4532,12 @@ msgstr "下一篇文章"
 
 msgid "Next unread"
 msgstr "下一篇未讀文章"
+
+msgid "Next unread at the end"
+msgstr "在最後前往下一篇未讀文章"
+
+msgid "Next unread halfway"
+msgstr "下一篇未讀文章讀到一半"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "接著，建立一個包含所有電子報的篩選器，讓它們轉寄到 NewsBlur 上的自訂地址。"
@@ -4757,6 +4884,9 @@ msgstr "使用 Premium Archive 時，搜尋會涵蓋所有曾封存的文章，�
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "Premium 可搜尋近期文章；Premium Archive 則可搜尋所有曾封存的文章。"
 
+msgid "On reload"
+msgstr "重新載入時"
+
 msgid "One command with Docker"
 msgstr "使用 Docker 執行一行指令"
 
@@ -4883,6 +5013,12 @@ msgstr "開啟訂閱來源和文章標題選單"
 msgid "Open the first story"
 msgstr "開啟第一篇文章"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "載入 NewsBlur 時開啟下方選取的資料夾"
+
+msgid "Open the next one"
+msgstr "開啟下一篇"
+
 msgid "Open the next site/folder"
 msgstr "開啟下一個網站／資料夾"
 
@@ -4903,6 +5039,12 @@ msgstr "開啟每日簡報"
 
 msgid "Open your saved stories"
 msgstr "開啟已儲存的文章"
+
+msgid "Opening a site also opens its first story"
+msgstr "開啟網站時也會開啟第一篇文章"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "開啟網站後會顯示文章，等你選擇要閱讀的文章"
 
 msgid "Opens"
 msgstr "開啟次數"
@@ -5042,6 +5184,9 @@ msgstr "選擇方案並付款。"
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "選擇你希望 NewsBlur 使用的語言。你隨時可以在偏好設定中更改。"
 
+msgid "Placement"
+msgstr "位置"
+
 msgid "Places"
 msgstr "地點"
 
@@ -5065,6 +5210,9 @@ msgstr "最後播放"
 
 msgid "Play Next"
 msgstr "接著播放"
+
+msgid "Play YouTube videos without captions"
+msgstr "播放 YouTube 影片時不顯示字幕"
 
 msgid "Play in Mini Media Player"
 msgstr "在迷你媒體播放器中播放"
@@ -5286,9 +5434,6 @@ msgstr "受保護："
 msgid "Public blurblog sharing"
 msgstr "公開分享至 Blurblog"
 
-msgid "Public comments"
-msgstr "公開留言"
-
 msgid "Public:"
 msgstr "公開："
 
@@ -5378,6 +5523,9 @@ msgstr "將資料夾中的所有訂閱來源合併成按時間順序排列的可
 
 msgid "Read aloud"
 msgstr "朗讀"
+
+msgid "Read and unread stories are both listed"
+msgstr "已讀與未讀文章都會列出"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5482,11 +5630,8 @@ msgstr "已兌換"
 msgid "Redirect URL"
 msgstr "重新導向網址"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "減少新聞流中的雜訊"
-
-msgid "Reduce motion"
-msgstr "減少動態效果"
+msgid "Reduced"
+msgstr "縮減"
 
 msgid "Refer"
 msgstr "推薦"
@@ -5528,6 +5673,9 @@ msgstr "相關"
 
 msgid "Related Sites"
 msgstr "相關網站"
+
+msgid "Related sites above the story titles"
+msgstr "文章標題上方的相關網站"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "相關文章僅提供給付費訂閱者。"
@@ -5674,6 +5822,12 @@ msgstr "新聞流"
 msgid "River of News (reading by folder)"
 msgstr "新聞流（依資料夾閱讀）"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "寬敞的列，附圖片與預覽"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "側邊欄和文章列表中的列"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "執行 newsblur auth login，透過 OAuth 授權"
 
@@ -5726,9 +5880,6 @@ msgstr "儲存我的 Blurblog 設定"
 
 msgid "Save My Profile"
 msgstr "儲存我的個人檔案"
-
-msgid "Save Preferences"
-msgstr "儲存偏好設定"
 
 msgid "Save Search"
 msgstr "儲存搜尋"
@@ -5806,15 +5957,21 @@ msgid ""
 " you use the Generate button."
 msgstr "排程簡報需要 Premium Archive 訂閱方案。依你目前的方案，只有在按下「產生」按鈕時才會產生簡報。"
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "排程傳送（每日或每日兩次）"
-
 msgid "Science"
 msgstr "科學"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "範圍分類器僅供 %(plan)s 訂閱者使用。"
+
+msgid "Scroll only"
+msgstr "僅捲動"
+
+msgid "Scroll the story"
+msgstr "捲動文章"
+
+msgid "Scroll the story by the distance set below"
+msgstr "依下方設定的距離捲動文章"
 
 msgid "Scroll to comments"
 msgstr "捲動至留言"
@@ -5949,14 +6106,8 @@ msgid ""
 "changed, highlighted in green and red."
 msgstr "查看文章首次發布後如何演變。NewsBlur 會追蹤修訂版本，並以綠色和紅色標示變更內容。"
 
-msgid "See shared stories"
-msgstr "查看分享的文章"
-
 msgid "See the story title and a short content preview"
 msgstr "查看文章標題和簡短的內容預覽"
-
-msgid "See which feeds cover the same story"
-msgstr "查看哪些訂閱來源報導了相同的新聞"
 
 msgid "Select"
 msgstr "選取"
@@ -6015,6 +6166,9 @@ msgstr "傳送這篇文章"
 msgid "Sending…"
 msgstr "正在傳送…"
 
+msgid "Separate"
+msgstr "分開"
+
 msgid "September"
 msgstr "九月"
 
@@ -6057,9 +6211,6 @@ msgstr "分享文章並附上留言，內容就會發布到你的 Blurblog，其
 
 msgid "Share on NewsBlur"
 msgstr "分享到 NewsBlur"
-
-msgid "Share stories"
-msgstr "分享文章"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6123,35 +6274,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "矮"
 
+msgid "Shorten all"
+msgstr "全部縮短"
+
+msgid "Shorten shared"
+msgstr "縮短分享內容"
+
+msgid "Shortened stories open with a click"
+msgstr "點擊即可開啟縮短的文章"
+
 msgid "Show"
 msgstr "顯示"
 
 msgid "Show Folders"
 msgstr "顯示資料夾"
 
-msgid "Show Global Shared Stories"
-msgstr "顯示全域分享文章"
-
-msgid "Show Good Reads"
-msgstr "顯示優質閱讀"
-
-msgid "Show Infrequent Site Stories"
-msgstr "顯示不常更新的網站文章"
-
-msgid "Show Long Reads"
-msgstr "顯示長篇閱讀"
-
-msgid "Show Widely Read Stories"
-msgstr "顯示廣受閱讀的文章"
-
 msgid "Show a preview of the story"
 msgstr "顯示文章預覽"
 
 msgid "Show all animations"
 msgstr "顯示所有動畫"
-
-msgid "Show all comments"
-msgstr "顯示所有留言"
 
 msgid "Show all stories"
 msgstr "顯示所有文章"
@@ -6182,6 +6324,9 @@ msgstr "選取文字時顯示醒目提示"
 
 msgid "Show history"
 msgstr "顯示歷史記錄"
+
+msgid "Show in full"
+msgstr "完整顯示"
 
 msgid "Show more related stories"
 msgstr "顯示更多相關文章"
@@ -6226,6 +6371,9 @@ msgstr "顯示 <b>%(date)s</b> 的文章"
 msgid "Shows a toolbar button with your unread count"
 msgstr "顯示含未讀數量的工具列按鈕"
 
+msgid "Sidebar"
+msgstr "側邊欄"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "登入後，你的訂閱來源、訓練設定和已儲存文章會立即同步"
 
@@ -6262,17 +6410,20 @@ msgstr "網站網址或依名稱搜尋…"
 msgid "Site by Site"
 msgstr "逐個網站"
 
+msgid "Site order"
+msgstr "網站順序"
+
 msgid "Site settings"
 msgstr "網站設定"
-
-msgid "Site sidebar order"
-msgstr "網站側邊欄順序"
 
 msgid "Site stats"
 msgstr "網站統計"
 
 msgid "Sites"
 msgstr "網站"
+
+msgid "Sites and folders"
+msgstr "網站與資料夾"
 
 msgid "Sites updated up to 5x more often"
 msgstr "網站更新頻率最高可提升 5 倍"
@@ -6295,6 +6446,12 @@ msgstr "左側顯示小型圖片縮圖"
 msgid "Small image thumbnail on the right"
 msgstr "右側顯示小型圖片縮圖"
 
+msgid "Small, left"
+msgstr "小，靠左"
+
+msgid "Small, right"
+msgstr "小型，右側"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "時間多得很，事情卻少得可憐。等等！說反了。"
 
@@ -6303,6 +6460,9 @@ msgstr "社群"
 
 msgid "Social Connections"
 msgstr "社群連結"
+
+msgid "Social features"
+msgstr "社交功能"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6354,8 +6514,11 @@ msgstr "排序、篩選和顯示選項"
 msgid "Source feeds"
 msgstr "訂閱來源"
 
-msgid "Spacing between feeds and story titles"
-msgstr "訂閱來源與文章標題之間的間距"
+msgid "Space bar"
+msgstr "空白鍵"
+
+msgid "Spacing"
+msgstr "間距"
 
 msgid "Spanish"
 msgstr "西班牙文"
@@ -6456,6 +6619,9 @@ msgstr "狀態"
 msgid "Stay on the same feed/folder"
 msgstr "停留在同一個訂閱來源／資料夾"
 
+msgid "Stay put"
+msgstr "保持原位"
+
 msgid "Steadier or more varied"
 msgstr "較穩定或更多變"
 
@@ -6484,6 +6650,9 @@ msgstr "喜歡的文章會以綠色標示，不喜歡的則會隱藏"
 
 msgid "Stories arrive in real-time"
 msgstr "文章即時送達"
+
+msgid "Stories as cards in a grid"
+msgstr "以卡片格狀顯示文章"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "快取文章以供離線閱讀，並在背景自動更新。"
@@ -6542,6 +6711,12 @@ msgstr "每月文章數"
 msgid "Stories readers finished, saved, and shared"
 msgstr "讀者讀完、儲存及分享的文章"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "在文章標題中捲過的文章"
+
+msgid "Stories shown"
+msgstr "顯示的文章"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "在 NewsBlur 中最受關注的文章。"
 
@@ -6550,6 +6725,9 @@ msgstr "文章將<b>永遠不會</b>自動標記為已讀"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "文章<b>永遠</b>不會標記為已讀"
+
+msgid "Stories you have read are left out"
+msgstr "已讀文章不會顯示"
 
 msgid "Story"
 msgstr "文章"
@@ -6584,6 +6762,9 @@ msgstr "文章字體樣式"
 msgid "Story URL"
 msgstr "文章網址"
 
+msgid "Story buttons"
+msgstr "文章按鈕"
+
 msgid "Story cards open on their own screen"
 msgstr "文章卡片會在獨立畫面中開啟"
 
@@ -6602,23 +6783,20 @@ msgstr "文章語言"
 msgid "Story layout"
 msgstr "文章版面"
 
+msgid "Story list"
+msgstr "文章列表"
+
 msgid "Story preview"
 msgstr "文章預覽"
 
 msgid "Story shows in Focus view"
 msgstr "文章會顯示在焦點檢視中"
 
-msgid "Story side options"
-msgstr "文章側邊選項"
-
-msgid "Story side options buttons"
-msgstr "文章側邊選項按鈕"
-
-msgid "Story side options placement"
-msgstr "文章側邊選項位置"
-
 msgid "Story title styling"
 msgstr "文章標題樣式"
+
+msgid "Story titles beside the open story"
+msgstr "文章標題顯示在開啟的文章旁"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "串流中斷。10 秒內未收到回應。"
@@ -6798,6 +6976,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "高"
 
+msgid "Tall stories"
+msgstr "高聳文章"
+
 msgid "Target category name"
 msgstr "目標分類名稱"
 
@@ -6863,6 +7044,9 @@ msgstr "謝謝！你擁有 %(bold_start)sPremium Archive 帳戶%(bold_end)s。"
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "謝謝！你擁有 %(bold_start)sPremium Pro 帳戶%(bold_end)s。"
 
+msgid "That change could not be saved"
+msgstr "無法儲存這項變更"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 服務回應時間過長。請再試一次。"
 
@@ -6906,6 +7090,9 @@ msgstr "完整新聞流是%(link_start)s進階功能%(link_end)s。"
 msgid "The full shortcut list"
 msgstr "完整快速鍵清單"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "從網站擷取的完整文章內容"
+
 msgid "The gift has been applied to your account."
 msgstr "禮物已套用至你的帳戶。"
 
@@ -6925,14 +7112,29 @@ msgstr "登入指令會開啟瀏覽器進行 OAuth 授權。你的權杖會儲�
 msgid "The most important stories from your feeds"
 msgstr "訂閱來源中最重要的文章"
 
+msgid "The most recent stories come first"
+msgstr "最新的文章排在最前面"
+
+msgid "The oldest stories come first"
+msgstr "最舊的文章排在最前面"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "發布者已停用原始頁面。"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "擷取並解析頁面 HTML，以提取內容結構。"
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "網站本身，也就是你在瀏覽器中看到的樣子"
+
+msgid "The story on its own page on the site"
+msgstr "文章在網站上獨立頁面中的樣子"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "你選擇的檢視方式會按網站記憶，因此僅提供摘要的訂閱來源可預設為文字檢視。"
+
+msgid "Theme"
+msgstr "佈景主題"
 
 msgid "Themes & Customization"
 msgstr "佈景主題與自訂"
@@ -7129,6 +7331,9 @@ msgstr "標題詞組"
 msgid "Title Regex"
 msgstr "標題正規表示式"
 
+msgid "Title and preview"
+msgstr "標題與預覽"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "標題篩選器在 %(context)s 中找不到文章。"
@@ -7201,9 +7406,6 @@ msgstr "工具"
 msgid "Tooltips"
 msgstr "工具提示"
 
-msgid "Tooltips like this"
-msgstr "這類工具提示"
-
 msgid "Top"
 msgstr "頂端"
 
@@ -7261,6 +7463,9 @@ msgstr "訓練這篇文章"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "訓練你的訂閱來源，篩選出你喜歡或不喜歡的文章。"
 
+msgid "Train, Save, Share and the rest"
+msgstr "訓練、儲存、分享等"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "像管理任何訂閱來源一樣，訓練、標記、搜尋及整理電子報"
 
@@ -7284,9 +7489,6 @@ msgstr "熱門趨勢"
 
 msgid "Trending Sites"
 msgstr "熱門網站"
-
-msgid "Truncate stories"
-msgstr "截短文章"
 
 msgid "Try"
 msgstr "試試"
@@ -7413,6 +7615,9 @@ msgstr "已取消靜音"
 
 msgid "Unread"
 msgstr "未讀"
+
+msgid "Unread count"
+msgstr "未讀數量"
 
 msgid "Unread only"
 msgstr "僅未讀"
@@ -7667,6 +7872,10 @@ msgstr "語音設定"
 msgid "Voices"
 msgstr "語音"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "暖色"
+
 msgid "Warning: This is actually permanent"
 msgstr "警告：此操作確實無法復原"
 
@@ -7764,8 +7973,14 @@ msgstr "背景與脈絡是什麼？"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI 和 MCP 有什麼不同？"
 
+msgid "When NewsBlur opens"
+msgstr "NewsBlur 開啟時"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "訂閱來源更新時，NewsBlur 會檢查你所有訂閱中是否有重複內容"
+
+msgid "When clicked"
+msgstr "點擊時"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "多個訂閱來源刊載相同文章時，NewsBlur 會將它們彙整在一起，讓你只需看一次。"
@@ -7789,6 +8004,9 @@ msgstr "新增訂閱來源時，系統會回填其歷史內容"
 
 msgid "Which AI models are available?"
 msgstr "有哪些 AI 模型可用？"
+
+msgid "While scrolling"
+msgstr "捲動時"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "糟糕！發生錯誤。請再試一次。"
@@ -7819,6 +8037,9 @@ msgstr "視窗標題"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "使用鍵盤"
 
 msgid "Word Matching"
 msgstr "文字比對"

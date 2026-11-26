@@ -938,6 +938,12 @@ msgstr "1년"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12시간"
+
+msgid "24-hour"
+msgstr "24시간"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할 수 있습니다."
 
@@ -988,6 +994,9 @@ msgstr "공유한 스토리를 모아 보는 Blurblog"
 msgid "A clearer, closer sound"
 msgstr "더 선명하고 가까운 소리"
 
+msgid "A folder"
+msgstr "폴더 하나"
+
 msgid "A folder of feeds read as one stream"
 msgstr "여러 피드를 하나의 스트림으로 모아 읽기"
 
@@ -1001,11 +1010,23 @@ msgstr "%(value_1)s님이 보내신 선물이 계정에 적용되었습니다."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "두 번째 단계에서는 힌트를 사용해 페이지에서 올바른 패턴을 찾습니다."
 
+msgid "A short list of titles above the open story"
+msgstr "열린 스토리 위에 표시되는 제목 목록"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "좋아요 하나는 싫어요 개수와 관계없이 우선 적용됩니다"
 
 msgid "A story diff with additions and deletions"
 msgstr "추가 및 삭제 내용이 표시되는 스토리 변경 비교"
+
+msgid "A story is read as soon as it is selected"
+msgstr "스토리는 선택하는 즉시 읽은 것으로 표시됩니다"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "아래에 설정한 시간 동안 스토리를 열어 두면 읽은 것으로 표시됩니다"
+
+msgid "A to Z"
+msgstr "가나다순"
 
 msgid "AI Filter"
 msgstr "AI 필터"
@@ -1166,6 +1187,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s초 후"
 
+msgid "After a delay"
+msgstr "지연 후"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "독자가 앱을 승인하면 NewsBlur에서 인증 코드와 함께 이 URL로 이동시킵니다."
 
@@ -1174,6 +1198,9 @@ msgstr "피드/폴더를 읽음으로 표시한 후"
 
 msgid "Afternoon"
 msgstr "오후"
+
+msgid "Afterwards"
+msgstr "이후"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1303,9 +1330,6 @@ msgstr "Android 알림을 사용하려면 프리미엄 아카이브가 필요합
 msgid "Animals"
 msgstr "동물"
 
-msgid "Animations"
-msgstr "애니메이션"
-
 msgid "Any"
 msgstr "모두"
 
@@ -1378,6 +1402,9 @@ msgstr "앱은 무료인가요?"
 msgid "Are the apps open source?"
 msgstr "앱은 오픈 소스인가요?"
 
+msgid "Arrow keys"
+msgstr "화살표 키"
+
 msgid "Arrows"
 msgstr "화살표"
 
@@ -1416,6 +1443,9 @@ msgstr "질문하기..."
 
 msgid "Ask about your browsing history..."
 msgstr "인터넷 사용 기록에 대해 질문하기..."
+
+msgid "Ask first"
+msgstr "먼저 확인"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1464,6 +1494,9 @@ msgstr "자동"
 
 msgid "Auto Mark as Read"
 msgstr "자동으로 읽음 표시"
+
+msgid "Auto follows system appearance"
+msgstr "시스템 모양 설정 자동 적용"
 
 msgid "Auto mark as read"
 msgstr "자동으로 읽음 표시"
@@ -1536,6 +1569,15 @@ msgstr "관심사 기반"
 msgid "Begin Training"
 msgstr "학습 시작"
 
+msgid "Behavior"
+msgstr "동작"
+
+msgid "Below the story"
+msgstr "스토리 아래"
+
+msgid "Beside the story"
+msgstr "스토리 옆"
+
 msgid "Bio"
 msgstr "소개"
 
@@ -1584,6 +1626,9 @@ msgstr "Blurblog 제목"
 
 msgid "Blurblogs"
 msgstr "Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog, 공유한 스토리 및 댓글"
 
 msgid "Bookmarklet"
 msgstr "북마클릿"
@@ -1649,14 +1694,23 @@ msgstr "브라우저"
 msgid "Browser Extensions"
 msgstr "브라우저 확장 프로그램"
 
+msgid "Browser menu"
+msgstr "브라우저 메뉴"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr "누구나 사용할 수 있는 공개 RSS 리더를 개발하고 계신가요? NewsBlur Premium Pro 계정을 무료로 받으실 수 있습니다."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "사이드바의 기본 스토리 목록"
 
 msgid "Bullet points"
 msgstr "글머리 기호"
 
 msgid "Bullets"
 msgstr "글머리 기호"
+
+msgid "Buttons"
+msgstr "버튼"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1822,9 +1876,6 @@ msgstr "브리핑을 작성할 AI 모델 선택"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "브리핑을 만들 때 사용할 피드를 선택하세요"
 
-msgid "Choose which feeds to include"
-msgstr "포함할 피드 선택"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "브리핑에 표시할 섹션 선택"
 
@@ -1900,11 +1951,17 @@ msgstr "원하는 출처를 클릭해 해당 버전을 읽거나, 중복 항목�
 msgid "Click to block"
 msgstr "클릭하여 차단"
 
+msgid "Clicks"
+msgstr "클릭"
+
 msgid "Client ID"
 msgstr "클라이언트 ID"
 
 msgid "Client secret"
 msgstr "클라이언트 비밀 키"
+
+msgid "Clock"
+msgstr "시계"
 
 msgid "Close"
 msgstr "닫기"
@@ -1945,6 +2002,9 @@ msgstr "스토리 접기"
 msgid "Collapsed"
 msgstr "접힘"
 
+msgid "Collapsed folders"
+msgstr "접힌 폴더"
+
 msgid "Color"
 msgstr "색상"
 
@@ -1963,8 +2023,8 @@ msgstr "명령어 출력은 jq에 바로 전달할 수 있는 JSON입니다."
 msgid "Comment"
 msgstr "댓글"
 
-msgid "Comment on stories"
-msgstr "스토리에 댓글 달기"
+msgid "Comments"
+msgstr "댓글"
 
 msgid "Comments:"
 msgstr "댓글:"
@@ -2178,9 +2238,6 @@ msgstr "사용자 지정 날짜 범위"
 msgid "Custom icon"
 msgstr "사용자 지정 아이콘"
 
-msgid "Customizable writing style and length"
-msgstr "글쓰기 스타일과 길이 맞춤 설정"
-
 msgid "Customize auto-read by site or folder"
 msgstr "사이트 또는 폴더별 자동 읽기 설정"
 
@@ -2216,6 +2273,9 @@ msgstr "스토리 일일 분포"
 msgid "Dark"
 msgstr "어둡게"
 
+msgid "Dark appearance"
+msgstr "어두운 화면"
+
 msgid "Dark mode and reading customization"
 msgstr "다크 모드 및 읽기 설정"
 
@@ -2246,9 +2306,6 @@ msgstr "기본값"
 
 msgid "Default Blocklist"
 msgstr "기본 차단 목록"
-
-msgid "Default folder"
-msgstr "기본 폴더"
 
 msgid "Default layout"
 msgstr "기본 레이아웃"
@@ -2330,15 +2387,6 @@ msgstr "자세히"
 
 msgid "Devices"
 msgstr "기기"
-
-msgid "Disable daily briefings"
-msgstr "데일리 브리핑 사용 안 함"
-
-msgid "Disable social features"
-msgstr "소셜 기능 사용 안 함"
-
-msgid "Disable story clustering"
-msgstr "스토리 클러스터링 사용 안 함"
 
 msgid "Disable the highlighter"
 msgstr "하이라이터 사용 중지"
@@ -2444,6 +2492,9 @@ msgstr "완료!"
 
 msgid "Double-clicking a site"
 msgstr "사이트를 두 번 클릭"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "사이트의 읽지 않은 스토리 수를 두 번 클릭하면 해당 사이트 전체가 읽음으로 표시됩니다"
 
 msgid "Double-clicking an unread count"
 msgstr "읽지 않은 항목 수를 두 번 클릭"
@@ -2571,17 +2622,11 @@ msgstr "YouTube 동영상 자막 사용"
 msgid "Enable daily briefings"
 msgstr "데일리 브리핑 사용"
 
-msgid "Enable highlighting"
-msgstr "강조 표시 사용"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "음성 입력을 사용하려면 브라우저 설정에서 마이크를 사용 설정하세요"
 
 msgid "Enable social features"
 msgstr "소셜 기능 사용"
-
-msgid "Enable story clustering"
-msgstr "스토리 클러스터링 사용"
 
 msgid "Enable the sites you want"
 msgstr "원하는 사이트를 활성화하세요"
@@ -2666,6 +2711,9 @@ msgstr "저녁"
 msgid "Every"
 msgstr "업데이트 간격"
 
+msgid "Every folder"
+msgstr "모든 폴더"
+
 msgid "Every new story is archived permanently"
 msgstr "새 스토리는 모두 영구 보관됩니다"
 
@@ -2678,11 +2726,20 @@ msgstr "모든 스토리를 영구 보관하고 검색"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "모든 스토리를 영구 보관하고 검색하세요. 나만의 지식 베이스입니다."
 
+msgid "Every story as the site published it in its feed"
+msgstr "사이트가 피드에 게시한 그대로의 모든 스토리"
+
+msgid "Every story in full, one after another"
+msgstr "모든 스토리를 하나씩 전문으로 재생"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "각 태그마다 별도의 RSS 피드가 제공됩니다. 링크를 공유하거나 IFTTT 또는 Zapier에 연결하세요."
 
 msgid "Everybody"
 msgstr "모두"
+
+msgid "Everyone"
+msgstr "모든 사용자"
 
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlur의 모든 기능과 사용 방법"
@@ -3058,6 +3115,9 @@ msgstr "폴더별 읽지 않은 항목 수"
 msgid "Folders"
 msgstr "폴더"
 
+msgid "Folders only"
+msgstr "폴더만"
+
 msgid "Folders, feeds, and story titles"
 msgstr "폴더, 피드 및 스토리 제목"
 
@@ -3221,6 +3281,9 @@ msgstr "친구 &amp; 팔로워"
 
 msgid "Friends and Followers"
 msgstr "친구 및 팔로워"
+
+msgid "Friends only"
+msgstr "친구만"
 
 msgctxt "date range"
 msgid "From"
@@ -3408,6 +3471,10 @@ msgstr "유용한 기능 &amp; 모바일 앱"
 msgid "Google News"
 msgstr "Google 뉴스"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "회색"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "추가된 내용은 녹색, 삭제된 내용은 빨간색으로 표시됩니다."
 
@@ -3425,6 +3492,9 @@ msgstr "피드 전체에서 중복 스토리를 그룹화"
 
 msgid "Group stories that share:"
 msgstr "다음 항목이 같은 스토리 그룹화:"
+
+msgid "Grouped"
+msgstr "그룹화"
 
 msgid "Groups similar stories from different feeds"
 msgstr "서로 다른 피드의 유사한 스토리를 그룹으로 묶습니다"
@@ -3497,6 +3567,9 @@ msgstr "읽고 있는 문단 강조 표시"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "특정 문구를 학습시키려면 제목에서 단어를 강조 표시하세요."
 
+msgid "Highlighter"
+msgstr "하이라이터"
+
 msgid "History"
 msgstr "기록"
 
@@ -3532,6 +3605,9 @@ msgstr "감정 표현 정도"
 
 msgid "How often"
 msgstr "빈도"
+
+msgid "How panes and stories move"
+msgstr "패널과 스토리 이동 방식"
 
 msgid "I'm Following"
 msgstr "팔로잉"
@@ -3613,6 +3689,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "새 창에서"
+
+msgid "In a pill"
+msgstr "알약 모양으로"
 
 msgid "In rotation"
 msgstr "순환 목록에 있음"
@@ -3745,6 +3824,9 @@ msgstr "읽는 동안 오른쪽 버튼 계속 표시"
 msgid "Keep stories separate"
 msgstr "스토리를 개별적으로 표시"
 
+msgid "Keep unread counts out of the window title"
+msgstr "읽지 않은 스토리 수를 창 제목에 표시하지 않기"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "NewsBlur의 최신 소식을 받아보세요"
 
@@ -3770,11 +3852,20 @@ msgstr "키워드 섹션"
 msgid "Language"
 msgstr "언어"
 
+msgid "Language and time"
+msgstr "언어 및 시간"
+
 msgid "Large image thumbnail on the left"
 msgstr "왼쪽에 큰 이미지 썸네일"
 
 msgid "Large image thumbnail on the right"
 msgstr "오른쪽에 큰 이미지 썸네일 표시"
+
+msgid "Large, left"
+msgstr "왼쪽에 크게"
+
+msgid "Large, right"
+msgstr "크게, 오른쪽"
 
 msgid "Last 30 Days"
 msgstr "지난 30일"
@@ -3819,6 +3910,9 @@ msgstr "읽을 사이트를 추가해 보세요."
 msgid "Light"
 msgstr "밝게"
 
+msgid "Light appearance"
+msgstr "밝은 테마"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3844,6 +3938,12 @@ msgstr "원본 스토리로 바로 연결"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "내 Blurblog 및 공유 댓글 링크"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "스토리의 링크를 새 창이나 탭에서 열기"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "스토리의 링크를 이 창에서 NewsBlur로 대체"
 
 msgid "List"
 msgstr "목록"
@@ -3943,9 +4043,6 @@ msgstr "MCP 서버에 액세스하려면 프리미엄 아카이브 또는 프리
 
 msgid "Magazine"
 msgstr "매거진"
-
-msgid "Make changes above..."
-msgstr "위에서 변경하세요..."
 
 msgid "Manage Categories"
 msgstr "카테고리 관리"
@@ -4060,9 +4157,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "지난 <b>%(value_1)s일</b> 동안의 스토리를 읽지 않음으로 표시"
 
-msgid "Mark stories read on scroll"
-msgstr "스크롤할 때 스토리를 읽음으로 표시"
-
 msgid "Mark the site as read"
 msgstr "사이트를 읽음으로 표시"
 
@@ -4074,6 +4168,12 @@ msgstr "읽음으로 표시하는 중..."
 
 msgid "Marking as unread..."
 msgstr "읽지 않음으로 표시하는 중..."
+
+msgid "Marking sites as read"
+msgstr "사이트를 읽음으로 표시"
+
+msgid "Marking stories as read"
+msgstr "스토리를 읽음으로 표시"
 
 msgid "Match"
 msgstr "일치"
@@ -4189,6 +4289,12 @@ msgstr "이번 주 구독자 수가 가장 많은 피드"
 msgid "Most used at top, then alphabetical"
 msgstr "자주 사용하는 항목을 위에 표시한 다음 가나다순"
 
+msgid "Most used first"
+msgstr "많이 사용한 항목 우선"
+
+msgid "Motion"
+msgstr "움직임"
+
 msgid "Move"
 msgstr "이동"
 
@@ -4261,6 +4367,9 @@ msgstr "없음"
 
 msgid "Name"
 msgstr "이름"
+
+msgid "Name only"
+msgstr "이름만"
 
 msgid "Native Apps"
 msgstr "네이티브 앱"
@@ -4350,11 +4459,20 @@ msgstr "새 비밀번호"
 msgid "New posts from feeds you recently read"
 msgstr "최근 읽은 피드의 새 게시물"
 
+msgid "New stories"
+msgstr "새 스토리"
+
 msgid "New tag name"
 msgstr "새 태그 이름"
 
 msgid "New to me"
 msgstr "처음 보는 항목"
+
+msgid "New window"
+msgstr "새 창"
+
+msgid "New window, marked read"
+msgstr "새 창, 읽음으로 표시"
 
 msgid "Newer:"
 msgstr "이후:"
@@ -4380,6 +4498,9 @@ msgstr "NewsBlur가 현재 다운되었습니다. <br>잠시 후 다시 시도�
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur는 점검 모드입니다. <br> 잠시 후 다시 시도하세요."
+
+msgid "NewsBlur menu"
+msgstr "NewsBlur 메뉴"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur가 페이지 변경 사항을 자동으로 확인합니다"
@@ -4419,6 +4540,12 @@ msgstr "다음 스토리"
 
 msgid "Next unread"
 msgstr "다음 읽지 않은 스토리"
+
+msgid "Next unread at the end"
+msgstr "마지막에서 다음 읽지 않은 스토리"
+
+msgid "Next unread halfway"
+msgstr "다음 읽지 않은 스토리의 중간"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "다음으로 모든 뉴스레터를 포함하는 필터를 만들어 NewsBlur의 맞춤 주소로 전달되도록 설정하세요."
@@ -4765,6 +4892,9 @@ msgstr "프리미엄 아카이브에서는 최근 스토리뿐 아니라 지금�
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "프리미엄에서는 최근 스토리를 검색할 수 있습니다. 프리미엄 아카이브에서는 지금까지 보관된 모든 스토리를 검색할 수 있습니다."
 
+msgid "On reload"
+msgstr "새로고침 시"
+
 msgid "One command with Docker"
 msgstr "Docker로 명령 한 번에 설치"
 
@@ -4891,6 +5021,12 @@ msgstr "피드 및 스토리 제목 메뉴 열기"
 msgid "Open the first story"
 msgstr "첫 번째 스토리 열기"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "NewsBlur을(를) 불러올 때 아래에서 선택한 폴더 열기"
+
+msgid "Open the next one"
+msgstr "다음 항목 열기"
+
 msgid "Open the next site/folder"
 msgstr "다음 사이트/폴더 열기"
 
@@ -4911,6 +5047,12 @@ msgstr "데일리 브리핑 열기"
 
 msgid "Open your saved stories"
 msgstr "저장한 스토리 열기"
+
+msgid "Opening a site also opens its first story"
+msgstr "사이트를 열면 첫 번째 스토리도 함께 열기"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "사이트를 열면 스토리가 표시되고, 선택할 때까지 기다립니다"
 
 msgid "Opens"
 msgstr "열람 횟수"
@@ -5050,6 +5192,9 @@ msgstr "요금제를 선택하고 결제하세요."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "NewsBlur에서 사용할 언어를 선택하세요. 이 설정은 언제든지 환경설정에서 변경할 수 있습니다."
 
+msgid "Placement"
+msgstr "배치"
+
 msgid "Places"
 msgstr "장소"
 
@@ -5073,6 +5218,9 @@ msgstr "맨 마지막에 재생"
 
 msgid "Play Next"
 msgstr "다음 재생"
+
+msgid "Play YouTube videos without captions"
+msgstr "자막 없이 YouTube 동영상 재생"
 
 msgid "Play in Mini Media Player"
 msgstr "미니 미디어 플레이어에서 재생"
@@ -5294,9 +5442,6 @@ msgstr "보호됨:"
 msgid "Public blurblog sharing"
 msgstr "Blurblog 공개 공유"
 
-msgid "Public comments"
-msgstr "공개 댓글"
-
 msgid "Public:"
 msgstr "공개:"
 
@@ -5386,6 +5531,9 @@ msgstr "폴더의 모든 피드를 시간순으로 하나의 스크롤 스트림
 
 msgid "Read aloud"
 msgstr "소리 내어 읽기"
+
+msgid "Read and unread stories are both listed"
+msgstr "읽은 스토리와 읽지 않은 스토리가 모두 표시됩니다"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5490,11 +5638,8 @@ msgstr "사용 완료"
 msgid "Redirect URL"
 msgstr "리디렉션 URL"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "스토리 스트림의 복잡함 줄이기"
-
-msgid "Reduce motion"
-msgstr "동작 줄이기"
+msgid "Reduced"
+msgstr "축소"
 
 msgid "Refer"
 msgstr "추천"
@@ -5536,6 +5681,9 @@ msgstr "관련 항목"
 
 msgid "Related Sites"
 msgstr "관련 사이트"
+
+msgid "Related sites above the story titles"
+msgstr "스토리 제목 위에 관련 사이트 표시"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "관련 스토리는 프리미엄 구독자만 이용할 수 있습니다."
@@ -5682,6 +5830,12 @@ msgstr "뉴스 스트림"
 msgid "River of News (reading by folder)"
 msgstr "뉴스 스트림(폴더별로 읽기)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "이미지와 미리보기가 포함된 넉넉한 행"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "사이드바와 스토리 목록의 행"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "OAuth로 인증하려면 newsblur auth login을 실행하세요"
 
@@ -5734,9 +5888,6 @@ msgstr "Blurblog 설정 저장"
 
 msgid "Save My Profile"
 msgstr "내 프로필 저장"
-
-msgid "Save Preferences"
-msgstr "환경설정 저장"
 
 msgid "Save Search"
 msgstr "검색 저장"
@@ -5814,15 +5965,21 @@ msgid ""
 " you use the Generate button."
 msgstr "예약 브리핑을 이용하려면 프리미엄 아카이브 구독이 필요합니다. 현재 요금제에서는 생성 버튼을 눌렀을 때만 브리핑이 생성됩니다."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "예약 전송(매일 또는 하루 두 번)"
-
 msgid "Science"
 msgstr "과학"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "범위 지정 분류기는 %(plan)s 구독자만 사용할 수 있습니다."
+
+msgid "Scroll only"
+msgstr "스크롤만"
+
+msgid "Scroll the story"
+msgstr "스토리 스크롤"
+
+msgid "Scroll the story by the distance set below"
+msgstr "아래에서 설정한 거리만큼 스토리를 스크롤합니다"
 
 msgid "Scroll to comments"
 msgstr "댓글로 스크롤"
@@ -5957,14 +6114,8 @@ msgid ""
 "changed, highlighted in green and red."
 msgstr "스토리가 처음 게시된 후 어떻게 바뀌는지 확인하세요. NewsBlur는 수정 내역을 추적하고 변경된 부분을 녹색과 빨간색으로 강조해 비교해서 보여줍니다."
 
-msgid "See shared stories"
-msgstr "공유된 스토리 보기"
-
 msgid "See the story title and a short content preview"
 msgstr "스토리 제목과 짧은 콘텐츠 미리 보기 표시"
-
-msgid "See which feeds cover the same story"
-msgstr "같은 스토리를 다루는 피드 보기"
 
 msgid "Select"
 msgstr "선택"
@@ -6023,6 +6174,9 @@ msgstr "이 스토리 보내기"
 msgid "Sending…"
 msgstr "보내는 중…"
 
+msgid "Separate"
+msgstr "분리"
+
 msgid "September"
 msgstr "9월"
 
@@ -6065,9 +6219,6 @@ msgstr "스토리에 댓글을 달아 공유하면 Blurblog에 게시되며, RSS
 
 msgid "Share on NewsBlur"
 msgstr "NewsBlur에서 공유"
-
-msgid "Share stories"
-msgstr "스토리 공유"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6131,35 +6282,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "낮음"
 
+msgid "Shorten all"
+msgstr "모두 줄이기"
+
+msgid "Shorten shared"
+msgstr "공유 스토리 줄이기"
+
+msgid "Shortened stories open with a click"
+msgstr "요약된 스토리는 클릭하면 열립니다"
+
 msgid "Show"
 msgstr "표시"
 
 msgid "Show Folders"
 msgstr "폴더 표시"
 
-msgid "Show Global Shared Stories"
-msgstr "전체 공유 스토리 표시"
-
-msgid "Show Good Reads"
-msgstr "좋은 글 표시"
-
-msgid "Show Infrequent Site Stories"
-msgstr "드물게 업데이트되는 사이트의 스토리 표시"
-
-msgid "Show Long Reads"
-msgstr "긴 글 표시"
-
-msgid "Show Widely Read Stories"
-msgstr "많이 읽힌 스토리 표시"
-
 msgid "Show a preview of the story"
 msgstr "스토리 미리보기 표시"
 
 msgid "Show all animations"
 msgstr "모든 애니메이션 표시"
-
-msgid "Show all comments"
-msgstr "모든 댓글 보기"
 
 msgid "Show all stories"
 msgstr "모든 스토리 표시"
@@ -6190,6 +6332,9 @@ msgstr "텍스트 선택 시 형광펜 표시"
 
 msgid "Show history"
 msgstr "기록 표시"
+
+msgid "Show in full"
+msgstr "전체 내용 표시"
 
 msgid "Show more related stories"
 msgstr "관련 스토리 더 보기"
@@ -6234,6 +6379,9 @@ msgstr "<b>%(date)s</b>에 게시된 스토리 표시"
 msgid "Shows a toolbar button with your unread count"
 msgstr "읽지 않은 항목 수를 표시하는 툴바 버튼"
 
+msgid "Sidebar"
+msgstr "사이드바"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "로그인하면 피드, 학습 데이터, 저장한 스토리가 즉시 동기화됩니다"
 
@@ -6270,17 +6418,20 @@ msgstr "사이트 URL을 입력하거나 이름으로 검색..."
 msgid "Site by Site"
 msgstr "사이트별"
 
+msgid "Site order"
+msgstr "사이트 순서"
+
 msgid "Site settings"
 msgstr "사이트 설정"
-
-msgid "Site sidebar order"
-msgstr "사이트 사이드바 순서"
 
 msgid "Site stats"
 msgstr "사이트 통계"
 
 msgid "Sites"
 msgstr "사이트"
+
+msgid "Sites and folders"
+msgstr "사이트 및 폴더"
 
 msgid "Sites updated up to 5x more often"
 msgstr "사이트 업데이트가 최대 5배 더 자주 이뤄집니다"
@@ -6303,6 +6454,12 @@ msgstr "왼쪽의 작은 이미지 미리보기"
 msgid "Small image thumbnail on the right"
 msgstr "오른쪽에 작은 이미지 미리보기"
 
+msgid "Small, left"
+msgstr "작게, 왼쪽"
+
+msgid "Small, right"
+msgstr "작게, 오른쪽"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "시간은 너무 많고 할 일은 너무 적군. 아니, 반대로!"
 
@@ -6311,6 +6468,9 @@ msgstr "소셜"
 
 msgid "Social Connections"
 msgstr "소셜 연결"
+
+msgid "Social features"
+msgstr "소셜 기능"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6362,8 +6522,11 @@ msgstr "정렬, 필터 및 표시 옵션"
 msgid "Source feeds"
 msgstr "소스 피드"
 
-msgid "Spacing between feeds and story titles"
-msgstr "피드와 스토리 제목 사이의 간격"
+msgid "Space bar"
+msgstr "스페이스바"
+
+msgid "Spacing"
+msgstr "간격"
 
 msgid "Spanish"
 msgstr "스페인어"
@@ -6464,6 +6627,9 @@ msgstr "상태"
 msgid "Stay on the same feed/folder"
 msgstr "같은 피드/폴더에 머무르기"
 
+msgid "Stay put"
+msgstr "현재 위치 유지"
+
 msgid "Steadier or more varied"
 msgstr "더 안정적 또는 더 다양한"
 
@@ -6492,6 +6658,9 @@ msgstr "스토리는 좋아요 표시 시 녹색으로 강조되고, 싫어요 �
 
 msgid "Stories arrive in real-time"
 msgstr "스토리가 실시간으로 도착합니다"
+
+msgid "Stories as cards in a grid"
+msgstr "그리드에 카드 형식으로 표시되는 스토리"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "오프라인에서 읽을 수 있도록 스토리를 캐시하고 백그라운드에서 자동으로 새로고침합니다."
@@ -6550,6 +6719,12 @@ msgstr "월별 스토리 수"
 msgid "Stories readers finished, saved, and shared"
 msgstr "독자가 끝까지 읽고 저장하고 공유한 스토리"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "스토리 제목에서 지나쳐 스크롤한 스토리"
+
+msgid "Stories shown"
+msgstr "표시할 스토리"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "NewsBlur에서 가장 많은 관심을 받은 스토리입니다."
 
@@ -6558,6 +6733,9 @@ msgstr "스토리는 자동으로 읽음 처리되지 <b>않습니다</b>"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "스토리는 <b>절대</b> 읽음으로 표시되지 않습니다"
+
+msgid "Stories you have read are left out"
+msgstr "읽은 스토리는 제외됩니다"
 
 msgid "Story"
 msgstr "스토리"
@@ -6592,6 +6770,9 @@ msgstr "스토리 글꼴"
 msgid "Story URL"
 msgstr "스토리 URL"
 
+msgid "Story buttons"
+msgstr "스토리 버튼"
+
 msgid "Story cards open on their own screen"
 msgstr "스토리 카드를 별도 화면에서 열기"
 
@@ -6610,23 +6791,20 @@ msgstr "스토리 언어"
 msgid "Story layout"
 msgstr "스토리 레이아웃"
 
+msgid "Story list"
+msgstr "스토리 목록"
+
 msgid "Story preview"
 msgstr "스토리 미리보기"
 
 msgid "Story shows in Focus view"
 msgstr "집중 보기에 스토리가 표시됨"
 
-msgid "Story side options"
-msgstr "스토리 측면 옵션"
-
-msgid "Story side options buttons"
-msgstr "스토리 측면 옵션 버튼"
-
-msgid "Story side options placement"
-msgstr "스토리 측면 옵션 배치"
-
 msgid "Story title styling"
 msgstr "스토리 제목 스타일"
+
+msgid "Story titles beside the open story"
+msgstr "열린 스토리 옆에 표시되는 스토리 제목"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "스트림이 중단되었습니다. 10초 동안 응답이 없습니다."
@@ -6806,6 +6984,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "높음"
 
+msgid "Tall stories"
+msgstr "긴 스토리"
+
 msgid "Target category name"
 msgstr "대상 카테고리 이름"
 
@@ -6871,6 +7052,9 @@ msgstr "감사합니다! %(bold_start)s프리미엄 아카이브 계정%(bold_en
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "감사합니다! %(bold_start)s프리미엄 프로 계정%(bold_end)s을 이용 중입니다."
 
+msgid "That change could not be saved"
+msgstr "변경 사항을 저장할 수 없습니다"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 서비스 응답이 너무 오래 걸립니다. 다시 시도해 주세요."
 
@@ -6916,6 +7100,9 @@ msgstr "전체 뉴스 스트림은 %(link_start)s프리미엄 기능%(link_end)s
 msgid "The full shortcut list"
 msgstr "전체 단축키 목록"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "사이트에서 가져온 스토리 전문"
+
 msgid "The gift has been applied to your account."
 msgstr "선물이 계정에 적용되었습니다."
 
@@ -6935,14 +7122,29 @@ msgstr "로그인 명령을 실행하면 브라우저에서 OAuth 인증이 열�
 msgid "The most important stories from your feeds"
 msgstr "피드에서 가장 중요한 스토리"
 
+msgid "The most recent stories come first"
+msgstr "최신 스토리를 먼저 표시"
+
+msgid "The oldest stories come first"
+msgstr "가장 오래된 스토리를 먼저 표시"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "게시자가 원문 페이지를 비활성화했습니다."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "페이지 HTML을 가져와 콘텐츠 구조를 추출합니다."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "브라우저에서 보는 것과 같은 사이트 자체"
+
+msgid "The story on its own page on the site"
+msgstr "사이트의 개별 페이지에 있는 스토리"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "선택한 보기는 사이트별로 기억되므로 요약만 제공하는 피드는 기본적으로 텍스트 보기로 설정할 수 있습니다."
+
+msgid "Theme"
+msgstr "테마"
 
 msgid "Themes & Customization"
 msgstr "테마 및 사용자 지정"
@@ -7139,6 +7341,9 @@ msgstr "제목 문구"
 msgid "Title Regex"
 msgstr "제목 정규식"
 
+msgid "Title and preview"
+msgstr "제목 및 미리 보기"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "제목 필터에서 %(context)s에 해당하는 스토리를 찾지 못했습니다."
@@ -7211,9 +7416,6 @@ msgstr "도구"
 msgid "Tooltips"
 msgstr "툴팁"
 
-msgid "Tooltips like this"
-msgstr "이런 툴팁"
-
 msgid "Top"
 msgstr "상단"
 
@@ -7271,6 +7473,9 @@ msgstr "이 스토리 학습시키기"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "좋아하거나 싫어하는 스토리를 필터링하도록 피드를 학습시키세요."
 
+msgid "Train, Save, Share and the rest"
+msgstr "학습, 저장, 공유 등"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "뉴스레터를 일반 피드처럼 학습하고, 태그를 달고, 검색하고, 정리하세요"
 
@@ -7294,9 +7499,6 @@ msgstr "인기 급상승"
 
 msgid "Trending Sites"
 msgstr "인기 급상승 사이트"
-
-msgid "Truncate stories"
-msgstr "스토리 줄여서 표시"
 
 msgid "Try"
 msgstr "사용해 보기"
@@ -7425,6 +7627,9 @@ msgstr "음소거 해제됨"
 
 msgid "Unread"
 msgstr "읽지 않음"
+
+msgid "Unread count"
+msgstr "읽지 않은 스토리 수"
 
 msgid "Unread only"
 msgstr "읽지 않은 항목만"
@@ -7679,6 +7884,10 @@ msgstr "음성 설정"
 msgid "Voices"
 msgstr "음성"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "따뜻함"
+
 msgid "Warning: This is actually permanent"
 msgstr "경고: 이 작업은 실제로 영구적입니다"
 
@@ -7776,8 +7985,14 @@ msgstr "맥락과 배경은 무엇인가요?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI와 MCP의 차이는 무엇인가요?"
 
+msgid "When NewsBlur opens"
+msgstr "NewsBlur이 열릴 때"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "피드가 업데이트되면 NewsBlur가 모든 구독 피드에서 중복 항목을 확인합니다"
+
+msgid "When clicked"
+msgstr "클릭할 때"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "여러 피드에 같은 스토리가 있으면 NewsBlur가 하나로 묶어 한 번만 표시합니다."
@@ -7801,6 +8016,9 @@ msgstr "새 피드를 구독하면 이전 항목도 기록에 채워집니다"
 
 msgid "Which AI models are available?"
 msgstr "어떤 AI 모델을 사용할 수 있나요?"
+
+msgid "While scrolling"
+msgstr "스크롤하는 동안"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "이런! 문제가 발생했습니다. 다시 시도해 주세요."
@@ -7831,6 +8049,9 @@ msgstr "창 제목"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "키보드 사용"
 
 msgid "Word Matching"
 msgstr "단어 일치"

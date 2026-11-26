@@ -2622,6 +2622,10 @@ msgstr "รับทราบ!<br>อีเมลควรส่งถึงค�
 msgid "Graceful iFrame Busting"
 msgstr "การป้องกัน iFrame อย่างราบรื่น"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "สีเทา"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "ข่าวดี %(username)s!"
@@ -6441,6 +6445,10 @@ msgstr "ต้องการปลดล็อกเพิ่มเติมอ
 
 msgid "Warm"
 msgstr "อบอุ่น"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "โทนอุ่น"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""

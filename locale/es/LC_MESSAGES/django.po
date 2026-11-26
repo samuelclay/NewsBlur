@@ -2694,6 +2694,10 @@ msgstr "¡Listo!<br>El correo debería llegar en los próximos minutos."
 msgid "Graceful iFrame Busting"
 msgstr "Graceful iFrame Busting"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Gris"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "¡Buenas noticias, %(username)s!"
@@ -6634,6 +6638,10 @@ msgstr "¿Quieres desbloquear aún más?"
 
 msgid "Warm"
 msgstr "Cálida"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "Cálido"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr ""

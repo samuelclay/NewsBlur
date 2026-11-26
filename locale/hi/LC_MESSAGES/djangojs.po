@@ -1006,6 +1006,12 @@ msgstr "1 वर्ष"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12-घंटे का"
+
+msgid "24-hour"
+msgstr "24 घंटे"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "पढ़ने, कार्रवाइयों, प्रशिक्षण और खोज के लिए 28 टूल उपलब्ध हैं।"
 
@@ -1059,6 +1065,9 @@ msgstr "साझा किए गए लेखों का blurblog"
 msgid "A clearer, closer sound"
 msgstr "और साफ़, और क़रीबी आवाज़"
 
+msgid "A folder"
+msgstr "एक फ़ोल्डर"
+
 msgid "A folder of feeds read as one stream"
 msgstr "एक फ़ोल्डर की फ़ीडों को एक स्ट्रीम की तरह पढ़ें"
 
@@ -1072,11 +1081,23 @@ msgstr "%(value_1)s की ओर से एक उपहार आपके ख
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "दूसरे चरण में, पृष्ठ पर सही पैटर्न खोजने के लिए आपके संकेत का उपयोग किया जाता है।"
 
+msgid "A short list of titles above the open story"
+msgstr "खुले लेख के ऊपर शीर्षकों की एक छोटी सूची"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "एक पसंद कितनी भी नापसंद पर भारी पड़ती है"
 
 msgid "A story diff with additions and deletions"
 msgstr "जोड़ और हटाव दिखाने वाला लेख अंतर"
+
+msgid "A story is read as soon as it is selected"
+msgstr "लेख चुनते ही उसे पढ़ा हुआ माना जाता है"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "नीचे तय किए गए समय तक खुला रहने पर लेख को पढ़ा हुआ माना जाता है"
+
+msgid "A to Z"
+msgstr "अ से ज्ञ"
 
 msgid "AI Filter"
 msgstr "AI फ़िल्टर"
@@ -1241,6 +1262,9 @@ msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s सेकंड बाद।"
 msgstr[1] "%(slider)s %(count)s सेकंड बाद।"
 
+msgid "After a delay"
+msgstr "कुछ देर बाद"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr "पाठक द्वारा आपके ऐप को अनुमति देने के बाद, NewsBlur उन्हें प्राधिकरण कोड के साथ इस URL पर भेजता है।"
 
@@ -1249,6 +1273,9 @@ msgstr "फ़ीड/फ़ोल्डर को पढ़ा हुआ चि�
 
 msgid "Afternoon"
 msgstr "दोपहर"
+
+msgid "Afterwards"
+msgstr "बाद में"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1388,9 +1415,6 @@ msgstr "Android सूचनाओं के लिए Premium Archive आवश
 msgid "Animals"
 msgstr "जानवर"
 
-msgid "Animations"
-msgstr "एनिमेशन"
-
 msgid "Any"
 msgstr "कोई भी"
 
@@ -1467,6 +1491,9 @@ msgstr "क्या ऐप मुफ़्त हैं?"
 msgid "Are the apps open source?"
 msgstr "क्या ऐप ओपन सोर्स हैं?"
 
+msgid "Arrow keys"
+msgstr "ऐरो कुंजियाँ"
+
 msgid "Arrows"
 msgstr "तीर"
 
@@ -1507,6 +1534,9 @@ msgstr "कोई सवाल पूछें..."
 
 msgid "Ask about your browsing history..."
 msgstr "अपने ब्राउज़िंग इतिहास के बारे में पूछें..."
+
+msgid "Ask first"
+msgstr "पहले पूछें"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1557,6 +1587,9 @@ msgstr "स्वचालित"
 
 msgid "Auto Mark as Read"
 msgstr "पढ़ा हुआ अपने-आप चिह्नित करें"
+
+msgid "Auto follows system appearance"
+msgstr "सिस्टम की दिखावट का अपने-आप अनुसरण करता है"
 
 msgid "Auto mark as read"
 msgstr "अपने-आप पढ़ा हुआ चिह्नित करें"
@@ -1630,6 +1663,15 @@ msgstr "आपकी रुचियों के आधार पर"
 msgid "Begin Training"
 msgstr "प्रशिक्षण शुरू करें"
 
+msgid "Behavior"
+msgstr "व्यवहार"
+
+msgid "Below the story"
+msgstr "लेख के नीचे"
+
+msgid "Beside the story"
+msgstr "लेख के बगल में"
+
 msgid "Bio"
 msgstr "परिचय"
 
@@ -1678,6 +1720,9 @@ msgstr "Blurblog शीर्षक"
 
 msgid "Blurblogs"
 msgstr "Blurblogs"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog, साझा किए गए लेख और टिप्पणियाँ"
 
 msgid "Bookmarklet"
 msgstr "बुकमार्कलेट"
@@ -1745,16 +1790,25 @@ msgstr "ब्राउज़र"
 msgid "Browser Extensions"
 msgstr "ब्राउज़र एक्सटेंशन"
 
+msgid "Browser menu"
+msgstr "ब्राउज़र मेनू"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr ""
 "क्या आप ऐसा सार्वजनिक RSS रीडर बना रहे हैं जिसे कोई भी इस्तेमाल कर सके? आपको मुफ़्त NewsBlur Premium Pro "
 "खाता मिल सकता है।"
+
+msgid "Built-in story lists in the sidebar"
+msgstr "साइडबार में पहले से मौजूद लेख सूचियाँ"
 
 msgid "Bullet points"
 msgstr "बुलेट पॉइंट"
 
 msgid "Bullets"
 msgstr "बुलेट पॉइंट"
+
+msgid "Buttons"
+msgstr "बटन"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1923,9 +1977,6 @@ msgstr "अपनी ब्रीफ़िंग लिखने के लि�
 msgid "Choose which feeds are used to build your briefing"
 msgstr "चुनें कि आपकी ब्रीफ़िंग बनाने के लिए कौन-से फ़ीड इस्तेमाल हों"
 
-msgid "Choose which feeds to include"
-msgstr "शामिल करने के लिए फ़ीड चुनें"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "चुनें कि आपकी ब्रीफ़िंग में कौन-से अनुभाग दिखें"
 
@@ -2002,11 +2053,17 @@ msgstr "उस संस्करण को पढ़ने के लिए क
 msgid "Click to block"
 msgstr "ब्लॉक करने के लिए क्लिक करें"
 
+msgid "Clicks"
+msgstr "क्लिक"
+
 msgid "Client ID"
 msgstr "क्लाइंट ID"
 
 msgid "Client secret"
 msgstr "क्लाइंट सीक्रेट"
+
+msgid "Clock"
+msgstr "घड़ी"
 
 msgid "Close"
 msgstr "बंद करें"
@@ -2047,6 +2104,9 @@ msgstr "लेख समेटें"
 msgid "Collapsed"
 msgstr "समेटा गया"
 
+msgid "Collapsed folders"
+msgstr "समेटे गए फ़ोल्डर"
+
 msgid "Color"
 msgstr "रंग"
 
@@ -2065,8 +2125,8 @@ msgstr "कमांड JSON आउटपुट देते हैं, जि�
 msgid "Comment"
 msgstr "टिप्पणी"
 
-msgid "Comment on stories"
-msgstr "लेखों पर टिप्पणी करें"
+msgid "Comments"
+msgstr "टिप्पणियाँ"
 
 msgid "Comments:"
 msgstr "टिप्पणियाँ:"
@@ -2284,9 +2344,6 @@ msgstr "कस्टम तारीख सीमा"
 msgid "Custom icon"
 msgstr "कस्टम आइकन"
 
-msgid "Customizable writing style and length"
-msgstr "अनुकूलित लेखन शैली और लंबाई"
-
 msgid "Customize auto-read by site or folder"
 msgstr "साइट या फ़ोल्डर के अनुसार ऑटो-रीड कस्टमाइज़ करें"
 
@@ -2324,6 +2381,9 @@ msgstr "लेखों का दैनिक वितरण"
 msgid "Dark"
 msgstr "गहरा"
 
+msgid "Dark appearance"
+msgstr "डार्क रूप"
+
 msgid "Dark mode and reading customization"
 msgstr "डार्क मोड और पढ़ने के विकल्प"
 
@@ -2354,9 +2414,6 @@ msgstr "डिफ़ॉल्ट"
 
 msgid "Default Blocklist"
 msgstr "डिफ़ॉल्ट ब्लॉकलिस्ट"
-
-msgid "Default folder"
-msgstr "डिफ़ॉल्ट फ़ोल्डर"
 
 msgid "Default layout"
 msgstr "डिफ़ॉल्ट लेआउट"
@@ -2441,15 +2498,6 @@ msgstr "विस्तृत"
 
 msgid "Devices"
 msgstr "डिवाइस"
-
-msgid "Disable daily briefings"
-msgstr "दैनिक ब्रीफ़िंग बंद करें"
-
-msgid "Disable social features"
-msgstr "सोशल सुविधाएँ बंद करें"
-
-msgid "Disable story clustering"
-msgstr "लेख क्लस्टरिंग बंद करें"
 
 msgid "Disable the highlighter"
 msgstr "हाइलाइटर अक्षम करें"
@@ -2555,6 +2603,9 @@ msgstr "हो गया!"
 
 msgid "Double-clicking a site"
 msgstr "किसी साइट पर डबल-क्लिक करना"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "किसी साइट की अपठित संख्या पर दो बार क्लिक करने से पूरी साइट पढ़ी हुई चिह्नित हो जाती है"
 
 msgid "Double-clicking an unread count"
 msgstr "अपठित संख्या पर डबल-क्लिक करना"
@@ -2689,17 +2740,11 @@ msgstr "YouTube वीडियो के लिए कैप्शन/उपश
 msgid "Enable daily briefings"
 msgstr "दैनिक ब्रीफ़िंग चालू करें"
 
-msgid "Enable highlighting"
-msgstr "हाइलाइटिंग सक्षम करें"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "आवाज़ इनपुट का उपयोग करने के लिए ब्राउज़र सेटिंग में माइक्रोफ़ोन चालू करें"
 
 msgid "Enable social features"
 msgstr "सोशल सुविधाएँ चालू करें"
-
-msgid "Enable story clustering"
-msgstr "लेख क्लस्टरिंग सक्षम करें"
 
 msgid "Enable the sites you want"
 msgstr "अपनी पसंद की साइटें सक्षम करें"
@@ -2786,6 +2831,9 @@ msgstr "शाम"
 msgid "Every"
 msgstr "हर"
 
+msgid "Every folder"
+msgstr "हर फ़ोल्डर"
+
 msgid "Every new story is archived permanently"
 msgstr "हर नया लेख स्थायी रूप से संग्रहित होता है"
 
@@ -2798,10 +2846,19 @@ msgstr "हर लेख हमेशा के लिए संग्रहि�
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "हर लेख हमेशा के लिए संग्रहित और खोजने योग्य। आपका निजी ज्ञान-भंडार।"
 
+msgid "Every story as the site published it in its feed"
+msgstr "हर लेख वैसा ही, जैसा साइट ने अपनी फ़ीड में प्रकाशित किया"
+
+msgid "Every story in full, one after another"
+msgstr "हर लेख पूरा, एक के बाद एक"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "हर टैग की अपनी RSS फ़ीड होती है। लिंक साझा करें या उसे IFTTT या Zapier में जोड़ें।"
 
 msgid "Everybody"
+msgstr "सभी"
+
+msgid "Everyone"
 msgstr "सभी"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3180,6 +3237,9 @@ msgstr "फ़ोल्डरों में अपठित लेखों �
 msgid "Folders"
 msgstr "फ़ोल्डर"
 
+msgid "Folders only"
+msgstr "केवल फ़ोल्डर"
+
 msgid "Folders, feeds, and story titles"
 msgstr "फ़ोल्डर, फ़ीड और लेख शीर्षक"
 
@@ -3345,6 +3405,9 @@ msgstr "मित्र &amp; फ़ॉलोअर"
 
 msgid "Friends and Followers"
 msgstr "दोस्त और फ़ॉलोअर"
+
+msgid "Friends only"
+msgstr "केवल दोस्तों के लिए"
 
 msgctxt "date range"
 msgid "From"
@@ -3536,6 +3599,10 @@ msgstr "उपयोगी चीज़ें &amp; मोबाइल ऐप्
 msgid "Google News"
 msgstr "Google News"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "धूसर"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "हरे रंग से जोड़ और लाल रंग से हटाव दिखता है।"
 
@@ -3553,6 +3620,9 @@ msgstr "अपने फ़ीड में डुप्लिकेट ले�
 
 msgid "Group stories that share:"
 msgstr "इन साझा विशेषताओं के आधार पर लेखों को समूहित करें:"
+
+msgid "Grouped"
+msgstr "समूहबद्ध"
 
 msgid "Groups similar stories from different feeds"
 msgstr "अलग-अलग फ़ीड के मिलते-जुलते लेखों को समूहित करता है"
@@ -3626,6 +3696,9 @@ msgstr "पढ़े जा रहे अनुच्छेद को हाइ�
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "खास वाक्यांशों पर प्रशिक्षण देने के लिए शीर्षक के शब्दों को हाइलाइट करें।"
 
+msgid "Highlighter"
+msgstr "हाइलाइटर"
+
 msgid "History"
 msgstr "इतिहास"
 
@@ -3661,6 +3734,9 @@ msgstr "भावनात्मकता का स्तर"
 
 msgid "How often"
 msgstr "कितनी बार"
+
+msgid "How panes and stories move"
+msgstr "पैन और लेख कैसे चलते हैं"
 
 msgid "I'm Following"
 msgstr "मैं फ़ॉलो कर रहा/रही हूँ"
@@ -3743,6 +3819,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "नई विंडो में"
+
+msgid "In a pill"
+msgstr "पिल में"
 
 msgid "In rotation"
 msgstr "क्रम में शामिल"
@@ -3879,6 +3958,9 @@ msgstr "पढ़ते समय दाईं ओर के बटन दृश
 msgid "Keep stories separate"
 msgstr "लेखों को अलग-अलग रखें"
 
+msgid "Keep unread counts out of the window title"
+msgstr "अपठित लेखों की संख्या विंडो के शीर्षक में न दिखाएँ"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "NewsBlur की ताज़ा जानकारी पाते रहें"
 
@@ -3904,11 +3986,20 @@ msgstr "कीवर्ड अनुभाग"
 msgid "Language"
 msgstr "भाषा"
 
+msgid "Language and time"
+msgstr "भाषा और समय"
+
 msgid "Large image thumbnail on the left"
 msgstr "बाईं ओर बड़ा छवि थंबनेल"
 
 msgid "Large image thumbnail on the right"
 msgstr "दाईं ओर बड़ा थंबनेल"
+
+msgid "Large, left"
+msgstr "बड़ा, बाईं ओर"
+
+msgid "Large, right"
+msgstr "बड़ा, दाईं ओर"
 
 msgid "Last 30 Days"
 msgstr "पिछले 30 दिन"
@@ -3953,6 +4044,9 @@ msgstr "आइए, पढ़ने के लिए कुछ साइटें
 msgid "Light"
 msgstr "हल्का"
 
+msgid "Light appearance"
+msgstr "हल्का रूप"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3980,6 +4074,12 @@ msgstr "सीधे मूल लेख का लिंक"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "मेरे Blurblog और साझा टिप्पणियों का लिंक"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "लेखों के लिंक नई विंडो या टैब में खुलते हैं"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "लेखों के लिंक इस विंडो में NewsBlur की जगह खुलते हैं"
 
 msgid "List"
 msgstr "सूची"
@@ -4079,9 +4179,6 @@ msgstr "MCP सर्वर तक पहुँच के लिए Premium Arch
 
 msgid "Magazine"
 msgstr "पत्रिका"
-
-msgid "Make changes above..."
-msgstr "ऊपर बदलाव करें..."
 
 msgid "Manage Categories"
 msgstr "श्रेणियाँ प्रबंधित करें"
@@ -4202,9 +4299,6 @@ msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "पिछले <b>%(value_1)s दिन</b> के लेखों को अपठित चिह्नित करें"
 msgstr[1] "पिछले <b>%(value_1)s दिनों</b> के लेखों को अपठित चिह्नित करें"
 
-msgid "Mark stories read on scroll"
-msgstr "स्क्रॉल करते समय लेखों को पढ़ा हुआ चिह्नित करें"
-
 msgid "Mark the site as read"
 msgstr "साइट को पढ़ा हुआ चिह्नित करें"
 
@@ -4216,6 +4310,12 @@ msgstr "पढ़ा हुआ चिह्नित किया जा रह�
 
 msgid "Marking as unread..."
 msgstr "अपठित के रूप में चिह्नित किया जा रहा है..."
+
+msgid "Marking sites as read"
+msgstr "साइटों को पढ़ा हुआ चिह्नित किया जा रहा है"
+
+msgid "Marking stories as read"
+msgstr "लेखों को पढ़ा हुआ चिह्नित करना"
 
 msgid "Match"
 msgstr "मिलान"
@@ -4335,6 +4435,12 @@ msgstr "इस सप्ताह सबसे ज़्यादा सब्�
 msgid "Most used at top, then alphabetical"
 msgstr "सबसे अधिक इस्तेमाल किए गए ऊपर, फिर वर्णानुक्रम में"
 
+msgid "Most used first"
+msgstr "सबसे ज़्यादा इस्तेमाल किए गए पहले"
+
+msgid "Motion"
+msgstr "गति"
+
 msgid "Move"
 msgstr "स्थानांतरित करें"
 
@@ -4409,6 +4515,9 @@ msgstr "कभी नहीं"
 
 msgid "Name"
 msgstr "नाम"
+
+msgid "Name only"
+msgstr "केवल नाम"
 
 msgid "Native Apps"
 msgstr "नेटिव ऐप्स"
@@ -4500,11 +4609,20 @@ msgstr "नया पासवर्ड"
 msgid "New posts from feeds you recently read"
 msgstr "हाल ही में पढ़े गए फ़ीड से नई पोस्ट"
 
+msgid "New stories"
+msgstr "नए लेख"
+
 msgid "New tag name"
 msgstr "नए टैग का नाम"
 
 msgid "New to me"
 msgstr "मेरे लिए नया"
+
+msgid "New window"
+msgstr "नई विंडो"
+
+msgid "New window, marked read"
+msgstr "नई विंडो, पढ़ा हुआ चिह्नित"
 
 msgid "Newer:"
 msgstr "इस तारीख के बाद:"
@@ -4530,6 +4648,9 @@ msgstr "NewsBlur अभी काम नहीं कर रहा है। <br
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur रखरखाव मोड में है। <br> जल्द ही फिर कोशिश करें।"
+
+msgid "NewsBlur menu"
+msgstr "NewsBlur मेनू"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur बदलावों के लिए पेज पर अपने-आप नज़र रखता है"
@@ -4569,6 +4690,12 @@ msgstr "अगला लेख"
 
 msgid "Next unread"
 msgstr "अगला अपठित"
+
+msgid "Next unread at the end"
+msgstr "अंत में अगला अपठित लेख"
+
+msgid "Next unread halfway"
+msgstr "अगला अपठित लेख आधा पढ़ें"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "इसके बाद, अपने सभी न्यूज़लेटर के लिए एक फ़िल्टर बनाएँ, ताकि वे NewsBlur के कस्टम पते पर फ़ॉरवर्ड हों।"
@@ -4919,6 +5046,9 @@ msgstr "Premium Archive में खोज से हाल का ही न�
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "Premium में खोज आपके हाल के लेखों तक सीमित है। Premium Archive में अब तक संग्रहित हर लेख खोजा जा सकता है।"
 
+msgid "On reload"
+msgstr "पुनः लोड करने पर"
+
 msgid "One command with Docker"
 msgstr "Docker के साथ एक कमांड"
 
@@ -5057,6 +5187,12 @@ msgstr "फ़ीड और लेख के शीर्षक का मेन
 msgid "Open the first story"
 msgstr "पहला लेख खोलें"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "NewsBlur लोड करते समय नीचे चुना गया फ़ोल्डर खोलें"
+
+msgid "Open the next one"
+msgstr "अगला खोलें"
+
 msgid "Open the next site/folder"
 msgstr "अगली साइट/फ़ोल्डर खोलें"
 
@@ -5077,6 +5213,12 @@ msgstr "अपनी दैनिक ब्रीफ़िंग खोलें
 
 msgid "Open your saved stories"
 msgstr "अपने सहेजे गए लेख खोलें"
+
+msgid "Opening a site also opens its first story"
+msgstr "साइट खोलने पर उसका पहला लेख भी खुलता है"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "साइट खोलने पर उसके लेख दिखते हैं और आपके चुने जाने का इंतज़ार होता है"
 
 msgid "Opens"
 msgstr "खोले गए"
@@ -5218,6 +5360,9 @@ msgstr "एक प्लान चुनें और भुगतान कर�
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "चुनें कि NewsBlur कौन-सी भाषा इस्तेमाल करे। आप इसे कभी भी प्राथमिकताओं में बदल सकते हैं।"
 
+msgid "Placement"
+msgstr "स्थान"
+
 msgid "Places"
 msgstr "स्थान"
 
@@ -5241,6 +5386,9 @@ msgstr "सबसे आख़िर में चलाएँ"
 
 msgid "Play Next"
 msgstr "इसके बाद चलाएँ"
+
+msgid "Play YouTube videos without captions"
+msgstr "YouTube वीडियो बिना कैप्शन के चलाएँ"
 
 msgid "Play in Mini Media Player"
 msgstr "मिनी मीडिया प्लेयर में चलाएँ"
@@ -5464,9 +5612,6 @@ msgstr "सुरक्षित:"
 msgid "Public blurblog sharing"
 msgstr "सार्वजनिक Blurblog साझा करना"
 
-msgid "Public comments"
-msgstr "सार्वजनिक टिप्पणियाँ"
-
 msgid "Public:"
 msgstr "सार्वजनिक:"
 
@@ -5564,6 +5709,9 @@ msgstr ""
 
 msgid "Read aloud"
 msgstr "ज़ोर से पढ़ें"
+
+msgid "Read and unread stories are both listed"
+msgstr "पढ़े हुए और अपठित, दोनों तरह के लेख सूचीबद्ध हैं"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5668,11 +5816,8 @@ msgstr "भुनाया गया"
 msgid "Redirect URL"
 msgstr "रीडायरेक्ट URL"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "अपनी समाचार धारा में अव्यवस्था कम करें"
-
-msgid "Reduce motion"
-msgstr "गति कम करें"
+msgid "Reduced"
+msgstr "कम किया गया"
 
 msgid "Refer"
 msgstr "रेफ़र करें"
@@ -5714,6 +5859,9 @@ msgstr "संबंधित"
 
 msgid "Related Sites"
 msgstr "संबंधित साइटें"
+
+msgid "Related sites above the story titles"
+msgstr "लेखों के शीर्षकों के ऊपर संबंधित साइटें"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "संबंधित लेख केवल प्रीमियम सदस्यों के लिए उपलब्ध हैं।"
@@ -5861,6 +6009,12 @@ msgstr "समाचारों की धारा"
 msgid "River of News (reading by folder)"
 msgstr "समाचार धारा (फ़ोल्डर के अनुसार पढ़ना)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "तस्वीर और पूर्वावलोकन वाली खुली-खुली पंक्तियाँ"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "साइडबार और लेख सूची की पंक्तियाँ"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "OAuth के ज़रिए अधिकृत करने के लिए newsblur auth login चलाएँ"
 
@@ -5917,9 +6071,6 @@ msgstr "मेरी Blurblog सेटिंग्स सहेजें"
 
 msgid "Save My Profile"
 msgstr "मेरी प्रोफ़ाइल सहेजें"
-
-msgid "Save Preferences"
-msgstr "प्राथमिकताएँ सहेजें"
 
 msgid "Save Search"
 msgstr "खोज सहेजें"
@@ -6001,15 +6152,21 @@ msgstr ""
 "निर्धारित ब्रीफ़िंग के लिए Premium Archive सदस्यता ज़रूरी है। आपके प्लान में ब्रीफ़िंग केवल ‘ब्रीफ़िंग "
 "बनाएँ’ बटन दबाने पर बनती हैं।"
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "निर्धारित डिलीवरी (रोज़ाना या दिन में दो बार)"
-
 msgid "Science"
 msgstr "विज्ञान"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "स्कोप्ड क्लासिफ़ायर केवल %(plan)s ग्राहकों के लिए उपलब्ध हैं।"
+
+msgid "Scroll only"
+msgstr "केवल स्क्रॉल करें"
+
+msgid "Scroll the story"
+msgstr "लेख में स्क्रॉल करें"
+
+msgid "Scroll the story by the distance set below"
+msgstr "लेख को नीचे निर्धारित दूरी तक स्क्रॉल करें"
 
 msgid "Scroll to comments"
 msgstr "टिप्पणियों तक स्क्रॉल करें"
@@ -6146,14 +6303,8 @@ msgstr ""
 "देखें कि पहली बार प्रकाशित होने के बाद कोई लेख कैसे बदलता है। NewsBlur संशोधनों को ट्रैक करता है और बदली "
 "हुई चीज़ों का अंतर हरे और लाल रंग में दिखाता है।"
 
-msgid "See shared stories"
-msgstr "साझा किए गए लेख देखें"
-
 msgid "See the story title and a short content preview"
 msgstr "लेख का शीर्षक और सामग्री की छोटी झलक देखें"
-
-msgid "See which feeds cover the same story"
-msgstr "देखें कि किन फ़ीड में वही लेख है"
 
 msgid "Select"
 msgstr "चुनें"
@@ -6212,6 +6363,9 @@ msgstr "यह लेख भेजें"
 msgid "Sending…"
 msgstr "भेजा जा रहा है…"
 
+msgid "Separate"
+msgstr "अलग-अलग"
+
 msgid "September"
 msgstr "सितंबर"
 
@@ -6256,9 +6410,6 @@ msgstr ""
 
 msgid "Share on NewsBlur"
 msgstr "NewsBlur पर साझा करें"
-
-msgid "Share stories"
-msgstr "लेख साझा करें"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6325,35 +6476,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "छोटा"
 
+msgid "Shorten all"
+msgstr "सभी छोटे करें"
+
+msgid "Shorten shared"
+msgstr "साझा लेखों को छोटा करें"
+
+msgid "Shortened stories open with a click"
+msgstr "छोटे किए गए लेख क्लिक करने पर खुलते हैं"
+
 msgid "Show"
 msgstr "दिखाएँ"
 
 msgid "Show Folders"
 msgstr "फ़ोल्डर दिखाएँ"
 
-msgid "Show Global Shared Stories"
-msgstr "वैश्विक साझा लेख दिखाएँ"
-
-msgid "Show Good Reads"
-msgstr "अच्छे लेख दिखाएँ"
-
-msgid "Show Infrequent Site Stories"
-msgstr "कम प्रकाशित होने वाली साइटों के लेख दिखाएँ"
-
-msgid "Show Long Reads"
-msgstr "लंबे लेख दिखाएँ"
-
-msgid "Show Widely Read Stories"
-msgstr "व्यापक रूप से पढ़े गए लेख दिखाएँ"
-
 msgid "Show a preview of the story"
 msgstr "लेख का पूर्वावलोकन दिखाएँ"
 
 msgid "Show all animations"
 msgstr "सभी एनिमेशन दिखाएँ"
-
-msgid "Show all comments"
-msgstr "सभी टिप्पणियाँ दिखाएँ"
 
 msgid "Show all stories"
 msgstr "सभी लेख दिखाएँ"
@@ -6384,6 +6526,9 @@ msgstr "टेक्स्ट चुनते समय हाइलाइटर
 
 msgid "Show history"
 msgstr "इतिहास दिखाएँ"
+
+msgid "Show in full"
+msgstr "पूरा दिखाएँ"
 
 msgid "Show more related stories"
 msgstr "और संबंधित लेख दिखाएँ"
@@ -6428,6 +6573,9 @@ msgstr "<b>%(date)s</b> के लेख दिखाए जा रहे है
 msgid "Shows a toolbar button with your unread count"
 msgstr "अपठित लेखों की संख्या वाला टूलबार बटन दिखाता है"
 
+msgid "Sidebar"
+msgstr "साइडबार"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "साइन इन करें और आपकी फ़ीड, ट्रेनिंग और सहेजे गए लेख तुरंत सिंक होंगे"
 
@@ -6464,17 +6612,20 @@ msgstr "साइट URL या नाम से खोजें..."
 msgid "Site by Site"
 msgstr "साइट दर साइट"
 
+msgid "Site order"
+msgstr "साइटों का क्रम"
+
 msgid "Site settings"
 msgstr "साइट सेटिंग"
-
-msgid "Site sidebar order"
-msgstr "साइट साइडबार का क्रम"
 
 msgid "Site stats"
 msgstr "साइट के आँकड़े"
 
 msgid "Sites"
 msgstr "साइटें"
+
+msgid "Sites and folders"
+msgstr "साइटें और फ़ोल्डर"
 
 msgid "Sites updated up to 5x more often"
 msgstr "साइटें 5 गुना तक अधिक बार अपडेट होती हैं"
@@ -6497,6 +6648,12 @@ msgstr "बाईं ओर छोटा छवि थंबनेल"
 msgid "Small image thumbnail on the right"
 msgstr "दाईं ओर छोटा छवि थंबनेल"
 
+msgid "Small, left"
+msgstr "छोटा, बाईं ओर"
+
+msgid "Small, right"
+msgstr "छोटा, दाईं ओर"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "करने को इतना कम और समय इतना ज़्यादा। नहीं, रुको! इसका उलटा कहो।"
 
@@ -6505,6 +6662,9 @@ msgstr "सोशल"
 
 msgid "Social Connections"
 msgstr "सोशल कनेक्शन"
+
+msgid "Social features"
+msgstr "सोशल सुविधाएँ"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6556,8 +6716,11 @@ msgstr "क्रमबद्ध करने, फ़िल्टर करन�
 msgid "Source feeds"
 msgstr "स्रोत फ़ीड"
 
-msgid "Spacing between feeds and story titles"
-msgstr "फ़ीड और लेख शीर्षकों के बीच की दूरी"
+msgid "Space bar"
+msgstr "स्पेस बार"
+
+msgid "Spacing"
+msgstr "अंतराल"
 
 msgid "Spanish"
 msgstr "स्पैनिश"
@@ -6661,6 +6824,9 @@ msgstr "स्थिति"
 msgid "Stay on the same feed/folder"
 msgstr "उसी फ़ीड/फ़ोल्डर पर बने रहें"
 
+msgid "Stay put"
+msgstr "यहीं रहें"
+
 msgid "Steadier or more varied"
 msgstr "ज़्यादा स्थिर या ज़्यादा विविध"
 
@@ -6689,6 +6855,9 @@ msgstr "पसंद किए गए लेख हरे रंग में �
 
 msgid "Stories arrive in real-time"
 msgstr "लेख तुरंत प्राप्त होते हैं"
+
+msgid "Stories as cards in a grid"
+msgstr "ग्रिड में कार्ड के रूप में लेख"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "ऑफ़लाइन पढ़ने के लिए लेख कैश होते हैं और बैकग्राउंड में अपने-आप अपडेट होते हैं।"
@@ -6748,6 +6917,12 @@ msgstr "प्रति माह लेख"
 msgid "Stories readers finished, saved, and shared"
 msgstr "पाठकों द्वारा पूरे पढ़े गए, सहेजे गए और साझा किए गए लेख"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "लेख शीर्षकों में स्क्रॉल करके पार किए गए लेख"
+
+msgid "Stories shown"
+msgstr "दिखाए गए लेख"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "वे लेख जिन्होंने NewsBlur में सबसे अधिक ध्यान खींचा।"
 
@@ -6756,6 +6931,9 @@ msgstr "लेखों को <b>कभी नहीं</b> अपने-आप
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "लेखों को <b>कभी नहीं</b> पढ़ा हुआ चिह्नित किया जाएगा"
+
+msgid "Stories you have read are left out"
+msgstr "आपके पढ़े हुए लेख शामिल नहीं किए जाते"
 
 msgid "Story"
 msgstr "लेख"
@@ -6790,6 +6968,9 @@ msgstr "लेख की टाइपोग्राफ़ी"
 msgid "Story URL"
 msgstr "लेख URL"
 
+msgid "Story buttons"
+msgstr "लेख के बटन"
+
 msgid "Story cards open on their own screen"
 msgstr "लेख कार्ड अपनी अलग स्क्रीन पर खुलते हैं"
 
@@ -6808,23 +6989,20 @@ msgstr "लेख की भाषा"
 msgid "Story layout"
 msgstr "लेख लेआउट"
 
+msgid "Story list"
+msgstr "लेख सूची"
+
 msgid "Story preview"
 msgstr "लेख पूर्वावलोकन"
 
 msgid "Story shows in Focus view"
 msgstr "लेख फ़ोकस दृश्य में दिखाई देता है"
 
-msgid "Story side options"
-msgstr "लेख के साइड विकल्प"
-
-msgid "Story side options buttons"
-msgstr "लेख साइड विकल्प बटन"
-
-msgid "Story side options placement"
-msgstr "लेख के साइड विकल्पों की स्थिति"
-
 msgid "Story title styling"
 msgstr "लेख शीर्षक की शैली"
+
+msgid "Story titles beside the open story"
+msgstr "खुले लेख के बगल में लेखों के शीर्षक"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "स्ट्रीम बाधित हुई। 10 सेकंड तक कोई जवाब नहीं मिला।"
@@ -7007,6 +7185,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "लंबा"
 
+msgid "Tall stories"
+msgstr "लंबे लेख"
+
 msgid "Target category name"
 msgstr "लक्ष्य श्रेणी का नाम"
 
@@ -7072,6 +7253,9 @@ msgstr "धन्यवाद! आपके पास %(bold_start)sPremium Arch
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "धन्यवाद! आपके पास %(bold_start)sPremium Pro खाता%(bold_end)s है।"
 
+msgid "That change could not be saved"
+msgstr "वह बदलाव सहेजा नहीं जा सका"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI सेवा को जवाब देने में बहुत समय लगा। कृपया फिर से कोशिश करें।"
 
@@ -7123,6 +7307,9 @@ msgstr "पूरी समाचार धारा एक %(link_start)sप्
 msgid "The full shortcut list"
 msgstr "शॉर्टकट की पूरी सूची"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "साइट से प्राप्त लेख का पूरा पाठ"
+
 msgid "The gift has been applied to your account."
 msgstr "उपहार आपके खाते में लागू कर दिया गया है।"
 
@@ -7144,16 +7331,31 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "आपकी फ़ीड के सबसे अहम लेख"
 
+msgid "The most recent stories come first"
+msgstr "सबसे नए लेख पहले आते हैं"
+
+msgid "The oldest stories come first"
+msgstr "सबसे पुराने लेख पहले आते हैं"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "प्रकाशक ने मूल पेज को बंद कर दिया है।"
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "पृष्ठ का HTML प्राप्त करके सामग्री की संरचना निकालने के लिए उसका विश्लेषण किया जाता है।"
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "साइट स्वयं, जैसी वह ब्राउज़र में दिखाई देती है"
+
+msgid "The story on its own page on the site"
+msgstr "साइट पर लेख का अपना पेज"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
 "आपका चुना हुआ दृश्य हर साइट के लिए याद रखा जाता है, इसलिए केवल सारांश वाली फ़ीड में डिफ़ॉल्ट रूप से पाठ "
 "दृश्य चुना जा सकता है।"
+
+msgid "Theme"
+msgstr "थीम"
 
 msgid "Themes & Customization"
 msgstr "थीम और अनुकूलन"
@@ -7366,6 +7568,9 @@ msgstr "शीर्षक के वाक्यांश"
 msgid "Title Regex"
 msgstr "शीर्षक रेगेक्स"
 
+msgid "Title and preview"
+msgstr "शीर्षक और पूर्वावलोकन"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "शीर्षक फ़िल्टर को %(context)s में कोई लेख नहीं मिला।"
@@ -7441,9 +7646,6 @@ msgstr "टूल"
 msgid "Tooltips"
 msgstr "टूलटिप"
 
-msgid "Tooltips like this"
-msgstr "इस तरह के टूलटिप"
-
 msgid "Top"
 msgstr "शीर्ष"
 
@@ -7503,6 +7705,9 @@ msgstr "इस लेख को प्रशिक्षित करें"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "अपनी पसंद और नापसंद के लेखों को फ़िल्टर करने के लिए अपनी फ़ीड को प्रशिक्षित करें।"
 
+msgid "Train, Save, Share and the rest"
+msgstr "प्रशिक्षित करें, सहेजें, साझा करें और बाकी"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "न्यूज़लेटर्स को किसी भी फ़ीड की तरह ट्रेन करें, टैग करें, खोजें और व्यवस्थित करें"
 
@@ -7526,9 +7731,6 @@ msgstr "रुझान में"
 
 msgid "Trending Sites"
 msgstr "ट्रेंडिंग साइटें"
-
-msgid "Truncate stories"
-msgstr "लेख छोटे करें"
 
 msgid "Try"
 msgstr "आज़माएँ"
@@ -7658,6 +7860,9 @@ msgstr "अनम्यूट किया गया"
 
 msgid "Unread"
 msgstr "अपठित"
+
+msgid "Unread count"
+msgstr "अपठित लेखों की संख्या"
 
 msgid "Unread only"
 msgstr "केवल अपठित"
@@ -7918,6 +8123,10 @@ msgstr "आवाज़ की सेटिंग्स"
 msgid "Voices"
 msgstr "आवाज़ें"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "गर्म"
+
 msgid "Warning: This is actually permanent"
 msgstr "चेतावनी: यह कार्रवाई वास्तव में स्थायी है"
 
@@ -8017,8 +8226,14 @@ msgstr "संदर्भ और पृष्ठभूमि क्या ह�
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI और MCP में क्या अंतर है?"
 
+msgid "When NewsBlur opens"
+msgstr "NewsBlur खुलने पर"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "फ़ीड अपडेट होने पर NewsBlur आपकी सभी सदस्यताओं में डुप्लिकेट खोजता है"
+
+msgid "When clicked"
+msgstr "क्लिक करने पर"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "जब कई फ़ीड में एक ही लेख होता है, तो NewsBlur उन्हें एक साथ समूहित करता है ताकि आपको वह केवल एक बार दिखे।"
@@ -8044,6 +8259,9 @@ msgstr "जब आप किसी नई फ़ीड की सदस्यत
 
 msgid "Which AI models are available?"
 msgstr "कौन-से AI मॉडल उपलब्ध हैं?"
+
+msgid "While scrolling"
+msgstr "स्क्रॉल करते समय"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "ओह! कुछ गड़बड़ हो गई। फिर से कोशिश करें।"
@@ -8074,6 +8292,9 @@ msgstr "विंडो का शीर्षक"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "कीबोर्ड से"
 
 msgid "Word Matching"
 msgstr "शब्द मिलान"

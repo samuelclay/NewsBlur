@@ -2455,6 +2455,10 @@ msgstr "承知しました！<br>メールは数分以内に送信されます�
 msgid "Graceful iFrame Busting"
 msgstr "iFrameの制限を適切に解除"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "グレー"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "%(username)sさん、うれしいお知らせです！"
@@ -5990,6 +5994,10 @@ msgstr "さらに多くの機能を利用しませんか？"
 
 msgid "Warm"
 msgstr "温かみのある"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "暖色"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinettは64バイトのRAMでBASICインタプリタを書きました。最大9行、64文字、整数0&ndash;99。"

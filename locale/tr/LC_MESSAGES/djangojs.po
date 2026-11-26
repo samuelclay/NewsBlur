@@ -942,6 +942,12 @@ msgstr "1 yıl"
 msgid "10 hours"
 msgstr ""
 
+msgid "12-hour"
+msgstr "12 saat"
+
+msgid "24-hour"
+msgstr "24 saatlik"
+
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
 
@@ -992,6 +998,9 @@ msgstr "Paylaşılan haberlerden oluşan bir blurblog"
 msgid "A clearer, closer sound"
 msgstr "Daha net ve yakın bir ses"
 
+msgid "A folder"
+msgstr "Bir klasör"
+
 msgid "A folder of feeds read as one stream"
 msgstr "Tek bir haber akışı olarak okunan bir klasör"
 
@@ -1005,11 +1014,23 @@ msgstr "%(value_1)s tarafından gönderilen hediye hesabınıza tanımlandı."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "İkinci geçişte, sayfadaki doğru deseni bulmak için verdiğiniz ipucu kullanılır."
 
+msgid "A short list of titles above the open story"
+msgstr "Açık haberin üstünde görünen kısa başlık listesi"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "Tek bir beğeni, istenen sayıda beğenmemeyi geçersiz kılar"
 
 msgid "A story diff with additions and deletions"
 msgstr "Eklemeleri ve silmeleri gösteren bir haber farkı"
+
+msgid "A story is read as soon as it is selected"
+msgstr "Bir haber seçilir seçilmez okunmuş sayılır"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "Bir haber, aşağıda belirlenen süre boyunca açık kaldığında okunmuş sayılır"
+
+msgid "A to Z"
+msgstr "A'dan Z'ye"
 
 msgid "AI Filter"
 msgstr "Yapay zekâ filtresi"
@@ -1172,6 +1193,9 @@ msgid "After %(slider)s %(count)s second."
 msgid_plural "After %(slider)s %(count)s seconds."
 msgstr[0] "%(slider)s %(count)s saniye sonra."
 
+msgid "After a delay"
+msgstr "Bir gecikmeden sonra"
+
 msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
 msgstr ""
 "Bir okuyucu uygulamanıza izin verdikten sonra NewsBlur, okuyucuyu bir yetkilendirme koduyla bu URL’ye "
@@ -1182,6 +1206,9 @@ msgstr "Akışı/klasörü okundu olarak işaretledikten sonra"
 
 msgid "Afternoon"
 msgstr "Öğleden sonra"
+
+msgid "Afterwards"
+msgstr "Sonrasında"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1317,9 +1344,6 @@ msgstr "Android bildirimleri için Premium Archive gerekir"
 msgid "Animals"
 msgstr "Hayvanlar"
 
-msgid "Animations"
-msgstr "Animasyonlar"
-
 msgid "Any"
 msgstr "Herhangi bir tarih"
 
@@ -1394,6 +1418,9 @@ msgstr "Uygulamalar ücretsiz mi?"
 msgid "Are the apps open source?"
 msgstr "Uygulamalar açık kaynaklı mı?"
 
+msgid "Arrow keys"
+msgstr "Ok tuşları"
+
 msgid "Arrows"
 msgstr "Oklar"
 
@@ -1434,6 +1461,9 @@ msgstr "Bir soru sorun..."
 
 msgid "Ask about your browsing history..."
 msgstr "Gezinme geçmişiniz hakkında sorun..."
+
+msgid "Ask first"
+msgstr "Önce sor"
 
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
@@ -1482,6 +1512,9 @@ msgstr "Otomatik"
 
 msgid "Auto Mark as Read"
 msgstr "Okunmuş Olarak Otomatik İşaretle"
+
+msgid "Auto follows system appearance"
+msgstr "Sistem görünümünü otomatik izler"
 
 msgid "Auto mark as read"
 msgstr "Otomatik olarak okundu işaretle"
@@ -1554,6 +1587,15 @@ msgstr "İlgi alanlarınıza göre"
 msgid "Begin Training"
 msgstr "Eğitimi başlat"
 
+msgid "Behavior"
+msgstr "Davranış"
+
+msgid "Below the story"
+msgstr "Haberin altında"
+
+msgid "Beside the story"
+msgstr "Haberin yanında"
+
 msgid "Bio"
 msgstr "Hakkında"
 
@@ -1602,6 +1644,9 @@ msgstr "Blurblog başlığı"
 
 msgid "Blurblogs"
 msgstr "Blurblog'lar"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "Blurblog'lar, paylaşılan haberler ve yorumlar"
 
 msgid "Bookmarklet"
 msgstr "Yer imi uygulaması"
@@ -1669,16 +1714,25 @@ msgstr "Tarayıcı"
 msgid "Browser Extensions"
 msgstr "Tarayıcı Eklentileri"
 
+msgid "Browser menu"
+msgstr "Tarayıcı menüsü"
+
 msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
 msgstr ""
 "Herkesin kullanabileceği, herkese açık bir RSS okuyucusu mu geliştiriyorsunuz? Ücretsiz bir NewsBlur "
 "Premium Pro hesabı almaya uygun olabilirsiniz."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "Kenar çubuğundaki yerleşik haber listeleri"
 
 msgid "Bullet points"
 msgstr "Madde işaretleri"
 
 msgid "Bullets"
 msgstr "Madde işaretleri"
+
+msgid "Buttons"
+msgstr "Düğmeler"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1844,9 +1898,6 @@ msgstr "Özetinizi hangi yapay zekâ modelinin yazacağını seçin"
 msgid "Choose which feeds are used to build your briefing"
 msgstr "Özetinizi oluşturmak için hangi akışların kullanılacağını seçin"
 
-msgid "Choose which feeds to include"
-msgstr "Dahil edilecek akışları seçin"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "Özetinizde hangi bölümlerin görüneceğini seçin"
 
@@ -1926,11 +1977,17 @@ msgstr ""
 msgid "Click to block"
 msgstr "Engellemek için tıklayın"
 
+msgid "Clicks"
+msgstr "Tıklamalar"
+
 msgid "Client ID"
 msgstr "İstemci Kimliği"
 
 msgid "Client secret"
 msgstr "İstemci gizli anahtarı"
+
+msgid "Clock"
+msgstr "Saat"
 
 msgid "Close"
 msgstr "Kapat"
@@ -1971,6 +2028,9 @@ msgstr "Haberi daralt"
 msgid "Collapsed"
 msgstr "Daraltıldı"
 
+msgid "Collapsed folders"
+msgstr "Daraltılmış klasörler"
+
 msgid "Color"
 msgstr "Renk"
 
@@ -1989,8 +2049,8 @@ msgstr "Komutlar, doğrudan jq'ya aktarabileceğiniz JSON çıktısı verir."
 msgid "Comment"
 msgstr "Yorum"
 
-msgid "Comment on stories"
-msgstr "Haberler hakkında yorum yap"
+msgid "Comments"
+msgstr "Yorumlar"
 
 msgid "Comments:"
 msgstr "Yorumlar:"
@@ -2212,9 +2272,6 @@ msgstr "Özel tarih aralığı"
 msgid "Custom icon"
 msgstr "Özel simge"
 
-msgid "Customizable writing style and length"
-msgstr "Yazım tarzı ve uzunluğu özelleştirilebilir"
-
 msgid "Customize auto-read by site or folder"
 msgstr "Otomatik okumayı siteye veya klasöre göre özelleştirin"
 
@@ -2252,6 +2309,9 @@ msgstr "Haberlerin günlere göre dağılımı"
 msgid "Dark"
 msgstr "Koyu"
 
+msgid "Dark appearance"
+msgstr "Koyu görünüm"
+
 msgid "Dark mode and reading customization"
 msgstr "Koyu mod ve okuma ayarları"
 
@@ -2282,9 +2342,6 @@ msgstr "Varsayılan"
 
 msgid "Default Blocklist"
 msgstr "Varsayılan Engelleme Listesi"
-
-msgid "Default folder"
-msgstr "Varsayılan klasör"
 
 msgid "Default layout"
 msgstr "Varsayılan düzen"
@@ -2366,15 +2423,6 @@ msgstr "Ayrıntılı"
 
 msgid "Devices"
 msgstr "Cihazlar"
-
-msgid "Disable daily briefings"
-msgstr "Günlük özetleri devre dışı bırak"
-
-msgid "Disable social features"
-msgstr "Sosyal özellikleri devre dışı bırak"
-
-msgid "Disable story clustering"
-msgstr "Haber kümelemeyi devre dışı bırak"
 
 msgid "Disable the highlighter"
 msgstr "Vurgulayıcıyı devre dışı bırak"
@@ -2480,6 +2528,9 @@ msgstr "Tamamlandı!"
 
 msgid "Double-clicking a site"
 msgstr "Bir siteye çift tıklama"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "Bir sitenin okunmamış haber sayısına çift tıklamak, sitenin tamamını okundu olarak işaretler"
 
 msgid "Double-clicking an unread count"
 msgstr "Okunmamış sayacına çift tıklama"
@@ -2615,17 +2666,11 @@ msgstr "YouTube videolarında altyazıları etkinleştir"
 msgid "Enable daily briefings"
 msgstr "Günlük özetleri etkinleştir"
 
-msgid "Enable highlighting"
-msgstr "Vurgulamayı etkinleştir"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "Sesli girişi kullanmak için tarayıcı ayarlarından mikrofonu etkinleştirin"
 
 msgid "Enable social features"
 msgstr "Sosyal özellikleri etkinleştir"
-
-msgid "Enable story clustering"
-msgstr "Haber kümelemeyi etkinleştir"
 
 msgid "Enable the sites you want"
 msgstr "İstediğiniz siteleri etkinleştirin"
@@ -2712,6 +2757,9 @@ msgstr "Akşam"
 msgid "Every"
 msgstr "Her"
 
+msgid "Every folder"
+msgstr "Her klasör"
+
 msgid "Every new story is archived permanently"
 msgstr "Her yeni haber kalıcı olarak arşivlenir"
 
@@ -2726,10 +2774,19 @@ msgstr "Her haber sonsuza dek arşivlenir ve aranabilir"
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "Her haber sonsuza dek arşivlenir ve aranabilir. Kişisel bilgi birikiminiz."
 
+msgid "Every story as the site published it in its feed"
+msgstr "Her haber, sitenin akışında yayımladığı hâliyle"
+
+msgid "Every story in full, one after another"
+msgstr "Her haberin tamamı, sırayla"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "Her etiketin kendine ait bir RSS akışı vardır. Bağlantıyı paylaşın veya IFTTT ya da Zapier'e aktarın."
 
 msgid "Everybody"
+msgstr "Herkes"
+
+msgid "Everyone"
 msgstr "Herkes"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3110,6 +3167,9 @@ msgstr "Klasörlerin okunmamış haber sayıları"
 msgid "Folders"
 msgstr "Klasörler"
 
+msgid "Folders only"
+msgstr "Yalnızca klasörler"
+
 msgid "Folders, feeds, and story titles"
 msgstr "Klasörler, akışlar ve haber başlıkları"
 
@@ -3275,6 +3335,9 @@ msgstr "Arkadaşlar &amp; Takipçiler"
 
 msgid "Friends and Followers"
 msgstr "Arkadaşlar ve takipçiler"
+
+msgid "Friends only"
+msgstr "Yalnızca arkadaşlar"
 
 msgctxt "date range"
 msgid "From"
@@ -3466,6 +3529,10 @@ msgstr "Ekstralar &amp; Mobil Uygulamalar"
 msgid "Google News"
 msgstr "Google Haberler"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Gri"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "Yeşil eklemeleri, kırmızı silmeleri gösterir."
 
@@ -3483,6 +3550,9 @@ msgstr "Akışlarınızdaki yinelenen haberleri gruplayın"
 
 msgid "Group stories that share:"
 msgstr "Şunları paylaşan haberleri grupla:"
+
+msgid "Grouped"
+msgstr "Gruplanmış"
 
 msgid "Groups similar stories from different feeds"
 msgstr "Farklı akışlardaki benzer haberleri gruplandırır"
@@ -3555,6 +3625,9 @@ msgstr "Okunan paragrafı vurgula"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "Belirli ifadeleri öğrenmesi için başlıktaki sözcükleri vurgulayın."
 
+msgid "Highlighter"
+msgstr "Vurgulayıcı"
+
 msgid "History"
 msgstr "Geçmiş"
 
@@ -3590,6 +3663,9 @@ msgstr "Duygu yoğunluğu"
 
 msgid "How often"
 msgstr "Ne sıklıkla"
+
+msgid "How panes and stories move"
+msgstr "Paneller ve haberler nasıl hareket eder"
 
 msgid "I'm Following"
 msgstr "Takip Ettiklerim"
@@ -3673,6 +3749,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "Yeni pencerede"
+
+msgid "In a pill"
+msgstr "Hap içinde"
 
 msgid "In rotation"
 msgstr "Döngüde"
@@ -3809,6 +3888,9 @@ msgstr "Okurken sağ taraftaki düğmeleri görünür tut"
 msgid "Keep stories separate"
 msgstr "Haberleri ayrı tut"
 
+msgid "Keep unread counts out of the window title"
+msgstr "Okunmamış sayılarını pencere başlığında gösterme"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "NewsBlur ile güncel kalın"
 
@@ -3834,11 +3916,20 @@ msgstr "Anahtar kelime bölümleri"
 msgid "Language"
 msgstr "Dil"
 
+msgid "Language and time"
+msgstr "Dil ve saat"
+
 msgid "Large image thumbnail on the left"
 msgstr "Solda büyük görsel"
 
 msgid "Large image thumbnail on the right"
 msgstr "Sağda büyük görsel"
+
+msgid "Large, left"
+msgstr "Büyük, sol"
+
+msgid "Large, right"
+msgstr "Büyük, sağda"
 
 msgid "Last 30 Days"
 msgstr "Son 30 Gün"
@@ -3883,6 +3974,9 @@ msgstr "Okumak için birkaç site bulalım."
 msgid "Light"
 msgstr "Açık"
 
+msgid "Light appearance"
+msgstr "Açık görünüm"
+
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
 "image previews, all customizable per-feed."
@@ -3910,6 +4004,12 @@ msgstr "Doğrudan orijinal habere bağlantı ver"
 
 msgid "Link to my blurblog and shared comments"
 msgstr "Blurblog'uma ve paylaşılan yorumlara bağlantı"
+
+msgid "Links in stories open in a new window or tab"
+msgstr "Haberlerdeki bağlantılar yeni bir pencerede veya sekmede açılır"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "Haberlerdeki bağlantılar bu pencerede NewsBlur öğesinin yerini alır"
 
 msgid "List"
 msgstr "Liste"
@@ -4009,9 +4109,6 @@ msgstr "MCP sunucusuna erişmek için Premium Archive veya Premium Pro gerekir."
 
 msgid "Magazine"
 msgstr "Dergi"
-
-msgid "Make changes above..."
-msgstr "Yukarıda değişiklik yapın..."
 
 msgid "Manage Categories"
 msgstr "Kategorileri yönet"
@@ -4128,9 +4225,6 @@ msgid "Mark stories from the last <b>%(value_1)s day</b> as unread"
 msgid_plural "Mark stories from the last <b>%(value_1)s days</b> as unread"
 msgstr[0] "Son <b>%(value_1)s gün</b> içindeki haberleri okunmadı olarak işaretle"
 
-msgid "Mark stories read on scroll"
-msgstr "Kaydırırken haberleri okundu olarak işaretle"
-
 msgid "Mark the site as read"
 msgstr "Siteyi okunmuş olarak işaretle"
 
@@ -4142,6 +4236,12 @@ msgstr "Okundu olarak işaretleniyor..."
 
 msgid "Marking as unread..."
 msgstr "Okunmamış olarak işaretleniyor..."
+
+msgid "Marking sites as read"
+msgstr "Siteleri okundu olarak işaretleme"
+
+msgid "Marking stories as read"
+msgstr "Haberleri okundu olarak işaretleme"
 
 msgid "Match"
 msgstr "Eşleşme"
@@ -4259,6 +4359,12 @@ msgstr "Bu hafta en çok abone olunan akışlar"
 msgid "Most used at top, then alphabetical"
 msgstr "En çok kullanılanlar en üstte, ardından alfabetik sırayla"
 
+msgid "Most used first"
+msgstr "En çok kullanılan önce"
+
+msgid "Motion"
+msgstr "Hareket"
+
 msgid "Move"
 msgstr "Taşı"
 
@@ -4331,6 +4437,9 @@ msgstr "ASLA"
 
 msgid "Name"
 msgstr "Ad"
+
+msgid "Name only"
+msgstr "Yalnızca ad"
 
 msgid "Native Apps"
 msgstr "Yerel Uygulamalar"
@@ -4422,11 +4531,20 @@ msgstr "Yeni şifre"
 msgid "New posts from feeds you recently read"
 msgstr "Yakın zamanda okuduğunuz akışlardan yeni gönderiler"
 
+msgid "New stories"
+msgstr "Yeni haberler"
+
 msgid "New tag name"
 msgstr "Yeni etiket adı"
 
 msgid "New to me"
 msgstr "Benim için yeni"
+
+msgid "New window"
+msgstr "Yeni pencere"
+
+msgid "New window, marked read"
+msgstr "Yeni pencere, okundu olarak işaretlendi"
 
 msgid "Newer:"
 msgstr "Daha yeni:"
@@ -4452,6 +4570,9 @@ msgstr "NewsBlur şu anda çalışmıyor. <br> Lütfen biraz sonra tekrar deneyi
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur bakım modunda. <br> Kısa süre sonra tekrar deneyin."
+
+msgid "NewsBlur menu"
+msgstr "NewsBlur menüsü"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "NewsBlur, sayfadaki değişiklikleri otomatik olarak izler"
@@ -4491,6 +4612,12 @@ msgstr "Sonraki haber"
 
 msgid "Next unread"
 msgstr "Sonraki okunmamış"
+
+msgid "Next unread at the end"
+msgstr "Sonda sonraki okunmamış haber"
+
+msgid "Next unread halfway"
+msgstr "Bir sonraki okunmamış haberin yarısı"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "Sonra, tüm bültenlerinizin NewsBlur'daki özel adrese yönlendirilmesini sağlayacak bir filtre oluşturun."
@@ -4839,6 +4966,9 @@ msgstr ""
 "Premium'da arama, son haberlerinizi kapsar. Premium Archive'da arşivlenmiş tüm haberlerde arama "
 "yapabilirsiniz."
 
+msgid "On reload"
+msgstr "Yeniden yüklemede"
+
 msgid "One command with Docker"
 msgstr "Docker ile tek komut"
 
@@ -4971,6 +5101,12 @@ msgstr "Akış ve haber başlığı menüsünü aç"
 msgid "Open the first story"
 msgstr "İlk haberi aç"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "NewsBlur yüklenirken aşağıdan seçilen klasörü aç"
+
+msgid "Open the next one"
+msgstr "Sonrakini aç"
+
 msgid "Open the next site/folder"
 msgstr "Sonraki siteyi/klasörü aç"
 
@@ -4991,6 +5127,12 @@ msgstr "Günlük Özetinizi açın"
 
 msgid "Open your saved stories"
 msgstr "Kaydettiğiniz haberleri açın"
+
+msgid "Opening a site also opens its first story"
+msgstr "Bir siteyi açtığınızda ilk haberi de açılır"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "Bir siteyi açtığınızda haberleri gösterilir ve siz birini seçene kadar beklenir"
 
 msgid "Opens"
 msgstr "Açılma"
@@ -5136,6 +5278,9 @@ msgstr "Bir paket seçin ve ödeme yapın."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "NewsBlur için kullanmak istediğiniz dili seçin. Bunu istediğiniz zaman Tercihler'den değiştirebilirsiniz."
 
+msgid "Placement"
+msgstr "Yerleşim"
+
 msgid "Places"
 msgstr "Yerler"
 
@@ -5159,6 +5304,9 @@ msgstr "Sıranın sonuna ekle"
 
 msgid "Play Next"
 msgstr "Sıradaki olarak oynat"
+
+msgid "Play YouTube videos without captions"
+msgstr "YouTube videolarını altyazısız oynat"
 
 msgid "Play in Mini Media Player"
 msgstr "Mini Medya Oynatıcı'da oynat"
@@ -5382,9 +5530,6 @@ msgstr "Korunan:"
 msgid "Public blurblog sharing"
 msgstr "Herkese açık blurblog paylaşımı"
 
-msgid "Public comments"
-msgstr "Herkese açık yorumlar"
-
 msgid "Public:"
 msgstr "Herkese açık:"
 
@@ -5478,6 +5623,9 @@ msgstr ""
 
 msgid "Read aloud"
 msgstr "Sesli oku"
+
+msgid "Read and unread stories are both listed"
+msgstr "Okunmuş ve okunmamış haberler birlikte listelenir"
 
 #, python-format
 msgid "Read by %(voice)s"
@@ -5582,11 +5730,8 @@ msgstr "Kullanıldı"
 msgid "Redirect URL"
 msgstr "Yönlendirme URL'si"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "Haber akışınızdaki kalabalığı azaltın"
-
-msgid "Reduce motion"
-msgstr "Hareketi azalt"
+msgid "Reduced"
+msgstr "Azaltılmış"
 
 msgid "Refer"
 msgstr "Davet et"
@@ -5628,6 +5773,9 @@ msgstr "İlgili"
 
 msgid "Related Sites"
 msgstr "İlgili Siteler"
+
+msgid "Related sites above the story titles"
+msgstr "Haber başlıklarının üzerindeki ilgili siteler"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "İlgili haberler yalnızca premium abonelere açıktır."
@@ -5774,6 +5922,12 @@ msgstr "Haber Akışı"
 msgid "River of News (reading by folder)"
 msgstr "Haber Akışı (klasöre göre okuma)"
 
+msgid "Roomy rows with a picture and a preview"
+msgstr "Görsel ve önizleme içeren ferah satırlar"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "Kenar çubuğundaki ve haber listesindeki satırlar"
+
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "OAuth ile yetkilendirmek için newsblur auth login komutunu çalıştırın"
 
@@ -5828,9 +5982,6 @@ msgstr "Blurblog Ayarlarımı Kaydet"
 
 msgid "Save My Profile"
 msgstr "Profilimi Kaydet"
-
-msgid "Save Preferences"
-msgstr "Tercihleri Kaydet"
 
 msgid "Save Search"
 msgstr "Aramayı Kaydet"
@@ -5914,15 +6065,21 @@ msgstr ""
 "Zamanlanmış özetler için Premium Archive aboneliği gerekir. Planınızda özetler yalnızca Oluştur düğmesini "
 "kullandığınızda hazırlanır."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "Planlanmış gönderim (günde bir veya iki kez)"
-
 msgid "Science"
 msgstr "Bilim"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "Kapsamlı sınıflandırıcılar yalnızca %(plan)s abonelerine sunulur."
+
+msgid "Scroll only"
+msgstr "Yalnızca kaydırma"
+
+msgid "Scroll the story"
+msgstr "Haberi kaydır"
+
+msgid "Scroll the story by the distance set below"
+msgstr "Haberi aşağıda belirlenen mesafe kadar kaydırın"
 
 msgid "Scroll to comments"
 msgstr "Yorumlara kaydır"
@@ -6059,14 +6216,8 @@ msgstr ""
 "Bir haberin ilk yayımlandıktan sonra nasıl değiştiğini görün. NewsBlur sürümleri izler ve değişiklikleri "
 "yeşil ve kırmızıyla vurgulayarak gösterir."
 
-msgid "See shared stories"
-msgstr "Paylaşılan haberleri gör"
-
 msgid "See the story title and a short content preview"
 msgstr "Haberin başlığını ve kısa bir içerik önizlemesini gör"
-
-msgid "See which feeds cover the same story"
-msgstr "Hangi akışların aynı haberi kapsadığını görün"
 
 msgid "Select"
 msgstr "Seç"
@@ -6125,6 +6276,9 @@ msgstr "Bu haberi gönder"
 msgid "Sending…"
 msgstr "Gönderiliyor…"
 
+msgid "Separate"
+msgstr "Ayrı"
+
 msgid "September"
 msgstr "Eylül"
 
@@ -6167,9 +6321,6 @@ msgstr "Bir haberi yorumla paylaşın; blurblog'unuzda yayımlansın ve RSS ya d
 
 msgid "Share on NewsBlur"
 msgstr "NewsBlur'da paylaş"
-
-msgid "Share stories"
-msgstr "Haberleri paylaş"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6237,35 +6388,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "Kısa"
 
+msgid "Shorten all"
+msgstr "Tümünü kısalt"
+
+msgid "Shorten shared"
+msgstr "Paylaşılanları kısalt"
+
+msgid "Shortened stories open with a click"
+msgstr "Kısaltılmış haberler tıklayınca açılır"
+
 msgid "Show"
 msgstr "Göster"
 
 msgid "Show Folders"
 msgstr "Klasörleri Göster"
 
-msgid "Show Global Shared Stories"
-msgstr "Genel Paylaşılan Haberleri Göster"
-
-msgid "Show Good Reads"
-msgstr "Okumaya Değer Haberleri Göster"
-
-msgid "Show Infrequent Site Stories"
-msgstr "Seyrek Güncellenen Sitelerin Haberlerini Göster"
-
-msgid "Show Long Reads"
-msgstr "Uzun Okumaları Göster"
-
-msgid "Show Widely Read Stories"
-msgstr "Çok Okunan Haberleri Göster"
-
 msgid "Show a preview of the story"
 msgstr "Haberin önizlemesini göster"
 
 msgid "Show all animations"
 msgstr "Tüm animasyonları göster"
-
-msgid "Show all comments"
-msgstr "Tüm yorumları göster"
 
 msgid "Show all stories"
 msgstr "Tüm haberleri göster"
@@ -6296,6 +6438,9 @@ msgstr "Metin seçerken vurgulayıcıyı göster"
 
 msgid "Show history"
 msgstr "Geçmişi göster"
+
+msgid "Show in full"
+msgstr "Tamamını göster"
 
 msgid "Show more related stories"
 msgstr "Daha fazla benzer haber göster"
@@ -6340,6 +6485,9 @@ msgstr "<b>%(date)s</b> tarihli haberler gösteriliyor"
 msgid "Shows a toolbar button with your unread count"
 msgstr "Okunmamış sayınızı gösteren bir araç çubuğu düğmesi ekler"
 
+msgid "Sidebar"
+msgstr "Kenar çubuğu"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "Oturum açın; akışlarınız, eğitim verileriniz ve kaydedilen haberleriniz anında eşitlenir"
 
@@ -6376,17 +6524,20 @@ msgstr "Site URL'si veya ada göre arayın..."
 msgid "Site by Site"
 msgstr "Siteye Göre"
 
+msgid "Site order"
+msgstr "Site sıralaması"
+
 msgid "Site settings"
 msgstr "Site ayarları"
-
-msgid "Site sidebar order"
-msgstr "Site kenar çubuğu sıralaması"
 
 msgid "Site stats"
 msgstr "Site istatistikleri"
 
 msgid "Sites"
 msgstr "Siteler"
+
+msgid "Sites and folders"
+msgstr "Siteler ve klasörler"
 
 msgid "Sites updated up to 5x more often"
 msgstr "Siteler 5 kata kadar daha sık güncellenir"
@@ -6409,6 +6560,12 @@ msgstr "Solda küçük görsel"
 msgid "Small image thumbnail on the right"
 msgstr "Sağda küçük görsel"
 
+msgid "Small, left"
+msgstr "Küçük, solda"
+
+msgid "Small, right"
+msgstr "Küçük, sağda"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "Bu kadar çok zaman, yapılacak bu kadar az şey. Yok, öyle değil! Tersini söyleyecektim."
 
@@ -6417,6 +6574,9 @@ msgstr "Sosyal"
 
 msgid "Social Connections"
 msgstr "Sosyal Bağlantılar"
+
+msgid "Social features"
+msgstr "Sosyal özellikler"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6468,8 +6628,11 @@ msgstr "Sıralama, filtre ve görüntüleme seçenekleri"
 msgid "Source feeds"
 msgstr "Kaynak akışlar"
 
-msgid "Spacing between feeds and story titles"
-msgstr "Akışlar ve haber başlıkları arasındaki boşluk"
+msgid "Space bar"
+msgstr "Boşluk tuşu"
+
+msgid "Spacing"
+msgstr "Aralık"
 
 msgid "Spanish"
 msgstr "İspanyolca"
@@ -6572,6 +6735,9 @@ msgstr "Durum"
 msgid "Stay on the same feed/folder"
 msgstr "Aynı akışta/klasörde kal"
 
+msgid "Stay put"
+msgstr "Olduğu yerde kalsın"
+
 msgid "Steadier or more varied"
 msgstr "Daha dengeli veya daha çeşitli"
 
@@ -6600,6 +6766,9 @@ msgstr "Beğenilen haberler yeşil renkle vurgulanır, beğenilmeyenler gizlenir
 
 msgid "Stories arrive in real-time"
 msgstr "Haberler gerçek zamanlı gelir"
+
+msgid "Stories as cards in a grid"
+msgstr "Haberleri ızgarada kartlar halinde göster"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "Haberler, otomatik arka plan yenilemesiyle çevrimdışı okumak üzere önbelleğe alınır."
@@ -6658,6 +6827,12 @@ msgstr "Ay başına haber"
 msgid "Stories readers finished, saved, and shared"
 msgstr "Okuyucuların bitirdiği, kaydettiği ve paylaştığı haberler"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "Haber başlıklarında üzerinden kaydırılan haberler"
+
+msgid "Stories shown"
+msgstr "Gösterilen haberler"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "NewsBlur genelinde en çok ilgi gören haberler."
 
@@ -6666,6 +6841,9 @@ msgstr "Haberler <b>asla</b> otomatik olarak okundu işaretlenmeyecek"
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "Haberler <b>asla</b> okundu olarak işaretlenmez"
+
+msgid "Stories you have read are left out"
+msgstr "Okuduğunuz haberler listede gösterilmez"
 
 msgid "Story"
 msgstr "Haber"
@@ -6700,6 +6878,9 @@ msgstr "Haber Tipografisi"
 msgid "Story URL"
 msgstr "Haber URL'si"
 
+msgid "Story buttons"
+msgstr "Haber düğmeleri"
+
 msgid "Story cards open on their own screen"
 msgstr "Haber kartları kendi ekranında açılır"
 
@@ -6718,23 +6899,20 @@ msgstr "Haber dili"
 msgid "Story layout"
 msgstr "Haber düzeni"
 
+msgid "Story list"
+msgstr "Haber listesi"
+
 msgid "Story preview"
 msgstr "Haber önizlemesi"
 
 msgid "Story shows in Focus view"
 msgstr "Haber Odak görünümünde gösteriliyor"
 
-msgid "Story side options"
-msgstr "Haber kenarı seçenekleri"
-
-msgid "Story side options buttons"
-msgstr "Haber kenarı seçenek düğmeleri"
-
-msgid "Story side options placement"
-msgstr "Haber kenarı seçeneklerinin konumu"
-
 msgid "Story title styling"
 msgstr "Haber başlığı görünümü"
+
+msgid "Story titles beside the open story"
+msgstr "Haber başlıklarını açık haberin yanında göster"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "Akış kesildi. 10 saniyedir yanıt alınamadı."
@@ -6916,6 +7094,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "Uzun"
 
+msgid "Tall stories"
+msgstr "Uzun haberler"
+
 msgid "Target category name"
 msgstr "Hedef kategori adı"
 
@@ -6981,6 +7162,9 @@ msgstr "Teşekkürler! %(bold_start)sPremium Archive hesabınız%(bold_end)s var
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "Teşekkürler! %(bold_start)sPremium Pro hesabınız%(bold_end)s var."
 
+msgid "That change could not be saved"
+msgstr "Bu değişiklik kaydedilemedi"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Yapay zekâ hizmetinin yanıt vermesi çok uzun sürdü. Lütfen tekrar deneyin."
 
@@ -7033,6 +7217,9 @@ msgstr "Haber Akışının tamamı bir %(link_start)spremium özelliğidir%(link
 msgid "The full shortcut list"
 msgstr "Kısayolların tam listesi"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "Siteden alınan haberin tam metni"
+
 msgid "The gift has been applied to your account."
 msgstr "Hediye hesabınıza eklendi."
 
@@ -7056,16 +7243,31 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "Akışlarınızdaki en önemli haberler"
 
+msgid "The most recent stories come first"
+msgstr "En yeni haberler önce gösterilir"
+
+msgid "The oldest stories come first"
+msgstr "En eski haberler önce gösterilir"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "Orijinal sayfa yayıncı tarafından devre dışı bırakıldı."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Sayfanın HTML'i içerik yapısını çıkarmak için alınıp ayrıştırılır."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "Tarayıcıda göreceğiniz hâliyle sitenin kendisi"
+
+msgid "The story on its own page on the site"
+msgstr "Haberin sitedeki kendi sayfası"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr ""
 "Seçtiğiniz görünüm site bazında hatırlanır; böylece yalnızca özet içeren akışlar varsayılan olarak Metin "
 "görünümünü kullanabilir."
+
+msgid "Theme"
+msgstr "Tema"
 
 msgid "Themes & Customization"
 msgstr "Temalar ve Özelleştirme"
@@ -7274,6 +7476,9 @@ msgstr "Başlık İfadeleri"
 msgid "Title Regex"
 msgstr "Başlık Düzenli İfadesi"
 
+msgid "Title and preview"
+msgstr "Başlık ve önizleme"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "Başlık filtreleri %(context)s içinde haber bulamadı."
@@ -7350,9 +7555,6 @@ msgstr "Araçlar"
 msgid "Tooltips"
 msgstr "Araç ipuçları"
 
-msgid "Tooltips like this"
-msgstr "Bunun gibi ipuçları"
-
 msgid "Top"
 msgstr "Üst"
 
@@ -7412,6 +7614,9 @@ msgstr "Bu haberi eğit"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "Beğendiğiniz ve beğenmediğiniz haberleri filtrelemek için akışlarınızı eğitin."
 
+msgid "Train, Save, Share and the rest"
+msgstr "Eğit, Kaydet, Paylaş ve diğerleri"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "Bültenleri de diğer akışlar gibi eğitin, etiketleyin, arayın ve düzenleyin"
 
@@ -7435,9 +7640,6 @@ msgstr "Trendler"
 
 msgid "Trending Sites"
 msgstr "Trend olan siteler"
-
-msgid "Truncate stories"
-msgstr "Haberleri kısalt"
 
 msgid "Try"
 msgstr "Dene"
@@ -7566,6 +7768,9 @@ msgstr "Sessizden çıkarıldı"
 
 msgid "Unread"
 msgstr "Okunmamış"
+
+msgid "Unread count"
+msgstr "Okunmamış haber sayısı"
 
 msgid "Unread only"
 msgstr "Yalnızca okunmamışlar"
@@ -7822,6 +8027,10 @@ msgstr "Ses ayarları"
 msgid "Voices"
 msgstr "Sesler"
 
+msgctxt "theme"
+msgid "Warm"
+msgstr "Sıcak"
+
 msgid "Warning: This is actually permanent"
 msgstr "Uyarı: Bu işlem gerçekten kalıcıdır"
 
@@ -7921,8 +8130,14 @@ msgstr "Bağlamı ve arka planı nedir?"
 msgid "What's the difference between CLI and MCP?"
 msgstr "CLI ile MCP arasındaki fark nedir?"
 
+msgid "When NewsBlur opens"
+msgstr "NewsBlur açıldığında"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "Bir akış güncellendiğinde NewsBlur, tüm aboneliklerinizde kopya içerik olup olmadığını kontrol eder"
+
+msgid "When clicked"
+msgstr "Tıklandığında"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr ""
@@ -7950,6 +8165,9 @@ msgstr "Yeni bir akışa abone olduğunuzda, geçmiş içerikleri de geriye dön
 
 msgid "Which AI models are available?"
 msgstr "Hangi yapay zekâ modelleri kullanılabilir?"
+
+msgid "While scrolling"
+msgstr "Kaydırırken"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "Hay aksi! Bir şeyler ters gitti. Tekrar deneyin."
@@ -7980,6 +8198,9 @@ msgstr "Pencere başlığı"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "Klavyeyle"
 
 msgid "Word Matching"
 msgstr "Kelime eşleştirme"

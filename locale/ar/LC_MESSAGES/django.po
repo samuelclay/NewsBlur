@@ -2728,6 +2728,10 @@ msgstr "حسنًا!<br>من المفترض أن تصلك الرسالة الإل
 msgid "Graceful iFrame Busting"
 msgstr "تجاوز إطارات iFrame بسلاسة"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "رمادي"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "أخبار رائعة، %(username)s!"
@@ -6614,6 +6618,10 @@ msgstr "هل تريد مزيدًا من ميزات MCP؟"
 msgid "Want to unlock even more?"
 msgstr "هل تريد الاستفادة من المزيد؟"
 
+msgid "Warm"
+msgstr "دافئ"
+
+msgctxt "theme"
 msgid "Warm"
 msgstr "دافئ"
 

@@ -2703,6 +2703,10 @@ msgstr "Fatto!<br>L'email dovrebbe arrivare entro pochi minuti."
 msgid "Graceful iFrame Busting"
 msgstr "Gestione elegante dell'uscita dagli iFrame"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Grigio"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Ottime notizie, %(username)s!"
@@ -6632,6 +6636,10 @@ msgstr "Vuoi altre funzionalità MCP?"
 msgid "Want to unlock even more?"
 msgstr "Vuoi sbloccare ancora di più?"
 
+msgid "Warm"
+msgstr "Caldo"
+
+msgctxt "theme"
 msgid "Warm"
 msgstr "Caldo"
 

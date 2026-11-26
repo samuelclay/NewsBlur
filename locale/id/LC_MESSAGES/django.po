@@ -2683,6 +2683,10 @@ msgstr "Baik!<br>Email akan dikirim dalam beberapa menit."
 msgid "Graceful iFrame Busting"
 msgstr "Penanganan iFrame yang tangguh"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "Abu-abu"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "Kabar baik, %(username)s!"
@@ -6605,6 +6609,10 @@ msgstr "Ingin lebih banyak fitur MCP?"
 msgid "Want to unlock even more?"
 msgstr "Ingin mendapatkan lebih banyak lagi?"
 
+msgid "Warm"
+msgstr "Hangat"
+
+msgctxt "theme"
 msgid "Warm"
 msgstr "Hangat"
 

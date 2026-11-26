@@ -2512,6 +2512,10 @@ msgstr "확인했습니다!<br>이메일은 몇 분 안에 발송됩니다."
 msgid "Graceful iFrame Busting"
 msgstr "원활한 iFrame 차단"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "회색"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "%(username)s님, 좋은 소식이 있습니다!"
@@ -6168,6 +6172,10 @@ msgstr "더 많은 기능을 잠금 해제하시겠습니까?"
 
 msgid "Warm"
 msgstr "따뜻한"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "따뜻함"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett은 RAM 64바이트로 BASIC 인터프리터를 작성했습니다. 최대 9줄, 64개 기호, 정수 0&ndash;99."

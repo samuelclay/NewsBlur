@@ -2466,6 +2466,10 @@ msgstr "知道了！<br>邮件将在几分钟内发送。"
 msgid "Graceful iFrame Busting"
 msgstr "优雅地绕过 iFrame 限制"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "灰色"
+
 #, python-format
 msgid "Great news, %(username)s!"
 msgstr "好消息，%(username)s！"
@@ -6042,6 +6046,10 @@ msgstr "想解锁更多功能吗？"
 
 msgid "Warm"
 msgstr "温暖"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "暖色"
 
 msgid "Warren Robinett wrote a BASIC interpreter in 64 bytes of RAM. Max 9 lines, 64 symbols, integers 0&ndash;99."
 msgstr "Warren Robinett 用 64 字节 RAM 编写了一个 BASIC 解释器。最多 9 行、64 个符号，整数范围为 0&ndash;99。"
