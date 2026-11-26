@@ -39,6 +39,9 @@ class StoryPush
         private val prefsRepo: PrefsRepo,
         @param:IconFileCache private val iconCache: FileCache,
     ) {
+        // Test_StoryPush.kt moves this clock to check when a token is sent again.
+        internal var clock: () -> Long = { System.currentTimeMillis() }
+
         /** Pushes are only useful to a signed-in device that can post notifications (DeviceNotifications.kt). */
         fun wantsPushes(): Boolean = prefsRepo.getUserId() != null && DeviceNotifications.isOn(context, prefsRepo)
 
@@ -52,13 +55,20 @@ class StoryPush
          */
         suspend fun registerToken(token: String): Boolean {
             if (!wantsPushes()) return false
-            if (prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") == token) return true
+            if (isRegistrationFresh(token)) return true
             val response = feedApi.registerPushToken(token)
             // The endpoint answers success with a message, which NewsBlurResponse.isError treats as an error.
             if (response == null || response.isProtocolError || response.code == -1) return false
             prefsRepo.putString(PrefConstants.PUSH_TOKEN_REGISTERED, token)
+            prefsRepo.putLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, clock())
             return true
         }
+
+        // StoryPush.kt sends an unchanged token again once a day. The server drops a token Firebase reports dead
+        // (apps/notifications/models.py), and a device that never sent it again would stop getting pushes for good.
+        private fun isRegistrationFresh(token: String): Boolean =
+            prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") == token &&
+                clock() - prefsRepo.getLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, 0L) < REGISTRATION_FRESH_MILLIS
 
         /** Returns whether the pushed story was fetched and this device's notifications were refreshed. */
         suspend fun handle(data: Map<String, String>): Boolean {
@@ -87,6 +97,8 @@ class StoryPush
             // Keys of the data message built by apps/notifications/models.py send_android.
             const val KEY_STORY_HASH = "story_hash"
             const val KEY_USER_ID = "user_id"
+
+            private const val REGISTRATION_FRESH_MILLIS = 24 * 60 * 60 * 1000L
 
             @JvmStatic
             fun from(context: Context): StoryPush =

@@ -89,6 +89,7 @@ class Test_StoryPush {
         // apps/notifications/views.py answers a saved token with a message, which NewsBlurResponse.isError reads as an error.
         val saved = NewsBlurResponse().apply { message = "Token saved." }
         coEvery { feedApi.registerPushToken("token-1") } returns NewsBlurResponse().apply { isProtocolError = true } andThen saved
+        storyPush.clock = { 5_000L }
 
         assertFalse(storyPush.registerToken("token-1"))
         verify(exactly = 0) { prefsRepo.putString(PrefConstants.PUSH_TOKEN_REGISTERED, any()) }
@@ -97,8 +98,27 @@ class Test_StoryPush {
         verify(exactly = 1) { prefsRepo.putString(PrefConstants.PUSH_TOKEN_REGISTERED, "token-1") }
 
         every { prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") } returns "token-1"
+        every { prefsRepo.getLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, 0L) } returns 5_000L
         assertTrue(storyPush.registerToken("token-1"))
         coVerify(exactly = 2) { feedApi.registerPushToken("token-1") }
+    }
+
+    @Test fun test_unchanged_token_is_sent_again_after_a_day() = runTest {
+        // apps/notifications/models.py drops a token Firebase reports dead. A device that never sent its token again
+        // would stop getting pushes for good.
+        val hour = 60 * 60 * 1000L
+        coEvery { feedApi.registerPushToken("token-1") } returns NewsBlurResponse()
+        every { prefsRepo.getString(PrefConstants.PUSH_TOKEN_REGISTERED, "") } returns "token-1"
+        every { prefsRepo.getLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, 0L) } returns 1_000L
+
+        storyPush.clock = { 1_000L + 23 * hour }
+        assertTrue(storyPush.registerToken("token-1"))
+        coVerify(exactly = 0) { feedApi.registerPushToken(any()) }
+
+        storyPush.clock = { 1_000L + 25 * hour }
+        assertTrue(storyPush.registerToken("token-1"))
+        coVerify(exactly = 1) { feedApi.registerPushToken("token-1") }
+        verify { prefsRepo.putLong(PrefConstants.PUSH_TOKEN_REGISTERED_AT, 1_000L + 25 * hour) }
     }
 
     @Test fun test_token_stays_on_the_device_while_notifications_are_off() = runTest {

@@ -1234,6 +1234,18 @@ class PrefsRepo(
         default: String,
     ): String = prefs.getString(key, default) ?: default
 
+    fun getLong(
+        key: String,
+        default: Long,
+    ): Long = prefs.getLong(key, default)
+
+    fun putLong(
+        key: String,
+        value: Long,
+    ) = prefs.edit {
+        putLong(key, value)
+    }
+
     fun putString(
         key: String,
         value: String,
