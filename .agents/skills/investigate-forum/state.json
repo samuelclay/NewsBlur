@@ -473,6 +473,20 @@
       "note": "Follow-up to the Feb 26 fix (fd61bcae9c), which never fired for this sender. pws3141's Gmail-forwarded POLITICO Berlin and London Playbooks arrive via ImprovMX with the text part set to the HTML source escaped twice; _get_content wrapped it in linebreaks/linkify and the longer-content check kept it. #2213 decodes while escaped tags outnumber real ones (stopping once markup appears) and uses a text part that decodes to markup as HTML; 4 review rounds. Merged f8400f9706 and deployed with make deploy on 2026-11-15 (all 14 app hosts ok, push servers verified on f8400f9706). Repair run on prod the same day: 238/238 stories in feeds 9896406 and 10358846 rewritten (story_content_z and image_urls only); re-tally shows all HTML, re-run finds 0 candidates. Reply is ready to post.",
       "reply": "Found the real cause this time. My February fix never actually kicked in for Politico. Their emails include a plain text version that is really the whole newsletter's HTML source, escaped twice, and NewsBlur was choosing that version over the real HTML because it was longer. The old fix only looked at the HTML version and only undid one layer. Now both versions get decoded properly, so Berlin Playbook renders correctly again, and so does London Playbook, which had the same problem. I also repaired every issue you've already received, so your older Playbooks should display properly too.",
       "question": null
+    },
+    "13976": {
+      "title": "Turn down the brightness on the new dark mode for web",
+      "url": "https://forum.newsblur.com/t/turn-down-the-brightness-on-the-new-dark-mode-for-web/13976",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-11-26T04:40:46Z",
+      "last_posted_at": "2026-11-25T22:41:28.667Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2234",
+      "branch": "web-gray-warm-themes",
+      "worktree": ".worktree/web-gray-warm-themes",
+      "note": "PK1 found the Nov 24 slate dark theme too bright; Sam promised a gray option and a sepia theme in the thread. #2234 adds Gray (the new dark structure in neutral grays, softer text) and Warm (sepia) to the web, an iOS style picker (Auto plus four circles), Auto remembering a light and a dark theme, and a redesigned Preferences dialog. Merged ecc1254163 after two review rounds, plus one follow-up fix on main (adefc3223e). Web deployed with make deploy_static on 2026-11-26 (all 14 app hosts ok, new bundles verified live). The blog post is on main and goes out with the #2235 session's deploy (make blog). Reply is ready to post: Gray is live.",
+      "reply": "Gray is live on the web now. It's the new dark mode with the blue taken out, in neutral grays a little lighter than the old dark mode, and the text is a soft gray instead of bright white. Warm, the sepia theme from the apps, is in too.\n\nThe theme row in the manage menu (the gear at the bottom left) is now Auto followed by four circles: Light, Warm, Gray and Dark. Auto remembers which dark theme you picked, so choose Gray once and Auto will use Gray whenever your system goes dark. Let me know if the contrast still feels off and I'll tune it.",
+      "question": null
     }
   }
 }
