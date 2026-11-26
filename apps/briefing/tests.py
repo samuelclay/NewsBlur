@@ -764,6 +764,59 @@ class Test_Summary(TestCase):
             MStory.objects(story_hash=story.story_hash).delete()
             feed.delete()
 
+    @patch("apps.briefing.summary.LLMCostTracker")
+    @patch("apps.ask_ai.providers.get_briefing_provider")
+    @patch(
+        "apps.ask_ai.providers.BRIEFING_MODELS",
+        {"google": {"vendor": "google"}, "haiku": {"vendor": "anthropic"}},
+    )
+    @patch("apps.ask_ai.providers.DEFAULT_BRIEFING_MODEL", "haiku")
+    def test_summary_falls_back_to_the_default_model_when_gemini_is_out_of_credits(
+        self, mock_get_provider, mock_cost
+    ):
+        """Google answers 402 once the Gemini account's prepaid credits are spent. The eight
+        users who picked Gemini got no briefing from 2026-10-27 on, and their task was queued
+        again every quarter hour. Any vendor that refuses the account falls back, not only xAI."""
+        from google.genai import errors as genai_errors
+
+        from apps.briefing.summary import generate_briefing_summary
+
+        gemini = MagicMock()
+        gemini.is_configured.return_value = True
+        gemini.generate.side_effect = genai_errors.ClientError(
+            402,
+            {
+                "error": {
+                    "code": 402,
+                    "message": "Your prepayment credits are depleted.",
+                    "status": "RESOURCE_EXHAUSTED",
+                }
+            },
+        )
+        default = MagicMock()
+        default.is_configured.return_value = True
+        default.generate.return_value = "<div>From the default model</div>"
+        default.get_last_usage.return_value = (10, 5)
+        mock_get_provider.side_effect = [(gemini, "gemini-3"), (default, "haiku-id")]
+
+        feed = Feed.objects.create(
+            feed_address="http://gemini-refused.com/rss",
+            feed_link="http://gemini-refused.com",
+            feed_title="Gemini Refused Feed",
+        )
+        story = self._make_summary_story(feed, "Refused Story", "Content", "gemini-refused-guid")
+        scored = [self._scored_from_story(story)]
+
+        try:
+            html, metadata = generate_briefing_summary(
+                self.id(), scored, datetime.datetime.utcnow(), model="google"
+            )
+            self.assertEqual(html, "<div>From the default model</div>")
+            self.assertEqual(metadata["model_name"], "haiku")
+        finally:
+            MStory.objects(story_hash=story.story_hash).delete()
+            feed.delete()
+
     @patch("apps.ask_ai.providers.get_briefing_provider")
     def test_summary_all_unconfigured_returns_none(self, mock_get_provider):
         from apps.briefing.summary import generate_briefing_summary
