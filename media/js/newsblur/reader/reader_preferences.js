@@ -1282,7 +1282,11 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         this.set_slider_sentence($(".NB-tangle-readstorydelay", this.$modal),
             ngettext("After %(slider)s %(count)s second.", "After %(slider)s %(count)s seconds.", value), {count: value});
         if (NEWSBLUR.Preferences.read_story_delay > 0 || ui) {
-            $("#NB-preference-readstorydelay-2", this.$modal).prop('checked', true).val(value);
+            // reader_preferences.js: the "After a delay" card is the one read_story_delay choice with
+            // a positive value, and the slider sets how many seconds that value is.
+            $('input[name=read_story_delay]', this.$modal).filter(function () {
+                return parseInt($(this).val(), 10) > 0;
+            }).prop('checked', true).val(value);
             if (ui) {
                 this.enable_save();
             }
@@ -1298,7 +1302,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             gettext("Scroll up/down in story by %(slider)s %(pixels)spx."), {pixels: value});
         $("input[name=arrow_scroll_spacing]", this.$modal).val(value);
         if (NEWSBLUR.Preferences.keyboard_verticalarrows == 'scroll' || ui) {
-            $("#NB-preference-keyboard-verticalarrows-2", this.$modal).prop('checked', true);
+            $('input[name=keyboard_verticalarrows][value=scroll]', this.$modal).prop('checked', true);
             if (ui) {
                 this.enable_save();
             }
