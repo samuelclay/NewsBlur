@@ -29262,6 +29262,12 @@ h5.NB-classifier-section-header {
     overflow-y: auto !important;
 }
 
+/* reader.css: the down arrow stays on the title's line. Where a longer language's tabs leave no
+ * room beside them, the whole title moves under the tabs instead of leaving the arrow on its own. */
+.NB-modal-account .NB-modal-title {
+    white-space: nowrap;
+}
+
 .NB-modal-account .NB-modal-title .NB-icon {
     background: transparent url('/media/embed/icons/nouns/dialog-account.svg') no-repeat 0 0;
     background-size: 28px;

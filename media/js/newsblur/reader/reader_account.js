@@ -1,6 +1,8 @@
 NEWSBLUR.ReaderAccount = function (options) {
     var defaults = {
-        'width': 800,
+        // reader_account.js: five tabs sit beside the title, so the dialog is wider than most, or as
+        // wide as a smaller window allows.
+        'width': Math.min(1000, $(window).width() - 48),
         'modal_container_class': 'NB-account-container',
         'animate_email': false,
         'change_password': false,
