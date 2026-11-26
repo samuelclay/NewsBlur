@@ -93,6 +93,10 @@ FLASK_SENTRY_DSN = None
 APNS_TEAM_ID = "YOUR_APNS_TEAM_ID"  # Apple Developer Team ID
 APNS_KEY_ID = "YOUR_APNS_KEY_ID"  # APNS Key ID from developer account
 
+# settings.py: Firebase Cloud Messaging service account key for Android push notifications, the key's
+# JSON file as a dict. send_android in apps/notifications/models.py sends nothing while this is None.
+FCM_SERVICE_ACCOUNT_INFO = None
+
 # ===================
 # = Global Settings =
 # ===================

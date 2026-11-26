@@ -909,6 +909,7 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Không có thông báo từ nguồn cấp</string>
+    <string name="notifications_device_off">Thông báo đang tắt trên thiết bị này. Các trang web được đặt thông báo trên Android sẽ không phát thông báo ở đây cho đến khi bạn bật lại.</string>
     <string name="notification_permissions_context">Cần có quyền để gửi thông báo</string>
     <string name="notification_permissions_rationale">Bạn cần cấp quyền thông báo theo cách thủ công trong phần cài đặt của ứng dụng trước khi thử bật thông báo lại</string>
     <string name="write_storage_permission_opml">Cần quyền ghi bộ nhớ để xuất OPML</string>

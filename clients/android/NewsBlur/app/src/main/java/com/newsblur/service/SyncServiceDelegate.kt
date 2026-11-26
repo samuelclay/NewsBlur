@@ -19,6 +19,9 @@ interface SyncServiceDelegate {
     val thumbnailCache: FileCache
     val context: Context
 
+    // SyncServiceDelegate.kt tells the sub services when SyncService.kt runs in SyncMode.NOTIFICATIONS_ONLY.
+    val isNotificationsOnlySync: Boolean
+
     fun sendSyncUpdate(update: Int)
 
     fun pushNotifications()
@@ -54,6 +57,7 @@ internal class SyncServiceDelegateImpl(
     override val iconCache: FileCache get() = syncService.iconCache
     override val thumbnailCache: FileCache get() = syncService.thumbnailCache
     override val context: Context get() = syncService.applicationContext
+    override val isNotificationsOnlySync: Boolean get() = syncService.isNotificationsOnlySync
 
     override fun sendSyncUpdate(update: Int) {
         syncService.sendSyncUpdate(update)

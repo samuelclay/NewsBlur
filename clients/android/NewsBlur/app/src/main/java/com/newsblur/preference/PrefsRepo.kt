@@ -20,6 +20,7 @@ import com.newsblur.database.BlurDatabaseHelper
 import com.newsblur.domain.UserDetails
 import com.newsblur.listen.ListenManager
 import com.newsblur.network.APIConstants
+import com.newsblur.push.PushMessaging
 import com.newsblur.service.SubscriptionSyncService
 import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.SyncService
@@ -222,6 +223,9 @@ class PrefsRepo(
         SubscriptionSyncService.cancel(context)
 
         NotificationUtils.clear(context)
+
+        // PrefsRepo.kt forgets this device's push token so the signed-out account's stories stop arriving here.
+        PushMessaging.forgetDevice(context)
 
         // PrefsRepo.kt retains only onboarding history across logout, never account data or credentials.
         val onboardingHistory = prefs.all.filterKeys { it == "last_auth_provider" || it.startsWith("onboarding_complete_") }
@@ -997,6 +1001,9 @@ class PrefsRepo(
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
+    /** DeviceNotifications.kt only prompts a device whose Enable notifications switch was never set, on or off. */
+    fun hasNotificationsChoice() = prefs.contains(PrefConstants.ENABLE_NOTIFICATIONS)
+
     // PrefsRepo.kt reads the synced show_sideoption_ask_ai toggle, falling back to the old device-only one.
     fun isShowAskAi() =
         prefs.getBoolean(StoryButton.ASK_AI.prefKey, prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true))
@@ -1226,6 +1233,18 @@ class PrefsRepo(
         key: String,
         default: String,
     ): String = prefs.getString(key, default) ?: default
+
+    fun getLong(
+        key: String,
+        default: Long,
+    ): Long = prefs.getLong(key, default)
+
+    fun putLong(
+        key: String,
+        value: Long,
+    ) = prefs.edit {
+        putLong(key, value)
+    }
 
     fun putString(
         key: String,

@@ -910,6 +910,19 @@
         <service
             android:name=".widget.WidgetRemoteViewsService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!-- AndroidManifest.xml: PushMessagingService.kt receives story pushes in the Play build. F-Droid ships a disabled stub. -->
+        <service
+            android:name=".push.PushMessagingService"
+            android:enabled="${playPushEnabled}"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- AndroidManifest.xml: PushMessaging.kt asks for a push token only once notifications are on. -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
         <service
             android:name=".service.SubscriptionSyncService"
             android:enabled="${playBillingEnabled}"

@@ -71,6 +71,8 @@ import com.newsblur.domain.Story
 import com.newsblur.network.domain.DailyBriefingModelOption
 import com.newsblur.preference.PrefsRepo
 import com.newsblur.util.DailyBriefingPresentationState
+import com.newsblur.util.DeviceNotifications
+import com.newsblur.util.FeedExt
 import com.newsblur.util.FeedSet
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.ImageLoader
@@ -694,6 +696,7 @@ private fun DailyBriefingSettingsForm(
             title = stringResource(com.newsblur.R.string.ui_753a22b2eb61),
             subtitle = stringResource(com.newsblur.R.string.ui_67a31d6fa581),
         ) {
+            val notificationsContext = LocalContext.current
             listOf(
                 "email" to R.string.notification_email,
                 "web" to R.string.notification_web,
@@ -704,6 +707,10 @@ private fun DailyBriefingSettingsForm(
                     title = stringResource(title),
                     checked = draft.notificationTypes.contains(option),
                     onCheckedChange = { checked ->
+                        // DeviceNotifications.kt: the briefing stays silent on Android until this device has notifications on.
+                        if (checked && option == FeedExt.NOTIFY_ANDROID) {
+                            (notificationsContext as? NbActivity)?.let { DeviceNotifications.turnOn(it, it.prefsRepo) }
+                        }
                         onDraftChange(
                             draft.copy(
                                 notificationTypes =

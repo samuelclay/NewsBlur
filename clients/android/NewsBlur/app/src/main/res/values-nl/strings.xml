@@ -917,6 +917,7 @@ om over de wereld te praten.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Geen feedmeldingen</string>
+    <string name="notifications_device_off">Meldingen staan uit op dit apparaat. Sites waarvan meldingen op Android zijn ingeschakeld, blijven hier stil totdat je ze inschakelt.</string>
     <string name="notification_permissions_context">Toestemming is vereist om meldingen te tonen</string>
     <string name="notification_permissions_rationale">Je moet de toestemming voor meldingen handmatig toevoegen in de instellingen van de app voordat je opnieuw probeert meldingen in te schakelen</string>
     <string name="write_storage_permission_opml">Toestemming voor schrijven naar opslag is vereist voor OPML-export</string>

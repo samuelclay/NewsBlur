@@ -925,6 +925,7 @@ les gens pour parler du monde.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Aucune notification de flux</string>
+    <string name="notifications_device_off">Les notifications sont désactivées sur cet appareil. Les sites configurés pour envoyer des notifications sur Android restent silencieux ici jusqu’à ce que vous les activiez.</string>
     <string name="notification_permissions_context">L’autorisation est requise pour envoyer des notifications</string>
     <string name="notification_permissions_rationale">Vous devez autoriser manuellement les notifications dans les réglages de l’app avant de réessayer de les activer</string>
     <string name="write_storage_permission_opml">L’autorisation d’écriture dans le stockage est requise pour exporter au format OPML</string>

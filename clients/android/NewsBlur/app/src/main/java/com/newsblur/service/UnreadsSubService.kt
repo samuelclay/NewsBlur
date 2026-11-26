@@ -51,9 +51,13 @@ class UnreadsSubService(
 
     private suspend fun syncUnreadList() {
         currentCoroutineContext().ensureActive()
+        // UnreadsSubService.kt asks only for notification feeds on a restricted network; null asks for every feed.
+        val requestedFeedIds: Set<String>? = if (isNotificationsOnlySync) dbHelper.getNotifyFeeds() else null
+        // apps/reader/views.py unread_story_hashes answers an empty feed list with every feed, so ask for nothing.
+        if (requestedFeedIds != null && requestedFeedIds.isEmpty()) return
         // get unread hashes and dates from the API
         val requestStartedAt = System.currentTimeMillis()
-        val unreadHashes = storyApi.getUnreadStoryHashes()
+        val unreadHashes = storyApi.getUnreadStoryHashes(requestedFeedIds)
 
         currentCoroutineContext().ensureActive()
         if (unreadHashes.isError() || !unreadHashes.authenticated || unreadHashes.unreadHashes == null) {
@@ -101,8 +105,10 @@ class UnreadsSubService(
         }
         Log.i(this, "new unread count: $count")
         // ClusterReadStore.kt also retires embedded children, whose feeds may be absent from this response.
+        // UnreadsSubService.kt learns nothing about a feed it left out of a filtered request, so that feed keeps its unreads.
+        val retirableFeedIds = if (requestedFeedIds == null) activeFeedIds else activeFeedIds.intersect(requestedFeedIds)
         val canRetireFeed = Predicate<String> { feedId ->
-            feedId in activeFeedIds && !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId)
+            feedId in retirableFeedIds && !delegate.isOrphanFeed(feedId) && !delegate.isDisabledFeed(feedId)
         }
         val cappedFeedCutoffs = unreadHashes.unreadHashes
             .filterValues { it.size >= SERVER_UNREAD_HASH_LIMIT }
@@ -159,6 +165,11 @@ class UnreadsSubService(
 
     private suspend fun getNewUnreadStories(scope: CoroutineScope) {
         val notifyFeeds = dbHelper.getNotifyFeeds()
+        if (isNotificationsOnlySync) {
+            // UnreadsSubService.kt drops the offline reading hashes an earlier full sync queued, so a restricted
+            // network only fetches notification stories. The next full unread refresh lists the dropped hashes again.
+            storyHashQueue.removeAll { hash -> inferFeedId(hash) !in notifyFeeds }
+        }
         unreadSyncLoop@ while (storyHashQueue.isNotEmpty()) {
             currentCoroutineContext().ensureActive()
             val isOfflineEnabled = prefsRepo.isOfflineEnabled()

@@ -917,6 +917,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Keine Feed-Benachrichtigungen</string>
+    <string name="notifications_device_off">Benachrichtigungen sind auf diesem Gerät deaktiviert. Websites, für die Benachrichtigungen aktiviert sind, bleiben hier stumm, bis du sie einschaltest.</string>
     <string name="notification_permissions_context">Berechtigungen sind erforderlich, um Benachrichtigungen zu senden</string>
     <string name="notification_permissions_rationale">Bevor du erneut versuchst, Benachrichtigungen zu aktivieren, musst du die Berechtigung für Benachrichtigungen manuell in den Einstellungen der App hinzufügen</string>
     <string name="write_storage_permission_opml">Für den OPML-Export ist eine Schreibberechtigung für den Speicher erforderlich</string>

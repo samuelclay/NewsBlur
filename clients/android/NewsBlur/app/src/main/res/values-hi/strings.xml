@@ -917,6 +917,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">कोई फ़ीड सूचना नहीं</string>
+    <string name="notifications_device_off">इस डिवाइस पर सूचनाएँ बंद हैं। Android पर सूचनाएँ पाने के लिए सेट की गई साइटें तब तक यहाँ सूचनाएँ नहीं देंगी, जब तक आप उन्हें चालू नहीं करते।</string>
     <string name="notification_permissions_context">सूचनाएँ भेजने के लिए अनुमति आवश्यक है</string>
     <string name="notification_permissions_rationale">सूचनाएँ सक्षम करने के लिए दोबारा कोशिश करने से पहले, ऐप की सेटिंग में सूचनाओं की अनुमति मैन्युअल रूप से जोड़नी होगी।</string>
     <string name="write_storage_permission_opml">OPML निर्यात के लिए स्टोरेज में लिखने की अनुमति आवश्यक है</string>

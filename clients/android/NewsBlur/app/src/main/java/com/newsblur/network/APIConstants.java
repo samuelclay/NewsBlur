@@ -83,6 +83,7 @@ public class APIConstants {
     public static final String PATH_SAVE_FEED_CHOOSER = "/reader/save_feed_chooser";
     public static final String PATH_SET_FEED_MUTE = "/reader/set_feed_mute";
     public static final String PATH_SET_NOTIFICATIONS = "/notifications/feed/";
+    public static final String PATH_SET_ANDROID_TOKEN = "/notifications/android_token/";
     public static final String PATH_INSTA_FETCH = "/rss_feeds/exception_retry";
     public static final String PATH_RENAME_FEED = "/reader/rename_feed";
     public static final String PATH_DELETE_SEARCH = "/reader/delete_search";
@@ -176,6 +177,7 @@ public class APIConstants {
 	public static final String PARAMETER_USER_TAGS = "user_tags";
     public static final String PARAMETER_HIGHLIGHTS = "highlights";
 	public static final String PARAMETER_NOTIFICATION_FILTER = "notification_filter";
+    public static final String PARAMETER_TOKEN = "token";
     public static final String PARAMETER_RESET_FETCH = "reset_fetch";
     public static final String PARAMETER_INFREQUENT = "infrequent";
     public static final String PARAMETER_TRENDING_TYPE = "trending_type";

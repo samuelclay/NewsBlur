@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.newsblur.domain.Feed;
+import com.newsblur.util.FeedExt;
 import com.newsblur.util.ReadFilter;
 import com.newsblur.util.StateFilter;
 import com.newsblur.util.StoryOrder;
@@ -432,19 +433,31 @@ public class DatabaseConstants {
         " = " + FEED_TABLE + "." + FEED_ID +
         " ORDER BY " + READING_SESSION_TABLE + ".rowid";
 
+    // DatabaseConstants.java: the server sets a filter for every channel (email, web, iOS), so a feed only
+    // notifies this device when it also lists Android. Feed.java stores the channels as a JSON array.
+    public static final String FEED_NOTIFIES_ANDROID =
+        FEED_NOTIFICATION_TYPES + " LIKE '%\"" + FeedExt.NOTIFY_ANDROID + "\"%'";
+
     public static String NOTIFY_FOCUS_STORY_QUERY = 
         STORY_QUERY_BASE_1 +
-        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "')" +
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "' AND " + FEED_NOTIFIES_ANDROID + ")" +
         " AND " + STORY_INTELLIGENCE_TOTAL + " > 0 " +
         STORY_QUERY_BASE_2 +
         " ORDER BY " + STORY_TIMESTAMP + " DESC";
 
     public static String NOTIFY_UNREAD_STORY_QUERY = 
         STORY_QUERY_BASE_1 +
-        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "')" +
+        STORY_FEED_ID + " IN (SELECT " + FEED_ID + " FROM " + FEED_TABLE + " WHERE " + FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "' AND " + FEED_NOTIFIES_ANDROID + ")" +
         " AND " + STORY_INTELLIGENCE_TOTAL + " >= 0 " +
         STORY_QUERY_BASE_2 +
         " ORDER BY " + STORY_TIMESTAMP + " DESC";
+
+    // DatabaseConstants.java: the one story a push named. The server chose it, by the feed's Android setting or by a
+    // classifier match on a feed with no setting at all, so no feed filter applies here.
+    public static String NOTIFY_PUSHED_STORY_QUERY =
+        STORY_QUERY_BASE_1 +
+        STORY_HASH + " = ?" +
+        STORY_QUERY_BASE_2;
 
     public static final String JOIN_STORIES_ON_SOCIALFEED_MAP = 
         " INNER JOIN " + STORY_TABLE + " ON " + STORY_TABLE + "." + STORY_ID + " = " + SOCIALFEED_STORY_MAP_TABLE + "." + SOCIALFEED_STORY_STORYID;

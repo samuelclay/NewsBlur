@@ -155,6 +155,9 @@ public class PrefConstants {
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
+    public static final String NOTIFICATIONS_PROMPT_SEEN = "notifications_prompt_seen";
+    public static final String PUSH_TOKEN_REGISTERED = "push_token_registered";
+    public static final String PUSH_TOKEN_REGISTERED_AT = "push_token_registered_at";
     public static final String SHOW_ASK_AI = "show_ask_ai";
     public static final String ASK_AI_MODEL = "ask_ai_model";
 

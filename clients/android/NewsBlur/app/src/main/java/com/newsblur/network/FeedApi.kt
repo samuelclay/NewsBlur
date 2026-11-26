@@ -73,6 +73,9 @@ interface FeedApi {
         notifyFilter: String?,
     ): NewsBlurResponse?
 
+    /** StoryPush.kt registers this install's Firebase Cloud Messaging token so the server can push stories to it. */
+    suspend fun registerPushToken(token: String): NewsBlurResponse?
+
     suspend fun instaFetch(feedId: String?): NewsBlurResponse?
 
     suspend fun renameFeed(

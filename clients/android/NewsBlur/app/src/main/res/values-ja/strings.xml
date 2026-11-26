@@ -909,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">フィード通知はありません</string>
+    <string name="notifications_device_off">このデバイスでは通知がオフになっています。Androidで通知するよう設定したサイトも、ここで通知をオンにするまで通知されません。</string>
     <string name="notification_permissions_context">通知を送信するには権限が必要です</string>
     <string name="notification_permissions_rationale">アプリの設定で通知の権限を手動で許可してから、もう一度通知を有効にしてください</string>
     <string name="write_storage_permission_opml">OPMLのエクスポートにはストレージへの書き込み権限が必要です</string>

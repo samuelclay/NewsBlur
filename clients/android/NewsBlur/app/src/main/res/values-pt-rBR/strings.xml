@@ -925,6 +925,7 @@ as pessoas para conversar sobre o mundo.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Nenhuma notificação de feed</string>
+    <string name="notifications_device_off">As notificações estão desativadas neste dispositivo. Os sites configurados para enviar notificações no Android ficarão em silêncio aqui até você ativá-las.</string>
     <string name="notification_permissions_context">É necessário conceder permissão para publicar notificações</string>
     <string name="notification_permissions_rationale">A permissão para notificações precisa ser adicionada manualmente nas configurações do app antes de tentar ativar as notificações novamente</string>
     <string name="write_storage_permission_opml">É necessária permissão de gravação no armazenamento para exportar OPML</string>

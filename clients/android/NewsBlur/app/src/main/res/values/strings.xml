@@ -1100,6 +1100,7 @@ people together to talk about the world.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">No feed notifications</string>
+    <string name="notifications_device_off">Notifications are off on this device. Sites set to notify on Android stay silent here until you turn them on.</string>
 
     <string name="notification_permissions_context">Permissions is required for posting notifications</string>
     <string name="notification_permissions_rationale">Notifications permission must be added manually in the app\'s settings before trying again to enable notifications</string>

@@ -925,6 +925,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">אין התראות על פידים</string>
+    <string name="notifications_device_off">ההתראות כבויות במכשיר הזה. אתרים שהוגדרו לשלוח התראות ב־Android לא ישמיעו כאן התראות עד שתפעילו אותן.</string>
     <string name="notification_permissions_context">נדרשת הרשאה לפרסום התראות</string>
     <string name="notification_permissions_rationale">יש להוסיף ידנית את הרשאת ההתראות בהגדרות האפליקציה לפני שמנסים שוב להפעיל התראות</string>
     <string name="write_storage_permission_opml">נדרשת הרשאת כתיבה לאחסון כדי לייצא OPML</string>

@@ -41,11 +41,21 @@ interface StoryApi {
 
     suspend fun markStoryAsUnstarred(storyHash: String?): NewsBlurResponse?
 
-    suspend fun getUnreadStoryHashes(): UnreadStoryHashesResponse
+    // StoryApi.kt asks for every feed when feedIds is null. apps/reader/views.py unread_story_hashes
+    // treats an empty list the same way, so a caller that wants no feeds must not call this.
+    // StoryApi.kt: a cancellable request is a single attempt that a coroutine timeout really aborts. StoryPush.kt
+    // needs that inside Firebase's short delivery window; every other caller keeps the retrying request.
+    suspend fun getUnreadStoryHashes(
+        feedIds: Collection<String>? = null,
+        cancellable: Boolean = false,
+    ): UnreadStoryHashesResponse
 
     suspend fun getStarredStoryHashes(): StarredStoryHashesResponse
 
-    suspend fun getStoriesByHash(storyHashes: List<String>): StoriesResponse?
+    suspend fun getStoriesByHash(
+        storyHashes: List<String>,
+        cancellable: Boolean = false,
+    ): StoriesResponse?
 
     suspend fun markStoryAsRead(
         storyHash: String,

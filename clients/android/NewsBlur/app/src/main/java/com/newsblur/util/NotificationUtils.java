@@ -11,6 +11,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -22,6 +24,9 @@ import com.newsblur.activity.Reading;
 import com.newsblur.database.BlurDatabaseHelper;
 import com.newsblur.database.DatabaseConstants;
 import com.newsblur.domain.Story;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationUtils {
 
@@ -90,6 +95,55 @@ public class NotificationUtils {
     }
 
     /**
+     * NotificationUtils.java: posts the one story a push named (StoryPush.kt). The server already chose it for this
+     * device, so the feed filter of the notify queries is not applied again. Read, dismissed and old stories are
+     * still left out, exactly as notifyStories leaves them out.
+     */
+    public static synchronized void notifyPushedStory(Context context, BlurDatabaseHelper dbHelper, FileCache iconCache, String storyHash) {
+        NotificationManagerCompat nm = NotificationManagerCompat.from(context);
+        Cursor cursor = dbHelper.getNotifyPushedStoryCursor(storyHash);
+        try {
+            if (cursor == null || !cursor.moveToFirst()) return;
+            Story story = Story.fromCursor(cursor);
+            if (story.read || dbHelper.isStoryDismissed(story.storyHash)) {
+                nm.cancel(story.hashCode());
+            } else if (StoryUtils.hasOldTimestamp(story.timestamp)) {
+                dbHelper.putStoryDismissed(story.storyHash);
+                nm.cancel(story.hashCode());
+            } else if (makeRoomFor(story, context, nm, dbHelper)) {
+                nm.notify(story.hashCode(), buildStoryNotification(story, cursor, context, iconCache));
+            }
+        } finally {
+            BlurDatabaseHelper.closeQuietly(cursor);
+        }
+    }
+
+    /**
+     * NotificationUtils.java: notifyStories keeps to MAX_CONCUR_NOTIFY by walking its own list of stories. A pushed
+     * story arrives alone, so the oldest stories are dismissed to keep the same limit. Returns false when the
+     * pushed story is itself one of the oldest and should not be shown.
+     */
+    private static boolean makeRoomFor(Story story, Context context, NotificationManagerCompat nm, BlurDatabaseHelper dbHelper) {
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
+        List<StoryNotificationLimit.Showing> showing = new ArrayList<>();
+        for (StatusBarNotification active : manager.getActiveNotifications()) {
+            // Only story notifications carry this extra; the Listen player and group summaries do not.
+            String storyHash = active.getNotification().extras.getString(Reading.EXTRA_STORY_HASH);
+            if (storyHash != null && active.getId() != story.hashCode()) {
+                showing.add(new StoryNotificationLimit.Showing(active.getId(), active.getNotification().when, storyHash));
+            }
+        }
+        StoryNotificationLimit.Showing incoming = new StoryNotificationLimit.Showing(story.hashCode(), story.timestamp, story.storyHash);
+        boolean hasRoom = true;
+        for (StoryNotificationLimit.Showing oldest : StoryNotificationLimit.toDismiss(showing, incoming, MAX_CONCUR_NOTIFY)) {
+            nm.cancel(oldest.getId());
+            dbHelper.putStoryDismissed(oldest.getStoryHash());
+            if (oldest.getId() == incoming.getId()) hasRoom = false;
+        }
+        return hasRoom;
+    }
+
+    /**
      * creates notification channels necessary for 26+, if applicable
      */
     public static void createNotificationChannel(Context context) {
@@ -155,6 +209,10 @@ public class NotificationUtils {
                 .addAction(0, strings.getString(R.string.save_this), savePendingIntent)
                 .addAction(0, strings.getString(R.string.share_this), sharePendingIntent)
                 .setColor(NOTIFY_COLOUR);
+        // NotificationUtils.java reads this back from the notifications showing, to know which stories they are.
+        Bundle extras = new Bundle();
+        extras.putString(Reading.EXTRA_STORY_HASH, story.storyHash);
+        nb.addExtras(extras);
         if (feedIcon != null) {
             nb.setLargeIcon(feedIcon);
         }

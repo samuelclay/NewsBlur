@@ -909,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">没有订阅源通知</string>
+    <string name="notifications_device_off">此设备上的通知已关闭。在 Android 上设置为发送通知的网站，在你开启通知前不会在此设备上发出提醒。</string>
     <string name="notification_permissions_context">显示通知需要权限</string>
     <string name="notification_permissions_rationale">请先在应用设置中手动授予通知权限，然后再试着启用通知</string>
     <string name="write_storage_permission_opml">导出 OPML 需要写入存储空间的权限</string>

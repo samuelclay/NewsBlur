@@ -909,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">피드 알림 없음</string>
+    <string name="notifications_device_off">이 기기에서는 알림이 꺼져 있습니다. Android에서 알림을 받도록 설정한 사이트도 여기에서는 알림을 켤 때까지 알림이 오지 않습니다.</string>
     <string name="notification_permissions_context">알림을 게시하려면 권한이 필요합니다</string>
     <string name="notification_permissions_rationale">알림을 사용 설정하려면 다시 시도하기 전에 앱 설정에서 알림 권한을 수동으로 추가해야 합니다</string>
     <string name="write_storage_permission_opml">OPML 내보내기에는 저장소 쓰기 권한이 필요합니다</string>
