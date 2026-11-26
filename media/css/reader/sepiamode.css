@@ -50,6 +50,8 @@
     --nb-sepia-800: #554437;
     --nb-sepia-900: #3C3226;
     --nb-sepia-selected-feed: #F5D1A2;
+    --nb-sepia-selected-story: #FBF2CC;
+    --nb-sepia-selected-story-edge: #E6D9AF;
     --nb-sepia-link: #1D4BA6;
     color-scheme: light;
 }
@@ -88,6 +90,17 @@ body:where(.NB-sepia) {
 
 .NB-sepia .NB-feeds-header:hover:not(.NB-selected) {
     background-color: var(--nb-sepia-200);
+}
+
+/* sepiamode.css: the selected story row gets a color of its own (--nb-sepia-selected-story). The tan
+ * that iOS uses for it (FeedDetailTableCell.m) is the color of the clustered stories under a row
+ * here, and the two were impossible to tell apart. */
+.NB-sepia .NB-story-title.NB-selected,
+.NB-sepia .NB-interaction:hover:not(.NB-disabled) {
+    color: var(--nb-sepia-900);
+    background-color: var(--nb-sepia-selected-story);
+    border-top-color: var(--nb-sepia-selected-story);
+    border-bottom-color: var(--nb-sepia-selected-story-edge);
 }
 
 /* sepiamode.css: story links, as clients/android colors.xml linkblue_sepia. */
