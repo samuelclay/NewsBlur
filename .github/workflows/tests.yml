@@ -40,6 +40,9 @@ jobs:
       - name: Test theme switching
         run: node --test node/tests/theme_switch.test.js
 
+      - name: Test feed and folder icons
+        run: node --test node/tests/favicon.test.js
+
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 
