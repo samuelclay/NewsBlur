@@ -125,7 +125,7 @@ jobs:
             Output requirements:
             - Return JSON that matches the provided schema.
             - For the first review, summarize the scoped changes in `summary`, grouped by severity. On follow-ups, leave `summary` empty.
-            - Put concrete line-specific findings in `inline_comments`.
+            - Put every finding in `inline_comments` with a file and line. The summary may be omitted when feedback is posted.
             - Only create inline comments for issues that can be anchored to a line in the PR diff.
             - Leave `inline_comments` empty if there are no concrete line-specific findings.
             - For each Critical/High issue include:
