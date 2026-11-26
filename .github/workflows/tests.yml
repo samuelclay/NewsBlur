@@ -31,6 +31,9 @@ jobs:
       - name: Test reader keyboard shortcuts
         run: node --test node/tests/reader_hotkeys.test.js
 
+      - name: Test Preferences option drawings
+        run: node --test node/tests/preferences_art.test.js
+
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 
