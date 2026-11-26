@@ -18,6 +18,7 @@ import com.newsblur.preference.PrefsRepo
 import com.newsblur.service.NBSync
 import com.newsblur.service.NbSyncManager
 import com.newsblur.service.SyncServiceState
+import com.newsblur.util.DeviceNotifications
 import com.newsblur.util.EdgeToEdgeUtil.applyTheme
 import com.newsblur.util.FeedUtils
 import com.newsblur.util.Log
@@ -111,6 +112,16 @@ open class NbActivity : AppCompatActivity(), SharedPreferences.OnSharedPreferenc
         finishIfNotLoggedIn()
 
         startSyncObservers()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // DeviceNotifications.kt asks for the notification permission from whichever screen set a feed to notify.
+        DeviceNotifications.onPermissionResult(this, prefsRepo, requestCode, grantResults)
     }
 
     internal fun startSyncObservers() {

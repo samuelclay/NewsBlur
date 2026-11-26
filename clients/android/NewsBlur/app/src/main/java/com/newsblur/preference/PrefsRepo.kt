@@ -997,6 +997,9 @@ class PrefsRepo(
 
     fun isEnableNotifications() = prefs.getBoolean(PrefConstants.ENABLE_NOTIFICATIONS, false)
 
+    /** DeviceNotifications.kt only prompts a device whose Enable notifications switch was never set, on or off. */
+    fun hasNotificationsChoice() = prefs.contains(PrefConstants.ENABLE_NOTIFICATIONS)
+
     // PrefsRepo.kt reads the synced show_sideoption_ask_ai toggle, falling back to the old device-only one.
     fun isShowAskAi() =
         prefs.getBoolean(StoryButton.ASK_AI.prefKey, prefs.getBoolean(PrefConstants.SHOW_ASK_AI, true))

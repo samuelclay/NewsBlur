@@ -1444,8 +1444,9 @@ public class BlurDatabaseHelper {
     @NonNull
     public Set<String> getNotifyFeeds() {
         String q = "SELECT " + DatabaseConstants.FEED_ID + " FROM " + DatabaseConstants.FEED_TABLE +
-                " WHERE " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "'" +
-                " OR " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "'";
+                " WHERE (" + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_FOCUS + "'" +
+                " OR " + DatabaseConstants.FEED_NOTIFICATION_FILTER + " = '" + Feed.NOTIFY_FILTER_UNREAD + "')" +
+                " AND " + DatabaseConstants.FEED_NOTIFIES_ANDROID;
         Cursor c = dbRO.rawQuery(q, null);
         Set<String> feedIds = new HashSet<>();
         while (c.moveToNext()) {

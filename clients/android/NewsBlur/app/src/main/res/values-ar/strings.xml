@@ -949,6 +949,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">لا توجد إشعارات للخلاصات</string>
+    <string name="notifications_device_off">الإشعارات متوقفة على هذا الجهاز. ستظل المواقع التي أعددت إشعاراتها على Android صامتة هنا إلى أن تفعّلها.</string>
     <string name="notification_permissions_context">يلزم منح الإذن لنشر الإشعارات</string>
     <string name="notification_permissions_rationale">يجب إضافة إذن الإشعارات يدويًا من إعدادات التطبيق قبل إعادة المحاولة لتفعيل الإشعارات</string>
     <string name="write_storage_permission_opml">يلزم إذن الكتابة إلى وحدة التخزين لتصدير OPML</string>

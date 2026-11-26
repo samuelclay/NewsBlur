@@ -909,6 +909,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Tidak ada notifikasi feed</string>
+    <string name="notifications_device_off">Notifikasi dinonaktifkan di perangkat ini. Situs yang diatur untuk mengirim notifikasi di Android tidak akan memberi notifikasi di sini sampai Anda mengaktifkannya.</string>
     <string name="notification_permissions_context">Izin diperlukan untuk mengirim notifikasi</string>
     <string name="notification_permissions_rationale">Izin notifikasi harus ditambahkan secara manual di pengaturan aplikasi sebelum mencoba mengaktifkan notifikasi lagi</string>
     <string name="write_storage_permission_opml">Izin menulis penyimpanan diperlukan untuk ekspor OPML</string>

@@ -917,6 +917,7 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Akış bildirimi yok</string>
+    <string name="notifications_device_off">Bu cihazda bildirimler kapalı. Android\'de bildirim alacak şekilde ayarladığınız siteler, siz burada bildirimleri açana kadar sessiz kalır.</string>
     <string name="notification_permissions_context">Bildirim göndermek için izin gereklidir</string>
     <string name="notification_permissions_rationale">Bildirimleri etkinleştirmeyi yeniden denemeden önce, uygulamanın ayarlarından bildirim iznini manuel olarak vermeniz gerekir</string>
     <string name="write_storage_permission_opml">OPML dışa aktarma için depolama alanına yazma izni gerekiyor</string>

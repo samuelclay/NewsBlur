@@ -415,6 +415,8 @@ public class Main extends NbActivity implements StateChangedListener, SwipeRefre
         setupQueue.feedListRendered();
         // LanguageChooserDialog.kt asks once which language to use, after a feed list has loaded.
         if (folderFeedList.firstCursorSeenYet) com.newsblur.compose.LanguageChooserGate.feedListLoaded(this);
+        // DeviceNotifications.kt asks once to turn notifications on when feeds were set to notify Android elsewhere.
+        if (folderFeedList.firstCursorSeenYet) com.newsblur.util.DeviceNotifications.feedListLoaded(this);
         if (folderFeedList.firstCursorSeenYet && isShowingLoadingSyncPlaceholder && !syncServiceState.isSyncRunning()) {
             updateStatusIndicators();
         }

@@ -909,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">ไม่มีการแจ้งเตือนจากฟีด</string>
+    <string name="notifications_device_off">ปิดการแจ้งเตือนบนอุปกรณ์นี้ เว็บไซต์ที่ตั้งค่าให้แจ้งเตือนบน Android จะไม่มีเสียงเตือนที่นี่จนกว่าจะเปิดใช้งาน</string>
     <string name="notification_permissions_context">ต้องใช้สิทธิ์เพื่อส่งการแจ้งเตือน</string>
     <string name="notification_permissions_rationale">ต้องเพิ่มสิทธิ์การแจ้งเตือนด้วยตนเองในการตั้งค่าของแอปก่อนลองเปิดใช้การแจ้งเตือนอีกครั้ง</string>
     <string name="write_storage_permission_opml">ต้องได้รับอนุญาตให้เขียนลงพื้นที่จัดเก็บเพื่อส่งออก OPML</string>

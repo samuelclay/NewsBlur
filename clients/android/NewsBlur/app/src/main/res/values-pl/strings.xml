@@ -933,6 +933,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Brak powiadomień o kanałach</string>
+    <string name="notifications_device_off">Powiadomienia są wyłączone na tym urządzeniu. Witryny ustawione na wysyłanie powiadomień na Androidzie nie będą tu wysyłać powiadomień, dopóki ich nie włączysz.</string>
     <string name="notification_permissions_context">Wymagane są uprawnienia do wysyłania powiadomień</string>
     <string name="notification_permissions_rationale">Zanim ponownie spróbujesz włączyć powiadomienia, musisz ręcznie nadać im uprawnienia w ustawieniach aplikacji</string>
     <string name="write_storage_permission_opml">Do eksportu OPML wymagane jest uprawnienie do zapisu w pamięci</string>
