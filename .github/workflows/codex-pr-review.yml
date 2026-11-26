@@ -124,14 +124,12 @@ jobs:
 
             Output requirements:
             - Return JSON that matches the provided schema.
-            - For the first review, summarize the scoped changes in `summary`, grouped by severity. On follow-ups, leave `summary` empty.
-            - Put every finding in `inline_comments` with a file and line. The summary may be omitted when feedback is posted.
-            - Only create inline comments for issues that can be anchored to a line in the PR diff.
-            - Leave `inline_comments` empty if there are no concrete line-specific findings.
+            - For the first review, summarize the scoped changes by severity in `summary`. If there are no major risks, briefly explain why. On follow-ups, leave `summary` empty.
+            - Put every finding introduced by the scoped changes in `inline_comments`. Give the most relevant file and line, preferably the changed line responsible. The posting step preserves findings it cannot anchor in the review body.
+            - Leave `inline_comments` empty when there are no findings.
             - For each Critical/High issue include:
               - why it matters (user impact)
               - a specific fix suggestion
-            - In the first review, say why the changes are low risk if you find no major issues.
             - Write the summary and every comment in plain language most important point first, short sentences, active voice, project shorthand expanded on first use, and a concrete next step for the author.
           output-schema: |
             {
@@ -153,7 +151,7 @@ jobs:
                     "properties": {
                       "path": {
                         "type": "string",
-                        "description": "Repository-relative file path from the PR diff."
+                        "description": "Repository-relative file path for the finding."
                       },
                       "line": {
                         "type": "integer",

@@ -140,7 +140,7 @@ case "$mode" in
     ;;
   incremental)
     scope_line="Reviewed only the changes since the last $reviewer_name review ($previous_short..$head_short)."
-    instructions="- Read the incremental patch at $diff_file (\`git diff $diff_base HEAD\`). Review and anchor findings only on changes in that patch. Consult surrounding code only as needed to understand those changes."
+    instructions="- Read the incremental patch at $diff_file (\`git diff $diff_base HEAD\`). Report only issues introduced by that patch. Consult surrounding code only as needed to understand those changes."
     ;;
   skip)
     scope_line="Skipped the $reviewer_name review: $reason."
@@ -151,7 +151,7 @@ esac
 # review has to carry every finding as an inline comment or it is never seen.
 if [ "$REVIEWER" = "codex" ] && [ -n "$previous_head" ] && [ "$mode" != "skip" ]; then
   instructions="$instructions
-- This PR already has a Codex summary review, so the \`summary\` from this run is not posted. Put every finding in \`inline_comments\`, anchored to a changed line. A finding that appears only in \`summary\` is lost."
+- This PR already has a Codex summary review, so the \`summary\` from this run is not posted. Leave \`summary\` empty and put every finding in \`inline_comments\`."
 fi
 
 {
