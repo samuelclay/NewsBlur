@@ -726,11 +726,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
 
     // reader_preferences.js: common/modal.js calls this as the dialog closes, while its fields can
-    // still be read, so a change made a moment before closing is saved too.
+    // still be read, so a change made a moment before closing is saved too, and one whose save
+    // failed gets another try.
     handle_modal_closed: function () {
-        if (this.save_timer) {
-            this.save_preferences();
-        }
+        this.save_preferences();
         NEWSBLUR.utils.hide_tip();
         if (this.system_theme_query) {
             this.system_theme_query.removeEventListener('change', this.on_system_theme_change);
@@ -1360,59 +1359,94 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     },
 
     // reader_preferences.js: there is no Save button. A change is saved a moment after it is made,
-    // and only the preferences that differ from the last save are sent.
+    // and only the preferences that differ from the last save are sent. The form is read here,
+    // while the dialog is still on the page, and waits in pending_form if a save is out.
     save_preferences: function () {
-        var self = this;
         clearTimeout(this.save_timer);
         this.save_timer = null;
-        var form = this.serialize_preferences();
+        this.pending_form = this.serialize_preferences();
+        this.send_pending_preferences();
+    },
+
+    // reader_preferences.js: one save is out at a time. A change made meanwhile is compared with
+    // what that save stored, so a setting put back while its first change is still on the way is
+    // sent after it. Compared with the form as it was before that save, it would look unchanged.
+    send_pending_preferences: function () {
+        var self = this;
+        if (this.saving || !this.pending_form) return;
+        var form = this.pending_form;
+        this.pending_form = null;
         var original = this.original_preferences || {};
         var changed = {};
         _.each(form, function (value, name) {
             if (!_.isEqual(value, original[name])) changed[name] = value;
         });
         if (_.isEmpty(changed)) {
-            this.set_status('saved');
+            this.finish_saving('saved');
             return;
         }
         $('.NB-preference-error', this.$modal).text('');
         this.set_status('saving');
+        this.saving = true;
 
         this.model.save_preferences(changed, function (data) {
-            if (data && data.code < 0) {
-                // reader_preferences.js: the next change tries these again, since they still differ.
-                self.set_status('error');
-                return;
+            self.saving = false;
+            // reader_preferences.js: common/assetmodel.js make_request answers a request that failed
+            // with a message and no code, so only a code that is not negative means it was saved.
+            var saved = !!data && _.isNumber(data.code) && data.code >= 0;
+            if (saved) {
+                self.original_preferences = form;
+                if ('language' in changed) {
+                    self.reload_when_saved = true;
+                } else {
+                    self.apply_saved_preferences(changed);
+                }
             }
-            self.original_preferences = form;
-            if ('language' in changed) { window.location.reload(); return; }
-            NEWSBLUR.reader.switch_feed_view_unread_view();
-            NEWSBLUR.reader.apply_story_styling(true);
-            NEWSBLUR.reader.apply_tipsy_titles();
-            NEWSBLUR.reader.adjust_for_narrow_window();
-            NEWSBLUR.reader.add_body_classes();
-            NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
-            NEWSBLUR.app.sidebar_header.count();
-            if ('feed_order' in changed || 'folder_counts' in changed) {
-                NEWSBLUR.app.feed_list.make_feeds();
-                NEWSBLUR.app.feed_list.make_social_feeds();
+            if (self.pending_form) {
+                self.send_pending_preferences();
+            } else {
+                // reader_preferences.js: what failed still differs from original_preferences, so
+                // the next change or closing the dialog sends it again.
+                self.finish_saving(saved ? 'saved' : 'error');
             }
-            if (_.any(['show_global_shared_stories', 'show_infrequent_site_stories', 'show_widely_read_stories',
-                       'show_long_reads', 'show_good_reads', 'briefing_enabled'], function (name) { return name in changed; })) {
-                NEWSBLUR.app.feed_list.toggle_filter_feeds();
-            }
-            if ('ssl' in changed) {
-                NEWSBLUR.reader.check_and_load_ssl();
-            }
-            if ('days_of_unread' in changed) {
-                NEWSBLUR.reader.force_feeds_refresh();
-            }
-            if (changed['realtime_new_stories'] === false) {
-                // reader_preferences.js: turning the pill off drops the stories it was holding.
-                NEWSBLUR.reader.clear_realtime_new_stories();
-            }
-            self.set_status('saved');
         });
+    },
+
+    // reader_preferences.js: a new language needs the page loaded again, once nothing is left to send.
+    finish_saving: function (status) {
+        if (this.reload_when_saved) {
+            window.location.reload();
+            return;
+        }
+        this.set_status(status);
+    },
+
+    apply_saved_preferences: function (changed) {
+        NEWSBLUR.reader.switch_feed_view_unread_view();
+        NEWSBLUR.reader.apply_story_styling(true);
+        NEWSBLUR.reader.apply_tipsy_titles();
+        NEWSBLUR.reader.adjust_for_narrow_window();
+        NEWSBLUR.reader.add_body_classes();
+        NEWSBLUR.app.story_list.show_stories_preference_in_feed_view();
+        NEWSBLUR.app.sidebar_header.count();
+        if ('feed_order' in changed || 'folder_counts' in changed) {
+            NEWSBLUR.app.feed_list.make_feeds();
+            NEWSBLUR.app.feed_list.make_social_feeds();
+        }
+        if (_.any(['show_global_shared_stories', 'show_infrequent_site_stories', 'show_widely_read_stories',
+                   'show_long_reads', 'show_good_reads', 'briefing_enabled'], function (name) { return name in changed; })) {
+            NEWSBLUR.app.feed_list.toggle_filter_feeds();
+        }
+        if ('ssl' in changed) {
+            NEWSBLUR.reader.check_and_load_ssl();
+        }
+        if ('days_of_unread' in changed) {
+            NEWSBLUR.reader.force_feeds_refresh();
+        }
+        if (changed['realtime_new_stories'] === false) {
+            // reader_preferences.js: turning the pill off drops the stories it was holding.
+            NEWSBLUR.reader.clear_realtime_new_stories();
+        }
     },
 
     set_status: function (status) {

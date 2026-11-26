@@ -34,6 +34,9 @@ jobs:
       - name: Test Preferences option drawings
         run: node --test node/tests/preferences_art.test.js
 
+      - name: Test Preferences saving
+        run: node --test node/tests/preferences_save.test.js
+
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 
