@@ -6,6 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext
 
 from apps.notifications.models import (
+    MUserAndroidTokens,
     MUserClassifierNotification,
     MUserFeedNotification,
     MUserNotificationTokens,
@@ -177,8 +178,10 @@ def set_android_token(request):
     the Android code.
     """
     user = get_user(request)
-    tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    token = request.POST["token"]
+    tokens = MUserAndroidTokens.get_tokens_for_user(user.pk)
+    token = request.POST.get("token")
+    if not token:
+        return {"code": -1, "message": gettext("Missing token.")}
 
     logging.user(user, "~FCUpdating Android push token")
     if token not in tokens.android_tokens:

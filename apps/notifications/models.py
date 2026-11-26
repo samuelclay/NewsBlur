@@ -3,12 +3,13 @@
 MUserFeedNotification configures which feeds trigger push notifications and
 at what frequency. MUserClassifierNotification configures which individual
 classifiers (title, author, tag, text, url, and Natural Language AI prompts)
-trigger push notifications. MUserNotificationTokens stores iOS APNS and Android
-push tokens for delivering notifications.
+trigger push notifications. MUserNotificationTokens stores iOS APNS push tokens
+and MUserAndroidTokens stores Android push tokens for delivering notifications.
 """
 
 import datetime
 import enum
+import functools
 import html
 import os
 import re
@@ -17,6 +18,7 @@ from collections import defaultdict
 
 import mongoengine as mongo
 import redis
+import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -25,6 +27,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.text import format_lazy
 from django.utils.translation import pgettext_lazy
+from google.auth import exceptions as google_auth_exceptions
+from google.auth.transport.requests import AuthorizedSession
+from google.oauth2 import service_account
 from pyapns_client import (
     APNSClient,
     APNSDeviceException,
@@ -67,6 +72,46 @@ CLASSIFIER_MATCH_LABELS = {
     "image_prompt": pgettext_lazy("notification email classifier match", "AI image filter"),
 }
 
+# notifications/models.py sends Android pushes through Firebase Cloud Messaging's HTTP v1 API, authorized by
+# the service account key in settings.FCM_SERVICE_ACCOUNT_INFO.
+FCM_SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
+FCM_SEND_URL = "https://fcm.googleapis.com/v1/projects/%s/messages:send"
+FCM_ERROR_TYPE = "type.googleapis.com/google.firebase.fcm.v1.FcmError"
+FCM_TIMEOUT_SECONDS = 10
+# notifications/models.py drops an Android token only on these (HTTP status, FCM error code) answers, which
+# mean the token can never work again. 400 INVALID_ARGUMENT is left out on purpose: FCM also answers it for a
+# malformed request, so pruning on it could wipe every user's tokens after a payload bug.
+FCM_DEAD_TOKEN_ERRORS = {(404, "UNREGISTERED"), (403, "SENDER_ID_MISMATCH")}
+
+
+@functools.lru_cache(maxsize=None)
+def fcm_session():
+    """notifications/models.py: the authorized session that send_android posts through. It is built once per
+    process and then reused, and it refreshes its own OAuth token."""
+    credentials = service_account.Credentials.from_service_account_info(
+        settings.FCM_SERVICE_ACCOUNT_INFO, scopes=[FCM_SCOPE]
+    )
+    return AuthorizedSession(credentials)
+
+
+def fcm_error_code(response):
+    """notifications/models.py: FCM's own code for a failed send, such as UNREGISTERED. It sits in an FcmError
+    detail, next to a generic status (NOT_FOUND) that is returned when no detail carries a code."""
+    try:
+        body = response.json()
+    except ValueError:
+        # models.py: an error page from a gateway is not JSON, so it has no FCM code.
+        return None
+
+    error = body.get("error") if isinstance(body, dict) else None
+    if not isinstance(error, dict):
+        return None
+
+    for detail in error.get("details") or []:
+        if isinstance(detail, dict) and detail.get("@type") == FCM_ERROR_TYPE:
+            return detail.get("errorCode")
+    return error.get("status")
+
 
 class NotificationFrequency(enum.Enum):
     immediately = 1
@@ -85,6 +130,38 @@ class MUserNotificationTokens(mongo.Document):
 
     meta = {
         "collection": "notification_tokens",
+        "indexes": [
+            {
+                "fields": ["user_id"],
+                "unique": True,
+            }
+        ],
+        "allow_inheritance": False,
+    }
+
+    @classmethod
+    def get_tokens_for_user(cls, user_id):
+        try:
+            tokens = cls.objects.get(user_id=user_id)
+        except cls.DoesNotExist:
+            tokens = cls.objects.create(user_id=user_id)
+
+        return tokens
+
+
+class MUserAndroidTokens(mongo.Document):
+    """A user's Firebase Cloud Messaging tokens, one per Android install that has notifications on.
+
+    notifications/models.py keeps these out of MUserNotificationTokens on purpose. That document loads
+    strictly, so a new field on it makes the previous release raise FieldDoesNotExist while a deploy rolls
+    out and after a rollback, which stops iOS pushes. The previous release never reads this collection.
+    """
+
+    user_id = mongo.IntField()
+    android_tokens = mongo.ListField(mongo.StringField(max_length=1024))
+
+    meta = {
+        "collection": "notification_android_tokens",
         "indexes": [
             {
                 "fields": ["user_id"],
@@ -385,7 +462,7 @@ class MUserFeedNotification(mongo.Document):
 
             self.send_web(story, user)
             self.send_ios(story, user, usersub)
-            self.send_android(story)
+            self.send_android(story, user)
             self.send_email(story, usersub)
 
             MUserClassifierNotification.mark_story_sent(
@@ -511,9 +588,78 @@ class MUserFeedNotification(mongo.Document):
             tokens.ios_tokens = confirmed_ios_tokens
             tokens.save()
 
-    def send_android(self, story):
+    def send_android(self, story, user):
         if not self.is_android:
             return
+
+        # models.py: Android pushes stay off until the Firebase service account key is in settings.
+        if not settings.FCM_SERVICE_ACCOUNT_INFO:
+            return
+
+        # models.py: most users never register an Android device, so a missing document is not created here.
+        tokens = MUserAndroidTokens.objects(user_id=self.user_id).first()
+        if not tokens or not tokens.android_tokens:
+            return
+
+        try:
+            session = fcm_session()
+            send_url = FCM_SEND_URL % settings.FCM_SERVICE_ACCOUNT_INFO["project_id"]
+        except (KeyError, ValueError) as e:
+            # models.py: google-auth raises ValueError for a key it cannot read. It is logged, not raised, so
+            # the email, web and iOS channels that push_story_notification sends alongside still go out.
+            logging.user(user, "~BMAndroid notification key error: ~FR~SB%s" % e)
+            return
+
+        dead_tokens = []
+        for token in tokens.android_tokens:
+            logging.user(
+                user,
+                "~BMStory notification by Android: ~FY~SB%s~SN~BM~FY/~SB%s"
+                % (story["story_title"][:50], story["story_hash"]),
+            )
+
+            # models.py: a data-only message, with no notification block, so the app wakes, fetches the story
+            # and draws its own notification. FCM rejects data values that are not strings.
+            message = {
+                "token": token,
+                "data": {
+                    "story_hash": story["story_hash"],
+                    "story_feed_id": str(story["story_feed_id"]),
+                    "user_id": str(self.user_id),
+                },
+                "android": {"priority": "HIGH", "ttl": "172800s"},
+            }
+
+            try:
+                response = session.post(send_url, json={"message": message}, timeout=FCM_TIMEOUT_SECONDS)
+            except (requests.RequestException, google_auth_exceptions.GoogleAuthError) as e:
+                # models.py: a timeout, a dropped connection or a failed OAuth token refresh says nothing
+                # about the token, so the token is kept for the next story.
+                logging.user(user, "~BMAndroid notification error: ~FR~SB%s - %s" % (token[:50], e))
+                continue
+
+            if response.status_code == 200:
+                if settings.DEBUG:
+                    logging.user(user, "~BMAndroid token good: ~FB~SB%s" % token[:50])
+                continue
+
+            error_code = fcm_error_code(response)
+            if (response.status_code, error_code) in FCM_DEAD_TOKEN_ERRORS:
+                # models.py: FCM answers UNREGISTERED once the app is uninstalled, and SENDER_ID_MISMATCH for
+                # a token that belongs to another Firebase project, so the token is dropped.
+                dead_tokens.append(token)
+                logging.user(user, "~BMAndroid token unregistered: ~FR~SB%s (%s)" % (token[:50], error_code))
+            else:
+                logging.user(
+                    user,
+                    "~BMAndroid notification failed: ~FR~SB%s - %s %s"
+                    % (token[:50], response.status_code, error_code),
+                )
+
+        if dead_tokens:
+            # models.py: pull only the dead tokens, so a token the app registered while this push was in
+            # flight (set_android_token in views.py) is not overwritten.
+            MUserAndroidTokens.objects(user_id=self.user_id).update(pull_all__android_tokens=dead_tokens)
 
     def send_email(self, story, usersub, classifier_match_desc=None):
         if not self.is_email:
@@ -1116,7 +1262,7 @@ class MUserClassifierNotification(mongo.Document):
                 )
                 sender.send_web(story, user)
                 sender.send_ios(story, user, usersub)
-                sender.send_android(story)
+                sender.send_android(story, user)
                 sender.send_email(story, usersub, classifier_match_desc=match_desc)
 
                 cls.mark_story_sent(
