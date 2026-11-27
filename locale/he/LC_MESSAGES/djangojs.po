@@ -597,6 +597,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -1017,9 +1021,6 @@ msgstr "28 כלים זמינים לקריאה, לפעולות, לאימון ול
 
 msgid "2x daily"
 msgstr "פעמיים ביום"
-
-msgid "30 second preview"
-msgstr "תצוגה מקדימה של 30 שניות"
 
 msgid "3x daily"
 msgstr "3 פעמים ביום"
@@ -5295,6 +5296,9 @@ msgstr "השהיית ההאזנה"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "השהיה או חידוש של הקראה בקול (y)"
+
+msgid "Paused"
+msgstr "מושהה"
 
 msgid "Payment history"
 msgstr "היסטוריית תשלומים"

@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -949,9 +953,6 @@ msgstr "읽기, 작업, 학습, 탐색을 지원하는 도구 28개를 이용할
 
 msgid "2x daily"
 msgstr "하루 2회"
-
-msgid "30 second preview"
-msgstr "30초 미리 듣기"
 
 msgid "3x daily"
 msgstr "하루 3회"
@@ -5149,6 +5150,9 @@ msgstr "듣기 일시 정지"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "소리 내어 읽기 일시 정지 또는 다시 시작 (y)"
+
+msgid "Paused"
+msgstr "일시 중지됨"
 
 msgid "Payment history"
 msgstr "결제 내역"

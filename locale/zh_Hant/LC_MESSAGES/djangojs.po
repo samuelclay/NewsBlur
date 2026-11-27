@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -949,9 +953,6 @@ msgstr "提供 28 種工具，涵蓋閱讀、操作、訓練和探索。"
 
 msgid "2x daily"
 msgstr "每日 2 次"
-
-msgid "30 second preview"
-msgstr "30 秒預覽"
 
 msgid "3x daily"
 msgstr "每日 3 次"
@@ -5141,6 +5142,9 @@ msgstr "暫停聆聽"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "暫停或繼續朗讀（y）"
+
+msgid "Paused"
+msgstr "已暫停"
 
 msgid "Payment history"
 msgstr "付款紀錄"

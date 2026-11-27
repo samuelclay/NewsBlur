@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -949,9 +953,6 @@ msgstr "記事の閲覧、操作、学習、検索などに使える28個のツ�
 
 msgid "2x daily"
 msgstr "1日2回"
-
-msgid "30 second preview"
-msgstr "30秒間プレビュー"
 
 msgid "3x daily"
 msgstr "1日3回"
@@ -5141,6 +5142,9 @@ msgstr "読み上げを一時停止"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "読み上げを一時停止／再開（y）"
+
+msgid "Paused"
+msgstr "一時停止中"
 
 msgid "Payment history"
 msgstr "支払い履歴"

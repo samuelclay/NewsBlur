@@ -3306,11 +3306,9 @@ msgstr ""
 "Bildunterschriften, Code und Tabellen werden übersprungen."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"„Vorlesen“ ist in Premium Archive (99 $/Jahr) und Premium Pro enthalten. Bei anderen Tarifen kannst du dir "
-"täglich eine Vorschau von einigen Artikeln mit einer Länge von 30 Sekunden anhören."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "„Vorlesen“ im Web, auf iPad, iPhone und Android"
@@ -3320,9 +3318,6 @@ msgstr "„Vorlesen“ läuft auf einem MacBook, iPad, iPhone und Android-Smartp
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Pro Woche 1 Stunde lang Artikel vorlesen lassen"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Pro Woche 10 Stunden lang Artikel vorlesen lassen"
@@ -3552,6 +3547,9 @@ msgstr "story_hash fehlt"
 
 msgid "Missing story_hash."
 msgstr "story_hash fehlt."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Benutzername fehlt."

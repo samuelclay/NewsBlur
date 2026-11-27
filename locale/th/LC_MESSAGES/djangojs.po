@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -949,9 +953,6 @@ msgstr "มีเครื่องมือ 28 รายการ ครอบ�
 
 msgid "2x daily"
 msgstr "วันละ 2 ครั้ง"
-
-msgid "30 second preview"
-msgstr "ตัวอย่าง 30 วินาที"
 
 msgid "3x daily"
 msgstr "วันละ 3 ครั้ง"
@@ -5187,6 +5188,9 @@ msgstr "หยุดฟังชั่วคราว"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "หยุดชั่วคราวหรืออ่านออกเสียงต่อ (y)"
+
+msgid "Paused"
+msgstr "หยุดชั่วคราว"
 
 msgid "Payment history"
 msgstr "ประวัติการชำระเงิน"

@@ -103,11 +103,26 @@ final class Test_ListenNarratorHandoff: XCTestCase {
         }
     }
 
+    // ListenPlayerTests.swift controls when the queue advances so a headless runner needs no audio output.
+    private final class NarrationQueue: AVQueuePlayer {
+        private(set) var playbackRequests = 0
+
+        override func playImmediately(atRate rate: Float) {
+            playbackRequests += 1
+        }
+
+        func finishCurrentItem() throws {
+            let item = try XCTUnwrap(currentItem)
+            advanceToNextItem()
+            NotificationCenter.default.post(name: AVPlayerItem.didPlayToEndTimeNotification, object: item)
+        }
+    }
+
     func test_continuous_narration_activates_the_audio_session_once_across_segments() throws {
         let app = try XCTUnwrap(NewsBlurAppDelegate.shared())
         var activations = 0
-        let player = ListenPlayer { session in
-            try session.setActive(true)
+        let queue = NarrationQueue()
+        let player = ListenPlayer(player: queue) { _ in
             activations += 1
         }
         let server = Server()
@@ -130,17 +145,31 @@ final class Test_ListenNarratorHandoff: XCTestCase {
         }
 
         player.start(story: ["story_hash": "1:listen-session", "story_feed_id": 1])
-        // ListenPlayerTests.swift holds the last response until the first two clips have played through.
-        let waitingForDownload = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            player.segmentIndex == 2 && player.status == .buffering && server.deliverLastSegment != nil
-        }, object: nil)
-        wait(for: [waitingForDownload], timeout: SimulatorTestTiming.realWorkTimeout)
-        let lastClipStarted = expectation(forNotification: ListenPlayer.stateDidChange, object: player) { _ in
-            player.status == .playing && player.segmentIndex == 2
+        func waitUntil(_ description: String, _ condition: @escaping () -> Bool) throws {
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
+            let result = XCTWaiter.wait(for: [ready], timeout: SimulatorTestTiming.realWorkTimeout)
+            guard result == .completed else {
+                let message = "\(description). Segment \(player.segmentIndex), status \(player.status)"
+                throw NSError(domain: "ListenPlayerTests", code: 1, userInfo: [NSLocalizedDescriptionKey: message])
+            }
         }
-        try XCTUnwrap(server.deliverLastSegment)()
+        try waitUntil("The first segment should start with the second queued behind it") {
+            queue.playbackRequests > 0 && queue.items().count == 2
+        }
+        try queue.finishCurrentItem()
+        try waitUntil("The queued segment should play and request the third segment") {
+            player.segmentIndex == 1 && server.deliverLastSegment != nil
+        }
+        try queue.finishCurrentItem()
+        try waitUntil("Listen should buffer while the third segment downloads") {
+            player.segmentIndex == 2 && player.status == .buffering
+        }
+
+        let deliverLastSegment = try XCTUnwrap(server.deliverLastSegment)
+        let requestsBeforeLastClip = queue.playbackRequests
+        deliverLastSegment()
         server.deliverLastSegment = nil
-        wait(for: [lastClipStarted], timeout: SimulatorTestTiming.realWorkTimeout)
+        try waitUntil("Listen should start the late-arriving clip") { queue.playbackRequests > requestsBeforeLastClip }
         XCTAssertEqual(activations, 1, "Queued and late-arriving paragraphs must leave the active mixer alone")
 
         player.pause()

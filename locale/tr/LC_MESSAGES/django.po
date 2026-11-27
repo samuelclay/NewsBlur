@@ -3246,11 +3246,9 @@ msgid ""
 msgstr "Dinle, sitenin tam makalesini alıp onun yerine onu okur. Görseller, açıklamalar, kod ve tablolar atlanır."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Dinle, Premium Archive'a (yıllık 99 $) ve Premium Pro'ya dahildir. Diğer planlarda günde birkaç haberin 30 "
-"saniyelik önizlemesini dinleyebilirsiniz."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Web'de, iPad, iPhone ve Android'de dinleyin"
@@ -3260,9 +3258,6 @@ msgstr "Dinle, MacBook, iPad, iPhone ve Android telefonda çalışırken"
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Haftada 1 saat haberleri sesli dinleyin"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
@@ -3488,6 +3483,9 @@ msgstr "story_hash eksik"
 
 msgid "Missing story_hash."
 msgstr "story_hash eksik."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Kullanıcı adı eksik."

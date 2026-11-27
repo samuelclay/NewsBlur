@@ -3234,11 +3234,9 @@ msgstr ""
 "được bỏ qua."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Tính năng Nghe được bao gồm trong gói Premium Archive ($99/năm) và Premium Pro. Với các gói khác, bạn có "
-"thể nghe bản xem trước 30 giây của một vài bài viết mỗi ngày."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Nghe trên web, iPad, iPhone và Android"
@@ -3248,9 +3246,6 @@ msgstr "Tính năng Nghe đang phát trên MacBook, iPad, iPhone và điện tho
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Nghe bài viết được đọc thành tiếng 1 giờ mỗi tuần"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
@@ -3476,6 +3471,9 @@ msgstr "Thiếu story_hash"
 
 msgid "Missing story_hash."
 msgstr "Thiếu story_hash."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Thiếu tên người dùng."

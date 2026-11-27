@@ -597,6 +597,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -1017,9 +1021,6 @@ msgstr "पढ़ने, कार्रवाइयों, प्रशिक�
 
 msgid "2x daily"
 msgstr "दिन में 2 बार"
-
-msgid "30 second preview"
-msgstr "30 सेकंड का प्रीव्यू"
 
 msgid "3x daily"
 msgstr "दिन में 3 बार"
@@ -5317,6 +5318,9 @@ msgstr "सुनना रोकें"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "ज़ोर से पढ़ना रोकें या फिर से शुरू करें (y)"
+
+msgid "Paused"
+msgstr "रुका हुआ"
 
 msgid "Payment history"
 msgstr "भुगतान इतिहास"

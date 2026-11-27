@@ -535,6 +535,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -951,9 +955,6 @@ msgstr "Có 28 công cụ, hỗ trợ đọc, thao tác, huấn luyện và khá
 
 msgid "2x daily"
 msgstr "2 lần mỗi ngày"
-
-msgid "30 second preview"
-msgstr "Bản nghe thử 30 giây"
 
 msgid "3x daily"
 msgstr "3 lần mỗi ngày"
@@ -5222,6 +5223,9 @@ msgstr "Tạm dừng nghe"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "Tạm dừng hoặc tiếp tục đọc thành tiếng (y)"
+
+msgid "Paused"
+msgstr "Đã tạm dừng"
 
 msgid "Payment history"
 msgstr "Lịch sử thanh toán"

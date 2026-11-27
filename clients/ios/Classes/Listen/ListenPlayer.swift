@@ -63,7 +63,7 @@ final class ListenPlayer: NSObject, ObservableObject {
 
     private(set) var story: [String: Any]?
 
-    private let player = AVQueuePlayer()
+    private let player: AVQueuePlayer
     private let activateSession: (AVAudioSession) throws -> Void
     private var itemSegments: [ObjectIdentifier: Int] = [:]
     private var itemObservations: [ObjectIdentifier: NSKeyValueObservation] = [:]
@@ -97,7 +97,9 @@ final class ListenPlayer: NSObject, ObservableObject {
     private var lastReportDate = Date()
     private var appDelegate: NewsBlurAppDelegate? { NewsBlurAppDelegate.shared() }
 
-    init(activateSession: @escaping (AVAudioSession) throws -> Void = { try $0.setActive(true) }) {
+    init(player: AVQueuePlayer = AVQueuePlayer(),
+         activateSession: @escaping (AVAudioSession) throws -> Void = { try $0.setActive(true) }) {
+        self.player = player
         self.activateSession = activateSession
         super.init()
         player.actionAtItemEnd = .advance

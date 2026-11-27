@@ -599,6 +599,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -1019,9 +1023,6 @@ msgstr "Er zijn 28 tools beschikbaar voor lezen, acties, training en ontdekken."
 
 msgid "2x daily"
 msgstr "2 keer per dag"
-
-msgid "30 second preview"
-msgstr "Voorbeeld van 30 seconden"
 
 msgid "3x daily"
 msgstr "3 keer per dag"
@@ -5328,6 +5329,9 @@ msgstr "Luisteren pauzeren"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "Hardop voorlezen pauzeren of hervatten (y)"
+
+msgid "Paused"
+msgstr "Gepauzeerd"
 
 msgid "Payment history"
 msgstr "Betalingsgeschiedenis"

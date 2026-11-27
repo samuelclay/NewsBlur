@@ -45,6 +45,7 @@ NEWSBLUR.AccountOAuthApplications = function (account) {
         account.close_and_load_premium({ highlight_feature: 'oauth' });
     });
     this.$upgrade_text = $.make('strong', gettext('Creating OAuth applications requires NewsBlur Premium Pro.'));
+    this.upgrade_text = this.$upgrade_text.text();
     this.$heading = $.make('summary', gettext('Create a new OAuth application'));
     this.$refresh = $.make('button', { type: 'button', className: 'NB-oauth-refresh' }, gettext('Refresh')).on('click', function () {
         self.load_applications();
@@ -84,10 +85,13 @@ NEWSBLUR.AccountOAuthApplications.prototype = {
         this.request = $.getJSON('/account/applications/usage/').done(function (data) {
             self.$list.empty();
             data.applications.forEach(function (app) { self.$list.append(self.application_row(app)); });
+            // apps/oauth/applications.py marks apps paused unless the owner has Premium Pro or staff exempted them.
+            // application_row labels each paused app, so the banner only says so when none of them works.
+            var all_paused = data.applications.length > 0 && _.every(data.applications, function (app) { return app.paused; });
+            self.$upgrade_text.text(all_paused
+                ? gettext('Your applications are paused until your account has active Premium Pro.')
+                : self.upgrade_text);
             if (data.applications.length) {
-                if (!NEWSBLUR.Globals.can_register_oauth_app) {
-                    self.$upgrade_text.text(gettext('Your applications are paused until your account has active Premium Pro.'));
-                }
                 self.$status.text(gettext('Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API requests and last activity are measured from the start of tracking.'));
             } else {
                 self.$status.text(gettext('You haven’t registered any OAuth applications yet.'));
@@ -117,8 +121,12 @@ NEWSBLUR.AccountOAuthApplications.prototype = {
         metric(gettext('Active readers · 7 days'), usage ? usage.readers.toLocaleString(lang) : unavailable);
         metric(gettext('API requests'), usage ? usage.requests.toLocaleString(lang) : unavailable);
         metric(gettext('Last activity'), usage ? last_used : unavailable);
+        var $summary = $.make('summary').text(app.name || app.client_id);
+        if (app.paused) {
+            $summary.append($.make('span', { className: 'NB-oauth-paused' }, gettext('Paused')));
+        }
         var $details = $.make('details', { className: 'NB-oauth-app-details' }, [
-            $.make('summary').text(app.name || app.client_id),
+            $summary,
             this.field(gettext('Client ID'), { type: 'text', readonly: true, value: app.client_id }),
             app.website && this.field(gettext('Application website'), { type: 'url', readonly: true, value: app.website }),
             $.make('div', {}, [

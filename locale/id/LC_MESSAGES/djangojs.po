@@ -601,6 +601,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -1021,9 +1025,6 @@ msgstr "Tersedia 28 alat untuk membaca, melakukan tindakan, melatih, dan menemuk
 
 msgid "2x daily"
 msgstr "2 kali sehari"
-
-msgid "30 second preview"
-msgstr "Pratinjau 30 detik"
 
 msgid "3x daily"
 msgstr "3 kali sehari"
@@ -5336,6 +5337,9 @@ msgstr "Jeda mendengarkan"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "Jeda atau lanjutkan pembacaan suara (y)"
+
+msgid "Paused"
+msgstr "Dijeda"
 
 msgid "Payment history"
 msgstr "Riwayat pembayaran"

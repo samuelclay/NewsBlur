@@ -11,6 +11,7 @@ from prometheus_client.parser import text_string_to_metric_families
 
 from apps.oauth import traffic
 from apps.oauth.access import SELF_SERVICE_LAUNCH
+from apps.oauth.models import ApplicationExemption
 
 
 @override_settings(OAUTH_METRICS_TOKEN="test-scraper")
@@ -65,12 +66,13 @@ class Test_OAuthUsage(TestCase):
                 next(s.value for s in samples if s.name.endswith("created_24h")), existing_new + 2
             )
 
-    def test_inventory_includes_idle_legacy_apps_until_the_owner_qualifies(self):
+    def test_inventory_includes_idle_exempt_apps_while_their_active_owner_lacks_pro(self):
         owner = User.objects.create_user("legacy-owner")
+        exempt = Application.objects.create(user=owner, name="Exempt reader")
         old = Application.objects.create(user=owner, name="Old reader")
-        new = Application.objects.create(user=owner, name="New reader")
-        Application.objects.filter(pk=old.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1))
-        Application.objects.filter(pk=new.pk).update(created=SELF_SERVICE_LAUNCH)
+        Application.objects.create(user=owner, name="New reader")
+        Application.objects.filter(pk=old.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(days=1))
+        ApplicationExemption.objects.create(application=exempt)
 
         def inventory():
             result = self.client.get("/monitor/oauth-usage", HTTP_AUTHORIZATION="OAuthMetrics test-scraper")
@@ -83,8 +85,12 @@ class Test_OAuthUsage(TestCase):
             ]
 
         self.assertEqual(
-            inventory(), [{"app_id": str(old.pk), "app_name": old.name, "owner": owner.username}]
+            inventory(), [{"app_id": str(exempt.pk), "app_name": exempt.name, "owner": owner.username}]
         )
+        # A deactivated owner's exempt app is paused, so it no longer depends on the exemption.
+        User.objects.filter(pk=owner.pk).update(is_active=False)
+        self.assertEqual(inventory(), [])
+        User.objects.filter(pk=owner.pk).update(is_active=True)
         profile = owner.profile
         profile.is_pro = profile.is_premium = True
         profile.is_premium_trial = False

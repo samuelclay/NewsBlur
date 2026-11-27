@@ -537,6 +537,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -953,9 +957,6 @@ msgstr "Okuma, işlemler, eğitim ve keşif için 28 araç kullanılabilir."
 
 msgid "2x daily"
 msgstr "Günde 2 kez"
-
-msgid "30 second preview"
-msgstr "30 saniyelik önizleme"
 
 msgid "3x daily"
 msgstr "Günde 3 kez"
@@ -5235,6 +5236,9 @@ msgstr "Dinlemeyi duraklat"
 
 msgid "Pause or resume reading aloud (y)"
 msgstr "Sesli okumayı duraklatın veya sürdürün (y)"
+
+msgid "Paused"
+msgstr "Duraklatıldı"
 
 msgid "Payment history"
 msgstr "Ödeme geçmişi"

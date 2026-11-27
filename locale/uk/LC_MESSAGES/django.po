@@ -3321,11 +3321,9 @@ msgstr ""
 "пропускаються."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Функція «Слухати» входить до планів Premium Archive ($99 на рік) і Premium Pro. На інших планах можна "
-"прослуховувати 30-секундний уривок із кількох статей на день."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Слухати у вебверсії, на iPad, iPhone та Android"
@@ -3335,9 +3333,6 @@ msgstr "Функція «Слухати» працює на MacBook, iPad, iPhon
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Слухайте озвучення статей до 1 години на тиждень"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Слухайте озвучення статей до 10 годин на тиждень"
@@ -3561,6 +3556,9 @@ msgstr "Відсутній story_hash"
 
 msgid "Missing story_hash."
 msgstr "Відсутній story_hash."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Не вказано ім’я користувача."

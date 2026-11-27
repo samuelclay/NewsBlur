@@ -224,9 +224,9 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                         $.make('div', { className: 'NB-premium-archive-plan', 'data-plan': 'archive' }, [
                             this.make_tier_buttons('archive', $creditcards.clone())
                         ]),
-                        (this.offers_archive_extra() && $.make('div', { className: 'NB-premium-archive-plan', 'data-plan': 'archive_extra' }, [
+                        $.make('div', { className: 'NB-premium-archive-plan', 'data-plan': 'archive_extra' }, [
                             this.make_tier_buttons('archive_extra', $creditcards.clone())
-                        ]))
+                        ])
                     ])
                 ]),
                 // Pro Tier
@@ -351,11 +351,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     // ============================================
 
     // reader_premium_upgrade.js: Premium Archive Extra is Premium Archive with 10 hours of Listen a month instead
-    // of 1, so it is a toggle on the Archive card rather than its own card. Pro already includes more, so a Pro
-    // subscriber sees the Archive card without it.
-    offers_archive_extra: function () {
-        return !NEWSBLUR.Globals.is_pro;
-    },
+    // of 1, so it is a toggle on the Archive card rather than its own card. Every account sees it, Pro included,
+    // since a Pro subscriber can switch down to either plan.
 
     initial_listen_hours: function () {
         if (NEWSBLUR.Globals.is_archive_extra) return 10;
@@ -365,12 +362,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     make_archive_listen_feature: function () {
-        if (!this.offers_archive_extra()) {
-            return $.make('li', { className: 'NB-19 NB-feature-listen' }, [
-                $.make('div', { className: 'NB-premium-bullet-image' }),
-                gettext('Listen to 1 hour of stories read aloud a month')
-            ]);
-        }
         var make_option = _.bind(function (hours, plan, label, price) {
             var is_current = this.is_current_plan(plan) && !NEWSBLUR.Globals.is_premium_trial;
             return $.make('button', {
@@ -400,7 +391,6 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
     },
 
     apply_listen_hours: function () {
-        if (!this.offers_archive_extra()) return;
         var extra = this.listen_hours == 10;
         var $card = this.$modal.find('.NB-premium-tier-archive');
         $card.toggleClass('NB-premium-archive-extra', extra);

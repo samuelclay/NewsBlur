@@ -3292,11 +3292,9 @@ msgstr ""
 "foto, el código y las tablas."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Escuchar está incluido en Premium Archive (99 $ al año) y Premium Pro. Con otros planes, puedes escuchar "
-"una vista previa de 30 segundos de algunos artículos al día."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Escuchar en la web, iPad, iPhone y Android"
@@ -3306,9 +3304,6 @@ msgstr "Escuchar en reproducción en un MacBook, un iPad, un iPhone y un teléfo
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Escucha 1 hora de artículos en voz alta a la semana"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Escucha 10 horas de artículos en voz alta a la semana"
@@ -3536,6 +3531,9 @@ msgstr "Falta story_hash"
 
 msgid "Missing story_hash."
 msgstr "Falta story_hash."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Falta el nombre de usuario."
