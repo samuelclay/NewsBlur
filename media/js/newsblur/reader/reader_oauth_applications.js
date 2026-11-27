@@ -45,6 +45,7 @@ NEWSBLUR.AccountOAuthApplications = function (account) {
         account.close_and_load_premium({ highlight_feature: 'oauth' });
     });
     this.$upgrade_text = $.make('strong', gettext('Creating OAuth applications requires NewsBlur Premium Pro.'));
+    this.upgrade_text = this.$upgrade_text.text();
     this.$heading = $.make('summary', gettext('Create a new OAuth application'));
     this.$refresh = $.make('button', { type: 'button', className: 'NB-oauth-refresh' }, gettext('Refresh')).on('click', function () {
         self.load_applications();
@@ -84,10 +85,12 @@ NEWSBLUR.AccountOAuthApplications.prototype = {
         this.request = $.getJSON('/account/applications/usage/').done(function (data) {
             self.$list.empty();
             data.applications.forEach(function (app) { self.$list.append(self.application_row(app)); });
+            // apps/oauth/applications.py marks apps paused unless the owner has Premium Pro or staff exempted them.
+            var paused = _.some(data.applications, function (app) { return app.paused; });
+            self.$upgrade_text.text(paused
+                ? gettext('Your applications are paused until your account has active Premium Pro.')
+                : self.upgrade_text);
             if (data.applications.length) {
-                if (!NEWSBLUR.Globals.can_register_oauth_app) {
-                    self.$upgrade_text.text(gettext('Your applications are paused until your account has active Premium Pro.'));
-                }
                 self.$status.text(gettext('Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API requests and last activity are measured from the start of tracking.'));
             } else {
                 self.$status.text(gettext('You haven’t registered any OAuth applications yet.'));

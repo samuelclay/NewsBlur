@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_http_methods
 from oauth2_provider.models import Application
 
+from apps.oauth.access import application_is_active, application_is_exempt
 from apps.oauth.models import ApplicationWebsite
 from apps.oauth.traffic import application_usage
 
@@ -84,9 +85,12 @@ def browser_session_required(view):
 @require_http_methods(["GET", "POST"])
 @browser_session_required
 def edit_application(request, pk):
-    if not request.user.profile.can_register_oauth_application:
+    application = get_object_or_404(
+        Application.objects.select_related("applicationexemption"), pk=pk, user=request.user
+    )
+    # Owners of exempt applications keep them up to date without Premium Pro (apps/oauth/access.py).
+    if not (request.user.profile.can_register_oauth_application or application_is_exempt(application)):
         raise PermissionDenied
-    application = get_object_or_404(Application, pk=pk, user=request.user)
     form = ApplicationEditForm(request.POST if request.method == "POST" else None, instance=application)
     if request.method == "POST" and form.is_valid():
         if form.changed_data:
@@ -113,6 +117,13 @@ def owned_applications(request):
         )
         .order_by("-id")
     )
+    active = {
+        application.pk
+        for application in Application.objects.filter(user=request.user).select_related(
+            "user__profile", "applicationexemption"
+        )
+        if application_is_active(application)
+    }
     try:
         traffic = application_usage([app["id"] for app in apps])
     except redis.RedisError:
@@ -121,6 +132,8 @@ def owned_applications(request):
     for app in apps:
         app["website"] = app.pop("applicationwebsite__website")
         app["usage"] = traffic.get(app["id"])
+        # media/js/newsblur/reader/reader_oauth_applications.js warns the owner about paused applications.
+        app["paused"] = app["id"] not in active
     return JsonResponse({"applications": apps})
 
 

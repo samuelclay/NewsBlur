@@ -5,3 +5,14 @@ from django.db import models
 class ApplicationWebsite(models.Model):
     application = models.OneToOneField(settings.OAUTH2_PROVIDER_APPLICATION_MODEL, on_delete=models.CASCADE)
     website = models.URLField(max_length=2048)
+
+
+class ApplicationExemption(models.Model):
+    """Keeps an application working while its owner lacks Premium Pro (apps/oauth/access.py). Staff add and
+    remove exemptions in the Django admin (apps/oauth/admin.py)."""
+
+    application = models.OneToOneField(settings.OAUTH2_PROVIDER_APPLICATION_MODEL, on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.application} (#{self.application_id})"
