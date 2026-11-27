@@ -37,6 +37,9 @@ jobs:
       - name: Test Preferences saving
         run: node --test node/tests/preferences_save.test.js
 
+      - name: Test the team dialog's rules
+        run: node --test node/tests/team_dialog.test.js
+
       - name: Test theme switching
         run: node --test node/tests/theme_switch.test.js
 

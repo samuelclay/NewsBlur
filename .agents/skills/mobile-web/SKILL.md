@@ -31,7 +31,8 @@ Node unit tests for the pure helpers are separate: `node --test node/tests/mobil
 | `smoke` | Every reader flow with assertions: screens and history, the Dashboard screen, long-press sheets, list inline expansion, grid → story screen, swipe paging, toolbar previous/next, Text view, Train modal, edge-swipe back (cancel and complete), browser back/forward, back from a search, pull to refresh, modal close, then `regressions` |
 | `regressions` | Bugs from code review, each confirmed failing before its fix. Add a check here for every phone layout bug you fix |
 | `tour` | Screenshots of every screen in order. `--args dark` for the dark theme, applied in the page and never saved |
-| `modals` | The 19 modals plus the activity sheet: each opens full width with nothing hanging off the screen |
+| `modals` | The 20 modals plus the activity sheet: each opens full width with nothing hanging off the screen |
+| `team` | The team dialog on every tab the `--user` account sees, as full screen sheets with nothing hanging off the side, in screenshots top to bottom. `--args dark` for the dark theme |
 | `player` | The Listen and podcast player floats as a one-row bar at the bottom of each screen, clear of the toolbar row under the nav bar, opens as a bottom sheet and closes from the shade. Uses whatever the account's player already holds and skips when it's empty |
 | `page_scroll` | The feed list and story list scroll the page itself while at rest, which is what lets a phone browser shrink its toolbar: bars stay stuck to the top, more stories load, and a sheet or slide holds each list where it was |
 | `sheets` | A story's Share form, Save tags and notes, and Related stories slide up as bottom sheets over the shade instead of opening inside the story, the share field takes the cursor without iOS zooming in, and the shade closes each. Saves and unsaves one story, shares nothing |

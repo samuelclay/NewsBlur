@@ -63,6 +63,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import ScheduleImmediateFetches, SchedulePremiumSetup
+from apps.social.models import MSocialProfile
 from apps.statistics.models import MStatistics
 from apps.statistics.rllm_costs import RLLMCosts
 from apps.team import stripe_billing
@@ -760,6 +761,24 @@ class Test_TeamLoad(TeamClientMixin, TestCase):
         self.assertNotIn("invites", loaded)
         self.assertNotIn("join_link", loaded)
         self.assertIsNone(self.get(outsider, "")["team"])
+
+    def test_teammates_carry_the_profile_photo_they_chose_and_nothing_otherwise(self):
+        owner = User.objects.create_user(username="owner")
+        member = User.objects.create_user(username="member")
+        team = self.create_team(owner)
+        self.add_member(team, member)
+        profile = MSocialProfile.get_user(owner.pk)
+        profile.photo_url = "//photos.example.com/owner.jpg"
+        profile.save()
+        MSocialProfile.get_user(member.pk)
+
+        loaded = self.get(member, "")["team"]
+
+        # The dialog draws a placeholder for a teammate without a photo, so the default photo isn't sent.
+        self.assertEqual(
+            {teammate["username"]: teammate["photo_url"] for teammate in loaded["members"]},
+            {"owner": "https://photos.example.com/owner.jpg", "member": None},
+        )
 
 
 class Test_TeamActivity(TeamClientMixin, TestCase):
@@ -2669,6 +2688,32 @@ class Test_TeamBilling(TeamProMixin, TestCase):
         # The AI filter billing lookup (Profile.usage_billing_profile) and the plan's.
         self.assertLessEqual(member_lookups, 2)
         self.assertEqual(payload(free)[1], 0)
+
+    def test_the_team_dialog_shows_billing_and_the_price_paid_where_it_is_paid_to_the_owner_only(self):
+        owner = self.reader("teamowner")
+        paid_through = self.now + self.days(31)
+        team = self.pay(owner, paid_through, plan=Team.PLAN_TEAM_ENTERPRISE).team
+        manager = self.reader("manager")
+        self.join(manager, self.join_link_token(team, owner))
+        self.post(owner, "change_role", team_id=team.pk, user_id=manager.pk, role=TeamMember.ROLE_MANAGER)
+
+        def billing(user):
+            return self.get(user, "")["team"].get("billing")
+
+        owner_billing = billing(owner)
+        self.assertEqual(
+            (owner_billing["provider"], owner_billing["comped"], owner_billing["monthly_price"]),
+            (Team.PROVIDER_STRIPE, False, 129),
+        )
+        self.assertEqual(dateutil.parser.parse(owner_billing["paid_through"]), paid_through)
+        self.assertIsNone(billing(manager))
+        # A store charges its own price, a team with more seats than a plan pays what was agreed with staff, and a
+        # comp costs nothing.
+        Team.objects.filter(pk=team.pk).update(billing_provider=Team.PROVIDER_PLAY)
+        self.assertEqual(billing(owner)["monthly_price"], "129.99")
+        Team.objects.filter(pk=team.pk).update(seat_limit=25)
+        self.assertIsNone(billing(owner)["monthly_price"])
+        self.assertEqual((billing(self.owner)["comped"], billing(self.owner)["monthly_price"]), (True, 0))
 
     def test_a_team_owners_renewal_notice_names_the_team_plan(self):
         owner = self.reader("teamowner")

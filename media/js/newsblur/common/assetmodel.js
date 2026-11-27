@@ -2783,6 +2783,25 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         this.make_request('/team/staff/' + action, data, callback, error_callback, { retry: false });
     },
 
+    // assetmodel.js: the team this account is on, or null (apps/team/views.py load_team).
+    fetch_team: function (callback, error_callback) {
+        this.make_request('/team/', {}, callback, error_callback, { request_type: 'GET' });
+    },
+
+    // assetmodel.js: one change to the team, named by its path under /team/ (apps/team/urls.py), which answers with
+    // the team as it is now or with a reason and a message. Not retried, since sending an invite or a request to hand
+    // the team over twice is not harmless.
+    team_action: function (action, data, callback, error_callback) {
+        this.make_request('/team/' + action, data, callback, error_callback, { retry: false });
+    },
+
+    fetch_team_activity: function (team_id, page, callback, error_callback) {
+        this.make_request('/team/activity', {
+            team_id: team_id,
+            page: page
+        }, callback, error_callback, { request_type: 'GET' });
+    },
+
     delete_saved_stories: function (timestamp, callback, error_callback) {
         var self = this;
         var pre_callback = function (data) {

@@ -1,5 +1,5 @@
-// reader_preferences_art.js: the small drawings on the option cards in Preferences
-// (reader_preferences.js make_cards). Each one is a 120 by 76 sketch of the part of the reader a
+// reader_preferences_art.js: the small drawings on the option cards in Preferences and the team
+// dialog (common/settings_dialog.js make_cards). Each one is a 120 by 76 sketch of the part of the reader a
 // choice changes, drawn from a handful of shapes. Shapes take their colors from the --nb-art-*
 // variables in css/reader/reader.css, so the drawings follow the reader's theme.
 //
@@ -90,6 +90,16 @@ NEWSBLUR.PreferencesArt = (function () {
         out.push(text(x + 6, top, 42, shortened ? 4 : (shared ? 7 : 9)));
         if (shortened) out.push(R(x, 44, 54, 14, 'as afadeup', 0) + R(x + 15, 58, 24, 8, 'aa', 4));
         return out.join('');
+    };
+
+    // A head and shoulders, the head centered on x, y.
+    var person = function (x, y, c) {
+        return C(x, y, 6, c) + P('M' + (x - 10) + ' ' + (y + 19) + 'a10 9 0 0 1 20 0z', c);
+    };
+    // A teammate in a list of them: a small head and a name, with a button at the end.
+    var teammate = function (y, button) {
+        return C(52, y, 5, 'ak') + B(62, y - 2, 26, 'al') + R(94, y - 6, 18, 12, button ? 'aa' : 'al', 6) +
+            (button ? P('M103 ' + (y - 3) + 'v6M100 ' + y + 'h6', 'astroke') : '');
     };
 
     var art = {
@@ -198,7 +208,13 @@ NEWSBLUR.PreferencesArt = (function () {
         'keys-scroll': function () { return page() + B(12, 9, 50, 'ab', 5) + text(12, 21, 82, 7) + R(106, 6, 4, 64, 'al', 2) + R(106, 22, 4, 22, 'ak', 2) + arrow(98, 30, 98, 58); },
         'space-bottom': function () { return page() + text(10, 6, 100, 5) + R(0, 44, 120, 2, 'aa', 0) + B(10, 54, 60, 'ab', 5) + text(10, 65, 100, 1); },
         'space-half': function () { return page() + text(10, 6, 100, 3) + R(0, 30, 120, 2, 'aa', 0) + B(10, 40, 60, 'ab', 5) + text(10, 51, 100, 3); },
-        'space-scroll': function () { return page() + B(12, 9, 50, 'ab', 5) + text(12, 21, 82, 7) + R(106, 6, 4, 64, 'al', 2) + R(106, 30, 4, 26, 'ak', 2) + arrow(98, 14, 98, 60); }
+        'space-scroll': function () { return page() + B(12, 9, 50, 'ab', 5) + text(12, 21, 82, 7) + R(106, 6, 4, 64, 'al', 2) + R(106, 30, 4, 26, 'ak', 2) + arrow(98, 14, 98, 60); },
+
+        // ----- Team (reader_team.js) -----
+
+        // A manager looks after the teammates, adding and removing them. A member reads.
+        'role-manager': function () { return page() + R(0, 0, 38, 76, 'as', 0) + person(19, 27, 'aa') + teammate(17, true) + teammate(38) + teammate(59); },
+        'role-member': function () { return page() + R(0, 0, 38, 76, 'as', 0) + person(19, 27, 'ak') + rows(42, 6, 76, 3, { h: 19, gap: 4, read: [1] }); }
 
     };
 

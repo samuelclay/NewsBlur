@@ -16,7 +16,9 @@ NEWSBLUR.ReaderPreferences = function (options) {
 NEWSBLUR.ReaderPreferences.prototype = new NEWSBLUR.Modal;
 NEWSBLUR.ReaderPreferences.prototype.constructor = NEWSBLUR.ReaderPreferences;
 
-_.extend(NEWSBLUR.ReaderPreferences.prototype, {
+// reader_preferences.js: the tabs, groups, rows, cards, chips and the pill come from
+// common/settings_dialog.js, which the team dialog (reader_team.js) is built from too.
+_.extend(NEWSBLUR.ReaderPreferences.prototype, NEWSBLUR.SettingsDialog, {
 
     runner: function () {
         var self = this;
@@ -63,13 +65,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         ];
 
         this.$modal = $.make('div', { className: 'NB-modal-preferences NB-modal' }, [
-            // reader_preferences.js: nothing to press to save or close. The pill ahead of the tabs
-            // says when a change has been saved (set_status).
-            $.make('div', { className: 'NB-modal-tabs' }, [
-                $.make('div', { className: 'NB-preferences-status', role: 'status' })
-            ].concat(_.map(tabs, function (tab, i) {
-                return $.make('div', { className: 'NB-modal-tab NB-modal-tab-' + tab[0] + (i ? '' : ' NB-active') }, tab[1]);
-            }))),
+            this.make_tabs(tabs, 'general'),
             $.make('div', { className: 'NB-modal-loading' }),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-icon' }),
@@ -90,84 +86,10 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
     // = Building =
     // ============
 
-    // reader_preferences.js: a tab is a list of groups, a group is a titled panel of rows, and a row
-    // is one preference: its name and a line of explanation on the left, its control on the right.
-    make_tab: function (name, groups) {
-        return $.make('div', { className: 'NB-tab NB-tab-' + name + (name == 'general' ? ' NB-active' : '') }, _.compact(groups));
-    },
-
-    make_group: function (title, rows) {
-        return $.make('div', { className: 'NB-preference-group' }, [
-            $.make('div', { className: 'NB-preference-group-title' }, title),
-            $.make('div', { className: 'NB-preference-group-rows' }, _.compact(rows))
-        ]);
-    },
-
-    make_row: function (class_name, title, hint, controls, label_extras) {
-        return $.make('div', { className: 'NB-preference ' + class_name }, [
-            $.make('div', { className: 'NB-preference-label' }, _.compact([
-                $.make('div', { className: 'NB-preference-title' }, title),
-                hint && $.make('div', { className: 'NB-preference-sublabel' }, hint)
-            ].concat(label_extras || []))),
-            $.make('div', { className: 'NB-preference-options' }, _.compact(_.flatten([controls])))
-        ]);
-    },
-
-    make_art: function (name) {
-        return $.make('span', { className: 'NB-pref-art' }).html(NEWSBLUR.PreferencesArt.draw(name));
-    },
-
-    // reader_preferences.js: radio buttons drawn as cards, each a small picture of what the choice
-    // does over a short name. The inputs keep the names and values that select_preferences and
-    // serialize_preferences read, so a card is only a different face on the same field.
-    make_cards: function (name, options, disabled) {
-        return $.make('div', { className: 'NB-pref-cards', role: 'radiogroup' }, _.map(options, function (option, i) {
-            var id = 'NB-preference-' + name + '-' + i;
-            var attrs = { className: 'NB-pref-card', 'for': id };
-            if (option.tip) attrs['data-tip'] = option.tip;
-            return $.make('label', attrs, [
-                $.make('input', { type: 'radio', id: id, name: name, value: option.value, disabled: !!disabled }),
-                this.make_art(option.art),
-                $.make('span', { className: 'NB-pref-caption' }, option.caption)
-            ]);
-        }, this));
-    },
-
-    // reader_preferences.js: cards for a choice that is not a plain radio group. Each card carries
-    // data- attributes saying what picking it means, handle_click applies that to fields kept out of
-    // sight, and update_field_cards marks the card that matches those fields.
-    make_field_cards: function (options, class_name) {
-        return $.make('div', { className: 'NB-pref-cards ' + (class_name || ''), role: 'radiogroup' }, _.map(options, function (option) {
-            var attrs = _.extend({ className: 'NB-pref-card NB-pref-field-card ' + (option.class_name || ''), role: 'radio', tabindex: '0' }, option.data);
-            if (option.tip) attrs['data-tip'] = option.tip;
-            return $.make('div', attrs, [
-                this.make_art(option.art),
-                $.make('span', { className: 'NB-pref-caption' }, option.caption)
-            ]);
-        }, this));
-    },
-
-    // reader_preferences.js: an on or off preference stored as a checkbox, shown as two cards.
-    make_toggle_cards: function (name, on, off) {
-        return [
-            $.make('input', { type: 'checkbox', name: name, className: 'NB-pref-hidden', tabindex: '-1' }),
-            this.make_field_cards([
-                _.extend({ data: { 'data-field': name, 'data-checked': 'true' } }, on),
-                _.extend({ data: { 'data-field': name, 'data-checked': 'false' } }, off)
-            ])
-        ];
-    },
-
-    // reader_preferences.js: checkboxes drawn as chips, for lists where any number can be on.
-    make_chips: function (items) {
-        return $.make('div', { className: 'NB-pref-chips' }, _.map(items, function (item) {
-            return $.make('div', { className: 'NB-pref-chip' }, [
-                $.make('input', { type: 'checkbox', id: item.id, name: item.name }),
-                $.make('label', { 'for': item.id }, item.label)
-            ]);
-        }));
-    },
-
+    // reader_preferences.js: a card's radio button keeps the name and value that select_preferences
+    // and serialize_preferences read. Field cards (make_field_cards) stand for fields kept out of
+    // sight: handle_click applies the card picked to them, and update_field_cards marks the card
+    // that matches them.
     make_override_links: function (type, hint) {
         return [
             $.make('div', { className: 'NB-preference-sublabel' }, hint),
@@ -236,7 +158,7 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
                     $.make('div', { className: 'NB-preference-email-status' }, gettext('You are unsubscribed from all NewsBlur emails')).toggle(!NEWSBLUR.assets.preference('send_emails'))
                 ])
             ])
-        ]);
+        ], true);
     },
 
     make_feeds_tab: function () {
@@ -740,22 +662,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
         var autoopen_folder = NEWSBLUR.Preferences.autoopen_folder;
         var $folders = NEWSBLUR.utils.make_folders(autoopen_folder, gettext("All Site Stories"), 'default_folder');
         return $folders;
-    },
-
-    resize_modal: function (old_height) {
-        var $scroll = $('.NB-tab.NB-active', this.$modal);
-        var $modal = this.$modal;
-        var $modal_container = $modal.closest('.simplemodal-container');
-
-        if ($modal.height() == old_height) {
-            console.log(['Modal resize doing nothing, escaping']);
-            return;
-        }
-        if ($modal.height() > $modal_container.height() - 24) {
-            $scroll.height($scroll.height() - 5);
-            if (!$scroll.height()) return;
-            this.resize_modal($modal.height());
-        }
     },
 
     // reader_preferences.js: mark the card that matches each field kept out of sight (make_field_cards).
@@ -1448,16 +1354,6 @@ _.extend(NEWSBLUR.ReaderPreferences.prototype, {
             // reader_preferences.js: turning the pill off drops the stories it was holding.
             NEWSBLUR.reader.clear_realtime_new_stories();
         }
-    },
-
-    set_status: function (status) {
-        var messages = {
-            'saving': gettext('Saving...'),
-            'saved': gettext('Saved'),
-            'error': gettext('That change could not be saved')
-        };
-        $('.NB-preferences-status', this.$modal).text(messages[status]).addClass('NB-visible')
-            .toggleClass('NB-saved', status == 'saved').toggleClass('NB-error', status == 'error');
     },
 
     close_and_load_account: function () {

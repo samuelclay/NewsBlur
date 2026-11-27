@@ -468,8 +468,32 @@ class Team(models.Model):
             "monthly_price": 0 if self.is_comped else self.MONTHLY_PRICES[self.plan],
         }
 
+    def monthly_price(self):
+        """What the team's plan costs its owner a month: nothing for a comp, the store's price when a store bills
+        it, and the web price otherwise. None for a team staff gave more seats than a plan comes with, which pays
+        a price agreed with staff (apps/team/stripe_billing.py)."""
+        if self.is_comped:
+            return 0
+        if self.seat_limit > self.DEFAULT_SEAT_LIMIT:
+            return None
+        if self.billing_provider in (self.PROVIDER_APP_STORE, self.PROVIDER_PLAY):
+            return self.STORE_MONTHLY_PRICES[self.plan]
+        return self.MONTHLY_PRICES[self.plan]
+
+    def billing_canonical(self):
+        """The team's billing as only its owner sees it in the team dialog: who bills it, whether staff comp it,
+        the end of the period paid for, a switch down waiting for that date, and the monthly price."""
+        return {
+            "provider": self.billing_provider,
+            "comped": self.is_comped,
+            "paid_through": self.paid_through,
+            "pending_plan": self.pending_plan,
+            "monthly_price": self.monthly_price(),
+        }
+
     def canonical(self, membership):
         members = list(self.active_members().order_by("joined_date"))
+        photos = profile_photos([member.user_id for member in members])
         data = {
             "id": self.pk,
             "name": self.name,
@@ -480,9 +504,11 @@ class Team(models.Model):
             "seat_limit": self.seat_limit,
             "seats_used": len(members),
             "role": membership.role,
-            "members": [member.canonical() for member in members],
+            "members": [member.canonical(photos.get(member.user_id)) for member in members],
             "transfer": self.transfer_canonical(membership.user_id),
         }
+        if membership.role == TeamMember.ROLE_OWNER:
+            data["billing"] = self.billing_canonical()
         if membership.is_manager:
             invites = self.pending_invites().select_related("created_by").order_by("-created_date")
             data["invites"] = [invite.canonical() for invite in invites]
@@ -626,12 +652,13 @@ class TeamMember(models.Model):
             TeamActivity.log(seat.team, self.user, "member_left")
         return None
 
-    def canonical(self):
+    def canonical(self, photo_url=None):
         return {
             "user_id": self.user_id,
             "username": self.user.username,
             "role": self.role,
             "joined_date": self.joined_date,
+            "photo_url": photo_url,
         }
 
 
@@ -967,6 +994,22 @@ class TeamProGrant(models.Model):
         self.own_tier = self.TIER_FREE
         self.own_trial_expire = None
         logging.user(self.user, "~FMTeam Pro: own plan ended, now free")
+
+
+def profile_photos(user_ids):
+    """The profile photo each of these accounts chose, by user id, for the teammates in the team dialog. An account
+    that never chose one is left out, so the dialog draws its own placeholder rather than the default photo.
+    """
+    # models.py: apps.social imports apps.profile, which imports this module.
+    from apps.social.models import MSocialProfile
+
+    photos = {}
+    for profile in MSocialProfile.objects.filter(user_id__in=user_ids).only("user_id", "photo_url"):
+        if profile.photo_url:
+            photos[profile.user_id] = (
+                "https:" + profile.photo_url if profile.photo_url.startswith("//") else profile.photo_url
+            )
+    return photos
 
 
 def one_line(text):
