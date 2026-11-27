@@ -1,6 +1,9 @@
 import datetime
 
 import pytz
+from django.utils.translation import gettext, ngettext
+
+from apps.team.models import team_scope, usage_query
 
 from .models import MAITranscriptionUsage, MAskAIUsage
 
@@ -12,6 +15,10 @@ class AskAIUsageTracker:
     def __init__(self, user):
         self.user = user
         self.profile = user.profile
+        # usage.py: on an active team the allowance is one for everyone on it, counted in the owner's day
+        # (apps/team/models.py TeamScope).
+        self.team = team_scope(user)
+        self.timezone = self.team.owner_timezone if self.team else self.profile.timezone
 
     # Public API -------------------------------------------------------------
     def can_use(self):
@@ -77,6 +84,16 @@ class AskAIUsageTracker:
                 return None
 
             time_remaining = self._format_time_until_reset()
+            if self.team:
+                if remaining == 0:
+                    return self._daily_limit_message(limit)
+                return ngettext(
+                    "%(team)s has %(count)s Ask AI request left today, shared by everyone on the team "
+                    "(resets in %(time)s).",
+                    "%(team)s has %(count)s Ask AI requests left today, shared by everyone on the team "
+                    "(resets in %(time)s).",
+                    remaining,
+                ) % {"team": self.team.team_name, "count": remaining, "time": time_remaining}
             if remaining == 0:
                 return (
                     f"You've used all {limit} Ask AI requests today. "
@@ -145,7 +162,7 @@ class AskAIUsageTracker:
         return "free"
 
     def _daily_window(self):
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -161,7 +178,10 @@ class AskAIUsageTracker:
     def _daily_count(self):
         start_utc, end_utc = self._daily_window()
         return MAskAIUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc, over_quota=False
+            __raw__=usage_query(self.team, self.user.pk, start_utc, "created_at"),
+            created_at__gte=start_utc,
+            created_at__lt=end_utc,
+            over_quota=False,
         ).count()
 
     def _weekly_window(self):
@@ -170,7 +190,7 @@ class AskAIUsageTracker:
         Resets Sunday night at midnight (Saturday night into Sunday morning) in user's timezone.
         Week runs from Sunday 00:00 to next Sunday 00:00.
         """
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -200,7 +220,10 @@ class AskAIUsageTracker:
         """Count questions asked this week for free users."""
         start_utc, end_utc = self._weekly_window()
         return MAskAIUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc, over_quota=False
+            __raw__=usage_query(self.team, self.user.pk, start_utc, "created_at"),
+            created_at__gte=start_utc,
+            created_at__lt=end_utc,
+            over_quota=False,
         ).count()
 
     def _lifetime_count(self):
@@ -209,7 +232,7 @@ class AskAIUsageTracker:
 
     def _format_time_until_reset(self):
         """Format time until daily reset for premium users."""
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -222,7 +245,7 @@ class AskAIUsageTracker:
 
     def _format_time_until_weekly_reset(self):
         """Format time until weekly reset for free users (Sunday night at midnight)."""
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -270,6 +293,15 @@ class AskAIUsageTracker:
     def _daily_limit_message(self, limit):
         """Generate error message for archive/pro users hitting daily limit."""
         time_remaining = self._format_time_until_reset()
+        if self.team:
+            return gettext(
+                "%(team)s has used all %(limit)s of today's Ask AI requests, which everyone on the team shares. "
+                "They reset at midnight, in %(time)s."
+            ) % {
+                "team": self.team.team_name,
+                "limit": limit,
+                "time": time_remaining,
+            }
         return (
             f"You've reached your daily limit of {limit} Ask AI requests. "
             f"Your limit resets at midnight tonight, in {time_remaining}."
@@ -288,6 +320,10 @@ class TranscriptionUsageTracker:
     def __init__(self, user):
         self.user = user
         self.profile = user.profile
+        # usage.py: on an active team the allowance is one for everyone on it, counted in the owner's day
+        # (apps/team/models.py TeamScope).
+        self.team = team_scope(user)
+        self.timezone = self.team.owner_timezone if self.team else self.profile.timezone
 
     # Public API -------------------------------------------------------------
     def can_use(self):
@@ -409,7 +445,7 @@ class TranscriptionUsageTracker:
         return "free"
 
     def _daily_window(self):
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -425,7 +461,9 @@ class TranscriptionUsageTracker:
     def _daily_count(self):
         start_utc, end_utc = self._daily_window()
         return MAITranscriptionUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+            __raw__=usage_query(self.team, self.user.pk, start_utc, "created_at"),
+            created_at__gte=start_utc,
+            created_at__lt=end_utc,
         ).count()
 
     def _weekly_window(self):
@@ -434,7 +472,7 @@ class TranscriptionUsageTracker:
         Resets Sunday night at midnight (Saturday night into Sunday morning) in user's timezone.
         Week runs from Sunday 00:00 to next Sunday 00:00.
         """
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -464,12 +502,14 @@ class TranscriptionUsageTracker:
         """Count transcriptions this week for free users."""
         start_utc, end_utc = self._weekly_window()
         return MAITranscriptionUsage.objects(
-            user_id=self.user.pk, created_at__gte=start_utc, created_at__lt=end_utc
+            __raw__=usage_query(self.team, self.user.pk, start_utc, "created_at"),
+            created_at__gte=start_utc,
+            created_at__lt=end_utc,
         ).count()
 
     def _format_time_until_reset(self):
         """Format time remaining until daily reset at midnight in user's timezone."""
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:
@@ -487,7 +527,7 @@ class TranscriptionUsageTracker:
 
     def _format_time_until_weekly_reset(self):
         """Format time remaining until Sunday midnight reset in user's timezone."""
-        tz_name = str(self.profile.timezone or "UTC")
+        tz_name = str(self.timezone or "UTC")
         try:
             user_tz = pytz.timezone(tz_name)
         except pytz.UnknownTimeZoneError:

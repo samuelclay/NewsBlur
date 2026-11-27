@@ -436,6 +436,16 @@ class Profile(models.Model):
         """
         return self.max_feed_limit
 
+    @property
+    def feed_limit_shown(self):
+        """The site limit the web client checks itself against before adding or choosing sites
+        (templates/base.html). A teammate's is their own active sites plus what their team has left of its shared
+        limit (apps/team/sites.py), which the server checks again exactly."""
+        from apps.team.sites import site_limit_shown
+
+        shown = site_limit_shown(self.user)
+        return self.max_feed_limit if shown is None else shown
+
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
 

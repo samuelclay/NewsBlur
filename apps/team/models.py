@@ -499,8 +499,13 @@ class TeamInvite(models.Model):
                     return "seat_limit"
 
                 now = datetime.datetime.now()
+                rejoin = {}
                 if not member:
                     member = TeamMember(team=team, user=user)
+                elif member.removed_date:
+                    # models.py: the seat row is reused, so the stint it held is kept on the join for the shared
+                    # allowances to count what the team used during it (_earlier_seats).
+                    rejoin["earlier_seat"] = [member.joined_date.isoformat(), member.removed_date.isoformat()]
                 member.role = invite.role
                 member.status = TeamMember.STATUS_ACTIVE
                 member.invited_by = invite.created_by
@@ -514,7 +519,7 @@ class TeamInvite(models.Model):
                     invite.accepted_by = user
                     invite.accepted_date = now
                     invite.save(update_fields=["accepted_by", "accepted_date"])
-                TeamActivity.log(team, user, "member_joined", role=invite.role, via=invite.kind)
+                TeamActivity.log(team, user, "member_joined", role=invite.role, via=invite.kind, **rejoin)
                 # models.py: granted in the seat's own transaction, so a seat never commits without its Pro.
                 grant_team_pro(member)
                 # models.py: the plan the joiner pays for on their own is settled once the seat commits, and only
@@ -740,9 +745,106 @@ def teammate_seat_windows(owner_id, since):
     """(user_id, joined_date, removed_date) for each seat other than the owner's on the team owner_id owns that
     was held at some point since a date. removed_date is None while the seat is held. What a teammate runs up in
     that window falls under the owner (team_owner_id)."""
-    return list(
+    seats = list(
         TeamMember.objects.filter(team__owner_id=owner_id)
         .exclude(user_id=owner_id)
         .filter(Q(removed_date__isnull=True) | Q(removed_date__gt=since))
         .values_list("user_id", "joined_date", "removed_date")
     )
+    return seats + _earlier_seats(TeamActivity.objects.filter(team__owner_id=owner_id), seats, since)
+
+
+def _earlier_seats(team_activities, seats, since):
+    """A seat row is reused when someone rejoins (TeamInvite.accept), so its dates cover only their latest stint.
+    Each rejoin keeps the stint before it on its member_joined activity. These are the earlier stints that ended
+    after since, for the seats that started after it."""
+    rejoined = [user_id for user_id, joined_date, _ in seats if joined_date > since]
+    if not rejoined:
+        return []
+    joins = team_activities.filter(action="member_joined", actor_id__in=rejoined, created_date__gt=since)
+    earlier = []
+    for user_id, details in joins.values_list("actor_id", "details"):
+        if "earlier_seat" not in details:
+            continue
+        joined_date, removed_date = (
+            datetime.datetime.fromisoformat(date) for date in details["earlier_seat"]
+        )
+        if removed_date > since:
+            earlier.append((user_id, joined_date, removed_date))
+    return earlier
+
+
+class TeamScope:
+    """Whose usage counts as one active team's. A team is one Premium Pro account that up to ten people use, so
+    everything Pro meters is one allowance for the team, counted against its owner: the owner's usage always,
+    and each teammate's for the time they held a seat. Usage rows keep the user id of whoever used it, which is
+    the per teammate breakdown."""
+
+    def __init__(self, team_id, team_name, owner_id, owner_timezone, seats):
+        self.team_id = team_id
+        self.team_name = team_name
+        self.owner_id = owner_id
+        self.owner_timezone = owner_timezone
+        # models.py: (user_id, joined_date, removed_date) of every seat on the team but the owner's, held or ended.
+        self.seats = seats
+
+    @property
+    def member_ids(self):
+        """The owner and everyone holding a seat now."""
+        return [self.owner_id] + [user_id for user_id, _, removed_date in self.seats if removed_date is None]
+
+    def windows(self, since):
+        """(user_id, from, until) for each account whose usage since a moment is the team's. The owner's counts
+        throughout, so its from and until are None."""
+        seats = [seat for seat in self.seats if seat[2] is None or seat[2] > since]
+        earlier = _earlier_seats(TeamActivity.objects.filter(team_id=self.team_id), seats, since)
+        return [(self.owner_id, None, None)] + seats + earlier
+
+
+def team_scope(user):
+    """Whose usage counts with this account's (TeamScope), in one query, or None when it is on no active team so
+    a caller counts the account alone. Everyone on an active team carries the Pro flags, so other accounts skip
+    the lookup."""
+    if not user.profile.is_pro:
+        return None
+    rows = list(
+        TeamMember.objects.filter(
+            team__members__user_id=user.pk,
+            team__members__status=TeamMember.STATUS_ACTIVE,
+            team__status=Team.STATUS_ACTIVE,
+            team__owner__isnull=False,
+        ).values_list(
+            "team_id",
+            "team__name",
+            "team__owner_id",
+            "team__owner__profile__timezone",
+            "user_id",
+            "joined_date",
+            "removed_date",
+        )
+    )
+    if not rows:
+        return None
+    team_id, team_name, owner_id, owner_timezone = rows[0][:4]
+    seats = [row[4:] for row in rows if row[4] != owner_id]
+    return TeamScope(team_id, team_name, owner_id, owner_timezone, seats)
+
+
+def usage_query(scope, user_id, since, date_field):
+    """A Mongo query for the usage rows that count against an allowance from a moment on: one account's, or
+    with a TeamScope everyone's on its team, each in their own window. Rows keep the user in user_id and their
+    date in date_field."""
+    if not scope:
+        return {"user_id": user_id}
+    clauses = []
+    for window_user_id, start, end in scope.windows(since):
+        clause = {"user_id": window_user_id}
+        dates = {}
+        if start:
+            dates["$gte"] = start
+        if end:
+            dates["$lt"] = end
+        if dates:
+            clause[date_field] = dates
+        clauses.append(clause)
+    return {"$or": clauses}

@@ -106,6 +106,7 @@ from apps.search.models import MUserSearch, SearchStory
 from apps.statistics.models import MAnalyticsLoader, MStatistics
 from apps.statistics.rstats import RStats
 from apps.statistics.rtrending import RTrendingStory
+from apps.team.sites import TeamSites
 
 # from apps.search.models import SearchStarredStory
 try:
@@ -588,6 +589,30 @@ def dev_autologin(request, username=None):
     return HttpResponseRedirect(reverse("index"))
 
 
+def _unmute_expired_mutes(request, user, expired_mute_ids):
+    """Timed mutes that have run out come back on as far as the account's own site limit allows, and for a
+    teammate the team's shared limit (apps/team/sites.py). A site the team has no room for stays muted for good, so
+    it isn't tried again on every load."""
+    if not user.profile.is_premium:
+        active_count = UserSubscription.objects.filter(user=user, active=True).count()
+        remaining = max(0, 64 - active_count)
+        expired_mute_ids = expired_mute_ids[:remaining]
+    with transaction.atomic():
+        team_sites = expired_mute_ids and TeamSites.lock_for(user)
+        if team_sites:
+            expired = dict(
+                UserSubscription.objects.filter(pk__in=expired_mute_ids).values_list("feed_id", "pk")
+            )
+            fitting = [expired[feed_id] for feed_id in team_sites.fitting(list(expired))]
+            UserSubscription.objects.filter(pk__in=set(expired_mute_ids) - set(fitting)).update(
+                mute_expires_at=None
+            )
+            expired_mute_ids = fitting
+        if expired_mute_ids:
+            UserSubscription.objects.filter(pk__in=expired_mute_ids).update(active=True, mute_expires_at=None)
+            logging.user(request, "~BB~FWAuto-unmuted ~SB%s~SN expired feeds" % len(expired_mute_ids))
+
+
 @ratelimit(minutes=1, requests=60)
 @never_cache
 @json.json_view
@@ -658,13 +683,7 @@ def load_feeds(request):
             scheduled_feeds.append(sub.feed.pk)
 
     if expired_mute_ids:
-        if not user.profile.is_premium:
-            active_count = UserSubscription.objects.filter(user=user, active=True).count()
-            remaining = max(0, 64 - active_count)
-            expired_mute_ids = expired_mute_ids[:remaining]
-        if expired_mute_ids:
-            UserSubscription.objects.filter(pk__in=expired_mute_ids).update(active=True, mute_expires_at=None)
-            logging.user(request, "~BB~FWAuto-unmuted ~SB%s~SN expired feeds" % len(expired_mute_ids))
+        _unmute_expired_mutes(request, user, expired_mute_ids)
 
     if len(scheduled_feeds) > 0 and request.user.is_authenticated:
         logging.user(
@@ -814,13 +833,7 @@ def load_feeds_flat(request):
             feeds[pk].update(notifications[pk])
 
     if expired_mute_ids:
-        if not user.profile.is_premium:
-            active_count = UserSubscription.objects.filter(user=user, active=True).count()
-            remaining = max(0, 64 - active_count)
-            expired_mute_ids = expired_mute_ids[:remaining]
-        if expired_mute_ids:
-            UserSubscription.objects.filter(pk__in=expired_mute_ids).update(active=True, mute_expires_at=None)
-            logging.user(request, "~BB~FWAuto-unmuted ~SB%s~SN expired feeds" % len(expired_mute_ids))
+        _unmute_expired_mutes(request, user, expired_mute_ids)
 
     if include_inactive:
         for sub in inactive_subs:
@@ -5213,21 +5226,31 @@ def save_feed_chooser(request):
                 % (would_mute, len(approved_feeds), total_subs, currently_active),
             )
 
-    for sub in usersubs:
-        try:
-            if sub.feed_id in approved_feeds:
-                activated += 1
-                if not sub.active:
-                    sub.active = True
+    with transaction.atomic():
+        # views.py: a teammate's choice replaces all of their active sites, so it has to fit beside everyone
+        # else's on the team, checked with the team row locked (apps/team/sites.py).
+        team_sites = TeamSites.lock_for(request.user)
+        left_muted = []
+        if team_sites:
+            subscribed = set(usersubs.values_list("feed_id", flat=True))
+            chosen = [feed_id for feed_id in approved_feeds if feed_id in subscribed]
+            approved_feeds = team_sites.fitting(chosen, without_user_id=request.user.pk)
+            left_muted = set(chosen) - set(approved_feeds)
+        for sub in usersubs:
+            try:
+                if sub.feed_id in approved_feeds:
+                    activated += 1
+                    if not sub.active:
+                        sub.active = True
+                        sub.save()
+                        if sub.feed.active_subscribers <= 0:
+                            sub.feed.count_subscribers()
+                elif sub.active:
+                    sub.active = False
                     sub.save()
-                    if sub.feed.active_subscribers <= 0:
-                        sub.feed.count_subscribers()
-            elif sub.active:
-                sub.active = False
-                sub.save()
-                muted += 1
-        except Feed.DoesNotExist:
-            pass
+                    muted += 1
+            except Feed.DoesNotExist:
+                pass
 
     UserSubscription.queue_new_feeds(request.user)
     UserSubscription.refresh_stale_feeds(request.user, exclude_new=True)
@@ -5241,7 +5264,10 @@ def save_feed_chooser(request):
         % (activated, muted, total_subs),
     )
 
-    return {"activated": activated, "muted": muted}
+    response = {"activated": activated, "muted": muted}
+    if left_muted:
+        response["message"] = team_sites.refusal_message()
+    return response
 
 
 @ajax_login_required
@@ -5294,9 +5320,14 @@ def set_feed_mute(request):
         logging.user(request, "~BB~FW~SBMuted feed ~FC%s~FB for %s" % (feed_id, duration_text))
     else:
         if not sub.active:
-            sub.active = True
-            sub.mute_expires_at = None
-            sub.save()
+            with transaction.atomic():
+                # views.py: an unmuted site counts against a teammate's shared team limit (apps/team/sites.py).
+                team_sites = TeamSites.lock_for(request.user)
+                if team_sites and not team_sites.fitting([feed_id]):
+                    return {"code": -1, "message": team_sites.refusal_message()}
+                sub.active = True
+                sub.mute_expires_at = None
+                sub.save()
             if sub.feed.active_subscribers <= 0:
                 sub.feed.count_subscribers()
             logging.user(request, "~BB~FW~SBUnmuted feed: ~FC%s" % feed_id)

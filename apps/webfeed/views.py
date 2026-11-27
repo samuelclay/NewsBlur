@@ -3,11 +3,13 @@ import uuid
 
 import redis
 from django.conf import settings
+from django.db import transaction
 from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 
 from apps.rss_feeds.models import Feed
 from apps.statistics.rtrending_webfeeds import RTrendingWebFeed
+from apps.team.sites import TeamSites
 from utils import feedfinder_forman
 from utils import json_functions as json
 from utils import log as logging
@@ -187,12 +189,17 @@ def subscribe(request):
     try:
         us = UserSubscription.objects.get(user=request.user, feed=feed)
     except UserSubscription.DoesNotExist:
-        us = UserSubscription.objects.create(
-            user=request.user,
-            feed=feed,
-            active=True,
-            user_title=feed.feed_title,
-        )
+        with transaction.atomic():
+            # views.py: a teammate's new site counts against their team's shared site limit (apps/team/sites.py).
+            team_sites = TeamSites.lock_for(request.user)
+            if team_sites and not team_sites.fitting([feed.pk]):
+                return {"code": -1, "message": team_sites.refusal_message()}
+            us = UserSubscription.objects.create(
+                user=request.user,
+                feed=feed,
+                active=True,
+                user_title=feed.feed_title,
+            )
         from apps.reader.models import UserSubscriptionFolders
         from utils import json_functions as json_util
         from utils.feed_functions import add_object_to_folder

@@ -66,6 +66,8 @@ Decided on 2026-11-26:
 - [x] On an ownership transfer, the old owner is refunded the unused part of their month when they paid by Stripe or PayPal. App Store and Play purchases cannot be refunded by us
 - [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
 - [x] Verifying payment notices and app purchases for every plan is part of step 3, on this PR
+- [x] Voice previews and transcription are shared across the team like Listen and Ask AI. Days and weeks follow the owner's timezone, and a staff Listen reset for any teammate resets the team's hours
+- [x] The message at a shared limit names the team. Only the site limit message names the owner, since making room for sites is something the owner can do
 - [x] If one owner ends up paying for a team plan in two places, the newest purchase wins, the older web renewal is cancelled, and staff are emailed. The stores take the money before the server hears of a purchase, so this cannot be refused up front
 - [x] Invite links are a path, `/team/join/<token>`, because the apps can claim a path but not a query string. The invite is carried through login or signup the way gift codes are, and the welcome page names the team before signup
 - [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
@@ -127,9 +129,9 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Up to 10 teammates on one plan
 - [ ] "More than 10 teammates? Get in touch" opens a short form that emails staff with the team name, seats wanted, a note and the account
 - [ ] Every teammate gets every Premium Pro feature: feeds fetched every 5 to 15 minutes, archive, Ask AI, regular expressions, MCP and CLI
-- [ ] The team shares one Premium Pro account's allowances: 10,000 sites across team folders and everyone's private feeds
-- [ ] The team shares 10 hours of Listen a week
-- [ ] Every other Pro allowance (Ask AI, AI filters) is shared the same way
+- [x] The team shares one Premium Pro account's allowances: 10,000 sites across team folders and everyone's private feeds
+- [x] The team shares 10 hours of Listen a week
+- [x] Every other Pro allowance (Ask AI, AI filters) is shared the same way
 - [ ] Every teammate keeps private feeds and folders that the team cannot see
 - [ ] Join with an existing NewsBlur account and keep everything in it
 - [ ] Invite by email
@@ -703,7 +705,7 @@ The grant:
 - [x] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, and when the grant began
 - [x] `grant_team_pro` sets the Pro flags on the teammate's `Profile` without calling `activate_pro`, so no welcome email, staff email or payment row is produced
 - [x] The grant never writes `premium_expire`. That stays the teammate's own paid through date
-- [ ] On a new grant: the teammate's muted sites are reactivated up to what the team has room for, feeds are scheduled at Pro speed, and the archive backfill starts if they were not already on Archive
+- [x] On a new grant: the teammate's muted sites are reactivated up to what the team has room for, feeds are scheduled at Pro speed, and the archive backfill starts if they were not already on Archive
 - [x] `release_team_pro` restores exactly the snapshotted tier if it is still paid for, restores a trial that is still running, and otherwise calls `deactivate_premium`
 - [x] One row per person, removed when the seat ends, so team Pro is never snapshotted as someone's own tier
 
@@ -739,20 +741,20 @@ A new teammate's own subscription:
 
 Shared allowances. The scope is the owner plus each teammate for the period they were on the team. Usage rows keep the teammate's own user id, which is the per teammate breakdown, so no field is added to any Mongo document.
 
-- [ ] Sites: a new `team_site_refusal` check wherever a site becomes active: adding a site, OPML import, batch subscribe, the feed chooser, unmute and `auto_activate`. A site any teammate already follows costs nothing
-- [ ] The count is distinct active sites across the team, exact when enforcing and cached for five minutes when displayed
-- [ ] Someone whose private feeds push the team past 10,000 can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep in the feed chooser
-- [ ] Listen: the 10 hours a week are counted across the scope (`apps/listen/usage.py`), and the message at the cap names the team and its owner
-- [ ] Ask AI and transcription: counted across the scope (`apps/ask_ai/usage.py`)
-- [ ] Archive Assistant's 100 a day: counted across the scope (`apps/archive_assistant/models.py`)
+- [x] Sites: one check in `apps/team/sites.py`, with the team row locked, wherever a site becomes active: adding a site, OPML import, batch subscribe, the feed chooser, unmute and `auto_activate`. A site any teammate already follows costs nothing
+- [x] The count is distinct active sites across the team, exact when enforcing and cached for five minutes when displayed
+- [x] Someone whose private feeds push the team past 10,000 can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep in the feed chooser
+- [x] Listen: the 10 hours a week are counted across the scope (`apps/listen/usage.py`), and the message at the cap names the team and its owner
+- [x] Ask AI and transcription: counted across the scope (`apps/ask_ai/usage.py`)
+- [x] Archive Assistant's 100 a day: counted across the scope (`apps/archive_assistant/models.py`)
 - [x] AI filters are pay per use, not an allowance. A teammate can use them once the owner has turned usage billing on, and the charge goes to the owner's Stripe customer against the owner's spending limit, with the teammate recorded on each cost row
 - [x] Only the owner can turn usage billing on for the team
-- [ ] When the team hits a shared limit, the teammate who hit it is told it is the team's limit and who to ask
+- [x] When the team hits a shared limit, the teammate who hit it is told it is the team's limit and who to ask
 
 Counting:
 
 - [x] Paid subscriber counts and gauges (`apps/monitor/views/newsblur_users.py`, `apps/statistics/models.py`) leave grant holders out, and a new gauge counts team seats
-- [ ] Feed fetch priority follows the flags, so team sites are fetched at Pro speed
+- [x] Feed fetch priority follows the flags, so team sites are fetched at Pro speed
 
 This is the riskiest integration in the plan. That code handles Stripe, PayPal, App Store and Play history and has a lot of special cases.
 
@@ -895,7 +897,7 @@ One step at a time, one agent at a time, each ending in passing tests and a comm
 Core:
 
 - [x] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
-- [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, and the fall back to a person's own plan the moment a seat ends
+- [x] 2. Premium Pro for teammates, shared allowances counted against the owner, and the fall back to a person's own plan the moment a seat ends
 - [ ] 3. Billing: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, staff controls
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
@@ -971,7 +973,7 @@ Written before any code. Each one is a test.
 - [x] A teammate who leaves or is removed gets no email, or two
 - [ ] A lapsed team pays again and its folders, roles or settings are gone
 - [x] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
-- [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
+- [x] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
 - [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [x] A teammate's own Stripe renewal keeps charging after they join
@@ -998,12 +1000,12 @@ Written before any code. Each one is a test.
 - [x] Someone leaves a team and keeps Premium Pro, for a minute or for good
 - [x] Leaving and rejoining records team Pro as the person's own tier
 - [x] A plan that is still paid for drops to free when the seat ends, or a plan that ran out survives it
-- [ ] A webhook that saves the whole profile row overwrites the grant
+- [x] A webhook that saves the whole profile row overwrites the grant
 - [x] Joining sends the Pro welcome email or the staff upgrade email, or writes a payment row
-- [ ] A shared meter counts usage from before someone joined or after they left, or gives each person their own 10 hours
+- [x] A shared meter counts usage from before someone joined or after they left, or gives each person their own 10 hours
 - [x] AI filters bill the teammate's own Stripe customer or ignore the owner's spending limit
-- [ ] The team passes 10,000 sites through add a site, OPML import, unmute or the feed chooser
-- [ ] A site several teammates follow is counted more than once, or muted sites are counted
+- [x] The team passes 10,000 sites through add a site, OPML import, unmute or the feed chooser
+- [x] A site several teammates follow is counted more than once, or muted sites are counted
 - [x] Deleting the owner's account leaves teammates on Pro for good
 
 **Notifications**

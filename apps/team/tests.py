@@ -11,9 +11,17 @@ from django.contrib.auth.models import User
 from django.core import mail
 from django.db import DatabaseError, connection, transaction
 from django.test import Client, TestCase, TransactionTestCase, override_settings
+from django.test.utils import CaptureQueriesContext
+from django.urls import reverse
 from django.utils import dateformat
 from mongoengine.context_managers import switch_db
 
+from apps.archive_assistant.models import MArchiveAssistantUsage
+from apps.ask_ai.models import MAITranscriptionUsage, MAskAIUsage
+from apps.ask_ai.usage import AskAIUsageTracker, TranscriptionUsageTracker
+from apps.feed_import.models import OPMLImporter
+from apps.listen.models import MListenUsage
+from apps.listen.usage import ListenUsageTracker
 from apps.monitor.models import MLLMCost
 from apps.profile import models as profile_models
 from apps.profile.apple_subscriptions import apply_verified_apple_transaction
@@ -36,7 +44,8 @@ from apps.profile.tasks import (
     EmailStaffPremiumUpgrade,
     PremiumExpire,
 )
-from apps.reader.models import UserSubscription
+from apps.reader.models import UserSubscription, UserSubscriptionFolders
+from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.statistics.models import MStatistics
@@ -51,7 +60,9 @@ from apps.team.models import (
     team_owner_id,
 )
 from apps.team.tasks import SendTeamInviteEmail, SettleOwnPlanOnJoin, TeamProGrants
+from apps.webfeed.models import MWebFeedConfig
 from utils import json_functions as json
+from utils import urlnorm
 from utils.llm_costs import LLMCostTracker
 
 # apps/team/tests.py: the Profile flags of each plan, written out here so the tests don't read them from the code
@@ -1481,6 +1492,22 @@ class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
         self.assertTrue(Profile.objects.get(user=stayer).is_usage_limit_reached)
         self.assertTrue(Profile.objects.get(user=self.owner).is_usage_limit_reached)
 
+    def test_a_teammate_who_left_and_came_back_counts_for_both_seats(self):
+        self.turn_on_owner_billing()
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        TeamMember.objects.filter(user=reader).update(joined_date=self.at(0.1))
+        self.leave(reader)
+        TeamMember.objects.filter(user=reader).update(removed_date=self.at(0.4))
+        self.join(reader)
+        TeamMember.objects.filter(user=reader).update(joined_date=self.at(0.8))
+
+        self.cost(reader, 0.30, self.at(0.2))
+        self.cost(reader, 5.00, self.at(0.6))
+        self.cost(reader, 0.20, self.at(0.9))
+
+        self.assertAlmostEqual(Profile.objects.get(user=self.owner).get_usage_billing_spend()[0], 0.50)
+
     def test_only_the_owner_turns_on_usage_billing_for_the_team(self):
         reader = self.reader("reader", "free")
         self.join(reader)
@@ -1577,3 +1604,372 @@ class Test_TeamProUpkeep(TeamProMixin, TestCase):
 
         self.leave(reader)
         self.assertEqual(self.plan_of(reader), "archive")
+
+
+class TeamSitesMixin(TeamProMixin):
+    """apps/team/tests.py: Premium Pro's site limit is patched down to three, so a team reaches it with a few rows.
+    The owner, alexis and casey are on the team. The owner and alexis both follow "shared", alexis follows
+    "followed" and has "muted" muted, and a former teammate who still pays for their own plan follows "former".
+    That's two of the three sites counted, because a site counts once and only while someone on the team follows it
+    actively, so one site of room is left. Casey has none yet."""
+
+    def setUp(self):
+        super().setUp()
+        self.patch(Profile, "PRO_FEED_LIMIT", new=3)
+        self.patch(MaintainFeedSubscriptions, "delay")
+        User.objects.filter(pk=self.owner.pk).update(username="editor_in_chief")
+        Profile.objects.filter(user=self.owner).update(**PLANS["pro"])
+        self.shared, self.followed, self.muted, self.former, self.new, self.newer = (
+            self.site(name) for name in ("shared", "followed", "muted", "former", "new", "newer")
+        )
+        self.follow(self.owner, self.shared)
+        self.alexis = self.reader("alexis")
+        self.join(self.alexis)
+        self.follow(self.alexis, self.shared, self.followed)
+        self.follow(self.alexis, self.muted, active=False)
+        former = self.reader("formerteammate", "premium", premium_expire=self.now + self.days(30))
+        self.join(former)
+        self.follow(former, self.former)
+        self.leave(former)
+        self.casey = self.reader("casey")
+        self.join(self.casey)
+
+    def site(self, name):
+        return Feed.objects.create(
+            feed_address=urlnorm.normalize("https://%s.example/feed.xml" % name),
+            feed_link=urlnorm.normalize("https://%s.example/" % name),
+            feed_title=name,
+            num_subscribers=20,
+        )
+
+    def follow(self, user, *feeds, active=True):
+        for feed in feeds:
+            UserSubscription.objects.create(user=user, feed=feed, active=active)
+
+    def active_sites(self, user):
+        return set(
+            UserSubscription.objects.filter(user=user, active=True).values_list("feed__feed_title", flat=True)
+        )
+
+    def reader_post(self, user, path, **data):
+        return json.decode(self.client_for(user).post("/reader/%s" % path, data).content)
+
+    def add_url(self, user, feed):
+        with patch("apps.reader.views.validate_public_url"), patch.object(
+            Feed, "get_feed_from_url", return_value=feed
+        ):
+            return self.reader_post(user, "add_url", url=feed.feed_address)
+
+    def assert_team_refusal(self, message):
+        self.assertIn("Newsroom", message)
+        self.assertIn("editor_in_chief", message)
+
+
+class Test_TeamSiteLimit(TeamSitesMixin, TestCase):
+    def test_adding_a_site_stops_at_the_teams_limit_except_for_sites_it_already_follows(self):
+        self.assertEqual(self.add_url(self.casey, self.new)["code"], 1)
+
+        refused = self.add_url(self.casey, self.newer)
+        self.assertEqual(refused["code"], -1)
+        self.assert_team_refusal(refused["message"])
+        self.assertEqual(self.add_url(self.casey, self.followed)["code"], 1)
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+    def test_batch_subscribe_stops_at_the_teams_limit(self):
+        self.follow(self.casey, self.new)
+
+        response = self.reader_post(self.casey, "add_feeds", feed_ids=[self.newer.pk, self.followed.pk])
+
+        results = {result["feed_id"]: result for result in response["results"]}
+        self.assertEqual([results[feed.pk]["code"] for feed in (self.newer, self.followed)], [-1, 1])
+        self.assert_team_refusal(results[self.newer.pk]["message"])
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+    def test_unmuting_stops_at_the_teams_limit(self):
+        self.follow(self.casey, self.new)
+        self.follow(self.casey, self.newer, self.followed, active=False)
+
+        refused = self.reader_post(self.casey, "set_feed_mute", feed_id=self.newer.pk, mute="false")
+        unmuted = self.reader_post(self.casey, "set_feed_mute", feed_id=self.followed.pk, mute="false")
+
+        self.assertEqual((refused["code"], unmuted["code"]), (-1, 1))
+        self.assert_team_refusal(refused["message"])
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+    def test_the_feed_chooser_swaps_sites_within_the_teams_limit(self):
+        self.follow(self.casey, self.new)
+        self.follow(self.casey, self.newer, self.followed, active=False)
+
+        too_many = self.reader_post(
+            self.casey, "save_feed_chooser", approved_feeds=[self.new.pk, self.newer.pk, self.followed.pk]
+        )
+        self.assert_team_refusal(too_many["message"])
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+        # Letting go of "new" makes room for "newer".
+        swapped = self.reader_post(
+            self.casey, "save_feed_chooser", approved_feeds=[self.newer.pk, self.followed.pk]
+        )
+        self.assertNotIn("message", swapped)
+        self.assertEqual(self.active_sites(self.casey), {"newer", "followed"})
+
+    def test_an_opml_import_makes_active_only_what_fits(self):
+        self.follow(self.casey, self.new)
+        outlines = "".join(
+            '<outline title="%s" type="rss" xmlUrl="%s" htmlUrl="%s" />'
+            % (feed.feed_title, feed.feed_address, feed.feed_link)
+            for feed in (self.newer, self.followed)
+        )
+
+        casey = User.objects.get(pk=self.casey.pk)
+        OPMLImporter('<opml version="1.0"><body>%s</body></opml>' % outlines, casey).process()
+
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+        self.assertTrue(UserSubscription.objects.filter(user=self.casey, feed=self.newer).exists())
+
+    def test_turning_sites_back_on_for_an_account_with_none_active_stops_at_the_limit(self):
+        self.follow(self.casey, self.new, self.newer, self.followed, active=False)
+        UserSubscriptionFolders.objects.create(
+            user=self.casey, folders=json.encode([self.new.pk, self.newer.pk, self.followed.pk])
+        )
+
+        UserSubscriptionFolders.objects.get(user=self.casey).auto_activate()
+
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+    def test_a_web_feed_stops_at_the_teams_limit(self):
+        self.follow(self.casey, self.new)
+        url = "https://pages.example/news"
+        self.addCleanup(lambda: MWebFeedConfig.objects(url=url).delete())
+
+        with patch("apps.webfeed.views.validate_public_url"):
+            response = json.decode(
+                self.client_for(self.casey)
+                .post(
+                    "/webfeed/subscribe",
+                    {"url": url, "variant_index": 0, "story_container_xpath": "//li", "title_xpath": ".//a"},
+                )
+                .content
+            )
+
+        self.assertEqual(response["code"], -1)
+        self.assert_team_refusal(response["message"])
+        self.assertEqual(self.active_sites(self.casey), {"new"})
+
+    def test_timed_mutes_running_out_come_back_only_as_far_as_the_limit(self):
+        self.follow(self.casey, self.new)
+        self.follow(self.casey, self.newer, self.followed, active=False)
+        UserSubscription.objects.filter(user=self.casey, active=False).update(
+            mute_expires_at=self.now - self.days(1)
+        )
+
+        self.client_for(self.casey).get("/reader/feeds", {"flat": "true"})
+
+        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+
+    def test_joining_past_the_limit_mutes_only_the_joiners_newest_sites(self):
+        joiner = self.reader("joiner", "premium", premium_expire=self.now + self.days(30))
+        self.follow(joiner, self.followed, self.new, self.newer)
+
+        self.join(joiner)
+
+        self.assertEqual(self.active_sites(joiner), {"followed", "new"})
+        self.assertEqual(self.active_sites(self.alexis), {"shared", "followed"})
+        self.assertEqual(self.active_sites(self.owner), {"shared"})
+
+    def test_a_free_account_joining_gets_back_only_what_fits_oldest_first(self):
+        joiner = self.reader("joiner")
+        self.follow(joiner, self.newer, self.followed, self.new, active=False)
+
+        self.join(joiner)
+
+        self.assertEqual(self.active_sites(joiner), {"newer", "followed"})
+
+    def test_an_account_on_no_team_keeps_the_limits_it_had(self):
+        solo = self.reader("solo", "pro", premium_expire=self.now + self.days(30))
+        self.follow(solo, self.shared, self.followed, self.muted)
+        self.follow(solo, self.new, active=False)
+
+        self.assertEqual(self.add_url(solo, self.newer)["code"], 1)
+        unmuted = self.reader_post(solo, "set_feed_mute", feed_id=self.new.pk, mute="false")
+        self.assertEqual(unmuted["code"], 1)
+
+    @override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}})
+    def test_the_web_client_checks_against_its_own_sites_plus_the_teams_room(self):
+        self.follow(self.casey, self.followed)
+        solo = self.reader("solo", "pro", premium_expire=self.now + self.days(30))
+
+        def limits_shown(user):
+            page = self.client_for(user).get(reverse("index")).content.decode("utf-8")
+            return re.findall(r"'(?:max|add)_feed_limit'\s*:\s*(\w+)", page)
+
+        self.assertEqual(limits_shown(self.casey), ["2", "2"])
+        self.assertEqual(limits_shown(solo), ["3", "3"])
+
+
+class Test_TeamSiteLimitAtOnce(TeamSitesMixin, TransactionTestCase):
+    def test_two_teammates_adding_the_last_site_at_once_leaves_one_out(self):
+        def add(user, feed):
+            return lambda: self.reader_post(user, "add_feeds", feed_ids=[feed.pk])
+
+        casey_response, alexis_response = self.while_held(
+            self.team.lock, add(self.alexis, self.newer), add(self.casey, self.new)
+        )
+
+        self.assertEqual(casey_response["code"], 1)
+        self.assertEqual(alexis_response["code"], -1)
+        self.assert_team_refusal(alexis_response["message"])
+        self.assertEqual(
+            self.active_sites(self.casey) | self.active_sites(self.alexis), {"shared", "followed", "new"}
+        )
+
+
+class Test_TeamSharedAllowances(TeamProMixin, TestCase):
+    """The owner, alexis and brooke are on the team. Listen, Ask AI and the Archive Assistant each give the team
+    one allowance between them, counted against the owner."""
+
+    def setUp(self):
+        super().setUp()
+        for document in (MListenUsage, MAskAIUsage, MAITranscriptionUsage, MArchiveAssistantUsage):
+            document.drop_collection()
+            self.addCleanup(document.drop_collection)
+        Profile.objects.filter(user=self.owner).update(**PLANS["pro"])
+        self.alexis = self.reader("alexis")
+        self.brooke = self.reader("brooke")
+        for user in (self.alexis, self.brooke):
+            self.join(user)
+        # apps/team/tests.py: Mongo keeps milliseconds, so usage saved right after a join could read as before it.
+        TeamMember.objects.filter(team=self.team).update(joined_date=self.now - datetime.timedelta(minutes=1))
+        self.week_start = ListenUsageTracker(self.fresh(self.owner)).week_window()[0]
+
+    def fresh(self, user):
+        return User.objects.get(pk=user.pk)
+
+    def at(self, fraction):
+        """apps/team/tests.py: a moment between the start of the owner's Listen week and now."""
+        now = datetime.datetime.utcnow()
+        return self.week_start + (now - self.week_start) * fraction
+
+    def listened(self, user, hours, at=None):
+        MListenUsage(
+            user_id=user.pk, kind="segment", seconds=hours * 3600, cached=False, created_at=at or self.at(1)
+        ).save()
+
+    def can_listen(self, user):
+        return ListenUsageTracker(self.fresh(user)).check_segment("900:story", cached=False)
+
+    def used(self, document, user, count):
+        document.objects.insert([document(user_id=user.pk) for _ in range(count)])
+
+    def test_listen_is_one_weekly_allowance_for_the_whole_team(self):
+        outsider = self.reader("outsider", "pro", premium_expire=self.now + self.days(30))
+        self.listened(outsider, 9)
+        self.listened(self.owner, 4)
+        self.listened(self.alexis, 5)
+        self.assertTrue(self.can_listen(self.brooke)[0])
+
+        self.listened(self.brooke, 1)
+
+        for user in (self.owner, self.alexis, self.brooke):
+            allowed, reason, message = self.can_listen(user)
+            self.assertEqual((allowed, reason), (False, "cap_reached"))
+        self.assertIn("Newsroom", message)
+        self.assertNotIn("alexis", message)
+        self.assertTrue(self.can_listen(outsider)[0])
+
+    def test_only_listening_while_on_the_team_counts_for_it(self):
+        leaver = self.reader("leaver")
+        self.join(leaver)
+        self.leave(leaver)
+        TeamMember.objects.filter(user=leaver).update(joined_date=self.at(0.3), removed_date=self.at(0.6))
+        self.listened(leaver, 9, at=self.at(0.2))
+        self.listened(leaver, 2, at=self.at(0.4))
+        self.listened(leaver, 9, at=self.at(0.8))
+
+        self.assertEqual(ListenUsageTracker(self.fresh(self.alexis)).seconds_used(), 2 * 3600)
+
+    def test_a_teammate_who_left_and_came_back_still_counts_their_first_seat(self):
+        TeamMember.objects.filter(user=self.alexis).update(joined_date=self.at(0.1))
+        self.leave(self.alexis)
+        TeamMember.objects.filter(user=self.alexis).update(removed_date=self.at(0.4))
+        self.join(self.alexis)
+        TeamMember.objects.filter(user=self.alexis).update(joined_date=self.at(0.8))
+        self.listened(self.alexis, 3, at=self.at(0.2))
+        self.listened(self.alexis, 9, at=self.at(0.6))
+        self.listened(self.alexis, 1, at=self.at(0.9))
+
+        self.assertEqual(ListenUsageTracker(self.fresh(self.brooke)).seconds_used(), 4 * 3600)
+
+    def test_only_a_reset_of_the_owners_starts_the_teams_week_over(self):
+        self.listened(self.alexis, 10, at=self.now - datetime.timedelta(seconds=30))
+        # A reset brooke had on their own before joining is not the team's.
+        MListenUsage(user_id=self.brooke.pk, kind="reset", reason="manual").save()
+        self.assertFalse(self.can_listen(self.brooke)[0])
+
+        staff = User.objects.create_user(username="staffer", is_staff=True)
+        self.client_for(staff).post("/listen/staff_usage", {"user_id": self.owner.pk})
+
+        self.assertTrue(self.can_listen(self.alexis)[0])
+
+    def test_after_the_team_lapses_each_teammate_listens_on_their_own(self):
+        paying = self.reader("paying", "pro", premium_expire=self.now + self.days(30))
+        self.join(paying)
+        self.listened(self.alexis, 10)
+        self.assertFalse(self.can_listen(paying)[0])
+
+        deactivate_team(self.team)
+
+        self.assertTrue(self.can_listen(paying)[0])
+
+    def test_ask_ai_and_transcription_are_one_daily_allowance_for_the_team(self):
+        self.used(MAskAIUsage, self.owner, 60)
+        self.used(MAskAIUsage, self.alexis, 39)
+        self.assertTrue(AskAIUsageTracker(self.fresh(self.brooke)).can_use()[0])
+
+        self.used(MAskAIUsage, self.brooke, 1)
+
+        allowed, message = AskAIUsageTracker(self.fresh(self.alexis)).can_use()
+        self.assertFalse(allowed)
+        self.assertIn("Newsroom", message)
+        self.used(MAITranscriptionUsage, self.owner, 100)
+        self.used(MAITranscriptionUsage, self.brooke, 10)
+        self.assertTrue(TranscriptionUsageTracker(self.fresh(self.alexis)).is_over_quota())
+
+    def test_the_archive_assistant_is_one_daily_allowance_for_the_team(self):
+        self.used(MArchiveAssistantUsage, self.owner, 60)
+        self.used(MArchiveAssistantUsage, self.alexis, 39)
+        self.assertTrue(MArchiveAssistantUsage.can_use(self.fresh(self.brooke))[0])
+
+        self.used(MArchiveAssistantUsage, self.brooke, 1)
+
+        allowed, message = MArchiveAssistantUsage.can_use(self.fresh(self.alexis))
+        self.assertFalse(allowed)
+        self.assertIn("Newsroom", message)
+
+
+class Test_TeamLookupCost(TeamProMixin, TestCase):
+    """Listen, Ask AI, the Archive Assistant and adding a site run on every request of their kind. An account that
+    isn't Pro is on no team, so it never looks one up, and a Pro account looks once."""
+
+    def team_lookups(self, user, run):
+        user = User.objects.get(pk=user.pk)
+        with CaptureQueriesContext(connection) as queries:
+            run(user)
+        return len([query for query in queries.captured_queries if '"team_' in query["sql"]])
+
+    def test_accounts_not_on_a_team_look_one_up_at_most_once(self):
+        feed = Feed.objects.create(feed_address="https://desk.example/feed.xml", num_subscribers=20)
+        checks = {
+            "listen": lambda user: ListenUsageTracker(user).check_segment("900:story", cached=False),
+            "ask_ai": lambda user: AskAIUsageTracker(user).can_use(),
+            "archive_assistant": lambda user: MArchiveAssistantUsage.can_use(user),
+            "add_site": lambda user: UserSubscription.add_subscription(user, feed.feed_address, folder=""),
+        }
+        free = self.reader("free")
+        pro = self.reader("pro", "pro", premium_expire=self.now + self.days(30))
+
+        with patch.object(Feed, "get_feed_from_url", return_value=feed):
+            for name, check in checks.items():
+                with self.subTest(check=name):
+                    self.assertEqual(self.team_lookups(free, check), 0)
+                    self.assertEqual(self.team_lookups(pro, check), 1)

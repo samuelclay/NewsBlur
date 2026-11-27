@@ -8,7 +8,9 @@ import zlib
 from datetime import datetime
 
 import mongoengine as mongo
+from django.utils.translation import gettext
 
+from apps.team.models import team_scope, usage_query
 from utils.llm_models import ANTHROPIC_ARCHIVE_MODEL
 
 
@@ -118,6 +120,17 @@ class MArchiveAssistantUsage(mongo.Document):
     }
 
     @classmethod
+    def queries_today(cls, user, team=None):
+        """Queries so far today: the account's own, or with a team scope (apps/team/models.py TeamScope)
+        everyone's on its team, since the daily allowance is one for the whole team."""
+        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        return cls.objects(
+            __raw__=usage_query(team, user.pk, today_start, "query_date"),
+            query_date__gte=today_start,
+            source__in=["live", "cache"],
+        ).count()
+
+    @classmethod
     def can_use(cls, user):
         """
         Check if user can make an Archive Assistant query.
@@ -132,12 +145,13 @@ class MArchiveAssistantUsage(mongo.Document):
         # Premium archive: 100 queries/day, Non-premium: 20 queries/day
         daily_limit = 100 if profile.is_archive else 20
 
-        today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        today_count = cls.objects(
-            user_id=user.pk, query_date__gte=today_start, source__in=["live", "cache"]
-        ).count()
-
-        if today_count >= daily_limit:
+        team = team_scope(user)
+        if cls.queries_today(user, team) >= daily_limit:
+            if team:
+                return False, gettext(
+                    "%(team)s has reached its daily limit of %(limit)s queries, which everyone on the team "
+                    "shares."
+                ) % {"team": team.team_name, "limit": daily_limit}
             return False, f"Daily query limit reached ({daily_limit} queries per day)"
 
         return True, None

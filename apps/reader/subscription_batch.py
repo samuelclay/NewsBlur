@@ -13,6 +13,7 @@ from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
 from apps.social.models import MSocialServices
+from apps.team.sites import TeamSites
 from utils import json_functions as json
 from utils.folder_paths import InvalidFolderPath, resolve_folder_path
 
@@ -115,6 +116,9 @@ def add_feed_ids(
     ):
         twitter_error = _twitter_access_error(user)
     with transaction.atomic():
+        # subscription_batch.py: a teammate's adds count against their team's shared site limit, checked with
+        # the team row locked so two teammates' batches can't both take its last room (apps/team/sites.py).
+        team_sites = TeamSites.lock_for(user)
         # Serialize bundle requests even before a user's folder row exists. Lock the
         # folder row too so other callers that lock it share the same serialization.
         User.objects.select_for_update().get(pk=user.pk)
@@ -131,6 +135,7 @@ def add_feed_ids(
         active_count = UserSubscription.objects.filter(user=user, active=True).count()
         limit = user.profile.add_feed_limit
         active = auto_active or user.profile.is_premium
+        team_room = team_sites and team_sites.room_for(list(feeds))
         seen = set()
         for value, feed_id in zip(feed_ids, numeric_ids):
             if feed_id is not None and feed_id in seen:
@@ -143,11 +148,15 @@ def add_feed_ids(
                 message = _access_error(
                     user, feed, sub is not None, public_catalog_ids, banned_urls, twitter_error
                 )
-            if not message and active and (not sub or not sub.active) and limit and active_count >= limit:
-                message = (
-                    "You've reached your limit of %s sites. Mute some sites or upgrade your account to add more."
-                    % limit
-                )
+            if not message and active and (not sub or not sub.active):
+                if team_room:
+                    if not team_room.admits(feed_id):
+                        message = team_sites.refusal_message()
+                elif limit and active_count >= limit:
+                    message = (
+                        "You've reached your limit of %s sites. Mute some sites or upgrade your account to add more."
+                        % limit
+                    )
             if message:
                 results.append(
                     {"feed_id": value if feed_id is None else feed_id, "code": -1, "message": message}

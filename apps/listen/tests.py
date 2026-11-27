@@ -819,7 +819,7 @@ class Test_ListenAbuse(ListenTestCase):
         self.assertEqual(segment["reason"], "manifest_expired")
 
 
-class Test_ListenUsageWindows(SimpleTestCase):
+class Test_ListenUsageWindows(TestCase):
     def setUp(self):
         # Messages are compared in English, whatever language an earlier test's request left active.
         from django.utils import translation
@@ -831,7 +831,7 @@ class Test_ListenUsageWindows(SimpleTestCase):
     def tracker(self, timezone_name):
         from types import SimpleNamespace
 
-        user = SimpleNamespace(pk=1, profile=SimpleNamespace(timezone=timezone_name))
+        user = SimpleNamespace(pk=1, profile=SimpleNamespace(timezone=timezone_name, is_pro=False))
         return ListenUsageTracker(user)
 
     def test_week_and_day_windows_start_at_local_midnight_across_dst(self):

@@ -17,6 +17,7 @@ from apps.profile.tasks import TIER_NAMES
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.team.models import Team, TeamActivity, TeamMember, TeamProGrant, one_line
+from apps.team.sites import fit_sites_on_join
 from utils import log as logging
 from utils.languages import account_translation
 from utils.templatetags.utils_tags import language_date
@@ -51,9 +52,9 @@ def grant_team_pro(member):
             own_premium_trial=profile.is_premium_trial,
         )
         # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets its
-        # muted sites back. Anyone else muted theirs on purpose.
-        if not profile.is_premium:
-            UserSubscription.objects.filter(user=user, active=False).update(active=True)
+        # muted sites back. Anyone else muted theirs on purpose. Either way the sites stay within the team's
+        # shared limit.
+        fit_sites_on_join(member, reactivate_muted=not profile.is_premium)
         Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO])
         User.objects.filter(pk=user.pk, is_active=False).update(is_active=True)
 
