@@ -646,7 +646,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     onApprove: function (data, actions) {
                         console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
                         if (plan == "archive" || plan == "archive_extra") {
-                            actions.redirect(NEWSBLUR.URLs.paypal_archive_return);
+                            // The Archive return page waits for Archive Extra when its address names it.
+                            actions.redirect(NEWSBLUR.URLs.paypal_archive_return + '?plan=' + plan);
                         } else if (plan == "pro") {
                             actions.redirect(NEWSBLUR.URLs.paypal_pro_return);
                         } else {

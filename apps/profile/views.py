@@ -13,6 +13,7 @@ import re
 from urllib.parse import urlencode
 
 import dateutil
+import paypalrestsdk
 import requests
 import stripe
 from django.conf import settings
@@ -22,6 +23,7 @@ from django.contrib.auth import logout as logout_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
 from django.http import (
@@ -554,9 +556,9 @@ def paypal_webhooks(request):
             is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
             # A switch to a lower plan replaces the primary subscription, so this reads it before
             # store_paypal_sub_id makes the new one primary (apps/profile/models.py).
-            lower_plan = None
+            lower_plan_switch = None
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status:
-                lower_plan = user.profile.lower_plan_from_paypal_activation(data["resource"])
+                lower_plan_switch = user.profile.lower_plan_from_paypal_activation(data["resource"])
             user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=not is_active_status)
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
@@ -579,10 +581,10 @@ def paypal_webhooks(request):
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
-            if lower_plan:
+            if lower_plan_switch:
                 # Last, once the older subscription is suspended: the history sync above can still read it
                 # as live and raise the account straight back to its plan.
-                user.profile.downgrade_to(lower_plan)
+                user.profile.finish_paypal_switch_to_lower_plan(lower_plan_switch)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
         user = find_paypal_user(data, custom_field="custom")
         if user:
@@ -906,13 +908,15 @@ def profile_is_premium(request):
 
     profile = Profile.objects.get(user=request.user)
     plan_active = payment_return_plan_active(profile, plan)
-    if not plan_active and (retries == PAYMENT_RETURN_SYNC_RETRY or retries >= PAYMENT_RETURN_LAST_RETRY):
+    sync_due = retries == PAYMENT_RETURN_SYNC_RETRY or retries >= PAYMENT_RETURN_LAST_RETRY
+    # cache.add is false while the last sync is under a minute old, so open tabs and repeated polls share one.
+    if not plan_active and sync_due and cache.add("payment_return_sync:%s" % request.user.pk, True, 60):
         # The provider's notification is late, so read the account's subscriptions from Stripe and
         # PayPal now (apps/profile/models.py setup_premium_history).
         try:
             profile.setup_premium_history()
-        except stripe.error.StripeError as e:
-            logging.user(request, "~FRPayment return couldn't read the Stripe subscription: %s" % e)
+        except (stripe.error.StripeError, paypalrestsdk.exceptions.ConnectionError) as e:
+            logging.user(request, "~FRPayment return couldn't read the account's subscriptions: %s" % e)
         profile = Profile.objects.get(user=request.user)
         plan_active = payment_return_plan_active(profile, plan)
 

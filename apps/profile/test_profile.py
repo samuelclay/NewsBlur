@@ -3246,6 +3246,16 @@ class Test_StripeSwitchToLowerPlan(TestCase):
 
         self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
 
+    def test_an_upgrade_that_lands_during_the_switch_is_kept(self):
+        """Another request raised the account to Pro after this one read it as Archive."""
+        set_plan(self.profile, "archive")
+        self.live_price = Profile.plan_to_stripe_price("archive")
+        Profile.objects.filter(pk=self.profile.pk).update(is_pro=True)
+
+        self.profile.switch_stripe_subscription("premium")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
     # --- Checkout -------------------------------------------------------------
 
     def test_switch_view_refuses_a_lower_plan_with_no_subscription_to_switch(self):
@@ -3309,6 +3319,7 @@ class Test_PaypalSwitchToLowerPlan(TestCase):
         self.subscriptions = {
             self.OLD_SUB: {"status": "ACTIVE", "plan_id": Profile.plan_to_paypal_plan_id("pro")},
         }
+        self.suspend_takes = True
         self.paypal = MagicMock()
         self.paypal.get.side_effect = self._paypal_get
         self.paypal.post.side_effect = self._paypal_post
@@ -3322,13 +3333,17 @@ class Test_PaypalSwitchToLowerPlan(TestCase):
         return dict(self.subscriptions[subscription_id])
 
     def _paypal_post(self, path, body):
-        if path.endswith("/suspend"):
+        if path.endswith("/suspend") and self.suspend_takes:
             self.subscriptions[path.split("/")[4]]["status"] = "SUSPENDED"
         return {}
 
-    def _activate(self, plan):
+    def _activate(self, plan, owner_on_record=None):
         plan_id = Profile.plan_to_paypal_plan_id(plan)
-        self.subscriptions[self.NEW_SUB] = {"status": "ACTIVE", "plan_id": plan_id}
+        self.subscriptions[self.NEW_SUB] = {
+            "status": "ACTIVE",
+            "plan_id": plan_id,
+            "custom_id": str(owner_on_record or self.user.pk),
+        }
         event = {
             "event_type": "BILLING.SUBSCRIPTION.ACTIVATED",
             "resource": {
@@ -3360,6 +3375,33 @@ class Test_PaypalSwitchToLowerPlan(TestCase):
         self._activate("archive")
 
         self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_a_subscription_paypal_has_under_another_account_keeps_the_plan(self):
+        """The notification names this account, and PayPal's record of the subscription names another."""
+        other = User.objects.create_user(username="paypalother", password="password", email="other@test.com")
+
+        self._activate("archive", owner_on_record=other.pk)
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_the_plan_stays_while_the_replaced_subscription_is_still_billing(self):
+        self.suspend_takes = False
+
+        self._activate("archive")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_paypal_returns_to_the_page_that_waits_for_the_plan_bought(self):
+        return_pages = {
+            "premium": "/profile/paypal_return",
+            "archive": "/profile/paypal_archive_return?plan=archive",
+            "archive_extra": "/profile/paypal_archive_return?plan=archive_extra",
+            "pro": "/profile/paypal_pro_return",
+        }
+        for plan, return_page in return_pages.items():
+            self.profile.switch_paypal_subscription_approval_url(plan)
+            return_url = self.paypal.post.call_args[0][1]["application_context"]["return_url"]
+            self.assertTrue(return_url.endswith(return_page), return_url)
 
     def test_switch_view_refuses_a_lower_plan_with_no_paypal_subscription_to_switch(self):
         """An App Store Pro account has no PayPal subscription to replace, so a PayPal Archive one would be a

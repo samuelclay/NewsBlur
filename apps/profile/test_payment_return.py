@@ -1,10 +1,12 @@
 """The page shown after a checkout, a plan switch or a new trial, and the status it polls
 (apps/profile/views.py render_payment_return and profile_is_premium)."""
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
+import paypalrestsdk
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import Client
 
@@ -22,6 +24,8 @@ class Test_PaymentReturn(TestCase):
         )
         self.client = Client(HTTP_USER_AGENT="Mozilla/5.0")
         self.client.login(username="returning", password="password")
+        # The minute-long hold on reading the provider outlives a test run, and user ids repeat across runs.
+        cache.delete("payment_return_sync:%s" % self.user.pk)
 
     def _set_plan(self, **flags):
         Profile.objects.filter(user=self.user).update(**flags)
@@ -97,6 +101,30 @@ class Test_PaymentReturn(TestCase):
         sync.assert_called_once()
         self.assertTrue(status["ready"])
         self.assertEqual(status["code"], 0)
+
+    def test_polls_within_a_minute_share_one_read_of_the_provider(self):
+        self._set_plan(is_premium=True, is_premium_trial=False)
+
+        with patch.object(Profile, "setup_premium_history") as sync:
+            self._status(plan="pro", retries=PAYMENT_RETURN_SYNC_RETRY)
+            self._status(plan="pro", retries=PAYMENT_RETURN_SYNC_RETRY)
+            last = self._status(plan="pro", retries=PAYMENT_RETURN_LAST_RETRY)
+
+        sync.assert_called_once()
+        self.assertEqual(last["code"], -1, "the last poll still stops the page and tells staff")
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_a_provider_that_cannot_be_reached_leaves_the_page_waiting(self):
+        self._set_plan(is_premium=True, is_premium_trial=False)
+        unreachable = paypalrestsdk.exceptions.ConnectionError(MagicMock(status_code=503, reason="down"))
+
+        with patch.object(Profile, "setup_premium_history", side_effect=unreachable):
+            response = self.client.get(
+                "/profile/is_premium", {"plan": "pro", "retries": PAYMENT_RETURN_SYNC_RETRY}
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(json.decode(response.content)["ready"])
 
     def test_an_account_already_on_its_plan_is_not_read_from_the_provider_again(self):
         self._activate_archive()
