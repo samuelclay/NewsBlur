@@ -624,6 +624,7 @@ class Test_SanitizeProposal(unittest.TestCase):
                 op("op14", "nest", BOSTON, parent=WOOD),
                 op("op15", "rename", MOBILITY, name="Bikes - Transit"),
                 op("op16", "rename", MOBILITY, name="top level"),
+                op("op17", "rename", MOBILITY, name="global"),
             ],
         )
         guarded = locks(keep=[["Blogs"]], skip=[["Bloglets"]])

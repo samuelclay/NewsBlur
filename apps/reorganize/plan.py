@@ -18,6 +18,24 @@ OP_TYPES = ("create", "rename", "nest", "merge", "remove")
 DEAD_ACTIONS = ("keep", "mute", "unsubscribe")
 SECTIONS = ("ops", "moves", "dead")
 
+# Ids the clients give built-in rivers and sidebar sections (media/js/newsblur/reader/reader.js,
+# media/js/newsblur/views/sidebar.js, clients/ios/Classes/FeedChooserViewController.m). Settings
+# are saved under a folder's name beside these, so a proposal never names a folder one of them and
+# apps/reorganize/state.py never carries one.
+RESERVED_FOLDER_NAMES = frozenset(
+    [
+        "global",
+        "infrequent",
+        "blurblogs",
+        "read",
+        "all",
+        "everything",
+        "starred",
+        "searches",
+        "river_blurblog",
+    ]
+)
+
 # Reasons reported in ApplyResult.skipped, one per item that could not be applied.
 INVALID = "invalid"  # malformed: unknown key, bad name, duplicate entry, a move onto its own folder
 FOLDER_CHANGED = "folder_changed"  # the folder's recorded path no longer resolves
@@ -883,13 +901,15 @@ def clean_folder_name(name):
     apps/reader/views.py add_folder and rename_folder refuse an empty name, and add_folder strips
     "river:" out of names, so a name holding it could not be made through them either. A proposed
     name also never holds " - ", which joins folder names into the paths that folder classifiers
-    in apps/analyzer/models.py are stored under, and is never "Top Level", the name the folder
-    pickers give the top of the tree.
+    in apps/analyzer/models.py are stored under, is never "Top Level", the name the folder
+    pickers give the top of the tree, and is never one of RESERVED_FOLDER_NAMES.
     """
     if not isinstance(name, str):
         return None
     name = name.strip()
     if not name or "river:" in name or " - " in name or name.lower() == "top level":
+        return None
+    if name in RESERVED_FOLDER_NAMES:
         return None
     return name
 
