@@ -166,7 +166,7 @@ def _load_items(folder, items):
     # apps/reader/models.py also merges them, so every folder path is unique. The subfolders of
     # both are kept and merged by the same rule.
     for item in items:
-        if _is_feed_id(item):
+        if is_feed_id(item):
             if item not in folder.items:
                 folder.append(item)
         elif isinstance(item, dict):
@@ -292,7 +292,7 @@ def sanitize_proposal(proposal, folders, locks):
     """A copy of `proposal` without anything that cannot apply to `folders` under `locks`.
 
     The checks are apply_plan's own, run with every item approved, every move accepted as at least a
-    copy and every dead site given its suggested action. Whatever apply_plan skips in that run, and
+    copy and every dead site muted. Whatever apply_plan skips in that run, and
     any new folder that would end up empty, is removed until a run skips nothing.
     """
     tree = FolderTree.from_list(folders)
@@ -302,7 +302,9 @@ def sanitize_proposal(proposal, folders, locks):
     while True:
         decisions = {
             "moves": {entry["id"]: {"arrive": True} for entry in clean["moves"]},
-            "dead": {entry["id"]: entry["suggest"] for entry in clean["dead"]},
+            # Muting leaves the tree alone, so no folder op passes only because an unsubscribe
+            # the reader never chose would have emptied its folder.
+            "dead": {entry["id"]: "mute" for entry in clean["dead"]},
         }
         applier = _Applier(folders, clean, decisions, locks)
         applier.run()
@@ -336,7 +338,7 @@ def _normalized_proposal(proposal):
         if _is_existing_key(key) and _valid_path(entry.get("path")):
             folders[key] = dict(entry, path=list(entry["path"]))
         elif _is_new_key(key):
-            name = _clean_name(entry.get("name"))
+            name = clean_folder_name(entry.get("name"))
             if name is not None and isinstance(entry.get("parent"), str):
                 folders[key] = dict(entry, name=name)
 
@@ -346,18 +348,18 @@ def _normalized_proposal(proposal):
             continue
         entry = dict(entry)
         if entry["type"] == "rename":
-            entry["name"] = _clean_name(entry.get("name"))
+            entry["name"] = clean_folder_name(entry.get("name"))
             if entry["name"] is None:
                 continue
         ops.append(entry)
 
     moves = [
-        dict(entry) for entry in _entries(proposal, "moves", unique=True) if _is_feed_id(entry.get("feed_id"))
+        dict(entry) for entry in _entries(proposal, "moves", unique=True) if is_feed_id(entry.get("feed_id"))
     ]
 
     dead = []
     for entry in _entries(proposal, "dead", unique=True):
-        if _is_feed_id(entry.get("feed_id")):
+        if is_feed_id(entry.get("feed_id")):
             suggest = "unsubscribe" if entry.get("suggest") == "unsubscribe" else "mute"
             dead.append(dict(entry, suggest=suggest))
 
@@ -643,7 +645,7 @@ class _Applier:
 
     def _place_new_folder(self, key, visiting):
         entry = self.folder_entries[key]
-        name = _clean_name(entry.get("name"))
+        name = clean_folder_name(entry.get("name"))
         if name is None:
             return None, INVALID
         parent_key = entry.get("parent")
@@ -674,7 +676,7 @@ class _Applier:
             source, source_reason = self._node(source_key)
             destination, destination_reason = self._node(entry.get("to"))
             if (
-                not _is_feed_id(feed_id)
+                not is_feed_id(feed_id)
                 or _is_new_key(source_key)
                 or INVALID in (source_reason, destination_reason)
             ):
@@ -723,7 +725,7 @@ class _Applier:
         seen_feeds = set()
         for entry in self.entries["dead"]:
             feed_id = entry.get("feed_id")
-            if not _is_feed_id(feed_id) or feed_id in seen_feeds:
+            if not is_feed_id(feed_id) or feed_id in seen_feeds:
                 self._skip("dead", entry, INVALID)
                 continue
             seen_feeds.add(feed_id)
@@ -744,7 +746,7 @@ class _Applier:
     def _apply_renames(self):
         for entry in self._ops("rename"):
             folder, reason = self._existing_node(entry.get("folder"))
-            name = _clean_name(entry.get("name"))
+            name = clean_folder_name(entry.get("name"))
             if folder is None:
                 self._skip("ops", entry, reason)
             elif name is None:
@@ -875,7 +877,7 @@ def _recorded_path(folder_entries, key):
     return []
 
 
-def _clean_name(name):
+def clean_folder_name(name):
     """The name with surrounding spaces removed, or None if it breaks the folder name limits.
 
     apps/reader/views.py add_folder and rename_folder refuse an empty name, and add_folder strips
@@ -892,7 +894,7 @@ def _clean_name(name):
     return name
 
 
-def _is_feed_id(value):
+def is_feed_id(value):
     return isinstance(value, int) and not isinstance(value, bool)
 
 
