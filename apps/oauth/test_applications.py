@@ -295,6 +295,20 @@ class Test_ApplicationExemptions(TestCase):
         ).values_list("application_id", flat=True)
         self.assertEqual(sorted(exempted), sorted([old.pk, partner_app.pk]))
 
+    def test_deleting_an_exempt_application_outside_the_orm_removes_its_exemption(self):
+        from django.db import connection
+
+        owner = User.objects.create_user("retired-publisher")
+        app = Application.objects.create(name="Retired reader", user=owner)
+        ApplicationExemption.objects.create(application=app)
+        # A release that predates ApplicationExemption deletes the application without collecting its
+        # exemption, so the database has to cascade (oauth.0004_applicationexemption).
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM oauth2_provider_application WHERE id = %s", [app.pk])
+        # Postgres checks deferred foreign keys at commit, which a TestCase never reaches.
+        connection.check_constraints()
+        self.assertFalse(ApplicationExemption.objects.filter(application_id=app.pk).exists())
+
     # Rendering the admin needs collectstatic's manifest, which test runs don't build.
     @override_settings(STATICFILES_STORAGE="django.contrib.staticfiles.storage.StaticFilesStorage")
     def test_staff_find_exemptions_by_owner_or_application_name(self):
