@@ -845,11 +845,11 @@ PayPal:
 App Store (iOS and macOS, one bundle id, one set of products):
 
 - [ ] Products `newsblur_premium_team` and `newsblur_premium_team_enterprise` in the existing subscription group, above Pro, at $79.99 and $129.99 a month, with names and descriptions in the 21 languages the other products have
-- [ ] Both in `APPLE_PRODUCTS` (`apps/profile/apple_subscriptions.py`) at their own rank, with the newest purchase deciding which of the two the owner has
-- [ ] A team owner's rank is the team rank, so their renewals are not dropped as a cross tier purchase
-- [ ] Team purchases call `record_team_payment` with Apple's signed expiry date
+- [x] Both in `APPLE_PRODUCTS` (`apps/profile/apple_subscriptions.py`) at their own rank, with the newest purchase deciding which of the two the owner has
+- [x] A team owner's rank is the team rank, so their renewals are not dropped as a cross tier purchase
+- [x] Team purchases call `record_team_payment` with Apple's signed expiry date
 - [ ] The app buys team products with StoreKit 2 and posts the signed transaction, which the server verifies
-- [ ] Refund and revoke notices for team products end the team
+- [x] Refund and revoke notices for team products end the team
 
 Google Play:
 

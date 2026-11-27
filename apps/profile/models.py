@@ -2064,6 +2064,19 @@ class Profile(models.Model):
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 
+        # models.py: an App Store payment for a team plan that is still current is the team's
+        # (apps/team/app_store_billing.py), as a Stripe or PayPal one is.
+        if (
+            PaymentHistory.objects.filter(
+                user=self.user,
+                plan__in=[plan for plan, _ in Team.PLAN_CHOICES],
+                apple_expires_date__gt=datetime.datetime.now(),
+            )
+            .exclude(refunded=True)
+            .exists()
+        ):
+            team_billed = True
+
         if team_billed:
             # models.py: apps/team/billing.py writes the owner's plan and premium_expire by queryset.
             self.refresh_from_db(fields=[*self.TIER_FLAG_FIELDS, "premium_expire"])
@@ -5940,8 +5953,9 @@ class PaymentHistory(models.Model):
     apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
     # models.py: the plan and the end of the period the provider says this payment was for, as
-    # Profile.setup_premium_history reads them from Stripe and PayPal. Empty for a store payment, one made before they
-    # were recorded, or one the provider can't say.
+    # Profile.setup_premium_history reads them from Stripe and PayPal, and as Apple signs them
+    # (apps/profile/apple_subscriptions.py). Empty for any other store payment, one made before they were recorded, or
+    # one the provider can't say.
     plan = models.CharField(max_length=32, blank=True, null=True)
     period_end = models.DateTimeField(blank=True, null=True)
 

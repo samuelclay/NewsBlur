@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy
 
+from apps.profile.apple_subscriptions import app_account_token
 from apps.profile.models import Profile
 from apps.team.billing import start_comp_team
 from apps.team.grants import own_plan_on_join
@@ -134,6 +135,20 @@ def paypal_plan(request):
     if refusal:
         return _failure(refusal)
     return {"code": 1, "plan": plan, "plan_id": Profile.plan_to_paypal_plan_id(plan)}
+
+
+@ajax_login_required
+@json.json_view
+def app_store_purchase(request):
+    """views.py: what the iOS and macOS apps ask before showing a team plan's buy button, so the server decides who may
+    buy a team in the App Store (apps/team/stripe_billing.py team_purchase_refusal). The app buys with the app account
+    token it is given, which ties Apple's signed transactions to this account
+    (apps/profile/apple_subscriptions.py)."""
+    user = get_user(request)
+    refusal = team_purchase_refusal(user, Team.PROVIDER_APP_STORE)
+    if refusal:
+        return _failure(refusal)
+    return {"code": 1, "app_account_token": app_account_token(user.pk)}
 
 
 @required_params("name", team_id=int)

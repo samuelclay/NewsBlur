@@ -972,23 +972,62 @@ def profile_is_premium_archive(request):
     }
 
 
+# views.py: the products an app may post as a product id and a transaction id, and what starts each. Every other
+# product, the team plans among them, is posted as the transaction StoreKit signed (apps/profile/apple_subscriptions.py).
+IOS_RECEIPT_ACTIVATIONS = {
+    "newsblur_premium_auto_renew_24": "activate_ios_premium",
+    "newsblur_premium_auto_renew_36": "activate_ios_premium",
+    "newsblur_premium_archive": "activate_ios_archive",
+    "newsblur_premium_archive_extra": "activate_ios_archive_extra",
+    "newsblur_premium_pro": "activate_ios_pro",
+}
+# views.py: why an App Store purchase the app posted didn't change the account's plan (save_ios_receipt).
+IOS_PURCHASE_MESSAGES = {
+    "unknown_product": gettext_lazy("That isn't a NewsBlur plan, so your plan hasn't changed."),
+    "not_verified": gettext_lazy(
+        "The App Store couldn't confirm this purchase, so your plan hasn't changed."
+    ),
+    "verify_later": gettext_lazy(
+        "The App Store couldn't be reached to confirm this purchase. Try again shortly."
+    ),
+    "other_account": gettext_lazy("This purchase belongs to another NewsBlur account."),
+    "not_production": gettext_lazy("Test purchases from the App Store sandbox don't change your plan."),
+    "ended": gettext_lazy("This purchase has ended or was refunded, so your plan hasn't changed."),
+    "on_team": gettext_lazy(
+        "You're on another team, so this purchase didn't start a team of your own. NewsBlur has been told."
+    ),
+    "comped": gettext_lazy(
+        "Your team is already covered, so this purchase didn't change it. NewsBlur has been told."
+    ),
+}
+
+
+def _ios_purchase_response(user, reason=None):
+    """views.py: the account's plan, as the app reads it after a purchase, with code -1 and why when the purchase
+    didn't change it."""
+    response = dict(Profile.objects.get(user=user).canonical(), code=1)
+    if reason:
+        response.update(code=-1, reason=reason, message=str(IOS_PURCHASE_MESSAGES[reason]))
+    return response
+
+
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
+    signed_transaction = request.POST.get("signed_transaction")
+    if signed_transaction:
+        return _save_signed_ios_purchase(request, signed_transaction)
     receipt = request.POST.get("receipt")
     product_identifier = request.POST.get("product_identifier")
     transaction_identifier = request.POST.get("transaction_identifier")
 
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
 
-    if product_identifier == "newsblur_premium_pro":
-        paid = request.user.profile.activate_ios_pro(transaction_identifier)
-    elif product_identifier == "newsblur_premium_archive_extra":
-        paid = request.user.profile.activate_ios_archive_extra(transaction_identifier)
-    elif product_identifier == "newsblur_premium_archive":
-        paid = request.user.profile.activate_ios_archive(transaction_identifier)
-    else:
-        paid = request.user.profile.activate_ios_premium(transaction_identifier)
+    activation = IOS_RECEIPT_ACTIVATIONS.get(product_identifier)
+    if not activation:
+        logging.user(request, "~BM~FRNot saving iOS Receipt for an unknown product: %s" % product_identifier)
+        return _ios_purchase_response(request.user, "unknown_product")
+    paid = getattr(request.user.profile, activation)(transaction_identifier)
     if paid:
         logging.user(
             request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier)
@@ -1011,6 +1050,28 @@ def save_ios_receipt(request):
         )
 
     return request.user.profile
+
+
+def _save_signed_ios_purchase(request, signed_transaction):
+    """views.py: a purchase posted as the transaction StoreKit signed, verified as Apple's before it changes anything
+    (apps/profile/apple_notifications.py process_apple_purchase)."""
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
+
+    from apps.profile.apple_notifications import process_apple_purchase
+
+    try:
+        reason = process_apple_purchase(request.user, signed_transaction)
+    except VerificationException as exc:
+        # Never log signed receipts or secrets from requests in apps/profile/views.py.
+        retryable = exc.status == VerificationStatus.RETRYABLE_VERIFICATION_FAILURE
+        reason = "verify_later" if retryable else "not_verified"
+    except ValueError:
+        reason = "not_verified"
+    logging.user(request, "~BM~FBSaving signed iOS purchase: %s" % (reason or "applied"))
+    return _ios_purchase_response(request.user, reason)
 
 
 @ajax_login_required

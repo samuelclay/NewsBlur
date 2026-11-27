@@ -11,6 +11,7 @@ import dateutil.parser
 import paypalrestsdk
 import redis
 import stripe
+from cryptography.hazmat.primitives.asymmetric import ec
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -31,8 +32,10 @@ from apps.feed_import.models import OPMLImporter
 from apps.listen.models import MListenUsage
 from apps.listen.usage import ListenUsageTracker
 from apps.monitor.models import MLLMCost
+from apps.profile import apple_notifications
 from apps.profile import models as profile_models
 from apps.profile.apple_subscriptions import apply_verified_apple_transaction
+from apps.profile.fake_app_store import FakeAppStore, apple_time
 from apps.profile.models import (
     MGiftCode,
     MRedeemedCode,
@@ -4174,3 +4177,307 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
 
         next_billing = dateutil.parser.parse(subscription["billing_info"]["next_billing_time"])
         self.assertEqual(response["next_invoice"]["payment_date"], str(next_billing.replace(tzinfo=None)))
+
+
+class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
+    """apps/team/app_store_billing.py: team plans bought, renewed, switched and taken back in the App Store, with what
+    Apple signs made and signed by a stand-in for the App Store (apps/profile/fake_app_store.py)."""
+
+    TEAM = "newsblur_premium_team"
+    ENTERPRISE = "newsblur_premium_team_enterprise"
+    PRO = "newsblur_premium_pro"
+
+    def setUp(self):
+        super().setUp()
+        self.now = self.now.replace(microsecond=0)
+        self.app_store = FakeAppStore()
+        self.patch(apple_notifications, "apple_verifier", side_effect=self.app_store.verifier)
+
+    def transaction(self, user, transaction_id, product=TEAM, original=None, days_ago=0, **fields):
+        """A month's transaction bought by user days_ago, with their app account token."""
+        return self.app_store.transaction(
+            user, product, transaction_id, original, purchased_at=self.now - self.days(days_ago), **fields
+        )
+
+    def buy(self, user, transaction, key=None):
+        """apps/team/tests.py: the app posts the transaction StoreKit signed for user's purchase."""
+        signed = self.app_store.sign(transaction, key)
+        return json.decode(self.profile_post(user, "save_ios_receipt", signed_transaction=signed).content)
+
+    def notify(self, kind, transaction, subtype=None, renewal_info=None):
+        """apps/team/tests.py: Apple's notification, with what it queued after its commit run in place. Returns the
+        status Apple gets back."""
+        body = self.app_store.notification(kind, transaction, subtype, renewal_info)
+        response = self.committed(
+            self.client_for(None).post,
+            reverse("profile-ios-subscription-status"),
+            data=json.encode(body),
+            content_type="application/json",
+        )
+        return response.status_code
+
+    def test_a_purchase_starts_one_team_whichever_of_the_app_and_apple_reports_it_first(self):
+        buyer = self.reader("buyer", "free", feeds=2)
+        purchase = self.transaction(buyer, "3000001")
+
+        response = self.buy(buyer, purchase)
+        self.assertEqual(self.notify("SUBSCRIBED", purchase, "INITIAL_BUY"), 200)
+
+        self.assertEqual((response["code"], response["team_plan"]), (1, Team.PLAN_TEAM))
+        team = self.owned_team(buyer)
+        self.assertEqual(
+            (team.status, team.billing_provider, team.billing_reference, team.paid_through),
+            (Team.STATUS_ACTIVE, Team.PROVIDER_APP_STORE, "3000001", self.now + self.days(31)),
+        )
+        self.assertEqual(self.plan_of(buyer), "pro")
+        self.assertEqual(self.muted_sites(buyer), 0)
+        self.assertEqual(PaymentHistory.objects.filter(user=buyer).count(), 1)
+        EmailNewPremiumPro.delay.assert_not_called()
+        self.assertEqual(len(self.mail_to(buyer)), 1)
+
+        # Apple's notice can come before the app posts the purchase. Apple asks again later.
+        other = self.reader("other")
+        other_purchase = self.transaction(other, "3000002")
+        self.assertEqual(self.notify("SUBSCRIBED", other_purchase, "INITIAL_BUY"), 503)
+        self.assertIsNone(self.owned_team(other))
+        self.buy(other, other_purchase)
+        self.assertEqual(self.notify("SUBSCRIBED", other_purchase, "INITIAL_BUY"), 200)
+        self.assertEqual(self.owned_team(other).status, Team.STATUS_ACTIVE)
+        self.assertEqual(len(self.mail_to(other)), 1)
+
+    def test_a_team_starts_only_from_a_purchase_apple_signed_for_this_app_and_this_account(self):
+        buyer = self.reader("buyer")
+        someone = self.reader("someone")
+        purchase = self.transaction(buyer, "3000001")
+        never_certified = ec.generate_private_key(ec.SECP256R1())
+        unsigned = self.profile_post(
+            buyer, "save_ios_receipt", product_identifier=self.TEAM, transaction_identifier="3000001"
+        )
+
+        refusals = [
+            json.decode(unsigned.content)["reason"],
+            self.buy(buyer, purchase, key=never_certified)["reason"],
+            self.buy(buyer, dict(purchase, bundleId="com.example.another"))["reason"],
+            self.buy(someone, purchase)["reason"],
+            self.buy(buyer, dict(purchase, environment="Sandbox"))["reason"],
+            # Family Sharing would hand the buyer's team plan to the rest of their family.
+            self.buy(someone, self.transaction(None, "3000002", inAppOwnershipType="FAMILY_SHARED"))[
+                "reason"
+            ],
+        ]
+
+        self.assertEqual(
+            refusals,
+            [
+                "unknown_product",
+                "not_verified",
+                "not_verified",
+                "other_account",
+                "not_production",
+                "other_account",
+            ],
+        )
+        for user in (buyer, someone):
+            self.assertIsNone(self.owned_team(user))
+            self.assertEqual(self.plan_of(user), "free")
+        self.assertFalse(PaymentHistory.objects.exists())
+
+    def test_someone_on_another_team_gets_no_team_and_no_plan_of_their_own_from_a_team_purchase(self):
+        member = self.reader("member")
+        self.join(member)
+
+        response = self.buy(member, self.transaction(member, "3000001"))
+        Profile.objects.get(user=member).setup_premium_history()
+
+        self.assertEqual(response["reason"], "on_team")
+        self.assertIsNone(self.owned_team(member))
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team"])
+        self.leave(member)
+        self.assertEqual(self.plan_of(member), "free")
+
+    def test_only_a_charged_renewal_moves_the_paid_period_and_failed_or_expired_notices_change_nothing(self):
+        owner = self.reader("teamowner")
+        self.buy(owner, self.transaction(owner, "3000001", days_ago=30))
+        renewal = self.transaction(owner, "3000002", original="3000001")
+
+        self.assertEqual(self.notify("DID_RENEW", renewal), 200)
+        for kind, subtype in (
+            ("DID_FAIL_TO_RENEW", None),
+            ("EXPIRED", "VOLUNTARY"),
+            ("GRACE_PERIOD_EXPIRED", None),
+        ):
+            self.assertEqual(self.notify(kind, renewal, subtype), 200)
+
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, self.now + self.days(31)))
+        self.assertEqual(self.premium_expire(owner), self.now + self.days(31))
+
+    def test_a_recovered_payment_brings_a_lapsed_team_back(self):
+        owner = self.reader("teamowner")
+        self.buy(owner, self.transaction(owner, "3000001"))
+        reader = self.reader("reader")
+        self.join(reader, self.join_link_token(self.owned_team(owner), owner))
+        self.lapse(owner)
+        self.assertEqual(self.plan_of(reader), "free")
+
+        recovered = self.transaction(owner, "3000002", original="3000001")
+        self.assertEqual(self.notify("DID_RENEW", recovered, "BILLING_RECOVERY"), 200)
+
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, self.now + self.days(31)))
+        self.assertEqual(self.plan_of(reader), "pro")
+
+    def test_a_refund_or_revoke_ends_the_team_at_once_unless_a_newer_payment_renewed_it(self):
+        refunded, revoked, renewed = (
+            self.reader(username) for username in ("refunded", "revoked", "renewed")
+        )
+        purchases = {}
+        for number, user in enumerate((refunded, revoked, renewed)):
+            purchases[user] = self.transaction(user, "300000%s" % number, days_ago=30)
+            self.buy(user, purchases[user])
+        self.notify(
+            "DID_RENEW", self.transaction(renewed, "3000009", original=purchases[renewed]["transactionId"])
+        )
+        taken_back = dict(revocationDate=apple_time(self.now), revocationReason=0)
+
+        self.assertEqual(self.notify("REFUND", dict(purchases[refunded], **taken_back)), 200)
+        self.notify("REVOKE", dict(purchases[revoked], **taken_back))
+        self.notify("REFUND", dict(purchases[renewed], **taken_back))
+
+        self.assertEqual(
+            [self.owned_team(user).status for user in (refunded, revoked, renewed)],
+            [Team.STATUS_INACTIVE, Team.STATUS_INACTIVE, Team.STATUS_ACTIVE],
+        )
+        self.assertTrue(PaymentHistory.objects.get(user=refunded).refunded)
+
+    def test_enterprise_starts_at_once_and_a_switch_down_waits_for_the_renewal(self):
+        owner = self.reader("teamowner")
+        self.buy(owner, self.transaction(owner, "3000001", days_ago=20))
+        upgrade = self.transaction(owner, "3000002", product=self.ENTERPRISE, original="3000001", days_ago=10)
+
+        self.notify("DID_CHANGE_RENEWAL_PREF", upgrade, "UPGRADE", self.app_store.renewal_info(upgrade))
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.paid_through), (Team.PLAN_TEAM_ENTERPRISE, self.now + self.days(21))
+        )
+
+        switch_down = self.app_store.renewal_info(upgrade, renews_into=self.TEAM)
+        self.notify("DID_CHANGE_RENEWAL_PREF", upgrade, "DOWNGRADE", switch_down)
+        team = self.owned_team(owner)
+        self.assertEqual((team.plan, team.pending_plan), (Team.PLAN_TEAM_ENTERPRISE, Team.PLAN_TEAM))
+
+        renewal = self.transaction(owner, "3000003", original="3000001")
+        self.notify("DID_RENEW", renewal, renewal_info=self.app_store.renewal_info(renewal))
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.pending_plan, team.paid_through),
+            (Team.PLAN_TEAM, None, self.now + self.days(31)),
+        )
+
+    def test_a_switch_down_to_pro_ends_the_team_with_the_paid_month_and_leaves_pro_as_the_owners_own(self):
+        owner = self.reader("teamowner")
+        team_purchase = self.transaction(owner, "3000001", days_ago=29)
+        self.buy(owner, team_purchase)
+        to_pro = self.app_store.renewal_info(team_purchase, renews_into=self.PRO)
+        self.notify("DID_CHANGE_RENEWAL_PREF", team_purchase, "DOWNGRADE", to_pro)
+        self.assertEqual(self.owned_team(owner).pending_plan, "pro")
+        # The paid month ended an hour ago, and the hourly task hasn't lapsed the team yet.
+        Team.objects.filter(owner=owner).update(paid_through=self.now - datetime.timedelta(hours=1))
+
+        self.assertEqual(
+            self.notify("DID_RENEW", self.transaction(owner, "3000002", self.PRO, "3000001")), 200
+        )
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.pending_plan, team.billing_reference), (Team.STATUS_INACTIVE, None, None)
+        )
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.premium_expire(owner), self.now + self.days(31))
+
+        # Apple can charge for Pro a little before the paid month ends. The team runs until the hourly task ends it.
+        early = self.reader("early")
+        self.buy(early, self.transaction(early, "3000003", days_ago=30))
+        self.notify("DID_RENEW", self.transaction(early, "3000004", self.PRO, "3000003"))
+        team = self.owned_team(early)
+        self.assertEqual((team.status, team.pending_plan), (Team.STATUS_ACTIVE, "pro"))
+        self.lapse(early)
+        self.assertEqual(self.plan_of(early), "pro")
+        self.assertEqual(self.premium_expire(early), self.now + self.days(31))
+
+    def test_an_upgrade_from_an_app_store_plan_replaces_it_but_a_plan_paid_for_elsewhere_is_kept(self):
+        upgrader = self.reader("upgrader")
+        pro = self.transaction(upgrader, "3000001", self.PRO, days_ago=10)
+        self.buy(upgrader, pro)
+        self.assertEqual(self.plan_of(upgrader), "pro")
+        self.buy(upgrader, self.transaction(upgrader, "3000002", original="3000001"))
+        # Apple's notice of the Pro month, signed before the upgrade, arrives late.
+        self.notify("DID_RENEW", pro)
+        kept_until = self.now + self.days(200)
+        archive = self.reader("archive", "archive", premium_expire=kept_until)
+        self.buy(archive, self.transaction(archive, "3000003"))
+
+        for user in (upgrader, archive):
+            Profile.objects.get(user=user).setup_premium_history()
+            self.lapse(user)
+
+        # Apple credited what was left of the Pro month toward the team, so the upgrader has no plan of their own:
+        # Pro is kept only until the team's paid month runs out, as for any lapsed plan.
+        self.assertEqual(self.plan_of(upgrader), "pro")
+        self.assertEqual(self.premium_expire(upgrader), self.now + self.days(31))
+        self.assertEqual(self.plan_of(archive), "archive")
+        self.assertEqual(self.premium_expire(archive), kept_until)
+
+    def test_the_app_is_told_who_may_buy_a_team_and_buys_with_the_token_it_is_given(self):
+        member = self.reader("member")
+        self.join(member)
+        stripe_owner = self.reader("stripeowner")
+        self.pay(stripe_owner, self.now + self.days(20))
+        store_owner = self.reader("storeowner")
+        self.buy(store_owner, self.transaction(store_owner, "3000001"))
+        buyer = self.reader("buyer")
+
+        refused = [
+            self.get(user, "app_store_purchase")["reason"] for user in (member, stripe_owner, self.owner)
+        ]
+        self.assertEqual(refused, ["on_team", "team_billed_elsewhere", "team_billed_elsewhere"])
+        self.assertEqual(self.get(store_owner, "app_store_purchase")["code"], 1)
+
+        token = self.get(buyer, "app_store_purchase")["app_account_token"]
+        purchase = self.transaction(None, "3000002", appAccountToken=token)
+        self.assertEqual(self.buy(buyer, purchase)["code"], 1)
+        self.assertEqual(self.buy(member, purchase)["reason"], "other_account")
+        self.assertEqual(self.owned_team(buyer).billing_reference, "3000002")
+
+    def test_an_app_store_purchase_while_stripe_bills_the_team_stops_the_stripe_renewal(self):
+        fake_stripe = FakeStripeBilling(self)
+        owner = self.reader("teamowner")
+        fake_stripe.known_customer(owner)
+        stripe_subscription = fake_stripe.subscribe(owner, Team.PLAN_TEAM)
+        self.pay(
+            owner,
+            self.now + self.days(20),
+            reference=stripe_subscription.id,
+            paid_at=self.now - self.days(11),
+        )
+
+        self.buy(owner, self.transaction(owner, "3000001", product=self.ENTERPRISE))
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.billing_provider, team.billing_reference),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_APP_STORE, "3000001"),
+        )
+        self.assertTrue(stripe_subscription.cancel_at_period_end)
+        self.assertEqual(self.staff_events(), ["team_paid_twice"])
+
+    def test_an_app_store_receipt_names_the_team_plan_and_the_period_apple_billed_for(self):
+        owner = self.reader("teamowner")
+        # A month Apple extended by four days.
+        self.buy(owner, self.transaction(owner, "3000001", product=self.ENTERPRISE, days=35))
+        payment = PaymentHistory.objects.get(user=owner)
+
+        receipt = self.client_for(owner).get(reverse("profile-invoice", args=[payment.pk])).content.decode()
+
+        self.assertIn("NewsBlur Premium Team Enterprise Subscription", receipt)
+        self.assertIn(dateformat.format(self.now + self.days(35), "F j, Y"), receipt)
