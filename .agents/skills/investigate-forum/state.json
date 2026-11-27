@@ -3,15 +3,15 @@
     "13926": {
       "title": "Traversal button not always available",
       "url": "https://forum.newsblur.com/t/traversal-button-not-always-available/13926",
-      "status": "merged",
+      "status": "pr-open",
       "tier": 2,
-      "handled_at": "2026-11-18T16:48:42.036Z",
-      "last_posted_at": "2026-11-18T16:47:41.252Z",
-      "pr": "https://github.com/samuelclay/NewsBlur/pull/2209",
-      "branch": "forum-13926-story-navigation",
-      "worktree": ".worktree/forum-13926-story-navigation",
-      "note": "Sam requested canceled horizontal peek, ordinary story tap, and upward-scroll reveal on Android, iOS, and Mac Catalyst, and corrected the upward threshold to 20pt/20dp. Merged at his request on 2026-11-18 as d50a20d1ed93d50e363c8d4e7b73ff4f3a190f52. Current-head CI passed and all four automated review threads were resolved. Local native regression tests, iOS real gesture UI test, Catalyst build, Android light/dark/black checks, slow tap, and double-tap smoke checks passed. Mac gestures use shared Apple controllers; no separate manual Mac session. Sam posted the prepared reply as forum post 3 on 2026-11-18; assistant did not post. Requires Android and Apple app releases, not yet released. No server deployment required.",
-      "reply": "I've prepared a fix so you can bring those buttons back with a small sideways peek without changing stories, or by tapping ordinary text or blank space in the story. Scrolling up a little also brings them back, and scrolling down hides them again. This will be in the next Android, iOS, and Mac updates.",
+      "handled_at": "2026-11-27T19:11:55.000Z",
+      "last_posted_at": "2026-11-27T17:06:26.089Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2242",
+      "branch": "forum-13926-always-show-navigation",
+      "worktree": ".worktree/forum-13926-always-show-navigation",
+      "note": "2026-11-27 follow-up to Guybrush post 7: Sam asked for an always-show option, default off, on Android and iOS. Android has had it since 15.1 (Preferences, Reading, Always show reading controls). Sam chose to rename it on both platforms to Always show story navigation, keep the top toolbar hiding, and put the iOS switch in Preferences only. PR #2242 rewords the Android strings (preference key unchanged) and adds the iOS and Mac preference: the scroll fade is skipped, the bar stays at the screen edge near the article end on phones, and turning it on returns a faded or floating bar. Both strings are translated into 20 languages. CI is green on c2b616592b; the first head needed one rerun of an unrelated iOS animation timing test that failed on PR #2240 at the same time. Four Codex threads were fixed and resolved, and the PR is ready for review. Verified: reader unit and UI tests on an iPhone 17e simulator, a Mac Catalyst compile, Android assembleDebug, the reworded row on a Galaxy S22 in light, dark and black, and the iOS row in English, German and Arabic. Not checked: an iPad, the Mac app at runtime, vertical paging at runtime, Android translations on a device. Sam posted #8 on 2026-11-27 calling the option Story controls; the label in released builds is Always show reading controls, so the reply draft gives the exact name. The reply needs no deploy for its first two sentences (the Android switch works today under the old name); the rename and the iOS and Mac switch need app releases. Assistant did not post. Earlier, PR #2209: Sam requested canceled horizontal peek, ordinary story tap, and upward-scroll reveal on Android, iOS, and Mac Catalyst, and corrected the upward threshold to 20pt/20dp. Merged at his request on 2026-11-18 as d50a20d1ed93d50e363c8d4e7b73ff4f3a190f52. Current-head CI passed and all four automated review threads were resolved. Local native regression tests, iOS real gesture UI test, Catalyst build, Android light/dark/black checks, slow tap, and double-tap smoke checks passed. Mac gestures use shared Apple controllers; no separate manual Mac session. Sam posted the prepared reply as forum post 3 on 2026-11-18; assistant did not post. Requires Android and Apple app releases, not yet released. No server deployment required.",
+      "reply": "Correction on the name: in the version you have it's Preferences > Reading > Always show reading controls. Turn that on and Previous and Next stay on screen while you scroll, no scrolling up or tapping needed. In the next update it's renamed to Always show story navigation, and iOS and Mac get the same setting.",
       "question": null
     },
     "13907": {
