@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ फ़ोल्डर, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ फ़ोल्डर, समेटा हुआ, %2$@";
 "%1$@ followed %2$@." = "%1$@ ने %2$@ को फ़ॉलो किया।";
+"%1$@ of %2$@ of listening left this month" = "इस महीने सुनने के शेष समय में से %1$@, %2$@";
 "%1$@ of %2$@ of listening left this week" = "इस सप्ताह सुनने के %2$@ में से %1$@ शेष";
 "%1$@ of %2$@ sites indexed" = "%2$@ में से %1$@ साइटें अनुक्रमित हुईं";
 "%1$@ of %2$@ story previews used today" = "आज %2$@ में से %1$@ लेख पूर्वावलोकन इस्तेमाल किए गए";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "इस प्रीव्यू में %@ बाकी";
 "%@ left this week" = "इस सप्ताह %@ शेष";
 "%@ match" = "%@ मिलान";
+"%@ new stories" = "%@ नए लेख";
 "%@ opens" = "%@ बार खुलता है";
 "%@ or search" = "%@ या खोजें";
 "%@ public comments" = "%@ सार्वजनिक टिप्पणियाँ";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2,000 लेख";
 "20 stories" = "20 लेख";
 "2x daily" = "दिन में 2 बार";
-"30s preview" = "30 सेकंड का प्रीव्यू";
 "3x daily" = "दिन में 3 बार";
 "5 stories" = "5 लेख";
 "5,000 stories" = "5,000 लेख";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "आपकी खर्च सीमा सहेजी नहीं जा सकी। कृपया फिर से कोशिश करें।";
 "Couldn’t load the full image. You can try opening it in your browser." = "पूरी इमेज लोड नहीं हो सकी। आप इसे अपने ब्राउज़र में खोलने की कोशिश कर सकते हैं।";
 "Counting is difficult..." = "गिनती करना मुश्किल है...";
+"Create OAuth applications" = "OAuth एप्लिकेशन बनाएँ";
 "Create a feed from any web page" = "किसी भी वेब पेज से फ़ीड बनाएँ";
 "Create a new account instead" = "इसके बजाय नया खाता बनाएँ";
 "Create account" = "खाता बनाएँ";
@@ -534,7 +536,6 @@
 "List style" = "सूची शैली";
 "Listen" = "सुनें";
 "Listen Settings" = "सुनने की सेटिंग्स";
-"Listen to 1 hour of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें";
 "Listen to 10 hours of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें";
 "Listen to story" = "लेख सुनें";
 "Listening isn't available right now." = "अभी सुनने की सुविधा उपलब्ध नहीं है।";
@@ -990,6 +991,7 @@
 "Show feed list" = "फ़ीड सूची दिखाएँ";
 "Show feeds after being read" = "पढ़ने के बाद फ़ीड दिखाएँ";
 "Show hidden stories" = "छिपे हुए लेख दिखाएँ";
+"Show new stories as they arrive" = "नए लेख आते ही दिखाएँ";
 "Show original story" = "मूल लेख दिखाएँ";
 "Show original text" = "मूल टेक्स्ट दिखाएँ";
 "Show public comments" = "सार्वजनिक टिप्पणियाँ दिखाएँ";
@@ -998,6 +1000,7 @@
 "Show unread count" = "अपठित संख्या दिखाएँ";
 "Show with feed icons" = "फ़ीड आइकन के साथ दिखाएँ";
 "Show without icons" = "बिना आइकन के दिखाएँ";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "खुले फ़ीड या फ़ोल्डर में नए लेख आने पर “N नए लेख” पिल दिखाता है।";
 "Shows the music settings" = "संगीत सेटिंग्स दिखाता है";
 "Sidebar" = "साइडबार";
 "Sign Up" = "साइन अप करें";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "कल का टेक्स्ट";
 "Text view" = "पाठ दृश्य";
 "Text view conveniently extracts the story" = "टेक्स्ट दृश्य लेख को सुविधाजनक रूप से निकालता है";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "यह 30 सेकंड का पूर्वावलोकन था। Premium Archive में पूरे लेख अनलॉक होते हैं।";
 "The audio couldn't be loaded. Try again in a moment." = "ऑडियो लोड नहीं हो सका। थोड़ी देर बाद फिर कोशिश करें।";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "पूरा टेक्स्ट दृश्य एक <a href=\"http://ios.newsblur.com/premium\">प्रीमियम सुविधा</a> है";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS सिम्युलेटर होम स्क्रीन का आइकन नहीं बदल सका। इसे किसी डिवाइस पर आज़माएँ।";

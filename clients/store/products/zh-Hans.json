@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "永久文章归档和每周 1 小时聆听"
+        "description": "永久文章归档和每月 1 小时聆听"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "频繁更新订阅源，每周 10 小时聆听"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "永久文章归档和每月 10 小时聆听"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive 订阅",
-        "description": "包含高级版的全部功能、可搜索的永久文章归档，以及每周 1 小时聆听时间。文章想保持未读状态多久都可以。聆听时间每周日重置。",
+        "description": "包含高级版的全部功能、可搜索的永久文章归档，以及每月 1 小时聆听时间。文章想保持未读状态多久都可以。聆听时间每月 1 日重置。",
         "benefits": [
           "高级版的全部功能",
           "文章可永远保持未读状态",
           "可搜索的永久文章归档",
-          "每周 1 小时聆听"
+          "每月 1 小时聆听"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "NewsBlur Premium Archive Extra 订阅",
+        "description": "包含高级版的全部功能、可搜索的永久文章归档，以及每月 10 小时聆听时间。文章想保持未读状态多久都可以。聆听时间每月 1 日重置。",
+        "benefits": [
+          "高级版的全部功能",
+          "文章可永远保持未读状态",
+          "可搜索的永久文章归档",
+          "每月 10 小时聆听"
         ]
       }
     }

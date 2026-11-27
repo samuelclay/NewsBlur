@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@フォルダー、%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@フォルダー、折りたたみ済み、%2$@";
 "%1$@ followed %2$@." = "%1$@さんが%2$@さんをフォローしました。";
+"%1$@ of %2$@ of listening left this month" = "今月の読み上げ残り：%1$@ / %2$@";
 "%1$@ of %2$@ of listening left this week" = "今週の聴取可能時間は%1$@／%2$@です";
 "%1$@ of %2$@ sites indexed" = "%2$@件中%1$@件のサイトをインデックス済み";
 "%1$@ of %2$@ story previews used today" = "本日使用した記事のプレビュー：%1$@／%2$@";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "このプレビューの残り%@";
 "%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
+"%@ new stories" = "新着記事：%@件";
 "%@ opens" = "%@ 回開かれました";
 "%@ or search" = "%@または検索";
 "%@ public comments" = "公開コメント%@件";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2,000件の記事";
 "20 stories" = "20件の記事";
 "2x daily" = "1日2回";
-"30s preview" = "30秒プレビュー";
 "3x daily" = "1日3回";
 "5 stories" = "5件の記事";
 "5,000 stories" = "5,000件の記事";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "支出上限を保存できませんでした。もう一度お試しください。";
 "Couldn’t load the full image. You can try opening it in your browser." = "画像全体を読み込めませんでした。ブラウザーで開いてみてください。";
 "Counting is difficult..." = "数えるのは難しいですね…";
+"Create OAuth applications" = "OAuthアプリケーションを作成";
 "Create a feed from any web page" = "どのウェブページからでもフィードを作成";
 "Create a new account instead" = "代わりに新しいアカウントを作成";
 "Create account" = "アカウントを作成";
@@ -534,7 +536,6 @@
 "List style" = "リストのスタイル";
 "Listen" = "聴く";
 "Listen Settings" = "読み上げ設定";
-"Listen to 1 hour of stories read aloud a week" = "読み上げ記事を週1時間聴取";
 "Listen to 10 hours of stories read aloud a week" = "読み上げ記事を週10時間聴取";
 "Listen to story" = "記事を聴く";
 "Listening isn't available right now." = "現在、読み上げは利用できません。";
@@ -990,6 +991,7 @@
 "Show feed list" = "フィード一覧を表示";
 "Show feeds after being read" = "既読後もフィードを表示";
 "Show hidden stories" = "非表示の記事を表示";
+"Show new stories as they arrive" = "新しい記事を受信したら表示";
 "Show original story" = "元の記事を表示";
 "Show original text" = "元のテキストを表示";
 "Show public comments" = "公開コメントを表示";
@@ -998,6 +1000,7 @@
 "Show unread count" = "未読数を表示";
 "Show with feed icons" = "フィードアイコンと一緒に表示";
 "Show without icons" = "アイコンなしで表示";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "開いているフィードまたはフォルダーに記事が届いたとき、「新着記事：N件」のピルを表示します。";
 "Shows the music settings" = "音楽の設定を表示";
 "Sidebar" = "サイドバー";
 "Sign Up" = "登録";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "昨日のテキスト";
 "Text view" = "テキスト表示";
 "Text view conveniently extracts the story" = "テキスト表示では記事の本文を手軽に抽出できます";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "30秒のプレビューです。プレミアムアーカイブに登録すると、記事全文を利用できます。";
 "The audio couldn't be loaded. Try again in a moment." = "音声を読み込めませんでした。しばらくしてからもう一度お試しください。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "テキスト表示の全機能は<a href=\"http://ios.newsblur.com/premium\">プレミアム機能</a>です";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOSシミュレーターではホーム画面のアイコンを変更できませんでした。デバイスでお試しください。";

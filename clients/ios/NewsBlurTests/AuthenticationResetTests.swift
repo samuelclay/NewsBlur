@@ -4,6 +4,47 @@ import WebKit
 @testable import NewsBlur
 
 @MainActor final class Test_AuthenticationReset: XCTestCase {
+    func test_returningNetworkRetriesOfflineFeedListOnce() {
+        let app = AuthenticationAppDelegate()
+        let feeds = AuthenticationFeedsController()
+        app.feedsViewController = feeds
+        feeds.appDelegate = app
+        app.activeUsername = "recovery-fixture"
+        let reachable = ReaderReachabilityFixture()
+        let notification = Notification(name: Notification.Name("kReachabilityChangedNotification"), object: reachable)
+        func networkChanged() {
+            app.perform(NSSelectorFromString("reachabilityChanged:"), with: notification)
+        }
+
+        networkChanged()
+        XCTAssertTrue(app.getRequests.isEmpty)
+        feeds.isOffline = true
+        networkChanged()
+        XCTAssertTrue(app.getRequests.isEmpty, "An unrelated failure such as marking a story read should not reload every feed.")
+        feeds.fetchFeedList(false)
+        app.getRequests.last?.failure(nil, URLError(.notConnectedToInternet))
+        app.getRequests.removeAll()
+        reachable.isReachable = false
+        networkChanged()
+        XCTAssertTrue(app.getRequests.isEmpty)
+
+        reachable.isReachable = true
+        networkChanged()
+        networkChanged()
+        XCTAssertEqual(app.getRequests.compactMap { URL(string: $0.url)?.path }, ["/reader/feeds"])
+        XCTAssertTrue(feeds.isOffline, "Only a successful feed list response can restore subscriptions.")
+        app.getRequests.first?.failure(nil, URLError(.notConnectedToInternet))
+        XCTAssertEqual(app.getRequests.count, 2, "Reachability can return before the previous request reports network loss.")
+
+        app.getRequests.last?.failure(nil, URLError(.serverCertificateUntrusted))
+        reachable.isReachable = false
+        networkChanged()
+        XCTAssertEqual(app.getRequests.count, 2)
+        reachable.isReachable = true
+        networkChanged()
+        XCTAssertEqual(app.getRequests.count, 3, "Leaving captive Wi-Fi for a reachable network must retry the feed list.")
+    }
+
     func test_closedAuthenticationFixtureReleasesItsReaderAndWebView() async throws {
         weak var releasedApp: AuthenticationAppDelegate?
         weak var releasedReader: AuthenticationPagesController?
@@ -826,6 +867,10 @@ import WebKit
         UserDefaults.standard.setPersistentDomain(preferences, forName: preferenceDomain)
         UserDefaults(suiteName: "group.com.newsblur.NewsBlur-Group")?.setPersistentDomain(sharedPreferences, forName: "group.com.newsblur.NewsBlur-Group")
     }
+}
+
+private final class ReaderReachabilityFixture: NSObject {
+    @objc var isReachable = true
 }
 
 private final class AuthenticationAppDelegate: NewsBlurAppDelegate {

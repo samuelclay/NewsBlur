@@ -6,6 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import gettext
 
 from apps.notifications.models import (
+    MUserAndroidTokens,
     MUserClassifierNotification,
     MUserFeedNotification,
     MUserNotificationTokens,
@@ -177,13 +178,14 @@ def set_android_token(request):
     the Android code.
     """
     user = get_user(request)
-    tokens = MUserNotificationTokens.get_tokens_for_user(user.pk)
-    token = request.POST["token"]
+    token = request.POST.get("token")
+    if not token:
+        return {"code": -1, "message": gettext("Missing token.")}
 
     logging.user(user, "~FCUpdating Android push token")
-    if token not in tokens.android_tokens:
-        tokens.android_tokens.append(token)
-        tokens.save()
+    # views.py: the app sends its token again every day. A token the server already has moves to the end, so
+    # the cap in MUserAndroidTokens.register_token trims the devices that stopped checking in.
+    if MUserAndroidTokens.register_token(user.pk, token):
         return {"message": gettext("Token saved.")}
 
     return {"message": gettext("Token already saved.")}

@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "whats_new": "Abbiamo risolto un problema che poteva lasciare interi paragrafi senza audio durante l’ascolto di un articolo con lo schermo bloccato. Quando in un feed arrivano più di 20 nuovi articoli, ora i primi compaiono più rapidamente quando tocchi il pulsante dei nuovi articoli."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-11-25T21:20:00Z",
+  "release_version": "17.2",
+  "release_commit": "c8fca89bc9",
+  "requested_release_mode": "Automatic release after approval; Android full production rollout",
+  "ios": {
+    "build": "360",
+    "uploaded_by_this_task": true,
+    "upload_method": "xcodebuild -exportArchive with destination upload on ClayMac Studio, whose Xcode has the App Store Connect account",
+    "app_store_version_created": true,
+    "submitted_for_review_by_this_task": true,
+    "version_id": "779942b5-16de-4028-97a3-0ad734ceb09f",
+    "build_id": "d7238344-f5ed-49fc-a008-63d9f24c41fd",
+    "submission_id": "72c6dc52-54ee-4db9-a03a-1d969b6f60e4",
+    "submitted_at": "2026-11-25T20:25:58.84Z",
+    "state": "WAITING_FOR_REVIEW",
+    "release_type": "AFTER_APPROVAL",
+    "submission_items": [
+      "iOS App 17.2 (360)",
+      "NewsBlur Premium Archive Extra Subscription"
+    ],
+    "localized_fields_verified": "21 locales x description, keywords, promotionalText, whatsNew read back identical"
+  },
+  "macos": {
+    "build": "360",
+    "uploaded_by_this_task": true,
+    "app_store_version_created": true,
+    "submitted_for_review_by_this_task": true,
+    "version_id": "538c1a8f-bbb4-470b-9308-8bf9549df270",
+    "build_id": "9e4c6da5-ee7d-440e-a190-767d63be2609",
+    "submission_id": "921efabf",
+    "submitted_at": "2026-11-25T20:26:47.844Z",
+    "state": "WAITING_FOR_REVIEW",
+    "release_type": "AFTER_APPROVAL",
+    "localized_fields_verified": "21 locales x description, keywords, promotionalText, whatsNew read back identical"
+  },
+  "apple_subscriptions": {
+    "newsblur_premium_archive_extra": {
+      "apple_id": "6839026145",
+      "state": "WAITING_FOR_REVIEW",
+      "review_screenshot": "Premium Archive Extra card on 10 hours, 1170x2532, asset COMPLETE",
+      "submitted_with": "iOS 17.2"
+    },
+    "newsblur_premium_archive": {
+      "apple_id": "1631207043",
+      "localization_change": "21 monthly descriptions Waiting for Review; approved weekly descriptions stay live until approval"
+    }
+  },
+  "android": {
+    "version_code": 305,
+    "version_name": "17.2",
+    "signed_bundle_built": true,
+    "bundle_sha256": "beb5fe7c8f2cf3b696c52a5f390bb525eb2fc1b36b5e47d4770282e280b484b5",
+    "upload_certificate_matches_previous_releases": true,
+    "release_tag": "Android_17.2 at c8fca89bc9 (android-release.yml)",
+    "uploaded_by_this_task": true,
+    "submitted_for_review_by_this_task": true,
+    "release_name": "305 (17.2)",
+    "console_release_id": "106",
+    "track": "production",
+    "rollout_percentage": 100,
+    "managed_publishing": false,
+    "state": "Changes in review",
+    "localized_release_notes": 21,
+    "listing_changes_in_same_review": "21 full descriptions (monthly Listen allowances, 60-second previews)"
+  },
+  "blocker": null,
+  "submission_method": "Signed-in Microsoft Edge store consoles driven in the background through Apple Events. App Store Connect writes used the console's own web API from its page; Play uploads used an in-page File."
+}

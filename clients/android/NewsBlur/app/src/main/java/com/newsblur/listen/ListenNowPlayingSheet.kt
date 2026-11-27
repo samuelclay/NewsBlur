@@ -383,7 +383,7 @@ private fun ListenPreviewBanner(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = stringResource(R.string.listen_preview_banner),
+            text = pluralStringResource(R.plurals.listen_preview_banner_seconds, state.previewSeconds, state.previewSeconds),
             color = colors.previewText,
             fontSize = 13.sp,
             modifier = Modifier.weight(1f),
@@ -422,7 +422,7 @@ private fun ListenPreviewEndedCard(
         Text(
             text =
                 state.usage?.upgradeMessage?.takeIf { it.isNotBlank() }
-                    ?: stringResource(R.string.listen_preview_banner),
+                    ?: pluralStringResource(R.plurals.listen_preview_banner_seconds, state.previewSeconds, state.previewSeconds),
             color = colors.previewText,
             fontSize = 14.sp,
         )
@@ -478,8 +478,8 @@ private fun upgradeButtonText(state: ListenUiState): String? {
     if (!error.isUpgradeReason) return null
     val usage = error.usage ?: state.usage
     return when {
-        usage?.tier == TIER_PRO -> null
-        usage?.isArchiveTier == true || usage?.tier == TIER_ARCHIVE ->
+        usage?.tier == ListenUsage.TIER_PRO -> null
+        usage?.hasTimeAllowance == true ->
             stringResource(
                 R.string.listen_upgrade_pro,
             )
@@ -520,9 +520,6 @@ fun formatListenTime(ms: Long): String {
 /** "1.05×": the precise rate, up to two decimals. */
 @Composable
 fun formatListenSpeed(speed: Double): String = stringResource(R.string.listen_speed_value, ListenSpeed.format(speed))
-
-private const val TIER_PRO = "pro"
-private const val TIER_ARCHIVE = "archive"
 
 /** ListenNowPlayingSheet.kt keeps counting times from jittering as their digits change. */
 private val TabularNumbers = TextStyle(fontFeatureSettings = "tnum")

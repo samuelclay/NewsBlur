@@ -29,11 +29,14 @@ $(document).ready(function () {
         return read_override() || system_theme();
     }
 
-    function apply(theme) {
-        if (theme === 'dark') {
-            $('body').addClass('NB-dark');
+    // theme_toggle.js: a click fades between themes the way the reader does (reader_utils.js
+    // switch_theme_classes). Loading the page and following the system change at once.
+    function apply(theme, animate) {
+        var is_dark = theme === 'dark';
+        if (animate && window.NEWSBLUR && NEWSBLUR.utils && NEWSBLUR.utils.switch_theme_classes) {
+            NEWSBLUR.utils.switch_theme_classes({ 'NB-dark': is_dark }, true);
         } else {
-            $('body').removeClass('NB-dark');
+            $('body').toggleClass('NB-dark', is_dark);
         }
     }
 
@@ -48,7 +51,7 @@ $(document).ready(function () {
         try {
             localStorage.setItem('newsblur:theme', JSON.stringify({theme: next, ts: Date.now()}));
         } catch (e) {}
-        apply(next);
+        apply(next, true);
 
         // Sync with reader if it exists (welcome page)
         if (window.NEWSBLUR && NEWSBLUR.reader && NEWSBLUR.reader.switch_theme) {

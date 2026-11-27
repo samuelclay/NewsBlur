@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@ 文件夹，%2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@ 文件夹，已折叠，%2$@";
 "%1$@ followed %2$@." = "%1$@ 关注了 %2$@。";
+"%1$@ of %2$@ of listening left this month" = "本月还可收听 %1$@ / %2$@";
 "%1$@ of %2$@ of listening left this week" = "本周还剩 %1$@，共 %2$@ 收听时长";
 "%1$@ of %2$@ sites indexed" = "已索引 %1$@ / %2$@ 个网站";
 "%1$@ of %2$@ story previews used today" = "今天已使用 %1$@ / %2$@ 次文章试听";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "此预览还剩 %@";
 "%@ left this week" = "本周还剩 %@";
 "%@ match" = "%@ 个匹配项";
+"%@ new stories" = "%@ 篇新文章";
 "%@ opens" = "%@ 次打开";
 "%@ or search" = "%@ 或搜索";
 "%@ public comments" = "%@ 条公开评论";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2,000 篇文章";
 "20 stories" = "20 篇文章";
 "2x daily" = "每天 2 次";
-"30s preview" = "30 秒试听";
 "3x daily" = "每天 3 次";
 "5 stories" = "5 篇文章";
 "5,000 stories" = "5,000 篇文章";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "无法保存你的消费限额。请重试。";
 "Couldn’t load the full image. You can try opening it in your browser." = "无法加载完整图片。你可以尝试在浏览器中打开。";
 "Counting is difficult..." = "计数很难……";
+"Create OAuth applications" = "创建 OAuth 应用";
 "Create a feed from any web page" = "从任意网页创建订阅源";
 "Create a new account instead" = "改为创建新账户";
 "Create account" = "创建账户";
@@ -534,7 +536,6 @@
 "List style" = "列表样式";
 "Listen" = "聆听";
 "Listen Settings" = "收听设置";
-"Listen to 1 hour of stories read aloud a week" = "每周可收听 1 小时文章朗读";
 "Listen to 10 hours of stories read aloud a week" = "每周可收听 10 小时文章朗读";
 "Listen to story" = "收听文章";
 "Listening isn't available right now." = "目前无法收听。";
@@ -990,6 +991,7 @@
 "Show feed list" = "显示订阅源列表";
 "Show feeds after being read" = "显示已读完的订阅源";
 "Show hidden stories" = "显示已隐藏的文章";
+"Show new stories as they arrive" = "新文章到达时显示";
 "Show original story" = "显示原文";
 "Show original text" = "显示原文";
 "Show public comments" = "显示公开评论";
@@ -998,6 +1000,7 @@
 "Show unread count" = "显示未读数";
 "Show with feed icons" = "与订阅源图标一起显示";
 "Show without icons" = "不显示图标";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "打开的订阅源或文件夹中有新文章时，显示“有 N 篇新文章”提示条。";
 "Shows the music settings" = "显示音乐设置";
 "Sidebar" = "侧边栏";
 "Sign Up" = "注册";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "昨天的文本";
 "Text view" = "文本视图";
 "Text view conveniently extracts the story" = "文本视图可便捷地提取文章内容";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "这是 30 秒试听。升级到高级归档版即可解锁完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "无法加载音频。请稍后重试。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整的文本视图是<a href=\"http://ios.newsblur.com/premium\">高级功能</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 模拟器无法更改主屏幕图标。请在设备上尝试。";

@@ -4,6 +4,8 @@ import SwiftUI
 /// ReaderMotion.swift keeps story identity separate from reusable cells and SwiftUI view lifetime.
 @objcMembers final class ReaderMotionSession: NSObject, ObservableObject {
     private var seen = Set<String>()
+    /// Rows NewStoriesPill.swift slides in itself, which show from their first frame.
+    private var arriving = Set<String>()
     private var starts = [String: CFTimeInterval]()
     private var batchStart: CFTimeInterval = 0
     private var batchIndex = 0
@@ -14,7 +16,7 @@ import SwiftUI
     fileprivate private(set) var hasPresented = false
 
     func reset() {
-        seen.removeAll(); starts.removeAll(); batchStart = 0; batchIndex = 0
+        seen.removeAll(); arriving.removeAll(); starts.removeAll(); batchStart = 0; batchIndex = 0
         hasPresented = false; presentationReady = true; entrancesStopped = false; visit += 1
     }
 
@@ -34,6 +36,11 @@ import SwiftUI
     func prepareForAppearance() { if !hasPresented { presentationReady = false } }
     func didAppear() { hasPresented = true; presentationReady = true }
     func hasSeen(_ key: String) -> Bool { seen.contains(key) }
+    func isArriving(_ key: String) -> Bool { arriving.contains(key) }
+    func markArriving(_ key: String) {
+        markSeen(key)
+        arriving.insert(key)
+    }
     func markSeen(_ key: String) {
         seen.insert(key)
         starts.removeValue(forKey: key)
@@ -518,7 +525,9 @@ struct ReaderEntrance: ViewModifier {
     @State private var appeared = false
     @State private var appearedVisit = -1
 
-    private var isVisible: Bool { session.entrancesStopped || (appeared && appearedVisit == session.visit) }
+    private var isVisible: Bool {
+        session.entrancesStopped || session.isArriving(key) || (appeared && appearedVisit == session.visit)
+    }
 
     func body(content: Content) -> some View {
         content.modifier(ReaderEntranceEffect(progress: isVisible ? 1 : 0,

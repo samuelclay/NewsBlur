@@ -637,6 +637,18 @@ def get_google_play_subscription(purchase_token):
         return None
 
 
+def google_play_confirms_plain_archive(subscription_info, product_id):
+    """Whether Google's subscriptionsv2 record says this purchase token is live on plain Archive now."""
+    if not subscription_info or not product_id:
+        return False
+    if "premium.archive" not in product_id or "premium.archive.extra" in product_id:
+        return False
+    live_states = ("SUBSCRIPTION_STATE_ACTIVE", "SUBSCRIPTION_STATE_IN_GRACE_PERIOD")
+    if subscription_info.get("subscriptionState") not in live_states:
+        return False
+    return any(item.get("productId") == product_id for item in subscription_info.get("lineItems", []))
+
+
 def handle_google_play_notification(user, notification_type, purchase_token, subscription_id):
     NOTIFICATION_NAMES = {
         1: "RECOVERED",
@@ -665,7 +677,16 @@ def handle_google_play_notification(user, notification_type, purchase_token, sub
             order_id=order_id_for_payment,
             product_id=subscription_id,
         )
-        user.profile.active_provider = "google-play"
+        billed_elsewhere = user.profile.active_provider not in (None, "", "google-play")
+        if google_play_confirms_plain_archive(subscription_info, subscription_id) and not billed_elsewhere:
+            # A crossgrade from Archive Extra back to Archive. Checked even when the app's receipt already
+            # recorded this order, and only on Google's word, since a late notification can name an old product.
+            # Extra that Stripe or PayPal bills for stays, even while an old Play Archive keeps renewing.
+            user.profile.activate_archive(downgrade_extra=True)
+        if not (billed_elsewhere and user.profile.is_archive_extra):
+            # Leaving the other store's claim in place keeps the guard above working when Google retries this
+            # notification, since a duplicate order skips the history sync that set it.
+            user.profile.active_provider = "google-play"
         user.profile.premium_renewal = True
         user.profile.save()
 
@@ -907,6 +928,8 @@ def save_ios_receipt(request):
 
     if product_identifier == "newsblur_premium_pro":
         paid = request.user.profile.activate_ios_pro(transaction_identifier)
+    elif product_identifier == "newsblur_premium_archive_extra":
+        paid = request.user.profile.activate_ios_archive_extra(transaction_identifier)
     elif product_identifier == "newsblur_premium_archive":
         paid = request.user.profile.activate_ios_archive(transaction_identifier)
     else:
@@ -1136,7 +1159,7 @@ def switch_paypal_subscription(request):
         return HttpResponseRedirect(approve_url)
 
     paypal_return = reverse("paypal-return")
-    if plan == "archive":
+    if plan in ("archive", "archive_extra"):
         paypal_return = reverse("paypal-archive-return")
     return HttpResponseRedirect(paypal_return)
 
@@ -1598,6 +1621,7 @@ def payment_history(request):
     return {
         "is_premium": user.profile.is_premium,
         "is_archive": user.profile.is_archive,
+        "is_archive_extra": bool(user.profile.is_archive_extra),
         "is_pro": user.profile.is_pro,
         "premium_expire": user.profile.premium_expire,
         "premium_renewal": user.profile.premium_renewal,

@@ -480,6 +480,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="pro_enable_sites">Bis zu 10.000 Websites folgen</string>
     <string name="pro_all_feeds_fetched">Alle Feeds werden alle 5–15 Minuten abgerufen</string>
     <string name="pro_regex_train">Artikel mit regulären Ausdrücken trainieren</string>
+    <string name="pro_oauth_applications">OAuth-Anwendungen erstellen</string>
     <string name="pro_priority_support">Bevorzugter Support</string>
     <string name="pro_natural_language_search">Suche in natürlicher Sprache</string>
     <string name="settings_cat_offline">Offline lesen</string>
@@ -622,6 +623,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Artikel automatisch als gelesen markieren, sobald du daran vorbeiscrollst</string>
     <string name="settings_story_clustering">Verwandte Artikel gruppieren</string>
     <string name="settings_story_clustering_summary">Doppelte Artikel aus anderen Feeds unter einem Artikeltitel anzeigen</string>
+    <string name="settings_show_new_stories">Neue Artikel direkt bei ihrem Eintreffen anzeigen</string>
+    <string name="settings_show_new_stories_summary">Zeigt eine Anzeige „N neue Artikel“ an, wenn neue Artikel auf der geöffneten Website oder im geöffneten Ordner eintreffen</string>
     <string name="settings_cluster_matches">Cluster-Treffer</string>
     <string name="settings_cluster_matches_summary">Lege fest, ob Cluster nur doppelte Titel oder auch verwandte Artikel anzeigen</string>
     <string name="settings_story_clustering_save_failed">Einstellung zur Gruppierung von Artikeln konnte nicht gespeichert werden</string>
@@ -914,6 +917,7 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Keine Feed-Benachrichtigungen</string>
+    <string name="notifications_device_off">Benachrichtigungen sind auf diesem Gerät deaktiviert. Websites, für die Benachrichtigungen aktiviert sind, bleiben hier stumm, bis du sie einschaltest.</string>
     <string name="notification_permissions_context">Berechtigungen sind erforderlich, um Benachrichtigungen zu senden</string>
     <string name="notification_permissions_rationale">Bevor du erneut versuchst, Benachrichtigungen zu aktivieren, musst du die Berechtigung für Benachrichtigungen manuell in den Einstellungen der App hinzufügen</string>
     <string name="write_storage_permission_opml">Für den OPML-Export ist eine Schreibberechtigung für den Speicher erforderlich</string>
@@ -1368,7 +1372,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_resume">Fortsetzen</string>
     <string name="listen_pause">Pausieren</string>
     <string name="listen_play">Abspielen</string>
-    <string name="listen_preview_pill">30-Sekunden-Vorschau</string>
     <string name="listen_open_player">Player öffnen</string>
     <string name="listen_close">Player schließen</string>
     <string name="listen_loading">Artikel wird vorbereitet …</string>
@@ -1424,7 +1427,6 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="listen_speed_exact">Exakte Wiedergabegeschwindigkeit</string>
     <string name="listen_speed_slider">Regler für die Wiedergabegeschwindigkeit</string>
     <string name="listen_speed_button">Wiedergabegeschwindigkeit %1$s×</string>
-    <string name="listen_preview_banner">30-Sekunden-Vorschau. Mit Premium Archive kannst du ganze Artikel anhören.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">Noch %1$d Sekunde</item>
         <item quantity="other">Noch %1$d Sekunden</item>
@@ -1513,6 +1515,9 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_listen_voices_summary">Wähle für jede Sprache eine Stimme und deren Vorlesestil aus</string>
     <string name="settings_listen_delivery">Wiedergabe</string>
     <string name="settings_listen_speed">Wiedergabegeschwindigkeit</string>
-    <string name="archive_listen">Pro Woche 1 Stunde lang Artikel vorlesen lassen</string>
     <string name="pro_listen">Pro Woche 10 Stunden lang Artikel vorlesen lassen</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d neuer Artikel</item>
+        <item quantity="other">%d neue Artikel</item>
+    </plurals>
 </resources>

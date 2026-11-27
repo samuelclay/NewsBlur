@@ -375,6 +375,7 @@ def RefundUnredeemedGifts():
 TIER_NAMES = {
     "premium": gettext_lazy("Premium"),
     "archive": gettext_lazy("Premium Archive"),
+    "archive_extra": gettext_lazy("Premium Archive Extra"),
     "pro": gettext_lazy("Premium Pro"),
 }
 

@@ -974,12 +974,13 @@ class ReadingItemFragment :
 
     /**
      * What this page's Listen button shows, so it's only touched when that changes: Pause or Resume for the story
-     * playing, the 30s preview pill without Archive, and the Up Next button.
+     * playing, the preview pill without Archive, and the Up Next button.
      */
     private data class ListenButtonLook(
         @param:StringRes val text: Int,
         @param:DrawableRes val icon: Int,
         val showsPreviewPill: Boolean,
+        val previewSeconds: Int,
         val upNext: UpNextButton,
     )
 
@@ -996,9 +997,10 @@ class ReadingItemFragment :
                 else -> UpNextButton.ADD
             }
         return when {
-            isThisStory && state.showsPause -> ListenButtonLook(R.string.listen_pause, R.drawable.ic_listen_pause, !archiveTier, upNext)
-            loaded -> ListenButtonLook(R.string.listen_resume, R.drawable.ic_listen, !archiveTier, upNext)
-            else -> ListenButtonLook(R.string.listen_story_button, R.drawable.ic_listen, !archiveTier, upNext)
+            isThisStory && state.showsPause ->
+                ListenButtonLook(R.string.listen_pause, R.drawable.ic_listen_pause, !archiveTier, state.previewSeconds, upNext)
+            loaded -> ListenButtonLook(R.string.listen_resume, R.drawable.ic_listen, !archiveTier, state.previewSeconds, upNext)
+            else -> ListenButtonLook(R.string.listen_story_button, R.drawable.ic_listen, !archiveTier, state.previewSeconds, upNext)
         }
     }
 
@@ -1013,6 +1015,8 @@ class ReadingItemFragment :
         actions.listenStoryButton.iconPadding = if (iconOnly) 0 else UIUtils.dp2px(requireContext(), 6)
         actions.listenStoryButton.setIconResource(look.icon)
         actions.listenStoryPreviewPill.visibility = if (look.showsPreviewPill && !iconOnly) View.VISIBLE else View.GONE
+        actions.listenStoryPreviewPill.text =
+            resources.getQuantityString(R.plurals.listen_preview_pill_seconds, look.previewSeconds, look.previewSeconds)
         actions.listenQueueButton.visibility = if (showsUpNext) View.VISIBLE else View.GONE
         if (showsUpNext) {
             val queued = look.upNext == UpNextButton.QUEUED

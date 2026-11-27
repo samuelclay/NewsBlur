@@ -138,19 +138,88 @@ class Test_AppleSubscriptions(TestCase):
         self.assertFalse(Profile.objects.get(user=self.user).is_premium)
 
     def test_archive_and_pro_activate_correct_tier(self):
-        for product, archive, pro in (
-            ("newsblur_premium_archive", True, False),
-            ("newsblur_premium_pro", True, True),
+        for product, archive, extra, pro in (
+            ("newsblur_premium_archive", True, False, False),
+            ("newsblur_premium_archive_extra", True, True, False),
+            ("newsblur_premium_pro", True, False, True),
         ):
             with self.subTest(product=product):
                 Profile.objects.filter(user=self.user).update(
-                    is_premium=False, is_archive=False, is_pro=False
+                    is_premium=False, is_archive=False, is_archive_extra=False, is_pro=False
                 )
                 self.apply(productId=product, transactionId=product)
                 profile = Profile.objects.get(user=self.user)
                 self.assertEqual(profile.is_archive, archive)
+                self.assertEqual(bool(profile.is_archive_extra), extra)
                 self.assertEqual(profile.is_pro, pro)
                 self.assertEqual(profile.premium_expire, self.expiration)
+
+    def test_archive_subscriber_switching_to_archive_extra_gets_two_hours(self):
+        Profile.objects.filter(user=self.user).update(
+            is_premium=True,
+            is_archive=True,
+            is_archive_extra=False,
+            premium_expire=self.now + datetime.timedelta(days=30),
+        )
+        result = self.apply(productId="newsblur_premium_archive_extra")
+        self.assertNotEqual(result.get("reason"), "cross-tier")
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
+
+    def test_an_old_archive_replay_after_extra_keeps_extra_and_a_newer_archive_downgrades(self):
+        def stamp(moment):
+            return int(moment.timestamp() * 1000)
+
+        Profile.objects.filter(user=self.user).update(
+            is_premium=False, is_archive=False, is_archive_extra=False, is_pro=False
+        )
+        old_archive = {
+            "productId": "newsblur_premium_archive",
+            "transactionId": "archive-1",
+            "purchaseDate": stamp(self.now - datetime.timedelta(days=20)),
+            "expiresDate": stamp(self.now + datetime.timedelta(days=345)),
+        }
+        self.apply(**old_archive)
+        extra = {
+            "productId": "newsblur_premium_archive_extra",
+            "transactionId": "extra-1",
+            "purchaseDate": stamp(self.now - datetime.timedelta(days=2)),
+        }
+        self.apply(**extra)
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
+
+        self.apply(**old_archive)
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra, "a replayed Archive kept Extra")
+
+        self.apply(
+            productId="newsblur_premium_archive",
+            transactionId="archive-2",
+            purchaseDate=stamp(self.now - datetime.timedelta(days=1)),
+        )
+        self.assertFalse(
+            Profile.objects.get(user=self.user).is_archive_extra, "a newer Archive is a crossgrade"
+        )
+
+        self.apply(**extra)
+        self.assertFalse(
+            Profile.objects.get(user=self.user).is_archive_extra, "a replayed Extra kept Archive"
+        )
+
+    def test_an_apple_archive_transaction_keeps_extra_billed_by_another_store(self):
+        """Extra bought through Stripe isn't in Apple's history, so a lingering Apple Archive can't undo it."""
+        Profile.objects.filter(user=self.user).update(
+            is_premium=True,
+            is_archive=True,
+            is_archive_extra=True,
+            is_pro=False,
+            active_provider="stripe",
+            premium_expire=self.now + datetime.timedelta(days=200),
+        )
+        self.apply(
+            productId="newsblur_premium_archive",
+            transactionId="archive-1",
+            purchaseDate=int((self.now - datetime.timedelta(days=1)).timestamp() * 1000),
+        )
+        self.assertTrue(Profile.objects.get(user=self.user).is_archive_extra)
 
     def test_lifetime_entitlement_is_preserved(self):
         Profile.objects.filter(user=self.user).update(is_premium=True, premium_expire=None)

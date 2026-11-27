@@ -483,6 +483,7 @@ a personas para hablar del mundo.</string>
     <string name="pro_enable_sites">Sigue hasta 10.000 sitios</string>
     <string name="pro_all_feeds_fetched">Todos los feeds se obtienen cada 5-15 minutos</string>
     <string name="pro_regex_train">Entrenar artículos con expresiones regulares</string>
+    <string name="pro_oauth_applications">Crear aplicaciones OAuth</string>
     <string name="pro_priority_support">Soporte prioritario</string>
     <string name="pro_natural_language_search">Búsqueda en lenguaje natural</string>
     <string name="settings_cat_offline">Lectura sin conexión</string>
@@ -630,6 +631,8 @@ a personas para hablar del mundo.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Marcar automáticamente los artículos como leídos al desplazarse más allá de ellos</string>
     <string name="settings_story_clustering">Agrupar artículos relacionados</string>
     <string name="settings_story_clustering_summary">Mostrar artículos duplicados de otros feeds debajo del título de un artículo</string>
+    <string name="settings_show_new_stories">Mostrar los artículos nuevos a medida que llegan</string>
+    <string name="settings_show_new_stories_summary">Muestra una etiqueta con \"N artículos nuevos\" cuando llegan artículos al sitio o la carpeta abiertos</string>
     <string name="settings_cluster_matches">Coincidencias de clúster</string>
     <string name="settings_cluster_matches_summary">Elige si los clústeres muestran solo títulos duplicados o también artículos relacionados</string>
     <string name="settings_story_clustering_save_failed">No se pudo guardar la preferencia de agrupación de artículos</string>
@@ -922,6 +925,7 @@ a personas para hablar del mundo.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Sin notificaciones de feed</string>
+    <string name="notifications_device_off">Las notificaciones están desactivadas en este dispositivo. Los sitios configurados para enviar notificaciones en Android permanecerán en silencio aquí hasta que las actives.</string>
     <string name="notification_permissions_context">Se requieren permisos para publicar notificaciones</string>
     <string name="notification_permissions_rationale">El permiso de notificaciones debe agregarse manualmente en la configuración de la aplicación antes de intentar habilitar las notificaciones de nuevo</string>
     <string name="write_storage_permission_opml">Se requiere permiso de escritura de almacenamiento para la exportación de OPML</string>
@@ -1394,7 +1398,6 @@ a personas para hablar del mundo.</string>
     <string name="listen_resume">Reanudar</string>
     <string name="listen_pause">Pausar</string>
     <string name="listen_play">Reproducir</string>
-    <string name="listen_preview_pill">Vista previa de 30 s</string>
     <string name="listen_open_player">Abrir reproductor</string>
     <string name="listen_close">Cerrar reproductor</string>
     <string name="listen_loading">Preparando el artículo…</string>
@@ -1452,7 +1455,6 @@ a personas para hablar del mundo.</string>
     <string name="listen_speed_exact">Velocidad de reproducción exacta</string>
     <string name="listen_speed_slider">Control deslizante de velocidad de reproducción</string>
     <string name="listen_speed_button">Velocidad de reproducción %1$s×</string>
-    <string name="listen_preview_banner">Vista previa de 30 segundos. Premium Archive permite escuchar los artículos completos.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="many">Quedan %1$d segundos</item>
         <item quantity="one">Queda %1$d segundo</item>
@@ -1547,6 +1549,10 @@ a personas para hablar del mundo.</string>
     <string name="settings_listen_voices_summary">Elige una voz para cada idioma y cómo lo lee</string>
     <string name="settings_listen_delivery">Reproducción</string>
     <string name="settings_listen_speed">Velocidad de reproducción</string>
-    <string name="archive_listen">Escucha 1 hora de artículos en voz alta a la semana</string>
     <string name="pro_listen">Escucha 10 horas de artículos en voz alta a la semana</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d artículos nuevos</item>
+        <item quantity="one">%d artículo nuevo</item>
+        <item quantity="other">%d artículos nuevos</item>
+    </plurals>
 </resources>

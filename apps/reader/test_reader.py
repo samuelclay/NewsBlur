@@ -441,6 +441,126 @@ class Test_Reader(TransactionTestCase):
         nested_names = [list(f.keys())[0] for f in tech_folder["Technology"] if isinstance(f, dict)]
         self.assertIn("Deep Tech", nested_names)
 
+    def test_invalid_folder_move_preserves_tree(self):
+        user = User.objects.get(username="conesus")
+        self.client.force_login(user)
+        tree = [
+            {"Reading": [1, {"Later": [6]}, {"Weekend": [8]}]},
+            {"Archive": [{"Later": [7]}, {"reading": [9]}]},
+        ]
+        folders = UserSubscriptionFolders.objects.get(user=user)
+        for name, parent, destination in (
+            ("Archive", "", "Archive"),  # self
+            ("Weekend", "Reading", "Later"),  # ambiguous destination
+            ("Reading", "", "Weekend"),  # descendant
+            ("Reading", "", "Missing"),  # stale destination
+            ("Reading", "", "Archive"),  # sibling name collision
+            ("Missing", "", "Archive"),  # stale source
+        ):
+            with self.subTest(folder=name, parent=parent, destination=destination):
+                folders.folders = json.encode(tree)
+                folders.save()
+                response = self.client.post(
+                    reverse("move-folder-to-folder"),
+                    {"folder_name": name, "in_folder": parent, "to_folder": destination},
+                )
+                folders.refresh_from_db()
+                self.assertEqual(json.decode(folders.folders), tree)
+                body = json.decode(response.content)
+                self.assertEqual(body["code"], -1)
+                self.assertEqual(body["folders"], tree)
+
+    def test_folder_move_uses_selected_parent_and_keeps_order_when_retried(self):
+        user = User.objects.get(username="conesus")
+        self.client.force_login(user)
+        folders = UserSubscriptionFolders.objects.get(user=user)
+        folders.folders = json.encode([{"A": [{"Today": [1]}, 8]}, {"B": [{"Today": [6]}]}, 7])
+        folders.save()
+
+        def move(parent, destination):
+            response = self.client.post(
+                reverse("move-folder-to-folder"),
+                {"folder_name": "Today", "in_folder": parent, "to_folder": destination},
+            )
+            self.assertEqual(json.decode(response.content)["code"], 1)
+            folders.refresh_from_db()
+            return json.decode(folders.folders)
+
+        self.assertEqual(move("B", ""), [{"A": [{"Today": [1]}, 8]}, {"B": []}, 7, {"Today": [6]}])
+        self.assertEqual(move("", "B"), [{"A": [{"Today": [1]}, 8]}, {"B": [{"Today": [6]}]}, 7])
+        self.assertEqual(move("A", "A"), [{"A": [{"Today": [1]}, 8]}, {"B": [{"Today": [6]}]}, 7])
+
+    def test_move_folder_paths_disambiguate_identically_named_parents(self):
+        user = User.objects.get(username="conesus")
+        self.client.force_login(user)
+        folders = UserSubscriptionFolders.objects.get(user=user)
+        tree = [
+            {"News": [{"Queue": [{"Saved": [1]}]}, {"Done": []}]},
+            {"Work": [{"Queue": [{"Saved": [6]}]}, {"Done": []}]},
+        ]
+        folders.folders = json.encode(tree)
+        folders.save()
+        response = self.client.post(
+            reverse("move-folder-to-folder"),
+            {"folder_name": "Saved", "in_folder": "Queue", "to_folder": "Done"},
+        )
+        self.assertEqual(json.decode(response.content)["code"], -1)
+        folders.refresh_from_db()
+        self.assertEqual(json.decode(folders.folders), tree)
+
+        response = self.client.post(
+            reverse("move-folder-to-folder"),
+            {
+                "folder_name": "Saved",
+                "in_folder_path": json.encode(["Work", "Queue"]),
+                "to_folder_path": json.encode(["News", "Done"]),
+            },
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+        folders.refresh_from_db()
+        self.assertEqual(
+            json.decode(folders.folders),
+            [
+                {"News": [{"Queue": [{"Saved": [1]}]}, {"Done": [{"Saved": [6]}]}]},
+                {"Work": [{"Queue": []}, {"Done": []}]},
+            ],
+        )
+
+    def test_overlapping_folder_move_waits_for_classifier_update(self):
+        from contextlib import closing
+
+        from django.db import connection
+        from psycopg2.errors import LockNotAvailable
+        from pymongo.errors import OperationFailure
+
+        user = User.objects.get(username="conesus")
+        self.client.force_login(user)
+        folders = UserSubscriptionFolders.objects.get(user=user)
+        folders.folders = json.encode([{"Reading": [1]}, {"Archive": []}])
+        folders.save()
+
+        def fail_classifier_write(*args):
+            # A second move uses the same row lock in views.py. NOWAIT makes the overlap deterministic.
+            with closing(connection.get_new_connection(connection.get_connection_params())) as competing:
+                with competing.cursor() as cursor, self.assertRaises(LockNotAvailable):
+                    cursor.execute(
+                        f"SELECT 1 FROM {folders._meta.db_table} WHERE id = %s FOR UPDATE NOWAIT",
+                        [folders.pk],
+                    )
+            raise OperationFailure("classifier store is unavailable")
+
+        with patch("apps.reader.views._update_classifiers_for_folder_path_change", fail_classifier_write):
+            response = self.client.post(
+                reverse("move-folder-to-folder"),
+                {"folder_name": "Reading", "to_folder": "Archive"},
+            )
+
+        body = json.decode(response.content)
+        self.assertEqual(body["code"], 1)
+        self.assertIn("training", body["message"])
+        folders.refresh_from_db()
+        self.assertEqual(json.decode(folders.folders), [{"Archive": [{"Reading": [1]}]}])
+
     def test_move_folder_updates_classifiers(self):
         """Moving a folder to a new parent should update folder-scoped classifier paths."""
         from apps.analyzer.models import MClassifierTag

@@ -480,6 +480,7 @@ om over de wereld te praten.</string>
     <string name="pro_enable_sites">Volg maximaal 10.000 sites</string>
     <string name="pro_all_feeds_fetched">Alle feeds worden elke 5–15 minuten opgehaald</string>
     <string name="pro_regex_train">Artikelen trainen met reguliere expressies</string>
+    <string name="pro_oauth_applications">OAuth-applicaties maken</string>
     <string name="pro_priority_support">Prioriteitsondersteuning</string>
     <string name="pro_natural_language_search">Zoeken in natuurlijke taal</string>
     <string name="settings_cat_offline">Offline lezen</string>
@@ -622,6 +623,8 @@ om over de wereld te praten.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Artikelen automatisch als gelezen markeren zodra je er voorbij scrolt</string>
     <string name="settings_story_clustering">Gerelateerde artikelen groeperen</string>
     <string name="settings_story_clustering_summary">Toon dubbele artikelen van andere feeds onder een artikeltitel</string>
+    <string name="settings_show_new_stories">Nieuwe artikelen meteen tonen</string>
+    <string name="settings_show_new_stories_summary">Toont een melding met \"N nieuwe artikelen\" wanneer er artikelen binnenkomen in de geopende site of map</string>
     <string name="settings_cluster_matches">Overeenkomsten clusteren</string>
     <string name="settings_cluster_matches_summary">Kies of clusters alleen dubbele titels of ook verwante artikelen tonen</string>
     <string name="settings_story_clustering_save_failed">Voorkeur voor het groeperen van artikelen kon niet worden opgeslagen</string>
@@ -914,6 +917,7 @@ om over de wereld te praten.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Geen feedmeldingen</string>
+    <string name="notifications_device_off">Meldingen staan uit op dit apparaat. Sites waarvan meldingen op Android zijn ingeschakeld, blijven hier stil totdat je ze inschakelt.</string>
     <string name="notification_permissions_context">Toestemming is vereist om meldingen te tonen</string>
     <string name="notification_permissions_rationale">Je moet de toestemming voor meldingen handmatig toevoegen in de instellingen van de app voordat je opnieuw probeert meldingen in te schakelen</string>
     <string name="write_storage_permission_opml">Toestemming voor schrijven naar opslag is vereist voor OPML-export</string>
@@ -1368,7 +1372,6 @@ om over de wereld te praten.</string>
     <string name="listen_resume">Hervatten</string>
     <string name="listen_pause">Pauzeren</string>
     <string name="listen_play">Afspelen</string>
-    <string name="listen_preview_pill">Voorbeeld van 30 sec.</string>
     <string name="listen_open_player">Speler openen</string>
     <string name="listen_close">Speler sluiten</string>
     <string name="listen_loading">Artikel wordt klaargemaakt…</string>
@@ -1424,7 +1427,6 @@ om over de wereld te praten.</string>
     <string name="listen_speed_exact">Exacte afspeelsnelheid</string>
     <string name="listen_speed_slider">Schuifregelaar voor afspeelsnelheid</string>
     <string name="listen_speed_button">Afspeelsnelheid %1$s×</string>
-    <string name="listen_preview_banner">Voorbeeld van 30 seconden. Met Premium Archive kun je volledige artikelen beluisteren.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">Nog %1$d seconde</item>
         <item quantity="other">Nog %1$d seconden</item>
@@ -1513,6 +1515,9 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
-    <string name="archive_listen">Luister elke week 1 uur naar artikelen die worden voorgelezen</string>
     <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
+    <plurals name="new_stories_pill">
+        <item quantity="one">%d nieuw artikel</item>
+        <item quantity="other">%d nieuwe artikelen</item>
+    </plurals>
 </resources>

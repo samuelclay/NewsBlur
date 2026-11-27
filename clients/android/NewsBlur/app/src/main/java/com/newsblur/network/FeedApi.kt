@@ -6,6 +6,7 @@ import com.newsblur.network.domain.AddFeedResponse
 import com.newsblur.network.domain.DiscoverFeedsResponse
 import com.newsblur.network.domain.FeedFolderResponse
 import com.newsblur.network.domain.NewsBlurResponse
+import com.newsblur.network.domain.StarredCountsResponse
 import com.newsblur.network.domain.UnreadCountResponse
 import com.newsblur.util.FeedSet
 
@@ -17,6 +18,11 @@ interface FeedApi {
     ): NewsBlurResponse?
 
     suspend fun getFeedUnreadCounts(apiIds: MutableSet<String>): UnreadCountResponse?
+
+    /** Unread counts for every subscription, without the folder list (/reader/refresh_feeds). */
+    suspend fun refreshFeedCounts(): UnreadCountResponse?
+
+    suspend fun getStarredCounts(): StarredCountsResponse?
 
     suspend fun getFolderFeedMapping(doUpdateCounts: Boolean): FeedFolderResponse?
 
@@ -66,6 +72,9 @@ interface FeedApi {
         notifyTypes: List<String>,
         notifyFilter: String?,
     ): NewsBlurResponse?
+
+    /** StoryPush.kt registers this install's Firebase Cloud Messaging token so the server can push stories to it. */
+    suspend fun registerPushToken(token: String): NewsBlurResponse?
 
     suspend fun instaFetch(feedId: String?): NewsBlurResponse?
 

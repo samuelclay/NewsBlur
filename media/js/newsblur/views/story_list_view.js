@@ -100,7 +100,9 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
 
         if (options.added) {
             var collection = this.collection;
-            var added = this.collection.models.slice(-1 * options.added);
+            // story_list_view.js: stories.js insert_realtime_stories names the stories it placed inside the list;
+            // a page that loaded is the last stories in the collection.
+            var added = options.inserted || this.collection.models.slice(-1 * options.added);
             var stories = _.compact(_.map(added, function (story) {
                 if (story.story_view) return;
                 var view = new NEWSBLUR.Views.StoryDetailView({
@@ -114,11 +116,37 @@ NEWSBLUR.Views.StoryListView = Backbone.View.extend({
                 }
             }));
             if (!NEWSBLUR.assets.preference('feed_view_single_story')) {
-                this.$el.append(_.pluck(stories, 'el'));
+                if (options.inserted) {
+                    // story_list_view.js: placed last to first, so the story after each one is already in place.
+                    var placing = _.sortBy(stories, function (view) {
+                        return -collection.indexOf(view.model);
+                    });
+                    _.each(placing, function (view) {
+                        // story_list_view.js: before the next story whose view is in this list, skipping any whose
+                        // story view lives elsewhere.
+                        var next_el = null;
+                        for (var i = collection.indexOf(view.model) + 1; i < collection.length && !next_el; i++) {
+                            var next_view = collection.at(i).story_view;
+                            if (next_view && next_view.el.parentNode === this.el) next_el = next_view.el;
+                        }
+                        if (next_el) {
+                            this.el.insertBefore(view.el, next_el);
+                        } else {
+                            this.$el.append(view.el);
+                        }
+                    }, this);
+                } else {
+                    this.$el.append(_.pluck(stories, 'el'));
+                }
                 _.invoke(stories, 'attach_handlers');
             }
 
             this.stories = this.stories.concat(stories);
+            if (options.inserted) {
+                this.stories = _.sortBy(this.stories, function (view) {
+                    return collection.indexOf(view.model);
+                });
+            }
             _.defer(this.check_feed_view_scrolled_to_bottom);
             this.show_correct_explainer();
         } else {

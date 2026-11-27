@@ -7,6 +7,7 @@ apps and browser extensions.
 
 import base64
 import datetime
+import hashlib
 import os
 import urllib.parse
 
@@ -339,6 +340,22 @@ def check_share_on_site(request, token):
     return response
 
 
+# views.py: The longest story URL, in UTF-8 bytes, that share_story stores as the shared story's
+# guid. MSharedStory indexes story_guid, and MongoDB 4.0 refuses an index entry of 1024 bytes or
+# more: next to the user id in the unique index, 1005 bytes is the longest guid it takes.
+MAX_SHARED_STORY_GUID_BYTES = 1000
+
+
+def shared_story_guid(story_url):
+    """The guid share_story gives a page shared from the bookmarklet: its URL, or the URL's SHA-1
+    when the URL is too long to index (a Google search with all its tracking parameters). The
+    full URL is kept in story_permalink either way. apps/api/views.py"""
+    encoded_url = story_url.encode("utf-8")
+    if len(encoded_url) <= MAX_SHARED_STORY_GUID_BYTES:
+        return story_url
+    return hashlib.sha1(encoded_url).hexdigest()
+
+
 @required_params("story_url")
 def share_story(request, token=None):
     code = 0
@@ -402,14 +419,15 @@ def share_story(request, token=None):
             if not title:
                 title = document["title"]
 
+    story_guid = shared_story_guid(story_url)
     shared_story = (
-        MSharedStory.objects.filter(user_id=profile.user.pk, story_feed_id=feed_id, story_guid=story_url)
+        MSharedStory.objects.filter(user_id=profile.user.pk, story_feed_id=feed_id, story_guid=story_guid)
         .limit(1)
         .first()
     )
     if not shared_story:
         story_db = {
-            "story_guid": story_url,
+            "story_guid": story_guid,
             "story_permalink": story_url,
             "story_title": title,
             "story_feed_id": feed_id,
@@ -431,7 +449,7 @@ def share_story(request, token=None):
         shared_story.story_title = title
         shared_story.comments = comments
         shared_story.story_permalink = story_url
-        shared_story.story_guid = story_url
+        shared_story.story_guid = story_guid
         shared_story.has_comments = bool(comments)
         shared_story.story_feed_id = feed_id
         shared_story.save()

@@ -17,31 +17,32 @@ struct Provider: AppIntentTimelineProvider {
     func snapshot(for configuration: NewsBlurWidgetConfiguration, in context: Context) async -> SimpleEntry {
         let cache = WidgetCache(source: configuration.source?.id ?? "all")
         cache.loadCachedStories()
-        if context.isPreview && cache.stories.isEmpty {
-            return placeholder(in: context)
+        let cached = cache.stories.isEmpty ? nil : SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
+        return await WidgetTimeline.snapshot(cached: cached, isPreview: context.isPreview) {
+            placeholder(in: context)
+        } load: {
+            await refreshStories(cache)
+            return SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
         }
-        return SimpleEntry(date: Date(), cache: cache, isPlaceholder: false)
     }
 
     func timeline(for configuration: NewsBlurWidgetConfiguration, in context: Context) async -> Timeline<SimpleEntry> {
-        await WidgetSourceCatalog.refresh()
-        // WidgetExtension.swift creates a cache per request, never shared across widget configurations.
         let cache = WidgetCache(source: configuration.source?.id ?? "all")
         cache.loadCachedStories()
+        await refreshStories(cache)
+        return WidgetTimeline.make { SimpleEntry(date: $0, cache: cache, isPlaceholder: false) }
+    }
+
+    private func refreshStories(_ cache: WidgetCache) async {
+        // WidgetExtension.swift puts the selected stories first on cold starts. A populated widget
+        // can refresh its subscription and favicon catalog together on its regular timeline.
+        if cache.error == .noFeeds || cache.error == .noStories || !cache.stories.isEmpty {
+            await WidgetSourceCatalog.refresh(includeFavicons: !cache.stories.isEmpty)
+            cache.loadCachedStories()
+        }
         await withCheckedContinuation { continuation in
             cache.load { continuation.resume() }
         }
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                let requests = DispatchGroup()
-                for feed in Set(cache.stories.map { $0.feed }) {
-                    requests.enter()
-                    cache.feedImage(for: feed) { _, _ in requests.leave() }
-                }
-                requests.notify(queue: .main) { continuation.resume() }
-            }
-        }
-        return WidgetTimeline.make { SimpleEntry(date: $0, cache: cache, isPlaceholder: false) }
     }
 }
 
@@ -73,7 +74,7 @@ struct WidgetEntryView : View {
 //            }
             
             if let error = entry.cache.error {
-                Link(destination: URL(string: "newsblurwidget://?error=\(error)")!) {
+                Link(destination: WidgetLink.status(error.rawValue).url(source: entry.cache.source)) {
                         Text(message(for: error))
                         .font(.headline)
                         .foregroundStyle(.secondary)
@@ -84,7 +85,8 @@ struct WidgetEntryView : View {
                     let stories = entry.cache.stories(count: isCompact ? 3 : 6)
                     
                     ForEach(Array(stories.enumerated()), id: \.element.id) { index, story in
-                        Link(destination: URL(string: entry.isPlaceholder ? "newsblurwidget://open" : "newsblurwidget://?feedId=\(story.feed)&storyHash=\(story.id)")!) {
+                        let link: WidgetLink = entry.isPlaceholder ? .background : .story(feedID: story.feed, hash: story.id, site: story.site)
+                        Link(destination: link.url(source: entry.cache.source)) {
                             WidgetStoryView(cache: entry.cache, story: story)
                         }
                         if index < stories.count - 1 {
@@ -97,9 +99,9 @@ struct WidgetEntryView : View {
                 .containerBackground(for: .widget) {
                     Color("WidgetBackground")
                 }
-                .widgetURL(URL(string: "newsblurwidget://open"))
             }
         }
+        .widgetURL(WidgetLink.background.url(source: entry.cache.source))
 //        .environment(\.colorScheme, colorScheme)
         .containerBackground(for: .widget) {
             Color("WidgetBackground")
@@ -132,6 +134,9 @@ struct WidgetExtension: Widget {
         .configurationDisplayName("NewsBlur")
         .description("The latest stories from NewsBlur.")
         .supportedFamilies([.systemMedium, .systemLarge])
+        #if os(iOS) && !targetEnvironment(macCatalyst)
+        .disfavoredLocations([.iPhoneWidgetsOnMac], for: [.systemMedium, .systemLarge])
+        #endif
         .contentMarginsDisabled()
     }
 }
@@ -139,10 +144,6 @@ struct WidgetExtension: Widget {
 struct WidgetExtension_Previews: PreviewProvider {
     static let cache: WidgetCache = {
         let cache = WidgetCache()
-        
-        cache.loadCachedStories()
-        
-//        cache.error = WidgetCacheError.loading
         
         let sample1 = "sample"
         let sample2 = "another"

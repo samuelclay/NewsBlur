@@ -17,9 +17,10 @@ from apps.listen.text import (
     truncate_segments,
 )
 from apps.listen.usage import (
-    ARCHIVE_WEEKLY_SECONDS,
+    ARCHIVE_EXTRA_MONTHLY_SECONDS,
+    ARCHIVE_MONTHLY_SECONDS,
     PRO_WEEKLY_SECONDS,
-    SAMPLE_STORIES_PER_DAY,
+    SAMPLE_FRESH_SECONDS_PER_DAY,
     ListenUsageTracker,
 )
 from apps.reader.models import UserSubscription
@@ -254,10 +255,11 @@ class ListenTestCase(TestCase):
             r.set(marker, json.dumps({"duration": 4.0, "bytes": 32000}))
             self.addCleanup(r.delete, marker)
 
-    def set_tier(self, premium=False, archive=False, pro=False, user=None):
+    def set_tier(self, premium=False, archive=False, pro=False, extra=False, user=None):
         profile = (user or self.user).profile
         profile.is_premium = premium
         profile.is_archive = archive
+        profile.is_archive_extra = extra
         profile.is_pro = pro
         profile.save()
 
@@ -267,13 +269,15 @@ class ListenTestCase(TestCase):
             for n in range(paragraphs)
         )
 
-    def make_story(self, story_hash="900:abc123", paragraphs=12, feed_id=900):
+    def make_story(
+        self, story_hash="900:abc123", paragraphs=12, feed_id=900, title="Council approves housing plan"
+    ):
         body = self.story_body(paragraphs)
         story = MStory(
             story_feed_id=feed_id,
             story_hash=story_hash,
             story_guid=story_hash,
-            story_title="Council approves housing plan",
+            story_title=title,
             story_date=datetime.datetime.utcnow(),
             story_content_z=zlib.compress(body.encode()),
             # A cached full text means building the manifest never fetches the original page.
@@ -332,12 +336,14 @@ class Test_ListenViews(ListenTestCase):
                 )
                 self.assertEqual(response["voice"]["voice_id"], voices.default_voice_id("en"))
 
-    def test_free_users_get_a_thirty_second_preview(self, configured):
-        story = self.make_story()
+    def test_free_users_get_a_sixty_second_preview(self, configured):
+        story = self.make_story(paragraphs=40)
         manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
         self.assertEqual(manifest["code"], 1)
         self.assertTrue(manifest["preview"]["is_preview"])
-        self.assertLessEqual(manifest["total_duration"], 31)
+        self.assertEqual(manifest["preview"]["seconds"], 60)
+        self.assertLessEqual(manifest["total_duration"], 61)
+        self.assertGreater(manifest["total_duration"], 45)
         beyond = self.post(
             "/listen/segment", {"manifest_id": manifest["manifest_id"], "index": len(manifest["segments"])}
         )
@@ -351,19 +357,16 @@ class Test_ListenViews(ListenTestCase):
         self.assertGreater(manifest["total_duration"], 31)
         self.assertEqual(manifest["paragraphs"][0]["kind"], "title")
 
-    def test_free_users_can_sample_three_stories_a_day(self, configured):
-        sampled = []
-        for n in range(SAMPLE_STORIES_PER_DAY):
-            story = self.make_story(story_hash=f"900:s{n}")
-            sampled.append(story.story_hash)
-            manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
-            segment = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
-            self.assertEqual(segment["code"], 1)
-        another = self.make_story(story_hash="900:another")
-        denied = self.post("/listen/manifest", {"story_hash": another.story_hash})
-        self.assertEqual(denied["reason"], "sample_limit")
-        again = self.post("/listen/manifest", {"story_hash": sampled[0]})
-        self.assertEqual(again["code"], 1)
+    def test_free_and_premium_users_can_sample_any_number_of_stories(self, configured):
+        for premium in (False, True):
+            self.set_tier(premium=premium)
+            for n in range(5):
+                story = self.make_story(story_hash=f"900:s{premium:d}{n}")
+                manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+                self.assertEqual(manifest["code"], 1)
+                segment = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+                self.assertEqual(segment["code"], 1, segment)
+            self.assertIsNone(manifest["usage"]["samples_limit"])
 
     def test_retrying_a_segment_does_not_charge_twice(self, configured):
         self.set_tier(premium=True, archive=True)
@@ -384,9 +387,68 @@ class Test_ListenViews(ListenTestCase):
         denied = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         self.assertEqual(denied["reason"], "cap_reached")
         self.assertEqual(denied["usage"]["seconds_remaining"], 0)
-        self.assertEqual(denied["usage"]["seconds_limit"], ARCHIVE_WEEKLY_SECONDS)
-        self.assertEqual(denied["usage"]["period"], "week")
-        self.assertIn("this week", denied["message"])
+        self.assertEqual(denied["usage"]["seconds_limit"], ARCHIVE_MONTHLY_SECONDS)
+        self.assertEqual(denied["usage"]["period"], "month")
+        self.assertIn("this month", denied["message"])
+
+    def test_archive_extra_listens_for_ten_hours_a_month(self, configured):
+        story = self.make_story()
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=90 * 60, cached=False).save()
+
+        self.set_tier(premium=True, archive=True)
+        manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        archive = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+        self.assertEqual(archive["reason"], "cap_reached")
+        self.assertIn("Premium Archive Extra", archive["message"])
+
+        self.set_tier(premium=True, archive=True, extra=True)
+        manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        extra = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+        self.assertEqual(extra["code"], 1)
+        self.assertEqual(extra["usage"]["tier"], "archive_extra")
+        self.assertEqual(extra["usage"]["seconds_limit"], ARCHIVE_EXTRA_MONTHLY_SECONDS)
+        self.assertEqual(extra["usage"]["period"], "month")
+
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=510 * 60, cached=False).save()
+        capped = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 1})
+        self.assertEqual(capped["reason"], "cap_reached")
+
+    def test_staff_reset_starts_the_week_over_and_keeps_the_usage_rows(self, configured):
+        self.set_tier(premium=True, archive=True)
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=2 * 60 * 60, cached=False).save()
+        story = self.make_story()
+        manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.assertEqual(
+            self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})["reason"],
+            "cap_reached",
+        )
+
+        refused = self.post("/listen/staff_usage", {"user_id": self.user.pk})
+        self.assertEqual(refused["reason"], "forbidden")
+        self.assertEqual(MListenUsage.objects(kind="reset").count(), 0)
+
+        staff = User.objects.create_user("staffer", "staffer@example.com", "password", is_staff=True)
+        staff_client = Client(HTTP_USER_AGENT=USER_AGENT)
+        staff_client.login(username="staffer", password="password")
+        reset = json.loads(staff_client.post("/listen/staff_usage", {"user_id": self.user.pk}).content)
+        self.assertEqual(reset["usage"]["seconds_used"], 0)
+        self.assertIsNotNone(reset["usage"]["last_reset_at"])
+        self.assertEqual(MListenUsage.objects(user_id=self.user.pk, kind="reset", reason="manual").count(), 1)
+        self.assertEqual(
+            MListenUsage.objects(user_id=self.user.pk, kind="segment", seconds=2 * 60 * 60).count(), 1
+        )
+
+        resumed = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+        self.assertEqual(resumed["code"], 1)
+
+    def test_reset_command_marks_a_manual_reset(self, configured):
+        from django.core.management import call_command
+
+        self.set_tier(premium=True, archive=True)
+        MListenUsage(user_id=self.user.pk, kind="segment", seconds=600, cached=False).save()
+        call_command("reset_listen_usage", self.user.username, stdout=open("/dev/null", "w"))
+        self.assertEqual(ListenUsageTracker(self.user).seconds_used(), 0)
+        self.assertEqual(MListenUsage.objects(user_id=self.user.pk, kind="reset", reason="manual").count(), 1)
 
     def test_cached_stories_still_play_after_the_weekly_cap(self, configured):
         from apps.listen.manifest import load_manifest
@@ -624,14 +686,24 @@ class Test_ListenAnalytics(ListenTestCase):
         self.assertEqual(values['listen{metric="minutes_listened",period="daily"}'], 5)
 
     def test_preview_funnel_counts_samplers_and_limits(self, configured):
-        for n in range(4):
+        for n in range(2):
             story = self.make_story(story_hash=f"900:f{n}")
             manifest = json.loads(
                 self.client.post("/listen/manifest", {"story_hash": story.story_hash}).content
             )
-            if manifest["code"] == 1:
-                self.client.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
-                self.client.post("/listen/progress", {"manifest_id": manifest["manifest_id"], "seconds": 30})
+            self.client.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+            self.client.post("/listen/progress", {"manifest_id": manifest["manifest_id"], "seconds": 60})
+        MListenUsage(
+            user_id=self.user.pk,
+            kind="segment",
+            seconds=SAMPLE_FRESH_SECONDS_PER_DAY,
+            is_sample=True,
+            cached=False,
+            model="eleven_v4_turbo",
+        ).save()
+        story = self.make_story(story_hash="900:f-over", title="A different story")
+        manifest = json.loads(self.client.post("/listen/manifest", {"story_hash": story.story_hash}).content)
+        self.client.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
         values = self.metrics()
         self.assertEqual(values['listen{metric="preview_sampled_users",period="monthly"}'], 1)
         self.assertEqual(values['listen{metric="preview_completed_users",period="monthly"}'], 1)
@@ -646,22 +718,43 @@ class Test_ListenAbuse(ListenTestCase):
     def post(self, path, data):
         return json.loads(self.client.post(path, data).content)
 
-    def test_manifests_made_up_front_still_count_against_the_daily_samples(self, configured):
+    def test_manifests_made_up_front_still_stop_at_the_fresh_audio_budget(self, configured):
         manifests = []
-        for n in range(SAMPLE_STORIES_PER_DAY + 1):
-            story = self.make_story(story_hash=f"900:up{n}")
+        for n in range(2):
+            # Different titles, so the second story's first segment isn't audio the first one already paid for.
+            story = self.make_story(story_hash=f"900:up{n}", title=f"Council approves housing plan {n}")
             manifests.append(self.post("/listen/manifest", {"story_hash": story.story_hash}))
         self.assertTrue(all(manifest["code"] == 1 for manifest in manifests))
-        results = [
-            self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
-            for manifest in manifests
-        ]
-        self.assertEqual([result["code"] for result in results], [1, 1, 1, -1])
-        self.assertEqual(results[-1]["reason"], "sample_limit")
+        first = self.post("/listen/segment", {"manifest_id": manifests[0]["manifest_id"], "index": 0})
+        self.assertEqual(first["code"], 1)
+        MListenUsage(
+            user_id=self.user.pk,
+            kind="segment",
+            seconds=SAMPLE_FRESH_SECONDS_PER_DAY,
+            is_sample=True,
+            cached=False,
+        ).save()
+        second = self.post("/listen/segment", {"manifest_id": manifests[1]["manifest_id"], "index": 0})
+        self.assertEqual(second["reason"], "sample_limit")
+
+    def test_cached_previews_still_play_after_the_fresh_audio_budget(self, configured):
+        from apps.listen.manifest import load_manifest
+
+        story = self.make_story(story_hash="900:popular")
+        manifest = self.post("/listen/manifest", {"story_hash": story.story_hash})
+        self.mark_cached(load_manifest(manifest["manifest_id"], self.user))
+        MListenUsage(
+            user_id=self.user.pk,
+            kind="segment",
+            seconds=SAMPLE_FRESH_SECONDS_PER_DAY,
+            is_sample=True,
+            cached=False,
+        ).save()
+        segment = self.post("/listen/segment", {"manifest_id": manifest["manifest_id"], "index": 0})
+        self.assertEqual(segment["code"], 1)
+        self.assertTrue(segment["cached"])
 
     def test_rebuilding_a_sampled_story_with_new_voices_stops_at_the_fresh_audio_budget(self, configured):
-        from apps.listen.usage import SAMPLE_FRESH_SECONDS_PER_DAY
-
         story = self.make_story(story_hash="900:voices")
         MListenUsage(
             user_id=self.user.pk,
@@ -727,6 +820,14 @@ class Test_ListenAbuse(ListenTestCase):
 
 
 class Test_ListenUsageWindows(SimpleTestCase):
+    def setUp(self):
+        # Messages are compared in English, whatever language an earlier test's request left active.
+        from django.utils import translation
+
+        english = translation.override("en")
+        english.__enter__()
+        self.addCleanup(english.__exit__, None, None, None)
+
     def tracker(self, timezone_name):
         from types import SimpleNamespace
 
@@ -756,9 +857,38 @@ class Test_ListenUsageWindows(SimpleTestCase):
         self.assertEqual(day_start, datetime.datetime(2026, 3, 8, 5, 0))
         self.assertEqual(day_end, datetime.datetime(2026, 3, 9, 4, 0))
 
-    def test_weekly_limits_are_ten_hours_for_pro_and_one_hour_for_archive(self):
-        self.assertEqual(PRO_WEEKLY_SECONDS, 10 * 60 * 60)
-        self.assertEqual(ARCHIVE_WEEKLY_SECONDS, 60 * 60)
+    def test_archive_plans_count_the_calendar_month_and_pro_the_week(self):
+        import pytz
+        from types import SimpleNamespace
+
+        def tracker(**flags):
+            profile = dict(
+                timezone="America/New_York",
+                is_pro=False,
+                is_archive=True,
+                is_archive_extra=False,
+                is_premium=True,
+            )
+            profile.update(flags)
+            return ListenUsageTracker(SimpleNamespace(pk=1, profile=SimpleNamespace(**profile)))
+
+        # Nov 4, 2026: the month began at midnight EDT on Nov 1 (04:00 UTC) and ends at midnight EST on Dec 1.
+        now = pytz.UTC.localize(datetime.datetime(2026, 11, 4, 15, 0))
+        for archive in (tracker(), tracker(is_archive_extra=True)):
+            start, end, reset_local = archive.allowance_window(now=now)
+            self.assertEqual(
+                (start, end), (datetime.datetime(2026, 11, 1, 4, 0), datetime.datetime(2026, 12, 1, 5, 0))
+            )
+            self.assertEqual(reset_local.date(), datetime.date(2026, 12, 1))
+        start, end, _ = tracker(is_pro=True).allowance_window(now=now)
+        self.assertEqual(
+            (start, end), (datetime.datetime(2026, 11, 1, 4, 0), datetime.datetime(2026, 11, 8, 5, 0))
+        )
+        # December rolls over into the next year.
+        start, end, _ = tracker().allowance_window(
+            now=pytz.UTC.localize(datetime.datetime(2026, 12, 20, 15, 0))
+        )
+        self.assertEqual(end, datetime.datetime(2027, 1, 1, 5, 0))
 
     def test_durations_read_as_hours_and_minutes(self):
         tracker = self.tracker("UTC")
@@ -770,33 +900,34 @@ class Test_ListenUsageWindows(SimpleTestCase):
     def test_cap_messages_name_the_week_and_the_reset_day(self):
         from types import SimpleNamespace
 
-        archive = ListenUsageTracker(
-            SimpleNamespace(
-                pk=1, profile=SimpleNamespace(timezone="UTC", is_pro=False, is_archive=True, is_premium=True)
+        def tracker(**flags):
+            profile = dict(
+                timezone="UTC", is_pro=False, is_archive=False, is_archive_extra=False, is_premium=False
             )
-        )
-        self.assertEqual(
+            profile.update(flags)
+            return ListenUsageTracker(SimpleNamespace(pk=1, profile=SimpleNamespace(**profile)))
+
+        # Monthly plans name the date the allowance comes back, which depends on today.
+        archive = tracker(is_premium=True, is_archive=True)
+        self.assertRegex(
             archive.cap_message(),
-            "You've listened to 1 hour of stories this week. Listening resets on Sunday, "
-            "or upgrade to Premium Pro for 10 hours a week.",
+            r"^You've listened to 1 hour of stories this month\. Listening resets on [A-Z][a-z]+ 1, "
+            r"or switch to Premium Archive Extra for 10 hours a month\.$",
         )
         self.assertIsNone(archive.upgrade_message())
-        pro = ListenUsageTracker(
-            SimpleNamespace(
-                pk=1, profile=SimpleNamespace(timezone="UTC", is_pro=True, is_archive=True, is_premium=True)
-            )
+        extra = tracker(is_premium=True, is_archive=True, is_archive_extra=True)
+        self.assertRegex(
+            extra.cap_message(),
+            r"^You've listened to 10 hours of stories this month\. Listening resets on [A-Z][a-z]+ 1, "
+            r"or upgrade to Premium Pro for 10 hours a week\.$",
         )
+        pro = tracker(is_premium=True, is_archive=True, is_pro=True)
         self.assertEqual(
             pro.cap_message(), "You've listened to 10 hours of stories this week. Listening resets on Sunday."
         )
-        free = ListenUsageTracker(
-            SimpleNamespace(
-                pk=1,
-                profile=SimpleNamespace(timezone="UTC", is_pro=False, is_archive=False, is_premium=False),
-            )
-        )
+        free = tracker()
         self.assertEqual(
-            free.upgrade_message(), "Premium Archive unlocks full stories read aloud, up to 1 hour a week."
+            free.upgrade_message(), "Premium Archive unlocks full stories read aloud, up to 1 hour a month."
         )
-        self.assertEqual(pro.weekly_limit, PRO_WEEKLY_SECONDS)
-        self.assertEqual(archive.weekly_limit, ARCHIVE_WEEKLY_SECONDS)
+        self.assertEqual(pro.allowance_limit, PRO_WEEKLY_SECONDS)
+        self.assertEqual(archive.allowance_limit, ARCHIVE_MONTHLY_SECONDS)

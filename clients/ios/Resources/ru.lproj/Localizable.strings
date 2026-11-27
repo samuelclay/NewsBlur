@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Папка %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Папка %1$@, свёрнута, %2$@";
 "%1$@ followed %2$@." = "%1$@ подписывается на обновления %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Осталось %1$@ из %2$@ прослушивания в этом месяце";
 "%1$@ of %2$@ of listening left this week" = "На этой неделе осталось %1$@ из %2$@ прослушивания";
 "%1$@ of %2$@ sites indexed" = "Проиндексировано %1$@ из %2$@ сайтов";
 "%1$@ of %2$@ story previews used today" = "Сегодня использовано %1$@ из %2$@ предпрослушиваний статей";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "В этой демоверсии осталось %@";
 "%@ left this week" = "На этой неделе осталось %@";
 "%@ match" = "совпадение %@";
+"%@ new stories" = "%@ новых статей";
 "%@ opens" = "%@ открытий";
 "%@ or search" = "%@ или поиск";
 "%@ public comments" = "%@ публичных комментариев";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2 000 статей";
 "20 stories" = "20 статей";
 "2x daily" = "2 раза в день";
-"30s preview" = "Предпрослушивание — 30 с";
 "3x daily" = "3 раза в день";
 "5 stories" = "5 статей";
 "5,000 stories" = "5 000 статей";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Не удалось сохранить лимит расходов. Попробуйте ещё раз.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Не удалось загрузить изображение полностью. Попробуйте открыть его в браузере.";
 "Counting is difficult..." = "Считать непросто...";
+"Create OAuth applications" = "Создать OAuth-приложения";
 "Create a feed from any web page" = "Создать ленту из любой веб-страницы";
 "Create a new account instead" = "Вместо этого создать новый аккаунт";
 "Create account" = "Создать аккаунт";
@@ -534,7 +536,6 @@
 "List style" = "Стиль списка";
 "Listen" = "Слушать";
 "Listen Settings" = "Настройки прослушивания";
-"Listen to 1 hour of stories read aloud a week" = "Слушайте озвученные статьи до 1 часа в неделю";
 "Listen to 10 hours of stories read aloud a week" = "Слушайте озвученные статьи до 10 часов в неделю";
 "Listen to story" = "Прослушать статью";
 "Listening isn't available right now." = "Прослушивание сейчас недоступно.";
@@ -990,6 +991,7 @@
 "Show feed list" = "Показать список лент";
 "Show feeds after being read" = "Показывать ленты после прочтения";
 "Show hidden stories" = "Показать скрытые статьи";
+"Show new stories as they arrive" = "Показывать новые статьи по мере их поступления";
 "Show original story" = "Показать исходную статью";
 "Show original text" = "Показать исходный текст";
 "Show public comments" = "Показывать публичные комментарии";
@@ -998,6 +1000,7 @@
 "Show unread count" = "Показывать количество непрочитанных";
 "Show with feed icons" = "Показывать значки лент";
 "Show without icons" = "Показывать без значков";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Показывает плашку «N новых статей», когда в открытой ленте или папке появляются новые статьи.";
 "Shows the music settings" = "Показывает настройки музыки";
 "Sidebar" = "Боковая панель";
 "Sign Up" = "Зарегистрироваться";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "Текст за вчера";
 "Text view" = "Текстовый вид";
 "Text view conveniently extracts the story" = "Вид «Текст» удобно извлекает текст статьи";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Это был 30-секундный фрагмент. Premium Archive открывает полный доступ к статьям.";
 "The audio couldn't be loaded. Try again in a moment." = "Не удалось загрузить аудио. Попробуйте ещё раз через некоторое время.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Полный текстовый режим — <a href=\"http://ios.newsblur.com/premium\">функция Premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Симулятор iOS не смог изменить значок на главном экране. Попробуйте сделать это на устройстве.";

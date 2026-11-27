@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import httpx
 import openai
 from django.test import SimpleTestCase, override_settings
+from google.genai import errors as genai_errors
 
 from apps.ask_ai.providers import DEFAULT_MODEL
 from apps.ask_ai.tasks import AskAIQuestion
@@ -110,6 +111,37 @@ class Test_AskAIRefusalFallback(AskAITaskTestCase):
         cost = self.record_usage.call_args.kwargs
         self.assertEqual(cost["model"], "claude-sonnet-5-5")
         self.assertEqual(cost["provider"], "anthropic")
+
+    @patch("apps.ask_ai.tasks.get_provider")
+    def test_gemini_out_of_credits_answers_with_the_default_model(self, mock_get_provider):
+        """Google answers 402 once the Gemini account's prepaid credits are spent. Any vendor
+        that refuses the account is answered by the default model, not only SpaceXSI."""
+        refused = genai_errors.ClientError(
+            402,
+            {
+                "error": {
+                    "code": 402,
+                    "message": "Your prepayment credits are depleted.",
+                    "status": "RESOURCE_EXHAUSTED",
+                }
+            },
+        )
+        gemini = MagicMock()
+        gemini.is_configured.return_value = True
+        gemini.stream_response.side_effect = _failing_stream(refused)
+        gemini.format_error.return_value = "Google API client error"
+        default = self._default_provider()
+        mock_get_provider.side_effect = [
+            (gemini, "gemini-3", None),
+            (default, "claude-sonnet-5-5", None),
+        ]
+
+        result = AskAIQuestion(user_id=1, story_hash="1:abc123", question_id="sentence", model="google")
+
+        self.assertEqual(result["code"], 1)
+        self.assertEqual([c.args[0] for c in mock_get_provider.call_args_list], ["google", DEFAULT_MODEL])
+        self.assertNotIn("error", self._event_types())
+        self.assertEqual(self.record_usage.call_args.kwargs["provider"], "anthropic")
 
     @patch("apps.ask_ai.tasks.get_provider")
     def test_bad_request_from_grok_is_reported_not_retried(self, mock_get_provider):

@@ -389,6 +389,8 @@ class FeedUtils(
     ) {
         feed.setNotifyUnread()
         updateFeedNotifications(context, feed)
+        // DeviceNotifications.kt: the feed stays silent until this device has notifications on too.
+        DeviceNotifications.turnOn(context, prefsRepo)
     }
 
     fun enableFocusNotifications(
@@ -397,6 +399,7 @@ class FeedUtils(
     ) {
         feed.setNotifyFocus()
         updateFeedNotifications(context, feed)
+        DeviceNotifications.turnOn(context, prefsRepo)
     }
 
     fun updateFeedNotifications(

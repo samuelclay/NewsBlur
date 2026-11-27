@@ -3,6 +3,46 @@ import XCTest
 @testable import WidgetTimeline
 
 final class Test_WidgetSource: XCTestCase {
+    func test_tapsRoundTripTheConfiguredSourceAndUnsubscribedStoryDetails() throws {
+        func query(_ link: WidgetLink, source: String) throws -> [String: String] {
+            let url = link.url(source: source)
+            XCTAssertEqual(url.scheme, "newsblurwidget")
+            let items = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false)).queryItems ?? []
+            return Dictionary(uniqueKeysWithValues: items.compactMap { item in
+                item.value.map { (item.name, $0) }
+            })
+        }
+
+        let title = "Arts & Culture"
+        let address = "https://example.com/feed?a=1&b=2"
+        let story = WidgetLink.story(feedID: "42", hash: "42:abc", site: ["feed_title": title, "feed_address": address])
+        let sources = ["all", "folder:Science & Art - 宇宙#1", "feed:42"] + WidgetStorySource.allCases.map(\.rawValue)
+        for source in sources {
+            XCTAssertEqual(try query(.background, source: source), ["source": source])
+            XCTAssertEqual(try query(story, source: source), [
+                "source": source, "feedId": "42", "storyHash": "42:abc",
+                "siteTitle": title, "siteAddress": address
+            ])
+        }
+        XCTAssertEqual(try query(.status("noStories"), source: "infrequent"),
+                       ["source": "infrequent", "error": "noStories"])
+    }
+
+    func test_largePickerListsStayLightweightAndMatchingSitesKeepTheirIcons() {
+        let icon = Data(repeating: 123, count: 8_192)
+        let encoded = icon.base64EncodedString()
+        let feeds = Dictionary(uniqueKeysWithValues: (1...200).map {
+            (String($0), ["feed_title": "Site \($0)", "favicon": encoded])
+        })
+        let catalog = WidgetSourceCatalog(dictionary: ["feeds": feeds])
+        let sites = catalog.pickerSites(matching: "")
+        XCTAssertEqual(sites.count, feeds.count)
+        XCTAssertLessThanOrEqual(sites.reduce(0) { $0 + ($1.favicon?.count ?? 0) }, 128 * 1024)
+        let matches = catalog.pickerSites(matching: "site 200")
+        XCTAssertEqual(matches.map(\.id), ["200"])
+        XCTAssertEqual(matches.first?.favicon, icon)
+    }
+
     func test_faviconsSurviveAppCatalogReplacementAndStayWithinTheirAccount() throws {
         let suite = "WidgetSourceTests." + UUID().uuidString
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
@@ -85,6 +125,29 @@ final class Test_WidgetSource: XCTestCase {
         XCTAssertEqual(catalog.feedIDs(for: "folder:Science - Space"), ["1", "2"])
         XCTAssertEqual(catalog.feedIDs(for: "all"), ["1", "2", "3"])
         XCTAssertNil(catalog.folders[" "])
+    }
+
+    func test_builtinSourcesAndIdenticallyNamedFoldersRequestDifferentStories() throws {
+        let catalog = WidgetSourceCatalog(dictionary: [
+            "feeds": ["1": ["feed_title": "One"], "2": ["feed_title": "Two"]],
+            "flat_folders": ["Good Reads": [2]],
+        ])
+        func request(_ source: String) throws -> URLComponents {
+            let path = WidgetStorySource.requestPath(source: source, feedIDs: catalog.feedIDs(for: source),
+                                                    page: 2, limit: 6, storiesPerMonth: 15)
+            return try XCTUnwrap(URLComponents(string: path))
+        }
+        let folder = try request("folder:Good Reads")
+        XCTAssertEqual(folder.queryItems?.filter { $0.name == "f" }.compactMap(\.value), ["2"])
+        let infrequent = try request("infrequent")
+        XCTAssertEqual(infrequent.queryItems?.filter { $0.name == "f" }.compactMap(\.value), ["1", "2"])
+        XCTAssertEqual(infrequent.queryItems?.first { $0.name == "infrequent" }?.value, "15")
+        for type in ["well_read", "long_reads", "good_reads"] {
+            let trending = try request("trending:" + type)
+            XCTAssertNotEqual(trending.path, folder.path)
+            XCTAssertEqual(trending.queryItems?.first { $0.name == "trending_type" }?.value, type)
+            XCTAssertFalse(trending.queryItems?.contains { $0.name == "f" } ?? true)
+        }
     }
 
     func test_emptyOrDeletedSelectionNeverFallsBackToAllStories() {

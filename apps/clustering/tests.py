@@ -82,6 +82,35 @@ class Test_TitleSignificantWords(TestCase):
 
 
 class Test_FindTitleClusters(TestCase):
+    def test_independent_category_feeds_group_the_same_article(self):
+        stories = [
+            {
+                "story_hash": f"{feed_id}:a1b2c3",
+                "story_feed_id": feed_id,
+                "story_title": "City council approves the new library",
+                "story_permalink": "https://example.com/news/new-library",
+                "id": "publisher-article-35",
+            }
+            for feed_id in (101, 202)
+        ]
+        clusters = find_title_clusters(stories)
+        expected = {"101:a1b2c3", "202:a1b2c3"}
+        self.assertIn(expected, [set(group) for group in clusters.values()])
+        merged = merge_clusters(
+            clusters, {}, story_feed_map={s["story_hash"]: s["story_feed_id"] for s in stories}
+        )
+        self.assertIn(expected, [set(group) for group in merged.values()])
+
+        self.assertFalse(find_title_clusters(stories, original_feed_map={202: 101}))
+        for change in (
+            {"id": "another-article"},
+            {"story_permalink": "https://example.com/other"},
+            {"story_permalink": ""},
+            {"story_title": "Library opens after renovations"},
+        ):
+            with self.subTest(change=change):
+                self.assertFalse(find_title_clusters([stories[0], {**stories[1], **change}]))
+
     def test_aggregator_title_clusters(self):
         """The NYT/Techmeme case that motivated this fix."""
         stories = [
@@ -764,6 +793,60 @@ class Test_SameFeedClusterFolding(TestCase):
             members[repost["story_hash"]]["prompt_classifiers"],
             [{"prompt": "Non-apple related news", "score": 1, "include_images": False}],
         )
+
+    def test_new_category_copy_joins_existing_short_headline(self):
+        from apps.clustering.models import store_clusters_to_redis
+
+        members = [f"{feed.pk}:baba35" for feed in (self.blog, self.forum_posts, self.forum_topics)]
+        existing = members[0]
+        self.store_cluster(existing, members[:2])
+        self.cluster_keys.append(f"sCL:{members[2]}")
+        store_clusters_to_redis(
+            {existing: members},
+            candidate_cluster_map={h: existing for h in members[:2]},
+            story_title_map={h: "Election results" for h in members},
+            article_keys=dict.fromkeys(
+                members, ("article-35", "https://example.com/election", "election results")
+            ),
+        )
+        self.assertEqual(self.redis.get(f"sCL:{members[2]}"), self.redis.get(f"sCL:{existing}"))
+
+    def test_category_article_visible_in_river_and_briefing(self):
+        from datetime import datetime
+
+        from apps.clustering.models import apply_clustering_to_stories, attach_cluster_data_to_stories
+        from apps.reader.models import UserSubscription
+        from apps.rss_feeds.models import Feed, MStory
+
+        guid = "publisher-article-35"
+        link = "https://example.com/news/new-library"
+        UserSubscription.objects.filter(user=self.user).update(active=True)
+        copies = []
+        for feed in (self.blog, self.forum_posts):
+            record = MStory(
+                story_guid=guid,
+                story_feed_id=feed.pk,
+                story_date=datetime.now(),
+                story_title="City council approves the new library",
+                story_permalink=link,
+            ).save()
+            self.addCleanup(MStory.objects(story_hash=record.story_hash).delete)
+            copies.append(Feed.format_story(record))
+        first = copies[0]
+        hashes = [s["story_hash"] for s in copies]
+        self.store_cluster(hashes[0], hashes)
+
+        rows = apply_clustering_to_stories(copies, self.user)
+        self.assertEqual([s["story_hash"] for s in rows], hashes[:1])
+        self.assertEqual([s["story_hash"] for s in rows[0]["cluster_stories"]], hashes[1:])
+
+        curated = {k: v for k, v in first.items() if k != "cluster_stories"}
+        attach_cluster_data_to_stories([curated], self.user)
+        self.assertEqual([s["story_hash"] for s in curated["cluster_stories"]], hashes[1:])
+
+        # tests.py: A stale Redis cluster must stop folding once a source becomes a branch.
+        Feed.objects.filter(pk=self.forum_posts.pk).update(branch_from_feed=self.blog)
+        self.assertEqual([s["story_hash"] for s in apply_clustering_to_stories(copies, self.user)], hashes)
 
     def test_river_still_folds_related_story_from_another_feed(self):
         from apps.clustering.models import apply_clustering_to_stories

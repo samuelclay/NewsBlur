@@ -18,7 +18,9 @@ struct Story: Codable, Identifiable {
     
     /// The feed ID.
     let feed: String
-    
+    /// WidgetStory.swift keeps the display and subscription details for trending sites outside the catalog.
+    let site: [String: String]?
+
     /// The date and/or time as a string.
     let date: String
     
@@ -51,9 +53,10 @@ struct Story: Codable, Identifiable {
     /// Initializer from a dictionary.
     ///
     /// - Parameter dictionary: Dictionary from the server.
-    init(from dictionary: [String : Any]) {
+    init(from dictionary: [String : Any], sites: [String: [String: String]] = [:]) {
         id = dictionary[DictionaryKeys.id] as? String ?? ""
         feed = dictionary[DictionaryKeys.feed] as? String ?? "\(dictionary[DictionaryKeys.feed] as? Int ?? 0)"
+        site = sites[feed]
         date = dictionary[DictionaryKeys.date] as? String ?? ""
         author = dictionary[DictionaryKeys.author] as? String ?? ""
         title = dictionary[DictionaryKeys.title] as? String ?? ""
@@ -79,6 +82,7 @@ struct Story: Codable, Identifiable {
     init(sample title: String, feed: String) {
         id = UUID().uuidString
         self.feed = feed
+        site = nil
         date = "2021-08-09"
         author = "Sample"
         self.title = title
@@ -92,6 +96,7 @@ struct Story: Codable, Identifiable {
         case version = "version"
         case id = "id"
         case feed = "feed"
+        case site
         case date = "date"
         case author = "author"
         case title = "title"
@@ -108,6 +113,7 @@ struct Story: Codable, Identifiable {
         
         id = try container.decode(String.self, forKey: .id)
         feed = try container.decode(String.self, forKey: .feed)
+        site = try container.decodeIfPresent([String: String].self, forKey: .site)
         date = try container.decode(String.self, forKey: .date)
         author = try container.decode(String.self, forKey: .author)
         title = try container.decode(String.self, forKey: .title)
@@ -131,6 +137,7 @@ struct Story: Codable, Identifiable {
         try container.encode(version, forKey: .version)
         try container.encode(id, forKey: .id)
         try container.encode(feed, forKey: .feed)
+        try container.encodeIfPresent(site, forKey: .site)
         try container.encode(date, forKey: .date)
         try container.encode(author, forKey: .author)
         try container.encode(title, forKey: .title)

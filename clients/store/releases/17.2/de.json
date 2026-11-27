@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Premium Archive enthält jetzt 1 Stunde Hörzeit pro Monat, und das neue Premium Archive Extra bietet 10 Stunden pro Monat. Mit dem Umschalter 1 Stunde / 10 Stunden beim Tarif Premium Archive wechselst du zwischen beiden. Kostenlose Konten und Premium-Konten können sich jetzt die ersten 60 Sekunden jedes Artikels vorlesen lassen. Außerdem stellt NewsBlur die Verbindung zuverlässiger wieder her, wenn du wieder online bist, auch nachdem du dich in einem WLAN angemeldet hast."
+  },
+  "macos": {
+    "whats_new": "Premium Archive enthält jetzt 1 Stunde Hörzeit pro Monat, und das neue Premium Archive Extra bietet 10 Stunden pro Monat. Mit dem Umschalter 1 Stunde / 10 Stunden beim Tarif Premium Archive wechselst du zwischen beiden. Kostenlose Konten und Premium-Konten können sich jetzt die ersten 60 Sekunden jedes Artikels vorlesen lassen. Außerdem stellt NewsBlur die Verbindung zuverlässiger wieder her, wenn du wieder online bist, auch nachdem du dich in einem WLAN angemeldet hast. Treffen mehr als 20 neue Artikel in einem Feed ein, zeigt ein Klick auf die Schaltfläche für neue Artikel die ersten davon jetzt schneller an."
+  },
+  "android": {
+    "release_notes": "Premium Archive enthält jetzt 1 Stunde Hörzeit pro Monat, und das neue Premium Archive Extra bietet 10 Stunden pro Monat. Mit dem Umschalter 1 Stunde / 10 Stunden beim Tarif Premium Archive wechselst du zwischen beiden. Kostenlose Konten und Premium-Konten können sich jetzt die ersten 60 Sekunden jedes Artikels vorlesen lassen. Treffen mehr als 20 neue Artikel in einem Feed ein, zeigt ein Tippen auf die Schaltfläche für neue Artikel die ersten davon jetzt schneller an."
+  }
+}

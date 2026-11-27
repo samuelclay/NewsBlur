@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Folder %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Folder %1$@, diciutkan, %2$@";
 "%1$@ followed %2$@." = "%1$@ mengikuti %2$@.";
+"%1$@ of %2$@ of listening left this month" = "%1$@ dari %2$@ waktu mendengarkan tersisa bulan ini";
 "%1$@ of %2$@ of listening left this week" = "Sisa waktu mendengarkan minggu ini: %1$@ dari %2$@";
 "%1$@ of %2$@ sites indexed" = "%1$@ dari %2$@ situs telah diindeks";
 "%1$@ of %2$@ story previews used today" = "%1$@ dari %2$@ pratinjau artikel digunakan hari ini";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
 "%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
+"%@ new stories" = "%@ artikel baru";
 "%@ opens" = "%@ kali dibuka";
 "%@ or search" = "%@ atau cari";
 "%@ public comments" = "%@ komentar publik";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2.000 artikel";
 "20 stories" = "20 artikel";
 "2x daily" = "2 kali sehari";
-"30s preview" = "Pratinjau 30 detik";
 "3x daily" = "3 kali sehari";
 "5 stories" = "5 artikel";
 "5,000 stories" = "5.000 artikel";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Batas pengeluaran Anda tidak dapat disimpan. Silakan coba lagi.";
 "Couldn’t load the full image. You can try opening it in your browser." = "Gambar penuh tidak dapat dimuat. Anda dapat mencoba membukanya di browser.";
 "Counting is difficult..." = "Menghitung itu sulit...";
+"Create OAuth applications" = "Buat aplikasi OAuth";
 "Create a feed from any web page" = "Buat feed dari halaman web mana pun";
 "Create a new account instead" = "Buat akun baru saja";
 "Create account" = "Buat akun";
@@ -534,7 +536,6 @@
 "List style" = "Gaya daftar";
 "Listen" = "Dengarkan";
 "Listen Settings" = "Pengaturan Dengarkan";
-"Listen to 1 hour of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 1 jam per minggu";
 "Listen to 10 hours of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 10 jam per minggu";
 "Listen to story" = "Dengarkan artikel";
 "Listening isn't available right now." = "Fitur mendengarkan sedang tidak tersedia.";
@@ -990,6 +991,7 @@
 "Show feed list" = "Tampilkan daftar feed";
 "Show feeds after being read" = "Tampilkan feed setelah dibaca";
 "Show hidden stories" = "Tampilkan artikel tersembunyi";
+"Show new stories as they arrive" = "Tampilkan artikel baru saat tersedia";
 "Show original story" = "Tampilkan artikel asli";
 "Show original text" = "Tampilkan teks asli";
 "Show public comments" = "Tampilkan komentar publik";
@@ -998,6 +1000,7 @@
 "Show unread count" = "Tampilkan jumlah belum dibaca";
 "Show with feed icons" = "Tampilkan dengan ikon feed";
 "Show without icons" = "Tampilkan tanpa ikon";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Menampilkan pil \"N artikel baru\" saat artikel baru tersedia di feed atau folder yang terbuka.";
 "Shows the music settings" = "Menampilkan pengaturan musik";
 "Sidebar" = "Bilah sisi";
 "Sign Up" = "Daftar";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "Teks dari kemarin";
 "Text view" = "Tampilan teks";
 "Text view conveniently extracts the story" = "Tampilan Teks mengekstrak isi artikel dengan praktis";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Itu adalah pratinjau 30 detik. Premium Archive membuka akses ke artikel lengkap.";
 "The audio couldn't be loaded. Try again in a moment." = "Audio tidak dapat dimuat. Coba lagi sebentar.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tampilan Teks penuh adalah <a href=\"http://ios.newsblur.com/premium\">fitur premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Simulator iOS tidak dapat mengubah ikon Layar Utama. Coba di perangkat.";

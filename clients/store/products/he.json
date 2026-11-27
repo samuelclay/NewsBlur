@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "ארכיון כתבות קבוע ושעת האזנה בשבוע"
+        "description": "ארכיון כתבות קבוע ושעת האזנה בחודש"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "עדכוני פידים תכופים ו־10 שעות האזנה בשבוע"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "ארכיון כתבות קבוע ו־10 שעות האזנה בחודש"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "מינוי NewsBlur Premium Archive",
-        "description": "כל תכונות Premium, ארכיון כתבות קבוע וניתן לחיפוש ושעת האזנה בשבוע. השאירו כתבות שלא נקראו כמה זמן שתרצו. מכסת ההאזנה מתחדשת ביום ראשון.",
+        "description": "כל תכונות Premium, ארכיון כתבות קבוע וניתן לחיפוש ושעת האזנה בחודש. השאירו כתבות שלא נקראו כמה זמן שתרצו. מכסת ההאזנה מתחדשת בראשון לכל חודש.",
         "benefits": [
           "כל מה שכלול ב־Premium",
           "כתבות שלא נקראו ללא הגבלת זמן",
           "ארכיון כתבות קבוע וניתן לחיפוש",
-          "שעת האזנה אחת בשבוע"
+          "שעת האזנה אחת בחודש"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "מינוי NewsBlur Premium Archive Extra",
+        "description": "כל תכונות Premium, ארכיון כתבות קבוע וניתן לחיפוש ו־10 שעות האזנה בחודש. השאירו כתבות שלא נקראו כמה זמן שתרצו. מכסת ההאזנה מתחדשת בראשון לכל חודש.",
+        "benefits": [
+          "כל מה שכלול ב־Premium",
+          "כתבות שלא נקראו ללא הגבלת זמן",
+          "ארכיון כתבות קבוע וניתן לחיפוש",
+          "10 שעות האזנה בחודש"
         ]
       }
     }

@@ -101,7 +101,7 @@ class FeedUtilsImmediateReadSyncTest {
         }
 
     @Test
-    fun submitReadTimesNowQueuesFallbackWhenImmediateFlushFails() =
+    fun submitReadTimesNowCanReplayThePersistedReportWhenImmediateFlushFails() =
         runTest {
             val protocolError = NewsBlurResponse().apply { isProtocolError = true }
             val queuedAction = slot<ReadingAction>()
@@ -110,10 +110,12 @@ class FeedUtilsImmediateReadSyncTest {
             feedUtils.submitReadTimesNow(context, """{"story-hash":12}""")
 
             verify { dbHelper.enqueueAction(capture(queuedAction)) }
-            val action = queuedAction.captured
-            assertTrue(action is ReadingAction.ReportStoryReadTimes)
-            action as ReadingAction.ReportStoryReadTimes
-            assertEquals("""{"story-hash":12}""", action.readTimesJson)
+            val persisted = ReadingAction.toJson(queuedAction.captured)
+            val replay = ReadingAction.fromJson(persisted)
+            val success = NewsBlurResponse()
+            coEvery { storyApi.submitReadTimes("""{"story-hash":12}""") } returns success
+
+            assertEquals(success, replay.doRemote(syncServiceState, mockk(), storyApi, dbHelper, StateFilter.ALL))
         }
 
     private fun unreadStory() =

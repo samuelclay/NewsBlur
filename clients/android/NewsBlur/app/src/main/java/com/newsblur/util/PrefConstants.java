@@ -28,6 +28,8 @@ public class PrefConstants {
 
 	public static final String IS_PREMIUM = "is_premium";
 	public static final String IS_ARCHIVE = "is_archive";
+    // True only for Premium Archive Extra, whose accounts also have is_archive.
+    public static final String IS_ARCHIVE_EXTRA = "is_archive_extra";
     public static final String IS_PRO = "is_pro";
     public static final String IS_STAFF = "is_staff";
     // Natural language classifier billing from /reader/feeds user_profile, see UsageBilling.kt.
@@ -126,6 +128,8 @@ public class PrefConstants {
 
     public static final String THEME = "theme";
     public static final String REDUCE_MOTION = "reduce_motion";
+    // PrefConstants.java: whether RealtimeUpdates.kt offers stories that arrive in the open list (NewStoriesPill.kt).
+    public static final String SHOW_NEW_STORIES = "show_new_stories_pill";
     public static final String THEME_LIGHT_VARIANT = "theme_light_variant";
     public static final String THEME_DARK_VARIANT = "theme_dark_variant";
     public static final String THEME_GESTURE = "theme_gesture";
@@ -151,6 +155,9 @@ public class PrefConstants {
     public static final String RTL_GESTURE_ACTION = "rtl_gesture_action";
 
     public static final String ENABLE_NOTIFICATIONS = "enable_notifications";
+    public static final String NOTIFICATIONS_PROMPT_SEEN = "notifications_prompt_seen";
+    public static final String PUSH_TOKEN_REGISTERED = "push_token_registered";
+    public static final String PUSH_TOKEN_REGISTERED_AT = "push_token_registered_at";
     public static final String SHOW_ASK_AI = "show_ask_ai";
     public static final String ASK_AI_MODEL = "ask_ai_model";
 

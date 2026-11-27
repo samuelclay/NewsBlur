@@ -39,12 +39,14 @@
 
 {% block bodyclass %}
   NB-body-main 
-  {% if preferences.theme == "dark" %}NB-dark{% endif %}
+  {% if preferences.theme == "dark" %}NB-dark{% elif preferences.theme == "gray" %}NB-dark NB-gray{% elif preferences.theme == "sepia" %}NB-sepia{% endif %}
 {% endblock %}
 
 {% block header %}
   {% if user.is_authenticated %}{# dashboard.xhtml: a phone hides the page until media/js/newsblur/views/mobile_layout_view.js lays out its screens, so the desktop layout never flashes. The query matches common/mobile_utils.js MEDIA_QUERY. #}
   <script>(function(){try{if(window.matchMedia&&window.matchMedia('(max-width: 768px), (pointer: coarse) and (max-height: 500px)').matches){document.body.classList.add('NB-mobile-booting');setTimeout(function(){document.body.classList.remove('NB-mobile-booting')},6000)}}catch(e){}})()</script>
+  {# dashboard.xhtml: set the theme classes before first paint the way media/js/newsblur/common/assetmodel.js theme() resolves them. base.html only knows the system setting, which would flash dark over a sepia or light reader and plain dark over a gray one. #}
+  <script>(function(){try{var t="{{ preferences.theme|default:'auto'|escapejs }}";if(t=='auto'){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?("{{ preferences.theme_dark|escapejs }}"=='gray'?'gray':'dark'):("{{ preferences.theme_light|escapejs }}"=='sepia'?'sepia':'light')}var c=document.body.classList;c.toggle('NB-dark',t=='dark'||t=='gray');c.toggle('NB-gray',t=='gray');c.toggle('NB-sepia',t=='sepia')}catch(e){}})()</script>
   {% endif %}
 {% endblock %}
 

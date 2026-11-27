@@ -49,6 +49,8 @@ struct CardView: View {
                     standardCardBody.background(nonGridRowBackgroundColor)
                         // FeedDetailCardView.swift rebinds nested observers when StoryCache replaces a same-ID model.
                         .id(ObjectIdentifier(story))
+                        // NewStoriesPill.swift animates only the cards' places when new stories arrive, not this swap.
+                        .withoutNewStoryArrivalAnimation()
                 }
                 .accessibilityElement(children: .combine)
                 .accessibilityValue(String(format: NBLocalization.text("%1$@, %2$@"),
@@ -174,6 +176,8 @@ struct CardView: View {
             standardCardBody
                 // FeedDetailCardView.swift rebinds nested observers when a menu action replaces the Story model.
                 .id(ObjectIdentifier(story))
+                // NewStoriesPill.swift animates only the cards' places when new stories arrive, not this swap.
+                .withoutNewStoryArrivalAnimation()
                 .background(nonGridRowBackgroundColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .offset(x: swipeOffset)

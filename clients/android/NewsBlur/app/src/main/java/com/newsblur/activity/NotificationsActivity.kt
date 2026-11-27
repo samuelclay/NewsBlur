@@ -1,6 +1,7 @@
 package com.newsblur.activity
 
 import android.os.Bundle
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -9,7 +10,9 @@ import com.newsblur.R
 import com.newsblur.databinding.ActivityNotificationsBinding
 import com.newsblur.di.IconLoader
 import com.newsblur.domain.Feed
+import com.newsblur.util.DeviceNotifications
 import com.newsblur.util.EdgeToEdgeUtil.applyView
+import com.newsblur.util.FeedExt.isNotifyAndroid
 import com.newsblur.util.ImageLoader
 import com.newsblur.util.UIUtils
 import com.newsblur.util.setViewGone
@@ -42,6 +45,12 @@ class NotificationsActivity :
         setupListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Android's permission dialog and the app's system settings both return here.
+        updateNotificationsOffBanner()
+    }
+
     private fun setupUI() {
         UIUtils.setupToolbar(this, R.drawable.logo, getString(R.string.notifications_title), true)
         adapter =
@@ -51,6 +60,10 @@ class NotificationsActivity :
     }
 
     private fun setupListeners() {
+        binding.btnEnableNotifications.setOnClickListener {
+            DeviceNotifications.turnOn(this, prefsRepo)
+            updateNotificationsOffBanner()
+        }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -64,6 +77,7 @@ class NotificationsActivity :
                             binding.txtNoNotifications.setViewVisible()
                         }
                         adapter.refreshFeeds(feeds)
+                        updateNotificationsOffBanner()
                     }
                 }
             }
@@ -72,5 +86,17 @@ class NotificationsActivity :
 
     override fun onFeedUpdated(feed: Feed) {
         viewModel.updateFeed(this, feed)
+        updateNotificationsOffBanner()
+    }
+
+    override fun onAndroidNotificationsEnabled() {
+        DeviceNotifications.turnOn(this, prefsRepo)
+        updateNotificationsOffBanner()
+    }
+
+    /** NotificationsActivity.kt: feeds set to notify on Android stay silent while this device has notifications off. */
+    private fun updateNotificationsOffBanner() {
+        val hasAndroidFeeds = viewModel.feeds.value.values.any { it.isNotifyAndroid() }
+        binding.notificationsOffBanner.isVisible = hasAndroidFeeds && !DeviceNotifications.isOn(this, prefsRepo)
     }
 }

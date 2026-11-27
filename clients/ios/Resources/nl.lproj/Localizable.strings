@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "%1$@-map, %2$@";
 "%1$@ folder, collapsed, %2$@" = "%1$@-map, ingeklapt, %2$@";
 "%1$@ followed %2$@." = "%1$@ is %2$@ gaan volgen.";
+"%1$@ of %2$@ of listening left this month" = "%1$@ van %2$@ luisterminuten resterend deze maand";
 "%1$@ of %2$@ of listening left this week" = "Je hebt deze week nog %1$@ van de %2$@ luistertijd over";
 "%1$@ of %2$@ sites indexed" = "%1$@ van %2$@ sites geïndexeerd";
 "%1$@ of %2$@ story previews used today" = "Vandaag %1$@ van de %2$@ artikelvoorbeelden gebruikt";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "%@ over in deze preview";
 "%@ left this week" = "Nog %@ over deze week";
 "%@ match" = "%@ overeenkomst";
+"%@ new stories" = "%@ nieuwe artikelen";
 "%@ opens" = "%@ keer geopend";
 "%@ or search" = "%@ of zoeken";
 "%@ public comments" = "%@ openbare reacties";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2.000 artikelen";
 "20 stories" = "20 artikelen";
 "2x daily" = "2 keer per dag";
-"30s preview" = "Voorbeeld van 30 s";
 "3x daily" = "3 keer per dag";
 "5 stories" = "5 artikelen";
 "5,000 stories" = "5.000 artikelen";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "Je bestedingslimiet kan niet worden opgeslagen. Probeer het opnieuw.";
 "Couldn’t load the full image. You can try opening it in your browser." = "De volledige afbeelding kon niet worden geladen. Je kunt proberen deze in je browser te openen.";
 "Counting is difficult..." = "Tellen is lastig...";
+"Create OAuth applications" = "OAuth-applicaties maken";
 "Create a feed from any web page" = "Maak een feed van elke webpagina";
 "Create a new account instead" = "In plaats daarvan een nieuw account aanmaken";
 "Create account" = "Account aanmaken";
@@ -534,7 +536,6 @@
 "List style" = "Lijststijl";
 "Listen" = "Luisteren";
 "Listen Settings" = "Luisterinstellingen";
-"Listen to 1 hour of stories read aloud a week" = "Luister elke week 1 uur naar artikelen die worden voorgelezen";
 "Listen to 10 hours of stories read aloud a week" = "Luister elke week 10 uur naar artikelen die worden voorgelezen";
 "Listen to story" = "Artikel beluisteren";
 "Listening isn't available right now." = "Luisteren is nu niet beschikbaar.";
@@ -990,6 +991,7 @@
 "Show feed list" = "Feedlijst weergeven";
 "Show feeds after being read" = "Feeds na het lezen weergeven";
 "Show hidden stories" = "Verborgen artikelen weergeven";
+"Show new stories as they arrive" = "Nieuwe artikelen meteen tonen";
 "Show original story" = "Origineel artikel tonen";
 "Show original text" = "Originele tekst weergeven";
 "Show public comments" = "Openbare reacties tonen";
@@ -998,6 +1000,7 @@
 "Show unread count" = "Ongelezen aantal weergeven";
 "Show with feed icons" = "Weergeven met feedpictogrammen";
 "Show without icons" = "Weergeven zonder pictogrammen";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Toont een melding met ‘N nieuwe artikelen’ wanneer er artikelen binnenkomen in de geopende feed of map.";
 "Shows the music settings" = "Toont de muziekvoorkeuren";
 "Sidebar" = "Zijbalk";
 "Sign Up" = "Registreren";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "Tekst van gisteren";
 "Text view" = "Tekstweergave";
 "Text view conveniently extracts the story" = "De tekstweergave haalt het artikel handig op";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Dit was een voorbeeld van 30 seconden. Met Premium Archive kun je volledige artikelen beluisteren.";
 "The audio couldn't be loaded. Try again in a moment." = "De audio kon niet worden geladen. Probeer het zo meteen opnieuw.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "De volledige tekstweergave is een <a href=\"http://ios.newsblur.com/premium\">premiumfunctie</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "De iOS-simulator kon het beginschermpictogram niet wijzigen. Probeer dit op een apparaat.";

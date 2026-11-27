@@ -105,6 +105,27 @@
             this.layout = {};
             this.constants = {
                 FEED_REFRESH_INTERVAL: (1000 * 60) * 1, // 1 minute
+                // reader.js handle_realtime_new_story: gather new stories this long before fetching them, plus up
+                // to 2ms per subscriber (capped) so busy feeds' readers don't all fetch at once.
+                REALTIME_NEW_STORY_BATCH_DELAY: 1000,
+                REALTIME_NEW_STORY_MS_PER_SUBSCRIBER: 2,
+                REALTIME_NEW_STORY_MAX_JITTER: 10000,
+                // Stories dated more than an hour ahead are ignored, as dashboard_river_view.js does.
+                REALTIME_NEW_STORY_FUTURE_TOLERANCE: 60 * 60,
+                // apps/reader/views.py load_river_stories__redis reads at most 100 story hashes.
+                REALTIME_NEW_STORY_MAX_HASHES: 100,
+                // reader.js fetches at most this many waiting stories; past it the pill only counts what is
+                // announced, and clicking it shows the newest of them (show_newest_realtime_new_stories). The iOS and
+                // Android apps use the same cap.
+                REALTIME_NEW_STORY_CAP: 20,
+                // new_stories_indicator_view.js hides the pill this long after the reader first scrolls away from it,
+                // and brings it back only once the list hasn't scrolled for REALTIME_PILL_RETURN_AFTER_IDLE.
+                REALTIME_PILL_HIDE_AFTER_SCROLLING: 5000,
+                REALTIME_PILL_RETURN_AFTER_IDLE: 3 * 60 * 1000,
+                // story_titles_view.js marks nothing read on scroll for this long after the pill brings stories in:
+                // the pill's own scroll, and common/motion.js arrive opening the new rows from no height (320ms,
+                // staggered by at most 400ms more).
+                REALTIME_NEW_STORY_ARRIVAL_HOLD: 1000,
                 FILL_OUT_PAGES: 100,
                 FILL_OUT_PAGES_FIND_STORY_TITLE: 5,
                 FILL_OUT_PAGES_SEARCH_STORY_TITLE: 10,
@@ -158,6 +179,10 @@
             NEWSBLUR.app.story_titles_header = new NEWSBLUR.Views.StoryTitlesHeader();
             NEWSBLUR.app.search_header = new NEWSBLUR.Views.FeedSearchHeader();
             NEWSBLUR.app.media_player = new NEWSBLUR.Views.MediaPlayerView();
+            NEWSBLUR.app.new_stories_indicator = new NEWSBLUR.Views.NewStoriesIndicatorView({
+                $container: this.$s.$story_titles
+            }).render();
+            this.clear_realtime_new_stories();
             // reader.js: phones get stacked full-screen screens (views/mobile_layout_view.js).
             NEWSBLUR.app.mobile = new NEWSBLUR.Views.MobileLayout();
 
@@ -215,6 +240,7 @@
             this.switch_story_layout();
             this.load_delayed_stylesheets();
             this.load_theme();
+            NEWSBLUR.utils.watch_tips();
             this.setup_read_time_tracker();
             this.setup_classifier_filter_popstate();
         },
@@ -1438,6 +1464,11 @@
             options = options || {};
             if (!NEWSBLUR.Globals.is_authenticated) return;
 
+            if (this.flags.oauth_application_requested) {
+                this.flags.oauth_application_requested = false;
+                return;
+            }
+
             // Handle test/next parameters for opening dialogs - skip normal dialog logic if present.
             // `next` is what the dev-autologin redirect uses; `test` is the hand-typed knob.
             // Both accept the same dialog keywords.
@@ -1613,6 +1644,9 @@
 
             // Dismiss any pending mark-read confirmation
             this.dismiss_mark_read_confirm();
+
+            // reader.js: stories waiting for the pill belong to the list being left.
+            this.clear_realtime_new_stories();
 
             // Flush read time for the current story before resetting
             if (NEWSBLUR.ReadTimeTracker && this.active_story) {
@@ -5198,7 +5232,30 @@
         },
 
         switch_theme: function (theme) {
-            this.model.preference('theme', theme);
+            // reader.js: Auto switches between the last light pick and the last dark pick
+            // (assetmodel.js theme), so each side's variant is saved along with the theme itself.
+            var preferences = { 'theme': theme };
+            if (theme == 'light' || theme == 'sepia') {
+                preferences['theme_light'] = theme;
+            } else if (theme == 'dark' || theme == 'gray') {
+                preferences['theme_dark'] = theme;
+            }
+            var changed = _.any(preferences, function (value, preference) {
+                return NEWSBLUR.Preferences[preference] != value;
+            });
+            if (changed && NEWSBLUR.Globals.is_authenticated) {
+                this.model.save_preferences(preferences);
+            } else {
+                _.extend(NEWSBLUR.Preferences, preferences);
+            }
+            this.apply_story_styling();
+        },
+
+        // reader.js: choose which light theme or which dark theme Auto switches to, without leaving
+        // whatever theme is showing now (reader_preferences.js make_theme_chooser).
+        switch_auto_theme: function (theme) {
+            var preference = (theme == 'light' || theme == 'sepia') ? 'theme_light' : 'theme_dark';
+            this.model.preference(preference, theme);
             this.apply_story_styling();
         },
 
@@ -5242,17 +5299,18 @@
             $('.NB-density-option').removeClass('NB-active');
             $('.NB-options-density-' + density).addClass('NB-active');
 
-            $("body").addClass('NB-theme-transitioning');
+            // reader.js: the page fades from one theme to the next (reader_utils.js switch_theme_classes),
+            // except as it first loads and when animations are turned off.
+            var animate = !!this.flags['theme_loaded'] && !$("body").hasClass('NB-no-animations');
+            this.flags['theme_loaded'] = true;
 
-            if (theme == 'dark') {
-                $("body").addClass('NB-dark');
-            } else {
-                $("body").removeClass('NB-dark');
-            }
-
-            _.delay(function () {
-                $("body").removeClass("NB-theme-transitioning");
-            }, 2000);
+            // reader.js: gray is the dark theme with its palette swapped (css/reader/graymode.css), so it
+            // carries NB-dark too. Sepia restyles the light theme (css/reader/sepiamode.css).
+            NEWSBLUR.utils.switch_theme_classes({
+                'NB-dark': theme == 'dark' || theme == 'gray',
+                'NB-gray': theme == 'gray',
+                'NB-sepia': theme == 'sepia'
+            }, animate);
         },
 
         close_interactions_popover: function () {
@@ -5456,18 +5514,21 @@
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-theme' }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
+                        // reader.js: Auto, then each theme as a circle of its own color, as the iOS menus
+                        // draw it (clients/ios/Classes/MenuViewController.m). The names stay as tooltips (reader_utils.js show_tip).
                         $.make('ul', { className: 'segmented-control NB-options-theme' }, [
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Light')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, gettext('Auto')),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-light', role: "button", 'data-tip': gettext('Light'), 'aria-label': gettext('Light') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-light' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Dark')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-sepia', role: "button", 'data-tip': pgettext('theme', 'Warm'), 'aria-label': pgettext('theme', 'Warm') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-sepia' })
                             ]),
-                            $.make('li', { className: 'NB-theme-option NB-options-theme-auto', role: "button" }, [
-                                $.make('div', { className: 'NB-icon' }),
-                                gettext('Auto')
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-gray', role: "button", 'data-tip': pgettext('theme', 'Gray'), 'aria-label': pgettext('theme', 'Gray') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-gray' })
+                            ]),
+                            $.make('li', { className: 'NB-theme-option NB-options-theme-dark', role: "button", 'data-tip': gettext('Dark'), 'aria-label': gettext('Dark') }, [
+                                $.make('div', { className: 'NB-theme-swatch NB-theme-swatch-dark' })
                             ])
                         ])
                     ])
@@ -5475,6 +5536,8 @@
                 $manage_menu.addClass('NB-menu-manage-notop');
                 var theme = this.model.preference('theme');
                 $(".NB-options-theme-light", $manage_menu).toggleClass('NB-active', theme == 'light');
+                $(".NB-options-theme-sepia", $manage_menu).toggleClass('NB-active', theme == 'sepia');
+                $(".NB-options-theme-gray", $manage_menu).toggleClass('NB-active', theme == 'gray');
                 $(".NB-options-theme-dark", $manage_menu).toggleClass('NB-active', theme == 'dark');
                 $(".NB-options-theme-auto", $manage_menu).toggleClass('NB-active', theme == 'auto');
                 var feed_font = this.model.preference('feed_font');
@@ -6507,24 +6570,21 @@
                     feed_id: feed_id,
                     multiple: true,
                     original: in_folders,
-                    selected: in_folders,
-                    disabled: []
+                    selected: in_folders
                 };
             } else {
                 // reader.js: a folder view's collection holds its children, so its parent is
                 // the collection that holds the folder's own model.
                 var folder_view = NEWSBLUR.assets.folders.get_view($feed) ||
                     this.active_folder.folder_view;
-                var parent_folder = folder_view.model.collection.options.title;
+                var parent_path = folder_view.model.parent_path();
+                var parent_value = JSON.stringify(parent_path);
                 this.folder_picker = {
                     feed_id: null,
                     multiple: false,
-                    original: [parent_folder],
-                    selected: [parent_folder],
-                    disabled: NEWSBLUR.folder_picker_utils.disabled_folder_targets(
-                        folder_view.options.folder_title,
-                        folder_view.collection.child_folder_names()
-                    )
+                    original: [parent_value],
+                    selected: [parent_value],
+                    moving_folder_path: parent_path.concat([folder_view.model.get('folder_title')])
                 };
             }
             this.folder_picker.query = '';
@@ -6588,7 +6648,7 @@
             var picker = this.folder_picker;
             var rows = NEWSBLUR.folder_picker_utils.build_rows(this.folder_picker_tree(NEWSBLUR.assets.get_folders()), {
                 selected: picker.selected,
-                disabled: picker.disabled,
+                moving_folder_path: picker.moving_folder_path,
                 top_level_title: gettext('Top Level')
             });
             return NEWSBLUR.folder_picker_utils.filter_rows(rows, picker.query);
@@ -6610,7 +6670,7 @@
                 style: '--nb-folder-depth: ' + row.depth
             }, [
                 $.make('div', { className: 'NB-folder-option-check' }),
-                $.make('div', { className: 'NB-folder-option-icon' }, [row.value && $.favicon_el('river:' + row.value)]),
+                $.make('div', { className: 'NB-folder-option-icon' }, [row.depth > 0 && $.favicon_el('river:' + row.title)]),
                 $.make('div', { className: 'NB-folder-option-title', dir: 'auto' }, row.title),
                 (picker.feed_id && $.make('div', { className: 'NB-icon-add' }))
             ]).data('folder', row.value).data('depth', row.depth);
@@ -6644,8 +6704,9 @@
             } else if (state.action == 'unchanged') {
                 label = picker.multiple ? gettext('Select folders') : gettext('Select a folder');
             } else if (state.action == 'move') {
+                var destination = picker.multiple ? state.folder : JSON.parse(state.folder).join(' › ');
                 label = interpolate(gettext('Move to %(folder)s'), {
-                    folder: state.folder || gettext('Top Level')
+                    folder: destination || gettext('Top Level')
                 }, true);
             } else {
                 label = interpolate(ngettext("Save %(count)s folder", "Save %(count)s folders", state.count), { count: state.count }, true);
@@ -6767,7 +6828,9 @@
 
         choose_folder_picker_folder: function (folder_value) {
             var picker = this.folder_picker;
-            if (_.contains(picker.disabled, folder_value)) return;
+            if (!picker.multiple && NEWSBLUR.folder_picker_utils.inside_moving_folder(
+                picker.moving_folder_path, JSON.parse(folder_value)
+            )) return;
 
             picker.selected = NEWSBLUR.folder_picker_utils.choose_folder(picker.selected, folder_value);
             picker.highlighted = folder_value;
@@ -6865,19 +6928,28 @@
             var folder_view = NEWSBLUR.assets.folders.get_view($folder) ||
                 this.active_folder.folder_view;
 
-            if (_.isUndefined(to_folder) ||
-                to_folder == picker.original[0] ||
-                _.contains(picker.disabled, to_folder)) {
+            if (_.isUndefined(to_folder) || to_folder === picker.original[0]) {
                 return this.hide_confirm_move_menu_item();
             }
 
-            var moved = folder_view.model.move_to_folder(to_folder, { view: folder_view });
-            this.hide_confirm_move_menu_item(moved);
-            if (moved) {
-                _.delay(_.bind(function () {
-                    this.hide_manage_menu('folder', $folder, true);
-                }, this), 500);
-            }
+            var to_folder_path = JSON.parse(to_folder);
+            if (NEWSBLUR.folder_picker_utils.inside_moving_folder(picker.moving_folder_path, to_folder_path)) return;
+            if (picker.moving) return;
+            var self = this;
+            picker.moving = folder_view.model.move_to_folder(to_folder_path, {
+                success: function () {
+                    picker.moving = false;
+                    if (self.folder_picker !== picker || !self.flags['showing_confirm_input_on_manage_menu']) return;
+                    self.hide_confirm_move_menu_item(true);
+                    _.delay(function () {
+                        if (self.folder_picker === picker) self.hide_manage_menu('folder', $folder, true);
+                    }, 500);
+                },
+                error: function (response) {
+                    picker.moving = false;
+                    window.alert(response.message || gettext('An error occurred. Please try again.'));
+                }
+            });
         },
 
         hide_confirm_move_menu_item: function (moved) {
@@ -7218,6 +7290,7 @@
                 NEWSBLUR.app.story_titles_header.show_feed_hidden_story_title_indicator(true);
             }
             this.show_story_titles_above_intelligence_level({ 'animate': true, 'follow': true });
+            this.show_realtime_new_stories_pill();
             this.toggle_focus_in_slider();
             if (!initial_load && this.flags['feed_list_showing_starred'] != showing_starred) {
                 this.reload_feed();
@@ -7536,6 +7609,7 @@
                         NEWSBLUR.app.dashboard_rivers['left'].new_story(story_hash, timestamp);
                         NEWSBLUR.app.dashboard_rivers['right'].new_story(story_hash, timestamp);
                     }
+                    this.handle_realtime_new_story(story_hash, timestamp);
                 }, this));
 
                 this.socket.removeAllListeners(NEWSBLUR.Globals.username);
@@ -7710,6 +7784,7 @@
                     NEWSBLUR.log(['Real-time user update for read story', username, message]);
                     var story_hash = message.replace('story:read:', '');
                     NEWSBLUR.assets.stories.mark_read_pubsub(story_hash);
+                    this.update_realtime_new_story_read_state(story_hash, true);
                     if (NEWSBLUR.app.dashboard_rivers) {
                         NEWSBLUR.app.dashboard_rivers['left'].mark_read_pubsub(story_hash);
                         NEWSBLUR.app.dashboard_rivers['right'].mark_read_pubsub(story_hash);
@@ -7718,6 +7793,7 @@
                     NEWSBLUR.log(['Real-time user update for unread story', username, message]);
                     var story_hash = message.replace('story:unread:', '');
                     NEWSBLUR.assets.stories.mark_unread_pubsub(story_hash);
+                    this.update_realtime_new_story_read_state(story_hash, false);
                     if (NEWSBLUR.app.dashboard_rivers) {
                         NEWSBLUR.app.dashboard_rivers['left'].mark_unread_pubsub(story_hash);
                         NEWSBLUR.app.dashboard_rivers['right'].mark_unread_pubsub(story_hash);
@@ -7779,6 +7855,524 @@
                         NEWSBLUR.log(['Error parsing briefing message', e]);
                     }
                 }
+            }
+        },
+
+        // ==========================
+        // = Real-time New Stories =
+        // ==========================
+
+        // reader.js: New stories announced over the socket (feed:story:new) for the open feed or folder are
+        // fetched in one batch, filtered the way the list filters, and offered by NewStoriesIndicatorView's pill.
+        // The iOS and Android apps follow the same rules (clients/ios/Classes/Network/RealtimeUpdates.swift).
+        // reader.js: The open list, if new stories can join it, and the feeds whose stories it loads.
+        realtime_new_story_list: function () {
+            if (!this.active_feed) return null;
+            if (this.flags['splash_page_frontmost'] || this.flags['starred_view'] || this.flags['briefing_view'] ||
+                this.flags['trending_view'] || this.flags['social_view'] || this.flags['archive_view'] ||
+                this.flags['classifier_filter'] || this.flags.search) return null;
+            // reader.js: a date-filtered list only holds its range, and a saved-only list (the Saved slider) only
+            // saved stories, so neither takes new arrivals.
+            if (this.flags.date_filter_start || this.flags.date_filter_end) return null;
+            if (this.model.view_setting(this.active_feed, 'read_filter') == 'starred') return null;
+
+            var feed_ids;
+            if (this.flags['river_view']) {
+                if (!_.string.startsWith(this.active_feed, 'river:') || !this.active_folder) return null;
+                // A free account's river shows only its first few stories.
+                if (!NEWSBLUR.Globals.is_premium) return null;
+                feed_ids = this.active_folder.feed_ids_in_folder();
+                if (this.active_feed == 'river:infrequent') {
+                    var threshold = NEWSBLUR.assets.preference('infrequent_stories_per_month');
+                    feed_ids = _.filter(feed_ids, function (feed_id) {
+                        var feed = NEWSBLUR.assets.get_feed(feed_id);
+                        return feed && feed.get('average_stories_per_month') <= threshold;
+                    });
+                }
+            } else if (/^\d+$/.test(String(this.active_feed))) {
+                feed_ids = [this.active_feed];
+            } else {
+                return null;
+            }
+
+            var active_feed_ids = {};
+            _.each(feed_ids, function (feed_id) {
+                var feed = NEWSBLUR.assets.get_feed(feed_id);
+                if (feed && feed.get('active')) active_feed_ids[String(feed_id)] = true;
+            });
+            if (_.isEmpty(active_feed_ids)) return null;
+
+            var order = this.model.view_setting(this.active_feed, 'order');
+            var read_filter = this.model.view_setting(this.active_feed, 'read_filter');
+            return {
+                key: [this.active_feed, order, read_filter].join('|'),
+                feed_ids: active_feed_ids,
+                oldest_first: order == 'oldest',
+                unread_only: read_filter == 'unread',
+                loaded_last_page: !!this.model.stories.no_more_stories
+            };
+        },
+
+        clear_realtime_new_stories: function (key) {
+            var previous = this.realtime_new_stories || {};
+            clearTimeout(previous.fetch_timer);
+            this.realtime_new_stories = {
+                key: key || null,
+                pending: [],
+                // reader.js: every story being fetched, queued or in flight: story hash to story timestamp.
+                pending_at: {},
+                buffered: {},
+                // Announced stories that don't belong among the REALTIME_NEW_STORY_CAP the tap shows, counted but
+                // not fetched: story hash to story timestamp, so they can be ranked against the fetched ones.
+                overflow: {},
+                // reader.js: counted stories being fetched to fill a place a fetched one left, still counted.
+                refilling: {},
+                // Reads and unreads on other devices of announced stories not yet fetched: river_stories?h= answers
+                // with a placeholder read state, so these settle it when the fetch lands.
+                read_elsewhere: {},
+                user_profiles: [],
+                fetch_timer: null,
+                fetch_at: null,
+                generation: (previous.generation || 0) + 1
+            };
+            if (NEWSBLUR.app.new_stories_indicator) NEWSBLUR.app.new_stories_indicator.hide();
+        },
+
+        handle_realtime_new_story: function (story_hash, timestamp) {
+            // reader.js: the "Show new stories as they arrive" preference (reader_preferences.js) turns the pill off;
+            // the list then only gains new stories when it reloads.
+            if (NEWSBLUR.assets.preference('realtime_new_stories') === false) return;
+            var list = this.realtime_new_story_list();
+            if (!list || !story_hash) return;
+            var feed_id = story_hash.split(':')[0];
+            if (!list.feed_ids[feed_id]) return;
+            if (this.realtime_new_stories.key != list.key) this.clear_realtime_new_stories(list.key);
+
+            var state = this.realtime_new_stories;
+            if (this.model.stories.get_by_story_hash(story_hash) || _.has(state.pending_at, story_hash) ||
+                state.buffered[story_hash] || state.overflow[story_hash]) return;
+            timestamp = parseInt(timestamp, 10);
+            if (timestamp > Date.now() / 1000 + this.constants.REALTIME_NEW_STORY_FUTURE_TOLERANCE) return;
+            if (list.oldest_first) {
+                // Until the last page loads, pagination brings the story in at the right place.
+                if (!list.loaded_last_page) return;
+            } else {
+                // A newest-first list only grows at the top; an older story arrives with a later page.
+                var oldest = this.model.stories.min(function (story) {
+                    return parseInt(story.get('story_timestamp'), 10);
+                });
+                if (oldest && oldest !== Infinity && timestamp < parseInt(oldest.get('story_timestamp'), 10)) return;
+            }
+            if (state.read_elsewhere[story_hash] && list.unread_only) return;
+            // reader.js: the page keeps the REALTIME_NEW_STORY_CAP stories the pill's tap shows loaded, so a list
+            // left open for hours doesn't fetch every story its feeds publish and the tap still shows at once. A story
+            // that belongs among them is fetched now; one that doesn't is only counted.
+            var places = this.realtime_new_story_places(list);
+            var cap = this.constants.REALTIME_NEW_STORY_CAP;
+            if (places.length >= cap &&
+                !this.realtime_new_story_ranks_ahead(timestamp, places[cap - 1].timestamp, list.oldest_first)) {
+                state.overflow[story_hash] = timestamp;
+                this.show_realtime_new_stories_pill();
+                return;
+            }
+            this.queue_realtime_new_story_fetch(story_hash, timestamp);
+        },
+
+        // reader.js: Whether a waiting story's date puts it ahead of another's in the list's order.
+        realtime_new_story_ranks_ahead: function (timestamp, other_timestamp, oldest_first) {
+            return oldest_first ? timestamp < other_timestamp : timestamp > other_timestamp;
+        },
+
+        // reader.js: Waiting stories in the order the list shows them: newest first, or oldest first.
+        rank_realtime_new_stories: function (entries, oldest_first) {
+            var ranked = _.sortBy(entries, function (entry) { return entry.timestamp; });
+            return oldest_first ? ranked : ranked.reverse();
+        },
+
+        // reader.js: The stories taking the places the pill's tap shows, best ranked first: the fetched ones the list
+        // would show and the ones being fetched. Hidden stories never take a place.
+        realtime_new_story_places: function (list) {
+            var places = _.map(this.realtime_offered_new_stories(), function (attributes) {
+                return { story_hash: attributes.story_hash, timestamp: parseInt(attributes.story_timestamp, 10) };
+            }).concat(_.map(this.realtime_new_stories.pending_at, function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }));
+            return this.rank_realtime_new_stories(places, list.oldest_first);
+        },
+
+        // reader.js: Past the cap, a fetched story that falls out of the places goes back to being counted, and a free
+        // place is filled by fetching the best ranked counted story, so the tap never waits on a fetch.
+        keep_realtime_new_story_places: function (list) {
+            var state = this.realtime_new_stories;
+            var cap = this.constants.REALTIME_NEW_STORY_CAP;
+            var offered = this.rank_realtime_new_stories(_.map(this.realtime_offered_new_stories(), function (attributes) {
+                return { story_hash: attributes.story_hash, timestamp: parseInt(attributes.story_timestamp, 10) };
+            }), list.oldest_first);
+            _.each(offered.slice(cap), function (entry) {
+                state.overflow[entry.story_hash] = entry.timestamp;
+                delete state.buffered[entry.story_hash];
+            });
+            var free = cap - Math.min(offered.length, cap) - _.size(state.pending_at);
+            if (free <= 0 || _.isEmpty(state.overflow)) return;
+            var counted = this.rank_realtime_new_stories(_.map(state.overflow, function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }), list.oldest_first);
+            _.each(counted.slice(0, free), function (entry) {
+                delete state.overflow[entry.story_hash];
+                state.refilling[entry.story_hash] = true;
+                this.queue_realtime_new_story_fetch(entry.story_hash, entry.timestamp);
+            }, this);
+        },
+
+        queue_realtime_new_story_fetch: function (story_hash, timestamp) {
+            var state = this.realtime_new_stories;
+            state.pending.push(story_hash);
+            state.pending_at[story_hash] = timestamp;
+
+            // reader.js: every subscriber hears of a new story at once, so busy feeds spread their fetches out,
+            // as dashboard_river_view.js new_story does.
+            var feed = NEWSBLUR.assets.get_feed(story_hash.split(':')[0]);
+            var subscribers = (feed && feed.get('num_subscribers')) || 0;
+            var jitter = Math.random() * Math.min(this.constants.REALTIME_NEW_STORY_MAX_JITTER,
+                subscribers * this.constants.REALTIME_NEW_STORY_MS_PER_SUBSCRIBER);
+            var delay = this.constants.REALTIME_NEW_STORY_BATCH_DELAY + jitter;
+            var fetch_at = Date.now() + delay;
+            if (state.fetch_at && state.fetch_at <= fetch_at) return;
+            clearTimeout(state.fetch_timer);
+            state.fetch_at = fetch_at;
+            state.fetch_timer = setTimeout(_.bind(this.fetch_realtime_new_stories, this), delay);
+        },
+
+        fetch_realtime_new_stories: function () {
+            var state = this.realtime_new_stories;
+            state.fetch_timer = null;
+            state.fetch_at = null;
+            var list = this.realtime_new_story_list();
+            if (!list || list.key != state.key) {
+                state.pending = [];
+                state.pending_at = {};
+                state.refilling = {};
+                return;
+            }
+            if (!state.pending.length) return;
+            var hashes = state.pending.splice(0, this.constants.REALTIME_NEW_STORY_MAX_HASHES);
+            var generation = state.generation;
+            // reader.js: the rapid group never aborts a page of the list that is still loading.
+            this.model.make_request('/reader/river_stories', { h: hashes, include_hidden: true }, _.bind(function (data) {
+                if (generation != this.realtime_new_stories.generation) return;
+                this.buffer_realtime_new_stories(data, hashes);
+            }, this), _.bind(function () {
+                // reader.js: stories that failed to load stay counted, for the tap to fetch.
+                if (generation != this.realtime_new_stories.generation) return;
+                var failed = this.realtime_new_stories;
+                _.each(hashes, function (story_hash) {
+                    if (_.has(failed.pending_at, story_hash)) failed.overflow[story_hash] = failed.pending_at[story_hash];
+                    delete failed.pending_at[story_hash];
+                    delete failed.refilling[story_hash];
+                });
+                this.show_realtime_new_stories_pill();
+            }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
+        },
+
+        buffer_realtime_new_stories: function (data, requested) {
+            var list = this.realtime_new_story_list();
+            var state = this.realtime_new_stories;
+            if (!list || list.key != state.key) return this.clear_realtime_new_stories();
+            _.each(requested, function (story_hash) {
+                delete state.pending_at[story_hash];
+                delete state.refilling[story_hash];
+            });
+            _.each(data && data.stories, function (attributes) {
+                var story_hash = attributes.story_hash;
+                if (!list.feed_ids[String(attributes.story_feed_id)]) return;
+                if (this.model.stories.get_by_story_hash(story_hash) || state.buffered[story_hash]) return;
+                if (_.has(state.read_elsewhere, story_hash)) attributes.read_status = state.read_elsewhere[story_hash] ? 1 : 0;
+                if (list.unread_only && attributes.read_status) return;
+                state.buffered[story_hash] = attributes;
+            }, this);
+            if (data && data.user_profiles) {
+                state.user_profiles = state.user_profiles.concat(data.user_profiles);
+            }
+            this.keep_realtime_new_story_places(list);
+            this.show_realtime_new_stories_pill();
+        },
+
+        // reader.js: The fetched waiting stories the pill offers: the ones the list shows at the current Focus level,
+        // but never stories the reader's classifiers hide, even while hidden stories are shown. The iOS and Android
+        // pills leave hidden stories out the same way.
+        realtime_offered_new_stories: function () {
+            var score = Math.max(this.get_unread_view_score(), 0);
+            return _.filter(_.values(this.realtime_new_stories.buffered), function (attributes) {
+                return new NEWSBLUR.Models.Story(attributes).score() >= score;
+            });
+        },
+
+        realtime_visible_new_story_count: function () {
+            return this.realtime_offered_new_stories().length;
+        },
+
+        // reader.js: The pill counts the fetched stories the list would show, plus the announced ones past the cap,
+        // which can include a few that Focus or a read elsewhere would hide. Counted stories being fetched to fill a
+        // place stay counted.
+        show_realtime_new_stories_pill: function () {
+            var indicator = NEWSBLUR.app.new_stories_indicator;
+            var state = this.realtime_new_stories;
+            var list = this.realtime_new_story_list();
+            if (!indicator || !state) return;
+            if (!list || list.key != state.key) return indicator.hide();
+            indicator.show(this.realtime_visible_new_story_count() + _.size(state.overflow) + _.size(state.refilling),
+                list.oldest_first);
+        },
+
+        update_realtime_new_story_read_state: function (story_hash, read) {
+            var state = this.realtime_new_stories;
+            if (!state) return;
+            var list = this.realtime_new_story_list();
+            var unread_only = list && list.unread_only;
+            if (state.overflow[story_hash]) {
+                // reader.js: river_stories?h= answers the click's fetch with a placeholder read state.
+                state.read_elsewhere[story_hash] = read;
+                if (read && unread_only) delete state.overflow[story_hash];
+            } else if (state.buffered[story_hash]) {
+                state.buffered[story_hash].read_status = read ? 1 : 0;
+                if (read && unread_only) {
+                    delete state.buffered[story_hash];
+                    // reader.js: the place it leaves is filled from the counted stories.
+                    this.keep_realtime_new_story_places(list);
+                }
+            } else {
+                // reader.js: a story announced but not fetched yet, or announced later, keeps this read state. A
+                // list that hasn't heard an announcement yet takes its key now, so its first one doesn't reset this.
+                if (!list || !list.feed_ids[story_hash.split(':')[0]]) return;
+                if (state.key != list.key) {
+                    this.clear_realtime_new_stories(list.key);
+                    state = this.realtime_new_stories;
+                }
+                state.read_elsewhere[story_hash] = read;
+                return;
+            }
+            this.show_realtime_new_stories_pill();
+        },
+
+        // reader.js: stories added above the one being read move the Feed view under its mouse indicator, which
+        // would select another story and pull the list to it, so the scroll lock story_list_view.js takes for its
+        // own scrolls holds until the Feed view has settled.
+        hold_story_scroll_for_new_stories: function () {
+            this.flags.scrolling_by_selecting_story_title = true;
+            clearTimeout(this.locks.scrolling);
+            this.locks.scrolling = setTimeout(_.bind(function () {
+                this.flags.scrolling_by_selecting_story_title = false;
+            }, this), 500);
+        },
+
+        // reader.js: the scroll the pill makes and the arrival after it aren't reading. Until the new rows have their
+        // height, the row under the top of the list is an old one, and story_titles_view.js
+        // mark_read_stories_above_scroll would mark the new stories above it read.
+        hold_mark_read_for_new_stories: function () {
+            this.flags['new_stories_arriving_until'] = Date.now() + this.constants.REALTIME_NEW_STORY_ARRIVAL_HOLD;
+        },
+
+        new_stories_arriving: function () {
+            return Date.now() < (this.flags['new_stories_arriving_until'] || 0);
+        },
+
+        // reader.js: The pill was clicked with more stories waiting than REALTIME_NEW_STORY_CAP. It shows the 20
+        // newest-dated waiting stories as if the list had just opened: they're loaded already, so it replaces
+        // the list with them and lets go of everything else, and the list pages in afresh below them as the reader
+        // scrolls (a page bringing one of them again merges into it rather than listing it twice). An oldest-first
+        // list instead gains its 20 oldest waiting stories at its end and keeps the rest waiting. The iOS and
+        // Android apps do the same.
+        show_newest_realtime_new_stories: function (list, state, announced_feed_ids, generation) {
+            // reader.js: reopening or reloading the list moves the generation on, so a click on the old one is let go.
+            var still_open = _.bind(function () {
+                var current = this.realtime_new_story_list();
+                return current && current.key == list.key && this.realtime_new_stories.generation == generation;
+            }, this);
+            if (!still_open()) return;
+            if (this.flags['opening_feed']) {
+                // reader.js: a page of the old paging is still loading; start once it lands.
+                return _.delay(_.bind(function () {
+                    this.show_newest_realtime_new_stories(list, state, announced_feed_ids, generation);
+                }, this), 250);
+            }
+            // reader.js: keep_realtime_new_story_places has the first REALTIME_NEW_STORY_CAP loaded already, so only
+            // stories still being fetched when the pill was clicked are fetched here.
+            var view_score = Math.max(this.get_unread_view_score(), 0);
+            var waiting = _.compact(_.map(state.buffered, function (attributes, story_hash) {
+                if (new NEWSBLUR.Models.Story(attributes).score() < view_score) return;
+                return { story_hash: story_hash, timestamp: parseInt(attributes.story_timestamp, 10), attributes: attributes };
+            })).concat(_.map(_.extend({}, state.overflow, state.pending_at), function (timestamp, story_hash) {
+                return { story_hash: story_hash, timestamp: timestamp };
+            }));
+            waiting = this.rank_realtime_new_stories(waiting, list.oldest_first);
+            var chosen = waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP);
+            var missing = _.pluck(_.reject(chosen, function (entry) { return entry.attributes; }), 'story_hash');
+            var show = _.bind(function (fetched) {
+                if (!still_open()) return;
+                if (this.flags['opening_feed']) {
+                    // reader.js: a page of the old paging started while the stories were fetched; let it land first.
+                    return _.delay(show, 250, fetched);
+                }
+                var score = Math.max(this.get_unread_view_score(), 0);
+                // reader.js: reads on other devices during the fetch land in the new state, and are newer.
+                var read_elsewhere = _.defaults({}, this.realtime_new_stories.read_elsewhere, state.read_elsewhere);
+                var stories = _.compact(_.map(chosen, function (entry) {
+                    var attributes = entry.attributes || fetched[entry.story_hash];
+                    if (!attributes || !list.feed_ids[String(attributes.story_feed_id)]) return;
+                    if (_.has(read_elsewhere, entry.story_hash)) {
+                        attributes.read_status = read_elsewhere[entry.story_hash] ? 1 : 0;
+                    }
+                    if (list.unread_only && attributes.read_status) return;
+                    if (new NEWSBLUR.Models.Story(attributes).score() < score) return;
+                    return attributes;
+                }));
+                var known_profiles = this.model.user_profiles;
+                known_profiles.add(_.reject(state.user_profiles, function (profile) {
+                    return known_profiles.get(profile.id);
+                }));
+                if (list.oldest_first) return this.append_oldest_realtime_new_stories(list, state, stories, waiting);
+                this.restart_list_with_realtime_new_stories(list, stories, announced_feed_ids);
+            }, this);
+            if (!missing.length) return show({});
+            this.model.make_request('/reader/river_stories', { h: missing, include_hidden: true }, _.bind(function (data) {
+                var fetched = {};
+                _.each(data && data.stories, function (attributes) { fetched[attributes.story_hash] = attributes; });
+                if (data && data.user_profiles) state.user_profiles = state.user_profiles.concat(data.user_profiles);
+                show(fetched);
+            }, this), _.bind(function () {
+                // reader.js: the fetch failed, so the stories wait for another click rather than disappearing.
+                if (!still_open()) return;
+                this.requeue_realtime_new_stories(list, state, waiting);
+                var next = this.realtime_new_stories;
+                next.user_profiles = next.user_profiles.concat(state.user_profiles);
+                this.show_realtime_new_stories_pill();
+            }, this), { 'ajax_group': 'rapid', 'request_type': 'GET' });
+        },
+
+        // reader.js: Stories go back to wait for another click. Reads on other devices since the click are newer
+        // than the ones from before it, and a story read since then leaves an unread-only list's count.
+        requeue_realtime_new_stories: function (list, state, waiting) {
+            var next = this.realtime_new_stories;
+            _.defaults(next.read_elsewhere, state.read_elsewhere);
+            _.each(waiting, function (entry) {
+                var read = next.read_elsewhere[entry.story_hash];
+                if (entry.attributes && _.has(next.read_elsewhere, entry.story_hash)) {
+                    entry.attributes.read_status = read ? 1 : 0;
+                }
+                if (list.unread_only && (entry.attributes ? entry.attributes.read_status : read)) return;
+                if (entry.attributes) next.buffered[entry.story_hash] = entry.attributes;
+                else next.overflow[entry.story_hash] = entry.timestamp;
+            });
+        },
+
+        // reader.js: A newest-first list starts over from the newest waiting stories, and pages from page 1 below them.
+        restart_list_with_realtime_new_stories: function (list, stories, announced_feed_ids) {
+            if (this.flags['river_view'] && this.active_folder &&
+                typeof this.active_folder.feeds_with_unreads === 'function') {
+                // reader.js: a folder pages the feeds that had unread stories when it opened; a feed whose first
+                // unread stories arrived since must be paged too, as must every feed the pill took stories from.
+                var feeds = list.unread_only ? _.pluck(this.active_folder.feeds_with_unreads(), 'id') :
+                    this.active_folder.feed_ids_in_folder();
+                this.cache['river_feeds_with_unreads'] = _.uniq(_.map(feeds, function (feed_id) {
+                    return parseInt(feed_id, 10);
+                }).concat(announced_feed_ids || []));
+            }
+            this.hold_story_scroll_for_new_stories();
+            this.hold_mark_read_for_new_stories();
+            this.$s.$story_titles.stop().scrollTop(0);
+            var collection = this.model.stories;
+            collection.no_more_stories = false;
+            collection.page_fill_outs = 0;
+            this.counts['page'] = 0;
+            collection.reset(_.sortBy(stories, function (attributes) {
+                return -parseInt(attributes.story_timestamp, 10);
+            }), { added: stories.length });
+            // reader.js: a short list asks for page 1 straight away, as an opened list does.
+            _.defer(function () { NEWSBLUR.app.story_titles.fill_out(); });
+        },
+
+        // reader.js: An oldest-first list gains its oldest waiting stories at its end; the rest keep waiting.
+        append_oldest_realtime_new_stories: function (list, state, stories, waiting) {
+            var shown = {};
+            _.each(waiting.slice(0, this.constants.REALTIME_NEW_STORY_CAP), function (entry) { shown[entry.story_hash] = true; });
+            var collection = this.model.stories;
+            this.hold_mark_read_for_new_stories();
+            NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, function () {
+                return _.compact(_.map(collection.insert_realtime_stories(stories, true), function (story) {
+                    return story.story_title_view && story.story_title_view.el;
+                }));
+            }, { root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : this.$s.$story_titles[0], from_bottom: true });
+            this.requeue_realtime_new_stories(list, state, _.reject(waiting, function (entry) {
+                return shown[entry.story_hash] || collection.get_by_story_hash(entry.story_hash);
+            }));
+            // reader.js: the next tap shows the next oldest at once too.
+            this.keep_realtime_new_story_places(list);
+            this.show_realtime_new_stories_pill();
+            var first = stories.length && collection.get_by_story_hash(_.min(stories, function (attributes) {
+                return parseInt(attributes.story_timestamp, 10);
+            }).story_hash);
+            if (first && first.story_title_view) {
+                var $story_titles = this.$s.$story_titles;
+                var container_top = $story_titles[0].getBoundingClientRect().top;
+                var target = $story_titles.scrollTop() + first.story_title_view.el.getBoundingClientRect().top -
+                    container_top - 40;
+                $story_titles.stop().animate({ scrollTop: Math.max(0, target) },
+                    this.$s.$body.hasClass('NB-reduce-motion') ? 0 : 250);
+            }
+        },
+
+        // reader.js: The pill was clicked: put the waiting stories into the list and bring the first into view.
+        insert_realtime_new_stories: function () {
+            var list = this.realtime_new_story_list();
+            var state = this.realtime_new_stories;
+            var stories = this.realtime_offered_new_stories();
+            var user_profiles = state.user_profiles;
+            var overflowing = _.size(state.overflow) + _.size(state.refilling) > 0 ||
+                this.realtime_visible_new_story_count() > this.constants.REALTIME_NEW_STORY_CAP;
+            var announced_feed_ids = _.uniq(_.map(_.keys(state.buffered).concat(_.keys(state.overflow), _.keys(state.pending_at)),
+                function (story_hash) { return parseInt(story_hash.split(':')[0], 10); }));
+            this.clear_realtime_new_stories(list && list.key);
+            if (!list || list.key != state.key) return;
+            if (overflowing) {
+                return this.show_newest_realtime_new_stories(list, state, announced_feed_ids,
+                    this.realtime_new_stories.generation);
+            }
+            if (!stories.length) return;
+
+            var known_profiles = this.model.user_profiles;
+            known_profiles.add(_.reject(user_profiles, function (profile) {
+                return known_profiles.get(profile.id);
+            }));
+            // reader.js: a newest-first list goes all the way to its top before the stories arrive there, so they
+            // push the rows below them down instead of the browser keeping the old rows in view.
+            var $story_titles = this.$s.$story_titles;
+            this.hold_mark_read_for_new_stories();
+            if (!list.oldest_first) $story_titles.stop().scrollTop(0);
+            this.hold_story_scroll_for_new_stories();
+            // reader.js: common/motion.js slides the stories in from the top, or up into the end of an oldest-first list.
+            var collection = this.model.stories;
+            var added = [];
+            NEWSBLUR.motion.arrive(NEWSBLUR.app.story_titles.el, function () {
+                added = _.sortBy(collection.insert_realtime_stories(stories, list.oldest_first), function (story) {
+                    return collection.indexOf(story);
+                });
+                return _.compact(_.map(added, function (story) {
+                    return story.story_title_view && story.story_title_view.el;
+                }));
+            }, {
+                root: this.$s.$body.hasClass('NB-mobile-page-scroll') ? null : $story_titles[0],
+                from_bottom: list.oldest_first
+            });
+            if (!added.length) return;
+
+            // reader.js: an oldest-first list gains its new stories at its end, which is brought into view.
+            var first = added[0];
+            if (list.oldest_first && first.story_title_view) {
+                var container_top = $story_titles[0].getBoundingClientRect().top;
+                var target = $story_titles.scrollTop() + first.story_title_view.el.getBoundingClientRect().top -
+                    container_top - 40;
+                $story_titles.stop().animate({ scrollTop: Math.max(0, target) },
+                    this.$s.$body.hasClass('NB-reduce-motion') ? 0 : 250);
             }
         },
 
@@ -9580,6 +10174,14 @@
             $.targetIs(e, { tagSelector: '.NB-options-theme-light' }, function ($t, $p) {
                 e.preventDefault();
                 self.switch_theme('light');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-sepia' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('sepia');
+            });
+            $.targetIs(e, { tagSelector: '.NB-options-theme-gray' }, function ($t, $p) {
+                e.preventDefault();
+                self.switch_theme('gray');
             });
             $.targetIs(e, { tagSelector: '.NB-options-theme-dark' }, function ($t, $p) {
                 e.preventDefault();

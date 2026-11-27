@@ -18,6 +18,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         this.make_modal();
         this.open_modal();
         this.fetch_payment_history();
+        this.fetch_listen_usage();
 
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
@@ -44,6 +45,10 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             $.make('ul', { className: 'NB-account-payments' }, [
                 $.make('li', { className: 'NB-payments-loading' }, gettext('Loading...'))
             ]),
+            $.make('fieldset', [
+                $.make('legend', gettext('Listen'))
+            ]),
+            $.make('div', { className: 'NB-admin-listen' }, gettext('Loading...')),
             $.make('fieldset', [
                 $.make('legend', gettext('Actions'))
             ]),
@@ -148,6 +153,56 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         }, this));
     },
 
+    // ==========
+    // = Listen =
+    // ==========
+
+    fetch_listen_usage: function () {
+        this.model.fetch_listen_staff_usage(this.user.get('user_id'), _.bind(function (data) {
+            this.render_listen_usage(data.usage);
+        }, this), _.bind(function () {
+            $('.NB-admin-listen', this.$modal).text(gettext("Couldn't load listening."));
+        }, this));
+    },
+
+    render_listen_usage: function (usage) {
+        var $listen = $('.NB-admin-listen', this.$modal).empty();
+        var minutes = function (seconds) { return Math.round((seconds || 0) / 60); };
+        var lines = [];
+        if (usage.seconds_limit) {
+            // reader_admin.js: Archive and Archive Extra count a calendar month, Pro a week (apps/listen/usage.py).
+            var allowance = {
+                tier: usage.tier,
+                used: minutes(usage.seconds_used),
+                limit: minutes(usage.seconds_limit),
+                resets: usage.resets_at ? new Date(usage.resets_at).toLocaleString() : ''
+            };
+            lines.push(usage.period == 'month' ?
+                interpolate(gettext("Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."), allowance, true) :
+                interpolate(gettext("Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."), allowance, true));
+        } else {
+            lines.push(interpolate(gettext("Plan: %(tier)s. %(count)s stories previewed today."), {
+                tier: usage.tier,
+                count: usage.samples_used || 0
+            }, true));
+        }
+        lines.push(interpolate(gettext("Voice previews today: %(used)s of %(limit)s."), {
+            used: usage.previews_used || 0,
+            limit: usage.previews_limit
+        }, true));
+        lines.push(usage.last_reset_at ?
+            interpolate(gettext("Last manual reset: %(date)s."), {
+                date: new Date(usage.last_reset_at + 'Z').toLocaleString()
+            }, true) :
+            gettext("Never reset."));
+        _.each(lines, function (line) {
+            $listen.append($.make('div', { className: 'NB-admin-listen-line' }, line));
+        });
+        $listen.append($.make('div', {
+            className: 'NB-modal-submit-button NB-modal-submit-green NB-admin-action-listen-reset'
+        }, gettext("Reset Listen usage")));
+    },
+
     // ===========
     // = Actions =
     // ===========
@@ -219,6 +274,17 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 self.fetch_payment_history();
             }, function (data) {
                 $(".NB-admin-action-history").replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
+            });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-listen-reset' }, function ($t, $p) {
+            e.preventDefault();
+            if ($t.hasClass('NB-disabled')) return;
+            $t.addClass('NB-disabled').text(gettext('Resetting...'));
+
+            NEWSBLUR.assets.reset_listen_usage(self.user.get('user_id'), function (data) {
+                self.render_listen_usage(data.usage);
+            }, function (data) {
+                $t.replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-opml' }, function ($t, $p) {

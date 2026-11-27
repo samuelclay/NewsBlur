@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Premium Archive artık ayda 1 saat dinleme içeriyor, yeni Premium Archive Extra ise ayda 10 saat sunuyor. Premium Archive planındaki 1 saat / 10 saat anahtarıyla ikisi arasında geçiş yapın. Ücretsiz ve Premium hesaplar artık herhangi bir haberin ilk 60 saniyesini sesli dinleyebilir. NewsBlur ayrıca tekrar çevrimiçi olduğunuzda, bir Wi-Fi ağında oturum açtıktan sonra da bağlantıyı daha güvenilir şekilde yeniden kuruyor."
+  },
+  "macos": {
+    "whats_new": "Premium Archive artık ayda 1 saat dinleme içeriyor, yeni Premium Archive Extra ise ayda 10 saat sunuyor. Premium Archive planındaki 1 saat / 10 saat anahtarıyla ikisi arasında geçiş yapın. Ücretsiz ve Premium hesaplar artık herhangi bir haberin ilk 60 saniyesini sesli dinleyebilir. NewsBlur ayrıca tekrar çevrimiçi olduğunuzda, bir Wi-Fi ağında oturum açtıktan sonra da bağlantıyı daha güvenilir şekilde yeniden kuruyor. Bir akışa 20’den fazla yeni haber geldiğinde, yeni haberler düğmesine tıklayınca ilk haberler artık daha çabuk görünüyor."
+  },
+  "android": {
+    "release_notes": "Premium Archive artık ayda 1 saat dinleme içeriyor, yeni Premium Archive Extra ise ayda 10 saat sunuyor. Premium Archive planındaki 1 saat / 10 saat anahtarıyla ikisi arasında geçiş yapın. Ücretsiz ve Premium hesaplar artık herhangi bir haberin ilk 60 saniyesini sesli dinleyebilir. Bir akışa 20’den fazla yeni haber geldiğinde, yeni haberler düğmesine dokununca ilk haberler artık daha çabuk görünüyor."
+  }
+}

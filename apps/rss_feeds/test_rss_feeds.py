@@ -5484,6 +5484,28 @@ class Test_ArchiveWalkRunsOncePerFeed(TestCase):
         self.assertEqual(len(walks), 2)
 
 
+class Test_ArchiveWalkStopsBeforeItIsKilled(TestCase):
+    """An archive walk of a long feed outlasts its task's time limit. Without a soft limit ahead
+    of the hard one the worker is SIGKILLed mid-walk: WIRED's 150 page walk, queued when an
+    archive subscriber added the feed, was killed at page 125 on 2026-11-26
+    (apps/rss_feeds/models.py schedule_fetch_archive_feed)."""
+
+    def test_walk_queued_for_a_new_archive_subscription_has_a_soft_limit(self):
+        feed = Feed.objects.create(
+            feed_address="https://rss.example.com/lineup/archive-soft-limit.xml",
+            feed_link="https://www.example.com/archive-soft-limit",
+            feed_title="Example | Archive soft limit",
+            archive_subscribers=1,
+        )
+
+        with patch("apps.profile.tasks.FetchArchiveFeedsChunk.apply_async") as apply_async:
+            feed.schedule_fetch_archive_feed()
+
+        limits = apply_async.call_args.kwargs
+        self.assertIsNotNone(limits.get("soft_time_limit"), "nothing stops the walk before the SIGKILL")
+        self.assertLess(limits["soft_time_limit"], limits["time_limit"])
+
+
 class Test_TaskFeedsNeverStrandsFeeds(TestCase):
     """A feed must not leave the queue of feeds waiting for a fetch until its fetch task is
     published. Publishing gives up after about a second of broker connection errors, and the

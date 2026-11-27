@@ -6,7 +6,9 @@ particularly the bug where fetching specific story hashes would trigger expensiv
 ZUNIONSTORE operations across all feeds.
 """
 
+import base64
 import datetime
+from io import BytesIO
 from unittest.mock import patch
 
 import redis
@@ -380,6 +382,17 @@ class Test_RiverStories(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual([story["story_hash"] for story in content["stories"]], [story_hash])
 
+        # test_river_stories.py exercises the thumbnail and feed metadata used for an unsubscribed widget row.
+        UserSubscription.objects.filter(user=self.user, feed_id=self.test_feeds[0]).delete()
+        MStory.objects(story_hash=story_hash).update(set__image_urls=["https://example.com/thumbnail.png"])
+        with patch("urllib.request.urlopen", return_value=BytesIO(b"thumbnail")):
+            response = self.client.get(
+                reverse("load-trending-stories"), {"trending_type": "good_reads", "widget": "true"}
+            )
+        widget = json.decode(response.content)
+        self.assertEqual(base64.b64decode(widget["stories"][0]["select_thumbnail_data"]), b"thumbnail")
+        self.assertEqual(widget["feeds"][0]["id"], self.test_feeds[0])
+
     def test_trending_stories__feed_classifiers_apply_without_subscription(self):
         """Widely Read and Long Reads should apply feed-scoped classifiers to unsubscribed feeds."""
         self.client.login(username="conesus", password="test")
@@ -513,6 +526,14 @@ class Test_RiverStories(TransactionTestCase):
             # Super dislikes ship their real -2 in the API (so clients can tell
             # them apart from a -1 dislike) instead of collapsing to -1.
             self.assertEqual(returned_story["score"], -2)
+
+            widget_response = self.client.get(
+                reverse("load-trending-stories"),
+                {"trending_type": trending_type, "widget": "true"},
+            )
+            widget = json.decode(widget_response.content)
+            self.assertEqual(widget["stories"], [])
+            self.assertEqual(widget["hidden_stories_removed"], 1)
 
         author_regex_classifier = next(
             classifier

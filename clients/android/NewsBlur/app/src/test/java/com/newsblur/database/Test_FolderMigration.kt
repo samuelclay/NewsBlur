@@ -51,10 +51,14 @@ class Test_FolderMigration {
         every { helper.onUpgrade(any(), any(), any()) } answers { callOriginal() }
         every { database.execSQL(any()) } answers { statements.add(firstArg()) }
         every { database.query(any(), any(), any(), any(), any(), any(), any()) } answers {
-            cursor(if (firstArg<String>() == "folders_legacy") legacyRows else emptyList())
+            cursor(when (firstArg<String>()) {
+                "folders_legacy" -> legacyRows
+                "sqlite_master" -> listOf(listOf(DatabaseConstants.FOLDER_TABLE), listOf(ClusterReadStore.MEMBERS))
+                else -> emptyList()
+            })
         }
         every { database.insertOrThrow(DatabaseConstants.FOLDER_TABLE, null, any()) } answers {
-            val schema = statements.last { it.startsWith("CREATE TABLE ${DatabaseConstants.FOLDER_TABLE} ") }
+            val schema = statements.last { it.startsWith("CREATE TABLE ") && it.contains(" ${DatabaseConstants.FOLDER_TABLE} (") }
             val primaryKey = Regex("([a-z_]+) TEXT PRIMARY KEY").find(schema)!!.groupValues[1]
             val key = pendingValues.getValue(primaryKey)
             check(key !in migrated) { "UNIQUE constraint failed: folders.$primaryKey ($key)" }
@@ -70,7 +74,7 @@ class Test_FolderMigration {
         assertEquals(2, migrated.values.count { it[DatabaseConstants.FOLDER_PATH] == "A ▸ B" })
         assertFalse(statements.any { it.startsWith("DROP TABLE IF EXISTS") })
         if (previousVersion < 8) {
-            assertTrue(statements.any { it.startsWith("CREATE TABLE ${ClusterReadStore.MEMBERS}") && it.contains("child_timestamp INTEGER") })
+            assertTrue(statements.any { it.startsWith("CREATE TABLE IF NOT EXISTS ${ClusterReadStore.MEMBERS}") && it.contains("child_timestamp INTEGER") })
             assertFalse(statements.any { it.startsWith("ALTER TABLE ${ClusterReadStore.MEMBERS}") })
         } else {
             assertEquals(3, statements.count { it.startsWith("ALTER TABLE ${ClusterReadStore.MEMBERS} ADD COLUMN") })

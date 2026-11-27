@@ -2,18 +2,14 @@ package com.newsblur.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,11 +33,14 @@ import com.newsblur.network.UserApi
 import com.newsblur.preference.ClusterMarkReadPreference
 import com.newsblur.preference.ListenPrefKeys
 import com.newsblur.preference.ListenPreferences
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.push.PushMessaging
 import com.newsblur.service.SyncServiceState
 import com.newsblur.util.AppIconAppearanceMode
 import com.newsblur.util.AppIconFlavor
 import com.newsblur.util.AppIconManager
+import com.newsblur.util.DeviceNotifications
 import com.newsblur.util.FeedUtils.Companion.triggerSync
 import com.newsblur.util.LanguageSettings
 import com.newsblur.util.MarkStoryReadBehavior
@@ -66,6 +65,9 @@ class SettingsFragment : Fragment() {
 
     @Inject
     lateinit var prefsRepo: PrefsRepo
+
+    @Inject
+    lateinit var realtimeUpdates: RealtimeUpdates
 
     @Inject
     lateinit var sharedPreferences: SharedPreferences
@@ -184,6 +186,8 @@ class SettingsFragment : Fragment() {
             return
         }
         prefsRepo.putBoolean(key, value)
+        // SettingsFragment.kt: turning the new stories pill off hides it and drops what it was holding.
+        if (key == PrefConstants.SHOW_NEW_STORIES) realtimeUpdates.newStoriesSettingChanged()
         refreshUiState()
     }
 
@@ -327,6 +331,8 @@ class SettingsFragment : Fragment() {
 
     private fun updateNotificationsPreference(enabled: Boolean) {
         prefsRepo.putBoolean(PrefConstants.ENABLE_NOTIFICATIONS, enabled)
+        // PushMessaging.kt registers this device for pushes, or forgets it when notifications go off.
+        PushMessaging.sync(requireContext())
         refreshUiState()
     }
 
@@ -364,21 +370,5 @@ class SettingsFragment : Fragment() {
             }
     }
 
-    private fun showNotificationRationaleDialog() {
-        AlertDialog
-            .Builder(requireContext())
-            .setTitle(R.string.settings_enable_notifications)
-            .setMessage(R.string.notification_permissions_rationale)
-            .setNegativeButton(android.R.string.cancel, null)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                openAppSettings()
-            }.show()
-    }
-
-    private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.data = Uri.fromParts("package", requireContext().packageName, null)
-        startActivity(intent)
-    }
+    private fun showNotificationRationaleDialog() = DeviceNotifications.showPermissionRationale(requireActivity())
 }

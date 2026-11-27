@@ -59,15 +59,15 @@ class ReadingAdapter(
         stories: List<Story>,
         classifiers: Map<String, Classifier>,
     ) {
-        val validHashes = stories.map { it.storyHash }.toSet()
-
         this.stories = stories.toList()
-        positionsByHash = stories.mapIndexed { position, story -> story.storyHash to position }.toMap()
+        positionsByHash = buildMap(stories.size) {
+            this@ReadingAdapter.stories.forEachIndexed { position, story -> put(story.storyHash, position) }
+        }
 
         this.classifiers.clear()
         this.classifiers.putAll(classifiers)
 
-        states.keys.retainAll(validHashes)
+        states.keys.retainAll(positionsByHash.keys)
 
         notifyDataSetChanged()
         activity.pagerUpdated()

@@ -38,12 +38,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         this.is_loading = false;
         this.is_discover_indexing = false;
 
-        // Detect if discover indexing is already in progress (opened popover mid-indexing)
-        var $related_stories_buttons = $('.NB-sideoption.NB-feed-story-discover');
-        if ($related_stories_buttons.data('tipsy')) {
-            this.is_discover_indexing = true;
-        }
-
+        this.discover_feed_ids = this.options.feed_id ? [this.options.feed_id] : this.options.feed_ids;
         this.shown_feed_titles = new Set();
 
         if (!this.options.selected_folder_title) {
@@ -59,6 +54,9 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         }
 
         this.fetch_data();
+        if (NEWSBLUR.Globals.is_archive && this.$('.NB-discover-index-banner').length) {
+            this.sync_discover_index(true);
+        }
     },
 
     fetch_data: function () {
@@ -72,7 +70,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
             this.discover_feeds_model.similar_to_feed_ids = this.options.feed_ids;
         }
 
-        NEWSBLUR.ReaderPopover.prototype.render.call(this);
+        if (!this._open) NEWSBLUR.ReaderPopover.prototype.render.call(this);
 
         this.show_loading();
         try {
@@ -348,57 +346,81 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
         if (this.is_discover_indexing) return;
 
         this.is_discover_indexing = true;
-        this.update_index_button_state();
+        this.sync_discover_index(false);
+    },
 
-        $.ajax({
+    sync_discover_index: function (status_only) {
+        if (this.closing || !this._open) return;
+        clearTimeout(this.discover_poll);
+        if (this.discover_request) this.discover_request.abort();
+
+        var data = { status_only: status_only ? 1 : 0 };
+        if (this.discover_feed_ids) {
+            data.feed_ids = this.discover_feed_ids.length ? this.discover_feed_ids : '';
+        }
+        if (!status_only) this.update_discover_banner();
+
+        this.discover_request = $.ajax({
             url: '/discover/index/',
             type: 'POST',
-            success: _.bind(function (data) {
-                if (data.code < 0) {
-                    this.is_discover_indexing = false;
-                    this.update_index_button_state();
+            timeout: 20000,
+            traditional: true,
+            data: data,
+            success: _.bind(function (response) {
+                this.discover_request = null;
+                this.is_discover_indexing = false;
+                if (response.indexed_feed_ids && response.pending_feed_ids) {
+                    this.is_discover_indexing = response.indexing && response.pending_feed_ids.length > 0;
+                    var indexed = new Set(response.indexed_feed_ids);
+                    this.eligible_feed_ids = response.indexed_feed_ids.concat(response.pending_feed_ids);
+                    _.each(this.eligible_feed_ids, function (id) {
+                        var feed = NEWSBLUR.assets.feeds.get(id);
+                        if (feed) feed.set('discover_indexed', indexed.has(id));
+                    });
+                }
+                this.update_discover_banner();
+                if (this.is_discover_indexing) {
+                    this.discover_poll = _.delay(_.bind(this.sync_discover_index, this), 4000, true);
                 }
             }, this),
-            error: _.bind(function () {
+            error: _.bind(function (xhr, status) {
+                this.discover_request = null;
+                if (status == 'abort') return;
                 this.is_discover_indexing = false;
-                this.update_index_button_state();
+                this.update_discover_banner();
             }, this)
         });
     },
 
-    update_index_button_state: function () {
-        var $button = this.$('.NB-discover-index-button');
-        if (this.is_discover_indexing) {
-            $button.addClass('NB-disabled').text(gettext('Indexing...'));
-        } else {
-            $button.removeClass('NB-disabled').text(gettext('Index remaining feeds'));
-        }
+    close: function () {
+        this.closing = true;
+        clearTimeout(this.discover_poll);
+        if (this.discover_request) this.discover_request.abort();
+        return NEWSBLUR.ReaderPopover.prototype.close.apply(this, arguments);
     },
 
     update_discover_progress: function (message) {
-        if (message == "start") {
-            this.is_discover_indexing = true;
-            this.update_index_button_state();
-        } else if (message == "done") {
-            this.is_discover_indexing = false;
-            // Refresh the entire popover to get new recommendations
+        if (this.closing || !NEWSBLUR.Globals.is_archive) return;
+        if (_.string.startsWith(message, 'feeds:')) {
+            this.update_discover_banner();
+        } else if (message == 'done' && !this.discover_request && this.$('.NB-discover-index-banner').length) {
+            this.sync_discover_index(true);
+        }
+    },
+
+    update_discover_banner: function () {
+        var $banner = this.$('.NB-discover-index-banner');
+        if (!$banner.length) return;
+
+        var banner = this.make_archive_upgrade_banner();
+        if (banner) {
+            $banner.replaceWith(banner);
+        } else {
             this.page = 1;
             this.has_more_results = true;
             this.shown_feed_titles.clear();
             this.discover_feeds_model.reset();
             this.fetch_data();
-        } else if (_.string.startsWith(message, 'feeds:')) {
-            // Update progress bar with current indexed count
-            var counts = this.get_discover_counts();
-            var progress_pct = counts.feed_count > 0 ? Math.round((counts.discover_indexed_count / counts.feed_count) * 100) : 0;
-
-            this.$('.NB-discover-archive-banner-progress-fill').css('width', progress_pct + '%');
-            this.$('.NB-discover-archive-banner-progress-label').text(
-                this.sites_indexed_label(counts.discover_indexed_count, counts.feed_count)
-            );
-            this.$('.NB-discover-archive-banner-body').text(
-                this.sites_indexed_body(counts.discover_indexed_count, counts.feed_count)
-            );
         }
     },
 
@@ -412,20 +434,16 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
     },
 
     get_discover_counts: function () {
-        var feed_count, discover_indexed_count;
-        if (this.options.feed_ids) {
-            var feed_ids = this.options.feed_ids;
-            feed_count = feed_ids.length;
-            discover_indexed_count = NEWSBLUR.assets.feeds.filter(function (feed) {
-                return _.contains(feed_ids, feed.get('id'));
-            }).reduce(function (sum, feed) {
-                return sum + (feed.get('discover_indexed') ? 1 : 0);
-            }, 0);
-        } else {
-            feed_count = NEWSBLUR.assets.feeds.length;
-            discover_indexed_count = NEWSBLUR.assets.feeds.discover_indexed();
+        var feeds = NEWSBLUR.assets.feeds.active();
+        var feed_ids = this.eligible_feed_ids || this.discover_feed_ids;
+        if (feed_ids) {
+            var scope = new Set(feed_ids.map(Number));
+            feeds = feeds.filter(function (feed) { return scope.has(Number(feed.id)); });
         }
-        return { feed_count: feed_count, discover_indexed_count: discover_indexed_count };
+        return {
+            feed_count: feeds.length,
+            discover_indexed_count: feeds.filter(function (feed) { return feed.get('discover_indexed'); }).length
+        };
     },
 
     make_archive_upgrade_banner: function () {
@@ -436,7 +454,7 @@ NEWSBLUR.DiscoverFeedsPopover = NEWSBLUR.ReaderPopover.extend({
 
         // Archive users: show index banner if not fully indexed
         if (NEWSBLUR.Globals.is_archive) {
-            if (progress_pct >= 100) return false;
+            if (discover_indexed_count === feed_count) return false;
 
             var is_indexing = this.is_discover_indexing;
             var button_text = is_indexing ? gettext('Indexing...') : gettext('Index remaining feeds');

@@ -141,7 +141,8 @@ struct FeedDetailGridView: View {
     @ViewBuilder
     func makeCardSections(reader: GeometryProxy) -> some View {
         if cache.isPhoneOrCompact {
-            Section(footer: makeLoadingView()) {
+            Section(header: makeNewStoriesRow(atBottom: false),
+                    footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
                 }
@@ -156,7 +157,7 @@ struct FeedDetailGridView: View {
                 }
             }
         } else {
-            Section {
+            Section(header: makeNewStoriesRow(atBottom: false)) {
                 ForEach(cache.before, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
                 }
@@ -170,7 +171,8 @@ struct FeedDetailGridView: View {
                     .id(story.id)
             }
 
-            Section(header: makeStoryView(reader: reader), footer: makeLoadingView()) {
+            Section(header: makeStoryView(reader: reader),
+                    footer: VStack(spacing: 0) { makeNewStoriesRow(atBottom: true); makeLoadingView() }) {
                 ForEach(cache.after, id: \.id) { story in
                     makeCardView(for: story, reader: reader)
                 }
@@ -185,8 +187,10 @@ struct FeedDetailGridView: View {
                 $0.append(CardFrame(id: "\(story.id)", frame: reader[$1]))
             }
             .onPreferenceChange(CardKey.self) {
+                // NewStoriesPill.swift slides new cards in from above the top edge, which isn't the reader scrolling.
                 if !story.isClusterStory,
                    feedDetailInteraction.isMarkReadOnScroll,
+                   !cache.newStoryArrivals.isSettling,
                    StoryScrollReadDecision.shouldMarkRead(storyID: "\(story.id)", frames: $0) {
                     NSLog("🐓 Scrolled off the top: \(story.debugTitle): \($0)")
                     
@@ -203,6 +207,7 @@ struct FeedDetailGridView: View {
             .if(cache.isGrid) { view in
                 view.frame(height: cardHeight)
             }
+            .modifier(NewStoryArrivalModifier(arrivals: cache.newStoryArrivals, hash: story.hash))
     }
     
     @ViewBuilder
@@ -226,6 +231,15 @@ struct FeedDetailGridView: View {
         }
     }
     
+    /// NewStoriesPill.swift's inline "N new stories" row, a full-width header at the top of a newest-first list or
+    /// above the end of an oldest-first one.
+    @ViewBuilder
+    func makeNewStoriesRow(atBottom: Bool) -> some View {
+        if let row = cache.newStoriesRow, row.atBottom == atBottom {
+            NewStoriesRowView(row: row, isGrid: cache.isGrid)
+        }
+    }
+
     @ViewBuilder
     func makeLoadingView() -> some View {
         FeedDetailLoadingView(feedDetailInteraction: feedDetailInteraction, cache: cache)

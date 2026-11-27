@@ -1711,6 +1711,143 @@ img.feed_favicon {
     margin-left: 220px;
 }
 
+/* reader.css: The "N new stories" pill (media/js/newsblur/views/new_stories_indicator_view.js). #story_titles
+   scrolls, so zero-height sticky anchors at its top and bottom hold the pill over the visible rows. */
+.NB-new-stories-indicator-anchor {
+    position: sticky;
+    z-index: 30;
+    height: 0;
+    overflow: visible;
+}
+
+.NB-new-stories-indicator-anchor.NB-top {
+    top: 0;
+}
+
+.NB-new-stories-indicator-anchor.NB-bottom {
+    bottom: 0;
+}
+
+.NB-new-stories-indicator {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px 7px 12px;
+    background: #477DBF;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: 999px;
+    box-shadow:
+        0 1px 2px rgba(15, 17, 20, 0.12),
+        0 6px 16px rgba(15, 17, 20, 0.16);
+    cursor: pointer;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+    /* reader.css: hidden, the pill waits above the list's top edge, which #story_titles clips, so it slides out from
+       beneath the toolbar above the list and back under it. */
+    transform: translate(-50%, calc(-100% - 14px));
+    transition:
+        opacity 240ms ease-out,
+        transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 120ms ease-out;
+}
+
+.NB-new-stories-indicator.NB-at-bottom {
+    top: auto;
+    bottom: 12px;
+    transform: translate(-50%, calc(100% + 16px));
+}
+
+.NB-new-stories-indicator.NB-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+.NB-new-stories-indicator:hover {
+    background: #3F6EA8;
+}
+
+.NB-new-stories-indicator:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: 2px;
+}
+
+.NB-new-stories-indicator-icon {
+    display: inline-flex;
+}
+
+.NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-indicator.NB-at-bottom .NB-new-stories-indicator-icon svg {
+    transform: rotate(180deg);
+}
+
+.NB-new-stories-indicator-label {
+    font-variant-numeric: tabular-nums;
+}
+
+/* reader.css: the row new_stories_indicator_view.js puts at the top of the list (the end of an oldest-first one)
+   while scrolling keeps the pill away, laid out like a story title but plainly a button. */
+.NB-new-stories-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: #EAF1FA;
+    color: #3F6EA8;
+    border-bottom: 1px solid #D5E2F2;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    user-select: none;
+    grid-column: 1 / -1;
+    transition: background-color 120ms ease-out;
+}
+
+.NB-new-stories-row.NB-at-bottom {
+    border-top: 1px solid #D5E2F2;
+    border-bottom: none;
+}
+
+.NB-new-stories-row:hover {
+    background: #DCE8F6;
+}
+
+.NB-new-stories-row:focus-visible {
+    outline: 2px solid #5C89C9;
+    outline-offset: -2px;
+}
+
+.NB-new-stories-row .NB-new-stories-indicator-icon svg {
+    display: block;
+}
+
+.NB-new-stories-row.NB-at-bottom .NB-new-stories-indicator-icon svg {
+    transform: rotate(180deg);
+}
+
+body.NB-reduce-motion .NB-new-stories-indicator {
+    transition: opacity 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-new-stories-indicator {
+        transition: opacity 120ms linear;
+    }
+}
+
 .NB-story-titles-header {
     font-weight: bold;
     font-size: 16px;
@@ -19868,6 +20005,45 @@ h5.NB-classifier-section-header {
     padding: 4px 8px;
 }
 
+/* reader.css: the theme row leads with Auto and then shows each theme as a circle of its own color,
+ * the way the iOS menus do (clients/ios/Classes/MenuViewController.m, theme_color_*.png). Five equal
+ * segments, with the selected one filled like any other segmented control. */
+.NB-menu-manage .NB-options-theme .NB-theme-option {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 18px;
+}
+
+.NB-theme-swatch {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.NB-dark .NB-theme-swatch {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.NB-theme-swatch-light {
+    background-color: #FAFAF8;
+}
+
+.NB-theme-swatch-sepia {
+    background-color: #F3E2CB;
+}
+
+.NB-theme-swatch-gray {
+    background-color: #5A5A5C;
+}
+
+.NB-theme-swatch-dark {
+    background-color: #1C1C1E;
+}
+
 .NB-menu-manage .NB-menu-manage-font .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/font.svg") no-repeat center center;
     background-size: 18px;
@@ -22800,9 +22976,19 @@ h5.NB-classifier-section-header {
 }
 
 .NB-modal-admin .NB-account-payments,
+.NB-modal-admin .NB-admin-listen,
 .NB-modal-admin .NB-admin-actions {
     overflow: hidden;
     padding: 12px 24px;
+}
+
+.NB-modal-admin .NB-admin-listen-line {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.NB-modal-admin .NB-admin-listen .NB-modal-submit-button {
+    margin-top: 8px;
 }
 
 .NB-modal-admin .NB-modal-submit-button {
@@ -26226,6 +26412,109 @@ h5.NB-classifier-section-header {
     /* indigo */
 }
 
+/* reader.css: Premium Archive's Listen line is a two-position toggle between 1 hour a week (Premium Archive)
+   and 2 hours a week (Premium Archive Extra). The thumb slides under the chosen option; inset-inline-start keeps
+   it on the right side in right-to-left languages. */
+.NB-premium-tier-features li.NB-feature-listen-hours {
+    padding-bottom: 8px;
+}
+
+.NB-listen-hours-title {
+    margin-bottom: 7px;
+}
+
+.NB-listen-hours {
+    position: relative;
+    display: flex;
+    padding: 3px;
+    border-radius: 10px;
+    background: #eef2f7;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+.NB-listen-hours-thumb {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    inset-inline-start: 3px;
+    width: calc(50% - 3px);
+    border-radius: 7px;
+    background: #ffffff;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.12),
+        0 2px 6px rgba(37, 99, 235, 0.12);
+    transition: inset-inline-start 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.NB-premium-archive-extra .NB-listen-hours-thumb {
+    inset-inline-start: 50%;
+}
+
+.NB-listen-hours-option {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 6px 4px 5px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    font: inherit;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.NB-listen-hours-option:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 1px;
+}
+
+.NB-listen-hours-option[aria-checked="true"] {
+    color: #1d4ed8;
+    cursor: default;
+}
+
+.NB-listen-hours-option-label {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-listen-hours-option-price {
+    font-size: 11px;
+    opacity: 0.8;
+    font-variant-numeric: tabular-nums;
+}
+
+/* The header price and plan name change with the toggle; a short fade makes the change noticeable. */
+.NB-premium-archive-name,
+.NB-premium-archive-price {
+    transition: opacity 0.2s ease;
+}
+
+/* The plan not chosen keeps its full width but takes no space, so its PayPal button renders at the right size. */
+.NB-premium-archive-actions {
+    position: relative;
+}
+
+.NB-premium-archive-plan-hidden {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-listen-hours-thumb,
+    .NB-listen-hours-option {
+        transition: none;
+    }
+}
+
 .NB-premium-tier-features-archive li.NB-19 .NB-premium-bullet-image {
     background-image: url('/media/embed/icons/nouns/listen.svg');
     filter: invert(40%) sepia(80%) saturate(1800%) hue-rotate(80deg) brightness(90%) contrast(100%);
@@ -27477,9 +27766,17 @@ h5.NB-classifier-section-header {
     margin-bottom: 0;
 }
 
+/* reader.css: the dialog is 1050px wide (reader_preferences.js) and its tabs half again as tall as
+ * other dialogs' (css/reader/modals.css). The two columns are proportions, so they still sit side
+ * by side when a smaller window squeezes the dialog. */
+.NB-modal.NB-modal-preferences .NB-tab {
+    height: 600px;
+    padding: 0 12px 18px 2px;
+}
+
 .NB-modal-preferences .NB-preference .NB-preference-options {
     float: right;
-    width: 420px;
+    width: 64%;
     overflow: hidden;
     padding: 2px 0;
 }
@@ -27490,7 +27787,7 @@ h5.NB-classifier-section-header {
 
 .NB-modal-preferences .NB-preference .NB-preference-label {
     float: left;
-    width: 176px;
+    width: 27%;
     position: relative;
 }
 
@@ -27639,24 +27936,842 @@ h5.NB-classifier-section-header {
     margin: -5px 6px 0 2px;
 }
 
-.NB-modal-preferences .NB-preference.NB-preference-reduce-motion .NB-preference-options {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: start;
-    column-gap: 4px;
+/* ======================= */
+/* = Preferences: layout = */
+/* ======================= */
+
+/* reader.css: reader_preferences.js builds each tab as groups of rows. A group is a titled panel,
+ * and a row is one preference: its name and a line of explanation on the left, its control on the
+ * right. These rules replace the float layout above for rows inside a group. */
+.NB-preference-group {
+    margin: 20px 0 0;
 }
 
-.NB-modal-preferences .NB-preference.NB-preference-reduce-motion .NB-preference-options label {
+.NB-preference-group-title {
+    margin: 0 0 8px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.NB-preference-group-rows {
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.035);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.NB-dark .NB-preference-group-rows {
+    background-color: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference {
+    display: grid;
+    grid-template-columns: 27% minmax(0, 1fr);
+    column-gap: 24px;
+    align-items: start;
+    margin: 0;
+    padding: 16px 18px;
+    overflow: visible;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: none;
+}
+
+.NB-dark .NB-modal-preferences .NB-preference-group .NB-preference {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference:last-child {
+    border-bottom: none;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference .NB-preference-label,
+.NB-modal-preferences .NB-preference-group .NB-preference .NB-preference-options {
+    float: none;
+    width: auto;
+    overflow: visible;
+    padding: 0;
+    column-count: auto;
+}
+
+.NB-preference-title {
+    padding-top: 4px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference .NB-preference-sublabel {
+    margin: 3px 0 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: inherit;
+    opacity: 0.6;
+    text-wrap: pretty;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference .NB-preference-sublabel-link {
+    margin: 4px 0 0;
+    font-size: 12px;
+}
+
+/* ====================== */
+/* = Preferences: cards = */
+/* ====================== */
+
+/* reader.css: a choice between a few options is a row of cards, five to a row so that every row
+ * lines up with the theme tiles. Each card is a drawing from reader_preferences_art.js over a short
+ * name. Most hold a real radio button (make_cards), kept out of sight, so :has() does the marking. */
+.NB-pref-cards {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 4px 4px 0;
+    list-style: none;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-card {
+    position: relative;
+    display: block;
+    float: none;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-card input,
+.NB-modal-preferences .NB-preference .NB-preference-options input.NB-pref-hidden,
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-chip input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.NB-pref-art {
+    display: block;
+    aspect-ratio: 120 / 76;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--nb-art-page);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.14s ease-out, transform 0.14s ease-out;
+}
+
+.NB-pref-art-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.NB-pref-caption {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 16px;
+    opacity: 0.7;
+    text-wrap: balance;
+    transition: opacity 0.14s ease-out;
+}
+
+.NB-pref-card:hover .NB-pref-caption {
+    opacity: 1;
+}
+
+.NB-pref-card:hover .NB-pref-art,
+.NB-pref-card:focus-visible .NB-pref-art,
+.NB-pref-card:has(input:focus-visible) .NB-pref-art {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 0 0 4px rgba(92, 137, 201, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-pref-card:active .NB-pref-art {
+    transform: scale(0.96);
+}
+
+.NB-pref-card.NB-active .NB-pref-art,
+.NB-pref-card:has(input:checked) .NB-pref-art {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 0 0 3px #5C89C9, 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-pref-card.NB-active .NB-pref-caption,
+.NB-pref-card:has(input:checked) .NB-pref-caption {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.NB-pref-card:has(input:disabled) {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.NB-dark .NB-pref-art {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-pref-card:hover .NB-pref-art,
+.NB-dark .NB-pref-card:focus-visible .NB-pref-art,
+.NB-dark .NB-pref-card:has(input:focus-visible) .NB-pref-art {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 0 4px rgba(143, 189, 232, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-pref-card.NB-active .NB-pref-art,
+.NB-dark .NB-pref-card:has(input:checked) .NB-pref-art {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 0 3px #8FBDE8, 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* reader.css: the colors every drawing is made of. They follow the theme: css/reader/sepiamode.css
+ * and graymode.css set their own, and the dark theme's are below. */
+.NB-modal-preferences {
+    --nb-art-page: #FFFFFF;
+    --nb-art-panel: #EAECE5;
+    --nb-art-line: #CDD0C7;
+    --nb-art-ink: #9A9D94;
+    --nb-art-strong: #5E6267;
+    --nb-art-accent: #5C89C9;
+    --nb-art-select: #FFF3A8;
+    --nb-art-good: #6EA85E;
+    --nb-art-notice: #E0A33C;
+    --nb-art-bad: #CB5F58;
+    --nb-art-dark: #45474A;
+    --nb-art-white: #FFFFFF;
+}
+
+.NB-dark .NB-modal-preferences {
+    --nb-art-page: #171B20;
+    --nb-art-panel: #222A31;
+    --nb-art-line: #3E4954;
+    --nb-art-ink: #74828F;
+    --nb-art-strong: #C5CFD8;
+    --nb-art-accent: #8FBDE8;
+    --nb-art-select: #354D61;
+    --nb-art-good: #6DB37A;
+    --nb-art-notice: #D9A94E;
+    --nb-art-bad: #D0747A;
+    --nb-art-dark: #0D1013;
+    --nb-art-white: #F1F4F6;
+}
+
+.NB-pref-art-svg .ap { fill: var(--nb-art-page); }
+.NB-pref-art-svg .as { fill: var(--nb-art-panel); }
+.NB-pref-art-svg .al { fill: var(--nb-art-line); }
+.NB-pref-art-svg .ak { fill: var(--nb-art-ink); }
+.NB-pref-art-svg .ab { fill: var(--nb-art-strong); }
+.NB-pref-art-svg .aa { fill: var(--nb-art-accent); }
+.NB-pref-art-svg .ay { fill: var(--nb-art-select); }
+.NB-pref-art-svg .ag { fill: var(--nb-art-good); }
+.NB-pref-art-svg .ao { fill: var(--nb-art-notice); }
+.NB-pref-art-svg .ar { fill: var(--nb-art-bad); }
+.NB-pref-art-svg .ad { fill: var(--nb-art-dark); }
+.NB-pref-art-svg .aw { fill: var(--nb-art-white); }
+
+.NB-pref-art-svg text {
+    font-family: inherit;
+    font-weight: bold;
+}
+
+.NB-pref-art-svg .astroke {
+    fill: none;
+    stroke: var(--nb-art-white);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aline,
+.NB-pref-art-svg .astrokeonly {
+    fill: none;
+    stroke: var(--nb-art-strong);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aarrow {
+    fill: none;
+    stroke: var(--nb-art-accent);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .acur {
+    stroke: var(--nb-art-page);
+    stroke-width: 1;
+    stroke-linejoin: round;
+}
+
+.NB-pref-art-svg .aghost {
+    opacity: 0.4;
+}
+
+.NB-pref-art-svg .afade {
+    opacity: 0.55;
+}
+
+.NB-pref-art-svg .afadeup {
+    opacity: 0.82;
+}
+
+.NB-pref-art-svg .ashadow {
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* ====================== */
+/* = Preferences: chips = */
+/* ====================== */
+
+/* reader.css: lists where any number of things can be on (make_chips) are checkboxes drawn as chips. */
+.NB-pref-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 4px 0;
+}
+
+.NB-pref-chip {
+    position: relative;
+    border-radius: 17px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.16);
+    transition: background-color 0.14s ease-out, box-shadow 0.14s ease-out;
+}
+
+.NB-dark .NB-pref-chip {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-chip label {
+    display: block;
+    float: none;
+    margin: 0;
+    padding: 8px 14px;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+    opacity: 0.65;
+}
+
+.NB-pref-chip:hover label,
+.NB-pref-chip:has(input:checked) label {
+    opacity: 1;
+}
+
+.NB-pref-chip:has(input:checked) {
+    background-color: rgba(92, 137, 201, 0.16);
+    box-shadow: inset 0 0 0 1.5px #5C89C9;
+}
+
+.NB-dark .NB-pref-chip:has(input:checked) {
+    background-color: rgba(143, 189, 232, 0.16);
+    box-shadow: inset 0 0 0 1.5px #8FBDE8;
+}
+
+.NB-pref-chip:has(input:focus-visible) {
+    box-shadow: inset 0 0 0 1.5px #5C89C9, 0 0 0 3px rgba(92, 137, 201, 0.25);
+}
+
+.NB-pref-chip:active {
+    transform: scale(0.96);
+}
+
+/* reader.css: the sharing services and story buttons keep the icons set on their labels further
+ * down this file. */
+.NB-modal-preferences .NB-preference.NB-preference-story-share .NB-pref-chips .NB-pref-chip label,
+.NB-modal-preferences .NB-preference.NB-preference-story-sideoptions .NB-pref-chips .NB-pref-chip label {
+    padding-left: 38px;
+    background-position: 13px center;
+}
+
+/* ============ */
+/* = Tooltips = */
+/* ============ */
+
+/* reader.css: the one tooltip reader_utils.js show_tip moves between elements that carry data-tip:
+ * the Preferences cards and the theme circles. It appears at once and looks the same in every
+ * browser and theme, unlike a title attribute. */
+.NB-tip {
+    position: fixed;
+    z-index: 100000;
+    top: 0;
+    left: 0;
+    max-width: 250px;
+    padding: 7px 11px 8px;
+    border-radius: 7px;
+    background-color: #1F2124;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+    color: #FFFFFF;
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    text-wrap: balance;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.NB-tip.NB-visible {
+    visibility: visible;
+}
+
+.NB-tip-arrow {
+    position: absolute;
+    bottom: -4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 1px;
+    background-color: inherit;
+    transform: rotate(45deg);
+}
+
+.NB-tip.NB-below .NB-tip-arrow {
+    top: -4px;
+    bottom: auto;
+}
+
+.NB-dark .NB-tip {
+    background-color: #0B0C0D;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+/* ======================== */
+/* = Preferences: details = */
+/* ======================== */
+
+/* reader.css: a line under a row of cards for something that goes with one of them, like the
+ * folder to open, a slider's sentence or a checkbox. */
+.NB-pref-detail {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 4px 0;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-detail label {
     float: none;
     margin: 0;
     padding: 0;
 }
 
-.NB-modal-preferences .NB-preference-reduce-motion .NB-preference-description {
-    grid-column: 2;
-    margin-top: 4px;
+.NB-modal-preferences .NB-preference .NB-preference-options label.NB-pref-detail {
+    float: none;
+    margin: 14px 4px 0;
+    padding: 0;
+    cursor: default;
+}
+
+/* reader.css: a slider's sentence belongs to one card, and is dimmed until that card is chosen. */
+.NB-modal-preferences .NB-pref-slider-line .NB-preference-slider,
+.NB-modal-preferences .NB-pref-slider-line .NB-tangle-readstorydelay {
+    flex: 0 0 auto;
+    display: block;
+    top: 0;
+    width: 140px;
+    margin: 0 8px;
+}
+
+.NB-preference-readstorydelay:not(:has(input[value="1"]:checked)) .NB-pref-slider-line,
+.NB-preference-keyboard-verticalarrows:not(:has(input[value="scroll"]:checked)) .NB-pref-slider-line {
+    opacity: 0.5;
+}
+
+.NB-preference-autoopenfolder:not(:has(input[value="1"]:checked)) .NB-pref-detail {
+    opacity: 0.5;
+}
+
+.NB-modal-preferences .NB-preference .NB-preference-options .NB-pref-detail input[type=checkbox] {
+    float: none;
+    margin: 0;
+}
+
+/* reader.css: every dropdown in the dialog is the same size: language, timezone and the folder
+ * picker that views/feed_folder_picker_view.js puts in place of its select. */
+.NB-modal-preferences .NB-preference-group .NB-preference-options select {
+    box-sizing: border-box;
+    width: 340px;
+    max-width: calc(100% - 8px);
+    height: 36px;
+    margin: 4px;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.22);
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference-autoopenfolder .NB-pref-detail {
+    display: block;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference-autoopenfolder .NB-feed-folder-picker-trigger {
+    box-sizing: border-box;
+    width: 340px;
+    max-width: 100%;
+    min-height: 36px;
+    margin: 0;
+    font-size: 15px;
+}
+
+.NB-pref-action {
+    display: inline-block;
+    margin: 4px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference-email-status {
+    margin: 4px;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference-label .NB-keyboard-shortcut-key {
+    float: none;
+    display: inline-block;
+    margin: 0 4px 0 0;
+}
+
+.NB-modal-preferences .NB-preference-group .NB-preference-daysofunread .NB-preference-options {
+    padding: 4px;
+}
+
+/* reader.css: the pill ahead of the tabs that says a change was saved (reader_preferences.js
+ * set_status). It keeps its place while hidden so the tabs never shift. */
+.NB-preferences-status {
+    float: left;
+    margin: 2px 14px 0 0;
+    padding: 4px 11px;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.06);
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    white-space: nowrap;
+    visibility: hidden;
+    transition: background-color 0.14s ease-out, color 0.14s ease-out;
+}
+
+.NB-preferences-status.NB-visible {
+    visibility: visible;
+}
+
+.NB-preferences-status.NB-saved {
+    background-color: rgba(52, 145, 46, 0.14);
+    color: #2B7326;
+}
+
+.NB-preferences-status.NB-saved::before {
+    content: "\2713\00a0";
+}
+
+.NB-preferences-status.NB-error {
+    background-color: rgba(179, 56, 44, 0.13);
+    color: #B3382C;
+}
+
+.NB-dark .NB-preferences-status {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark .NB-preferences-status.NB-saved {
+    background-color: rgba(109, 179, 122, 0.2);
+    color: #9AD8A8;
+}
+
+.NB-dark .NB-preferences-status.NB-error {
+    background-color: rgba(208, 116, 122, 0.2);
+    color: #F0A39B;
+}
+
+/* ============================= */
+/* = Preferences: theme chooser = */
+/* ============================= */
+
+/* reader.css: built by reader_preferences.js make_theme_chooser. Five tiles pick a theme, each a
+ * small drawing of the reader in that theme. The panel under them picks the light theme and the
+ * dark theme that Auto switches between. */
+.NB-theme-chooser {
+    padding: 4px 4px 0;
+}
+
+.NB-theme-choices {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.NB-theme-choice {
+    cursor: pointer;
+    text-align: center;
+    outline: none;
+}
+
+/* reader.css: every preview is drawn from these five colors, set per theme below. They are the
+ * theme's real colors whatever theme the reader is in, so css/reader/sepiamode.css and
+ * graymode.css leave them alone. */
+.NB-theme-preview {
+    position: relative;
+    display: flex;
+    height: 72px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--nb-preview-page);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.14s ease-out, transform 0.14s ease-out;
+}
+
+.NB-theme-preview-light {
+    --nb-preview-page: #FFFFFF;
+    --nb-preview-feeds: #EAECE5;
+    --nb-preview-line: #C4C8BC;
+    --nb-preview-text: #9A9D94;
+    --nb-preview-selected: #FFF3A8;
+}
+
+.NB-theme-preview-sepia {
+    --nb-preview-page: #FAF5ED;
+    --nb-preview-feeds: #F3E2CB;
+    --nb-preview-line: #D4C8B8;
+    --nb-preview-text: #A39281;
+    --nb-preview-selected: #F5D1A2;
+}
+
+.NB-theme-preview-gray {
+    --nb-preview-page: #2B2B2B;
+    --nb-preview-feeds: #474747;
+    --nb-preview-line: #6C6C6C;
+    --nb-preview-text: #9C9C9C;
+    --nb-preview-selected: #586B82;
+}
+
+.NB-theme-preview-dark {
+    --nb-preview-page: #171B20;
+    --nb-preview-feeds: #222A31;
+    --nb-preview-line: #4A5661;
+    --nb-preview-text: #8593A0;
+    --nb-preview-selected: #354D61;
+}
+
+.NB-theme-preview-feeds {
+    flex: 0 0 31%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 9px 6px;
+    background-color: var(--nb-preview-feeds);
+}
+
+.NB-theme-preview-feed {
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--nb-preview-line);
+}
+
+.NB-theme-preview-feed:nth-child(3) {
+    width: 70%;
+}
+
+.NB-theme-preview-feed.NB-selected {
+    height: 8px;
+    margin: -2px -3px;
+    border-radius: 3px;
+    background-color: var(--nb-preview-selected);
+}
+
+.NB-theme-preview-stories {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 9px 9px;
+}
+
+.NB-theme-preview-story {
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--nb-preview-text);
+}
+
+.NB-theme-preview-story:nth-child(1) {
+    width: 82%;
+}
+
+.NB-theme-preview-story:nth-child(3) {
+    width: 94%;
+    opacity: 0.55;
+}
+
+.NB-theme-preview-story:nth-child(4) {
+    width: 60%;
+    opacity: 0.55;
+}
+
+.NB-theme-preview-story.NB-selected {
+    height: 12px;
+    margin: -1px -4px;
+    border-radius: 3px;
+    background-color: var(--nb-preview-selected);
+}
+
+/* reader.css: the Auto tile is the light theme it uses with the dark one laid over its far corner. */
+.NB-theme-preview-auto {
+    position: relative;
+    border-radius: 8px;
+    transition: transform 0.14s ease-out;
+}
+
+.NB-theme-preview-auto .NB-theme-preview-night {
+    position: absolute;
+    inset: 0;
+    height: auto;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.NB-theme-choice-name {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 16px;
+    opacity: 0.7;
+    transition: opacity 0.14s ease-out;
+}
+
+.NB-theme-choice:hover .NB-theme-choice-name {
+    opacity: 1;
+}
+
+.NB-theme-choice:hover .NB-theme-preview:not(.NB-theme-preview-night),
+.NB-theme-choice:focus-visible .NB-theme-preview:not(.NB-theme-preview-night) {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 0 0 4px rgba(92, 137, 201, 0.25), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-theme-choice:active .NB-theme-preview:not(.NB-theme-preview-night),
+.NB-theme-choice:active .NB-theme-preview-auto {
+    transform: scale(0.96);
+}
+
+.NB-theme-choice.NB-active .NB-theme-preview:not(.NB-theme-preview-night) {
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.14), 0 0 0 3px #5C89C9, 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.NB-theme-choice.NB-active .NB-theme-choice-name {
+    opacity: 1;
+    font-weight: bold;
+}
+
+.NB-dark .NB-theme-preview {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-theme-choice:hover .NB-theme-preview:not(.NB-theme-preview-night),
+.NB-dark .NB-theme-choice:focus-visible .NB-theme-preview:not(.NB-theme-preview-night) {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 0 4px rgba(143, 189, 232, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.NB-dark .NB-theme-choice.NB-active .NB-theme-preview:not(.NB-theme-preview-night) {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 0 0 3px #8FBDE8, 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* reader.css: Auto's two themes. The panel is always there so the choices can be set ahead of
+ * time. It stands out while Auto is the theme, and the side the device is on now is not dimmed. */
+.NB-theme-auto {
+    margin-top: 18px;
+    padding: 12px 14px 14px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.035);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.14s ease-out;
+}
+
+.NB-dark .NB-theme-auto {
+    background-color: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.NB-theme-auto-title {
     font-size: 12px;
-    opacity: .7;
+    opacity: 0.65;
+}
+
+.NB-theme-auto.NB-active .NB-theme-auto-title {
+    opacity: 0.9;
+}
+
+.NB-theme-auto-sides {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.NB-theme-auto-side-title {
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.NB-theme-auto.NB-active .NB-theme-auto-side:not(.NB-in-effect) {
+    opacity: 0.6;
+}
+
+.NB-theme-auto.NB-active .NB-theme-auto-side:hover,
+.NB-theme-auto.NB-active .NB-theme-auto-side:focus-within {
+    opacity: 1;
+}
+
+.NB-modal-preferences .NB-theme-auto .segmented-control.NB-theme-auto-control {
+    display: flex;
+    float: none;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.NB-modal-preferences .NB-theme-auto .NB-theme-auto-option {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+/* reader.css: on a phone a preference's name sits above its control, and cards run three to a row. */
+.NB-mobile .NB-modal-preferences .NB-preference-group .NB-preference {
+    display: block;
+    padding: 14px 12px;
+}
+
+.NB-mobile .NB-modal-preferences .NB-preference-group .NB-preference .NB-preference-options {
+    margin-top: 10px;
+}
+
+.NB-mobile .NB-pref-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+/* reader.css: on a phone the two Auto controls share one narrow row. */
+.NB-mobile .NB-theme-choices {
+    gap: 8px;
+}
+
+.NB-mobile .NB-theme-auto {
+    padding: 10px 10px 12px;
+}
+
+.NB-mobile .NB-theme-auto-sides {
+    gap: 10px;
+}
+
+.NB-mobile .NB-modal-preferences .NB-theme-auto .NB-theme-auto-option {
+    gap: 5px;
+    padding: 0 4px;
 }
 
 .NB-modal-preferences .NB-preference-feedorder label img {
@@ -28145,6 +29260,12 @@ h5.NB-classifier-section-header {
 #simplemodal-container.NB-account-container .simplemodal-wrap {
     max-height: calc(100vh - 80px);
     overflow-y: auto !important;
+}
+
+/* reader.css: the down arrow stays on the title's line. Where a longer language's tabs leave no
+ * room beside them, the whole title moves under the tabs instead of leaving the arrow on its own. */
+.NB-modal-account .NB-modal-title {
+    white-space: nowrap;
 }
 
 .NB-modal-account .NB-modal-title .NB-icon {
@@ -44741,3 +45862,215 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     background: #e3e6e0; color: #4b673e; font-size: 20px;
 }
 .NB-dark .NB-motion-refresh-check { background: #303936; color: #b6d99f; }
+
+.NB-premium-tier-features-pro .NB-feature-oauth .NB-premium-bullet-image {
+    background: transparent url("/media/embed/icons/nouns/dialog-oauth-application.svg") no-repeat center / contain;
+}
+
+/* reader_oauth_applications.js is a tab in the standard Account dialog. */
+.NB-modal.NB-modal-account .NB-tab-oauth {
+    height: auto;
+    padding: 20px 24px 24px;
+    line-height: 1.5;
+}
+
+.NB-modal-account .NB-modal-tab-oauth {
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+.NB-tab-oauth h3 {
+    margin: 0;
+    padding-inline-start: 32px;
+    background: url("/media/embed/icons/nouns/dialog-oauth-application.svg") left center / 24px no-repeat;
+    font-size: 20px;
+    line-height: 1.4;
+}
+
+[dir=rtl] .NB-tab-oauth h3 {
+    background-position: right center;
+}
+
+.NB-oauth-intro {
+    margin: 6px 0 20px;
+    max-width: 72ch;
+}
+
+.NB-oauth-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.NB-oauth-columns > * {
+    min-width: 0;
+}
+
+.NB-tab-oauth label {
+    display: block;
+    margin: 0 0 14px;
+    font-weight: bold;
+}
+
+.NB-tab-oauth label input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 4px;
+    padding: 8px 10px;
+    font: inherit;
+    font-weight: normal;
+}
+
+.NB-dark .NB-tab-oauth input::placeholder {
+    color: #bec0c1;
+    opacity: 1;
+}
+
+.NB-oauth-preview {
+    border-inline-start: 1px solid rgba(127, 127, 127, .35);
+    padding-inline-start: 24px;
+}
+
+.NB-oauth-preview h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+}
+
+.NB-oauth-preview-link {
+    margin: 0 0 16px;
+}
+
+.NB-oauth-url {
+    border-radius: 5px;
+    background: rgba(127, 127, 127, .09);
+    overflow-wrap: anywhere;
+    padding: 12px 14px;
+    display: block;
+    text-align: left;
+    font: 12px/1.55 monospace;
+    user-select: all;
+}
+
+.NB-tab-oauth input[readonly] {
+    font-family: monospace;
+}
+
+.NB-oauth-help {
+    font-size: 12px;
+    margin: 6px 0 12px;
+}
+
+.NB-oauth-error:empty {
+    display: none;
+}
+
+.NB-tab-oauth .NB-oauth-upgrade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    text-align: start;
+    margin: 0 0 20px;
+}
+
+.NB-oauth-upgrade button {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .NB-modal.NB-modal-account .NB-tab-oauth {
+        padding: 14px;
+    }
+
+    .NB-oauth-columns {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .NB-oauth-preview {
+        border-inline-start: 0;
+        border-top: 1px solid rgba(127, 127, 127, .35);
+        padding: 14px 0 0;
+    }
+}
+
+/* reader_oauth_applications.js shows the owner's registrations and their current usage. */
+.NB-oauth-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.NB-oauth-refresh {
+    background: none;
+    border: 0;
+    color: #365c7d;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.NB-dark .NB-oauth-refresh {
+    color: var(--nb-dark-link);
+}
+
+.NB-oauth-registration {
+    border-block: 1px solid rgba(127, 127, 127, .35);
+    margin-bottom: 10px;
+}
+
+.NB-oauth-registration[open] {
+    padding-bottom: 14px;
+}
+
+.NB-oauth-registration > summary,
+.NB-oauth-app-details > summary {
+    cursor: pointer;
+    padding-block: 9px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+}
+
+.NB-oauth-app-row {
+    padding: 6px 0 10px;
+    border-block-start: 1px solid rgba(127, 127, 127, .35);
+}
+
+.NB-oauth-app-details[open] {
+    margin-bottom: 14px;
+}
+
+.NB-oauth-redirects {
+    display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.NB-oauth-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
+    gap: 8px 16px;
+    margin: 0;
+}
+
+.NB-oauth-metrics dt {
+    font-size: 12px;
+}
+
+.NB-oauth-metrics dd {
+    margin: 2px 0 0;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 700px) {
+    .NB-oauth-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

@@ -303,6 +303,11 @@ NEWSBLUR.log = function(msg) {
                     return $.favicon(parseInt(feed_id.replace('feed:', ''), 10));
                 if (_.string.startsWith(feed_id, 'social:'))
                     return $.favicon(NEWSBLUR.assets.get_feed(feed_id));
+                // jquery.newsblur.js: A string is an id, never a model, so an id without an icon of
+                // its own gets a stand-in and stays out of the model code below.
+                if (_.string.startsWith(feed, 'search:'))
+                    return NEWSBLUR.Globals.MEDIA_URL + 'img/icons/nouns/search.svg';
+                return empty_icon;
             }
             
             // Feed is a model - check for briefing section or custom feed icon first

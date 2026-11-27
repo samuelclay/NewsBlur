@@ -158,7 +158,7 @@ struct ListenNowPlayingView: View {
                 .font(.system(size: 18))
             VStack(alignment: .leading, spacing: 2) {
                 Text(String(format: NBLocalization.text("Previewing %@ seconds. Premium Archive unlocks full stories"),
-                            ListenPreferences.numberString(player.previewLimit ?? 30)))
+                            ListenPreferences.numberString(player.previewLimit ?? ListenUsage.defaultPreviewSeconds)))
                     .font(.system(size: 13, weight: .medium))
                     .fixedSize(horizontal: false, vertical: true)
                 Text(String(format: NBLocalization.text("%@ left in this preview"), ListenFormat.clock(remaining)))
@@ -200,7 +200,9 @@ struct ListenNowPlayingView: View {
     }
 
     private var usageUpgradeMessage: String {
-        player.usage?.upgradeMessage ?? NBLocalization.text("That was a 30 second preview. Premium Archive unlocks full stories.")
+        player.usage?.upgradeMessage ?? String(
+            format: NBLocalization.text("That was a %@ second preview. Premium Archive unlocks full stories."),
+            ListenPreferences.numberString(player.previewLimit ?? ListenUsage.defaultPreviewSeconds))
     }
 
     private func upgradeButton(_ upgrade: ListenPlaybackError.Upgrade) -> some View {
@@ -529,10 +531,8 @@ struct ListenNowPlayingView: View {
 
     private var usageText: String? {
         guard let usage = player.usage else { return nil }
-        if usage.isArchiveTier, let limit = usage.secondsLimit {
-            let remaining = usage.secondsRemaining ?? max(0, limit - usage.secondsUsed)
-            return String(format: NBLocalization.text("%1$@ of %2$@ of listening left this week"),
-                          ListenFormat.allowance(remaining), ListenFormat.allowance(limit))
+        if usage.isArchiveTier, let allowance = usage.allowanceOfLimitText {
+            return allowance
         }
         if let samplesLimit = usage.samplesLimit {
             return String(format: NBLocalization.text("%1$@ of %2$@ story previews used today"),

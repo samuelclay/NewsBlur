@@ -36,14 +36,25 @@ test('build_rows flattens the folder tree under Top Level with depths', function
     assert.equal(rows.find(function (row) { return row.value === 'Audio'; }).selected, false);
 });
 
-test('build_rows marks a folder and its subfolders as disabled targets', function () {
+test('moving a folder disables its subtree while same-named folders in other branches remain selectable', function () {
+    const tree = [
+        { title: 'News', children: [{ title: 'Done', children: [{ title: 'Read' }] }] },
+        { title: 'Work', children: [{ title: 'Done', children: [{ title: 'Read' }, { title: 'Latest' }] }] }
+    ];
     const rows = folder_picker_utils.build_rows(tree, {
-        selected: [''],
-        disabled: folder_picker_utils.disabled_folder_targets('Reality', ['Africa', 'Asia', 'Japan'])
+        selected: [JSON.stringify(['News'])],
+        moving_folder_path: ['News', 'Done']
     });
-
-    const disabled = rows.filter(function (row) { return row.disabled; });
-    assert.deepEqual(values(disabled), ['Reality', 'Africa', 'Asia', 'Japan']);
+    const paths = list => list.map(row => JSON.parse(row.value));
+    assert.deepEqual(paths(rows.filter(row => row.disabled)), [['News', 'Done'], ['News', 'Done', 'Read']]);
+    assert.deepEqual(paths(rows.filter(row => row.selected)), [['News']]);
+    assert.deepEqual(paths(folder_picker_utils.filter_rows(rows, 'latest')), [
+        ['Work'], ['Work', 'Done'], ['Work', 'Done', 'Latest']
+    ]);
+    const matches = folder_picker_utils.filter_rows(rows, 'Done');
+    assert.equal(folder_picker_utils.first_match(matches), JSON.stringify(['Work', 'Done']));
+    assert.equal(folder_picker_utils.next_highlight(matches, JSON.stringify(['Work']), 1), JSON.stringify(['Work', 'Done']));
+    assert.deepEqual(JSON.parse(rows[0].value), []);
 });
 
 test('choosing a folder by name moves the feed instead of adding a folder', function () {
@@ -114,7 +125,7 @@ test('change folders picker shows custom folder icons and a sized list', functio
     const js = repo_file('media/js/newsblur/reader/reader.js');
     const css = repo_file('media/css/reader/reader.css');
 
-    assert.match(js, /\$\.favicon_el\('river:' \+ row\.value\)/);
+    assert.match(js, /\$\.favicon_el\('river:' \+ row\.title\)/);
     assert.match(js, /utils\.list_height\(\{/);
     assert.doesNotMatch(css, /\.NB-change-folders \{\s*width: 100%;\s*height: 84px;/);
 });

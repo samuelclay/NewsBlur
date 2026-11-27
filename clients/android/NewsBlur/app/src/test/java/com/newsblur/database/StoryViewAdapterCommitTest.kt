@@ -31,6 +31,41 @@ import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoryViewAdapterCommitTest {
+    // The "N new stories" row sits in the list but isn't a story: next/previous, mark-read-on-scroll and returning to
+    // a story all find stories by display position, so the row must shift those positions without being one.
+    @Test
+    fun theNewStoriesRowIsListedButIsNeverAStory() = runTest {
+        withFixture { fixture ->
+            val adapter = fixture.adapter
+            every { adapter.setNewStoriesRow(any()) } answers { callOriginal() }
+            every { adapter.getStory(any()) } answers { callOriginal() }
+            every { adapter.getDisplayPositionForStoryIndex(any()) } answers { callOriginal() }
+            every { adapter.storyHashAtDisplayPosition(any()) } answers { callOriginal() }
+            every { adapter.storyCount } answers { callOriginal() }
+            every { adapter["rebuildStoryDisplayPositions"]() } answers { callOriginal() }
+            fixture.submitRows(3)
+            runCurrent()
+
+            adapter.setNewStoriesRow(StoryViewAdapter.NewStoriesRowState(2, atTop = true))
+            assertTrue(fixture.items.first() is StoryViewAdapter.DisplayItem.NewStoriesRow)
+            assertEquals(null, adapter.getStory(0))
+            assertEquals(null, adapter.storyHashAtDisplayPosition(0))
+            assertEquals("1:row0", adapter.getStory(1)?.storyHash)
+            assertEquals(1, adapter.getDisplayPositionForStoryIndex(0))
+            assertEquals(1, adapter.getDisplayPositionForStoryHash("1:row0"))
+            assertEquals(3, adapter.rawStoryCount)
+
+            // A new batch keeps the row in place; removing it puts the stories back where they were.
+            fixture.submitRows(4)
+            runCurrent()
+            assertTrue(fixture.items.first() is StoryViewAdapter.DisplayItem.NewStoriesRow)
+            assertEquals(1, adapter.getDisplayPositionForStoryIndex(0))
+            adapter.setNewStoriesRow(null)
+            assertEquals(0, adapter.getDisplayPositionForStoryIndex(0))
+            assertEquals("1:row0", adapter.getStory(0)?.storyHash)
+        }
+    }
+
     @Test
     fun followingInAThreeColumnTwoRowViewportFullyRevealsTheSelectedTile() = runTest {
         withFixture { fixture ->
@@ -603,7 +638,7 @@ class StoryViewAdapterCommitTest {
             every { adapter["commitStoryDiff"](any<StoryViewAdapter.StoryDifference>()) } answers { callOriginal() }
             every { adapter["rebuildDisplayItemsFromCurrentStories"]() } answers { callOriginal() }
             every { adapter["visibleDisplayItemCount"]() } answers { items.size }
-            every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>()) } answers { firstArg<List<Story>>() }
+            every { adapter["applySkipBackfill"](any<List<Story>>(), any<Boolean>(), any<Set<String>>()) } answers { firstArg<List<Story>>() }
             every { adapter["buildDisplayItems"](any<List<Story>>()) } answers {
                 val incoming = firstArg<List<Story>>()
                 val shape = incoming.flatMapIndexed { index, story ->

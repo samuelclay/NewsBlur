@@ -1,0 +1,1149 @@
+/* ========= */
+/* = Index = */
+/* ========= */
+
+/* graymode.css: the Gray theme.
+ *
+ * reader.js load_theme puts both NB-dark and NB-gray on the body, so every dark rule still applies
+ * and this file only takes the blue out. The palette swaps the slate variables that darkmode.css
+ * paints its main panes with for neutral grays, and the feed pane gets back the lighter gray it had
+ * before the dark theme moved to slate.
+ *
+ * The sections named after stylesheets answer the dark rules in that stylesheet that still write
+ * out a faintly blue surface or border, giving each the neutral gray of the same lightness. They
+ * use .NB-dark:where(.NB-gray), which keeps the dark rule's specificity, so this file has to load
+ * after every stylesheet that holds dark rules (newsblur_web/assets.yml,
+ * apps/reader/test_theme_stylesheets.py). A few repeat a dark rule's color unchanged so that it
+ * still comes after the override of an equally specific rule it beats in the dark theme.
+ *
+ * Palette
+ * Feed Pane
+ * Stories Pane
+ * Dialogs
+ * reader.css, darkmode.css and the other stylesheets with dark rules
+ */
+
+
+
+
+/* =========== */
+/* = Palette = */
+/* =========== */
+
+body.NB-dark.NB-gray {
+    --nb-dark-canvas: #2b2b2b;
+    --nb-dark-surface: #363636;
+    --nb-dark-raised: #424242;
+    --nb-dark-border: #5e5e5e;
+    --nb-dark-text: #d6d6d6;
+    --nb-dark-muted: #a6a6a6;
+    --nb-dark-selected: #46535f;
+    --nb-dark-link: #8fbde8;
+}
+
+/* graymode.css: the colors of the drawings on the Preferences cards (css/reader/reader.css,
+ * reader_preferences_art.js). */
+.NB-dark.NB-gray .NB-modal-preferences {
+    --nb-art-page: #2B2B2B;
+    --nb-art-panel: #474747;
+    --nb-art-line: #5A5A5A;
+    --nb-art-ink: #8E8E8E;
+    --nb-art-strong: #D6D6D6;
+    --nb-art-select: #586B82;
+    --nb-art-dark: #171717;
+    --nb-art-white: #F2F2F2;
+}
+
+.NB-dark.NB-gray {
+    scrollbar-color: #6a6a6a #333333;
+}
+
+.NB-dark.NB-gray ::-webkit-scrollbar-thumb,
+.NB-dark.NB-gray::-webkit-scrollbar-thumb {
+    background-color: #6a6a6a;
+}
+
+.NB-dark.NB-gray ::-webkit-scrollbar-track,
+.NB-dark.NB-gray::-webkit-scrollbar-track {
+    background-color: #333333;
+}
+
+
+
+
+/* ============= */
+/* = Feed Pane = */
+/* ============= */
+
+/* graymode.css: darkmode.css paints the sidebar from the same variables as the story list. Raising
+ * them here makes the whole feed pane a lighter gray than the stories beside it. */
+.NB-dark.NB-gray .left-pane {
+    --nb-dark-surface: #474747;
+    --nb-dark-raised: #565656;
+    --nb-dark-selected: #586b82;
+    --nb-dark-text: #dcdcdc;
+}
+
+.NB-dark.NB-gray .unread_count_neutral {
+    background-color: #6c6c6c;
+    color: #f4f4f4;
+}
+
+
+
+
+/* ================ */
+/* = Stories Pane = */
+/* ================ */
+
+/* graymode.css: darkmode.css darkens a read row under the pointer to a blue black. */
+.NB-dark.NB-gray #story_titles .NB-story-title.read:is(:hover, .NB-selected) {
+    --nb-read-row-background: #222222;
+}
+
+
+
+
+/* =========== */
+/* = Dialogs = */
+/* =========== */
+
+/* graymode.css: css/reader/modals.css dims the page behind a dialog with navy in every theme. */
+.NB-dark.NB-gray #simplemodal-overlay {
+    background-color: #141414;
+}
+
+
+
+
+/* ============== */
+/* = reader.css = */
+/* ============== */
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-banner {
+    --classifier-tint: #262626;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-banner.NB-filter-title {
+    --classifier-tint: #272727;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-banner.NB-filter-text {
+    --classifier-tint: #252525;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-segmented:hover {
+    background-color: #4d4d4d;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-scope-button:hover,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-training-button:hover,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-notification-button:hover,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-scope-button:focus-visible,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-training-button:focus-visible,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-notification-button:focus-visible,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-scope-button.NB-active,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-training-button.NB-active,
+.NB-dark:where(.NB-gray) .NB-classifier-filter-notification-button.NB-active {
+    background-color: #6d6d6d;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-segmented:hover > button.NB-active {
+    background-color: #797979;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-filter-segmented > button:hover:not(:disabled):not(.NB-active) {
+    background-color: #5b5b5b;
+}
+
+.NB-dark:where(.NB-gray) .NB-folder-icon-editor .NB-folder-icon-search {
+    background-color: #2c2c2c;
+    border-color: #424242;
+}
+
+.NB-dark:where(.NB-gray) .NB-social-card input[type="radio"]:checked+.NB-social-card-content {
+    background-color: #383838;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-subcat-pills-row {
+    background-color: #2d2d2d;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-source-header {
+    background-color: #2c2c2c;
+    border-color: #424242;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-section-search {
+    background-color: #2b2b2b;
+    border-color: #424242;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-webfeed-feed-badge {
+    background-color: #282828;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-section-hint-popover {
+    background-image: linear-gradient(135deg, #2c2c2c 0%, #272727 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-motion-refresh-check {
+    background-color: #363636;
+}
+
+
+
+
+/* ================= */
+/* = faq_modal.css = */
+/* ================= */
+
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-modal-titlebar,
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-modal-titlebar {
+    background-image: linear-gradient(180deg, #272727 0%, #1e1f22 100%);
+}
+
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-faq-expand-toggle li.NB-faq-expand-option.NB-active {
+    background-color: #363636;
+}
+
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-faq-search-input,
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-faq-search-input {
+    background-color: #2b2b2b;
+}
+
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-faq-item,
+body.NB-dark:where(.NB-gray) .NB-modal.NB-modal-faq .NB-faq-item {
+    background-color: #272727;
+}
+
+
+
+
+/* ================ */
+/* = darkmode.css = */
+/* ================ */
+
+body.NB-dark:where(.NB-gray) {
+    --nb-dark-canvas: #1a1a1a;
+    --nb-dark-surface: #282828;
+    --nb-dark-raised: #353535;
+    --nb-dark-border: #747474;
+}
+
+.NB-dark:where(.NB-gray) .NB-overlay {
+    background-color: rgba(17, 17, 17, 0.3);
+}
+
+.NB-dark:where(.NB-gray) .ui-layout-resizer-west,
+.NB-dark:where(.NB-gray) .right-pane .ui-layout-resizer-south,
+.NB-dark:where(.NB-gray) .right-pane .ui-layout-resizer-north {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .NB-module-premium .NB-module-item-intro {
+    background-image: linear-gradient(145deg, #2a3a30 0%, #303030 50%, #203028 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage .NB-folder-picker-filter-input {
+    border-color: #515151;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-popover-container.popover {
+    background-image: linear-gradient(160deg, #393939 0%, #2e2e2e 100%);
+}
+
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete li {
+    border-bottom-color: #2a2a2a;
+}
+
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete .ui-menu-item a:hover {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-divider::before,
+.NB-dark:where(.NB-gray) .NB-add-discover-divider::after {
+    border-bottom-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-source {
+    background-image: linear-gradient(135deg, #333333 0%, #2b2b2b 100%);
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-source:hover {
+    background-image: linear-gradient(135deg, #3b3b3b 0%, #333333 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-add-input-row,
+.NB-dark:where(.NB-gray) .NB-add-folder-row .NB-folders,
+.NB-dark:where(.NB-gray) .NB-add-folder-input-row {
+    border-color: #535353;
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-trending {
+    background-color: #323232;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-trending:hover {
+    background-color: #3e3e3e;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-popular-flyout-inner {
+    background-color: #333333;
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-popular-category:hover {
+    background-color: #3b3b3b;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-discover-popular-separator {
+    background-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete.ui-widget-content {
+    background-color: #2b2b2b;
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete li a.ui-state-hover,
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete li a.ui-state-active,
+.NB-dark:where(.NB-gray) .ui-menu.ui-autocomplete li a.ui-state-focus {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .NB-autocomplete-freshness.NB-freshness-none .NB-freshness-dot {
+    background-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control-vertical li.NB-active,
+.NB-dark:where(.NB-gray) .segmented-control-vertical li.NB-active:active,
+.NB-dark:where(.NB-gray) .segmented-control-vertical-active li {
+    background-color: #6e6e6e;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control-vertical li {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-goodies .NB-goodies-hero {
+    background-color: #353535;
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-goodies .NB-goodies-app,
+.NB-dark:where(.NB-gray) .NB-modal-goodies .NB-goodies-tip {
+    background-color: #2f2f2f;
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-goodies .NB-goodies-hero-shots img,
+.NB-dark:where(.NB-gray) .NB-modal-goodies .NB-goodies-app-thumbs img {
+    border-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-gift-hero {
+    background-image: linear-gradient(135deg, #1d1d1d 0%, #232323 40%, #282828 100%);
+}
+
+.NB-dark:where(.NB-gray) #simplemodal-container:has(.NB-modal-features) {
+    background-color: #1e1e1e;
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) #simplemodal-container:has(.NB-modal-features) .simplemodal-data {
+    background-color: #1e1e1e;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-features {
+    background-image: linear-gradient(180deg, #1e1e1e 0%, #191919 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-features-rail-item.NB-active {
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-features-shot img {
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-features-faq-item {
+    background-color: #2b2b2b;
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-intro .NB-intro-module,
+.NB-dark:where(.NB-gray) .NB-modal-intro .NB-intro-uptodate-follow,
+.NB-dark:where(.NB-gray) .NB-keyboard-group,
+.NB-dark:where(.NB-gray) .NB-keyboard-shortcut-explanation,
+.NB-dark:where(.NB-gray) .NB-modal-organizer .NB-organizer-sidebar-container,
+.NB-dark:where(.NB-gray) .NB-modal-feedchooser .NB-feedchooser-premium-plan {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-free,
+.NB-dark:where(.NB-gray) .NB-modal-feedchooser .NB-feedchooser-progress-track {
+    background-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage li.NB-menu-item.NB-menu-manage-story-feed.NB-active {
+    background-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage-story-feed-submenu,
+.NB-dark:where(.NB-gray) .NB-menu-manage-story-feed-submenu li.NB-menu-item {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage-story-feed-submenu li.NB-menu-item:hover:not(.NB-disabled) {
+    background-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage-story-feed-submenu li.NB-menu-separator {
+    border-bottom-color: #252623;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-statistics .NB-statistics-history-chart-hours-row {
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier {
+    background-color: #626262;
+}
+
+.NB-dark:where(.NB-gray) .NB-interaction:hover:not(.NB-disabled) {
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-interaction:active:not(.NB-disabled) {
+    background-color: transparent;
+    background-color: transparent;
+}
+
+.NB-dark:where(.NB-gray) .NB-interaction.NB-highlighted {
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-interaction {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player {
+    background-color: #303030;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-volume-popover {
+    background-color: #393939;
+    border-color: #4d4d4d;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-volume::-webkit-slider-runnable-track {
+    background-color: #525252;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-volume::-webkit-slider-thumb {
+    background-color: #a0a2a6;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-volume::-moz-range-track {
+    background-color: #525252;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-volume::-moz-range-thumb {
+    background-color: #a0a2a6;
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-queue li:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark:where(.NB-gray) .NB-media-player-queue li.NB-queue-dragging {
+    background-color: #3c3c3c;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control li.NB-active,
+.NB-dark:where(.NB-gray) .segmented-control li.NB-active:not(.NB-disabled),
+.NB-dark:where(.NB-gray) .segmented-control li:active:not(.NB-disabled),
+.NB-dark:where(.NB-gray) .segmented-control-active li {
+    background-color: transparent;
+    background-color: #6d6d6d;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control:hover {
+    background-color: #4d4d4d;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control:hover li.NB-active {
+    background-color: #797979;
+}
+
+.NB-dark:where(.NB-gray) .segmented-control li:hover:not(.NB-disabled):not(.NB-active) {
+    background-color: #5b5b5b;
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-options,
+.NB-dark:where(.NB-gray) .NB-dashboard-river .NB-dashboard-river-options,
+.NB-dark:where(.NB-gray) #story_taskbar .NB-taskbar-options,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-story-title-indicator,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-discover-container {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-dashboard-river .NB-dashboard-river-options {
+    background-color: #565759;
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-options:hover,
+.NB-dark:where(.NB-gray) .NB-dashboard-river .NB-dashboard-river-options:hover,
+.NB-dark:where(.NB-gray) #story_taskbar .NB-taskbar-options:hover,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-story-title-indicator:hover,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read:hover,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read-time:hover,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read-expand:hover,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-discover-container:hover {
+    background-color: #636363;
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read-expand,
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read-time {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-feedbar-mark-feed-read-expand {
+    background-color: transparent;
+}
+
+.NB-dark:where(.NB-gray) input.NB-search-input[type="text"] {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) #story_titles .NB-story-title.read:is(:hover, .NB-selected) {
+    --nb-read-row-background: #1a1a1a;
+}
+
+.NB-dark:where(.NB-gray) .NB-end-line,
+.NB-dark:where(.NB-gray) .NB-feed-story-endbar {
+    background-color: #212121;
+    border-top-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-new-stories-row {
+    background-color: #282828;
+}
+
+.NB-dark:where(.NB-gray) .NB-search-header .NB-search-header-save,
+.NB-dark:where(.NB-gray) .NB-search-header .NB-search-header-save:hover,
+.NB-dark:where(.NB-gray) .NB-search-header .NB-search-header-save.NB-active {
+    background-color: #2f2f2f;
+}
+
+.NB-dark:where(.NB-gray) .hljs {
+    background-color: #212121;
+}
+
+.NB-dark:where(.NB-gray) .NB-sideoption-save,
+.NB-dark:where(.NB-gray) .NB-sideoption-share,
+.NB-dark:where(.NB-gray) .NB-sideoption-discover,
+.NB-dark:where(.NB-gray) ul.tagit {
+    border-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) ul.tagit li.tagit-choice,
+.NB-dark:where(.NB-gray) .NB-sideoption-save .NB-sideoption-save-populate,
+.NB-dark:where(.NB-gray) .NB-tagging-autocomplete.ui-widget-content {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-tagging-autocomplete.ui-widget-content a {
+    background-color: #353535;
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-tagging-autocomplete.ui-widget-content a.ui-state-focus,
+.NB-dark:where(.NB-gray) .NB-tagging-autocomplete.ui-widget-content a.ui-state-active,
+.NB-dark:where(.NB-gray) .NB-tagging-autocomplete.ui-widget-content a:hover {
+    background-color: #2b2b2b;
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-sideoption-save .NB-sideoption-save-notes {
+    background-color: #353535;
+    border-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-sideoption:hover,
+.NB-dark:where(.NB-gray) .NB-sideoption.NB-active,
+.NB-dark:where(.NB-gray) .NB-story-starred .NB-dark .NB-sideoption.NB-feed-story-save,
+.NB-dark:where(.NB-gray) .NB-story-shared .NB-sideoption.NB-feed-story-share,
+.NB-dark:where(.NB-gray) .NB-story-comments-shares-teaser {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-tryfeed-signup-banner {
+    background-image: linear-gradient(135deg, #1e1e1e 0%, #292929 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-tryfeed-signup-banner:hover {
+    background-image: linear-gradient(135deg, #242424 0%, #303030 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-search-indexing-banner {
+    background-image: linear-gradient(135deg, #202020 0%, #1f2840 100%);
+}
+
+.NB-dark:where(.NB-gray) .modal-header,
+.NB-dark:where(.NB-gray) .modal-footer,
+.NB-dark:where(.NB-gray) .modal-inner-container,
+.NB-dark:where(.NB-gray) .modal .modal-body label,
+.NB-dark:where(.NB-gray) .badge-notification.clicks,
+.NB-dark:where(.NB-gray) p>code,
+.NB-dark:where(.NB-gray) li>code,
+.NB-dark:where(.NB-gray) pre>code {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) #topic-progress,
+.NB-dark:where(.NB-gray) .select-kit.combo-box.category-drop .select-kit-collection {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .search-menu a:hover {
+    background-color: #0088cc;
+}
+
+.NB-dark:where(.NB-gray) .menu-panel {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-container {
+    background-color: rgba(47, 47, 47, 0.95);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-container.NB-inverse {
+    background-color: rgba(41, 41, 41, 0.95);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-option,
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-group {
+    background-color: rgba(35, 35, 35, 0.8);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-group:has(.NB-menu-ask-ai-segment:hover) .NB-menu-ask-ai-group-header,
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-option:hover {
+    background-color: rgba(52, 52, 52, 0.9);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-option:active {
+    background-color: rgba(58, 69, 87, 0.9);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-segmented-control {
+    background-color: rgba(25, 25, 25, 0.5);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-segment {
+    background-color: rgba(35, 35, 35, 0.8);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-segment:hover {
+    background-color: rgba(52, 52, 52, 0.9);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-segment:active {
+    background-color: rgba(58, 69, 87, 0.9);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-custom-input-wrapper {
+    background-color: rgba(25, 25, 25, 0.5);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-custom-input,
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-voice-button {
+    background-color: rgba(35, 35, 35, 0.8);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-voice-button:hover {
+    background-color: rgba(45, 45, 45, 0.9);
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-voice-button.NB-recording {
+    background-color: #FF6B6B;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-ask-ai-voice-button.NB-transcribing {
+    background-color: #4ECDC4;
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-regex-popover {
+    background-image: linear-gradient(135deg, #2c2c2c 0%, #272727 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-classifier-input-regex-mode {
+    background-color: #2c2c2c;
+}
+
+.NB-dark:where(.NB-gray) .NB-module-gettingstarted .NB-module-item-intro {
+    background-image: linear-gradient(145deg, #2a3a30 0%, #303030 50%, #203028 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-module-gettingstarted .NB-intro-progress-goal:not(.NB-done) {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-module-trial .NB-module-item-intro {
+    background-image: linear-gradient(145deg, #2a3a30 0%, #303030 50%, #203028 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-module-hide {
+    background-color: #404040;
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-module-hide:hover {
+    background-color: #545454;
+    border-color: #727272;
+}
+
+.NB-dark:where(.NB-gray) #simplemodal-container:has(.NB-modal-premium-upgrade) {
+    background-color: #1e1e1e;
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) #simplemodal-container:has(.NB-modal-premium-upgrade) .simplemodal-data {
+    background-color: #1e1e1e;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-premium-upgrade {
+    background-image: linear-gradient(180deg, #1e1e1e 0%, #191919 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier {
+    background-color: #2b2b2b;
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier:hover {
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-free {
+    background-image: linear-gradient(180deg, #252525 0%, #1f1f1f 100%);
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-free .NB-premium-tier-header {
+    background-image: linear-gradient(135deg, #404040 0%, #545454 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-free .NB-premium-tier-features {
+    background-color: #1f1f1f;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-free .NB-premium-tier-actions {
+    background-image: linear-gradient(180deg, #252525 0%, #1f1f1f 100%);
+    border-top-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-selfhosted {
+    background-image: linear-gradient(180deg, #242424 0%, #1d1d1d 100%);
+    border-color: #334155;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-selfhosted .NB-premium-tier-header {
+    background-image: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-selfhosted .NB-premium-tier-features {
+    background-color: #1d1d1d;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-selfhosted .NB-premium-tier-actions {
+    background-image: linear-gradient(180deg, #242424 0%, #1d1d1d 100%);
+    border-top-color: #334155;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-selfhosted-github {
+    background-color: #404040;
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-selfhosted-github:hover {
+    background-color: #545454;
+    border-color: #727272;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-premium .NB-premium-tier-header {
+    background-image: linear-gradient(135deg, #065f46 0%, #047857 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-archive .NB-premium-tier-header {
+    background-image: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-pro .NB-premium-tier-header {
+    background-image: linear-gradient(135deg, #78350f 0%, #92400e 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-features {
+    background-color: #252525;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-features li {
+    border-bottom-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-features li:last-child {
+    border-bottom-color: transparent;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-hours {
+    background-color: #1b1b1b;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-hours-thumb {
+    background-color: #393939;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-features li.NB-premium-tier-upcoming-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-actions {
+    background-image: linear-gradient(180deg, #2b2b2b 0%, #252525 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button {
+    background-color: #404040;
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-buttons .NB-provider-alternate .NB-modal-submit-button:hover {
+    background-color: #545454;
+    border-color: #727272;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-status-included {
+    background-image: linear-gradient(135deg, #252525 0%, #2b2b2b 100%);
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-status .NB-modal-submit-grey {
+    background-color: #404040;
+    border-color: #545454;
+}
+
+.NB-dark:where(.NB-gray) .NB-premium-tier-status .NB-modal-submit-grey:hover {
+    background-color: #545454;
+    border-color: #727272;
+}
+
+.NB-dark:where(.NB-gray) .NB-provider-button-change {
+    background-color: #404040 !important;
+    border-color: #545454 !important;
+}
+
+.NB-dark:where(.NB-gray) .NB-provider-button-change:hover {
+    background-color: #545454 !important;
+    border-color: #727272 !important;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge {
+    background-color: #2b2b2b;
+    border-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge:hover {
+    border-color: #505050;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge .NB-feed-badge {
+    background-image: linear-gradient(180deg, #353535 0%, #2c2c2c 100%);
+    border-bottom-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge .NB-feed-badge-icon {
+    background-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats {
+    background-color: #404040;
+    border-color: #505050;
+}
+
+.NB-dark:where(.NB-gray) .NB-trending-feed-badge .NB-feed-badge-subscribed-actions .NB-badge-action-stats:hover {
+    background-color: #505050;
+    border-color: #606060;
+}
+
+.NB-dark:where(.NB-gray) .NB-folder-icon-editor .NB-folder-icon-upload-preview img {
+    border-color: #333;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-icon-reset-banner {
+    background-color: #2d2d2d;
+    border-color: #3e3e3e;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-icon-reset-banner:hover {
+    background-color: #373737;
+    border-color: #4f4f4f;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-style-popover .segmented-control {
+    background-color: #2A2A2A;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-style-popover .segmented-control li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-style-popover .segmented-control li.NB-active {
+    background-color: #3A3A3A;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-view-toggles {
+    background-color: #2c2c2c;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-view-toggle.NB-active {
+    background-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-search-wrapper {
+    border-color: #424242;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-section-header {
+    border-bottom-color: #3c3c3c;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-source-header {
+    background-color: #2c2c2c;
+    border-color: #424242;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-trending-pill:hover {
+    background-color: #282828;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-trending-pill.NB-active {
+    background-color: #5C89C9;
+}
+
+.NB-dark:where(.NB-gray) .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-actions,
+.NB-dark:where(.NB-gray) .NB-discover-feed-badges .NB-feed-badge .NB-feed-badge-subscribed-actions {
+    border-top-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add {
+    background-color: #3c3c3c;
+    border-color: #4b4b4b;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-match {
+    background-color: #2c2c2c;
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-type {
+    background-color: #333333;
+    border-right-color: #4b4b4b;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-type:focus-visible {
+    background-color: #3a3a3a;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-type option {
+    background-color: #2c2c2c;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-regex {
+    border-left-color: #4b4b4b;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-regex:hover {
+    background-color: #343434;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-regex.NB-active {
+    background-color: #6a58d8;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-match.NB-regex-mode {
+    background-color: #2c2c2c;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-sentiments {
+    background-color: #2c2c2c;
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .NB-manage-add-sentiment {
+    border-left-color: #4b4b4b;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker-trigger {
+    background-color: #2c2c2c;
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-folder-row .NB-feed-folder-picker-trigger {
+    background-color: #2b2b2b;
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker-for-NB-add-site-folder-select .NB-feed-folder-picker-trigger {
+    background-color: #2A2A2A;
+    border-color: #444;
+}
+
+.NB-dark:where(.NB-gray) .NB-add-site-card-add-group .NB-feed-folder-picker-trigger,
+.NB-dark:where(.NB-gray) .NB-badge-folder-add-group .NB-feed-folder-picker-trigger {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.NB-dark:where(.NB-gray) .NB-menu-manage-confirm .NB-feed-folder-picker-trigger {
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker-trigger:focus-visible,
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker.NB-open .NB-feed-folder-picker-trigger {
+    border-color: #50A050;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker-popover {
+    background-color: #323232;
+    border-color: #535353;
+}
+
+.NB-dark:where(.NB-gray) input.NB-feed-folder-picker-search,
+.NB-dark:where(.NB-gray) input.NB-feed-folder-picker-search:focus {
+    background-color: #282828;
+    border-color: #4b4b4b;
+}
+
+.NB-dark:where(.NB-gray) input.NB-feed-folder-picker-search:focus {
+    border-color: #50A050;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-folder-picker-option.NB-active {
+    background-color: #404040;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-group-header:hover {
+    background-color: #444444;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-summary-story .NB-story-title {
+    background-image: linear-gradient(135deg, #222222 0%, #282828 40%, #252525 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-summary-story .NB-story-title:hover {
+    background-image: linear-gradient(135deg, #222840 0%, #2f2f2f 40%, #2a2a2a 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-summary-story .NB-story-title.NB-selected {
+    background-image: linear-gradient(135deg, #283048 0%, #363636 40%, #323232 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-briefing-preferences-icon {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-feedbar .NB-briefing-preferences-icon:hover {
+    background-color: #636363;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-section-custom-input input {
+    background-color: #2a2a2e;
+    border-color: #444;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-section-custom-input input:focus {
+    border-color: #5C89C4;
+}
+
+.NB-dark:where(.NB-gray) .NB-briefing-section-hint-popover {
+    background-image: linear-gradient(135deg, #2c2c2c 0%, #272727 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-story-content h3[data-section] {
+    border-bottom-color: #444444 !important;
+}
+
+.NB-dark:where(.NB-gray) .NB-feed-story-content .NB-briefing-summary hr {
+    background-color: #444444 !important;
+    border-color: #444444 !important;
+}
+
+.NB-dark:where(.NB-gray) .NB-story-titles-explainer {
+    border-color: #373737;
+    background-image: linear-gradient(180deg, #303030 0%, #292B2C 100%);
+}
+
+.NB-dark:where(.NB-gray) .NB-story-titles-explainer-rule {
+    background-color: #3c3c3c;
+}
+
+.NB-dark:where(.NB-gray) .NB-modal-email .NB-modal-email-story {
+    background-color: #2b2b2b;
+}
+
+.NB-dark:where(.NB-gray) .NB-sideoption.NB-feed-story-listen.NB-listen-current {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-select select:hover {
+    background-color: #4d4d4d;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-select select option {
+    background-color: #353535;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-filter.NB-active select {
+    background-color: #6d6d6d;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-voice-header {
+    background-color: #2e2e2e;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-speed-field:hover {
+    background-color: #4d4d4d;
+}
+
+.NB-dark:where(.NB-gray) .NB-listen-speed-field:focus-within {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+
+
+
+/* ================ */
+/* = language.css = */
+/* ================ */
+
+.NB-dark:where(.NB-gray) .NB-language-chooser {
+    --nb-language-surface: #363636;
+    --nb-language-muted: #8b8b8b;
+}
+
+
+
+
+/* ============== */
+/* = mobile.css = */
+/* ============== */
+
+@media (hover: none) {
+    body.NB-mobile.NB-dark:where(.NB-gray) .NB-briefing-summary-story .NB-story-title:hover:not(.NB-selected) {
+        background-image: linear-gradient(135deg, #222222 0%, #282828 40%, #252525 100%);
+    }
+}

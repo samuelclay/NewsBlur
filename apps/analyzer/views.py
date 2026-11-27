@@ -9,7 +9,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext
 from django.views.decorators.http import require_POST
-from mongoengine.queryset import NotUniqueError, Q
+from mongoengine.queryset import NotUniqueError
 
 from apps.analyzer.forms import PopularityQueryForm
 from apps.analyzer.models import (
@@ -23,6 +23,7 @@ from apps.analyzer.models import (
     MClassifierUrl,
     MPopularityQuery,
     get_classifiers_for_user,
+    save_classifier_score,
     validate_regex_pattern,
 )
 from apps.reader.models import UserSubscription
@@ -37,38 +38,6 @@ from utils.user_functions import ajax_login_required, get_user
 def index(request):
     # /classifier/ has no page of its own, the trainer lives inside the reader.
     return redirect("index")
-
-
-# Fields added to classifiers after the first ones were saved, with the value a
-# document that lacks the field stands for.
-LEGACY_CLASSIFIER_FIELD_DEFAULTS = {"scope": "feed", "folder_name": "", "is_regex": False}
-
-
-def find_legacy_classifier(ClassifierCls, classifier_dict):
-    """
-    Find the classifier an exact lookup missed because it was saved before scope,
-    folder_name or is_regex existed, so it can still be updated or removed.
-
-    A missing field may only stand in for its default value. Matching it against
-    anything else would let a folder save update the global classifier with the same
-    phrase, or a plain title update the regex title with the same text.
-    """
-    legacy_fields = [field for field in LEGACY_CLASSIFIER_FIELD_DEFAULTS if field in classifier_dict]
-    if not any(classifier_dict[field] == LEGACY_CLASSIFIER_FIELD_DEFAULTS[field] for field in legacy_fields):
-        return None
-
-    query = Q(**{key: value for key, value in classifier_dict.items() if key not in legacy_fields})
-    for field in legacy_fields:
-        value = classifier_dict[field]
-        if value == LEGACY_CLASSIFIER_FIELD_DEFAULTS[field]:
-            query &= Q(**{field: value}) | Q(**{field + "__exists": False})
-        else:
-            query &= Q(**{field: value})
-
-    try:
-        return ClassifierCls.objects.get(query)
-    except (ClassifierCls.DoesNotExist, ClassifierCls.MultipleObjectsReturned):
-        return None
 
 
 @require_POST
@@ -221,35 +190,10 @@ def save_classifier(request):
                         if not post_content.startswith("social:"):
                             classifier_dict["feed_id"] = post_content
                     try:
-                        classifier = ClassifierCls.objects.get(**classifier_dict)
-                    except ClassifierCls.DoesNotExist:
-                        classifier = find_legacy_classifier(ClassifierCls, classifier_dict)
-                    except ClassifierCls.MultipleObjectsReturned:
-                        classifiers_found = ClassifierCls.objects.filter(**classifier_dict)
-                        if score == 0:
-                            for classifier in classifiers_found:
-                                classifier.delete()
-                        else:
-                            first_classifier = classifiers_found[0]
-                            first_classifier.score = score
-                            first_classifier.save()
-                            for dup in classifiers_found[1:]:
-                                dup.delete()
-                        continue
-                    if not classifier:
-                        if score != 0:
-                            try:
-                                classifier_dict.update(dict(score=score))
-                                classifier = ClassifierCls.objects.create(**classifier_dict)
-                            except NotUniqueError:
-                                if use_scope:
-                                    scope_conflicts.append(post_content)
-                                continue
-                    elif score == 0:
-                        classifier.delete()
-                    elif classifier.score != score:
-                        classifier.score = score
-                        classifier.save()
+                        save_classifier_score(ClassifierCls, classifier_dict, score)
+                    except NotUniqueError:
+                        if use_scope:
+                            scope_conflicts.append(post_content)
 
     _save_classifier(MClassifierAuthor, "author")
     _save_classifier(MClassifierTag, "tag")
@@ -279,44 +223,14 @@ def save_classifier(request):
                 if len(prompt_text) > 500:
                     continue
                 use_scope = scope != "feed"
-                lookup = {
-                    "user_id": request.user.pk,
-                    "feed_id": 0 if use_scope else (feed_id or 0),
-                    "folder_id": scope_folder_name if scope == "folder" else "",
-                    "prompt": prompt_text,
-                    "include_images": include_images,
-                }
-                try:
-                    classifier = MClassifierPrompt.objects.get(**lookup)
-                except MClassifierPrompt.DoesNotExist:
-                    classifier = None
-                except MClassifierPrompt.MultipleObjectsReturned:
-                    classifiers_found = MClassifierPrompt.objects.filter(**lookup)
-                    if classifier_type is None:
-                        for c in classifiers_found:
-                            c.delete()
-                    else:
-                        first = classifiers_found[0]
-                        first.classifier_type = classifier_type
-                        first.save()
-                        for dup in classifiers_found[1:]:
-                            dup.delete()
-                    continue
-                if not classifier:
-                    if classifier_type is not None:
-                        MClassifierPrompt.objects.create(
-                            user_id=request.user.pk,
-                            feed_id=0 if use_scope else (feed_id or 0),
-                            folder_id=scope_folder_name if scope == "folder" else "",
-                            prompt=prompt_text,
-                            classifier_type=classifier_type,
-                            include_images=include_images,
-                        )
-                elif classifier_type is None:
-                    classifier.delete()
-                elif classifier.classifier_type != classifier_type:
-                    classifier.classifier_type = classifier_type
-                    classifier.save()
+                MClassifierPrompt.set_training(
+                    user_id=request.user.pk,
+                    feed_id=0 if use_scope else (feed_id or 0),
+                    folder_id=scope_folder_name if scope == "folder" else "",
+                    prompt=prompt_text,
+                    include_images=include_images,
+                    classifier_type=classifier_type,
+                )
 
     # Prompt classifiers only apply to new stories going forward (no backlog classification)
 
@@ -365,9 +279,7 @@ def save_prompt_classifier(request):
 
     if action == "delete" and prompt_id:
         try:
-            classifier = MClassifierPrompt.objects.get(id=prompt_id, user_id=request.user.pk)
-            classifier.delete()
-            MClassifierPrompt.invalidate_cache(request.user.pk, prompt_id)
+            MClassifierPrompt.delete_training_by_id(request.user.pk, prompt_id)
             logging.user(request, "~FGDeleted prompt classifier: ~SB%s" % prompt_id)
         except MClassifierPrompt.DoesNotExist:
             return {"code": -1, "message": gettext("Prompt classifier not found")}
@@ -375,14 +287,13 @@ def save_prompt_classifier(request):
         if len(prompt) > 500:
             return {"code": -1, "message": gettext("Prompt too long (max 500 characters)")}
 
-        classifier = MClassifierPrompt(
+        MClassifierPrompt.set_training(
             user_id=request.user.pk,
             feed_id=feed_id,
             prompt=prompt,
             classifier_type=classifier_type,
             include_images=include_images,
         )
-        classifier.save()
         logging.user(
             request,
             "~FGSaved prompt classifier: ~SB%s~SN (type=%s, images=%s) ~FW%s"
@@ -727,34 +638,9 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
                                 continue
 
                     try:
-                        classifier = ClassifierCls.objects.get(**classifier_dict)
-                    except ClassifierCls.DoesNotExist:
-                        classifier = find_legacy_classifier(ClassifierCls, classifier_dict)
-                    except ClassifierCls.MultipleObjectsReturned:
-                        classifiers = ClassifierCls.objects.filter(**classifier_dict)
-                        if score == 0:
-                            for classifier in classifiers:
-                                classifier.delete()
-                        else:
-                            first_classifier = classifiers[0]
-                            first_classifier.score = score
-                            first_classifier.save()
-                            for dup in classifiers[1:]:
-                                dup.delete()
+                        save_classifier_score(ClassifierCls, classifier_dict, score)
+                    except NotUniqueError:
                         continue
-
-                    if not classifier:
-                        if score != 0:
-                            try:
-                                classifier_dict["score"] = score
-                                ClassifierCls.objects.create(**classifier_dict)
-                            except NotUniqueError:
-                                pass
-                    elif score == 0:
-                        classifier.delete()
-                    elif classifier.score != score:
-                        classifier.score = score
-                        classifier.save()
 
     # Handle AI prompt classifiers (prompt = text-only, image_prompt = VLM)
     prompt_opinions = {
@@ -776,42 +662,13 @@ def _save_classifiers_for_feed(user_id, feed_id, social_user_id, classifier_data
         for prompt_text in values:
             if not prompt_text:
                 continue
-            lookup = {
-                "user_id": user_id,
-                "feed_id": feed_id or 0,
-                "prompt": prompt_text,
-                "include_images": include_images,
-            }
-            try:
-                classifier = MClassifierPrompt.objects.get(**lookup)
-            except MClassifierPrompt.DoesNotExist:
-                classifier = None
-            except MClassifierPrompt.MultipleObjectsReturned:
-                classifiers_found = MClassifierPrompt.objects.filter(**lookup)
-                if classifier_type is None:
-                    for c in classifiers_found:
-                        c.delete()
-                else:
-                    first = classifiers_found[0]
-                    first.classifier_type = classifier_type
-                    first.save()
-                    for dup in classifiers_found[1:]:
-                        dup.delete()
-                continue
-            if not classifier:
-                if classifier_type is not None:
-                    MClassifierPrompt.objects.create(
-                        user_id=user_id,
-                        feed_id=feed_id or 0,
-                        prompt=prompt_text,
-                        classifier_type=classifier_type,
-                        include_images=include_images,
-                    )
-            elif classifier_type is None:
-                classifier.delete()
-            elif classifier.classifier_type != classifier_type:
-                classifier.classifier_type = classifier_type
-                classifier.save()
+            MClassifierPrompt.set_training(
+                user_id=user_id,
+                feed_id=feed_id or 0,
+                prompt=prompt_text,
+                include_images=include_images,
+                classifier_type=classifier_type,
+            )
 
 
 def popularity_query(request):
