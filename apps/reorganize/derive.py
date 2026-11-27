@@ -1,14 +1,15 @@
 """Turn a model's answer about a user's sites and folders into a proposal for apps/reorganize/plan.py.
 
 model_view() is what the model may see: the open folders by key, and where each site it may file
-sits. The model answers with targets (the folders the result should have), assignments (one folder
-per site) and dead sites. build_proposal() resolves that answer against the stored folders into a
-proposal in plan.py's shape. The answer may be malformed or name folders and sites that do not
+sits. The model answers with targets (the folders the result should have) and assignments (one
+folder per site); dead sites come from the rule in apps/reorganize/sites.py. build_proposal()
+resolves all of that against the stored folders into a proposal in plan.py's shape. The answer may be malformed or name folders and sites that do not
 exist; whatever cannot be used is dropped.
 
 This module imports only the standard library and apps/reorganize/plan.py.
 """
 
+import re
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -23,6 +24,11 @@ from apps.reorganize.plan import (
 )
 
 REASON_LIMIT = 200
+
+# Why a dead site looks dead, and the month of its latest story as "YYYY-MM". The interface writes
+# its sentence from these, so a dead entry carries no prose of its own.
+DEAD_CAUSES = ("failing", "quiet")
+MONTH_PATTERN = re.compile(r"\d{4}-(0[1-9]|1[0-2])")
 
 
 def model_view(folders, locks):
@@ -258,7 +264,16 @@ def _dead_sites(dead, sites):
             continue
         seen.add(feed_id)
         suggest = "unsubscribe" if entry.get("suggest") == "unsubscribe" else "mute"
-        entries.append({"feed_id": feed_id, "reason": _reason(entry.get("reason")), "suggest": suggest})
+        since = entry.get("since")
+        entries.append(
+            {
+                "feed_id": feed_id,
+                "reason": _reason(entry.get("reason")),
+                "suggest": suggest,
+                "cause": entry.get("cause") if entry.get("cause") in DEAD_CAUSES else None,
+                "since": since if isinstance(since, str) and MONTH_PATTERN.fullmatch(since) else None,
+            }
+        )
     return entries
 
 

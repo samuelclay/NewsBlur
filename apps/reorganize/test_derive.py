@@ -404,6 +404,27 @@ class Test_DeadSites(unittest.TestCase):
         )
         apply_cleanly(self, proposal)
 
+    def test_dead_sites_keep_why_and_since_when_they_look_dead(self):
+        # The interface writes its sentence from cause and since, so they survive into the proposal,
+        # and values it could not write a sentence from become None.
+        proposal = build_proposal(
+            TREE,
+            NO_LOCKS,
+            [],
+            [],
+            [
+                dict(dead_site(70), cause="quiet", since="2023-04"),
+                dict(dead_site(81, "unsubscribe"), cause="failing", since=None),
+                dict(dead_site(41), cause="asleep", since="April 2023"),
+            ],
+        )
+
+        self.assertEqual(
+            [(entry["feed_id"], entry["cause"], entry["since"]) for entry in proposal["dead"]],
+            [(70, "quiet", "2023-04"), (81, "failing", None), (41, None, None)],
+        )
+        apply_cleanly(self, proposal)
+
 
 # A model answer over TREE (apps/reorganize/test_plan.py) that renames mobility, merges Bloglets into
 # Blogs, creates Apple, nests New York and Boston under a new Places and files a dozen sites.

@@ -169,6 +169,7 @@ class RLLMCosts:
         "vision_classification",
         "transcription",
         "webfeed",
+        "reorganize",
         "search_story_embedding",
         "search_query_embedding",
         "search_feed_embedding",
