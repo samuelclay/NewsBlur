@@ -334,10 +334,7 @@ class Profile(models.Model):
         """True when the account's plan comes from a Stripe or PayPal subscription that can move to a lower
         plan's price. The upgrade dialog offers "Switch to" a lower plan only then
         (media/js/newsblur/reader/reader_premium_upgrade.js)."""
-        if self.active_provider not in ("stripe", "paypal"):
-            return False
-        # A subscription change leaves the lifetime grant from apps/oauth/reader_grants.py in place.
-        return not (self.is_pro and self.premium_expire is None and self.has_oauth_reader_grant())
+        return self.active_provider in ("stripe", "paypal")
 
     @property
     def can_register_oauth_application(self):
@@ -1245,9 +1242,6 @@ class Profile(models.Model):
             fresh = Profile.objects.select_for_update().get(pk=self.pk)
             if fresh.paid_plan != from_plan:
                 logging.user(self.user, "~FMdowngrade_to %s: no longer on %s, skipping" % (plan, from_plan))
-                return False
-            # A subscription change leaves the lifetime grant from apps/oauth/reader_grants.py in place.
-            if fresh.is_pro and fresh.premium_expire is None and fresh.has_oauth_reader_grant():
                 return False
             Profile.objects.filter(pk=self.pk).update(**flags)
 

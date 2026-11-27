@@ -3105,19 +3105,6 @@ def saved_plan_flags(profile):
     return {field: bool(getattr(saved, field)) for field in PLAN_FLAGS["premium"]}
 
 
-def grant_lifetime_pro(profile):
-    """The lifetime Pro grant from apps/oauth/reader_grants.py."""
-    set_plan(profile, "pro")
-    profile.premium_expire = None
-    profile.save()
-    PaymentHistory.objects.create(
-        user=profile.user,
-        payment_date=datetime.datetime.now(),
-        payment_amount=0,
-        payment_provider="oauth-reader-grant",
-    )
-
-
 class Test_StripeSwitchToLowerPlan(TestCase):
     """Switching a Stripe subscription to a lower plan lowers the account as soon as Stripe takes the new
     price (Profile.switch_stripe_subscription in apps/profile/models.py), and a plan below the account's own
@@ -3237,14 +3224,6 @@ class Test_StripeSwitchToLowerPlan(TestCase):
         self.assertTrue(self.profile.switch_stripe_subscription("premium", proration_behavior="none"))
 
         self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["archive"])
-
-    def test_lifetime_grant_is_never_lowered(self):
-        grant_lifetime_pro(self.profile)
-        self.live_price = Profile.plan_to_stripe_price("pro")
-
-        self.profile.switch_stripe_subscription("archive")
-
-        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
 
     def test_an_upgrade_that_lands_during_the_switch_is_kept(self):
         """Another request raised the account to Pro after this one read it as Archive."""
@@ -3448,10 +3427,5 @@ class Test_LowerPlanSwitchButton(TestCase):
     def test_app_store_subscriber_cannot_switch(self):
         self.profile.active_provider = None
         self.profile.save()
-
-        self.assertFalse(self._can_switch_to_lower_plan())
-
-    def test_lifetime_grant_holder_cannot_switch(self):
-        grant_lifetime_pro(self.profile)
 
         self.assertFalse(self._can_switch_to_lower_plan())
