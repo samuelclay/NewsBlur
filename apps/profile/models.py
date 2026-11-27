@@ -374,8 +374,10 @@ class Profile(models.Model):
     @classmethod
     def stripe_payment_period(cls, charge):
         """(plan, end of the period paid for) from the invoice a Stripe charge paid: the first line that charges for a
-        plan, with the service period Stripe gives it. (None, None) when the charge paid for no plan or Stripe can't
-        say."""
+        plan, a custom price for a team with more seats included (apps/team/stripe_billing.py price_plan), with the
+        service period Stripe gives it. (None, None) when the charge paid for no plan or Stripe can't say."""
+        from apps.team.stripe_billing import price_plan
+
         invoice_id = charge.get("invoice")
         if not isinstance(invoice_id, str):
             return None, None
@@ -385,7 +387,7 @@ class Profile(models.Model):
             logging.debug(" ---> Couldn't read Stripe invoice %s for its plan: %s" % (invoice_id, e))
             return None, None
         for line in (invoice.get("lines") or {}).get("data") or []:
-            plan = cls.stripe_price_plan((line.get("price") or {}).get("id"))
+            plan = price_plan(line.get("price"))
             if plan and (line.get("amount") or 0) > 0:
                 return plan, datetime.datetime.fromtimestamp(line["period"]["end"])
         return None, None
@@ -1748,11 +1750,17 @@ class Profile(models.Model):
                 continue
             # Only update expiration if payment in the last year
             if payment.payment_date > last_year:
-                if payment.payment_amount in cls.MONTHLY_PRICES:
+                # models.py: a payment recorded as a team plan's counts as one whatever its amount, since a custom
+                # price for a team with more seats charges more (apps/team/stripe_billing.py price_plan). It pays for
+                # the period recorded with it, or else a month.
+                team_plan = payment.plan in dict(Team.PLAN_CHOICES)
+                if team_plan or payment.payment_amount in cls.MONTHLY_PRICES:
                     paid_until = payment.payment_date + datetime.timedelta(days=cls.MONTHLY_PERIOD_DAYS)
+                    if team_plan and payment.period_end:
+                        paid_until = payment.period_end
                     monthly_price_expiration = max(monthly_price_expiration or paid_until, paid_until)
                     monthly_price_count += 1
-                    if payment.payment_amount not in cls.TEAM_MONTHLY_PRICES:
+                    if not team_plan and payment.payment_amount not in cls.TEAM_MONTHLY_PRICES:
                         pro_monthly_dates.append(payment.payment_date)
                     continue
                 recent_payment_dates.append(payment.payment_date)
@@ -5453,7 +5461,7 @@ def stripe_signup(sender, full_json, **kwargs):
         # (apps/team/stripe_billing.py).
         from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
 
-        if is_team_subscription(profile, full_json["data"]["object"].get("id"), plan_id):
+        if is_team_subscription(profile, full_json["data"]["object"]):
             sync_stripe_event(profile)
             return
         plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
@@ -5509,7 +5517,7 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
         # models.py: a team plan renews and switches only on what Stripe reports (apps/team/stripe_billing.py).
         from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
 
-        if is_team_subscription(profile, full_json["data"]["object"].get("id"), plan_id):
+        if is_team_subscription(profile, full_json["data"]["object"]):
             sync_stripe_event(profile)
             return
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)

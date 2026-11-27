@@ -23,4 +23,10 @@ urlpatterns = [
     url(r"^paypal_plan/?$", views.paypal_plan, name="team-paypal-plan"),
     url(r"^app_store_purchase/?$", views.app_store_purchase, name="team-app-store-purchase"),
     url(r"^play_purchase/?$", views.play_purchase, name="team-play-purchase"),
+    url(r"^contact/?$", views.contact, name="team-contact"),
+    url(r"^staff/?$", views.staff_team, name="team-staff"),
+    url(r"^staff/seat_limit/?$", views.staff_seat_limit, name="team-staff-seat-limit"),
+    url(r"^staff/plan/?$", views.staff_plan, name="team-staff-plan"),
+    url(r"^staff/comp/?$", views.staff_comp, name="team-staff-comp"),
+    url(r"^staff/end_comp/?$", views.staff_end_comp, name="team-staff-end-comp"),
 ]

@@ -445,17 +445,80 @@ def _billed_teams(user, provider, reference, status):
 
 
 def start_comp_team(owner, name, plan):
-    """A team staff start under a name they chose, as a comp that doesn't lapse on a date. Its owner gets Premium
-    Pro through record_team_payment like every owner. Returns (team, None), or (None, failure reason) as
-    Team.create_team does."""
+    """A team staff start under a name they chose, as a comp that doesn't lapse on a date. With no name it gets the
+    default one a bought team starts with, which its owner is asked to replace. Its owner gets Premium Pro through
+    record_team_payment like every owner. Returns (team, None), or (None, failure reason) as Team.create_team
+    does."""
     with transaction.atomic():
-        team, reason = Team.create_team(owner, name, plan)
+        team, reason = Team.create_team(owner, name or _default_name(owner), plan, name_confirmed=bool(name))
         if reason:
             return None, reason
         payment = record_team_payment(
             owner, plan, Team.PROVIDER_COMP, None, owner.username, datetime.datetime.now()
         )
     return payment.team, None
+
+
+def comp_refusal(user):
+    """Why staff can't comp this account's team (comp_team), or None: the account is on a team it doesn't own, the
+    team is comped already, or a provider bills it for a period that hasn't lapsed. A comp ignores every later
+    payment (record_team_payment), so that subscription is cancelled first."""
+    membership = TeamMember.active_membership(user)
+    if not membership:
+        return None
+    team = membership.team
+    if membership.role != TeamMember.ROLE_OWNER:
+        return "comp_not_owner"
+    if team.is_comped:
+        return "already_comped"
+    if (
+        team.billing_provider in Team.PAID_PROVIDERS
+        and Team.paid_for(datetime.datetime.now()).filter(pk=team.pk).exists()
+    ):
+        return "team_billed"
+    return None
+
+
+def comp_team(user, plan, staff):
+    """Staff comp a team on plan for this account: a new one, under the default name, for an account on no team, or
+    the team it owns once its paid period has lapsed, which comes back with its teammates. A comp has no payment and
+    no lapse date until staff end it (end_comp). Returns (team, None) or (None, failure reason)."""
+    with transaction.atomic():
+        owned = Team.objects.select_for_update().filter(owner=user).first()
+        reason = comp_refusal(user)
+        if reason:
+            return None, reason
+        if owned:
+            payment = record_team_payment(
+                user, plan, Team.PROVIDER_COMP, None, user.username, datetime.datetime.now()
+            )
+            team, reason = payment.team, payment.reason
+        else:
+            team, reason = start_comp_team(user, None, plan)
+        if reason:
+            return None, reason
+        TeamActivity.log(team, staff, "comp_started", plan=plan)
+    return team, None
+
+
+def end_comp(team, staff):
+    """Staff end a comp, and the team lapses now as a team whose paid period ended now does (deactivate_team): every
+    teammate's Premium Pro ends with one email each, and its owner goes back to a plan of their own or keeps Pro
+    through the usual expiry window from now. Returns a failure reason or None."""
+    now = datetime.datetime.now()
+    with transaction.atomic():
+        team = team.lock()
+        if not team.is_comped:
+            return "not_comped"
+        team.paid_through = now
+        team.save(update_fields=["paid_through", "updated_date"])
+        # billing.py: as each payment moves the owner's premium_expire up to its paid through date (_give_owner_pro),
+        # the comp's end moves an older one up to now, so the owner's expiry window starts now. release_team_pro
+        # starts it now for an owner who never had one.
+        Profile.objects.filter(user_id=team.owner_id, premium_expire__lt=now).update(premium_expire=now)
+        TeamActivity.log(team, staff, "comp_ended")
+        deactivate_team(team)
+    return None
 
 
 def _default_name(user):

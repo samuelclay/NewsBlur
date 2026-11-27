@@ -56,6 +56,8 @@ class Team(models.Model):
     TRANSFER_DAYS = 7
 
     DEFAULT_SEAT_LIMIT = 10
+    # models.py: the most seats staff can give a team that asked for more than DEFAULT_SEAT_LIMIT (set_seat_limit).
+    MAX_SEAT_LIMIT = 1000
     NAME_MAX_LENGTH = 100
     # models.py: counts invite_sent activity, so re-sending a live invite counts against it too.
     EMAIL_INVITES_PER_DAY = 50
@@ -228,6 +230,41 @@ class Team(models.Model):
             self.name_confirmed_date = datetime.datetime.now()
         self.save(update_fields=["name", "name_confirmed_date", "updated_date"])
         TeamActivity.log(self, actor, "team_renamed", old_name=old_name, name=name)
+
+    def set_seat_limit(self, actor, seat_limit):
+        """Staff set how many seats the team has, from 1 to MAX_SEAT_LIMIT and never below the seats in use, so a
+        lower limit takes nobody's seat. The seats are counted under the team row lock every join takes
+        (TeamInvite.accept). Returns a failure reason or None."""
+        if seat_limit < 1:
+            return "invalid_seat_limit"
+        if seat_limit > self.MAX_SEAT_LIMIT:
+            return "seat_limit_too_high"
+        with transaction.atomic():
+            team = self.lock()
+            if team.members.filter(status=TeamMember.STATUS_ACTIVE).count() > seat_limit:
+                return "seat_limit_below_seats"
+            if team.seat_limit != seat_limit:
+                TeamActivity.log(
+                    team, actor, "seat_limit_changed", old_seat_limit=team.seat_limit, seat_limit=seat_limit
+                )
+                team.seat_limit = seat_limit
+                team.save(update_fields=["seat_limit", "updated_date"])
+        self.seat_limit = seat_limit
+        return None
+
+    def set_comped_plan(self, actor, plan):
+        """Staff choose a comped team's plan. A team that is paid for is on the plan its payments are for
+        (apps/team/billing.py record_team_payment). Returns a failure reason or None."""
+        with transaction.atomic():
+            team = self.lock()
+            if not team.is_comped:
+                return "plan_follows_payments"
+            if team.plan != plan:
+                TeamActivity.log(team, actor, "plan_changed", old_plan=team.plan, plan=plan)
+                team.plan = plan
+                team.save(update_fields=["plan", "updated_date"])
+        self.plan = plan
+        return None
 
     def invite_by_email(self, actor, emails, role):
         """Invite each address, or refresh and resend its live invite. Returns a failure reason or None. The team
@@ -455,6 +492,30 @@ class Team(models.Model):
                 "created_date": join_link.created_date,
             }
         return data
+
+    def staff_canonical(self, user_id):
+        """The team as the staff User Admin dialog shows it for the account user_id on it, billing included
+        (apps/team/views.py staff_team). Only staff see it."""
+        members = list(self.active_members().order_by("joined_date"))
+        transfer = self.transfer_canonical(user_id)
+        return {
+            "id": self.pk,
+            "name": self.name,
+            "role": next((member.role for member in members if member.user_id == user_id), None),
+            "owner": self.owner.username if self.owner else None,
+            "plan": self.plan,
+            "status": self.status,
+            "seats_used": len(members),
+            "seat_limit": self.seat_limit,
+            "max_seat_limit": self.MAX_SEAT_LIMIT,
+            "billing_provider": self.billing_provider,
+            "billing_reference": self.billing_reference,
+            "paid_through": self.paid_through,
+            "comped": self.is_comped,
+            "pending_plan": self.pending_plan,
+            "pending_owner": transfer["pending_owner"] if transfer else None,
+            "members": [{"username": member.user.username, "role": member.role} for member in members],
+        }
 
 
 class TeamMember(models.Model):

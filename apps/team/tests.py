@@ -17,6 +17,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.cache import cache
 from django.core.mail import EmailMultiAlternatives
 from django.db import DatabaseError, connection, transaction
 from django.test import Client, TestCase, TransactionTestCase, override_settings
@@ -3201,9 +3202,20 @@ class FakeStripeBilling:
     def charge(self, charge_id):
         return next(charge for charge in self.charges if charge.id == charge_id)
 
-    def subscribe(self, user, plan, period_end=None, invoice_status="paid", status="active", prices=None):
+    def subscribe(
+        self,
+        user,
+        plan,
+        period_end=None,
+        invoice_status="paid",
+        status="active",
+        prices=None,
+        amount=None,
+        metadata=None,
+    ):
         """A subscription as Stripe Checkout leaves it, its first invoice paid unless told otherwise. prices gives
-        it several items, as the AI filter usage billing subscription has."""
+        it several items, as the AI filter usage billing subscription has, or a custom price staff made, charging
+        amount and carrying metadata."""
         annual = plan in self.ANNUAL_PLANS
         end = period_end or datetime.datetime.now() + datetime.timedelta(days=365 if annual else 31)
         end = int(end.timestamp())
@@ -3233,13 +3245,15 @@ class FakeStripeBilling:
             "sk_test",
         )
         for item, price in zip(subscription["items"].data, prices):
-            item["price"] = stripe.Price.construct_from({"id": price, "object": "price"}, "sk_test")
+            item["price"] = stripe.Price.construct_from(
+                {"id": price, "object": "price", "metadata": metadata or {}}, "sk_test"
+            )
             item["plan"] = stripe.Plan.construct_from(
                 {"id": price, "object": "plan", "active": True}, "sk_test"
             )
         subscription["plan"] = subscription["items"].data[0].plan if len(prices) == 1 else None
         self.subscriptions.append(subscription)
-        self.invoice(subscription, invoice_status, self.AMOUNTS.get(plan, 1), "subscription_create")
+        self.invoice(subscription, invoice_status, amount or self.AMOUNTS.get(plan, 1), "subscription_create")
         return subscription
 
     def set_plan(self, subscription, plan):
@@ -3254,6 +3268,7 @@ class FakeStripeBilling:
         it: the subscription starting, a new period, or a change to the subscription such as a switch. Its line
         charges for the subscription's price over its current period."""
         invoice_id = "in_%s" % (len(self.invoices) + 1)
+        price = subscription["items"].data[0].price
         self.invoices[invoice_id] = {
             "id": invoice_id,
             "status": status,
@@ -3263,7 +3278,7 @@ class FakeStripeBilling:
                 "data": [
                     {
                         "amount": amount * 100,
-                        "price": {"id": subscription["items"].data[0].price.id},
+                        "price": {"id": price.id, "metadata": dict(price.get("metadata") or {})},
                         "period": {
                             "start": subscription.current_period_start,
                             "end": subscription.current_period_end,
@@ -3417,7 +3432,12 @@ class FakeStripeBilling:
             "status": "active",
             "plan": {"id": subscription.plan.id, "active": True},
             "cancel_at": subscription.cancel_at,
-            "items": {"data": []},
+            "items": {
+                "data": [
+                    {"price": {"id": item.price.id, "metadata": dict(item.price.get("metadata") or {})}}
+                    for item in subscription["items"].data
+                ]
+            },
         }
 
     def invoice_event(self, subscription):
@@ -4050,6 +4070,63 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         self.assertEqual(self.staff_events(), ["team_handover_not_refunded"])
         [old_owner_email] = self.mail_to(owner)
         self.assertNotIn("$", old_owner_email.body)
+
+    def custom_price(self, user, plan=None, period_end=None):
+        """apps/team/tests.py: a subscription on a $199 price staff made in Stripe for a team of 25, with the metadata
+        staff set on it naming plan, or none."""
+        return self.stripe.subscribe(
+            user,
+            Team.PLAN_TEAM,
+            period_end=period_end,
+            prices=["price_custom_25_seats"],
+            amount=199,
+            metadata={"newsblur_plan": plan} if plan else None,
+        )
+
+    def test_a_custom_price_naming_a_team_plan_bills_the_team_as_that_plans_own_price_does(self):
+        buyer = self.reader("buyer")
+        self.stripe.known_customer(buyer)
+        subscription = self.custom_price(buyer, Team.PLAN_TEAM_ENTERPRISE)
+
+        self.stripe_event("customer.subscription.created", self.stripe.subscription_event(subscription))
+
+        team = self.owned_team(buyer)
+        self.assertEqual(
+            (team.plan, team.billing_reference, team.paid_through),
+            (Team.PLAN_TEAM_ENTERPRISE, subscription.id, self.paid_through(subscription)),
+        )
+        # Its $199 pays for the month it was charged for, not the year an unknown $199 charge buys.
+        self.assertEqual(self.premium_expire(buyer), self.paid_through(subscription))
+
+        # A switch down from it waits for the end of the month paid for.
+        self.profile_post(buyer, "switch_stripe_subscription", plan="pro")
+        self.assertIsNotNone(subscription.schedule)
+        self.stripe.modify.assert_not_called()
+        self.assertEqual(self.owned_team(buyer).status, Team.STATUS_ACTIVE)
+
+        # A custom price whose metadata names no team plan starts no team.
+        unnamed = self.reader("unnamed")
+        self.stripe.known_customer(unnamed)
+        unnamed_subscription = self.custom_price(unnamed)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(unnamed_subscription))
+        self.assertIsNone(self.owned_team(unnamed))
+
+    def test_custom_priced_team_payments_are_no_plan_of_the_old_owners_once_the_team_is_handed_over(self):
+        self.settle_hand_overs()
+        owner = self.reader("teamowner")
+        self.stripe.known_customer(owner)
+        old_subscription = self.custom_price(owner, Team.PLAN_TEAM, period_end=self.now + self.days(10))
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(old_subscription))
+        heir, team = self.heir_of(owner)
+        self.stripe.known_customer(heir)
+        self.stripe_event(
+            "invoice.paid", self.stripe.invoice_event(self.stripe.subscribe(heir, Team.PLAN_TEAM))
+        )
+        self.assertEqual(self.owned_team(heir), team)
+
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(old_subscription))
+
+        self.assertIsNone(self.premium_expire(owner))
 
 
 def paypal_time(moment):
@@ -5796,3 +5873,215 @@ class Test_TeamPlayBilling(TeamProMixin, TestCase):
         )
         self.assertEqual(self.plan_of(owner), "pro")
         self.assertEqual(self.staff_events(), ["team_handed_over_in_store"])
+
+
+class Test_TeamStaffTools(TeamProMixin, TestCase):
+    """apps/team/views.py: the team block of the staff User Admin dialog, and what staff change on a team there."""
+
+    def setUp(self):
+        super().setUp()
+        self.staff = User.objects.create_user(username="staff", is_staff=True)
+
+    def staff_post(self, action, user, **data):
+        return self.post(self.staff, "staff/%s" % action, user_id=user.pk, **data)
+
+    def staff_actor(self, team, action):
+        return TeamActivity.objects.get(team=team, action=action).actor
+
+    def test_only_staff_see_or_change_a_team(self):
+        member = self.reader("member")
+        self.join(member)
+        outsider = self.reader("outsider")
+        team_before = Team.objects.filter(pk=self.team.pk).values().get()
+        requests = (
+            ("staff/seat_limit", dict(user_id=self.owner.pk, seat_limit=20)),
+            ("staff/plan", dict(user_id=self.owner.pk, plan=Team.PLAN_TEAM_ENTERPRISE)),
+            ("staff/end_comp", dict(user_id=self.owner.pk)),
+            ("staff/comp", dict(user_id=outsider.pk, plan=Team.PLAN_TEAM)),
+        )
+
+        for user in (self.owner, member, None):
+            client = self.client_for(user)
+            block = client.get("/team/staff", dict(user_id=self.owner.pk))
+            self.assertNotIn(b"billing_provider", block.content)
+            for path, data in requests:
+                client.post("/team/%s" % path, data)
+
+        self.assertEqual(Team.objects.filter(pk=self.team.pk).values().get(), team_before)
+        self.assertIsNone(self.owned_team(outsider))
+        self.assertEqual(self.plan_of(member), "pro")
+
+    def test_the_seat_limit_never_drops_below_the_seats_in_use(self):
+        for username in ("first", "second"):
+            self.join(self.reader(username))
+
+        for seat_limit, reason in (
+            ("2", "seat_limit_below_seats"),
+            ("0", "invalid_seat_limit"),
+            ("-3", "invalid_seat_limit"),
+            ("ten", "invalid_seat_limit"),
+            ("2.5", "invalid_seat_limit"),
+            (str(Team.MAX_SEAT_LIMIT + 1), "seat_limit_too_high"),
+        ):
+            self.assertEqual(
+                self.staff_post("seat_limit", self.owner, seat_limit=seat_limit)["reason"], reason
+            )
+        self.assertEqual(Team.objects.get(pk=self.team.pk).seat_limit, Team.DEFAULT_SEAT_LIMIT)
+
+        team = self.staff_post("seat_limit", self.owner, seat_limit="3")["team"]
+
+        self.assertEqual((team["seat_limit"], team["seats_used"]), (3, 3))
+        self.assertEqual(
+            self.post(self.reader("late"), "accept_invite", token=self.token)["reason"], "seat_limit"
+        )
+
+    def test_raising_the_seat_limit_lets_an_eleventh_teammate_join(self):
+        for number in range(Team.DEFAULT_SEAT_LIMIT - 1):
+            self.add_member(self.team, User.objects.create_user(username="seat%s" % number))
+        eleventh = self.reader("eleventh")
+        self.assertEqual(self.post(eleventh, "accept_invite", token=self.token)["reason"], "seat_limit")
+
+        team = self.staff_post("seat_limit", self.owner, seat_limit="12")["team"]
+
+        self.assertEqual(team["seat_limit"], 12)
+        self.join(eleventh)
+        self.assertEqual(self.plan_of(eleventh), "pro")
+        self.assertEqual(self.staff_actor(self.team, "seat_limit_changed"), self.staff)
+
+    def test_only_a_comped_teams_plan_is_chosen_by_staff(self):
+        paying = self.reader("paying")
+        self.pay(paying, self.now + self.days(20))
+
+        team = self.staff_post("plan", self.owner, plan=Team.PLAN_TEAM_ENTERPRISE)["team"]
+        refused = self.staff_post("plan", paying, plan=Team.PLAN_TEAM_ENTERPRISE)
+
+        self.assertEqual(team["plan"], Team.PLAN_TEAM_ENTERPRISE)
+        self.assertEqual(self.staff_actor(self.team, "plan_changed"), self.staff)
+        self.assertEqual(refused["reason"], "plan_follows_payments")
+        self.assertEqual(self.owned_team(paying).plan, Team.PLAN_TEAM)
+
+    def test_comping_an_account_on_no_team_starts_a_team_its_owner_names(self):
+        solo = self.reader("solo", feeds=2)
+        block = self.get(self.staff, "staff", user_id=solo.pk)
+        self.assertEqual((block["team"], block["can_comp"]), (None, True))
+
+        response = self.staff_post("comp", solo, plan=Team.PLAN_TEAM_ENTERPRISE)
+
+        team = self.owned_team(solo)
+        self.assertEqual(
+            (response["team"]["role"], response["team"]["comped"], response["can_comp"]),
+            (TeamMember.ROLE_OWNER, True, False),
+        )
+        self.assertEqual((team.plan, team.name_confirmed_date), (Team.PLAN_TEAM_ENTERPRISE, None))
+        self.assertEqual((self.plan_of(solo), self.muted_sites(solo)), ("pro", 0))
+        self.assertEqual(self.staff_actor(team, "comp_started"), self.staff)
+
+    def test_a_team_a_provider_bills_is_comped_only_once_its_paid_period_has_lapsed(self):
+        owner = self.reader("teamowner")
+        team = self.pay(owner, self.now + self.days(20)).team
+        member = self.reader("member", feeds=2)
+        self.join(member, self.join_link_token(team, owner))
+
+        self.assertFalse(self.get(self.staff, "staff", user_id=owner.pk)["can_comp"])
+        self.assertEqual(self.staff_post("comp", owner, plan=Team.PLAN_TEAM)["reason"], "team_billed")
+        self.assertEqual(self.staff_post("comp", member, plan=Team.PLAN_TEAM)["reason"], "comp_not_owner")
+        self.assertEqual(self.owned_team(owner).billing_provider, Team.PROVIDER_STRIPE)
+
+        self.lapse(owner)
+        self.assertEqual(self.plan_of(member), "free")
+        response = self.staff_post("comp", owner, plan=Team.PLAN_TEAM_ENTERPRISE)
+
+        self.assertEqual((response["team"]["status"], response["team"]["comped"]), (Team.STATUS_ACTIVE, True))
+        self.assertEqual((self.plan_of(member), self.muted_sites(member)), ("pro", 0))
+        # The subscription that paid for it before is charged again, and a comp ignores it. No date ends it either.
+        self.assertEqual(self.pay(owner, self.now + self.days(31)).reason, "comped")
+        self.committed(TeamProGrants)
+        PremiumExpire()
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.plan, team.billing_provider, team.paid_through),
+            (Team.STATUS_ACTIVE, Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_COMP, None),
+        )
+        self.assertEqual((self.plan_of(owner), self.plan_of(member)), ("pro", "pro"))
+        self.assertIn("team_comp_paid", self.staff_events())
+
+    def test_ending_a_comp_ends_the_team_now_and_its_owner_expires_from_now(self):
+        # One owner's own plan ended long ago, and the other never had one.
+        expired_long_ago = self.reader("expiredlongago", premium_expire=self.now - self.days(400), feeds=2)
+        never_paid = self.reader("neverpaid", feeds=2)
+        owners = (expired_long_ago, never_paid)
+        for owner in owners:
+            self.staff_post("comp", owner, plan=Team.PLAN_TEAM)
+        team = self.owned_team(expired_long_ago)
+        member = self.reader("member", feeds=2)
+        self.join(member, self.join_link_token(team, expired_long_ago))
+        mail.outbox = []
+        started = datetime.datetime.now()
+
+        response = self.staff_post("end_comp", expired_long_ago)
+        self.staff_post("end_comp", never_paid)
+
+        self.assertEqual(
+            (response["team"]["status"], response["team"]["comped"]), (Team.STATUS_INACTIVE, False)
+        )
+        self.assertEqual((self.plan_of(member), self.muted_sites(member)), ("free", 2))
+        self.assertEqual(len(self.mail_to(member)), 1)
+        self.assertEqual(self.staff_actor(team, "comp_ended"), self.staff)
+        for owner in owners:
+            self.assertGreaterEqual(self.premium_expire(owner), started)
+        # The owners keep Premium Pro through the usual window, and lose it once it has passed.
+        PremiumExpire()
+        self.assertEqual(
+            [(self.plan_of(owner), self.muted_sites(owner)) for owner in owners], [("pro", 0)] * 2
+        )
+        Profile.objects.filter(user__in=owners).update(premium_expire=self.now - self.days(31))
+        PremiumExpire()
+        self.assertEqual([self.plan_of(owner) for owner in owners], ["free", "free"])
+
+        self.assertEqual(self.staff_post("end_comp", expired_long_ago)["reason"], "not_comped")
+
+
+@override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}})
+class Test_TeamContact(TeamProMixin, TestCase):
+    """apps/team/views.py contact: "More than 10 teammates? Get in touch"."""
+
+    REQUEST = dict(team_name="Metro and Sports Desks", seats="25", note="Twenty five reporters on two desks.")
+
+    def setUp(self):
+        super().setUp()
+        cache.clear()
+        self.member = self.reader("member")
+        self.join(self.member)
+
+    def test_a_request_for_more_seats_reaches_staff_once_a_day_with_the_account_attached(self):
+        first = self.post(self.member, "contact", **self.REQUEST)
+        again = self.post(self.member, "contact", **dict(self.REQUEST, seats="30"))
+
+        self.assertEqual((first["code"], again["code"]), (1, 1))
+        self.assertEqual(again["message"], first["message"])
+        [staff_email] = EmailStaffNotification.delay.call_args_list
+        for detail in (self.member.username, self.member.email, self.team.name, self.REQUEST["note"]):
+            self.assertIn(detail, staff_email.kwargs["body"])
+        [logged] = TeamActivity.objects.filter(team=self.team, action="more_seats_requested")
+        self.assertEqual(logged.actor, self.member)
+
+        # Another account's request is its own.
+        self.post(self.reader("outsider"), "contact", **self.REQUEST)
+        self.assertEqual(EmailStaffNotification.delay.call_count, 2)
+
+    def test_a_request_that_isnt_for_more_seats_is_refused_and_reaches_nobody(self):
+        for changes, reason in (
+            (dict(seats="10"), "invalid_seats"),
+            (dict(seats="many"), "invalid_seats"),
+            (dict(team_name=" "), "invalid_name"),
+            (dict(note="Our newsroom. " * 1000), "note_too_long"),
+        ):
+            self.assertEqual(
+                self.post(self.member, "contact", **dict(self.REQUEST, **changes))["reason"], reason
+            )
+        self.assertEqual(self.client_for(None).post("/team/contact", self.REQUEST).status_code, 403)
+        EmailStaffNotification.delay.assert_not_called()
+
+        # A refused request doesn't count as the day's one.
+        self.assertEqual(self.post(self.member, "contact", **self.REQUEST)["code"], 1)
+        EmailStaffNotification.delay.assert_called_once()

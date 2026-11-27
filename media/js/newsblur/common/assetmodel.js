@@ -2770,6 +2770,19 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
 
+    // assetmodel.js: staff only. The team an account is on, and what staff change on it: action is seat_limit, plan,
+    // comp or end_comp (apps/team/views.py staff_team). An action isn't retried, since the server refuses a repeat of a
+    // comp or an end of one that went through.
+    fetch_team_staff: function (user_id, callback, error_callback) {
+        this.make_request('/team/staff', {
+            user_id: user_id
+        }, callback, error_callback, { request_type: 'GET' });
+    },
+
+    team_staff_action: function (action, data, callback, error_callback) {
+        this.make_request('/team/staff/' + action, data, callback, error_callback, { retry: false });
+    },
+
     delete_saved_stories: function (timestamp, callback, error_callback) {
         var self = this;
         var pre_callback = function (data) {

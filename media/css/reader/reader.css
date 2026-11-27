@@ -22977,9 +22977,35 @@ h5.NB-classifier-section-header {
 
 .NB-modal-admin .NB-account-payments,
 .NB-modal-admin .NB-admin-listen,
+.NB-modal-admin .NB-admin-team,
 .NB-modal-admin .NB-admin-actions {
     overflow: hidden;
     padding: 12px 24px;
+}
+
+.NB-modal-admin .NB-admin-team-control {
+    overflow: hidden;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.NB-modal-admin .NB-admin-team-control span,
+.NB-modal-admin .NB-admin-team-control input,
+.NB-modal-admin .NB-admin-team-control select {
+    float: left;
+    margin: 9px 8px 0 0;
+}
+
+.NB-modal-admin .NB-admin-team-control input {
+    width: 64px;
+    margin-top: 6px;
+}
+
+.NB-modal-admin .NB-admin-team-error {
+    clear: both;
+    padding-top: 8px;
+    font-size: 12px;
+    color: #D9473C;
 }
 
 .NB-modal-admin .NB-admin-listen-line {

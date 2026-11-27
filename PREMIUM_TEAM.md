@@ -334,7 +334,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] If the owner cancels or a payment fails, the team goes inactive the day the paid period ends, with one email to every teammate. No grace
 - [ ] A payment that succeeds later brings the team back at once
 - [ ] Team folders and settings are kept when a team goes inactive, so it can come back
-- [ ] Staff can raise a team's seat limit and set a custom price
+- [x] Staff can raise a team's seat limit and set a custom price
 - [ ] One email to a teammate who leaves or is removed, saying which plan their account is on now
 
 **Screenshots**
@@ -892,9 +892,10 @@ Ownership transfer:
 
 Staff and the contact form:
 
-- [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team block: seat limit, plan, comp a team with no payment and no lapse date, and end a comp
-- [ ] A full staff refund for an owner ends the team now
-- [ ] "More than 10 teammates? Get in touch" posts to a login required view that emails staff through the existing staff notification task
+- [x] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team block: seat limit, plan, comp a team with no payment and no lapse date, and end a comp
+- [x] A full staff refund for an owner ends the team now
+- [x] A larger team is billed on a custom Stripe price whose metadata names the plan (`newsblur_plan` set to `team` or `team_enterprise`). Its payments count as team payments whatever the amount
+- [x] "More than 10 teammates? Get in touch" posts to a login required view that emails staff through the existing staff notification task
 
 The web dialog:
 
@@ -920,7 +921,8 @@ Core:
 
 - [x] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
 - [x] 2. Premium Pro for teammates, shared allowances counted against the owner, and the fall back to a person's own plan the moment a seat ends
-- [ ] 3. Billing: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, staff controls
+- [x] 3. Billing on the server: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, ownership transfer, staff controls
+- [ ] 3b. Buying a team plan from each client: the web upgrade dialog (Stripe and PayPal), StoreKit 2 on iOS and macOS, Play Billing on Android, and the store products themselves. Built with step 4's screens
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
 - [ ] 6. Team folders on screen: badges, manager editing, Folders tab, team folder dialog (web, iOS, Android)

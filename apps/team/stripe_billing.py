@@ -22,6 +22,27 @@ from utils import log as logging
 
 # stripe_billing.py: lowest first. Every other plan is below both.
 TEAM_PLANS = (Team.PLAN_TEAM, Team.PLAN_TEAM_ENTERPRISE)
+# stripe_billing.py: the metadata key on a custom Stripe price staff make for a team with more seats, whose value
+# names the team plan the price is for (price_plan).
+TEAM_PLAN_METADATA_KEY = "newsblur_plan"
+
+
+def price_plan(price):
+    """The plan a Stripe price is for, as Profile.stripe_price_plan names it. A custom price staff made for a team with
+    more seats names its team plan in its metadata, and bills that team as the plan's own price does. price is a price
+    or plan object as Stripe's API or an event gives it, or None."""
+    if not price:
+        return None
+    plan = Profile.stripe_price_plan(price.get("id"))
+    named = (price.get("metadata") or {}).get(TEAM_PLAN_METADATA_KEY)
+    return plan or (named if named in TEAM_PLANS else None)
+
+
+def subscription_plan(subscription):
+    """The plan a Stripe subscription is on (price_plan): its first item's price, which carries the price's metadata,
+    or its top level plan."""
+    items = (subscription.get("items") or {}).get("data") or []
+    return price_plan(items[0].get("price") if items else None) or price_plan(subscription.get("plan"))
 
 
 def team_purchase_refusal(user, provider=Team.PROVIDER_STRIPE):
@@ -42,11 +63,13 @@ def team_purchase_refusal(user, provider=Team.PROVIDER_STRIPE):
     return None
 
 
-def is_team_subscription(profile, subscription_id, price_id):
-    """Whether a Stripe subscription event is a team plan's: the subscription is on a team price, or it is the
-    one that bills the account's team, which a switch down moves to a lower plan."""
-    if Profile.stripe_price_plan(price_id) in TEAM_PLANS:
+def is_team_subscription(profile, subscription):
+    """Whether a Stripe subscription event, given the subscription as the event holds it, is a team plan's: the
+    subscription is on a team price (subscription_plan), or it is the one that bills the account's team, which a
+    switch down moves to a lower plan."""
+    if subscription_plan(subscription) in TEAM_PLANS:
         return True
+    subscription_id = subscription.get("id")
     return bool(subscription_id) and _team_billed_by(profile.user_id, subscription_id).exists()
 
 
@@ -76,7 +99,7 @@ def sync_team_subscriptions(profile, subscriptions):
     wrote and doesn't start Premium from a team's payment."""
     team_billed = False
     for subscription in subscriptions:
-        plan = Profile.stripe_price_plan(_price_id(subscription))
+        plan = subscription_plan(subscription)
         if plan in TEAM_PLANS:
             team_billed = True
             _apply_team_subscription(profile.user, subscription, plan)
@@ -92,7 +115,7 @@ def switch_team_subscription(profile, subscription, plan):
     with proration, as for any plan."""
     if not _team_billed_by(profile.user_id, subscription.id).exists():
         return False
-    current_plan = Profile.stripe_price_plan(_price_id(subscription))
+    current_plan = subscription_plan(subscription)
     release_schedule(subscription)
     if plan == current_plan:
         return True
@@ -172,16 +195,6 @@ def _team_billed_by(user_id, subscription_id):
     return Team.objects.filter(
         owner_id=user_id, billing_provider=Team.PROVIDER_STRIPE, billing_reference=subscription_id
     )
-
-
-def _price_id(subscription):
-    """As Profile.setup_premium_history reads it: the top level plan, or the first item's."""
-    plan = subscription.plan
-    if not plan:
-        items = subscription.get("items")
-        if items and items.data:
-            plan = items.data[0].plan
-    return plan.id if plan else None
 
 
 def _apply_team_subscription(user, subscription, plan):
