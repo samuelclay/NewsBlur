@@ -1,0 +1,8 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with username=inviter.username team=team.name %}{{ username }} invited you to join {{ team }} on NewsBlur.{% endblocktrans %}
+
+{% trans "Join the team:" %} {{ join_url }}
+
+{% trans "You can join with the NewsBlur account you already have, or create one." %}
+
+{% blocktrans with date=expire_date|date:"F j, Y" %}This invite expires on {{ date }}.{% endblocktrans %}
+{% endautoescape %}

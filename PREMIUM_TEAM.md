@@ -609,9 +609,9 @@ There is no team, organization or seat concept in the repo today. The nearest th
 
 All new tables, which the migration rules treat as always safe. Nothing is added to `profile_profile`, `auth_user` or `reader_usersubscription`.
 
-- [ ] `Team`: name, slug, owner (one team per owner), plan (`team` or `team_enterprise`), seat_limit, status
-- [ ] `TeamMember`: team, user, role, status (active, removed). One active membership per user across all teams
-- [ ] `TeamInvite`: team, email, token, role, expiry
+- [x] `Team`: name, slug, owner (one team per owner), plan (`team` or `team_enterprise`), seat_limit, status
+- [x] `TeamMember`: team, user, role, status (active, removed). One active membership per user across all teams
+- [x] `TeamInvite`: team, email, token, role, expiry
 - [ ] `TeamFolder`: team, parent, title, position, read_mode, audience (everyone or chosen members)
 - [ ] `TeamFeed`: team_folder, feed, position, added_by
 - [ ] `TeamFolderMember`: team_folder, user, kind (audience or assigned)
@@ -621,8 +621,8 @@ All new tables, which the migration rules treat as always safe. Nothing is added
 - [ ] Channel URLs and the OIDC client secret are credentials: stored encrypted, never logged, and never returned whole by an endpoint
 - [ ] `TeamDomain`: team, domain, verification token, verified_at, require_sso
 - [ ] `TeamSSOConfig`: team, protocol, provider metadata, SCIM token hash
-- [ ] `TeamActivity`: team, actor, action, target, timestamp
-- [ ] The team is anchored on its owner. One helper answers "whose account does this teammate's team usage fall under" and returns the owner's user id
+- [x] `TeamActivity`: team, actor, action, target, timestamp
+- [x] The team is anchored on its owner. One helper answers "whose account does this teammate's team usage fall under" and returns the owner's user id
 
 Everything in NewsBlur is keyed by user id (subscriptions, read state, classifiers, notifications, usage). The team reuses that machinery through its owner's user id, the account that pays. There are no hidden accounts.
 
@@ -791,7 +791,7 @@ One step at a time, one agent at a time, each ending in passing tests and a comm
 
 Core:
 
-- [ ] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
+- [x] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
 - [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, fallback when a seat ends, grace period
 - [ ] 3. Billing: the two team plans on the owner's account, plan switches, lapses, cancelling a new teammate's own renewal, staff controls
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
@@ -862,14 +862,14 @@ Written before any code. Each one is a test.
 
 **Seats and billing**
 
-- [ ] Two invites are accepted at once and the team ends up with 11 seats
+- [x] Two invites are accepted at once and the team ends up with 11 seats
 - [ ] A teammate with a personal Premium Archive subscription leaves the team and drops to free
 - [ ] A team's payment fails and teammates keep Pro after the paid period ends
 - [ ] A teammate removed from an active team loses Pro before their 14 days are up
 - [ ] A lapsed team pays again and its folders, roles or settings are gone
 - [ ] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
 - [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
-- [ ] One account ends up owning two teams, or active in two teams at once
+- [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [ ] A teammate's own Stripe renewal keeps charging after they join
 - [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing

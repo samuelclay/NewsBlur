@@ -486,6 +486,7 @@ INSTALLED_APPS = (
     "apps.archive_extension",
     "apps.mcp",
     "apps.archive_assistant",
+    "apps.team",
     "apps.monitor",
     "utils",  # missing models so no migrations
     "vendor",

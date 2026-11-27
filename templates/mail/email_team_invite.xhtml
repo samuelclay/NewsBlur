@@ -1,0 +1,24 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n %}
+
+{% block body %}
+    <h2 style="color: #282F33; font-size: 18px; font-weight: bold;">
+        {% blocktrans trimmed with username=inviter.username team=team.name %}{{ username }} invited you to join {{ team }} on NewsBlur.{% endblocktrans %}
+    </h2>
+
+    <table cellpadding="0" cellspacing="0" border="0" style="margin: 16px 0 8px;">
+        <tr>
+            <td align="center" bgcolor="#2563eb" style="border-radius: 6px;">
+                <a href="{{ join_url }}" style="display: inline-block; padding: 12px 24px; font-size: 15px; font-weight: bold; line-height: 20px; color: #ffffff; text-decoration: none; border-radius: 6px;">{% trans "Join the team" %}</a>
+            </td>
+        </tr>
+    </table>
+
+    <p style="line-height: 20px;">{% trans "You can join with the NewsBlur account you already have, or create one." %}</p>
+    <p style="line-height: 20px; color: #84919B;">{% blocktrans with date=expire_date|date:"F j, Y" %}This invite expires on {{ date }}.{% endblocktrans %}</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block optout %}{% endblock %}
