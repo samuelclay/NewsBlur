@@ -365,6 +365,23 @@ class Test_Levels(GenerateTestCase):
             [{"Technology": [laptops, {"Apple": [apple, phones]}]}, {"Cooking": [pasta, bread]}],
         )
 
+    def test_no_site_is_moved_to_the_top_level_but_top_level_sites_are_filed(self):
+        loose = self.add_site("Loose Site")
+        gadgets = self.add_site("Gadget Blog")
+        self.set_tree([loose, {"Tech": [gadgets]}])
+        for level, folder in (("tidy", "e0"), ("reorganize", "t1"), ("fresh", "t1")):
+            model = FakeModel(
+                design=lambda: answer({"targets": [target("t1", "Tech", continues=["e0"])]}),
+                assign=lambda feed_ids: answer(
+                    {"assignments": [assign(gadgets, "root"), assign(loose, folder)]}
+                ),
+            )
+
+            result = self.generate(level, model)
+
+            self.assertEqual(moves_of(result["proposal"]), [(loose, "root", "e0")])
+            self.assertEqual(self.apply_cleanly(result["proposal"]).folders, [{"Tech": [gadgets, loose]}])
+
     def test_newsletters_folder_is_never_renamed_nested_or_merged_away(self):
         letter = self.add_site("A Newsletter")
         other_letter = self.add_site("Another Newsletter")

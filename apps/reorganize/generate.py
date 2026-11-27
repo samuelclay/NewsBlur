@@ -19,7 +19,7 @@ from apps.reader.models import UserSubscriptionFolders
 from apps.reorganize import prompts
 from apps.reorganize.derive import build_proposal, model_view
 from apps.reorganize.plan import ROOT_KEY, clean_folder_name
-from apps.reorganize.sites import TOP_LEVEL, dead_sites, folder_label, gather_sites
+from apps.reorganize.sites import dead_sites, folder_label, gather_sites
 from utils import log as logging
 from utils.llm_costs import LLMCostTracker
 from utils.llm_models import ANTHROPIC_CHAT_MODEL
@@ -34,7 +34,7 @@ ASSIGN_BATCH_SIZE = 80
 DESIGN_SITE_LIMIT = 2000
 INSTRUCTIONS_LIMIT = 4000
 MAX_TOKENS = 16000
-DESIGN_EFFORT = "medium"
+DESIGN_EFFORT = "high"
 ASSIGN_EFFORT = "low"
 
 # A refusal and a max_tokens stop both leave no usable answer.
@@ -84,7 +84,7 @@ def generate_proposal(
 
     targets = []
     if tidy:
-        destinations = [{"id": ROOT_KEY, "path": TOP_LEVEL}] + [
+        destinations = [
             {"id": folder["key"], "path": folder_label(folder["path"])} for folder in view["folders"]
         ]
     else:
@@ -117,9 +117,7 @@ def generate_proposal(
             failures.append(failure)
         else:
             batch_ids = {site.feed_id for site in batch}
-            assignments += [
-                entry for entry in entries if isinstance(entry, dict) and entry.get("feed_id") in batch_ids
-            ]
+            assignments += [entry for entry in entries if _files_into_a_folder(entry, batch_ids)]
         run.report("assign")
     if len(failures) * 2 > len(batches):
         run.record_cost()
@@ -295,9 +293,15 @@ def _answer_entries(result, key):
     return None, entries
 
 
+def _files_into_a_folder(entry, batch_ids):
+    """Whether an assignment names a site of its batch and a folder. A proposal never moves a site
+    out to the top level, so an assignment to it is dropped."""
+    return isinstance(entry, dict) and entry.get("feed_id") in batch_ids and entry.get("folder") != ROOT_KEY
+
+
 def _target_destinations(targets, view):
-    """The folders an assign call may file into: the top level, then each target with its path and
-    the current folders it carries on."""
+    """The folders an assign call may file into: each target with its path and the current folders
+    it carries on."""
     paths = {folder["key"]: folder["path"] for folder in view["folders"]}
     by_id = {}
     for entry in targets:
@@ -320,7 +324,7 @@ def _target_destinations(targets, view):
             target_id = by_id[target_id].get("parent")
         return names
 
-    destinations = [{"id": ROOT_KEY, "path": TOP_LEVEL}]
+    destinations = []
     for target_id, entry in by_id.items():
         if name(entry) is None:
             continue

@@ -371,6 +371,15 @@ class Test_FolderNames(unittest.TestCase):
         result = apply_cleanly(self, proposal)
         self.assertEqual(folder_items(result.folders, "Tech"), [30, 31, 32, 33, 1])
 
+    def test_target_continuing_a_folder_under_its_name_in_new_capitals_renames_it(self):
+        proposal = build_proposal(TREE, NO_LOCKS, [target("t1", "Mobility", continues=[MOBILITY])], [], [])
+
+        self.assertEqual(
+            [(op["folder"], op["name"]) for op in ops_of(proposal, "rename")], [(MOBILITY, "Mobility")]
+        )
+        result = apply_cleanly(self, proposal)
+        self.assertEqual(folder_items(result.folders, "Mobility"), [70])
+
     def test_subfolder_keeps_its_name_ahead_of_a_top_level_target_continuing_it(self):
         proposal = build_proposal(
             TREE,

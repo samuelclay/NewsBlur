@@ -54,9 +54,10 @@ def build_proposal(folders, locks, targets, assignments, dead, allow_folder_chan
 
     The result has been through sanitize_proposal, and apply_plan with no decisions skips none of
     it. A target named like an open folder directly under its parent is that folder and keeps its
-    name. With allow_folder_changes False the targets are ignored and no folder op is proposed, so
-    sites are only filed into folders the user already has. An answer with nothing usable gives an
-    empty proposal.
+    name, unless it lists that folder first in its continues, which gives the folder the target's
+    spelling of the name. With allow_folder_changes False the targets are ignored and no folder op
+    is proposed, so sites are only filed into folders the user already has. An answer with nothing
+    usable gives an empty proposal.
     """
     tree = FolderTree.from_list(folders)
     paths = tree.folder_keys()
@@ -93,7 +94,7 @@ class _Target:
     continues: list  # the open existing folder keys the answer says it carries on, deduplicated
     reason: str
     claims: list = field(default_factory=list)  # the keys it carries on; the first is the folder itself
-    keeps_name: bool = False  # it is the folder its name already names under its parent
+    keeps_name: bool = False  # claimed by its name without listing that folder first, so no rename
     key: str = ""
     parent_key: str = ROOT_KEY
     depth: int = 0
@@ -196,7 +197,9 @@ def _claim_keys(resolved, parents, by_name, reserved):
         if key is not None and key not in named:
             named.add(key)
             target.claims = [key] + [other for other in target.claims if other != key]
-            target.keeps_name = True
+            # A target that lists the folder first in its continues means its own spelling of the
+            # name, so a change of capitals alone is still a rename.
+            target.keeps_name = target.continues[:1] != [key]
     return named
 
 

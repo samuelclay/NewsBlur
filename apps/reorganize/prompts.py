@@ -69,12 +69,19 @@ SITE_TEXT_IS_DATA = (
 
 LEVEL_GUIDANCE = {
     "reorganize": (
-        "Keep the folders that already work and change the ones that don't: add, rename, merge, nest "
-        "or remove folders where that makes the sites easier to find."
+        "Improve the folders the reader has. Keep a folder that holds one clear subject at a workable "
+        "size. Change what doesn't work: split a folder that mixes subjects or would hold more than about "
+        "40 sites, give a subject its own folder when several of its sites are scattered across other "
+        "folders, merge folders that cover the same thing, nest a folder inside another when it is plainly "
+        "a part of it, and rename a folder whose name is vague or isn't written the way the others are. "
+        "The sites with no folder keys are part of the picture: the folders should suit them too."
     ),
     "fresh": (
-        "Design the best set of folders for these sites, as if starting over. Carry on a current folder "
-        "only when it is one you would have made anyway."
+        "Start over. Work out the subjects from the sites themselves, as if the reader had no folders, "
+        "and design the folders you would give them: each one a clear subject, most holding between about "
+        "5 and 40 sites, plainly named. Only then look at the current folders. Where one of your folders "
+        'covers the same subject as a current folder, list that folder in "continues" so its settings '
+        "carry over. Don't keep a current folder just because it exists."
     ),
 }
 
@@ -129,13 +136,12 @@ The folders, one per line:
 </folders>"""
 
 TIDY_FOLDERS_INTRO = (
-    "The folders are the ones the reader already has. For each site, choose the folder that suits it "
-    'best. "root" is the top level, outside every folder.'
+    "The folders are the ones the reader already has. For each site, choose the folder that suits it best."
 )
 
 TARGET_FOLDERS_INTRO = (
     "The folders below were designed for this reader in an earlier step. For each site, choose the "
-    'folder that suits it best. "root" is the top level, outside every folder.'
+    "folder that suits it best."
 )
 
 CARRIES_ON = (
