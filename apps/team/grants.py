@@ -1,6 +1,6 @@
-"""Premium Pro for teammates: granting it with a seat, 14 days of grace after a seat on an active team ends,
-releasing it back to the person's own plan, and a team lapsing or coming back (apps/team/models.py
-TeamProGrant)."""
+"""Premium Pro for teammates: granting it with a seat, what joining does to a plan the person pays for on their
+own, 14 days of grace after a seat on an active team ends, releasing it back to the person's own plan, and a team
+lapsing or coming back (apps/team/models.py TeamProGrant)."""
 
 import datetime
 
@@ -12,7 +12,7 @@ from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils.translation import gettext
 
-from apps.profile.models import MSentEmail, Profile
+from apps.profile.models import MSentEmail, PaymentHistory, Profile
 from apps.profile.tasks import TIER_NAMES
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.tasks import SchedulePremiumSetup
@@ -24,6 +24,17 @@ from utils.templatetags.utils_tags import language_date
 GRACE_DAYS = 14
 # grants.py: the reminder goes out on day 10 of grace, where day 1 is the day grace began.
 REMINDER_AFTER_DAYS = 9
+
+# grants.py: a plan a teammate pays for on their own. Joining turns off a Stripe or PayPal renewal; an App Store
+# or Play subscription only its owner can cancel, so they're told where.
+RENEWALS_TURNED_OFF_ON_JOIN = ("stripe", "paypal")
+STORE_PAYMENT_PREFIXES = (("ios-", "app_store"), ("android-", "play"))
+STORE_SUBSCRIPTION_URLS = {
+    "app_store": "https://apps.apple.com/account/subscriptions",
+    "play": "https://play.google.com/store/account/subscriptions?package=%s"
+    % settings.GOOGLE_PLAY_PACKAGE_NAME,
+}
+STORE_PAYMENT_DAYS = 365
 
 
 def grant_team_pro(member):
@@ -48,6 +59,7 @@ def grant_team_pro(member):
                 member=member,
                 own_tier=own_tier,
                 own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
+                own_premium_trial=profile.is_premium_trial,
             )
             # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets
             # its muted sites back. Anyone else muted theirs on purpose, and a rejoin keeps what they chose.
@@ -55,7 +67,6 @@ def grant_team_pro(member):
                 UserSubscription.objects.filter(user=user, active=False).update(active=True)
         Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO])
         User.objects.filter(pk=user.pk, is_active=False).update(is_active=True)
-        TeamActivity.log(member.team, user, "team_pro_granted")
 
         start_archive_backfill = not profile.is_archive
         transaction.on_commit(lambda: _set_up_pro_feeds(user, start_archive_backfill))
@@ -128,6 +139,9 @@ def release_team_pro(user, grace_ended_by=None):
         plan = grant.own_plan_on(profile, now)
         grant.delete()
         if plan == TeamProGrant.TIER_FREE:
+            # grants.py: an account that never had a trial can still start one. Any other has used it, including
+            # one whose trial ran out during the seat.
+            profile.is_premium_trial = None if grant.own_premium_trial is None else False
             profile.deactivate_premium()
         else:
             Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[plan])
@@ -168,6 +182,77 @@ def activate_team(team):
         TeamActivity.log(team, None, "team_activated")
         for member in team.active_members().exclude(role=TeamMember.ROLE_OWNER):
             grant_team_pro(member)
+
+
+def own_subscription(user):
+    """The plan this person pays for on their own that renews by itself: "stripe" or "paypal", "app_store" or
+    "play", or None."""
+    profile = Profile.objects.get(user=user)
+    if profile.premium_renewal and profile.active_provider in RENEWALS_TURNED_OFF_ON_JOIN:
+        return profile.active_provider
+    now = datetime.datetime.now()
+    if profile.premium_expire and profile.premium_expire <= now:
+        return None
+    # grants.py: setup_premium_history clears active_provider for an account Stripe and PayPal don't bill, so a
+    # store subscription shows only as its payments.
+    payment = (
+        PaymentHistory.objects.filter(
+            user=user,
+            payment_amount__gt=0,
+            payment_date__gte=now - datetime.timedelta(days=STORE_PAYMENT_DAYS),
+        )
+        .exclude(refunded=True)
+        .order_by("-payment_date")
+        .first()
+    )
+    for prefix, store in STORE_PAYMENT_PREFIXES:
+        if payment and payment.payment_provider.startswith(prefix):
+            return store
+    return None
+
+
+def own_plan_on_join(user):
+    """What joining a team does to the plan this person pays for on their own, for the join screen and the
+    accept response (apps/team/views.py). on_join is "renewal_off", "cancel_in_store" or None."""
+    subscription = own_subscription(user)
+    own_plan = dict(subscription=subscription, on_join=None, paid_through=None, manage_url=None, message=None)
+    if subscription in RENEWALS_TURNED_OFF_ON_JOIN:
+        paid_through = Profile.objects.get(user=user).premium_expire
+        own_plan.update(on_join="renewal_off", paid_through=paid_through)
+        if paid_through:
+            own_plan["message"] = gettext(
+                "The team covers Premium Pro, so joining turns off renewal of the plan you pay for yourself. "
+                "You keep that plan until %(date)s."
+            ) % {"date": language_date(paid_through, "F j, Y")}
+        else:
+            own_plan["message"] = gettext(
+                "The team covers Premium Pro, so joining turns off renewal of the plan you pay for yourself."
+            )
+    elif subscription == "app_store":
+        own_plan.update(on_join="cancel_in_store", manage_url=STORE_SUBSCRIPTION_URLS[subscription])
+        own_plan["message"] = gettext(
+            "The team covers Premium Pro, so you can cancel your App Store subscription to NewsBlur. "
+            "NewsBlur can't cancel it for you."
+        )
+    elif subscription == "play":
+        own_plan.update(on_join="cancel_in_store", manage_url=STORE_SUBSCRIPTION_URLS[subscription])
+        own_plan["message"] = gettext(
+            "The team covers Premium Pro, so you can cancel your Google Play subscription to NewsBlur. "
+            "NewsBlur can't cancel it for you."
+        )
+    return own_plan
+
+
+def settle_own_plan_on_join(user, team, subscription):
+    """Run by SettleOwnPlanOnJoin (apps/team/tasks.py) once a join has committed. A Stripe or PayPal renewal stops
+    at the end of the period already paid for, with no refund, and the AI filter usage billing subscription keeps
+    running. Either way the person gets one email saying what happened to their own plan."""
+    if subscription in RENEWALS_TURNED_OFF_ON_JOIN:
+        profile = Profile.objects.get(user=user)
+        profile.cancel_premium_stripe()
+        profile.cancel_premium_paypal()
+        profile.setup_premium_history()
+    send_own_plan_email(user, team, subscription)
 
 
 def _plan_context(plan, profile):
@@ -214,6 +299,38 @@ def send_team_plan_ended_email(user, team, plan):
         html = render_to_string("mail/email_team_plan_ended.xhtml", data)
         subject = gettext("The Premium Team plan for %(team)s has ended") % {"team": team.name}
     _send(profile, subject, text, html, "team_plan_ended")
+
+
+def send_own_plan_email(user, team, subscription):
+    profile = Profile.objects.get(user=user)
+    if not user.email:
+        logging.user(user, "~FMNot sending team own plan email, no email address")
+        return
+
+    data = dict(
+        user=user,
+        team_name=team.name,
+        subscription=subscription,
+        paid_through=profile.premium_expire,
+        manage_url=STORE_SUBSCRIPTION_URLS.get(subscription),
+    )
+    with account_translation(profile):
+        text = render_to_string("mail/email_team_own_plan.txt", data)
+        html = render_to_string("mail/email_team_own_plan.xhtml", data)
+        subject_data = {"team": team.name}
+        if subscription == "app_store":
+            subject = (
+                gettext("You're on %(team)s now, so you can cancel your App Store subscription")
+                % subject_data
+            )
+        elif subscription == "play":
+            subject = (
+                gettext("You're on %(team)s now, so you can cancel your Google Play subscription")
+                % subject_data
+            )
+        else:
+            subject = gettext("Your own plan won't renew now that you're on %(team)s") % subject_data
+    _send(profile, subject, text, html, "team_own_plan")
 
 
 def _send(profile, subject, text, html, email_type):

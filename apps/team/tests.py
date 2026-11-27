@@ -1,20 +1,31 @@
 import datetime
 import re
 import threading
-from unittest.mock import patch
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
 
+import redis
+import stripe
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.db import DatabaseError, connection, transaction
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, TestCase, TransactionTestCase, override_settings
+from django.utils import dateformat
+from mongoengine.context_managers import switch_db
 
+from apps.monitor.models import MLLMCost
+from apps.profile import models as profile_models
 from apps.profile.apple_subscriptions import apply_verified_apple_transaction
 from apps.profile.models import (
     MGiftCode,
     MRedeemedCode,
     MReferral,
     PaymentHistory,
+    PaypalIds,
     Profile,
+    StripeIds,
+    stripe_subscription_updated,
 )
 from apps.profile.tasks import (
     EmailNewPremium,
@@ -28,6 +39,8 @@ from apps.profile.tasks import (
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.statistics.models import MStatistics
+from apps.statistics.rllm_costs import RLLMCosts
 from apps.team.grants import activate_team, deactivate_team
 from apps.team.models import (
     Team,
@@ -37,8 +50,9 @@ from apps.team.models import (
     TeamProGrant,
     team_owner_id,
 )
-from apps.team.tasks import SendTeamInviteEmail, TeamProGrants
+from apps.team.tasks import SendTeamInviteEmail, SettleOwnPlanOnJoin, TeamProGrants
 from utils import json_functions as json
+from utils.llm_costs import LLMCostTracker
 
 # apps/team/tests.py: the Profile flags of each plan, written out here so the tests don't read them from the code
 # under test.
@@ -55,6 +69,9 @@ PLANS = {
     "archive": dict(
         is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=False
     ),
+    "archive_extra": dict(
+        is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=True, is_pro=False
+    ),
     "pro": dict(
         is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=True
     ),
@@ -70,6 +87,7 @@ class TeamClientMixin:
         self.invite_email_task = self.patch(
             SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
         )
+        self.patch(SettleOwnPlanOnJoin, "delay", side_effect=lambda **kwargs: SettleOwnPlanOnJoin(**kwargs))
         self.patch(EmailNewPremiumTrial, "delay")
         self.patch(SchedulePremiumSetup, "apply_async")
         self.patch(UserSubscription, "queue_new_feeds")
@@ -535,7 +553,9 @@ class Test_TeamInvites(TeamClientMixin, TestCase):
     def test_the_preview_is_open_before_login_but_joining_is_not(self):
         token = self.join_link_token(self.team, self.owner)
 
-        self.assertEqual(self.get(None, "invite_preview", token=token)["invite"]["team_name"], "Newsroom")
+        preview = self.get(None, "invite_preview", token=token)["invite"]
+        self.assertEqual(preview["team_name"], "Newsroom")
+        self.assertNotIn("own_plan", preview)
         response = self.client_for(None).post("/team/accept_invite", {"token": token})
         self.assertEqual(response.status_code, 403)
         self.assertEqual(self.team.active_members().count(), 1)
@@ -682,13 +702,13 @@ class Test_TeamActivity(TeamClientMixin, TestCase):
         self.post(member, "accept_invite", token=self.join_link_token(team, owner))
         self.post(owner, "remove_member", team_id=team.pk, user_id=member.pk)
 
-        with patch.object(TeamActivity, "PAGE_SIZE", 4):
+        with patch.object(TeamActivity, "PAGE_SIZE", 3):
             first_page = self.get(owner, "activity", team_id=team.pk)
             second_page = self.get(owner, "activity", team_id=team.pk, page=2)
 
         self.assertEqual(
             [entry["action"] for entry in first_page["activities"]],
-            ["member_removed", "team_pro_granted", "member_joined", "join_link_created"],
+            ["member_removed", "member_joined", "join_link_created"],
         )
         self.assertTrue(first_page["has_more"])
         self.assertEqual([entry["action"] for entry in second_page["activities"]], ["team_created"])
@@ -1057,3 +1077,414 @@ class Test_TeamProFeedSetup(TeamClientMixin, TransactionTestCase):
             self.assertEqual(self.post(user, "accept_invite", token=token)["code"], 1)
 
         self.backfill.assert_called_once_with(trial_reader.pk)
+
+
+USAGE_PRICES = dict(
+    STRIPE_PRICE_TEXT_CLASSIFICATION="price_text_classifier",
+    STRIPE_PRICE_IMAGE_CLASSIFICATION="price_image_classifier",
+)
+
+
+def stripe_subscription(subscription_id, prices):
+    """apps/team/tests.py: a Stripe subscription as the API returns it, with no top level plan once it has two
+    items."""
+    items = [
+        {
+            "id": "si_%s_%s" % (subscription_id, index),
+            "object": "subscription_item",
+            "price": {"id": price, "object": "price"},
+            "plan": {"id": price, "object": "plan", "active": True},
+        }
+        for index, price in enumerate(prices)
+    ]
+    return stripe.Subscription.construct_from(
+        {
+            "id": subscription_id,
+            "object": "subscription",
+            "status": "active",
+            "cancel_at": None,
+            "plan": items[0]["plan"] if len(items) == 1 else None,
+            "items": {"object": "list", "data": items},
+        },
+        "sk_test",
+    )
+
+
+class FakeStripe:
+    """apps/team/tests.py: Stripe's API for one customer's subscriptions. Turning off renewal shows on the
+    subscription, as it would at Stripe."""
+
+    def __init__(self, test, customer_id, subscriptions):
+        self.subscriptions = subscriptions
+        customer = MagicMock(id=customer_id, email=None, stripe_id=customer_id)
+        test.patch(stripe.Customer, "retrieve", return_value=customer)
+        test.patch(stripe.Customer, "list", return_value=[customer])
+        test.patch(stripe.Charge, "list", return_value=MagicMock(data=[]))
+        test.patch(
+            stripe.Subscription, "list", side_effect=lambda **kwargs: MagicMock(data=self.subscriptions)
+        )
+        self.modify = test.patch(stripe.Subscription, "modify", side_effect=self._modify)
+        self.cancel = test.patch(stripe.Subscription, "cancel")
+        self.delete = test.patch(stripe.Subscription, "delete")
+        self.refund = test.patch(stripe.Refund, "create")
+
+    def _modify(self, subscription_id, cancel_at_period_end=False, **changes):
+        if cancel_at_period_end:
+            subscription = next(sub for sub in self.subscriptions if sub.id == subscription_id)
+            subscription["cancel_at"] = int(datetime.datetime.now().timestamp())
+
+    def renewals_turned_off(self):
+        return [(call.args[0], call.kwargs) for call in self.modify.call_args_list]
+
+
+class FakePayPal:
+    """apps/team/tests.py: PayPal's subscriptions API for one subscription."""
+
+    def __init__(self, test, subscription_id):
+        self.subscription_id = subscription_id
+        self.status = "ACTIVE"
+        self.posts = []
+        test.patch(profile_models.paypalrestsdk, "Api", return_value=self)
+
+    def get(self, url):
+        if "/transactions" in url:
+            return {"transactions": []}
+        return {"id": self.subscription_id, "status": self.status, "plan_id": "P-TEAMJOINER"}
+
+    def post(self, url, data):
+        self.posts.append(url)
+        if url.endswith("/suspend"):
+            self.status = "SUSPENDED"
+        return {}
+
+
+@override_settings(**USAGE_PRICES)
+class Test_TeamJoinOwnPlan(TeamProMixin, TestCase):
+    """What joining does to a plan the teammate pays for on their own."""
+
+    def subscriber(self, username, plan, provider, paid_through):
+        user = self.reader(username, plan, premium_expire=paid_through)
+        Profile.objects.filter(user=user).update(premium_renewal=True, active_provider=provider)
+        return user
+
+    def store_subscriber(self, username, payment_provider):
+        user = self.reader(username, "premium", premium_expire=self.now + self.days(335))
+        PaymentHistory.objects.create(
+            user=user,
+            payment_date=self.now - self.days(30),
+            payment_amount=36,
+            payment_provider=payment_provider,
+        )
+        return user
+
+    def own_plan_preview(self, user):
+        return self.get(user, "invite_preview", token=self.token)["invite"]["own_plan"]
+
+    def accept(self, user):
+        response = self.post(user, "accept_invite", token=self.token)
+        self.assertEqual(response["code"], 1)
+        return response["own_plan"]
+
+    def test_joining_turns_off_a_stripe_renewal_at_the_period_end_and_keeps_usage_billing(self):
+        paid_through = self.now + self.days(200)
+        reader = self.subscriber("reader", "archive", "stripe", paid_through)
+        Profile.objects.filter(user=reader).update(stripe_id="cus_reader", is_usage_billing=True)
+        StripeIds.objects.create(user=reader, stripe_id="cus_reader")
+        usage_sub = stripe_subscription("sub_usage", ["price_text_classifier", "price_image_classifier"])
+        archive_sub = stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])
+        fake_stripe = FakeStripe(self, "cus_reader", [usage_sub, archive_sub])
+
+        # A join the team refuses changes nothing.
+        Team.objects.filter(pk=self.team.pk).update(seat_limit=1)
+        self.assertEqual(self.post(reader, "accept_invite", token=self.token)["reason"], "seat_limit")
+        self.assertEqual(fake_stripe.renewals_turned_off(), [])
+        Team.objects.filter(pk=self.team.pk).update(seat_limit=10)
+
+        self.assertEqual(self.own_plan_preview(reader)["on_join"], "renewal_off")
+        own_plan = self.accept(reader)
+
+        self.assertEqual((own_plan["subscription"], own_plan["on_join"]), ("stripe", "renewal_off"))
+        self.assertEqual(fake_stripe.renewals_turned_off(), [("sub_archive", {"cancel_at_period_end": True})])
+        for refused in (fake_stripe.cancel, fake_stripe.delete, fake_stripe.refund):
+            refused.assert_not_called()
+        self.assertEqual(self.premium_expire(reader), paid_through)
+        [email] = self.mail_to(reader)
+        self.assertIn(dateformat.format(paid_through, "F j, Y"), email.body)
+
+        # What they paid for stays theirs once the seat ends.
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "archive")
+
+    def test_joining_suspends_a_paypal_renewal_without_a_refund(self):
+        reader = self.subscriber("reader", "premium", "paypal", self.now + self.days(300))
+        Profile.objects.filter(user=reader).update(paypal_sub_id="I-TEAMJOINER")
+        PaypalIds.objects.create(user=reader, paypal_sub_id="I-TEAMJOINER")
+        fake_paypal = FakePayPal(self, "I-TEAMJOINER")
+
+        own_plan = self.accept(reader)
+
+        self.assertEqual((own_plan["subscription"], own_plan["on_join"]), ("paypal", "renewal_off"))
+        self.assertEqual(fake_paypal.posts, ["/v1/billing/subscriptions/I-TEAMJOINER/suspend"])
+        self.assertFalse(Profile.objects.get(user=reader).premium_renewal)
+        self.assertEqual(len(self.mail_to(reader)), 1)
+
+    def test_store_subscribers_are_told_to_cancel_in_their_own_store(self):
+        ios_reader = self.store_subscriber("iosreader", "ios-subscription")
+        android_reader = self.store_subscriber("androidreader", "android-archive")
+
+        for user, store, store_domain in (
+            (ios_reader, "app_store", "apps.apple.com"),
+            (android_reader, "play", "play.google.com"),
+        ):
+            self.assertEqual(self.own_plan_preview(user)["on_join"], "cancel_in_store")
+            own_plan = self.accept(user)
+            self.assertEqual(own_plan["subscription"], store)
+            self.assertIn(store_domain, own_plan["manage_url"])
+            [email] = self.mail_to(user)
+            self.assertIn(store_domain, email.body)
+
+    def test_someone_without_a_renewing_plan_of_their_own_gets_no_email(self):
+        free_reader = self.reader("freereader", "free")
+        # Renewal already off: their plan runs out on its own date.
+        cancelled = self.reader("cancelled", "premium", premium_expire=self.now + self.days(100))
+        Profile.objects.filter(user=cancelled).update(active_provider="stripe", premium_renewal=False)
+        lapsed_store = self.store_subscriber("lapsedstore", "ios-subscription")
+        Profile.objects.filter(user=lapsed_store).update(premium_expire=self.now - self.days(1))
+
+        for user in (free_reader, cancelled, lapsed_store):
+            self.assertIsNone(self.own_plan_preview(user)["subscription"])
+            self.join(user)
+
+        self.assertEqual(mail.outbox, [])
+
+    def test_a_lapsed_team_coming_back_cancels_and_emails_nothing_again(self):
+        stripe_reader = self.subscriber("stripereader", "archive", "stripe", self.now + self.days(200))
+        Profile.objects.filter(user=stripe_reader).update(stripe_id="cus_reader")
+        StripeIds.objects.create(user=stripe_reader, stripe_id="cus_reader")
+        fake_stripe = FakeStripe(
+            self,
+            "cus_reader",
+            [stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])],
+        )
+        ios_reader = self.store_subscriber("iosreader", "ios-subscription")
+        for user in (stripe_reader, ios_reader):
+            self.join(user)
+        deactivate_team(self.team)
+        # While the team was off, the reader turned their own renewal back on.
+        Profile.objects.filter(user=stripe_reader).update(premium_renewal=True)
+        mail.outbox = []
+
+        activate_team(self.team)
+
+        self.assertEqual(self.plan_of(stripe_reader), "pro")
+        self.assertEqual(len(fake_stripe.renewals_turned_off()), 1)
+        self.assertEqual(mail.outbox, [])
+
+
+@override_settings(**USAGE_PRICES)
+class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
+    """AI filters are pay per use on the owner's Stripe customer, against the owner's spending limit."""
+
+    def setUp(self):
+        super().setUp()
+        # apps/team/tests.py: cost rows go to the test database instead of the shared analytics one.
+        analytics = switch_db(MLLMCost, "default")
+        analytics.__enter__()
+        self.addCleanup(analytics.__exit__, None, None, None)
+        self.addCleanup(lambda: MLLMCost.objects.delete())
+        self.patch(RLLMCosts, "record")
+        self.meter_events = self.patch(stripe.billing.MeterEvent, "create")
+        Profile.objects.filter(user=self.owner).update(stripe_id="cus_owner")
+        self.addCleanup(self.forget_cached_limit, self.owner)
+
+    def forget_cached_limit(self, user):
+        redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL).delete("usage_limit:%s" % user.pk)
+
+    def turn_on_owner_billing(self, limit=None):
+        Profile.objects.filter(user=self.owner).update(is_usage_billing=True, usage_billing_limit=limit)
+
+    def at(self, fraction):
+        """apps/team/tests.py: a moment between the start of this billing month and now."""
+        now = datetime.datetime.utcnow()
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        return month_start + (now - month_start) * fraction
+
+    def cost(self, user, cost_usd, timestamp, feature="story_classification"):
+        MLLMCost(
+            user_id=user.pk,
+            provider="anthropic",
+            model="claude-haiku-5-5",
+            feature=feature,
+            cost_usd=cost_usd,
+            timestamp=timestamp,
+        ).save()
+
+    def classify(self, user):
+        LLMCostTracker.record_usage(
+            provider="anthropic",
+            model="claude-sonnet-5-5",
+            feature="story_classification",
+            input_tokens=1_000_000,
+            user_id=user.pk,
+        )
+
+    def test_a_teammate_uses_ai_filters_only_once_the_owner_pays_for_them(self):
+        # The teammate's own usage billing from before joining doesn't carry onto the team.
+        reader = self.reader("reader", "free")
+        Profile.objects.filter(user=reader).update(stripe_id="cus_reader", is_usage_billing=True)
+        self.join(reader)
+        self.assertFalse(Profile.objects.get(user=reader).can_use_ai_classifiers)
+
+        self.turn_on_owner_billing()
+        self.assertTrue(Profile.objects.get(user=reader).can_use_ai_classifiers)
+        self.classify(reader)
+
+        self.assertEqual(
+            [call.kwargs["payload"]["stripe_customer_id"] for call in self.meter_events.call_args_list],
+            ["cus_owner"],
+        )
+        self.assertEqual(MLLMCost.objects(user_id=reader.pk).count(), 1)
+
+        self.leave(reader)
+        self.assertTrue(Profile.objects.get(user=reader).can_use_ai_classifiers)
+        self.classify(reader)
+        self.assertEqual(
+            self.meter_events.call_args_list[-1].kwargs["payload"]["stripe_customer_id"], "cus_reader"
+        )
+
+    def test_the_owners_limit_counts_each_teammate_only_while_on_the_team(self):
+        self.turn_on_owner_billing(limit=Decimal("1.00"))
+        stayer = self.reader("stayer", "free")
+        leaver = self.reader("leaver", "free")
+        outsider = self.reader("outsider", "free")
+        for user in (stayer, leaver):
+            self.join(user)
+        self.leave(leaver)
+        TeamMember.objects.filter(user__in=(stayer, leaver)).update(joined_date=self.at(0.3))
+        TeamMember.objects.filter(user=leaver).update(removed_date=self.at(0.6))
+
+        self.cost(self.owner, 0.40, self.at(0.1))
+        self.cost(stayer, 5.00, self.at(0.2))
+        self.cost(stayer, 0.20, self.at(0.5))
+        self.cost(stayer, 0.10, self.at(0.5), feature="vision_classification")
+        self.cost(stayer, 3.00, self.at(0.5), feature="ask_ai")
+        self.cost(leaver, 0.20, self.at(0.4))
+        self.cost(leaver, 2.00, self.at(0.8))
+        self.cost(outsider, 4.00, self.at(0.5))
+
+        spend, limit, reached = Profile.objects.get(user=stayer).get_usage_billing_spend()
+        self.assertAlmostEqual(spend, 0.90)
+        self.assertEqual((limit, reached), (1.0, False))
+        self.assertAlmostEqual(Profile.objects.get(user=self.owner).get_usage_billing_spend()[0], 0.90)
+        self.assertFalse(Profile.objects.get(user=stayer).is_usage_limit_reached)
+
+        # Another teammate's use past the owner's limit stops everyone at once.
+        teammate = self.reader("teammate", "free")
+        self.join(teammate)
+        self.classify(teammate)
+        self.assertTrue(Profile.objects.get(user=stayer).is_usage_limit_reached)
+        self.assertTrue(Profile.objects.get(user=self.owner).is_usage_limit_reached)
+
+    def test_only_the_owner_turns_on_usage_billing_for_the_team(self):
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        self.patch(stripe.Subscription, "list", return_value=MagicMock(data=[]))
+        checkout = self.patch(
+            stripe.checkout.Session,
+            "create",
+            return_value=MagicMock(url="https://checkout.stripe.com/c/team"),
+        )
+
+        app_response = self.client_for(reader).post("/profile/setup_usage_billing/", {"platform": "ios"})
+        self.assertEqual(json.decode(app_response.content)["reason"], "team_owner_only")
+        web_response = self.client_for(reader).post("/profile/setup_usage_billing/")
+        self.assertIn("usage_billing=team_owner_only", web_response["Location"])
+        checkout.assert_not_called()
+
+        owner_response = self.client_for(self.owner).post("/profile/setup_usage_billing/")
+        self.assertEqual(owner_response["Location"], "https://checkout.stripe.com/c/team")
+
+
+class Test_TeamProUpkeep(TeamProMixin, TestCase):
+    def test_paid_counts_leave_teammates_out_and_count_them_as_seats(self):
+        MStatistics.objects(key__startswith="munin:users_").delete()
+        Profile.objects.filter(user=self.owner).update(**PLANS["free"])
+        self.reader("subscriber", "pro", premium_expire=self.now + self.days(20))
+        for username in ("first", "second", "third", "leaver"):
+            self.join(self.reader(username, "free"))
+        self.leave(User.objects.get(username="leaver"))
+
+        body = self.client_for(None).get("/monitor/users").content.decode("utf-8")
+
+        counts = dict(re.findall(r'users\{category="(\w+)"\} (\d+)', body))
+        self.assertEqual(
+            {category: counts[category] for category in ("premium", "archive", "pro", "team_seats")},
+            {"premium": "1", "archive": "1", "pro": "1", "team_seats": "3"},
+        )
+
+    def test_the_hourly_task_puts_back_pro_a_stale_profile_save_took_away(self):
+        reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
+        leaver = self.reader("leaver", "free")
+        outsider = self.reader("outsider", "free")
+        # Loaded before the grant, as LastSeenMiddleware does, and saved whole after it.
+        stale_profiles = [Profile.objects.get(user=user) for user in (reader, leaver)]
+        for user in (reader, leaver):
+            self.join(user)
+        self.leave(leaver)
+        for stale_profile in stale_profiles:
+            stale_profile.save()
+        self.assertEqual([self.plan_of(reader), self.plan_of(leaver)], ["trial", "free"])
+
+        TeamProGrants()
+
+        self.assertEqual([self.plan_of(user) for user in (reader, leaver, outsider)], ["pro", "pro", "free"])
+
+    def test_leaving_keeps_whether_the_account_can_start_a_trial(self):
+        never_tried = self.reader("nevertried", "free")
+        Profile.objects.filter(user=never_tried).update(is_premium_trial=None)
+        used_trial = self.reader("usedtrial", "free")
+        trial_ran_out = self.reader("trialranout", "trial", premium_expire=self.now + self.days(5))
+        readers = (never_tried, used_trial, trial_ran_out)
+        for user in readers:
+            self.join(user)
+        TeamProGrant.objects.filter(user=trial_ran_out).update(own_trial_expire=self.now - self.days(1))
+
+        for user in readers:
+            self.leave(user)
+            self.grace_day(user, 15)
+
+        self.assertEqual(
+            [Profile.objects.get(user=user).start_premium_trial() for user in readers], [True, False, False]
+        )
+
+    def test_a_stripe_switch_from_archive_extra_to_archive_during_the_seat_is_kept(self):
+        reader = self.reader("reader", "archive_extra", premium_expire=self.now + self.days(200))
+        Profile.objects.filter(user=reader).update(stripe_id="cus_reader")
+        StripeIds.objects.create(user=reader, stripe_id="cus_reader")
+        self.join(reader)
+        archive_price = Profile.plan_to_stripe_price("archive")
+        FakeStripe(self, "cus_reader", [stripe_subscription("sub_archive", [archive_price])])
+        self.patch(
+            stripe.Subscription, "retrieve", return_value={"status": "active", "plan": {"id": archive_price}}
+        )
+
+        stripe_subscription_updated(
+            None,
+            {
+                "data": {
+                    "object": {
+                        "id": "sub_archive",
+                        "customer": "cus_reader",
+                        "plan": {"id": archive_price, "active": True},
+                        "cancel_at": None,
+                        "items": {"data": []},
+                    }
+                }
+            },
+        )
+        self.assertEqual(self.plan_of(reader), "pro")
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "archive")

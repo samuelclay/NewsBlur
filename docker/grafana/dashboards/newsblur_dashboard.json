@@ -737,6 +737,15 @@
      "expr": "users{category=\"pro\"}",
      "legendFormat": "Pro Users",
      "refId": "A"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "users{category=\"team_seats\"}",
+     "legendFormat": "Team Seats",
+     "refId": "B"
     }
    ],
    "title": "Premium Pro Users",

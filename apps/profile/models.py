@@ -47,7 +47,7 @@ from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.team.models import TeamProGrant, team_pro_grant
+from apps.team.models import TeamProGrant, team_owner_id, team_pro_grant
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
@@ -161,20 +161,35 @@ class Profile(models.Model):
         return AnthropicProvider().is_configured()
 
     @property
+    def usage_billing_profile(self):
+        """The profile whose usage billing pays for this account's AI classifiers. On an active team it's the
+        owner's (apps/team/models.py team_owner_id), so a teammate's usage bills the owner against the owner's
+        spending limit."""
+        # Everyone on an active team carries the Pro flags, so other accounts skip the team lookup. This runs
+        # for every profile payload (canonical).
+        if not self.is_pro:
+            return self
+        owner_id = team_owner_id(self.user_id)
+        if not owner_id or owner_id == self.user_id:
+            return self
+        return Profile.objects.get(user_id=owner_id)
+
+    @property
     def can_use_ai_classifiers(self):
-        return bool(self.is_usage_billing) or self.is_self_hosted_ai
+        return bool(self.usage_billing_profile.is_usage_billing) or self.is_self_hosted_ai
 
     def get_usage_billing_spend(self):
         """Get current billing cycle spend from MLLMCost MongoDB records.
         Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
         """
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
+        billing = self.usage_billing_profile
+        if not billing.is_usage_billing and not self.is_self_hosted_ai:
             return (0.0, None, False)
 
         from apps.monitor.models import MLLMCost
 
-        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
-        limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
+        current_spend = MLLMCost.get_current_cycle_spend(billing.user_id)
+        limit = float(billing.usage_billing_limit) if billing.usage_billing_limit else None
         if current_spend is None:
             # Analytics is down, so spend is unknown. Fail closed rather than
             # let usage billing run uncapped.
@@ -185,11 +200,12 @@ class Profile(models.Model):
     @property
     def is_usage_limit_reached(self):
         """Quick check: has user hit their spending limit? Uses Redis cache."""
-        if not self.usage_billing_limit:
+        billing = self.usage_billing_profile
+        if not billing.usage_billing_limit:
             return False
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
+        if not billing.is_usage_billing and not self.is_self_hosted_ai:
             return False
-        return self._check_cached_limit_status()
+        return billing._check_cached_limit_status()
 
     def _check_cached_limit_status(self):
         """Check Redis cache for limit status, fall back to MongoDB."""
@@ -5058,9 +5074,13 @@ def stripe_confirmed_plan_id(profile, subscription_id, plan_id):
     """
     archive_price = Profile.plan_to_stripe_price("archive")
     extra_price = Profile.plan_to_stripe_price("archive_extra")
-    if plan_id not in (archive_price, extra_price) or not profile.is_archive or profile.is_pro:
+    # A teammate's flags show team Pro (apps/team/grants.py), so the event is compared with the tier they pay for
+    # on their own, as in setup_premium_history.
+    team_grant = team_pro_grant(profile.user_id)
+    own = team_grant.own_flags() if team_grant else profile
+    if plan_id not in (archive_price, extra_price) or not own.is_archive or own.is_pro:
         return plan_id, False
-    current_price = extra_price if profile.is_archive_extra else archive_price
+    current_price = extra_price if own.is_archive_extra else archive_price
     if plan_id == current_price:
         return plan_id, False
     live_plan_id = stripe_current_plan_id(subscription_id)

@@ -69,7 +69,14 @@ from apps.profile.models import (
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
+from apps.social.models import (
+    MActivity,
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
+from apps.team.models import team_owner_id
 from utils import json_functions as json
 from utils import log as logging
 from utils.languages import normalize_language
@@ -1262,6 +1269,25 @@ def setup_usage_billing(request):
             return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
         return HttpResponseRedirect(reverse("index"))
 
+    # views.py: On an active team a teammate's AI filters bill the team's owner against the owner's
+    # spending limit (Profile.usage_billing_profile), so only the owner turns usage billing on.
+    owner_id = team_owner_id(request.user)
+    if owner_id and owner_id != request.user.pk:
+        logging.user(request, "~BR~FRUsage billing refused: the team's owner turns it on")
+        if app_platform:
+            return JsonResponse(
+                {
+                    "code": -1,
+                    "reason": "team_owner_only",
+                    "message": gettext(
+                        "On a team, AI filters are billed to the team's owner. Ask them to turn on usage billing."
+                    ),
+                }
+            )
+        return HttpResponseRedirect(
+            "https://%s%s?next=payments&usage_billing=team_owner_only" % (domain, reverse("index"))
+        )
+
     # Guard against duplicate subscriptions. Meter events are customer-scoped,
     # so any extra active sub on the same classifier prices silently double-bills
     # the user every cycle. Bail out to the billing portal instead of creating
@@ -2037,7 +2063,10 @@ def email_optout_token(request, username, secret):
 @require_POST
 @json.json_view
 def ios_subscription_status(request):
-    from appstoreserverlibrary.signed_data_verifier import VerificationException, VerificationStatus
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
 
     from apps.profile.apple_notifications import process_apple_notification
 

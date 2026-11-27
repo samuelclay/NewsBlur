@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy
 
+from apps.team.grants import own_plan_on_join
 from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
@@ -217,7 +218,11 @@ def invite_preview(request):
     reason = team_invite.refusal_reason()
     if reason:
         return _failure(reason)
-    return {"code": 1, "invite": team_invite.preview()}
+    preview = team_invite.preview()
+    # views.py: request.user, not get_user, which stands the homepage account in for a logged out visitor.
+    if request.user.is_authenticated:
+        preview["own_plan"] = own_plan_on_join(request.user)
+    return {"code": 1, "invite": preview}
 
 
 @required_params("token")
@@ -229,10 +234,14 @@ def accept_invite(request):
     if not team_invite:
         return _failure("invite_not_found")
 
+    # views.py: read before joining, since the join settles the person's own plan once it commits.
+    own_plan = own_plan_on_join(user)
     reason = team_invite.accept(user)
     if reason:
         return _failure(reason)
-    return _team_response(user, team_invite.team_id)
+    response = _team_response(user, team_invite.team_id)
+    response["own_plan"] = own_plan
+    return response
 
 
 @required_params("role", team_id=int, user_id=int)

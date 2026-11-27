@@ -64,19 +64,32 @@ class MLLMCost(mongo.Document):
     def get_current_cycle_spend(cls, user_id):
         """Get total classifier spend for a user in the current billing month.
 
+        A team's owner pays for each teammate's classifiers while they hold a seat
+        (apps/team/models.py team_owner_id), so the owner's spend also counts each
+        teammate's for the time they were on the team.
+
         Returns:
             float: Total cost in USD for current month's classifier usage, or
                 None when the analytics DB is unavailable and spend is unknown.
                 Callers treat unknown spend as over-limit so that an analytics
                 outage can't hand out unmetered AI usage.
         """
+        from apps.team.models import teammate_seat_windows
+
         now = datetime.utcnow()
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        billed_to_user = [{"user_id": user_id}]
+        for teammate_id, joined_date, removed_date in teammate_seat_windows(user_id, month_start):
+            seat_window = {"$gte": joined_date}
+            if removed_date:
+                seat_window["$lt"] = removed_date
+            billed_to_user.append({"user_id": teammate_id, "timestamp": seat_window})
 
         pipeline = [
             {
                 "$match": {
-                    "user_id": user_id,
+                    "$or": billed_to_user,
                     "feature": {"$in": ["story_classification", "vision_classification"]},
                     "timestamp": {"$gte": month_start},
                 }

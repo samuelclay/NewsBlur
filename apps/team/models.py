@@ -478,8 +478,9 @@ class TeamInvite(models.Model):
         """Join the team, reusing the user's earlier seat row if they had one. Returns a failure reason or
         None. The team row lock makes the seat count and the single use of an email invite hold when several
         people accept at once."""
-        # models.py: apps/team/grants.py imports apps.profile, which imports this module.
-        from apps.team.grants import grant_team_pro
+        # models.py: apps/team/grants.py and apps/team/tasks.py import apps.profile, which imports this module.
+        from apps.team.grants import grant_team_pro, own_subscription
+        from apps.team.tasks import SettleOwnPlanOnJoin
 
         try:
             with transaction.atomic():
@@ -518,6 +519,15 @@ class TeamInvite(models.Model):
                 TeamActivity.log(team, user, "member_joined", role=invite.role, via=invite.kind)
                 # models.py: granted in the seat's own transaction, so a seat never commits without its Pro.
                 grant_team_pro(member)
+                # models.py: the plan the joiner pays for on their own is settled once the seat commits, and only
+                # on a join. A lapsed team coming back (apps/team/grants.py activate_team) leaves it alone.
+                subscription = own_subscription(user)
+                if subscription:
+                    transaction.on_commit(
+                        lambda: SettleOwnPlanOnJoin.delay(
+                            user_id=user.pk, team_id=team.pk, subscription=subscription
+                        )
+                    )
         except IntegrityError:
             # models.py: the same account joined another team at the same moment, and the one active team
             # constraint on TeamMember refused this join.
@@ -646,6 +656,9 @@ class TeamProGrant(models.Model):
     member = models.ForeignKey(TeamMember, related_name="+", null=True, blank=True, on_delete=models.SET_NULL)
     own_tier = models.CharField(max_length=16, choices=TIER_CHOICES)
     own_trial_expire = models.DateTimeField(null=True, blank=True)
+    # models.py: Profile.is_premium_trial when the grant began. None means the account never had a trial and
+    # can still start one (Profile.start_premium_trial), which team Pro's flags would otherwise take away.
+    own_premium_trial = models.BooleanField(null=True, blank=True)
     granted_date = models.DateTimeField(default=datetime.datetime.now)
     grace_started = models.DateTimeField(null=True, blank=True)
     grace_until = models.DateTimeField(null=True, blank=True)
@@ -725,3 +738,15 @@ def team_owner_id(user):
     if not membership or membership.team.status != Team.STATUS_ACTIVE:
         return None
     return membership.team.owner_id
+
+
+def teammate_seat_windows(owner_id, since):
+    """(user_id, joined_date, removed_date) for each seat other than the owner's on the team owner_id owns that
+    was held at some point since a date. removed_date is None while the seat is held. What a teammate runs up in
+    that window falls under the owner (team_owner_id)."""
+    return list(
+        TeamMember.objects.filter(team__owner_id=owner_id)
+        .exclude(user_id=owner_id)
+        .filter(Q(removed_date__isnull=True) | Q(removed_date__gt=since))
+        .values_list("user_id", "joined_date", "removed_date")
+    )
