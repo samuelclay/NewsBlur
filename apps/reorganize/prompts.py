@@ -92,7 +92,7 @@ DESIGN_SYSTEM = """You are designing the folders for a NewsBlur reader's sites. 
 This is the first of two steps. Here you decide which folders the reader should end up with. In the \
 second step every site is filed into one of your folders, so you don't place sites here.
 
-{level}
+{level}{revision}
 
 The message lists the reader's current folders, one per line, each with its key (such as "e3"), its \
 path and the number of sites directly in it. Then it lists the sites, one per line as \
@@ -149,20 +149,37 @@ CARRIES_ON = (
     "already in it. A site in a current folder that no folder carries on has to move. "
 )
 
+DESIGN_REVISION = """You designed folders for this reader before. The message lists that design \
+inside <earlier_design>, one target per line in the shape of your answer, with "continues" naming the \
+current folder keys. The reader has looked at it and asks for a change:
+<request>
+{request}
+</request>
+Change the earlier design only as far as the request needs, and keep every other target as it was."""
 
-def design_system(level, instructions, language):
+ASSIGN_REVISION = """After seeing an earlier proposal for these sites, the reader asked for a change. \
+Follow it wherever it applies:
+<request>
+{request}
+</request>"""
+
+
+def design_system(level, instructions, language, request=None):
+    """The design call's system prompt. `request`, for a revision, is what the reader asks to change."""
     text = DESIGN_SYSTEM.format(
         about=ABOUT_NEWSBLUR,
         instructions=_instructions(instructions),
         level=LEVEL_GUIDANCE.get(level, LEVEL_GUIDANCE["reorganize"]),
+        revision="\n\n" + DESIGN_REVISION.format(request=request) if request else "",
         site_text=SITE_TEXT_IS_DATA,
         language=language_name(language),
     )
     return [{"type": "text", "text": text}]
 
 
-def design_content(folders, site_lines, site_count):
-    """The design call's message: the open folders, then the sites, a sample of them if there are many."""
+def design_content(folders, site_lines, site_count, earlier_targets=None):
+    """The design call's message: the open folders, then the sites, a sample of them if there are many,
+    then for a revision the targets designed before."""
     folder_lines = [
         _json({"key": folder["key"], "path": folder["path"], "sites": folder["sites"]}) for folder in folders
     ]
@@ -173,19 +190,27 @@ def design_content(folders, site_lines, site_count):
         )
     else:
         sample = ""
-    return "<folders>\n%s\n</folders>\n\n%s<sites>\n%s\n</sites>" % (
+    content = "<folders>\n%s\n</folders>\n\n%s<sites>\n%s\n</sites>" % (
         "\n".join(folder_lines),
         sample,
         "\n".join(_json(line) for line in site_lines),
     )
+    if earlier_targets is not None:
+        content += "\n\n<earlier_design>\n%s\n</earlier_design>" % "\n".join(
+            _json(entry) for entry in earlier_targets
+        )
+    return content
 
 
-def assign_system(tidy, destinations, instructions, language):
+def assign_system(tidy, destinations, instructions, language, request=None):
     """The assign calls' system prompt. It is the same for every batch, so later batches read it from
-    the cache."""
+    the cache. `request`, for a revision, is what the reader asks to change."""
+    instructions = _instructions(instructions)
+    if request:
+        instructions += "\n\n" + ASSIGN_REVISION.format(request=request)
     text = ASSIGN_SYSTEM.format(
         about=ABOUT_NEWSBLUR,
-        instructions=_instructions(instructions),
+        instructions=instructions,
         folders_intro=TIDY_FOLDERS_INTRO if tidy else TARGET_FOLDERS_INTRO,
         site_text=SITE_TEXT_IS_DATA,
         language=language_name(language),

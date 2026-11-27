@@ -105,7 +105,7 @@ def apply_proposal(user, proposal_doc):
 
 def undo_proposal(user, proposal_doc):
     """Put back the tree and folder settings `proposal_doc` changed. Returns {"code", "folders"}."""
-    refusal = _undo_refusal(user, proposal_doc)
+    refusal = undo_refusal(user, proposal_doc)
     if refusal:
         return {"code": refusal}
 
@@ -113,7 +113,7 @@ def undo_proposal(user, proposal_doc):
         user_folders = UserSubscriptionFolders.objects.select_for_update().get(user=user)
         # Checked again under the lock, which an apply of a later proposal also holds.
         proposal_doc.reload()
-        refusal = _undo_refusal(user, proposal_doc)
+        refusal = undo_refusal(user, proposal_doc)
         if refusal:
             return {"code": refusal}
 
@@ -145,7 +145,8 @@ def _apply_refusal(user, proposal_doc):
     return None
 
 
-def _undo_refusal(user, proposal_doc):
+def undo_refusal(user, proposal_doc):
+    """Why `proposal_doc` cannot be undone now, or None if it can."""
     if proposal_doc.user_id != user.pk:
         return NOT_FOUND
     if proposal_doc.status not in (APPLYING, APPLIED):

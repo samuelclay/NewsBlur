@@ -8,6 +8,11 @@ of DAILY_RUNS runs in any 24 hours. A user has one run working at a time.
 Runs are counted from the MReorganizeProposal documents by created_date. A run counts unless it
 failed, so a failed run never uses up an allowance. Every date here is naive UTC, as the documents
 store them.
+
+A revision of a proposal is a run too. It counts toward the DAILY_RUNS cap, but never as an
+account's monthly run, so an account without Premium Archive can revise the proposal it has. A
+proposal can be revised REVISIONS_WITH_ARCHIVE times in a row with Premium Archive or Pro, and
+REVISIONS_WITHOUT_ARCHIVE times without.
 """
 
 import datetime
@@ -19,6 +24,8 @@ from apps.reorganize.models import FAILED, WORKING, MReorganizeProposal
 
 MONTHLY_RUNS = 1
 DAILY_RUNS = 10
+REVISIONS_WITH_ARCHIVE = 5
+REVISIONS_WITHOUT_ARCHIVE = 2
 DAY = datetime.timedelta(hours=24)
 # The task's time limit in apps/reorganize/tasks.py ends every run well before this, so a run still
 # working after it was left behind by a worker that went away.
@@ -42,8 +49,8 @@ def clock():
     return datetime.datetime.utcnow()
 
 
-def can_start(user):
-    """Whether `user` may start a run now.
+def can_start(user, revision=False):
+    """Whether `user` may start a run now, or a revision when `revision` is true.
 
     Returns {"allowed": True}, or {"allowed": False, "code": one of the refusals above,
     "next_date": when the limit next lets a run through, or None}. A run left working longer than
@@ -54,6 +61,8 @@ def can_start(user):
     if _is_running(user.pk):
         return {"allowed": False, "code": ALREADY_RUNNING, "next_date": None}
     window = _window(user, now)
+    if revision and window["period"] == MONTH:
+        return {"allowed": True}
     if window["remaining"] == 0:
         code = MONTHLY_LIMIT if window["period"] == MONTH else DAILY_CAP
         return {"allowed": False, "code": code, "next_date": window["next_date"]}
@@ -85,13 +94,18 @@ def _window(user, now):
         }
 
     start, end = _calendar_month(user, now)
-    dates = _run_dates(user.pk, created_date__gte=start, created_date__lt=end)
+    dates = _run_dates(user.pk, revises__exists=False, created_date__gte=start, created_date__lt=end)
     return {
         "period": MONTH,
         "limit": MONTHLY_RUNS,
         "remaining": max(0, MONTHLY_RUNS - len(dates)),
         "next_date": end,
     }
+
+
+def revision_limit(user):
+    """How many revisions in a row a proposal of `user`'s may have."""
+    return REVISIONS_WITH_ARCHIVE if _has_archive(user) else REVISIONS_WITHOUT_ARCHIVE
 
 
 def _has_archive(user):

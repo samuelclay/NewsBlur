@@ -9,6 +9,7 @@ field never breaks one still reading the documents.
 import datetime
 
 import mongoengine as mongo
+from mongoengine.queryset.visitor import Q
 from pymongo import ReadPreference
 
 WORKING = "working"  # the model is still building the proposal
@@ -17,7 +18,8 @@ FAILED = "failed"  # no proposal could be made; `error` says why
 APPLYING = "applying"  # the undo snapshot is saved and the apply has started
 APPLIED = "applied"
 UNDONE = "undone"
-STATUSES = (WORKING, READY, FAILED, APPLYING, APPLIED, UNDONE)
+REPLACED = "replaced"  # a revision of it became ready, so it can no longer be decided on or applied
+STATUSES = (WORKING, READY, FAILED, APPLYING, APPLIED, UNDONE, REPLACED)
 
 LEVELS = ("tidy", "reorganize", "fresh")
 
@@ -31,6 +33,10 @@ class MReorganizeProposal(mongo.Document):
     what the apply did and lists the items plan.py skipped. `undo` is {"folders": the stored tree
     before, as its JSON text, "carried": what apps/reorganize/state.py moved, "muted_feed_ids": the
     sites the apply muted}.
+
+    A revision is a proposal made again from an earlier one at the user's request: `revises` is the
+    earlier proposal's id, `revision_request` what the user asked to change, and `revisions` how
+    many revisions lead back to the first proposal.
     """
 
     user_id = mongo.IntField(required=True)
@@ -47,6 +53,8 @@ class MReorganizeProposal(mongo.Document):
     stats = mongo.DictField()
     decisions = mongo.DictField()
     revisions = mongo.IntField(default=0)
+    revises = mongo.ObjectIdField()
+    revision_request = mongo.StringField()
     error = mongo.StringField()
     created_date = mongo.DateTimeField(default=datetime.datetime.now)
     updated_date = mongo.DateTimeField(default=datetime.datetime.now)
@@ -71,6 +79,55 @@ class MReorganizeProposal(mongo.Document):
             .order_by("-applied_date")
             .first()
         )
+
+    @classmethod
+    def current(cls, user_id):
+        """The proposal the Organize sites dialog shows: the user's latest, leaving out proposals a
+        revision replaced and revisions that failed, since the proposal they revise is still current."""
+        return (
+            cls.objects(
+                Q(status__ne=REPLACED) & (Q(revises__exists=False) | Q(status__ne=FAILED)), user_id=user_id
+            )
+            .read_preference(ReadPreference.PRIMARY)
+            .order_by("-created_date", "-id")
+            .first()
+        )
+
+    @classmethod
+    def change_decisions(cls, proposal_id, before, after):
+        """Save the decisions `after` over `before` on a ready proposal. Returns whether it was ready.
+
+        Each choice is its own field in the update, so two requests that change different choices at
+        once both keep theirs.
+        """
+        before_fields, after_fields = _decision_fields(before), _decision_fields(after)
+        update = {
+            "$set": {
+                "updated_date": datetime.datetime.now(),
+                **{
+                    name: value
+                    for name, value in after_fields.items()
+                    if name not in before_fields or before_fields[name] != value
+                },
+            }
+        }
+        removed = {name: "" for name in before_fields if name not in after_fields}
+        if removed:
+            update["$unset"] = removed
+        return cls.objects(id=proposal_id, status=READY).update_one(__raw__=update) == 1
+
+
+def _decision_fields(decisions):
+    """{"decisions.<section>.<id>[.<side>]": value} for every choice in `decisions`."""
+    fields = {}
+    for section, entries in decisions.items():
+        for entry_id, value in entries.items():
+            if isinstance(value, dict):
+                for side, side_value in value.items():
+                    fields["decisions.%s.%s.%s" % (section, entry_id, side)] = side_value
+            else:
+                fields["decisions.%s.%s" % (section, entry_id)] = value
+    return fields
 
 
 class MReorganizeLocks(mongo.Document):

@@ -6,6 +6,9 @@ the user already has, a design call first decides the folders. Assign calls then
 them, ASSIGN_BATCH_SIZE at a time. derive.build_proposal() turns the answer, with the dead sites
 sites.py finds by rule, into a proposal for apps/reorganize/plan.py.
 
+A revision runs the same way, and every call is told what the reader asks to change. The design
+call also sees the targets it designed before and changes them only as far as the request needs.
+
 Every outcome is a return value: {"code": READY, ...} or {"code": one of the failure codes below}.
 """
 
@@ -53,23 +56,26 @@ COST_FEATURE = "reorganize"
 
 
 def generate_proposal(
-    user, level, find_dead, instructions, locks, language="en", progress=None, model_call=None
+    user, level, find_dead, instructions, locks, language="en", progress=None, model_call=None, revision=None
 ):
     """Ask the model to reorganize `user`'s sites and folders at `level` and return its proposal.
 
     `level` is "tidy", "reorganize" or "fresh". `locks` is {"keep": [...], "skip": [...]} as
     apps/reorganize/plan.py takes it. `progress(step, done, total)`, when given, is called as the work
     goes, with `done` rising to `total`. `model_call(system, content, schema, effort)` is call_model()
-    unless a caller passes its own.
+    unless a caller passes its own. `revision`, for a revision of an earlier proposal, is
+    {"answer": the earlier run's answer, "request": what the reader asks to change}.
 
-    Returns {"code": READY, "proposal", "answer": {"targets", "assignments"}, "stats"}, where the
-    answer is what build_proposal() was given, or {"code": NO_API_KEY | NOTHING_TO_ORGANIZE |
+    Returns {"code": READY, "proposal", "answer": {"targets", "assignments", "folders"}, "stats"},
+    where the targets and assignments are what build_proposal() was given and "folders" maps each
+    folder key they could name to its path, or {"code": NO_API_KEY | NOTHING_TO_ORGANIZE |
     MODEL_DECLINED | MODEL_FAILED}.
     """
     if not AnthropicProvider().is_configured():
         return {"code": NO_API_KEY}
     tidy = level == "tidy"
     instructions = (instructions or "").strip()[:INSTRUCTIONS_LIMIT]
+    request = ((revision or {}).get("request") or "").strip()[:INSTRUCTIONS_LIMIT] or None
 
     folders = _stored_folders(user)
     view = model_view(folders, locks)
@@ -89,9 +95,12 @@ def generate_proposal(
         ]
     else:
         shown = _even_sample(sites, DESIGN_SITE_LIMIT)
+        earlier_targets = _earlier_targets(revision.get("answer"), view) if revision else None
         result = run.call(
-            prompts.design_system(level, instructions, language),
-            prompts.design_content(view["folders"], [site.line() for site in shown], len(sites)),
+            prompts.design_system(level, instructions, language, request),
+            prompts.design_content(
+                view["folders"], [site.line() for site in shown], len(sites), earlier_targets
+            ),
             prompts.DESIGN_SCHEMA,
             DESIGN_EFFORT,
         )
@@ -104,7 +113,7 @@ def generate_proposal(
         run.report("design")
 
     assignments, failures = [], []
-    system = prompts.assign_system(tidy, destinations, instructions, language)
+    system = prompts.assign_system(tidy, destinations, instructions, language, request)
     for batch in batches:
         result = run.call(
             system,
@@ -130,7 +139,11 @@ def generate_proposal(
     return {
         "code": READY,
         "proposal": proposal,
-        "answer": {"targets": targets, "assignments": assignments},
+        "answer": {
+            "targets": targets,
+            "assignments": assignments,
+            "folders": {folder["key"]: folder["path"] for folder in view["folders"]},
+        },
         "stats": {
             "sites": len(sites),
             "design_sites": None if tidy else min(len(sites), DESIGN_SITE_LIMIT),
@@ -182,6 +195,37 @@ def pin_newsletters(targets, view):
         entries.append(pinned)
     pinned.update(name=NEWSLETTERS_FOLDER, parent=None, continues=[key] + pinned.get("continues", []))
     return entries
+
+
+def _earlier_targets(answer, view):
+    """The targets of an earlier run's `answer`, each "continues" key turned into the key the same
+    folder has now. The keys follow the tree's order, so a folder added or removed since moves them;
+    a folder that is gone or locked now drops out."""
+    answer = answer if isinstance(answer, dict) else {}
+    earlier_paths = answer.get("folders") if isinstance(answer.get("folders"), dict) else {}
+    keys_now = {tuple(folder["path"]): folder["key"] for folder in view["folders"]}
+    targets = answer.get("targets") if isinstance(answer.get("targets"), list) else []
+
+    earlier = []
+    for entry in targets:
+        if not isinstance(entry, dict):
+            continue
+        continues = entry.get("continues") if isinstance(entry.get("continues"), list) else []
+        paths = [earlier_paths.get(key) for key in continues if isinstance(key, str)]
+        earlier.append(
+            {
+                "id": entry.get("id"),
+                "name": entry.get("name"),
+                "parent": entry.get("parent"),
+                "continues": [
+                    keys_now[tuple(path)]
+                    for path in paths
+                    if isinstance(path, list) and tuple(path) in keys_now
+                ],
+                "reason": entry.get("reason"),
+            }
+        )
+    return earlier
 
 
 def call_model(system, content, schema, effort):
