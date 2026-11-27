@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy
 
+from apps.team.billing import start_comp_team
 from apps.team.grants import own_plan_on_join
 from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember
 from utils import json_functions as json
@@ -95,7 +96,7 @@ def load_team(request):
 @ajax_login_required
 @json.json_view
 def create_team(request):
-    # views.py: staff only until teams can be bought.
+    # views.py: staff only until teams can be bought. A team started here is a comp (apps/team/billing.py).
     user = get_user(request)
     if not user.is_staff:
         return _failure("not_allowed")
@@ -106,7 +107,7 @@ def create_team(request):
     if plan not in dict(Team.PLAN_CHOICES):
         return _failure("invalid_plan")
 
-    team, reason = Team.create_team(user, name, plan)
+    team, reason = start_comp_team(user, name, plan)
     if reason:
         return _failure(reason)
     return _team_response(user, team.pk)

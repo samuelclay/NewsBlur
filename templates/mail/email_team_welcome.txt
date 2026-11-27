@@ -1,0 +1,8 @@
+{% load i18n utils_tags %}{% autoescape off %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% blocktrans with plan=plan_name count seats=seats %}Your {{ plan }} plan has started and your team is ready. It has {{ seats }} seat, and everyone you invite gets Premium Pro on their own NewsBlur account.{% plural %}Your {{ plan }} plan has started and your team is ready. It has {{ seats }} seats, one of them yours, and everyone you invite gets Premium Pro on their own NewsBlur account.{% endblocktrans %}
+
+{% trans "Give your team a name and invite your teammates:" %} https://{{ domain }}/?next=team
+
+Sam
+{% endautoescape %}

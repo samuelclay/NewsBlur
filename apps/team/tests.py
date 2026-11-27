@@ -50,6 +50,7 @@ from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.statistics.models import MStatistics
 from apps.statistics.rllm_costs import RLLMCosts
+from apps.team.billing import record_team_payment, start_comp_team
 from apps.team.grants import activate_team, deactivate_team
 from apps.team.models import (
     Team,
@@ -59,7 +60,12 @@ from apps.team.models import (
     TeamProGrant,
     team_owner_id,
 )
-from apps.team.tasks import SendTeamInviteEmail, SettleOwnPlanOnJoin, TeamProGrants
+from apps.team.tasks import (
+    EmailTeamWelcome,
+    SendTeamInviteEmail,
+    SettleOwnPlanOnJoin,
+    TeamProGrants,
+)
 from apps.webfeed.models import MWebFeedConfig
 from utils import json_functions as json
 from utils import urlnorm
@@ -99,10 +105,15 @@ class TeamClientMixin:
             SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
         )
         self.patch(SettleOwnPlanOnJoin, "delay", side_effect=lambda **kwargs: SettleOwnPlanOnJoin(**kwargs))
-        self.patch(EmailNewPremiumTrial, "delay")
+        self.patch(EmailTeamWelcome, "delay", side_effect=lambda team_id: EmailTeamWelcome(team_id))
+        for task in (EmailNewPremiumTrial, EmailStaffPremiumUpgrade, EmailStaffNotification):
+            self.patch(task, "delay")
         self.patch(SchedulePremiumSetup, "apply_async")
         self.patch(UserSubscription, "queue_new_feeds")
         self.backfill = self.patch(UserSubscription, "schedule_fetch_archive_feeds_for_user")
+        # apps/team/tests.py: a site becoming active looks up similar sites with an OpenAI embedding and an
+        # Elasticsearch vector search (Feed.find_similar_feeds), which no test here may reach.
+        self.patch(Feed, "find_similar_feeds", return_value=[])
 
     def patch(self, target, attribute, **kwargs):
         patcher = patch.object(target, attribute, **kwargs)
@@ -130,7 +141,8 @@ class TeamClientMixin:
         return json.decode(self.client_for(user).get("/team/%s" % path, data).content)
 
     def create_team(self, owner, name="Newsroom"):
-        team, reason = Team.create_team(owner, name)
+        """apps/team/tests.py: a team started the way staff start one, as a comp whose owner gets Premium Pro."""
+        team, reason = start_comp_team(owner, name, Team.PLAN_TEAM)
         self.assertIsNone(reason)
         return team
 
@@ -770,6 +782,19 @@ class TeamProMixin(TeamClientMixin):
     def mail_to(self, user):
         return [message for message in mail.outbox if user.email in message.to[0]]
 
+    def pay(
+        self, user, paid_through, plan=Team.PLAN_TEAM, provider=Team.PROVIDER_STRIPE, reference="sub_team"
+    ):
+        """apps/team/tests.py: a payment the provider confirmed, with what it queued for after its commit run in
+        place, as the commit at the end of a real webhook would."""
+        queued = len(connection.run_on_commit)
+        payment = record_team_payment(user, plan, provider, paid_through, reference)
+        callbacks = connection.run_on_commit[queued:]
+        del connection.run_on_commit[queued:]
+        for _, callback in callbacks:
+            callback()
+        return payment
+
 
 class Test_TeamProSeat(TeamProMixin, TestCase):
     def test_joining_gives_pro_without_welcome_emails_or_payment_rows(self):
@@ -977,7 +1002,7 @@ class Test_TeamProPremiumExpire(TeamProMixin, TestCase):
         for user, days_ago in ((trial_joiner, 1), (lapsed, 10), (long_lapsed, 40)):
             self.assertEqual(self.plan_of(user), "pro")
             self.assertEqual(self.premium_expire(user), self.now - self.days(days_ago))
-        self.assertEqual(self.plan_of(self.owner), "premium")
+        self.assertEqual(self.plan_of(self.owner), "pro")
         # Someone on no team still expires as before.
         self.assertEqual(self.plan_of(outsider), "free")
         self.assertEqual([message.to for message in mail.outbox], [["outsider <outsider@example.com>"]])
@@ -986,6 +1011,21 @@ class Test_TeamProPremiumExpire(TeamProMixin, TestCase):
         self.leave(lapsed)
         self.assertEqual(self.plan_of(lapsed), "free")
         self.assertEqual(self.muted_sites(lapsed), 1)
+
+    def test_a_team_nobody_pays_for_spares_no_one(self):
+        # Neither paid through a date nor a comp, like a team started before teams were billed.
+        Team.objects.filter(pk=self.team.pk).update(billing_provider=None, paid_through=None)
+        reader = self.reader("reader", "free", feeds=1)
+        self.join(reader)
+        Profile.objects.filter(user=self.owner).update(premium_expire=self.now - self.days(40))
+
+        PremiumExpire()
+        TeamProGrants()
+
+        self.assertEqual(self.plan_of(self.owner), "free")
+        self.assertEqual(self.plan_of(reader), "free")
+        self.team.refresh_from_db()
+        self.assertEqual(self.team.status, Team.STATUS_INACTIVE)
 
 
 class Test_TeamProStaleProfiles(TeamProMixin, TestCase):
@@ -1026,7 +1066,7 @@ class Test_TeamLapse(TeamProMixin, TestCase):
         self.post(self.owner, "change_role", team_id=self.team.pk, user_id=archive_reader.pk, role="manager")
         self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=leaver.pk)
         roles = self.roles()
-        Team.objects.filter(pk=self.team.pk).update(paid_through=self.now - datetime.timedelta(hours=1))
+        Team.objects.filter(pk=self.team.pk).update(paid_through=self.now - self.days(2))
         mail.outbox = []
 
         TeamProGrants()
@@ -1045,8 +1085,9 @@ class Test_TeamLapse(TeamProMixin, TestCase):
         )
         self.assertEqual(self.roles(), roles)
 
-        activate_team(self.team)
+        payment = self.pay(self.owner, self.now + self.days(30))
 
+        self.assertTrue(payment.reactivated)
         self.assertEqual(self.plan_of(free_reader), "pro")
         self.assertEqual(self.muted_sites(free_reader), 0)
         self.assertEqual(self.plan_of(archive_reader), "pro")
@@ -1099,6 +1140,8 @@ class Test_TeamProFeedSetup(TeamClientMixin, TransactionTestCase):
     def test_joining_starts_the_archive_backfill_only_for_teammates_without_archive(self):
         owner = User.objects.create_user(username="owner")
         token = self.join_link_token(self.create_team(owner), owner)
+        # The owner's own Pro started a backfill of its own.
+        self.backfill.reset_mock()
         trial_reader = User.objects.create_user(username="trialreader")
         archive_reader = User.objects.create_user(username="archivereader")
         Profile.objects.filter(user=archive_reader).update(is_archive=True, is_premium_trial=False)
@@ -1675,6 +1718,20 @@ class Test_TeamSiteLimit(TeamSitesMixin, TestCase):
         self.assertEqual(self.add_url(self.casey, self.followed)["code"], 1)
         self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
 
+    def test_the_owner_of_a_team_staff_started_is_held_to_its_limit(self):
+        staffer = self.reader("staffer")
+        User.objects.filter(pk=staffer.pk).update(is_staff=True)
+        desk = Team.objects.get(pk=self.post(staffer, "create", name="Desk")["team"]["id"])
+        deskmate = self.reader("deskmate")
+        self.join(deskmate, self.join_link_token(desk, staffer))
+        self.follow(deskmate, self.shared, self.followed, self.new)
+
+        refused = self.add_url(staffer, self.newer)
+
+        self.assertEqual(refused["code"], -1)
+        self.assertIn("Desk", refused["message"])
+        self.assertEqual(self.active_sites(staffer), set())
+
     def test_batch_subscribe_stops_at_the_teams_limit(self):
         self.follow(self.casey, self.new)
 
@@ -1973,3 +2030,250 @@ class Test_TeamLookupCost(TeamProMixin, TestCase):
                 with self.subTest(check=name):
                     self.assertEqual(self.team_lookups(free, check), 0)
                     self.assertEqual(self.team_lookups(pro, check), 1)
+
+
+class Test_TeamBilling(TeamProMixin, TestCase):
+    """apps/team/billing.py: a payment for a team plan that a provider confirmed."""
+
+    def owned_team(self, user):
+        return Team.objects.filter(owner=user).first()
+
+    def staff_events(self):
+        return [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
+
+    def test_the_first_payment_starts_a_team_with_the_owner_on_pro_as_their_own_plan(self):
+        buyer = self.reader("buyer", "free", feeds=2)
+        paid_through = self.now + self.days(31)
+
+        payment = self.pay(buyer, paid_through)
+
+        self.assertTrue(payment.created)
+        team = self.owned_team(buyer)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, paid_through))
+        self.assertEqual(self.plan_of(buyer), "pro")
+        self.assertEqual(self.muted_sites(buyer), 0)
+        self.assertFalse(TeamProGrant.objects.filter(user=buyer).exists())
+        EmailNewPremiumPro.delay.assert_not_called()
+        EmailStaffPremiumUpgrade.delay.assert_called_once_with(
+            user_id=buyer.pk, tier=Team.PLAN_TEAM, previous_tier="free"
+        )
+        [welcome] = self.mail_to(buyer)
+        self.assertIn("?next=team", welcome.body)
+
+    def test_renewals_move_the_paid_period_only_forward_and_welcome_nobody_again(self):
+        buyer = self.reader("buyer", "free")
+        first_period = self.now + self.days(31)
+        second_period = first_period + self.days(31)
+        self.pay(buyer, first_period)
+        mail.outbox = []
+
+        renewal = self.pay(buyer, second_period)
+        late_notice = self.pay(buyer, first_period)
+
+        self.assertFalse(renewal.created or late_notice.created)
+        self.assertEqual(self.owned_team(buyer).paid_through, second_period)
+        self.assertEqual(self.premium_expire(buyer), second_period)
+        self.assertEqual(mail.outbox, [])
+        EmailStaffPremiumUpgrade.delay.assert_called_once()
+
+    def test_someone_with_a_seat_on_another_team_gets_no_team_and_keeps_their_own_plan(self):
+        own_paid_through = self.now + self.days(100)
+        reader = self.reader("reader", "premium", premium_expire=own_paid_through)
+        self.join(reader)
+
+        payment = self.pay(reader, self.now + self.days(31))
+
+        self.assertEqual(payment.reason, "on_team")
+        self.assertIsNone(self.owned_team(reader))
+        self.assertEqual(TeamProGrant.objects.get(user=reader).own_tier, TeamProGrant.TIER_PREMIUM)
+        self.assertEqual(self.premium_expire(reader), own_paid_through)
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team"])
+
+        # A seat on a team whose plan has lapsed is still a seat.
+        deactivate_team(self.team)
+        self.assertEqual(self.pay(reader, self.now + self.days(31)).reason, "on_team")
+        self.assertIsNone(self.owned_team(reader))
+        self.assertEqual(self.plan_of(reader), "premium")
+
+    def test_the_hourly_task_lapses_a_team_a_day_after_its_paid_period_and_never_an_open_comp(self):
+        renewing, overdue, comped = (self.reader(username) for username in ("renewing", "overdue", "comped"))
+        self.pay(renewing, self.now - datetime.timedelta(hours=12))
+        self.pay(overdue, self.now - self.days(3))
+        self.pay(comped, None, provider=Team.PROVIDER_COMP, reference="staff")
+
+        TeamProGrants()
+
+        self.assertEqual(
+            [self.owned_team(user).status for user in (renewing, overdue, comped)],
+            [Team.STATUS_ACTIVE, Team.STATUS_INACTIVE, Team.STATUS_ACTIVE],
+        )
+
+    def test_a_renewal_landing_while_the_hourly_task_lapses_the_team_keeps_it(self):
+        buyer = self.reader("buyer")
+        team = self.pay(buyer, self.now - self.days(2)).team
+        reader = self.reader("reader")
+        self.join(reader, self.join_link_token(team, buyer))
+
+        def renewed_first(team, **kwargs):
+            # The renewal commits after the task chose the team and before it locks the team's row.
+            self.pay(buyer, self.now + self.days(29))
+            return deactivate_team(team, **kwargs)
+
+        with patch("apps.team.tasks.deactivate_team", side_effect=renewed_first):
+            TeamProGrants()
+
+        self.assertEqual(self.owned_team(buyer).status, Team.STATUS_ACTIVE)
+        self.assertEqual(self.plan_of(reader), "pro")
+
+    def test_only_a_comp_makes_a_team_never_lapse_and_no_payment_ends_one(self):
+        comped = self.reader("comped")
+        self.pay(comped, None, provider=Team.PROVIDER_COMP, reference="staff")
+        paying = self.reader("paying")
+        paid_through = self.now + self.days(31)
+        self.pay(paying, paid_through)
+
+        self.assertEqual(self.pay(comped, self.now + self.days(31)).reason, "comped")
+        self.assertEqual(self.pay(paying, None).reason, "no_paid_through")
+
+        comp_team = self.owned_team(comped)
+        self.assertEqual((comp_team.billing_provider, comp_team.paid_through), (Team.PROVIDER_COMP, None))
+        self.assertEqual(self.owned_team(paying).paid_through, paid_through)
+        self.assertEqual(self.staff_events(), ["team_comp_paid", "team_payment_without_date"])
+
+    def test_paying_in_a_second_place_bills_the_team_through_the_newest_and_tells_staff(self):
+        buyer = self.reader("buyer")
+        store_period = self.now + self.days(31)
+        self.pay(buyer, self.now + self.days(20), reference="sub_web")
+
+        self.pay(
+            buyer,
+            store_period,
+            plan=Team.PLAN_TEAM_ENTERPRISE,
+            provider=Team.PROVIDER_APP_STORE,
+            reference="2000000000001",
+        )
+
+        team = self.owned_team(buyer)
+        self.assertEqual(
+            (team.plan, team.billing_provider, team.billing_reference, team.paid_through),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_APP_STORE, "2000000000001", store_period),
+        )
+        self.assertEqual(self.staff_events(), ["team_paid_twice"])
+
+    def test_the_owner_of_a_lapsed_team_expires_like_any_plan_unless_the_team_comes_back(self):
+        lapsed = self.reader("lapsed", "free", feeds=2)
+        returning = self.reader("returning", "free")
+        # Both teams were paid through 40 days ago, past the usual 30 days an expired plan is kept.
+        for user in (lapsed, returning):
+            self.pay(user, self.now - self.days(40))
+        TeamProGrants()
+        self.pay(returning, self.now + self.days(31))
+
+        PremiumExpire()
+
+        self.assertEqual(self.plan_of(lapsed), "free")
+        self.assertEqual(self.muted_sites(lapsed), 2)
+        self.assertEqual(self.plan_of(returning), "pro")
+
+        # Paying after their own account expired brings back Pro and the sites the expiry muted.
+        self.pay(lapsed, self.now + self.days(31))
+        self.assertEqual(self.plan_of(lapsed), "pro")
+        self.assertEqual(self.muted_sites(lapsed), 0)
+
+    def test_the_profile_payload_names_the_team_plan_and_shows_billing_to_the_owner_only(self):
+        owner = self.reader("teamowner")
+        paid_through = self.now + self.days(31)
+        team = self.pay(owner, paid_through, plan=Team.PLAN_TEAM_ENTERPRISE).team
+        member = self.reader("member")
+        self.join(member, self.join_link_token(team, owner))
+        solo_pro = self.reader("solopro", "pro", premium_expire=paid_through)
+        free = self.reader("free")
+
+        def payload(user):
+            profile = Profile.objects.get(user=user)
+            with CaptureQueriesContext(connection) as queries:
+                data = profile.canonical()
+            team_lookups = [query for query in queries.captured_queries if '"team_' in query["sql"]]
+            return {key: value for key, value in data.items() if key.startswith("team_")}, len(team_lookups)
+
+        owner_fields, _ = payload(owner)
+        member_fields, member_lookups = payload(member)
+        self.assertEqual(
+            owner_fields,
+            dict(
+                team_plan=Team.PLAN_TEAM_ENTERPRISE,
+                team_role=TeamMember.ROLE_OWNER,
+                team_billing_provider=Team.PROVIDER_STRIPE,
+                team_paid_through=int(paid_through.strftime("%s")),
+                team_pending_owner=None,
+            ),
+        )
+        self.assertEqual(
+            member_fields,
+            dict(
+                team_plan=Team.PLAN_TEAM_ENTERPRISE,
+                team_role=TeamMember.ROLE_MEMBER,
+                team_billing_provider=None,
+                team_paid_through=None,
+                team_pending_owner=None,
+            ),
+        )
+        for user in (solo_pro, free):
+            self.assertEqual(set(payload(user)[0].values()), {None})
+        # The AI filter billing lookup (Profile.usage_billing_profile) and the plan's.
+        self.assertLessEqual(member_lookups, 2)
+        self.assertEqual(payload(free)[1], 0)
+
+    def test_a_team_owners_renewal_notice_names_the_team_plan(self):
+        owner = self.reader("teamowner")
+        self.pay(owner, self.now + self.days(31), plan=Team.PLAN_TEAM_ENTERPRISE)
+        mail.outbox = []
+
+        Profile.objects.get(user=owner).send_premium_renewal_notice_email(force=True)
+
+        [notice] = mail.outbox
+        self.assertIn("$129/month", notice.body)
+        self.assertNotIn("$29/month", notice.body)
+
+    def test_each_new_team_gets_a_default_name_within_the_name_rules_and_a_slug_of_its_own(self):
+        owners = [self.reader(username) for username in ("samuel", "samuel.", "s" * 150)]
+
+        for user in owners:
+            self.pay(user, self.now + self.days(31))
+
+        teams = [self.owned_team(user) for user in owners]
+        self.assertEqual(len({team.slug for team in teams}), len(owners))
+        for user, team in zip(owners, teams):
+            self.assertIn(user.username[:20], team.name)
+            self.assertEqual(self.post(user, "rename", team_id=team.pk, name=team.name)["code"], 1)
+
+    def test_the_owners_first_rename_confirms_the_default_name(self):
+        buyer = self.reader("buyer")
+        team = self.pay(buyer, self.now + self.days(31)).team
+
+        self.assertTrue(self.get(buyer, "")["team"]["name_needs_confirming"])
+        self.post(buyer, "rename", team_id=team.pk, name="Desk")
+        self.assertFalse(self.get(buyer, "")["team"]["name_needs_confirming"])
+        # A team started with a name its owner chose has nothing to confirm.
+        self.assertFalse(self.get(self.owner, "")["team"]["name_needs_confirming"])
+
+
+class Test_TeamBillingAtOnce(TeamClientMixin, TransactionTestCase):
+    """Real commits, so two notices of one payment can race."""
+
+    def test_two_notices_of_one_payment_at_once_start_one_team_and_send_one_welcome(self):
+        buyer = User.objects.create_user(username="buyer", email="buyer@example.com")
+        paid_through = datetime.datetime.now() + datetime.timedelta(days=31)
+        first = []
+
+        def notice():
+            return record_team_payment(buyer, Team.PLAN_TEAM, Team.PROVIDER_STRIPE, paid_through, "sub_team")
+
+        # The first notice's team is written but not committed, so the second can't see it and waits on it.
+        _, second = self.while_held(lambda: first.append(notice()), notice)
+
+        self.assertTrue(first[0].created)
+        self.assertEqual((second.reason, second.created), (None, False))
+        self.assertEqual(Team.objects.filter(owner=buyer).count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        EmailStaffPremiumUpgrade.delay.assert_called_once()

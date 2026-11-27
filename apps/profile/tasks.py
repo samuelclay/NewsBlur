@@ -122,8 +122,9 @@ def PremiumExpire(**kwargs):
     now = datetime.datetime.now()
     # A teammate's flags show team Pro and the owner of an active team pays through the team, so neither
     # expires on their own premium_expire here. apps/team/tasks.py ends a teammate's grant and lapses the team,
-    # after which its owner is expired here as usual.
-    on_team = Q(user__team_pro_grant__isnull=False) | Q(user__owned_team__status=Team.STATUS_ACTIVE)
+    # after which its owner is expired here as usual. An owner is spared only while the team's plan hasn't
+    # lapsed by the hourly task's rule (Team.lapsed), so a team nobody pays for can't keep its owner on Pro.
+    on_team = Q(user__team_pro_grant__isnull=False) | Q(user__owned_team__in=Team.paid_for(now))
 
     # Handle trial expirations FIRST (no grace period for trials)
     expired_trials = Profile.objects.filter(
@@ -390,6 +391,8 @@ TIER_NAMES = {
     "archive": gettext_lazy("Premium Archive"),
     "archive_extra": gettext_lazy("Premium Archive Extra"),
     "pro": gettext_lazy("Premium Pro"),
+    "team": gettext_lazy("Premium Team"),
+    "team_enterprise": gettext_lazy("Premium Team Enterprise"),
 }
 
 

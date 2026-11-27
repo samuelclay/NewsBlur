@@ -102,13 +102,16 @@ def release_team_pro(user):
     return plan
 
 
-def deactivate_team(team):
+def deactivate_team(team, lapsed_at=None):
     """Billing calls this when the owner's paid period ends without a payment. The team goes inactive and every
     teammate's Premium Pro ends at once, and each teammate gets one email. Members, roles, invites and settings
-    stay as they are."""
+    stay as they are. With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that
+    moment once its row is locked (Team.lapsed), so a renewal committed after the task chose it keeps it."""
     with transaction.atomic():
         team = team.lock()
         if team.status == Team.STATUS_INACTIVE:
+            return
+        if lapsed_at and not Team.objects.filter(Team.lapsed(lapsed_at), pk=team.pk).exists():
             return
         team.status = Team.STATUS_INACTIVE
         team.save(update_fields=["status", "updated_date"])
@@ -241,6 +244,23 @@ def send_team_plan_ended_email(user, team, plan):
         html = render_to_string("mail/email_team_plan_ended.xhtml", data)
         subject = gettext("The Premium Team plan for %(team)s has ended") % {"team": team.name}
     _send(profile, subject, text, html, "team_plan_ended")
+
+
+def send_team_welcome_email(team):
+    """Sent by EmailTeamWelcome (apps/team/tasks.py) once the first payment for a team has committed. The link
+    opens the team dialog, which asks the owner for the team's name first."""
+    owner = team.owner
+    profile = Profile.objects.get(user=owner)
+    if not owner.email:
+        logging.user(owner, "~FMNot sending team welcome email, no email address")
+        return
+
+    data = dict(user=owner, plan_name=TIER_NAMES.get(team.plan), seats=team.seat_limit)
+    with account_translation(profile):
+        text = render_to_string("mail/email_team_welcome.txt", data)
+        html = render_to_string("mail/email_team_welcome.xhtml", data)
+        subject = gettext("Your %(plan)s plan has started") % {"plan": TIER_NAMES.get(team.plan)}
+    _send(profile, subject, text, html, "team_welcome")
 
 
 def send_own_plan_email(user, team, subscription):

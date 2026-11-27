@@ -2192,6 +2192,26 @@ class Test_PremiumExpireBillingPeriod(TestCase):
 
         self.assertLess((expiration - datetime.datetime.now()).days, 60)
 
+    def test_a_team_charge_buys_a_month_alone_or_after_an_annual_plan(self):
+        """Premium Team's $79 and Premium Team Enterprise's $129 are only billed monthly, so one charge buys
+        a month, even as an owner's first charge or after a yearly plan."""
+        self._pay(days_ago=2, amount=79)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+        self.assertGreater((expiration - datetime.datetime.now()).days, 0)
+        self.assertLess((expiration - datetime.datetime.now()).days, 60)
+
+        PaymentHistory.objects.filter(user=self.user).delete()
+        self._pay(days_ago=300, amount=36)
+        # The store price, $129.99, held as whole dollars like a Stripe charge's.
+        self._pay(days_ago=1, amount=129.99)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(count, 2)
+        self.assertLess((expiration - datetime.datetime.now()).days, 100, "a team charge bought a year")
+
 
 class Test_StoreReceiptRenewals(TestCase):
     """Old iOS clients (pre-14.4, March 2026) re-send the same identifier for every

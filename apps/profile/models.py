@@ -47,7 +47,12 @@ from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.team.models import TeamProGrant, team_owner_id, team_pro_grant
+from apps.team.models import (
+    TeamProGrant,
+    team_owner_id,
+    team_plan_fields,
+    team_pro_grant,
+)
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
@@ -127,9 +132,15 @@ class Profile(models.Model):
     # 365 so an annual subscriber never reads as monthly.
     MONTHLY_GAP_CEILING_DAYS = 180
     # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
-    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
-    # price absent here, which is what makes a charge at any of these mean a full year.
+    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly and the team
+    # plans' MONTHLY_PRICES are absent here, which is what makes a charge at any of these mean
+    # a full year.
     ANNUAL_PRICES = {12, 24, 36, 99, 159, 299}
+    # Prices only ever billed monthly: Premium Team at $79 and Premium Team Enterprise at $129,
+    # or $79.99 and $129.99 in the stores, which payment rows hold as whole dollars. A charge at
+    # one of these buys a month from its own date and stays out of the cadence reading, so a
+    # team owner's first charge, or one after an annual plan, doesn't read as a year.
+    MONTHLY_PRICES = {79, 129}
     # A same-identifier store receipt arriving within this window is a duplicate
     # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
     # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
@@ -457,6 +468,12 @@ class Profile(models.Model):
     def get_ask_ai_usage_message(self):
         return AskAIUsageTracker(self.user).get_usage_message()
 
+    @property
+    def team_fields(self):
+        """The team plan this account is on (apps/team/models.py team_plan_fields), for canonical and
+        templates/base.html."""
+        return team_plan_fields(self)
+
     def canonical(self):
         return {
             "is_premium": self.is_premium,
@@ -482,6 +499,7 @@ class Profile(models.Model):
             "is_self_hosted_ai": self.is_self_hosted_ai,
             "can_use_ai_classifiers": self.can_use_ai_classifiers,
             "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
+            **self.team_fields,
         }
 
     @classmethod
@@ -1594,6 +1612,8 @@ class Profile(models.Model):
         free_lifetime_premium = False
         verified_apple_expiration = None
         verified_apple_count = 0
+        monthly_price_expiration = None
+        monthly_price_count = 0
         payments = list(payments)
         verified_apple_periods = {}
         for payment in payments:
@@ -1630,6 +1650,11 @@ class Profile(models.Model):
                 continue
             # Only update expiration if payment in the last year
             if payment.payment_date > last_year:
+                if payment.payment_amount in cls.MONTHLY_PRICES:
+                    paid_until = payment.payment_date + datetime.timedelta(days=cls.MONTHLY_PERIOD_DAYS)
+                    monthly_price_expiration = max(monthly_price_expiration or paid_until, paid_until)
+                    monthly_price_count += 1
+                    continue
                 recent_payment_dates.append(payment.payment_date)
                 if payment.payment_amount in cls.ANNUAL_PRICES and (
                     not latest_annual_payment_date or payment.payment_date > latest_annual_payment_date
@@ -1637,7 +1662,12 @@ class Profile(models.Model):
                     latest_annual_payment_date = payment.payment_date
 
         if not recent_payment_dates:
-            return verified_apple_expiration, free_lifetime_premium, verified_apple_count
+            expirations = [date for date in (verified_apple_expiration, monthly_price_expiration) if date]
+            return (
+                max(expirations, default=None),
+                free_lifetime_premium,
+                verified_apple_count + monthly_price_count,
+            )
 
         period_days = cls.billing_period_days(recent_payment_dates)
         expiration = min(recent_payment_dates) + datetime.timedelta(
@@ -1650,7 +1680,13 @@ class Profile(models.Model):
             )
         if verified_apple_expiration:
             expiration = max(expiration, verified_apple_expiration)
-        return expiration, free_lifetime_premium, len(recent_payment_dates) + verified_apple_count
+        if monthly_price_expiration:
+            expiration = max(expiration, monthly_price_expiration)
+        return (
+            expiration,
+            free_lifetime_premium,
+            len(recent_payment_dates) + verified_apple_count + monthly_price_count,
+        )
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
@@ -3650,12 +3686,16 @@ class Profile(models.Model):
             "archive": "Premium Archive",
             "archive_extra": "Premium Archive Extra",
             "pro": "Premium Pro",
+            "team": "Premium Team",
+            "team_enterprise": "Premium Team Enterprise",
         }
         previous_tier_names = {
             "free": "Free",
             "trial": "Trial",
             "premium": "Premium",
             "archive": "Premium Archive",
+            "archive_extra": "Premium Archive Extra",
+            "pro": "Premium Pro",
         }
         tier_display = tier_names.get(tier, tier)
         previous_tier_display = previous_tier_names.get(previous_tier, previous_tier)
@@ -4227,7 +4267,16 @@ class Profile(models.Model):
                 return
 
         # Plan names reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
-        if self.is_pro:
+        # A team owner's plan is the team's (apps/team/models.py team_plan_fields).
+        team = self.team_fields
+        team_plan = team["team_plan"] if team["team_role"] == "owner" else None
+        if team_plan == "team_enterprise":
+            tier_name = gettext("Premium Team Enterprise")
+            amount = gettext("$129/month")
+        elif team_plan == "team":
+            tier_name = gettext("Premium Team")
+            amount = gettext("$79/month")
+        elif self.is_pro:
             tier_name = gettext("Premium Pro")
             amount = gettext("$29/month")
         elif self.is_archive:

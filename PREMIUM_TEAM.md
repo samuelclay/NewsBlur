@@ -66,6 +66,9 @@ Decided on 2026-11-26:
 - [x] On an ownership transfer, the old owner is refunded the unused part of their month when they paid by Stripe or PayPal. App Store and Play purchases cannot be refunded by us
 - [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
 - [x] Verifying payment notices and app purchases for every plan is part of step 3, on this PR
+- [x] A team that is active must be paid for or comped. One that is neither, with no paid through date, is lapsed by the hourly task, and only the owner of a team that is paid for or comped is spared the nightly expiry
+- [x] Only staff can comp a team, and a comped team stays comped: a later payment for it changes nothing and staff are emailed
+- [x] A new team is named after its owner ("samuel's team") until the owner renames it
 - [x] Voice previews and transcription are shared across the team like Listen and Ask AI. Days and weeks follow the owner's timezone, and a staff Listen reset for any teammate resets the team's hours
 - [x] The message at a shared limit names the team. Only the site limit message names the owner, since making room for sites is something the owner can do
 - [x] If one owner ends up paying for a team plan in two places, the newest purchase wins, the older web renewal is cancelled, and staff are emailed. The stores take the money before the server hears of a purchase, so this cannot be refused up front
@@ -727,7 +730,7 @@ A seat's life:
 
 A team's life:
 
-- [ ] `Team.paid_through` holds the end of the owner's paid period. The lapse cannot use `premium_expire`, which counts every payment as a year
+- [x] `Team.paid_through` holds the end of the owner's paid period. The lapse cannot use `premium_expire`, which counts every payment as a year
 - [x] `activate_team` and `deactivate_team` are the two functions billing calls. Deactivating releases every teammate's grant at once and sends one email to everyone. Activating grants again with fresh snapshots
 - [x] The hourly task only lapses teams and repairs overwritten flags. It no longer ends grace or sends reminders
 - [x] The same beat task lapses a team whose `paid_through` has passed
@@ -799,13 +802,13 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
 
 One function for all four providers:
 
-- [ ] `record_team_payment(user, plan, provider, paid_through, reference)` in `apps/team/billing.py`, called only on a confirmed payment. It creates or finds the owner's team, sets its plan and provider, moves `paid_through` forward, reactivates the team if it had lapsed, and sets the owner's Pro flags
+- [x] `record_team_payment(user, plan, provider, paid_through, reference)` in `apps/team/billing.py`, called only on a confirmed payment. It creates or finds the owner's team, sets its plan and provider, moves `paid_through` forward, reactivates the team if it had lapsed, and sets the owner's Pro flags
 - [ ] Payment notices from Stripe and PayPal are verified before they are acted on, for every plan. This needs each provider's signing secret in settings
 - [ ] App Store and Play purchases are verified with the store before any plan starts, for every plan
-- [ ] It does not go through `activate_pro`, which would send the Pro welcome email and call back into the payment sync. The owner gets a team welcome email, and staff get the usual upgrade email with the team plan named
-- [ ] Someone who holds team Pro from another person's team and buys a team plan gets no second team. Their purchase is flagged to staff
-- [ ] New columns on `Team`: the billing provider and its reference, the pending owner and when the transfer was requested, and when the name was confirmed
-- [ ] `Profile.canonical` and the web globals carry the team plan, the person's role, the billing provider, the paid through date and any pending transfer, so every client can show the current plan. Today the clients read only the tier flags, where an owner and a teammate both look like Pro
+- [x] It does not go through `activate_pro`, which would send the Pro welcome email and call back into the payment sync. The owner gets a team welcome email, and staff get the usual upgrade email with the team plan named
+- [x] Someone who holds team Pro from another person's team and buys a team plan gets no second team. Their purchase is flagged to staff
+- [x] New columns on `Team`: the billing provider and its reference, the pending owner and when the transfer was requested, and when the name was confirmed
+- [x] `Profile.canonical` and the web globals carry the team plan, the person's role, the billing provider, the paid through date and any pending transfer, so every client can show the current plan. Today the clients read only the tier flags, where an owner and a teammate both look like Pro
 - [x] The Stripe products and prices exist in test and live mode, created 2026-11-26, monthly, in USD:
 
   | Plan | Lookup key | Live price | Test price |
@@ -847,10 +850,10 @@ Google Play:
 Lapse and return:
 
 - [ ] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
-- [ ] The hourly task lapses a team one day after `paid_through`
+- [x] The hourly task lapses a team one day after `paid_through`
 - [ ] A payment that recovers (Stripe charge succeeded, PayPal sale completed, Apple recovered, Play recovered or restarted) brings the team back through `record_team_payment`
 - [ ] A refund or revoke ends the team at once
-- [ ] After a lapse the owner's own account goes through the normal `PremiumExpire` window
+- [x] After a lapse the owner's own account goes through the normal `PremiumExpire` window
 
 Switching:
 
@@ -979,17 +982,17 @@ Written before any code. Each one is a test.
 - [x] A teammate's own Stripe renewal keeps charging after they join
 - [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
 - [ ] One owner ends up paying for a team plan in two places
-- [ ] The hourly task lapses a team between the end of its period and the renewal arriving
-- [ ] The owner keeps personal Pro for a year after paying once
+- [x] The hourly task lapses a team between the end of its period and the renewal arriving
+- [x] The owner keeps personal Pro for a year after paying once
 - [ ] The AI filter usage subscription hides the team subscription
 - [ ] A team is started without a payment the provider confirms
-- [ ] Two payment notices at once create the team twice
+- [x] Two payment notices at once create the team twice
 - [ ] A team owner's switch between providers refunds most of a month
 - [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
 - [ ] The old owner's store subscription keeps renewing the team after a transfer
 - [ ] A Play expiry notice for an upgraded token ends the team
 - [ ] A staff refund leaves the team running
-- [ ] A comp is set on a paid team by mistake, so it never lapses
+- [x] A comp is set on a paid team by mistake, so it never lapses
 - [ ] A switch down from a team plan ends the team before the paid month is over
 - [x] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
 - [x] The nightly expiry sends a teammate the expiry email because of an old trial date

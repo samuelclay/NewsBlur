@@ -31,6 +31,24 @@ class Team(models.Model):
         (STATUS_INACTIVE, "Inactive"),
     )
 
+    PROVIDER_STRIPE = "stripe"
+    PROVIDER_PAYPAL = "paypal"
+    PROVIDER_APP_STORE = "app_store"
+    PROVIDER_PLAY = "play"
+    # models.py: a team staff give away. Only a comp may leave paid_through empty (apps/team/billing.py).
+    PROVIDER_COMP = "comp"
+    PROVIDER_CHOICES = (
+        (PROVIDER_STRIPE, "Stripe"),
+        (PROVIDER_PAYPAL, "PayPal"),
+        (PROVIDER_APP_STORE, "App Store"),
+        (PROVIDER_PLAY, "Google Play"),
+        (PROVIDER_COMP, "Comp"),
+    )
+    PAID_PROVIDERS = (PROVIDER_STRIPE, PROVIDER_PAYPAL, PROVIDER_APP_STORE, PROVIDER_PLAY)
+    # models.py: providers charge a renewal some hours after the paid period ends, so a team lapses only once a
+    # day has passed without one, rather than lapsing and coming straight back on every renewal.
+    LAPSE_AFTER = datetime.timedelta(days=1)
+
     DEFAULT_SEAT_LIMIT = 10
     NAME_MAX_LENGTH = 100
     # models.py: counts invite_sent activity, so re-sending a live invite counts against it too.
@@ -51,8 +69,19 @@ class Team(models.Model):
     seat_limit = models.PositiveIntegerField(default=DEFAULT_SEAT_LIMIT)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
     # models.py: the end of the owner's paid period, written by billing. The hourly team-pro-grants task
-    # (apps/team/tasks.py) lapses the team once it passes. Empty means the team doesn't lapse on a date.
+    # (apps/team/tasks.py) lapses the team a day after it passes. Only a comp may leave it empty (Team.lapsed).
     paid_through = models.DateTimeField(null=True, blank=True)
+    # models.py: who bills the team and the id that stays the same across its renewals, written by
+    # apps/team/billing.py record_team_payment. Empty until the first payment.
+    billing_provider = models.CharField(max_length=16, choices=PROVIDER_CHOICES, null=True, blank=True)
+    billing_reference = models.TextField(null=True, blank=True)
+    pending_owner = models.ForeignKey(
+        User, related_name="+", null=True, blank=True, on_delete=models.SET_NULL
+    )
+    transfer_requested_date = models.DateTimeField(null=True, blank=True)
+    # models.py: empty while the team still has the default name it was bought with (record_team_payment), so
+    # the owner is asked for a real one.
+    name_confirmed_date = models.DateTimeField(null=True, blank=True)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -60,15 +89,42 @@ class Team(models.Model):
         return "%s (%s)" % (self.name, self.slug)
 
     @classmethod
-    def create_team(cls, owner, name, plan=PLAN_TEAM):
-        """Returns (team, None), or (None, failure reason) when the owner already has a team or is on one."""
+    def lapsed(cls, now):
+        """The filter for a team whose plan has lapsed at a moment: nobody owns it, its paid period ended more than
+        LAPSE_AFTER before, or it has no paid period and isn't a comp. The hourly task (apps/team/tasks.py) ends an
+        active team that matches, and PremiumExpire (apps/profile/tasks.py) stops sparing its owner."""
+        return (
+            Q(owner__isnull=True)
+            | Q(paid_through__lt=now - cls.LAPSE_AFTER)
+            | Q(paid_through__isnull=True)
+            & (Q(billing_provider__isnull=True) | Q(billing_provider__in=cls.PAID_PROVIDERS))
+        )
+
+    @classmethod
+    def paid_for(cls, now):
+        """The active teams whose plan hasn't lapsed at a moment (lapsed)."""
+        return cls.objects.filter(status=cls.STATUS_ACTIVE).exclude(cls.lapsed(now))
+
+    @classmethod
+    def create_team(cls, owner, name, plan=PLAN_TEAM, name_confirmed=True):
+        """Returns (team, None), or (None, failure reason) when the owner already has a team or is on one.
+        name_confirmed is False for a team started with a default name. Teams start through apps/team/billing.py,
+        which gives the owner Premium Pro: everything that skips the team lookup for accounts without Pro
+        (team_scope) counts on every owner of an active team having it."""
+        name_confirmed_date = datetime.datetime.now() if name_confirmed else None
         for attempt in range(cls.SLUG_ATTEMPTS):
             try:
                 with transaction.atomic():
                     reason = cls._creation_refusal(owner)
                     if reason:
                         return None, reason
-                    team = cls.objects.create(name=name, slug=cls._unique_slug(name), owner=owner, plan=plan)
+                    team = cls.objects.create(
+                        name=name,
+                        slug=cls._unique_slug(name),
+                        owner=owner,
+                        plan=plan,
+                        name_confirmed_date=name_confirmed_date,
+                    )
                     TeamMember.objects.create(team=team, user=owner, role=TeamMember.ROLE_OWNER)
                     TeamActivity.log(team, owner, "team_created", name=name, plan=plan)
                 return team, None
@@ -120,9 +176,12 @@ class Team(models.Model):
         return Team.objects.select_for_update().get(pk=self.pk)
 
     def rename(self, actor, name):
+        """Only the owner renames the team (apps/team/views.py), and the first rename confirms the name."""
         old_name = self.name
         self.name = name
-        self.save(update_fields=["name", "updated_date"])
+        if not self.name_confirmed_date:
+            self.name_confirmed_date = datetime.datetime.now()
+        self.save(update_fields=["name", "name_confirmed_date", "updated_date"])
         TeamActivity.log(self, actor, "team_renamed", old_name=old_name, name=name)
 
     def invite_by_email(self, actor, emails, role):
@@ -277,6 +336,7 @@ class Team(models.Model):
         data = {
             "id": self.pk,
             "name": self.name,
+            "name_needs_confirming": self.name_confirmed_date is None,
             "slug": self.slug,
             "plan": self.plan,
             "status": self.status,
@@ -828,6 +888,50 @@ def team_scope(user):
     team_id, team_name, owner_id, owner_timezone = rows[0][:4]
     seats = [row[4:] for row in rows if row[4] != owner_id]
     return TeamScope(team_id, team_name, owner_id, owner_timezone, seats)
+
+
+def team_plan_fields(profile):
+    """The team plan an account is on, for every client's profile payload (Profile.canonical and
+    templates/base.html), where an owner and a teammate otherwise both look like Premium Pro. Owners and
+    teammates alike get the plan and their role; only the owner gets the billing provider and the paid through
+    date, as a Unix time. Each is None for an account on no active team. Everyone on an active team carries the
+    Pro flags, so other accounts skip the lookup, and the rest take one query."""
+    fields = dict(
+        team_plan=None,
+        team_role=None,
+        team_billing_provider=None,
+        team_paid_through=None,
+        team_pending_owner=None,
+    )
+    if not profile.is_pro:
+        return fields
+    seat = (
+        TeamMember.objects.filter(
+            user_id=profile.user_id, status=TeamMember.STATUS_ACTIVE, team__status=Team.STATUS_ACTIVE
+        )
+        .values(
+            "role",
+            "team__plan",
+            "team__billing_provider",
+            "team__paid_through",
+            "team__pending_owner__username",
+        )
+        .first()
+    )
+    if not seat:
+        return fields
+    fields.update(
+        team_plan=seat["team__plan"],
+        team_role=seat["role"],
+        team_pending_owner=seat["team__pending_owner__username"],
+    )
+    if seat["role"] == TeamMember.ROLE_OWNER:
+        paid_through = seat["team__paid_through"]
+        fields.update(
+            team_billing_provider=seat["team__billing_provider"],
+            team_paid_through=int(paid_through.strftime("%s")) if paid_through else None,
+        )
+    return fields
 
 
 def usage_query(scope, user_id, since, date_field):
