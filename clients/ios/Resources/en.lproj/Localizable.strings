@@ -173,6 +173,7 @@
 "Already have an account? Sign in" = "Already have an account? Sign in";
 "Already have feeds?" = "Already have feeds?";
 "Also published by %@ sites" = "Also published by %@ sites";
+"Always show story navigation" = "Always show story navigation";
 "Analyze" = "Analyze";
 "Analyzing images..." = "Analyzing images...";
 "App Badge" = "App Badge";
@@ -515,6 +516,7 @@
 "Interactions" = "Interactions";
 "Invalid: %@" = "Invalid: %@";
 "Invoice" = "Invoice";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "Keep Previous, Next, and the other reading buttons visible while scrolling.";
 "Keep fades, without movement." = "Keep fades, without movement.";
 "Keeps the dark icon no matter how your device is set." = "Keeps the dark icon no matter how your device is set.";
 "Keeps the light icon no matter how your device is set." = "Keeps the light icon no matter how your device is set.";

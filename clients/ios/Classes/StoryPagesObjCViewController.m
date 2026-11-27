@@ -3794,6 +3794,25 @@
     self.autoscrollActive = self.autoscrollAvailable;
 }
 
+- (BOOL)alwaysShowsStoryNavigation {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_always_show_navigation"];
+}
+
+- (void)changedAlwaysShowStoryNavigation {
+    BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+    if (!self.alwaysShowsStoryNavigation || !hasFeedOrFolder) return;
+
+    if (self.traverseFloating) {
+        // StoryPagesObjCViewController.m returns navigation that was resting with the article end to the screen edge.
+        self.traversePinned = YES;
+        self.traverseFloating = NO;
+        self.traverseBottomConstraint.constant = self.traverseBottomGap;
+        [self.view layoutIfNeeded];
+    }
+    // StoryPagesObjCViewController.m brings back navigation that had already faded on the open story.
+    [self revealTraversalControls];
+}
+
 - (void)changedScrollOrientation {
     [self setNextPreviousButtons];
     // StoryPagesObjCViewController.m restores article interaction when changing the paging axis interrupts deceleration.

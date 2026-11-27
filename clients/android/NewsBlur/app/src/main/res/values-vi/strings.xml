@@ -664,8 +664,8 @@ mọi người kết nối để trò chuyện về thế giới.</string>
     <string name="settings_social">Chia sẻ bài viết</string>
     <string name="settings_show_public_comments">Hiển thị bình luận công khai</string>
     <string name="settings_reading">Đọc</string>
-    <string name="settings_always_show_reading_controls">Luôn hiển thị các nút điều khiển đọc</string>
-    <string name="settings_always_show_reading_controls_sum">Luôn hiển thị các nút điều khiển đọc như Trước, Tiếp theo khi cuộn trang.</string>
+    <string name="settings_always_show_reading_controls">Luôn hiển thị điều hướng bài viết</string>
+    <string name="settings_always_show_reading_controls_sum">Giữ các nút Trước, Tiếp và những nút đọc khác luôn hiển thị khi cuộn.</string>
     <string name="settings_show_ask_ai">Hiển thị Hỏi AI</string>
     <string name="settings_content_preview">Văn bản xem trước nội dung…</string>
     <string name="settings_thumbnails_style">Ảnh thu nhỏ xem trước…</string>

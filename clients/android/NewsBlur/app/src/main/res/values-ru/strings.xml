@@ -688,8 +688,8 @@
     <string name="settings_social">Обмен статьями</string>
     <string name="settings_show_public_comments">Показывать публичные комментарии</string>
     <string name="settings_reading">Чтение</string>
-    <string name="settings_always_show_reading_controls">Всегда показывать элементы управления чтением</string>
-    <string name="settings_always_show_reading_controls_sum">Оставлять кнопки «Предыдущая», «Следующая» и другие элементы управления чтением видимыми при прокрутке.</string>
+    <string name="settings_always_show_reading_controls">Всегда показывать навигацию по статьям</string>
+    <string name="settings_always_show_reading_controls_sum">Оставлять кнопки «Предыдущая», «Следующая» и другие кнопки навигации видимыми при прокрутке.</string>
     <string name="settings_show_ask_ai">Показывать «Спросить ИИ»</string>
     <string name="settings_content_preview">Текст предпросмотра содержимого…</string>
     <string name="settings_thumbnails_style">Миниатюры для предпросмотра изображений…</string>

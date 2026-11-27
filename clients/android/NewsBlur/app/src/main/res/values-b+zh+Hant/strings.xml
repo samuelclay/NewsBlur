@@ -664,8 +664,8 @@
     <string name="settings_social">分享文章</string>
     <string name="settings_show_public_comments">顯示公開留言</string>
     <string name="settings_reading">閱讀</string>
-    <string name="settings_always_show_reading_controls">一律顯示閱讀控制項</string>
-    <string name="settings_always_show_reading_controls_sum">捲動時仍顯示「上一則」、「下一則」等閱讀控制項。</string>
+    <string name="settings_always_show_reading_controls">一律顯示文章導覽</string>
+    <string name="settings_always_show_reading_controls_sum">捲動時，持續顯示「上一頁」、「下一頁」及其他閱讀按鈕。</string>
     <string name="settings_show_ask_ai">顯示「詢問 AI」</string>
     <string name="settings_content_preview">內容預覽文字…</string>
     <string name="settings_thumbnails_style">文章圖片預覽縮圖…</string>

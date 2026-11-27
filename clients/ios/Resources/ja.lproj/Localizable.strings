@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "アカウントをお持ちですか？ログイン";
 "Already have feeds?" = "すでにフィードをお持ちですか？";
 "Also published by %@ sites" = "ほか%@サイトでも公開";
+"Always show story navigation" = "常に記事ナビゲーションを表示";
 "Analyze" = "分析";
 "Analyzing images..." = "画像を分析中...";
 "App Badge" = "アプリアイコンのバッジ";
@@ -509,6 +510,7 @@
 "Interactions" = "やり取り";
 "Invalid: %@" = "無効：%@";
 "Invoice" = "請求書";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "スクロール中も、前へ、次へ、その他の閲覧ボタンを表示したままにします。";
 "Keep fades, without movement." = "動きをなくし、フェードは維持します。";
 "Keeps the dark icon no matter how your device is set." = "デバイスの設定にかかわらず、暗いアイコンを維持します。";
 "Keeps the light icon no matter how your device is set." = "デバイスの設定にかかわらず、ライトアイコンを表示します。";

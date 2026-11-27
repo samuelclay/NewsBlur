@@ -664,8 +664,8 @@
     <string name="settings_social">การแชร์บทความ</string>
     <string name="settings_show_public_comments">แสดงความคิดเห็นสาธารณะ</string>
     <string name="settings_reading">การอ่าน</string>
-    <string name="settings_always_show_reading_controls">แสดงปุ่มควบคุมการอ่านไว้เสมอ</string>
-    <string name="settings_always_show_reading_controls_sum">แสดงปุ่มควบคุมการอ่าน เช่น ก่อนหน้าและถัดไปไว้เสมอขณะเลื่อนหน้า</string>
+    <string name="settings_always_show_reading_controls">แสดงปุ่มนำทางบทความเสมอ</string>
+    <string name="settings_always_show_reading_controls_sum">แสดงปุ่มก่อนหน้า ถัดไป และปุ่มอ่านอื่นๆ ไว้ขณะเลื่อนหน้า</string>
     <string name="settings_show_ask_ai">แสดงฟีเจอร์ถาม AI</string>
     <string name="settings_content_preview">ข้อความตัวอย่างเนื้อหา…</string>
     <string name="settings_thumbnails_style">ภาพตัวอย่างขนาดย่อ…</string>

@@ -5,7 +5,7 @@ import XCTest
 @testable import NewsBlur
 
 @MainActor final class Test_StoryReaderPopGesture: XCTestCase {
-    private let keys = ["story_detail_swipe_left_edge", "scroll_stories_horizontally"]
+    private let keys = ["story_detail_swipe_left_edge", "scroll_stories_horizontally", "story_always_show_navigation"]
     private var preferences: [String: Any] = [:]
 
     override func setUp() {
@@ -13,6 +13,8 @@ import XCTest
         let bundle = Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? ""
         let persisted = UserDefaults.standard.persistentDomain(forName: bundle) ?? [:]
         for key in keys { preferences[key] = persisted[key] }
+        // StoryReaderPopGestureTests.swift starts every case from the default, whatever the simulator has saved.
+        UserDefaults.standard.set(false, forKey: keys[2])
     }
 
     override func tearDown() {
@@ -153,13 +155,7 @@ import XCTest
         scroll.contentOffset.y = 700
         scroll.simulatesDragging = true
         page.lastDragDirectionDown = false
-        func scrollBy(_ delta: CGFloat) {
-            let old = scroll.contentOffset
-            scroll.contentOffset.y += delta
-            page.observeValue(forKeyPath: "contentOffset", of: scroll,
-                              change: [.oldKey: NSValue(cgPoint: old), .newKey: NSValue(cgPoint: scroll.contentOffset)],
-                              context: nil)
-        }
+        func scrollBy(_ delta: CGFloat) { scrollArticle(page, by: delta) }
 
         scrollBy(-10)
         XCTAssertEqual(pages.traverseView.alpha, 0, "Small direction changes must not flash navigation")
@@ -171,6 +167,91 @@ import XCTest
         scrollBy(30)
         XCTAssertGreaterThan(pages.traverseView.alpha, 0)
         XCTAssertLessThan(pages.traverseView.alpha, 1)
+    }
+
+    func test_alwaysShowStoryNavigationHoldsTraversalThroughDownwardScroll() {
+        UserDefaults.standard.set(true, forKey: keys[2])
+        let (pages, _) = makeReaderWithArticles()
+        pages.traverseView = UIView()
+        let page = pages.currentPage!
+        let scroll = page.webView.scrollView as! ReaderTraversalScroll
+        scroll.contentSize = CGSize(width: 375, height: 4000)
+        scroll.contentOffset.y = 700
+        scroll.simulatesDragging = true
+
+        scrollArticle(page, by: 200)
+        XCTAssertEqual(pages.traverseView.alpha, 1, "The preference keeps navigation through a long downward scroll")
+
+        UserDefaults.standard.set(false, forKey: keys[2])
+        scrollArticle(page, by: 200)
+        XCTAssertEqual(pages.traverseView.alpha, 0, "Turning the preference off restores the fade without a relaunch")
+    }
+
+    func test_alwaysShowStoryNavigationStaysAtTheScreenEdgeNearTheEndOfTheStory() throws {
+        try XCTSkipUnless(UIDevice.current.userInterfaceIdiom == .phone, "Only phones attach navigation to the article end")
+        UserDefaults.standard.set(true, forKey: keys[1])
+        UserDefaults.standard.set(true, forKey: keys[2])
+        let (pages, _) = makeReaderWithArticles()
+        pages.traverseView = UIView()
+        let edge = attachTraverseEdge(to: pages, constant: 0)
+        let page = pages.currentPage!
+        page.view.frame = CGRect(x: 0, y: 0, width: 375, height: 667)
+        let scroll = page.webView.scrollView as! ReaderTraversalScroll
+        scroll.contentSize = CGSize(width: 375, height: 4000)
+        scroll.contentOffset.y = 3200
+        scroll.simulatesDragging = true
+
+        // The story ends at offset 3333, so both of these land in its last 150 points without reaching the end.
+        scrollArticle(page, by: 30)
+        // StoryReaderPopGestureTests.swift clears the pin the way the float animation's completion does.
+        pages.traversePinned = false
+        scrollArticle(page, by: 30)
+        XCTAssertEqual(edge.constant, pages.traverseBottomGap, "Navigation must not ride below the screen with the article end")
+        XCTAssertEqual(pages.traverseView.alpha, 1)
+
+        UserDefaults.standard.set(false, forKey: keys[2])
+        pages.traversePinned = false
+        scrollArticle(page, by: 30)
+        XCTAssertLessThan(edge.constant, 0, "Without the preference navigation still arrives with the article end")
+    }
+
+    func test_turningOnAlwaysShowStoryNavigationRestoresFadedTraversalOnlyForAnOpenFeed() {
+        let (pages, _) = makeReaderWithArticles()
+        pages.appDelegate.storiesCollection = StoriesCollection()
+        pages.traverseView = UIView()
+        pages.traverseView.alpha = 0
+        let edge = attachTraverseEdge(to: pages, constant: -80)
+        pages.traverseFloating = true
+        UserDefaults.standard.set(true, forKey: keys[2])
+
+        pages.changedAlwaysShowStoryNavigation()
+        XCTAssertEqual(pages.traverseView.alpha, 0, "An empty reader has no stories to move between")
+
+        pages.appDelegate.storiesCollection.activeFolder = "everything"
+        pages.traverseFadeAccumulator = 80
+        pages.changedAlwaysShowStoryNavigation()
+        XCTAssertEqual(pages.traverseView.alpha, 1)
+        XCTAssertEqual(pages.traverseFadeAccumulator, 0)
+        XCTAssertEqual(edge.constant, pages.traverseBottomGap,
+                       "Navigation resting below the screen with the article end returns to the screen edge")
+    }
+
+    // StoryReaderPopGestureTests.swift stands in for the xib constraint that holds navigation above the bottom edge.
+    private func attachTraverseEdge(to pages: StoryPagesViewController, constant: CGFloat) -> NSLayoutConstraint {
+        let edge = NSLayoutConstraint(item: pages.view!, attribute: .bottom, relatedBy: .equal,
+                                      toItem: pages.traverseView, attribute: .bottom, multiplier: 1, constant: constant)
+        pages.traverseBottomConstraint = edge
+        return edge
+    }
+
+    // StoryReaderPopGestureTests.swift reports an article offset change the way the production KVO observer receives it.
+    private func scrollArticle(_ page: StoryDetailViewController, by delta: CGFloat) {
+        let scroll = page.webView.scrollView
+        let old = scroll.contentOffset
+        scroll.contentOffset.y += delta
+        page.observeValue(forKeyPath: "contentOffset", of: scroll,
+                          change: [.oldKey: NSValue(cgPoint: old), .newKey: NSValue(cgPoint: scroll.contentOffset)],
+                          context: nil)
     }
 
     private func makeReaderWithArticles() -> (ReaderPopGesturePages, UINavigationController) {

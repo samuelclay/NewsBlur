@@ -672,8 +672,8 @@
     <string name="settings_social">लेख साझा करना</string>
     <string name="settings_show_public_comments">सार्वजनिक टिप्पणियाँ दिखाएँ</string>
     <string name="settings_reading">पढ़ना</string>
-    <string name="settings_always_show_reading_controls">पढ़ने के नियंत्रण हमेशा दिखाएँ</string>
-    <string name="settings_always_show_reading_controls_sum">स्क्रॉल करते समय पिछला, अगला और पढ़ने के अन्य नियंत्रण हमेशा दिखाएँ।</string>
+    <string name="settings_always_show_reading_controls">लेख नेविगेशन हमेशा दिखाएँ</string>
+    <string name="settings_always_show_reading_controls_sum">स्क्रॉल करते समय पिछला, अगला और पढ़ने के अन्य बटन दिखाई देते रहें।</string>
     <string name="settings_show_ask_ai">‘AI से पूछें’ दिखाएँ</string>
     <string name="settings_content_preview">सामग्री पूर्वावलोकन पाठ…</string>
     <string name="settings_thumbnails_style">छवि पूर्वावलोकन थंबनेल…</string>

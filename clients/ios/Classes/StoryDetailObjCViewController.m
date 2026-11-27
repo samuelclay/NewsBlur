@@ -2552,10 +2552,12 @@
         if (!atTopForFade && !atBottom && !singlePage) {
             CGFloat traverseFadeDistance = 80.0;
             BOOL isUserTraverseScroll = self.isUserScrolling && (isUserDragging || scrollView.isDecelerating);
-            CGFloat newAccum = [StoryTraverseFadeDecision accumulatorWithCurrentAccumulator:pagesVC.traverseFadeAccumulator
-                                                                                     deltaY:revealDelta
-                                                                               fadeDistance:traverseFadeDistance
-                                                                               isUserScroll:isUserTraverseScroll];
+            // StoryDetailObjCViewController.m leaves navigation in place when Preferences asks to always show it.
+            CGFloat newAccum = pagesVC.alwaysShowsStoryNavigation ? 0.0 :
+                [StoryTraverseFadeDecision accumulatorWithCurrentAccumulator:pagesVC.traverseFadeAccumulator
+                                                                      deltaY:revealDelta
+                                                                fadeDistance:traverseFadeDistance
+                                                                isUserScroll:isUserTraverseScroll];
             pagesVC.traverseFadeAccumulator = newAccum;
             CGFloat traverseAlpha = [StoryTraverseFadeDecision alphaWithAccumulator:newAccum
                                                                        fadeDistance:traverseFadeDistance];
@@ -2580,8 +2582,9 @@
                     appDelegate.storyPagesViewController.traverseBottomConstraint.constant = gap;
                 }
             }
-        } else if ((!singlePage && (atTopForFade && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone) {
+        } else if ((!singlePage && (atTopForFade && !atBottom)) || [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPhone || pagesVC.alwaysShowsStoryNavigation) {
             // Pin to bottom of viewport, regardless of scrollview
+            // StoryDetailObjCViewController.m also pins here near the article end when navigation is always shown.
             appDelegate.storyPagesViewController.traversePinned = YES;
             appDelegate.storyPagesViewController.traverseFloating = NO;
             appDelegate.storyPagesViewController.traverseFadeAccumulator = 0.0;
@@ -2595,6 +2598,7 @@
                 [self.appDelegate.storyPagesViewController.view layoutIfNeeded];
                 self.appDelegate.storyPagesViewController.traverseView.alpha = 1;
             } completion:nil];
+            [appDelegate.storyPagesViewController updateUITestTraverseFadeProbe];
         } else if (appDelegate.storyPagesViewController.traverseView.alpha == 1 &&
                    appDelegate.storyPagesViewController.traversePinned) {
             // Scroll with bottom of scrollview, but smoothly

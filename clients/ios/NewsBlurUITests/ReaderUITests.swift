@@ -2236,7 +2236,8 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_traverseButtonsReappearAfterBlankTapPeekAndUpwardScroll() {
-        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES"]
+        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES",
+                                "-story_always_show_navigation", "NO"]
         launch(on: "reader-story-swift-1")
         let story = app.webViews.firstMatch
         XCTAssertTrue(story.waitForExistence(timeout: 10))
@@ -2267,7 +2268,54 @@ final class ReaderUITests: XCTestCase {
         attachScreenshot(named: "traversal-revealed-by-upward-scroll")
     }
 
+    func test_alwaysShowStoryNavigationKeepsTraverseButtonsToTheEndOfTheStory() {
+        app.launchArguments += ["-story_always_show_navigation", "YES", "-scroll_stories_horizontally", "YES"]
+        launch(on: "reader-story-swift-1")
+        let story = app.webViews.firstMatch
+        XCTAssertTrue(story.waitForExistence(timeout: 10))
+        let nextButton = app.buttons["story-traverse-next-button"]
+        XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
+        // ReaderUITests.swift finds the fixture's last paragraph so a scroll that silently stops cannot pass as the end.
+        let lastParagraph = story.staticTexts
+            .matching(NSPredicate(format: "label CONTAINS %@", "Fixture paragraph 60 ")).firstMatch
+        func assertNavigationHeld(_ step: String) {
+            XCTAssertFalse(waitForTraverseFadeAlpha({ $0 < 0.99 }, timeout: 1),
+                           "\(step) faded navigation; alpha=\(traverseFadeAlpha() ?? -1)")
+            XCTAssertGreaterThanOrEqual(traverseFadeAlpha() ?? -1, 0.99, "\(step) left no readable navigation opacity")
+            XCTAssertTrue(app.frame.contains(nextButton.frame) && nextButton.isHittable,
+                          "\(step) moved navigation off screen; \(debugVisibility(nextButton))")
+        }
+
+        dragUp(on: story, distance: 200)
+        assertNavigationHeld("A mid-story drag")
+        attachScreenshot(named: "navigation-held-mid-story")
+
+        var sawLastParagraph = false
+        for flick in 1...20 where !sawLastParagraph {
+            story.swipeUp(velocity: .fast)
+            assertNavigationHeld("Flick \(flick)")
+            sawLastParagraph = lastParagraph.exists && lastParagraph.frame.maxY <= app.frame.maxY
+        }
+        XCTAssertTrue(sawLastParagraph, "Never scrolled to the fixture's last paragraph")
+        story.swipeUp(velocity: .fast)
+        var previousFrame = CGRect.null
+        let settled = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            let frame = lastParagraph.frame
+            defer { previousFrame = frame }
+            return frame == previousFrame
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter().wait(for: [settled], timeout: 15), .completed)
+        assertNavigationHeld("The end of the story")
+        attachScreenshot(named: "navigation-held-at-story-end")
+
+        // ReaderUITests.swift rests inside the last 150 points, where phones attach navigation to the article end.
+        dragUp(on: story, distance: -60, velocity: 150)
+        assertNavigationHeld("Resting just short of the end")
+        attachScreenshot(named: "navigation-held-just-short-of-story-end")
+    }
+
     func test_traverseButtonsFadeRelativeAfterNextWithHiddenToolbar() {
+        app.launchArguments += ["-story_always_show_navigation", "NO"]
         launch(on: "reader-story-swift-1")
 
         let currentStory = currentStoryProbe()
@@ -2695,7 +2743,7 @@ final class ReaderUITests: XCTestCase {
         start.press(forDuration: 0.05, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
     }
 
-    private func dragUp(on element: XCUIElement, distance: CGFloat) {
+    private func dragUp(on element: XCUIElement, distance: CGFloat, velocity: CGFloat = 40) {
         XCTAssertTrue(element.exists)
 
         let frame = element.frame
@@ -2710,7 +2758,7 @@ final class ReaderUITests: XCTestCase {
 
         // ReaderUITests.swift measures partial fade from a short drag without release momentum.
         start.press(forDuration: 0.2, thenDragTo: end,
-                    withVelocity: XCUIGestureVelocity(rawValue: 40), thenHoldForDuration: 0.5)
+                    withVelocity: XCUIGestureVelocity(rawValue: velocity), thenHoldForDuration: 0.5)
     }
 
     private func launch(on screen: String, storyTitlesStyle: String? = nil) {

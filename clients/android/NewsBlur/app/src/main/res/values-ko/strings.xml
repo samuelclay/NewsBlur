@@ -664,8 +664,8 @@
     <string name="settings_social">스토리 공유</string>
     <string name="settings_show_public_comments">공개 댓글 표시</string>
     <string name="settings_reading">읽기</string>
-    <string name="settings_always_show_reading_controls">읽기 컨트롤 항상 표시</string>
-    <string name="settings_always_show_reading_controls_sum">스크롤하는 동안 이전, 다음 등의 읽기 컨트롤을 계속 표시합니다.</string>
+    <string name="settings_always_show_reading_controls">스토리 탐색 항상 표시</string>
+    <string name="settings_always_show_reading_controls_sum">스크롤하는 동안 이전, 다음 및 기타 스토리 탐색 버튼을 계속 표시합니다.</string>
     <string name="settings_show_ask_ai">AI에게 질문 표시</string>
     <string name="settings_content_preview">콘텐츠 미리보기 텍스트…</string>
     <string name="settings_thumbnails_style">이미지 미리보기 썸네일…</string>

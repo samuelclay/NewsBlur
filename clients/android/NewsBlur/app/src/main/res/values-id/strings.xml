@@ -664,8 +664,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_social">Berbagi artikel</string>
     <string name="settings_show_public_comments">Tampilkan komentar publik</string>
     <string name="settings_reading">Membaca</string>
-    <string name="settings_always_show_reading_controls">Selalu tampilkan kontrol baca</string>
-    <string name="settings_always_show_reading_controls_sum">Tetap tampilkan kontrol Sebelumnya, Berikutnya, dan kontrol baca lainnya saat menggulir.</string>
+    <string name="settings_always_show_reading_controls">Selalu tampilkan navigasi artikel</string>
+    <string name="settings_always_show_reading_controls_sum">Tombol Sebelumnya, Berikutnya, dan tombol baca lainnya tetap terlihat saat Anda menggulir.</string>
     <string name="settings_show_ask_ai">Tampilkan Tanya AI</string>
     <string name="settings_content_preview">Teks pratinjau konten…</string>
     <string name="settings_thumbnails_style">Gambar mini pratinjau…</string>

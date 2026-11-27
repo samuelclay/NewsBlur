@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "क्या आपका खाता पहले से है? साइन इन करें";
 "Already have feeds?" = "क्या आपके पास पहले से फ़ीड हैं?";
 "Also published by %@ sites" = "%@ अन्य साइटों पर भी प्रकाशित";
+"Always show story navigation" = "लेख नेविगेशन हमेशा दिखाएँ";
 "Analyze" = "विश्लेषण करें";
 "Analyzing images..." = "छवियों का विश्लेषण हो रहा है…";
 "App Badge" = "ऐप बैज";
@@ -509,6 +510,7 @@
 "Interactions" = "इंटरैक्शन";
 "Invalid: %@" = "अमान्य: %@";
 "Invoice" = "चालान";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "स्क्रॉल करते समय पिछला, अगला और पढ़ने के अन्य बटन दिखाई देते रहें।";
 "Keep fades, without movement." = "बिना गति के फ़ेड प्रभाव बनाए रखें।";
 "Keeps the dark icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, गहरा आइकन बनाए रखता है।";
 "Keeps the light icon no matter how your device is set." = "आपके डिवाइस की सेटिंग चाहे जो हो, हल्का आइकन बनाए रखता है।";

@@ -680,8 +680,8 @@ a personas para hablar del mundo.</string>
     <string name="settings_social">Compartir artículos</string>
     <string name="settings_show_public_comments">Mostrar comentarios públicos</string>
     <string name="settings_reading">Lectura</string>
-    <string name="settings_always_show_reading_controls">Mostrar siempre los controles de lectura</string>
-    <string name="settings_always_show_reading_controls_sum">Mantén visibles los controles de lectura Anterior, Siguiente y otros mientras te desplazas.</string>
+    <string name="settings_always_show_reading_controls">Mostrar siempre la navegación por artículos</string>
+    <string name="settings_always_show_reading_controls_sum">Mantén visibles los botones Anterior, Siguiente y los demás botones de lectura mientras te desplazas.</string>
     <string name="settings_show_ask_ai">Mostrar «Preguntar a la IA»</string>
     <string name="settings_content_preview">Texto de vista previa del contenido…</string>
     <string name="settings_thumbnails_style">Miniaturas de vista previa de imágenes…</string>
