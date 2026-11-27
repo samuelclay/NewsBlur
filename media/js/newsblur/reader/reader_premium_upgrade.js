@@ -484,7 +484,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             ]);
         }
 
-        // Higher tier user viewing lower tier - show "includes everything" and switch option
+        // Higher tier user viewing lower tier - show "includes everything" and, when the plan comes from a
+        // Stripe or PayPal subscription that can move to a lower price, a switch option
         if (!is_trial && user_tier > plan_tier && user_tier > 0) {
             var current_plan_name = this.plan_name(this.get_plan_name_from_tier(user_tier));
             return $.make('div', { className: 'NB-premium-tier-status' }, [
@@ -492,7 +493,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
                     $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription includes everything above"), {value_1: current_plan_name}, true))
                 ]),
-                $.make('div', {
+                NEWSBLUR.Globals.can_switch_to_lower_plan && $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
                 }, interpolate(gettext("Switch to %(value_1)s"), {value_1: this.plan_name(plan)}, true))
             ]);

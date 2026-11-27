@@ -552,6 +552,11 @@ def paypal_webhooks(request):
             # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
             resource_status = data["resource"].get("status")
             is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+            # A switch to a lower plan replaces the primary subscription, so this reads it before
+            # store_paypal_sub_id makes the new one primary (apps/profile/models.py).
+            lower_plan = None
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status:
+                lower_plan = user.profile.lower_plan_from_paypal_activation(data["resource"])
             user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=not is_active_status)
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
@@ -574,6 +579,10 @@ def paypal_webhooks(request):
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
+            if lower_plan:
+                # Last, once the older subscription is suspended: the history sync above can still read it
+                # as live and raise the account straight back to its plan.
+                user.profile.downgrade_to(lower_plan)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
         user = find_paypal_user(data, custom_field="custom")
         if user:
@@ -1123,6 +1132,8 @@ def switch_stripe_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
 
+    # The plan before the switch, so the return page can say the account moved down to a lower plan.
+    previous_plan = request.user.profile.paid_plan
     switch_successful = request.user.profile.switch_stripe_subscription(plan)
 
     logging.user(
@@ -1132,9 +1143,30 @@ def switch_stripe_subscription(request):
     )
 
     if switch_successful:
-        return HttpResponseRedirect(reverse("stripe-return"))
+        return_params = {"plan": plan}
+        if Profile.is_lower_plan(plan, previous_plan):
+            return_params["switched"] = 1
+        return HttpResponseRedirect("%s?%s" % (reverse("stripe-return"), urlencode(return_params)))
 
+    # No subscription to switch, so this is a new checkout, which stripe_checkout refuses for a plan below
+    # the account's own.
     return stripe_checkout(request)
+
+
+def _refuse_lower_plan_sale(request, plan):
+    """views.py: A redirect to the upgrade dialog when plan sits below the account's paid plan, else None.
+
+    A lower plan only comes from switching the subscription that carries the account's plan
+    (Profile.switch_stripe_subscription, and lower_plan_from_paypal_activation for PayPal, in
+    apps/profile/models.py), never from a new subscription. A trial counts as no plan.
+    """
+    profile = request.user.profile
+    if not Profile.is_lower_plan(plan, profile.paid_plan):
+        return None
+    logging.user(
+        request, "~FRNot selling ~SB%s~SN below the account's ~SB%s~SN plan" % (plan, profile.paid_plan)
+    )
+    return HttpResponseRedirect(reverse("index") + "?next=premium")
 
 
 def switch_paypal_subscription(request):
@@ -1147,7 +1179,15 @@ def switch_paypal_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
 
-    approve_url = request.user.profile.switch_paypal_subscription_approval_url(plan)
+    profile = request.user.profile
+    # Only a PayPal subscription that carries the account's plan can be replaced by a lower one
+    # (paypal_webhooks lowers the account once PayPal activates the new subscription).
+    if not (profile.can_switch_to_lower_plan and profile.active_provider == "paypal"):
+        refusal = _refuse_lower_plan_sale(request, plan)
+        if refusal:
+            return refusal
+
+    approve_url = profile.switch_paypal_subscription_approval_url(plan)
 
     logging.user(
         request,
@@ -1158,10 +1198,8 @@ def switch_paypal_subscription(request):
     if approve_url:
         return HttpResponseRedirect(approve_url)
 
-    paypal_return = reverse("paypal-return")
-    if plan in ("archive", "archive_extra"):
-        paypal_return = reverse("paypal-archive-return")
-    return HttpResponseRedirect(paypal_return)
+    # PayPal gave no approval link, so nothing was paid: back to the upgrade dialog.
+    return HttpResponseRedirect(reverse("index") + "?next=premium")
 
 
 @login_required
@@ -1179,6 +1217,10 @@ def stripe_checkout(request):
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
+    refusal = _refuse_lower_plan_sale(request, plan)
+    if refusal:
+        return refusal
+
     price = Profile.plan_to_stripe_price(plan)
 
     session_dict = {
@@ -1190,7 +1232,7 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "success_url": "https://%s%s?%s" % (domain, reverse("stripe-return"), urlencode({"plan": plan})),
         "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:
