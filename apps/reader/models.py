@@ -1955,17 +1955,22 @@ class UserSubscription(models.Model):
         """
         Walk up folder hierarchy to find auto_mark_read_days setting.
         Folder titles use " - " as hierarchy separator (e.g., "Parent - Child - Grandchild").
+        At each level a setting saved under the folder's full path wins over one saved under
+        its own name, which is how the web client saves it, so folders that share an own name
+        share that setting.
         Returns tuple of (days, source).
         """
         if not folder_title:
             return (None, "default")
 
         # Check this folder's setting
-        if folder_title in folder_settings:
-            days = folder_settings[folder_title]
-            if days == 0:
-                return (None, f"folder:{folder_title}")  # Explicit "never auto-mark"
-            return (days, f"folder:{folder_title}")
+        own_name = folder_title.split(" - ")[-1]
+        for setting_title in (folder_title, own_name):
+            if setting_title in folder_settings:
+                days = folder_settings[setting_title]
+                if days == 0:
+                    return (None, f"folder:{setting_title}")  # Explicit "never auto-mark"
+                return (days, f"folder:{setting_title}")
 
         # Walk up to parent folder (split on " - ")
         if " - " in folder_title:

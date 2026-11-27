@@ -6326,9 +6326,12 @@ def save_folder_auto_mark_read(request):
         flat_folders = usf.flatten_folders()
         affected_feeds = []
 
-        # Collect all feeds that might be affected (this folder and nested folders)
+        # Collect all feeds that might be affected (this folder and nested folders). The
+        # setting applies to the folder at this full path and to every folder with this own
+        # name, as UserSubscription._resolve_folder_auto_mark_read in apps/reader/models.py
+        # resolves it.
         for ft, feed_ids in flat_folders.items():
-            if ft == folder_title or ft.startswith(folder_title + " - "):
+            if ft == folder_title or ft.startswith(folder_title + " - ") or folder_title in ft.split(" - "):
                 affected_feeds.extend(feed_ids)
 
         if affected_feeds:
