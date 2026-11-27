@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_http_methods
 from oauth2_provider.models import Application
 
+from apps.oauth.access import application_is_exempt
 from apps.oauth.models import ApplicationWebsite
 from apps.oauth.traffic import application_usage
 
@@ -84,9 +85,12 @@ def browser_session_required(view):
 @require_http_methods(["GET", "POST"])
 @browser_session_required
 def edit_application(request, pk):
-    if not request.user.profile.can_register_oauth_application:
+    application = get_object_or_404(
+        Application.objects.select_related("applicationexemption"), pk=pk, user=request.user
+    )
+    # Owners of exempt applications keep them up to date without Premium Pro (apps/oauth/access.py).
+    if not (request.user.profile.can_register_oauth_application or application_is_exempt(application)):
         raise PermissionDenied
-    application = get_object_or_404(Application, pk=pk, user=request.user)
     form = ApplicationEditForm(request.POST if request.method == "POST" else None, instance=application)
     if request.method == "POST" and form.is_valid():
         if form.changed_data:
@@ -105,7 +109,14 @@ def owned_applications(request):
 
     apps = list(
         Application.objects.filter(user=request.user)
-        .values("id", "name", "client_id", "redirect_uris", "applicationwebsite__website")
+        .values(
+            "id",
+            "name",
+            "client_id",
+            "redirect_uris",
+            "applicationwebsite__website",
+            "applicationexemption__id",
+        )
         .annotate(
             connected=Count(
                 "accesstoken__user_id", distinct=True, filter=Q(accesstoken__expires__gt=timezone.now())
@@ -113,6 +124,9 @@ def owned_applications(request):
         )
         .order_by("-id")
     )
+    # The signed-in owner's account is active, so an application works while the owner has Premium Pro or
+    # staff exempted it, as application_is_active in apps/oauth/access.py decides.
+    has_pro = request.user.profile.can_register_oauth_application
     try:
         traffic = application_usage([app["id"] for app in apps])
     except redis.RedisError:
@@ -121,6 +135,9 @@ def owned_applications(request):
     for app in apps:
         app["website"] = app.pop("applicationwebsite__website")
         app["usage"] = traffic.get(app["id"])
+        # media/js/newsblur/reader/reader_oauth_applications.js warns the owner about paused applications.
+        exempt = app.pop("applicationexemption__id") is not None
+        app["paused"] = not (has_pro or exempt)
     return JsonResponse({"applications": apps})
 
 

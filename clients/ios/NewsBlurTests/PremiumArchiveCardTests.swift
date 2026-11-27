@@ -43,11 +43,22 @@ final class Test_PremiumArchiveCard: XCTestCase {
         }
     }
 
-    func test_proSubscriberSeesTheArchiveCardWithoutTheToggle() {
-        let card = PremiumArchiveCard(isPremium: true, isArchive: true, isPro: true, storeSellsArchiveExtra: true,
-                                      chosenPlan: .archiveExtra)
-        XCTAssertFalse(card.showsListenToggle)
+    func test_proSubscriberComparesBothListenPlansWithoutBeingSoldEither() {
+        // Pro is on neither plan, so the toggle starts on 1 hour, and its subscription includes both, so neither
+        // position may offer a purchase.
+        var card = PremiumArchiveCard(isPremium: true, isArchive: true, isPro: true, storeSellsArchiveExtra: true)
+        XCTAssertTrue(card.showsListenToggle)
         XCTAssertEqual(card.plan, .archive)
         XCTAssertEqual(card.status, .included(by: .pro))
+
+        card.chosenPlan = .archiveExtra
+        XCTAssertEqual(card.plan, .archiveExtra)
+        XCTAssertEqual(card.status, .included(by: .pro))
+
+        // Until StoreKit returns Premium Archive Extra, Pro sees the plain card like everyone else.
+        let withoutExtra = PremiumArchiveCard(isPremium: true, isArchive: true, isPro: true, chosenPlan: .archiveExtra)
+        XCTAssertFalse(withoutExtra.showsListenToggle)
+        XCTAssertEqual(withoutExtra.plan, .archive)
+        XCTAssertEqual(withoutExtra.status, .included(by: .pro))
     }
 }
