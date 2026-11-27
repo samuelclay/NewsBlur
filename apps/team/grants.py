@@ -146,7 +146,9 @@ def _own_plan_expire(user, grant):
     period (apps/team/billing.py), so it is the later of the end their grant keeps (TeamProGrant.own_premium_expire)
     and the end their own payments give, leaving out payments for a team plan."""
     team_plans = [plan for plan, _ in Team.PLAN_CHOICES]
-    team_payments = Q(plan__in=team_plans) | Q(plan__isnull=True, payment_amount__in=Profile.MONTHLY_PRICES)
+    team_payments = Q(plan__in=team_plans) | Q(
+        plan__isnull=True, payment_amount__in=Profile.TEAM_MONTHLY_PRICES
+    )
     paid_through, _, _ = Profile.premium_expire_from_payments(
         PaymentHistory.objects.filter(user=user).exclude(team_payments)
     )

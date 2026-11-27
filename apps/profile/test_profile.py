@@ -2117,17 +2117,17 @@ class Test_PremiumExpireBillingPeriod(TestCase):
 
     def test_monthly_subscriber_expires_about_a_month_out(self):
         """Twelve monthly charges must buy about a month past the last one, not twelve years."""
-        for month in range(12):
-            self._pay(days_ago=30 * month)
+        for month in reversed(range(12)):
+            latest = self._pay(days_ago=30 * month)
 
         expiration, _, count = Profile.premium_expire_from_payments(
             PaymentHistory.objects.filter(user=self.user)
         )
 
         self.assertEqual(count, 12)
-        days_out = (expiration - datetime.datetime.now()).days
-        self.assertGreater(days_out, 0, "a paid-up monthly subscriber must not be expired")
-        self.assertLess(days_out, 60, "expiration ran away: %s" % expiration)
+        self.assertEqual(
+            expiration, latest.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS)
+        )
 
     def test_annual_subscriber_still_gets_a_year(self):
         """The common case must be untouched by the fix."""
@@ -2240,6 +2240,51 @@ class Test_PremiumExpireBillingPeriod(TestCase):
         )
         self.assertEqual(count, 2)
         self.assertLess((expiration - datetime.datetime.now()).days, 100, "a team charge bought a year")
+
+    def test_a_premium_pro_charge_buys_a_month_alone_and_leaves_an_annual_plans_year_as_it_is(self):
+        """Premium Pro's $29 is only billed monthly, so one charge buys a month from its own date. After a
+        yearly plan it neither shortens the year that plan bought nor adds another."""
+        pro = self._pay(days_ago=2)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(
+            (expiration, count), (pro.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS), 1)
+        )
+
+        # The gap between the two charges reads as yearly for the first, and as monthly for the second.
+        for annual_price, days_ago in ((36, 300), (99, 100)):
+            PaymentHistory.objects.filter(user=self.user).delete()
+            annual = self._pay(days_ago=days_ago, amount=annual_price)
+            self._pay(days_ago=1)
+
+            expiration, _, count = Profile.premium_expire_from_payments(
+                PaymentHistory.objects.filter(user=self.user)
+            )
+            self.assertEqual(
+                (expiration, count),
+                (annual.payment_date + datetime.timedelta(days=Profile.ANNUAL_PERIOD_DAYS), 2),
+            )
+
+    def test_an_odd_prorated_charge_reads_by_the_cadence_premium_pro_charges_set(self):
+        """A switch to Premium Pro first bills an odd prorated amount. Alone it buys a year, as one charge at
+        an amount no price list holds does. Followed a month later by a $29 charge, it reads as monthly."""
+        prorated = self._pay(days_ago=40, amount=8.39)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+        self.assertEqual(
+            expiration, prorated.payment_date + datetime.timedelta(days=Profile.ANNUAL_PERIOD_DAYS)
+        )
+
+        pro = self._pay(days_ago=9)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(
+            (expiration, count), (pro.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS), 2)
+        )
 
 
 class Test_StoreReceiptRenewals(TestCase):
@@ -3348,8 +3393,9 @@ class Test_PaypalWebhookSignature(TestCase):
 
 
 class Test_PaypalIpnVerification(TestCase):
-    """apps/profile/models.py acts on a PayPal IPN only once PayPal's postback verifies it. A notice PayPal doesn't
-    verify attaches no subscription to an account and starts no plan, then or at a later sync."""
+    """apps/profile/models.py acts on a PayPal IPN only once PayPal's postback verifies it, even when
+    django-paypal flags it for another reason. A notice PayPal doesn't verify attaches no subscription to an
+    account and starts no plan, then or at a later sync."""
 
     def setUp(self):
         self.user = User.objects.create_user(username="ipnreader", email="ipnreader@test.com")
@@ -3386,7 +3432,7 @@ class Test_PaypalIpnVerification(TestCase):
             }
         raise AssertionError("Unexpected PayPal API path: %s" % path)
 
-    def deliver(self, postback, txn_id, days_ago=0, amount="36.00"):
+    def deliver(self, postback, txn_id, days_ago=0, amount="36.00", payment_status="Completed"):
         """A subscription payment IPN for I-PAID naming this account, paid days_ago, whose postback PayPal answers
         with postback."""
         from paypal.standard.ipn.models import PayPalIPN
@@ -3402,7 +3448,7 @@ class Test_PaypalIpnVerification(TestCase):
                         "subscr_id": "I-PAID",
                         "custom": self.user.username,
                         "payer_email": self.user.email,
-                        "payment_status": "Completed",
+                        "payment_status": payment_status,
                         "payment_date": paid_at.strftime("%H:%M:%S %b %d, %Y ") + paid_at.tzname(),
                         "mc_gross": amount,
                         "payment_gross": amount,
@@ -3437,3 +3483,29 @@ class Test_PaypalIpnVerification(TestCase):
         self.deliver(b"INVALID", "TX-3", days_ago=30, amount="299.00")
         Profile.objects.get(user=self.user).setup_premium_history()
         self.assertEqual(self.payments(), [36])
+
+    def test_a_resent_notice_paypal_verifies_records_its_payment_though_its_txn_id_is_stored(self):
+        from paypal.standard.ipn.models import PayPalIPN
+
+        # The first delivery is stored, then fails before its payment is recorded, so PayPal sends it again.
+        unreachable = ConnectionError("PayPal unreachable")
+        with patch.object(Profile, "setup_premium_history", side_effect=unreachable):
+            with self.assertRaises(ConnectionError):
+                self.deliver(b"VERIFIED", "TX-1")
+        self.assertEqual(self.payments(), [])
+
+        self.deliver(b"VERIFIED", "TX-1")
+
+        self.assertIn("Duplicate txn_id", PayPalIPN.objects.get(txn_id="TX-1", flag=True).flag_info)
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        self.assertEqual(self.payments(), [36])
+
+    def test_a_notice_paypal_verifies_with_a_payment_status_django_paypal_lacks_records_its_payment(self):
+        from paypal.standard.ipn.models import PayPalIPN
+
+        self.deliver(b"VERIFIED", "TX-1", days_ago=30, payment_status="In-Progress")
+
+        self.assertIn("Invalid payment_status", PayPalIPN.objects.get(txn_id="TX-1").flag_info)
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        # Today's payment from PayPal's API, and the one the notice names.
+        self.assertEqual(self.payments(), [36, 36])

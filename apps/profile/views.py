@@ -1855,7 +1855,8 @@ def invoice(request, payment_id):
     # Calculate coverage period (1 year from payment date)
     coverage_start = payment.payment_date
     coverage_end = coverage_start + dateutil.relativedelta.relativedelta(years=1)
-    # views.py: Premium Team's $79 and Premium Team Enterprise's $129 each pay for a month (Profile.MONTHLY_PRICES).
+    # views.py: Premium Team's $79 and Premium Team Enterprise's $129 each pay for a month
+    # (Profile.TEAM_MONTHLY_PRICES).
     plan_name = TIER_NAMES.get({79: "team", 129: "team_enterprise"}.get(payment.payment_amount))
     if plan_name:
         coverage_end = coverage_start + dateutil.relativedelta.relativedelta(months=1)

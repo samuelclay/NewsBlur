@@ -9,6 +9,7 @@ The plan and build checklist for a team tier on NewsBlur. Market research is in 
 - Each feature section ends with a **Screenshots** list. Those are the pictures the feature page needs, one per distinct feature.
 - Work happens in the order of the "Build order" section. A box is ticked in the same commit that finishes it.
 - Decisions made while building are recorded under "Decisions" with the date.
+- Every step that adds or changes a screen gets its screenshots attached to the pull request, for the web, iOS, macOS and Android.
 
 ## What it is
 

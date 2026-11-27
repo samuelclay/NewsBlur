@@ -66,6 +66,12 @@ from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.timezones.fields import TimeZoneField
 
+# models.py: the stored PayPal IPNs an account's subscriptions and payments are read from. A notice whose
+# postback PayPal verified counts even when django-paypal flagged it for another reason. A flagged one PayPal
+# answered otherwise is left out (paypal_payment_was_flagged), as is one django-paypal couldn't read, which it
+# stores blank.
+PAYPAL_IPNS_COUNTED = Q(flag=False) | Q(response="VERIFIED")
+
 
 class Profile(models.Model):
     # Feed limits by subscription tier
@@ -136,15 +142,20 @@ class Profile(models.Model):
     # 365 so an annual subscriber never reads as monthly.
     MONTHLY_GAP_CEILING_DAYS = 180
     # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
-    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly and the team
-    # plans' MONTHLY_PRICES are absent here, which is what makes a charge at any of these mean
-    # a full year.
+    # $99 Premium Archive, $299 Premium Pro yearly. The MONTHLY_PRICES, Premium Pro's $29
+    # monthly and the team plans', are absent here, which is what makes a charge at any of
+    # these mean a full year.
     ANNUAL_PRICES = {12, 24, 36, 99, 159, 299}
-    # Prices only ever billed monthly: Premium Team at $79 and Premium Team Enterprise at $129,
-    # or $79.99 and $129.99 in the stores, which payment rows hold as whole dollars. A charge at
-    # one of these buys a month from its own date and stays out of the cadence reading, so a
-    # team owner's first charge, or one after an annual plan, doesn't read as a year.
-    MONTHLY_PRICES = {79, 129}
+    # Prices only ever billed monthly: Premium Pro at $29, Premium Team at $79 and Premium Team
+    # Enterprise at $129, or $79.99 and $129.99 in the stores, which payment rows hold as whole
+    # dollars. A charge at one of these buys a month from its own date and doesn't stack with
+    # the account's other charges, so a first Premium Pro charge, a team owner's first charge,
+    # or one after an annual plan, doesn't read as a year.
+    MONTHLY_PRICES = {29, 79, 129}
+    # The team plans' MONTHLY_PRICES. A team charge also stays out of the cadence reading, which
+    # reads the plan an account pays for on its own, while a Premium Pro charge still sets the
+    # cadence an odd prorated amount is read by (premium_expire_from_payments).
+    TEAM_MONTHLY_PRICES = {79, 129}
     # A same-identifier store receipt arriving within this window is a duplicate
     # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
     # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
@@ -1692,6 +1703,7 @@ class Profile(models.Model):
         verified_apple_count = 0
         monthly_price_expiration = None
         monthly_price_count = 0
+        pro_monthly_dates = []
         payments = list(payments)
         verified_apple_periods = {}
         for payment in payments:
@@ -1732,6 +1744,8 @@ class Profile(models.Model):
                     paid_until = payment.payment_date + datetime.timedelta(days=cls.MONTHLY_PERIOD_DAYS)
                     monthly_price_expiration = max(monthly_price_expiration or paid_until, paid_until)
                     monthly_price_count += 1
+                    if payment.payment_amount not in cls.TEAM_MONTHLY_PRICES:
+                        pro_monthly_dates.append(payment.payment_date)
                     continue
                 recent_payment_dates.append(payment.payment_date)
                 if payment.payment_amount in cls.ANNUAL_PRICES and (
@@ -1747,7 +1761,7 @@ class Profile(models.Model):
                 verified_apple_count + monthly_price_count,
             )
 
-        period_days = cls.billing_period_days(recent_payment_dates)
+        period_days = cls.billing_period_days(recent_payment_dates + pro_monthly_dates)
         expiration = min(recent_payment_dates) + datetime.timedelta(
             days=period_days * len(recent_payment_dates)
         )
@@ -1954,7 +1968,7 @@ class Profile(models.Model):
                         Q(custom=self.user.username)
                         | Q(payer_email=self.user.email)
                         | Q(custom=self.user.pk),
-                        flag=False,
+                        PAYPAL_IPNS_COUNTED,
                     ).order_by("-payment_date")
                     for transaction in ipns:
                         if transaction.txn_type != "subscr_payment":
@@ -3102,7 +3116,7 @@ class Profile(models.Model):
     def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
             Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk),
-            flag=False,
+            PAYPAL_IPNS_COUNTED,
         ).order_by("-payment_date")
         if not len(ipns):
             return
@@ -5210,9 +5224,21 @@ def paypal_payment_was_flagged(sender, **kwargs):
         )
         return {"code": -1, "message": "User doesn't exist."}
 
-    # models.py: a flagged notice attaches no subscription to the account and starts no plan. Only one that passed
-    # PayPal's verification is acted on (paypal_signup, paypal_payment_history_sync).
-    logging.user(user, "~BC~SB~FBPaypal subscription payment flagged: %s" % ipn_obj.flag_info)
+    # models.py: a notice PayPal's postback didn't verify attaches no subscription to the account and starts
+    # no plan. One PayPal verified that django-paypal flagged for another reason, such as a txn_id it already
+    # stored or an unexpected payment_status, still records its payment.
+    if ipn_obj.response != "VERIFIED":
+        logging.user(user, "~BC~SB~FBPaypal subscription payment flagged: %s" % ipn_obj.flag_info)
+        return
+
+    try:
+        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
+        if paypal_sub_id:
+            user.profile.store_paypal_sub_id(paypal_sub_id)
+        user.profile.setup_premium_history()
+        logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
+    except:
+        return {"code": -1, "message": "User doesn't exist."}
 
 
 invalid_ipn_received.connect(paypal_payment_was_flagged)

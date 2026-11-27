@@ -2515,6 +2515,21 @@ class Test_TeamBilling(TeamProMixin, TestCase):
         self.assertEqual(self.premium_expire(store), store_paid_through)
         self.assertGreater(self.premium_expire(gifted), self.now + self.days(364))
 
+    def test_an_owner_paying_monthly_for_pro_on_their_own_goes_back_to_the_month_it_paid_for(self):
+        # Premium Pro's $29 is billed monthly as the team plans are, and is still a plan of the owner's own.
+        owner = self.reader("monthly", "pro", premium_expire=self.now + self.days(5))
+        self.pay(owner, self.now + self.days(31))
+        renewal = PaymentHistory.objects.create(
+            user=owner, payment_date=self.now - self.days(1), payment_amount=29, payment_provider="paypal"
+        )
+
+        self.lapse(owner)
+
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(
+            self.premium_expire(owner), renewal.payment_date + self.days(Profile.MONTHLY_PERIOD_DAYS)
+        )
+
     def test_the_owner_of_a_lapsed_team_expires_like_any_plan_unless_the_team_comes_back(self):
         lapsed = self.reader("lapsed", "free", feeds=2)
         returning = self.reader("returning", "free")
