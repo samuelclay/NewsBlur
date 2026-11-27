@@ -5330,6 +5330,9 @@ msgstr "Luisteren pauzeren"
 msgid "Pause or resume reading aloud (y)"
 msgstr "Hardop voorlezen pauzeren of hervatten (y)"
 
+msgid "Paused"
+msgstr "Gepauzeerd"
+
 msgid "Payment history"
 msgstr "Betalingsgeschiedenis"
 

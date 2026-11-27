@@ -46046,6 +46046,17 @@ body.NB-no-animations .NB-story-title-search-input { transition: none; }
     margin-bottom: 14px;
 }
 
+/* reader_oauth_applications.js labels each application that stays paused until its owner has Premium Pro. */
+.NB-oauth-paused {
+    display: inline-block;
+    margin-inline-start: 8px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    background: rgba(127, 127, 127, .18);
+    font-size: 11px;
+    vertical-align: 1px;
+}
+
 .NB-oauth-redirects {
     display: block;
     white-space: pre-wrap;

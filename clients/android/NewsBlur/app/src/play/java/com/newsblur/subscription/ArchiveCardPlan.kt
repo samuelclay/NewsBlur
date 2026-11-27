@@ -19,7 +19,10 @@ enum class ArchiveCardStatus {
     /** The chosen plan is the account's own. */
     OWNED,
 
-    /** Premium Pro already has more listening than either plan, so the card has no toggle. */
+    /**
+     * Premium Pro already has more listening than either plan, so in both toggle positions the card says Pro
+     * includes it and never offers a purchase, upgrade or manage button.
+     */
     INCLUDED_IN_PRO,
 
     /** One hour, chosen by an account that already has ten. Downgrades go through Play, not this card. */
@@ -38,8 +41,10 @@ data class ArchiveCardPlan(
 )
 
 /**
- * The toggle needs Play to sell Premium Archive Extra, or an account that already has it, and Pro never sees it.
+ * The toggle needs Play to sell Premium Archive Extra, or an account that already has it. Pro sees it under the same
+ * rule, so it can compare both plans, though its subscription already includes either one.
  * Until someone touches it, it sits on the account's own plan: ten hours for Archive Extra, one for everyone else.
+ * Pro is on neither plan, so its toggle starts on one hour and neither position is captioned as its own.
  */
 fun archiveCardPlan(
     isPremium: Boolean,
@@ -50,7 +55,7 @@ fun archiveCardPlan(
     chosenHours: ArchiveListenHours?,
 ): ArchiveCardPlan {
     val ownsExtra = isArchiveExtra && !isPro
-    val showsHoursToggle = !isPro && (extraOffered || ownsExtra)
+    val showsHoursToggle = extraOffered || ownsExtra
     val ownedHours =
         when {
             isPro -> null

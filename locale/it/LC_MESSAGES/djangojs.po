@@ -5346,6 +5346,9 @@ msgstr "Metti in pausa l'ascolto"
 msgid "Pause or resume reading aloud (y)"
 msgstr "Metti in pausa o riprendi la lettura ad alta voce (y)"
 
+msgid "Paused"
+msgstr "In pausa"
+
 msgid "Payment history"
 msgstr "Cronologia dei pagamenti"
 
