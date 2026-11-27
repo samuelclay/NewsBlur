@@ -5998,8 +5998,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "זה כבר פיד RSS. מתבצעת הרשמה ישירה."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "זה נמשך זמן רב מהרגיל. קיבלנו הודעה ונבצע את השדרוג של החשבון שלך."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "הפעולה נמשכת זמן רב מהרגיל. החשבון שלך ישודרג ברגע שהתשלום יאושר."
 
 msgid "This payment has been refunded."
 msgstr "התשלום הזה הוחזר."

@@ -6207,8 +6207,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Este já é um feed RSS. Assinando diretamente."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "Isso está demorando mais do que o normal. Fomos avisados e garantiremos que sua conta receba o upgrade."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Isso está demorando mais do que o normal. Sua conta receberá o upgrade assim que o pagamento for confirmado."
 
 msgid "This payment has been refunded."
 msgstr "Este pagamento foi reembolsado."

@@ -5663,8 +5663,8 @@ msgstr "這是一個為你打造、可自行自訂的個人網站。你也可以
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "這已是 RSS 訂閱來源，正在直接訂閱。"
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "這次處理時間比平常久。我們已收到通知，會確保你的帳戶完成升級。"
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "處理時間比平常久。確認付款後，就會立即升級你的帳戶。"
 
 msgid "This payment has been refunded."
 msgstr "此筆付款已退款。"

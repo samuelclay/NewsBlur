@@ -6318,10 +6318,10 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Il s'agit déjà d'un flux RSS. Abonnement direct en cours."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
 msgstr ""
-"Cela prend plus de temps que d’habitude. Nous en avons été informés et veillerons à ce que votre compte "
-"passe à l’offre supérieure."
+"Cela prend plus de temps que d’habitude. Votre compte sera mis à niveau dès que votre paiement sera "
+"confirmé."
 
 msgid "This payment has been refunded."
 msgstr "Ce paiement a été remboursé."

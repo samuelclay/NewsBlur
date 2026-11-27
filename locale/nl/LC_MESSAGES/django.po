@@ -6199,10 +6199,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Dit is al een RSS-feed. Er wordt rechtstreeks op geabonneerd."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr ""
-"Dit duurt langer dan normaal. We zijn op de hoogte gebracht en zorgen ervoor dat je account wordt "
-"geüpgraded."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Dit duurt langer dan normaal. Je account wordt geüpgraded zodra je betaling is bevestigd."
 
 msgid "This payment has been refunded."
 msgstr "Deze betaling is terugbetaald."

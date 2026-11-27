@@ -5668,8 +5668,8 @@ msgstr "这是一个为你打造的个人网站，你可以自定义设置。你
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "这已经是 RSS 订阅源。正在直接订阅。"
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "处理时间比平时长。我们已收到通知，并会确保你的账户完成升级。"
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "处理时间比平时长。确认付款后，你的账户将立即升级。"
 
 msgid "This payment has been refunded."
 msgstr "此笔款项已退款。"

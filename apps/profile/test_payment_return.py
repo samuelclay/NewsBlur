@@ -24,8 +24,10 @@ class Test_PaymentReturn(TestCase):
         )
         self.client = Client(HTTP_USER_AGENT="Mozilla/5.0")
         self.client.login(username="returning", password="password")
-        # The minute-long hold on reading the provider outlives a test run, and user ids repeat across runs.
-        cache.delete("payment_return_sync:%s" % self.user.pk)
+        # The minute-long holds on reading the provider outlive a test run, and user ids repeat across runs.
+        cache.delete_many(
+            ["payment_return_sync:%s:%s" % (self.user.pk, stage) for stage in ("early", "last")]
+        )
 
     def _set_plan(self, **flags):
         Profile.objects.filter(user=self.user).update(**flags)
@@ -102,17 +104,17 @@ class Test_PaymentReturn(TestCase):
         self.assertTrue(status["ready"])
         self.assertEqual(status["code"], 0)
 
-    def test_polls_within_a_minute_share_one_read_of_the_provider(self):
+    def test_repeated_polls_share_a_read_and_the_last_poll_gets_a_fresh_one(self):
         self._set_plan(is_premium=True, is_premium_trial=False)
 
         with patch.object(Profile, "setup_premium_history") as sync:
             self._status(plan="pro", retries=PAYMENT_RETURN_SYNC_RETRY)
             self._status(plan="pro", retries=PAYMENT_RETURN_SYNC_RETRY)
-            last = self._status(plan="pro", retries=PAYMENT_RETURN_LAST_RETRY)
+            self.assertEqual(sync.call_count, 1)
 
-        sync.assert_called_once()
-        self.assertEqual(last["code"], -1, "the last poll still stops the page and tells staff")
-        self.assertEqual(len(mail.outbox), 1)
+            self._status(plan="pro", retries=PAYMENT_RETURN_LAST_RETRY)
+            self._status(plan="pro", retries=PAYMENT_RETURN_LAST_RETRY)
+            self.assertEqual(sync.call_count, 2, "the last poll reads the provider once more, and only once")
 
     def test_a_provider_that_cannot_be_reached_leaves_the_page_waiting(self):
         self._set_plan(is_premium=True, is_premium_trial=False)

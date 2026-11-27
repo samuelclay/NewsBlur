@@ -908,9 +908,12 @@ def profile_is_premium(request):
 
     profile = Profile.objects.get(user=request.user)
     plan_active = payment_return_plan_active(profile, plan)
-    sync_due = retries == PAYMENT_RETURN_SYNC_RETRY or retries >= PAYMENT_RETURN_LAST_RETRY
-    # cache.add is false while the last sync is under a minute old, so open tabs and repeated polls share one.
-    if not plan_active and sync_due and cache.add("payment_return_sync:%s" % request.user.pk, True, 60):
+    last_poll = retries >= PAYMENT_RETURN_LAST_RETRY
+    # The early read and the last one each get their own minute-long hold, so open tabs and repeated polls
+    # share a read while the last poll still gets a fresh one.
+    sync_key = "payment_return_sync:%s:%s" % (request.user.pk, "last" if last_poll else "early")
+    sync_due = retries == PAYMENT_RETURN_SYNC_RETRY or last_poll
+    if not plan_active and sync_due and cache.add(sync_key, True, 60):
         # The provider's notification is late, so read the account's subscriptions from Stripe and
         # PayPal now (apps/profile/models.py setup_premium_history).
         try:
@@ -925,7 +928,7 @@ def profile_is_premium(request):
     activated_subs = subs.filter(active=True).count()
 
     code = 0
-    if retries >= PAYMENT_RETURN_LAST_RETRY:
+    if last_poll:
         code = -1
         if not plan_active:
             plan_names = {

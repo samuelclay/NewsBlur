@@ -6257,8 +6257,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Це вже RSS-стрічка. Підписуємося безпосередньо."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "Це триває довше, ніж зазвичай. Нас уже сповістили, і ми подбаємо про оновлення вашого облікового запису."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Це триває довше, ніж зазвичай. Ваш план буде оновлено, щойно платіж підтвердять."
 
 msgid "This payment has been refunded."
 msgstr "Кошти за цей платіж повернуто."

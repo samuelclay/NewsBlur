@@ -6044,8 +6044,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "นี่เป็นฟีด RSS อยู่แล้ว กำลังสมัครรับโดยตรง"
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "ใช้เวลานานกว่าปกติ เราได้รับแจ้งแล้วและจะดำเนินการอัปเกรดบัญชีของคุณ"
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "ใช้เวลานานกว่าปกติ การอัปเกรดบัญชีจะเสร็จสิ้นทันทีที่ยืนยันการชำระเงินแล้ว"
 
 msgid "This payment has been refunded."
 msgstr "คืนเงินสำหรับการชำระเงินนี้แล้ว"

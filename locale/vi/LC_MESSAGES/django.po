@@ -6137,10 +6137,10 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Đây đã là nguồn cấp dữ liệu RSS. Đang đăng ký trực tiếp."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
 msgstr ""
-"Việc này mất nhiều thời gian hơn bình thường. Chúng tôi đã được thông báo và sẽ đảm bảo tài khoản của bạn "
-"được nâng cấp."
+"Quá trình này đang lâu hơn bình thường. Tài khoản của bạn sẽ được nâng cấp ngay khi thanh toán được xác "
+"nhận."
 
 msgid "This payment has been refunded."
 msgstr "Khoản thanh toán này đã được hoàn tiền."

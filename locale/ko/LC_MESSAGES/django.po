@@ -5787,8 +5787,8 @@ msgstr "이곳은 회원님을 위해 만들어진, 직접 꾸밀 수 있는 개
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "이미 RSS 피드입니다. 바로 구독합니다."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "평소보다 시간이 더 걸리고 있습니다. 알림을 받았으며 계정이 업그레이드되도록 조치하겠습니다."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "평소보다 시간이 오래 걸리고 있습니다. 결제가 확인되는 즉시 계정이 업그레이드됩니다."
 
 msgid "This payment has been refunded."
 msgstr "결제가 환불되었습니다."

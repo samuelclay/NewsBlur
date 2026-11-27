@@ -6201,10 +6201,10 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Ini sudah merupakan feed RSS. Berlangganan langsung."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
 msgstr ""
-"Proses ini memerlukan waktu lebih lama dari biasanya. Kami telah diberi tahu dan akan memastikan paket akun"
-" Anda ditingkatkan."
+"Proses ini memakan waktu lebih lama dari biasanya. Akun Anda akan ditingkatkan segera setelah pembayaran "
+"dikonfirmasi."
 
 msgid "This payment has been refunded."
 msgstr "Pembayaran ini telah dikembalikan."

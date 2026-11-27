@@ -6164,8 +6164,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Bu zaten bir RSS akışı. Doğrudan abone olunuyor."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "Bu işlem normalden uzun sürüyor. Bize haber verildi; hesabınızın yükseltildiğinden emin olacağız."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Bu işlem normalden uzun sürüyor. Ödemeniz onaylanır onaylanmaz hesabınız yükseltilecek."
 
 msgid "This payment has been refunded."
 msgstr "Bu ödeme iade edildi."

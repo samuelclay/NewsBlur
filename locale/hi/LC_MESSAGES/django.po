@@ -6164,10 +6164,8 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "यह पहले से ही RSS फ़ीड है। सीधे सदस्यता ली जा रही है।"
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr ""
-"इसमें सामान्य से अधिक समय लग रहा है। हमें सूचित कर दिया गया है और हम सुनिश्चित करेंगे कि आपका खाता अपग्रेड "
-"हो जाए।"
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "इसमें सामान्य से ज़्यादा समय लग रहा है। भुगतान की पुष्टि होते ही आपका खाता अपग्रेड कर दिया जाएगा।"
 
 msgid "This payment has been refunded."
 msgstr "यह भुगतान वापस कर दिया गया है।"

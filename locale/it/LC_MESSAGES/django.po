@@ -6230,10 +6230,10 @@ msgstr ""
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Questo è già un feed RSS. Iscrizione diretta in corso."
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
 msgstr ""
-"Ci sta mettendo più tempo del solito. Ci è stata inviata una notifica e ci assicureremo che il tuo account "
-"venga aggiornato."
+"L'operazione sta richiedendo più tempo del solito. Il tuo account passerà al nuovo piano non appena il "
+"pagamento sarà confermato."
 
 msgid "This payment has been refunded."
 msgstr "Questo pagamento è stato rimborsato."

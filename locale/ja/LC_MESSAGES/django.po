@@ -5618,8 +5618,8 @@ msgstr "これはあなたのために作られた、自由にカスタマイズ
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "これはすでにRSSフィードです。直接購読します。"
 
-msgid "This is taking longer than usual. We've been notified and will make sure your account is upgraded."
-msgstr "通常より時間がかかっています。通知を受け取りましたので、アカウントがアップグレードされるよう対応いたします。"
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "通常より時間がかかっています。お支払いが確認され次第、アカウントはアップグレードされます。"
 
 msgid "This payment has been refunded."
 msgstr "このお支払いは返金されました。"
