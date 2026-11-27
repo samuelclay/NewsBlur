@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "Đã có tài khoản? Đăng nhập";
 "Already have feeds?" = "Bạn đã có nguồn cấp?";
 "Also published by %@ sites" = "Cũng được đăng trên %@ trang";
+"Always show story navigation" = "Luôn hiển thị điều hướng bài viết";
 "Analyze" = "Phân tích";
 "Analyzing images..." = "Đang phân tích hình ảnh...";
 "App Badge" = "Huy hiệu ứng dụng";
@@ -509,6 +510,7 @@
 "Interactions" = "Tương tác";
 "Invalid: %@" = "Không hợp lệ: %@";
 "Invoice" = "Hóa đơn";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "Giữ các nút Trước, Tiếp và những nút đọc khác luôn hiển thị khi cuộn.";
 "Keep fades, without movement." = "Giữ hiệu ứng mờ dần, không chuyển động.";
 "Keeps the dark icon no matter how your device is set." = "Luôn giữ biểu tượng tối bất kể thiết lập trên thiết bị của bạn.";
 "Keeps the light icon no matter how your device is set." = "Luôn dùng biểu tượng sáng bất kể cài đặt thiết bị của bạn.";

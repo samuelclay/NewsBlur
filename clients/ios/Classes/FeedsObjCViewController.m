@@ -2585,6 +2585,8 @@ static BOOL NBBoolPreferenceValue(id value) {
         [self.appDelegate.feedDetailViewController updateStoryTitleSwipePreference];
     } else if ([identifier isEqual:@"feed_title_swipe_right"] || [identifier isEqual:@"feed_title_swipe_left"] || [identifier isEqual:@"enable_feed_swipes"]) {
         [self reloadFeedTitlesTable];
+    } else if ([identifier isEqual:@"story_always_show_navigation"]) {
+        [self.appDelegate.storyPagesViewController changedAlwaysShowStoryNavigation];
     } else if ([identifier isEqual:@"story_clustering"]) {
         NSString *value = [[NSUserDefaults standardUserDefaults] boolForKey:@"story_clustering"] ? @"true" : @"false";
         [self saveProfilePreferenceWithKey:@"story_clustering" value:value];

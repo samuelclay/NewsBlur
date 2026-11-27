@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "Hai già un account? Accedi";
 "Already have feeds?" = "Hai già dei feed?";
 "Also published by %@ sites" = "Pubblicato anche da %@ siti";
+"Always show story navigation" = "Mostra sempre la navigazione tra gli articoli";
 "Analyze" = "Analizza";
 "Analyzing images..." = "Analisi delle immagini...";
 "App Badge" = "Badge dell'app";
@@ -509,6 +510,7 @@
 "Interactions" = "Interazioni";
 "Invalid: %@" = "Non valido: %@";
 "Invoice" = "Fattura";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "Mantieni visibili i pulsanti Precedente, Successivo e gli altri pulsanti di lettura mentre scorri.";
 "Keep fades, without movement." = "Mantieni le dissolvenze, senza movimento.";
 "Keeps the dark icon no matter how your device is set." = "Mantiene l'icona scura indipendentemente dalle impostazioni del dispositivo.";
 "Keeps the light icon no matter how your device is set." = "Mantiene l'icona chiara indipendentemente dalle impostazioni del dispositivo.";

@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "لديك حساب بالفعل؟ سجّل الدخول";
 "Already have feeds?" = "لديك خلاصات بالفعل؟";
 "Also published by %@ sites" = "نُشر أيضًا على %@ مواقع";
+"Always show story navigation" = "إظهار التنقل بين القصص دائمًا";
 "Analyze" = "تحليل";
 "Analyzing images..." = "جارٍ تحليل الصور...";
 "App Badge" = "شارة التطبيق";
@@ -509,6 +510,7 @@
 "Interactions" = "التفاعلات";
 "Invalid: %@" = "غير صالح: %@";
 "Invoice" = "فاتورة";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "أبقِ زري السابق والتالي وأزرار القراءة الأخرى ظاهرة أثناء التمرير.";
 "Keep fades, without movement." = "الاحتفاظ بالتلاشي دون حركة.";
 "Keeps the dark icon no matter how your device is set." = "يُبقي الأيقونة داكنة مهما كان إعداد جهازك.";
 "Keeps the light icon no matter how your device is set." = "يُبقي الأيقونة فاتحة مهما كانت إعدادات جهازك.";

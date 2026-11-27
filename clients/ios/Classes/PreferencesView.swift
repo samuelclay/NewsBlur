@@ -1019,6 +1019,13 @@ class PreferencesViewModel: ObservableObject {
                         subtitle: NBLocalization.text("Hide toolbars when reading")
                     ),
                     PreferenceItem(
+                        title: NBLocalization.text("Always show story navigation"),
+                        icon: "hand.tap",
+                        iconColor: .blue,
+                        type: .toggle(key: "story_always_show_navigation", defaultValue: false),
+                        subtitle: NBLocalization.text("Keep Previous, Next, and the other reading buttons visible while scrolling.")
+                    ),
+                    PreferenceItem(
                         title: NBLocalization.text("Hide status bar"),
                         icon: "rectangle.topthird.inset.filled",
                         iconColor: .indigo,

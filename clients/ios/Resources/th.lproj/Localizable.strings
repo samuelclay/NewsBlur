@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "มีบัญชีอยู่แล้วใช่ไหม? เข้าสู่ระบบ";
 "Already have feeds?" = "มีฟีดอยู่แล้วใช่ไหม";
 "Also published by %@ sites" = "เผยแพร่โดยเว็บไซต์อื่นอีก %@ แห่ง";
+"Always show story navigation" = "แสดงปุ่มนำทางบทความเสมอ";
 "Analyze" = "วิเคราะห์";
 "Analyzing images..." = "กำลังวิเคราะห์รูปภาพ...";
 "App Badge" = "ป้ายแอป";
@@ -509,6 +510,7 @@
 "Interactions" = "การโต้ตอบ";
 "Invalid: %@" = "ไม่ถูกต้อง: %@";
 "Invoice" = "ใบแจ้งหนี้";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "แสดงปุ่มก่อนหน้า ถัดไป และปุ่มอ่านอื่นๆ ไว้ขณะเลื่อนหน้า";
 "Keep fades, without movement." = "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว";
 "Keeps the dark icon no matter how your device is set." = "คงไอคอนสีเข้มไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";
 "Keeps the light icon no matter how your device is set." = "คงไอคอนสว่างไว้ไม่ว่าอุปกรณ์ของคุณจะตั้งค่าไว้อย่างไร";

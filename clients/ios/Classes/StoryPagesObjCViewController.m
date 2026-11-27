@@ -3794,6 +3794,16 @@
     self.autoscrollActive = self.autoscrollAvailable;
 }
 
+- (BOOL)alwaysShowsStoryNavigation {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"story_always_show_navigation"];
+}
+
+- (void)changedAlwaysShowStoryNavigation {
+    // StoryPagesObjCViewController.m brings back navigation that had already faded on the open story.
+    BOOL hasFeedOrFolder = appDelegate.storiesCollection.activeFeed != nil || appDelegate.storiesCollection.activeFolder != nil;
+    if (self.alwaysShowsStoryNavigation && hasFeedOrFolder) [self revealTraversalControls];
+}
+
 - (void)changedScrollOrientation {
     [self setNextPreviousButtons];
     // StoryPagesObjCViewController.m restores article interaction when changing the paging axis interrupts deceleration.

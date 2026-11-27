@@ -92,6 +92,7 @@
 @property (nonatomic, readonly) BOOL isNavigationBarHidden;
 @property (nonatomic, readonly) CGFloat navigationBarFadeAlpha;
 @property (nonatomic, readonly) BOOL allowFullscreen;
+@property (nonatomic, readonly) BOOL alwaysShowsStoryNavigation;
 @property (nonatomic, readonly) BOOL useCustomToolbar;
 @property (nonatomic, readonly) BOOL usesVerticalReaderToolbar;
 @property (nonatomic, readonly) UIBarButtonItem *settingsPresentationBarButton;
@@ -157,6 +158,7 @@
 - (void)changeLineSpacing:(NSString *)lineSpacing;
 - (void)changedFullscreen;
 - (void)changedAutoscroll;
+- (void)changedAlwaysShowStoryNavigation;
 - (void)changedScrollOrientation;
 - (void)updateStoriesTheme;
 - (void)updateStoriesDirection;

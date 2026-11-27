@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "Уже маєте обліковий запис? Увійти";
 "Already have feeds?" = "Уже маєте стрічки?";
 "Also published by %@ sites" = "Також опубліковано на %@ сайтах";
+"Always show story navigation" = "Завжди показувати навігацію між статтями";
 "Analyze" = "Аналізувати";
 "Analyzing images..." = "Аналіз зображень...";
 "App Badge" = "Значок програми";
@@ -509,6 +510,7 @@
 "Interactions" = "Взаємодії";
 "Invalid: %@" = "Недійсне значення: %@";
 "Invoice" = "Рахунок";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "Залишати кнопки «Назад», «Далі» та інші кнопки читання видимими під час прокручування.";
 "Keep fades, without movement." = "Зберегти плавну появу та зникнення без руху.";
 "Keeps the dark icon no matter how your device is set." = "Завжди використовує темну іконку, незалежно від налаштувань пристрою.";
 "Keeps the light icon no matter how your device is set." = "Завжди використовує світлу іконку, незалежно від налаштувань вашого пристрою.";

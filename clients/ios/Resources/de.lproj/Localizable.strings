@@ -168,6 +168,7 @@
 "Already have an account? Sign in" = "Du hast bereits ein Konto? Anmelden";
 "Already have feeds?" = "Hast du bereits Feeds?";
 "Also published by %@ sites" = "Ebenfalls veröffentlicht auf %@ Websites";
+"Always show story navigation" = "Artikelnavigation immer anzeigen";
 "Analyze" = "Analysieren";
 "Analyzing images..." = "Bilder werden analysiert…";
 "App Badge" = "App-Symbolkennzeichen";
@@ -509,6 +510,7 @@
 "Interactions" = "Interaktionen";
 "Invalid: %@" = "Ungültig: %@";
 "Invoice" = "Rechnung";
+"Keep Previous, Next, and the other reading buttons visible while scrolling." = "Vorherigen, Nächsten und die anderen Leseschaltflächen beim Scrollen sichtbar lassen.";
 "Keep fades, without movement." = "Überblendungen beibehalten, ohne Bewegung.";
 "Keeps the dark icon no matter how your device is set." = "Behält das dunkle Symbol unabhängig von den Geräteeinstellungen bei.";
 "Keeps the light icon no matter how your device is set." = "Behält das helle Symbol bei, unabhängig von den Geräteeinstellungen.";
