@@ -3232,3 +3232,78 @@ class Test_StripeWebhookSignature(TestCase):
 
     def test_without_a_secret_events_are_acted_on_as_sent(self):
         self.assertEqual(self.deliver(), (200, True))
+
+
+class Test_PaypalWebhookSignature(TestCase):
+    """apps/profile/views.py paypal_webhooks acts on a notification only once PayPal verifies it sent it to the
+    webhook settings.PAYPAL_WEBHOOK_ID names, and acts on it as sent while that setting is empty."""
+
+    WEBHOOK_ID = "WH-NEWSBLUR-TEST"
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="paypalsigned", email="paypalsigned@test.com")
+        self.event = {
+            "id": "WH-EVENT-1",
+            "event_type": "BILLING.SUBSCRIPTION.CREATED",
+            "resource": {"id": "I-SIGNED", "status": "APPROVAL_PENDING", "custom_id": str(self.user.pk)},
+        }
+        api = MagicMock()
+        api.post.side_effect = self.verify
+        api_patcher = patch("paypalrestsdk.Api", return_value=api)
+        api_patcher.start()
+        self.addCleanup(api_patcher.stop)
+
+    def signature(self, webhook_id, event):
+        return hashlib.sha256(("%s|%s" % (webhook_id, json.encode(event))).encode()).hexdigest()
+
+    def verify(self, url, data):
+        """PayPal's verify-webhook-signature: SUCCESS only for the signature PayPal made for this event and this
+        webhook."""
+        if url != "/v1/notifications/verify-webhook-signature":
+            raise AssertionError("PayPal has no POST %s" % url)
+        signed = data["transmission_sig"] == self.signature(data["webhook_id"], data["webhook_event"])
+        return {"verification_status": "SUCCESS" if signed else "FAILURE"}
+
+    def deliver(self, signature=None, event=None):
+        headers = {}
+        if signature:
+            headers = {
+                "HTTP_PAYPAL_TRANSMISSION_ID": "8f9a2e10-transmission",
+                "HTTP_PAYPAL_TRANSMISSION_TIME": "2026-11-27T08:00:00Z",
+                "HTTP_PAYPAL_TRANSMISSION_SIG": signature,
+                "HTTP_PAYPAL_CERT_URL": "https://api.paypal.com/v1/notifications/certs/CERT-1",
+                "HTTP_PAYPAL_AUTH_ALGO": "SHA256withRSA",
+            }
+        response = Client().post(
+            reverse("paypal-webhooks"),
+            json.encode(event or self.event),
+            content_type="application/json",
+            **headers
+        )
+        return response.status_code, self.user.paypal_ids.exists()
+
+    @override_settings(PAYPAL_WEBHOOK_ID=WEBHOOK_ID)
+    def test_only_a_notification_paypal_verifies_is_acted_on(self):
+        self.assertEqual(self.deliver(), (400, False))
+        self.assertEqual(self.deliver(self.signature("WH-SOMEONE-ELSE", self.event)), (400, False))
+        changed = dict(self.event, resource=dict(self.event["resource"], id="I-CHANGED"))
+        self.assertEqual(
+            self.deliver(self.signature(self.WEBHOOK_ID, self.event), event=changed), (400, False)
+        )
+
+        self.assertEqual(self.deliver(self.signature(self.WEBHOOK_ID, self.event)), (200, True))
+
+    def test_without_a_webhook_id_notifications_are_acted_on_and_each_is_reported_outside_development(self):
+        with patch("utils.log.error") as report:
+            # Development and tests say nothing.
+            self.assertEqual(self.deliver(), (200, True))
+            self.assertFalse(report.called)
+
+            with self.settings(DEBUG=False, TEST_DEBUG=False):
+                for subscription_id in ("I-SECOND", "I-THIRD"):
+                    event = dict(self.event, resource=dict(self.event["resource"], id=subscription_id))
+                    self.assertEqual(self.deliver(event=event)[0], 200)
+
+        self.assertEqual(self.user.paypal_ids.count(), 3)
+        self.assertEqual(report.call_count, 2)
+        self.assertNotIn("I-THIRD", str(report.call_args_list))

@@ -9,7 +9,12 @@ from django.utils.translation import gettext
 
 from apps.profile.models import Profile
 from apps.profile.tasks import EmailStaffNotification, EmailStaffPremiumUpgrade
-from apps.team.grants import activate_team, grant_team_pro
+from apps.team.grants import (
+    activate_team,
+    deactivate_team,
+    grant_team_pro,
+    release_team_pro,
+)
 from apps.team.models import Team, TeamMember, TeamProGrant
 from apps.team.tasks import EmailTeamWelcome
 from utils import log as logging
@@ -102,6 +107,29 @@ def _owners_team(user, plan, lapsed):
     if reason:
         return None, False, "on_team"
     return team, True, None
+
+
+def end_team_now(team):
+    """A payment for the team was taken back by a full refund, a dispute or a reversal, so the team ends at once
+    (apps/team/grants.py deactivate_team)."""
+    with transaction.atomic():
+        Team.objects.filter(pk=team.pk).update(paid_through=datetime.datetime.now())
+        deactivate_team(team)
+
+
+def end_team_switched_down(user, team, plan):
+    """The owner switched the team down to plan, and the month paid for has passed. The team ends and the owner is
+    on that plan, or on a higher one of their own they had besides (release_team_pro). Returns the plan they're
+    on."""
+    with transaction.atomic():
+        team = team.lock()
+        own_plan = release_team_pro(user, owner=True)
+        if not own_plan or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(own_plan):
+            own_plan = plan
+            Profile.objects.filter(user=user).update(**TeamProGrant.TIER_FLAGS[plan])
+        deactivate_team(team)
+        Team.objects.filter(pk=team.pk).update(pending_plan=None)
+    return own_plan
 
 
 def start_comp_team(owner, name, plan):

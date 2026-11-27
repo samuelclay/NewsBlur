@@ -66,6 +66,7 @@ Decided on 2026-11-26:
 - [x] On an ownership transfer, the old owner is refunded the unused part of their month when they paid by Stripe or PayPal. App Store and Play purchases cannot be refunded by us
 - [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
 - [x] Verifying payment notices and app purchases for every plan is part of step 3, on this PR
+- [x] If a provider's webhook signing secret is not configured in production, its notices are still handled, and each one reports an error so the missing secret cannot go unnoticed
 - [x] A team that is active must be paid for or comped. One that is neither, with no paid through date, is lapsed by the hourly task, and only the owner of a team that is paid for or comped is spared the nightly expiry
 - [x] Only staff can comp a team, and a comped team stays comped: a later payment for it changes nothing and staff are emailed
 - [x] A new team is named after its owner ("samuel's team") until the owner renames it
@@ -830,9 +831,16 @@ Stripe:
 
 PayPal:
 
-- [ ] Two monthly PayPal plans, live and sandbox, in `plan_to_paypal_plan_id` and in the upgrade dialog's copy of those ids
-- [ ] `paid_through` comes from the subscription's next billing time, only while it is active with no failed payments
-- [ ] Proration uses the real paid period, not 365 days
+- [x] The PayPal plans exist in live and sandbox, created 2026-11-27, monthly, in USD, on the product the Premium and Archive plans use:
+
+  | Plan | Live plan | Sandbox plan |
+  |---|---|---|
+  | Premium Team, $79 | `P-8S7370738J488325JNMEUTOI` | `P-26G78309H2256220LNMEUTOA` |
+  | Premium Team Enterprise, $129 | `P-82711566SE765874KNMEUTOI` | `P-4PW05904U2821301YNMEUTOI` |
+
+- [x] Both plans in `plan_to_paypal_plan_id`. The web client gets a team plan id from the server (`/team/paypal_plan`) only when the account may buy one
+- [x] `paid_through` comes from the subscription's next billing time, only while it is active with no failed payments
+- [x] Proration uses the real paid period, not 365 days
 
 App Store (iOS and macOS, one bundle id, one set of products):
 
@@ -991,7 +999,7 @@ Written before any code. Each one is a test.
 - [x] The AI filter usage subscription hides the team subscription
 - [ ] A team is started without a payment the provider confirms
 - [x] Two payment notices at once create the team twice
-- [ ] A team owner's switch between providers refunds most of a month
+- [x] A team owner's switch between providers refunds most of a month
 - [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
 - [ ] The old owner's store subscription keeps renewing the team after a transfer
 - [ ] A Play expiry notice for an upgraded token ends the team

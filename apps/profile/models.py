@@ -334,7 +334,23 @@ class Profile(models.Model):
             price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:
                 price = "P-1AE0908250058421JM565SVY"
+        elif plan == "team":
+            # models.py: $79/month "Premium Team", created 2026-11-27.
+            price = "P-8S7370738J488325JNMEUTOI"
+            if settings.DEBUG:
+                price = "P-26G78309H2256220LNMEUTOA"
+        elif plan == "team_enterprise":
+            # models.py: $129/month "Premium Team Enterprise", created 2026-11-27.
+            price = "P-82711566SE765874KNMEUTOI"
+            if settings.DEBUG:
+                price = "P-4PW05904U2821301YNMEUTOI"
         return price
+
+    @classmethod
+    def paypal_plan(cls, plan_id):
+        """The plan a PayPal plan id is for, as plan_to_paypal_plan_id names it, or None."""
+        plans = ("premium", "archive", "archive_extra", "pro", "team", "team_enterprise")
+        return next((plan for plan in plans if plan_id and plan_id == cls.plan_to_paypal_plan_id(plan)), None)
 
     @property
     def can_register_oauth_application(self):
@@ -1430,9 +1446,15 @@ class Profile(models.Model):
         paypal_api = self.paypal_api()
         if not paypal_api:
             return
+        from apps.team.paypal_billing import switch_start_time
+        from apps.team.stripe_billing import TEAM_PLANS
+
         paypal_return = reverse("paypal-return")
         if plan in ("archive", "archive_extra"):
             paypal_return = reverse("paypal-archive-return")
+        elif plan in TEAM_PLANS:
+            # models.py: the return page waits for the team (media/js/newsblur/payments/paypal_return.js).
+            paypal_return = f"{paypal_return}?plan={plan}"
 
         try:
             application_context = {
@@ -1445,14 +1467,17 @@ class Profile(models.Model):
                 application_context[
                     "return_url"
                 ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
-            paypal_subscription = paypal_api.post(
-                f"/v1/billing/subscriptions",
-                {
-                    "plan_id": Profile.plan_to_paypal_plan_id(plan),
-                    "custom_id": self.user.pk,
-                    "application_context": application_context,
-                },
-            )
+            subscription = {
+                "plan_id": Profile.plan_to_paypal_plan_id(plan),
+                "custom_id": self.user.pk,
+                "application_context": application_context,
+            }
+            # models.py: a switch down from a team plan PayPal bills starts once the month already paid for
+            # ends (apps/team/paypal_billing.py).
+            start_time = switch_start_time(self, plan)
+            if start_time:
+                subscription["start_time"] = start_time
+            paypal_subscription = paypal_api.post(f"/v1/billing/subscriptions", subscription)
         except paypalrestsdk.ResourceNotFound as e:
             logging.user(
                 self.user, f"~FRCouldn't create paypal subscription: {self.paypal_sub_id} {plan}: {e}"
@@ -1806,6 +1831,7 @@ class Profile(models.Model):
                     f"~BY~SN~FRDeleting~FW duplicate paypal history: ~SB{deleted_paypal_payments} payments",
                 )
             paypal_api = self.paypal_api()
+            paypal_subscriptions = []
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
                 try:
@@ -1852,6 +1878,7 @@ class Profile(models.Model):
                     if not transactions or "transactions" not in transactions:
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
+                    paypal_subscriptions.append((paypal_subscription, transactions["transactions"]))
                     for transaction in transactions["transactions"]:
                         created = dateutil.parser.parse(transaction["time"]).date()
                         if transaction["status"] not in ["COMPLETED", "PARTIALLY_REFUNDED", "REFUNDED"]:
@@ -1896,6 +1923,14 @@ class Profile(models.Model):
                             )
                         except PaymentHistory.MultipleObjectsReturned:
                             pass  # Duplicate records exist, skip
+
+            # models.py: a team subscription PayPal shows as paid starts or renews the owner's team, and while a
+            # team plan decides the account's plan no PayPal plan is activated below (apps/team/paypal_billing.py).
+            from apps.team import paypal_billing
+
+            if paypal_billing.sync_team_subscriptions(self, paypal_subscriptions):
+                team_billed = True
+                active_plan = None
         else:
             logging.user(self.user, "~FBNo Paypal payments")
 
@@ -2346,6 +2381,16 @@ class Profile(models.Model):
                     )
                     self.cancel_premium_paypal()
 
+        if (
+            provider == "paypal"
+            and isinstance(refunded, int)
+            and Team.objects.filter(
+                owner_id=self.user_id, status=Team.STATUS_ACTIVE, billing_provider=Team.PROVIDER_PAYPAL
+            ).exists()
+        ):
+            # models.py: the sync ends at once a team this payment was for (apps/team/paypal_billing.py).
+            self.setup_premium_history()
+
         return refunded
 
     def refund_latest_stripe_payment(self, partial=False):
@@ -2429,10 +2474,14 @@ class Profile(models.Model):
         if prorate:
             transaction_date = dateutil.parser.parse(transaction["time"])
             days_since = (datetime.datetime.now() - transaction_date.replace(tzinfo=None)).days
-            if days_since < 365:
-                days_left = 365 - days_since
-                pct_left = days_left / 365
+            period_days = self.paypal_paid_period_days(paypal_api, paypal_sub_id, transaction_date)
+            if days_since < period_days:
+                days_left = period_days - days_since
+                pct_left = days_left / period_days
                 refund_amount = pct_left * refund_amount
+            elif period_days < 365:
+                logging.user(self.user, f"~FRNothing left of the paypal payment's month: ~SB{transaction}")
+                return
             else:
                 logging.user(self.user, f"~FRCouldn't prorate paypal payment, too old: ~SB{transaction}")
         try:
@@ -2468,6 +2517,23 @@ class Profile(models.Model):
             refunded = response
 
         return refunded
+
+    def paypal_paid_period_days(self, paypal_api, paypal_sub_id, paid_at):
+        """The days a payment made at paid_at pays for, from the billing cycle of the subscription's plan at
+        PayPal: the month after it for a monthly plan, and a year otherwise or when PayPal can't say, as for a
+        subscription made before PayPal had plans."""
+        try:
+            plan_id = paypal_api.get(f"/v1/billing/subscriptions/{paypal_sub_id}").get("plan_id")
+            plan = paypal_api.get(f"/v1/billing/plans/{plan_id}") if plan_id else {}
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            logging.user(self.user, f"~FRCouldn't read the paypal plan of {paypal_sub_id}: {e}")
+            return self.ANNUAL_PERIOD_DAYS
+        for cycle in plan.get("billing_cycles") or []:
+            frequency = cycle.get("frequency") or {}
+            if cycle.get("tenure_type") == "REGULAR" and frequency.get("interval_unit") == "MONTH":
+                months = int(frequency.get("interval_count") or 1)
+                return (paid_at + dateutil.relativedelta.relativedelta(months=months) - paid_at).days
+        return self.ANNUAL_PERIOD_DAYS
 
     def refund_prorated_stripe_payment(self):
         """Refund a prorated portion of the latest Stripe payment based on unused days.
@@ -3023,14 +3089,18 @@ class Profile(models.Model):
 
     def paypal_api(self):
         if self.paypal_sub_id:
-            api = paypalrestsdk.Api(
-                {
-                    "mode": "sandbox" if settings.DEBUG else "live",
-                    "client_id": settings.PAYPAL_API_CLIENTID,
-                    "client_secret": settings.PAYPAL_API_SECRET,
-                }
-            )
-            return api
+            return Profile.paypal_app_api()
+
+    @staticmethod
+    def paypal_app_api():
+        """PayPal's REST API with NewsBlur's own credentials, for calls about no one account in particular."""
+        return paypalrestsdk.Api(
+            {
+                "mode": "sandbox" if settings.DEBUG else "live",
+                "client_id": settings.PAYPAL_API_CLIENTID,
+                "client_secret": settings.PAYPAL_API_SECRET,
+            }
+        )
 
     def _duplicate_store_receipt_reason(self, payment_provider, payment_identifier, renewal_window_days):
         """Why this store receipt should not create a payment, or None when it should.

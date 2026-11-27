@@ -13,6 +13,7 @@ import re
 from urllib.parse import urlencode
 
 import dateutil
+import paypalrestsdk
 import requests
 import stripe
 from django.conf import settings
@@ -77,7 +78,8 @@ from apps.social.models import (
     MSocialServices,
     MSocialSubscription,
 )
-from apps.team.models import team_owner_id
+from apps.team.models import Team, team_owner_id
+from apps.team.paypal_billing import refunded_sale_user, settled_by_team_sync
 from apps.team.stripe_billing import TEAM_PLANS, team_purchase_refusal
 from utils import json_functions as json
 from utils import log as logging
@@ -529,6 +531,37 @@ def find_paypal_user(data, custom_field="custom_id"):
     return None
 
 
+def _sent_by_paypal(request, data):
+    """views.py: with settings.PAYPAL_WEBHOOK_ID set, a notification is acted on only once PayPal's
+    verify-webhook-signature API confirms, from its transmission headers, that PayPal sent this event to that
+    webhook. Without it the notification is acted on as sent, and outside development and tests each one reports an
+    error, so a missing id is noticed."""
+    webhook_id = getattr(settings, "PAYPAL_WEBHOOK_ID", "")
+    if not webhook_id:
+        if not (settings.DEBUG or getattr(settings, "TEST_DEBUG", False)):
+            # views.py: one fixed message, without the notification, so Sentry keeps every report in one issue.
+            logging.error("PayPal webhook id is not configured, so a PayPal notification was not verified")
+        return True
+    headers = request.META
+    try:
+        response = Profile.paypal_app_api().post(
+            "/v1/notifications/verify-webhook-signature",
+            {
+                "auth_algo": headers.get("HTTP_PAYPAL_AUTH_ALGO", ""),
+                "cert_url": headers.get("HTTP_PAYPAL_CERT_URL", ""),
+                "transmission_id": headers.get("HTTP_PAYPAL_TRANSMISSION_ID", ""),
+                "transmission_sig": headers.get("HTTP_PAYPAL_TRANSMISSION_SIG", ""),
+                "transmission_time": headers.get("HTTP_PAYPAL_TRANSMISSION_TIME", ""),
+                "webhook_id": webhook_id,
+                "webhook_event": data,
+            },
+        )
+    except (paypalrestsdk.exceptions.ConnectionError, requests.exceptions.RequestException) as e:
+        logging.user(request, f" ---> Paypal webhook not verified, PayPal couldn't be asked: {e}")
+        return False
+    return response.get("verification_status") == "SUCCESS"
+
+
 def paypal_webhooks(request):
     try:
         data = json.decode(request.body)
@@ -545,6 +578,10 @@ def paypal_webhooks(request):
     if not data.get("event_type"):
         logging.user(request, f" ---> Paypal webhooks missing event_type, ignoring: {data}")
         return HttpResponse("OK")
+
+    if not _sent_by_paypal(request, data):
+        logging.user(request, f" ---> Paypal webhook refused, PayPal didn't verify it: {data['event_type']}")
+        return HttpResponse("Invalid signature.", status=400)
 
     logging.user(request, f" ---> Paypal webhooks {data['event_type']} data: {data}")
 
@@ -576,12 +613,16 @@ def paypal_webhooks(request):
             # users switching to PayPal — their active_provider was already "stripe",
             # so the cancel was skipped and the old Stripe sub kept auto-renewing.
             is_fresh_activation = data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
-            if is_fresh_activation:
+            # views.py: a team plan's subscription, or any while the account's team is paid for, is settled by
+            # setup_premium_history from what PayPal reports, without the refunds and cancellations here
+            # (apps/team/paypal_billing.py).
+            team_event = settled_by_team_sync(user.profile, data["resource"].get("plan_id"))
+            if is_fresh_activation and not team_event:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()
                 user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
-            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and not team_event:
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
         user = find_paypal_user(data, custom_field="custom")
@@ -589,6 +630,11 @@ def paypal_webhooks(request):
             user.profile.setup_premium_history()
     elif data["event_type"] == "PAYMENT.CAPTURE.REFUNDED":
         user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
+    elif data["event_type"] in ["PAYMENT.SALE.REFUNDED", "PAYMENT.SALE.REVERSED"]:
+        # views.py: these name only the sale, so whose it is comes from PayPal's record of the sale.
+        user = refunded_sale_user(data["resource"])
         if user:
             user.profile.setup_premium_history()
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
@@ -1177,6 +1223,10 @@ def switch_paypal_subscription(request):
     elif plan == "change_paypal":
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user, Team.PROVIDER_PAYPAL)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
 
     approve_url = request.user.profile.switch_paypal_subscription_approval_url(plan)
 
@@ -1192,6 +1242,8 @@ def switch_paypal_subscription(request):
     paypal_return = reverse("paypal-return")
     if plan in ("archive", "archive_extra"):
         paypal_return = reverse("paypal-archive-return")
+    elif plan in TEAM_PLANS:
+        paypal_return = "%s?%s" % (paypal_return, urlencode({"plan": plan}))
     return HttpResponseRedirect(paypal_return)
 
 
@@ -1666,8 +1718,12 @@ def payment_history(request):
             pass
 
     if paypal_api and not next_invoice and user.profile.premium_renewal and len(history):
+        # views.py: when PayPal says it bills next, which a payment's amount can't tell for a monthly plan or a
+        # prorated charge. A year after the last payment for a subscription PayPal can't read.
+        next_billing = Profile._parse_paypal_next_billing(user.profile.paypal_subscription_detail())
         next_invoice = dict(
-            payment_date=history[0].payment_date + dateutil.relativedelta.relativedelta(years=1),
+            payment_date=next_billing
+            or history[0].payment_date + dateutil.relativedelta.relativedelta(years=1),
             payment_amount=history[0].payment_amount,
             payment_provider="(scheduled)",
             scheduled=True,

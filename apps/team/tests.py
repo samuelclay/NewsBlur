@@ -1,13 +1,17 @@
+import copy
 import datetime
 import re
 import smtplib
 import threading
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
+from urllib.parse import urlencode
 
+import dateutil.parser
 import paypalrestsdk
 import redis
 import stripe
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
@@ -18,6 +22,7 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import dateformat
 from mongoengine.context_managers import switch_db
+from paypal.standard.ipn.models import PayPalIPN
 
 from apps.archive_assistant.models import MArchiveAssistantUsage
 from apps.ask_ai.models import MAITranscriptionUsage, MAskAIUsage
@@ -68,6 +73,7 @@ from apps.team.tasks import (
     EmailTeamWelcome,
     SendTeamInviteEmail,
     SettleOwnPlanOnJoin,
+    StopRenewalsMadeBefore,
     TeamProGrants,
 )
 from apps.webfeed.models import MWebFeedConfig
@@ -109,7 +115,7 @@ class TeamClientMixin:
             SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
         )
         # apps/team/tests.py: apply runs a task's retries in place too, and get() raises what its last try raised.
-        for task in (SettleOwnPlanOnJoin, EmailTeamPlanEnded):
+        for task in (SettleOwnPlanOnJoin, EmailTeamPlanEnded, StopRenewalsMadeBefore):
             self.patch(task, "delay", side_effect=lambda task=task, **kwargs: task.apply(kwargs=kwargs).get())
         self.patch(EmailTeamWelcome, "delay", side_effect=lambda team_id: EmailTeamWelcome(team_id))
         for task in (EmailNewPremiumTrial, EmailStaffPremiumUpgrade, EmailStaffNotification):
@@ -823,6 +829,16 @@ class TeamProMixin(TeamClientMixin):
         for _, callback in callbacks:
             callback()
         return result
+
+    def profile_post(self, user, path, **data):
+        """apps/team/tests.py: a POST to /profile/, with what it queued for after its commit run in place."""
+        return self.committed(self.client_for(user).post, "/profile/%s" % path, data)
+
+    def owned_team(self, user):
+        return Team.objects.filter(owner=user).first()
+
+    def staff_events(self):
+        return [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
 
 
 class Test_TeamProSeat(TeamProMixin, TestCase):
@@ -2298,12 +2314,6 @@ class Test_TeamLookupCost(TeamProMixin, TestCase):
 class Test_TeamBilling(TeamProMixin, TestCase):
     """apps/team/billing.py: a payment for a team plan that a provider confirmed."""
 
-    def owned_team(self, user):
-        return Team.objects.filter(owner=user).first()
-
-    def staff_events(self):
-        return [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
-
     def test_the_first_payment_starts_a_team_with_the_owner_on_pro_as_their_own_plan(self):
         buyer = self.reader("buyer", "free", feeds=2)
         paid_through = self.now + self.days(31)
@@ -2721,6 +2731,7 @@ class FakeStripeBilling:
             {
                 "id": "sub_%s" % index,
                 "object": "subscription",
+                "created": int((datetime.datetime.now() - datetime.timedelta(days=30)).timestamp()),
                 "customer": self.customer_id(user),
                 "status": status,
                 "cancel_at": None,
@@ -2941,19 +2952,6 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
             callback()
         self.assertEqual(response.status_code, 200)
 
-    def profile_post(self, user, path, **data):
-        """apps/team/tests.py: a POST to /profile/, with what it queued for after its commit run in place."""
-        queued = len(connection.run_on_commit)
-        response = self.client_for(user).post("/profile/%s" % path, data)
-        callbacks = connection.run_on_commit[queued:]
-        del connection.run_on_commit[queued:]
-        for _, callback in callbacks:
-            callback()
-        return response
-
-    def owned_team(self, user):
-        return Team.objects.filter(owner=user).first()
-
     def paid_through(self, subscription):
         return datetime.datetime.fromtimestamp(subscription.current_period_end)
 
@@ -2965,9 +2963,6 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
         self.assertEqual(self.owned_team(owner).billing_reference, subscription.id)
         return owner, subscription
-
-    def staff_events(self):
-        return [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
 
     def test_a_checkout_starts_one_team_whatever_order_its_events_arrive_in(self):
         buyer = self.reader("buyer", "free", feeds=2)
@@ -3333,3 +3328,658 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
 
         self.assertEqual(self.owned_team(owner).billing_provider, Team.PROVIDER_APP_STORE)
+
+
+def paypal_time(moment):
+    """apps/team/tests.py: a local time as PayPal writes times, in UTC to the second."""
+    return moment.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def local_time(paypal_moment):
+    return datetime.datetime.fromtimestamp(dateutil.parser.parse(paypal_moment).timestamp())
+
+
+class FakePayPalBilling:
+    """apps/team/tests.py: PayPal's records for every account in a test: subscriptions with their billing info and
+    transactions, plans with their billing cycles, and what creating, approving, charging, suspending and refunding
+    do there. A test that reaches PayPal's API anyway fails."""
+
+    MONTHLY_PLANS = ("pro", "team", "team_enterprise")
+    AMOUNTS = {
+        "premium": 36,
+        "archive": 99,
+        "archive_extra": 159,
+        "pro": 29,
+        "team": 79,
+        "team_enterprise": 129,
+    }
+
+    def __init__(self, test):
+        self.subscriptions = {}
+        self.transactions = {}
+        self.created = []
+        self.refunds = []
+        self.clock = datetime.datetime.now()
+        test.patch(profile_models.paypalrestsdk, "Api", return_value=self)
+        test.patch(
+            paypalrestsdk.api.Api, "http_call", side_effect=AssertionError("a test reached PayPal's API")
+        )
+
+    def plan(self, subscription):
+        return Profile.paypal_plan(subscription["plan_id"])
+
+    def subscribe(self, user, plan, created=None, start=None, status="ACTIVE"):
+        """A subscription to plan the account approved through PayPal's button, made at created or else just after
+        the last one. It bills from start, at once unless a switch scheduled it, and has no payment until charged.
+        """
+        if not created:
+            self.clock = created = max(datetime.datetime.now(), self.clock + datetime.timedelta(seconds=1))
+        subscription = {
+            "id": "I-%s%s" % (plan.upper().replace("_", ""), len(self.subscriptions) + 1),
+            "status": status,
+            "plan_id": Profile.plan_to_paypal_plan_id(plan),
+            "custom_id": str(user.pk),
+            "create_time": paypal_time(created),
+            "start_time": paypal_time(start or created),
+            "billing_info": {
+                "next_billing_time": paypal_time(start or created),
+                "failed_payments_count": 0,
+                "outstanding_balance": {"currency_code": "USD", "value": "0.0"},
+            },
+        }
+        self.subscriptions[subscription["id"]] = subscription
+        self.transactions[subscription["id"]] = []
+        return subscription
+
+    def known(self, user, subscription):
+        """The account paid through PayPal before, so its history sync reads this subscription."""
+        Profile.objects.filter(user=user).update(paypal_sub_id=subscription["id"])
+        PaypalIds.objects.create(user=user, paypal_sub_id=subscription["id"])
+
+    def approve(self, subscription):
+        subscription["status"] = "ACTIVE"
+        return subscription
+
+    def period(self, subscription):
+        if self.plan(subscription) in self.MONTHLY_PLANS:
+            return relativedelta(months=1)
+        return relativedelta(years=1)
+
+    def charge(self, subscription, at=None):
+        """PayPal collects the subscription's payment for the cycle starting at at, or now, and bills the next cycle
+        a period later."""
+        at = at or datetime.datetime.now()
+        amount = "%.2f" % self.AMOUNTS[self.plan(subscription)]
+        transaction = {
+            "id": "TX%s" % (sum(len(transactions) for transactions in self.transactions.values()) + 1),
+            "status": "COMPLETED",
+            "time": paypal_time(at),
+            "amount_with_breakdown": {"gross_amount": {"currency_code": "USD", "value": amount}},
+        }
+        # tests.py: PayPal lists a subscription's newest transaction first.
+        self.transactions[subscription["id"]].insert(0, transaction)
+        subscription["status"] = "ACTIVE"
+        subscription["billing_info"].update(
+            last_payment={"time": paypal_time(at), "amount": {"currency_code": "USD", "value": amount}},
+            next_billing_time=paypal_time(at + self.period(subscription)),
+            failed_payments_count=0,
+            outstanding_balance={"currency_code": "USD", "value": "0.0"},
+        )
+        return transaction
+
+    def fail_renewal(self, subscription):
+        """PayPal couldn't collect the next cycle's payment. It moves on to the cycle after and holds the amount as
+        outstanding."""
+        billing_info = subscription["billing_info"]
+        next_billing = local_time(billing_info["next_billing_time"])
+        billing_info["next_billing_time"] = paypal_time(next_billing + self.period(subscription))
+        billing_info["failed_payments_count"] += 1
+        billing_info["outstanding_balance"] = {
+            "currency_code": "USD",
+            "value": "%.2f" % self.AMOUNTS[self.plan(subscription)],
+        }
+
+    def take_back(self, subscription, status):
+        """PayPal took the subscription's latest payment back, refunded in its dashboard or reversed after a
+        dispute."""
+        transaction = self.transactions[subscription["id"]][0]
+        transaction["status"] = status
+        return transaction
+
+    def next_billing(self, subscription):
+        return local_time(subscription["billing_info"]["next_billing_time"])
+
+    def latest_payment(self, subscription):
+        return self.transactions[subscription["id"]][0]
+
+    def _transaction(self, transaction_id):
+        return next(
+            (subscription_id, transaction)
+            for subscription_id, transactions in self.transactions.items()
+            for transaction in transactions
+            if transaction["id"] == transaction_id
+        )
+
+    def get(self, url):
+        path = url.split("?")[0]
+        parts = path.strip("/").split("/")
+        if path.startswith("/v1/billing/subscriptions/") and path.endswith("/transactions"):
+            return {"transactions": copy.deepcopy(self.transactions[parts[3]])}
+        if path.startswith("/v1/billing/subscriptions/"):
+            if parts[3] not in self.subscriptions:
+                raise paypalrestsdk.ResourceNotFound(MagicMock())
+            return copy.deepcopy(self.subscriptions[parts[3]])
+        if path.startswith("/v1/billing/plans/"):
+            unit = "MONTH" if Profile.paypal_plan(parts[3]) in self.MONTHLY_PLANS else "YEAR"
+            return {
+                "id": parts[3],
+                "billing_cycles": [
+                    {"tenure_type": "REGULAR", "frequency": {"interval_unit": unit, "interval_count": 1}}
+                ],
+            }
+        if path.startswith("/v1/payments/sale/"):
+            subscription_id, transaction = self._transaction(parts[3])
+            return {"id": transaction["id"], "billing_agreement_id": subscription_id}
+        raise AssertionError("PayPal has no GET %s" % url)
+
+    def post(self, url, data):
+        path = url.split("?")[0]
+        parts = path.strip("/").split("/")
+        if path == "/v1/billing/subscriptions":
+            user = User.objects.get(pk=data["custom_id"])
+            start = local_time(data["start_time"]) if "start_time" in data else None
+            subscription = self.subscribe(
+                user, Profile.paypal_plan(data["plan_id"]), start=start, status="APPROVAL_PENDING"
+            )
+            self.created.append((data, subscription))
+            approve_url = (
+                "https://www.paypal.com/webapps/billing/subscriptions?ba_token=BA-%s" % subscription["id"]
+            )
+            return {"id": subscription["id"], "links": [{"rel": "approve", "href": approve_url}]}
+        if path.startswith("/v1/billing/subscriptions/") and path.endswith("/suspend"):
+            self.subscriptions[parts[3]]["status"] = "SUSPENDED"
+            return {}
+        if path.startswith("/v2/payments/captures/") and path.endswith("/refund"):
+            _, transaction = self._transaction(parts[3])
+            gross = float(transaction["amount_with_breakdown"]["gross_amount"]["value"])
+            refunded = float(data["amount"]["value"])
+            transaction["status"] = "REFUNDED" if refunded >= gross else "PARTIALLY_REFUNDED"
+            self.refunds.append((transaction["id"], data["amount"]["value"]))
+            return {"id": "REFUND-%s" % transaction["id"], "status": "COMPLETED"}
+        raise AssertionError("PayPal has no POST %s" % url)
+
+
+@override_settings(**USAGE_PRICES)
+class Test_TeamPayPalBilling(TeamProMixin, TestCase):
+    """apps/team/paypal_billing.py: team plans bought, renewed, switched, cancelled and refunded through PayPal."""
+
+    def setUp(self):
+        super().setUp()
+        self.paypal = FakePayPalBilling(self)
+        self.staff = User.objects.create_user(username="staff", is_staff=True)
+
+    def paypal_event(self, event_type, resource):
+        """apps/team/tests.py: a PayPal notification posted to the webhook, with what it queued for after its commit
+        run in place."""
+        response = self.committed(
+            Client().post,
+            reverse("paypal-webhooks"),
+            json.encode({"event_type": event_type, "resource": resource}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def subscription_event(self, event_type, subscription):
+        """BILLING.SUBSCRIPTION.* as PayPal sends it."""
+        resource = {key: subscription[key] for key in ("id", "status", "plan_id", "custom_id")}
+        self.paypal_event(event_type, resource)
+
+    def sale_completed(self, subscription):
+        """PAYMENT.SALE.COMPLETED for the subscription's latest payment."""
+        self.paypal_event(
+            "PAYMENT.SALE.COMPLETED",
+            {
+                "id": self.paypal.latest_payment(subscription)["id"],
+                "billing_agreement_id": subscription["id"],
+                "custom": subscription["custom_id"],
+            },
+        )
+
+    def team_owner(self, username, plan=Team.PLAN_TEAM, paid_at=None):
+        """apps/team/tests.py: an owner whose team a PayPal subscription bills, bought through PayPal's button and
+        paid at paid_at or now, and the subscription."""
+        owner = self.reader(username)
+        subscription = self.paypal.subscribe(owner, plan, created=paid_at)
+        self.paypal.charge(subscription, at=paid_at)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+        self.assertEqual(self.owned_team(owner).billing_reference, subscription["id"])
+        return owner, subscription
+
+    def own_subscriber(self, username, plan, paid_days_ago):
+        """apps/team/tests.py: someone paying for plan through PayPal on their own, last paid paid_days_ago, and the
+        subscription and that payment."""
+        paid_at = self.now - self.days(paid_days_ago)
+        user = self.reader(username, plan, premium_expire=paid_at + relativedelta(years=1))
+        subscription = self.paypal.subscribe(user, plan, created=paid_at)
+        payment = self.paypal.charge(subscription, at=paid_at)
+        self.paypal.known(user, subscription)
+        return user, subscription, payment
+
+    def month_left(self, amount, paid_days_ago):
+        """apps/team/tests.py: what is left of a month's payment made paid_days_ago, the month being the one after
+        that payment."""
+        paid_at = self.now - self.days(paid_days_ago)
+        month = (paid_at + relativedelta(months=1) - paid_at).days
+        return "%.2f" % (amount * (month - paid_days_ago) / month)
+
+    def test_a_purchase_starts_one_team_whatever_order_its_notices_arrive_in(self):
+        buyer = self.reader("buyer", "free", feeds=2)
+        subscription = self.paypal.subscribe(buyer, Team.PLAN_TEAM)
+
+        # PayPal activates the subscription before it has collected the first payment.
+        self.subscription_event("BILLING.SUBSCRIPTION.CREATED", subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+        self.assertIsNone(self.owned_team(buyer))
+        self.paypal.charge(subscription)
+        self.sale_completed(subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+        self.sale_completed(subscription)
+
+        [team] = Team.objects.filter(owner=buyer)
+        self.assertEqual(
+            (team.plan, team.status, team.billing_provider, team.billing_reference, team.paid_through),
+            (
+                Team.PLAN_TEAM,
+                Team.STATUS_ACTIVE,
+                Team.PROVIDER_PAYPAL,
+                subscription["id"],
+                self.paypal.next_billing(subscription),
+            ),
+        )
+        self.assertEqual(self.plan_of(buyer), "pro")
+        self.assertEqual(self.muted_sites(buyer), 0)
+        [welcome] = self.mail_to(buyer)
+        self.assertIn("?next=team", welcome.body)
+        EmailNewPremium.delay.assert_not_called()
+        EmailNewPremiumPro.delay.assert_not_called()
+        EmailStaffPremiumUpgrade.delay.assert_called_once_with(
+            user_id=buyer.pk, tier=Team.PLAN_TEAM, previous_tier="free"
+        )
+
+    def test_a_team_starts_only_from_a_payment_paypal_shows_for_this_account(self):
+        # The notices say the subscription is active and paid. PayPal says it is still waiting for approval.
+        buyer = self.reader("buyer")
+        pending = self.paypal.subscribe(buyer, Team.PLAN_TEAM, status="APPROVAL_PENDING")
+        self.paypal_event(
+            "BILLING.SUBSCRIPTION.ACTIVATED",
+            {
+                "id": pending["id"],
+                "status": "ACTIVE",
+                "plan_id": pending["plan_id"],
+                "custom_id": str(buyer.pk),
+            },
+        )
+        self.paypal_event(
+            "PAYMENT.SALE.COMPLETED",
+            {"id": "TX-1", "billing_agreement_id": pending["id"], "custom": str(buyer.pk)},
+        )
+        self.assertIsNone(self.owned_team(buyer))
+        self.assertEqual(self.plan_of(buyer), "free")
+
+        # An IPN reaches the account whose email the payer's PayPal account has, for a team another account bought.
+        payer = self.reader("payer")
+        bought = self.paypal.subscribe(self.reader("teamowner"), Team.PLAN_TEAM)
+        self.paypal.charge(bought)
+        self.patch(PayPalIPN, "_postback", return_value=b"VERIFIED")
+        self.committed(
+            Client().post,
+            reverse("paypal-ipn"),
+            urlencode(
+                {
+                    "txn_type": "recurring_payment",
+                    "txn_id": "TX-IPN-1",
+                    "recurring_payment_id": bought["id"],
+                    "custom": bought["custom_id"],
+                    "payer_email": payer.email,
+                    "payment_status": "Completed",
+                    "mc_gross": "79.00",
+                    "mc_currency": "USD",
+                    "charset": "utf-8",
+                }
+            ),
+            content_type="application/x-www-form-urlencoded",
+        )
+        self.assertEqual(Profile.objects.get(user=payer).paypal_sub_id, bought["id"])
+        self.assertIsNone(self.owned_team(payer))
+        self.assertEqual(self.plan_of(payer), "free")
+
+        # Someone on another team who buys one anyway gets no team, and staff are told.
+        member = self.reader("member")
+        self.join(member)
+        on_team = self.paypal.subscribe(member, Team.PLAN_TEAM)
+        self.paypal.charge(on_team)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", on_team)
+        self.assertIsNone(self.owned_team(member))
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team"])
+        EmailNewPremium.delay.assert_not_called()
+
+    def test_only_a_collected_renewal_moves_the_paid_period_and_a_later_one_brings_the_team_back(self):
+        owner, subscription = self.team_owner("teamowner", paid_at=self.now - self.days(25))
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+
+        self.paypal.charge(subscription)
+        self.sale_completed(subscription)
+        renewed_through = self.paypal.next_billing(subscription)
+        self.assertEqual(self.owned_team(owner).paid_through, renewed_through)
+
+        # The next renewal fails. PayPal moves on to the following cycle and holds the payment as outstanding.
+        self.paypal.fail_renewal(subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.UPDATED", subscription)
+        TeamProGrants()
+        team = self.owned_team(owner)
+        self.assertEqual((team.paid_through, team.status), (renewed_through, Team.STATUS_ACTIVE))
+
+        self.lapse(owner)
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+        self.assertEqual(self.plan_of(member), "free")
+
+        self.paypal.charge(subscription)
+        self.sale_completed(subscription)
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.paid_through), (Team.STATUS_ACTIVE, self.paypal.next_billing(subscription))
+        )
+        self.assertEqual(self.plan_of(member), "pro")
+
+    def test_switching_up_from_a_plan_of_the_owners_own_refunds_what_is_left_of_it(self):
+        subscriber, archive, archive_payment = self.own_subscriber("subscriber", "archive", paid_days_ago=100)
+
+        response = self.profile_post(subscriber, "switch_paypal_subscription", plan=Team.PLAN_TEAM)
+
+        [(request, team_subscription)] = self.paypal.created
+        self.assertIn(team_subscription["id"], response["Location"])
+        self.assertNotIn("start_time", request)
+        self.assertTrue(
+            request["application_context"]["return_url"].endswith("%s?plan=team" % reverse("paypal-return"))
+        )
+        self.paypal.approve(team_subscription)
+        self.paypal.charge(team_subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", team_subscription)
+
+        team = self.owned_team(subscriber)
+        self.assertEqual((team.plan, team.billing_reference), (Team.PLAN_TEAM, team_subscription["id"]))
+        self.assertEqual(self.plan_of(subscriber), "pro")
+        self.assertEqual(archive["status"], "SUSPENDED")
+        # 265 days of the $99 year were left.
+        self.assertEqual(self.paypal.refunds, [(archive_payment["id"], "71.88")])
+
+        # The Archive the team replaced was refunded, so there is no Archive to go back to.
+        self.lapse(subscriber)
+        self.assertEqual(self.plan_of(subscriber), "pro")
+        self.assertFalse(TeamProGrant.objects.filter(user=subscriber).exists())
+
+    def test_switching_up_between_team_plans_refunds_what_is_left_of_the_month(self):
+        owner, team_subscription = self.team_owner("teamowner", paid_at=self.now - self.days(20))
+        team_payment = self.paypal.latest_payment(team_subscription)
+
+        self.profile_post(owner, "switch_paypal_subscription", plan=Team.PLAN_TEAM_ENTERPRISE)
+
+        [(request, enterprise)] = self.paypal.created
+        self.assertNotIn("start_time", request)
+        self.paypal.approve(enterprise)
+        self.paypal.charge(enterprise)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", enterprise)
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.billing_reference, team.paid_through),
+            (Team.PLAN_TEAM_ENTERPRISE, enterprise["id"], self.paypal.next_billing(enterprise)),
+        )
+        self.assertEqual(team_subscription["status"], "SUSPENDED")
+        self.assertEqual(self.paypal.refunds, [(team_payment["id"], self.month_left(79, 20))])
+
+        # Refunding the rest of the old subscription's payment ends nothing, since it no longer bills the team.
+        self.paypal.take_back(team_subscription, "REFUNDED")
+        self.subscription_event("BILLING.SUBSCRIPTION.UPDATED", team_subscription)
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_ACTIVE)
+        self.assertFalse(TeamActivity.objects.filter(team=team, action="team_deactivated").exists())
+
+    def test_an_ordinary_switch_refunds_the_old_plan_for_what_is_left_of_the_period_it_bills(self):
+        pro, pro_subscription, pro_payment = self.own_subscriber("prouser", "pro", paid_days_ago=20)
+        premium, premium_subscription, premium_payment = self.own_subscriber(
+            "premiumuser", "premium", paid_days_ago=100
+        )
+
+        for user, subscription in ((pro, pro_subscription), (premium, premium_subscription)):
+            archive = self.paypal.subscribe(user, "archive")
+            self.paypal.charge(archive)
+            self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", archive)
+            self.assertEqual(subscription["status"], "SUSPENDED")
+
+        # Pro bills monthly, so 20 days in a year's proration would refund $27.41. Premium bills yearly.
+        self.assertEqual(
+            self.paypal.refunds,
+            [(pro_payment["id"], self.month_left(29, 20)), (premium_payment["id"], "26.14")],
+        )
+
+    def test_switching_down_keeps_the_team_until_the_paid_month_ends(self):
+        owner, team_subscription = self.team_owner("teamowner", plan=Team.PLAN_TEAM_ENTERPRISE)
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+        period_end = self.owned_team(owner).paid_through
+
+        self.profile_post(owner, "switch_paypal_subscription", plan="archive")
+        [(request, archive)] = self.paypal.created
+        self.assertEqual(local_time(request["start_time"]), period_end)
+        self.paypal.approve(archive)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", archive)
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.status, team.paid_through, team.pending_plan),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.STATUS_ACTIVE, period_end, "archive"),
+        )
+        self.assertEqual(Profile.objects.get(user=owner).canonical()["team_pending_plan"], "archive")
+        self.assertEqual(team_subscription["status"], "SUSPENDED")
+        self.assertEqual((self.plan_of(owner), self.plan_of(member)), ("pro", "pro"))
+
+        # Choosing again drops the earlier choice before it bills.
+        self.profile_post(owner, "switch_paypal_subscription", plan=Team.PLAN_TEAM)
+        _, team_switch = self.paypal.created[1]
+        self.paypal.approve(team_switch)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", team_switch)
+
+        self.assertEqual(archive["status"], "SUSPENDED")
+        self.assertEqual(self.owned_team(owner).pending_plan, Team.PLAN_TEAM)
+        self.assertEqual(self.paypal.refunds, [])
+
+    def test_a_switch_down_starts_the_lower_plan_once_paypal_collects_it_after_the_paid_month(self):
+        # All three months ended an hour ago.
+        paid_at = self.now - relativedelta(months=1) - datetime.timedelta(hours=1)
+        down, down_subscription = self.team_owner("down", paid_at=paid_at)
+        member = self.reader("member", "archive", premium_expire=self.now + self.days(100))
+        self.join(member, self.join_link_token(self.owned_team(down), down))
+        late, _ = self.team_owner("late", paid_at=paid_at)
+        enterprise, enterprise_subscription = self.team_owner(
+            "enterprise", plan=Team.PLAN_TEAM_ENTERPRISE, paid_at=paid_at
+        )
+
+        for owner, plan in ((down, "premium"), (late, "premium"), (enterprise, Team.PLAN_TEAM)):
+            self.profile_post(owner, "switch_paypal_subscription", plan=plan)
+        (_, premium), (_, late_premium), (_, team_switch) = self.paypal.created
+        for subscription in (premium, late_premium, team_switch):
+            self.paypal.approve(subscription)
+            self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+
+        # Premium starts only once PayPal has collected it.
+        self.assertEqual((self.owned_team(down).status, self.plan_of(down)), (Team.STATUS_ACTIVE, "pro"))
+        self.assertEqual(down_subscription["status"], "SUSPENDED")
+        self.paypal.charge(premium)
+        self.sale_completed(premium)
+
+        team = self.owned_team(down)
+        self.assertEqual((team.status, team.pending_plan), (Team.STATUS_INACTIVE, None))
+        self.assertEqual(self.plan_of(down), "premium")
+        self.assertEqual(self.plan_of(member), "archive")
+
+        # A team whose month ran out before PayPal collected the lower plan ends a day later as any team does, and
+        # the plan starts once PayPal collects it.
+        self.lapse(late)
+        self.assertEqual(self.plan_of(late), "pro")
+        self.paypal.charge(late_premium)
+        self.sale_completed(late_premium)
+        self.assertEqual(self.plan_of(late), "premium")
+        self.assertIsNone(self.owned_team(late).pending_plan)
+
+        # A switch between team plans bills the team from the new subscription's first payment.
+        self.assertEqual(self.owned_team(enterprise).pending_plan, Team.PLAN_TEAM)
+        self.paypal.charge(team_switch)
+        self.sale_completed(team_switch)
+
+        team = self.owned_team(enterprise)
+        self.assertEqual(
+            (team.plan, team.status, team.billing_reference, team.paid_through, team.pending_plan),
+            (
+                Team.PLAN_TEAM,
+                Team.STATUS_ACTIVE,
+                team_switch["id"],
+                self.paypal.next_billing(team_switch),
+                None,
+            ),
+        )
+        self.assertEqual(enterprise_subscription["status"], "SUSPENDED")
+        self.assertEqual(self.paypal.refunds, [])
+
+    def test_cancelling_runs_to_the_end_of_the_paid_month_and_keeps_the_team(self):
+        owner, subscription = self.team_owner("teamowner")
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+        paid_through = self.owned_team(owner).paid_through
+
+        self.profile_post(owner, "cancel_premium")
+        self.subscription_event("BILLING.SUBSCRIPTION.SUSPENDED", subscription)
+        TeamProGrants()
+
+        self.assertEqual(subscription["status"], "SUSPENDED")
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, paid_through))
+        self.assertEqual(self.plan_of(member), "pro")
+
+        self.lapse(owner)
+        team = self.owned_team(owner)
+        self.assertEqual(team.status, Team.STATUS_INACTIVE)
+        self.assertEqual(team.active_members().count(), 2)
+
+    def test_a_full_refund_or_a_reversal_ends_the_team_at_once(self):
+        refunded, _ = self.team_owner("refunded", paid_at=self.now - self.days(10))
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(refunded), refunded))
+        credited, _ = self.team_owner("credited", paid_at=self.now - self.days(10))
+        reversed_owner, reversed_subscription = self.team_owner("reversed")
+
+        # A prorated refund is a credit, not the end of the team.
+        self.profile_post(self.staff, "refund_premium", user_id=credited.pk, partial="true")
+        self.assertEqual(self.owned_team(credited).status, Team.STATUS_ACTIVE)
+
+        self.profile_post(self.staff, "refund_premium", user_id=refunded.pk)
+        team = self.owned_team(refunded)
+        self.assertEqual(team.status, Team.STATUS_INACTIVE)
+        self.assertLess(team.paid_through, datetime.datetime.now())
+        self.assertEqual(self.plan_of(member), "free")
+
+        reversal = self.paypal.take_back(reversed_subscription, "REVERSED")
+        self.paypal_event("PAYMENT.SALE.REVERSED", {"id": "REVERSAL-1", "sale_id": reversal["id"]})
+        self.assertEqual(self.owned_team(reversed_owner).status, Team.STATUS_INACTIVE)
+
+        # Later notices for the subscription, which PayPal still shows active, don't bring the team back.
+        self.subscription_event("BILLING.SUBSCRIPTION.UPDATED", reversed_subscription)
+        self.assertEqual(self.owned_team(reversed_owner).status, Team.STATUS_INACTIVE)
+
+    def test_a_teammate_or_an_owner_billed_elsewhere_gets_no_paypal_team_plan(self):
+        member = self.reader("member")
+        self.join(member)
+        store_owner = self.reader("storeowner")
+        self.pay(store_owner, self.now + self.days(20), provider=Team.PROVIDER_APP_STORE, reference="2000001")
+        stripe_owner = self.reader("stripeowner")
+        self.pay(stripe_owner, self.now + self.days(20))
+        refused = (
+            (member, "on_team"),
+            (store_owner, "team_billed_elsewhere"),
+            (stripe_owner, "team_billed_elsewhere"),
+            # Staff comp this one.
+            (self.owner, "team_billed_elsewhere"),
+        )
+        for buyer, reason in refused:
+            response = self.get(buyer, "paypal_plan", plan=Team.PLAN_TEAM_ENTERPRISE)
+            self.assertEqual((response["code"], response["reason"]), (-1, reason))
+            self.assertNotIn("plan_id", response)
+            response = self.profile_post(buyer, "switch_paypal_subscription", plan=Team.PLAN_TEAM_ENTERPRISE)
+            self.assertIn("team_purchase=%s" % reason, response["Location"])
+        self.assertEqual(self.paypal.created, [])
+
+        # Anyone else, and an owner whose team PayPal bills, is handed the plan to subscribe to.
+        paypal_owner, _ = self.team_owner("paypalowner")
+        for buyer in (self.reader("buyer"), paypal_owner):
+            response = self.get(buyer, "paypal_plan", plan=Team.PLAN_TEAM_ENTERPRISE)
+            self.assertEqual(response["plan_id"], Profile.plan_to_paypal_plan_id(Team.PLAN_TEAM_ENTERPRISE))
+
+    def test_a_paypal_purchase_stops_stripe_renewals_without_a_refund(self):
+        fake_stripe = FakeStripeBilling(self)
+        # One owner's team Stripe bills already; the other pays for Archive through Stripe.
+        stripe_owner = self.reader("stripeowner")
+        fake_stripe.known_customer(stripe_owner)
+        team_subscription = fake_stripe.subscribe(stripe_owner, Team.PLAN_TEAM)
+        stripe_paid_at = self.now - self.days(11)
+        fake_stripe.invoices[team_subscription.latest_invoice]["status_transitions"] = {
+            "paid_at": int(stripe_paid_at.timestamp())
+        }
+        self.pay(
+            stripe_owner, self.now + self.days(20), reference=team_subscription.id, paid_at=stripe_paid_at
+        )
+        archive_owner = self.reader("archiveowner", "archive", premium_expire=self.now + self.days(200))
+        fake_stripe.known_customer(archive_owner)
+        archive_subscription = fake_stripe.subscribe(archive_owner, "archive")
+
+        for owner, plan in ((stripe_owner, Team.PLAN_TEAM_ENTERPRISE), (archive_owner, Team.PLAN_TEAM)):
+            subscription = self.paypal.subscribe(owner, plan)
+            self.paypal.charge(subscription)
+            self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+            team = self.owned_team(owner)
+            self.assertEqual(
+                (team.plan, team.billing_provider, team.billing_reference),
+                (plan, Team.PROVIDER_PAYPAL, subscription["id"]),
+            )
+
+        self.assertTrue(team_subscription.cancel_at_period_end)
+        self.assertTrue(archive_subscription.cancel_at_period_end)
+        self.assertEqual([charge.amount_refunded for charge in fake_stripe.charges], [0, 0])
+        self.assertEqual(self.staff_events(), ["team_paid_twice"])
+        # The Archive paid for through Stripe was kept, and is the owner's plan again after the team.
+        self.lapse(archive_owner)
+        self.assertEqual(self.plan_of(archive_owner), "archive")
+
+    def test_a_stripe_renewal_that_wont_stop_is_retried_and_then_goes_to_staff(self):
+        fake_stripe = FakeStripeBilling(self)
+        owner = self.reader("archiveowner", "archive", premium_expire=self.now + self.days(200))
+        fake_stripe.known_customer(owner)
+        archive_subscription = fake_stripe.subscribe(owner, "archive")
+        fake_stripe.modify.side_effect = stripe.error.APIConnectionError("Stripe can't be reached")
+
+        subscription = self.paypal.subscribe(owner, Team.PLAN_TEAM)
+        self.paypal.charge(subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+
+        self.assertEqual(self.owned_team(owner).billing_reference, subscription["id"])
+        self.assertFalse(archive_subscription.cancel_at_period_end)
+        self.assertGreater(fake_stripe.modify.call_count, 1)
+        self.assertEqual(self.staff_events(), ["team_renewal_unconfirmed"])
+
+    def test_the_payments_list_shows_when_paypal_bills_next(self):
+        owner, subscription = self.team_owner("teamowner")
+
+        response = json.decode(self.client_for(owner).get(reverse("profile-payment-history")).content)
+
+        next_billing = dateutil.parser.parse(subscription["billing_info"]["next_billing_time"])
+        self.assertEqual(response["next_invoice"]["payment_date"], str(next_billing.replace(tzinfo=None)))

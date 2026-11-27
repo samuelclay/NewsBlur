@@ -514,6 +514,9 @@ STRIPE_PRICE_IMAGE_CLASSIFICATION = ""
 
 PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
 PAYPAL_API_SECRET = "YOUR-PAYPAL-API-SECRET"
+# The id of the PayPal webhook, which apps/profile/views.py paypal_webhooks asks PayPal to verify each notification
+# against. Outside development, each notification that arrives while it is empty reports an error.
+PAYPAL_WEBHOOK_ID = ""
 
 GOOGLE_PLAY_PACKAGE_NAME = "com.newsblur"
 GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None

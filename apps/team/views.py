@@ -6,9 +6,11 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy
 
+from apps.profile.models import Profile
 from apps.team.billing import start_comp_team
 from apps.team.grants import own_plan_on_join
 from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember
+from apps.team.stripe_billing import team_purchase_refusal
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
 from utils.view_functions import required_params
@@ -33,6 +35,10 @@ FAILURE_MESSAGES = {
     "removed_by_team": gettext_lazy("You were removed from this team. Ask a manager for a new invite."),
     "owner_cannot_leave": gettext_lazy("Transfer ownership to a teammate before you leave the team."),
     "team_inactive": gettext_lazy("This team's plan has ended, so it can't take new teammates right now."),
+    "on_team": gettext_lazy("You can only be on one team at a time. Leave your current team first."),
+    "team_billed_elsewhere": gettext_lazy(
+        "Your team is already paid for another way, so it can't be bought here."
+    ),
 }
 
 
@@ -111,6 +117,23 @@ def create_team(request):
     if reason:
         return _failure(reason)
     return _team_response(user, team.pk)
+
+
+@required_params("plan", method="GET")
+@ajax_login_required
+@json.json_view
+def paypal_plan(request):
+    """views.py: the PayPal plan a team purchase subscribes to. The upgrade dialog's PayPal button asks for it as it
+    opens PayPal, so the server decides who may buy a team there (apps/team/stripe_billing.py
+    team_purchase_refusal)."""
+    user = get_user(request)
+    plan = request.GET["plan"]
+    if plan not in dict(Team.PLAN_CHOICES):
+        return _failure("invalid_plan")
+    refusal = team_purchase_refusal(user, Team.PROVIDER_PAYPAL)
+    if refusal:
+        return _failure(refusal)
+    return {"code": 1, "plan": plan, "plan_id": Profile.plan_to_paypal_plan_id(plan)}
 
 
 @required_params("name", team_id=int)

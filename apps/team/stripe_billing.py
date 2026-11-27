@@ -6,31 +6,25 @@ team plan waits for the end of the month already paid for, through a Stripe subs
 import datetime
 
 import stripe
-from django.db import transaction
 
 from apps.profile.models import Profile
-from apps.team.billing import record_team_payment
-from apps.team.grants import deactivate_team, release_team_pro
-from apps.team.models import Team, TeamMember, TeamProGrant
+from apps.team.billing import end_team_now, end_team_switched_down, record_team_payment
+from apps.team.models import Team, TeamMember
 from utils import log as logging
 
 # stripe_billing.py: lowest first. Every other plan is below both.
 TEAM_PLANS = (Team.PLAN_TEAM, Team.PLAN_TEAM_ENTERPRISE)
 
 
-def team_purchase_refusal(user):
-    """Why this account can't buy a team plan on the web, or None. Someone holding a seat on another person's
-    team is on one team already, and a team another provider bills, or staff comp, is already paid for there. An
-    owner whose team Stripe bills switches between the two team plans."""
+def team_purchase_refusal(user, provider=Team.PROVIDER_STRIPE):
+    """Why this account can't buy a team plan on the web through provider, Stripe or PayPal, or None. Someone
+    holding a seat on another person's team is on one team already, and a team another provider bills, or staff
+    comp, is already paid for there. An owner whose team the same provider bills switches between the two team
+    plans."""
     membership = TeamMember.active_membership(user)
     if membership and membership.team.owner_id != user.pk:
         return "on_team"
-    if (
-        Team.paid_for(datetime.datetime.now())
-        .filter(owner=user)
-        .exclude(billing_provider=Team.PROVIDER_STRIPE)
-        .exists()
-    ):
+    if Team.paid_for(datetime.datetime.now()).filter(owner=user).exclude(billing_provider=provider).exists():
         return "team_billed_elsewhere"
     return None
 
@@ -181,9 +175,7 @@ def _end_team_now(user, subscription):
     team = _team_billed_by(user.pk, subscription.id).filter(status=Team.STATUS_ACTIVE).first()
     if not team:
         return
-    with transaction.atomic():
-        Team.objects.filter(pk=team.pk).update(paid_through=datetime.datetime.now())
-        deactivate_team(team)
+    end_team_now(team)
     logging.user(user, "~FRTeam %s ended: its Stripe payment was refunded or disputed" % team.pk)
 
 
@@ -194,14 +186,7 @@ def _end_team_switched_down(user, subscription, plan):
     team = _team_billed_by(user.pk, subscription.id).filter(status=Team.STATUS_ACTIVE).first()
     if not team or (team.paid_through and team.paid_through > datetime.datetime.now()):
         return False
-    with transaction.atomic():
-        team = team.lock()
-        own_plan = release_team_pro(user, owner=True)
-        if not own_plan or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(own_plan):
-            own_plan = plan
-            Profile.objects.filter(user=user).update(**TeamProGrant.TIER_FLAGS[plan])
-        deactivate_team(team)
-        Team.objects.filter(pk=team.pk).update(pending_plan=None)
+    own_plan = end_team_switched_down(user, team, plan)
     logging.user(user, "~FCTeam %s ended on its switch down to %s, now on %s" % (team.pk, plan, own_plan))
     return True
 

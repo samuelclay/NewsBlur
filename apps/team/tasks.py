@@ -70,6 +70,38 @@ def SettleOwnPlanOnJoin(self, grant_id, joined_at, subscription=None):
     )
 
 
+# tasks.py: queued once a PayPal subscription starts billing a team or is approved as a switch away from the team's
+# plan (apps/team/paypal_billing.py), with when that subscription was made. The account's Stripe and PayPal
+# subscriptions made before it stop renewing. One Stripe or PayPal can't stop or confirm stopped is retried, and after
+# the last retry staff are told, since the account would otherwise pay twice.
+@app.task(name="team-stop-renewals-made-before", bind=True, max_retries=3)
+def StopRenewalsMadeBefore(self, user_id, started_at):
+    # tasks.py: apps/team/paypal_billing.py imports this module.
+    from apps.team.paypal_billing import stop_renewals_made_before
+
+    user = User.objects.filter(pk=user_id).first()
+    if not user:
+        return
+    problem = "a renewal that isn't confirmed off"
+    try:
+        if stop_renewals_made_before(user, started_at):
+            return
+    except Exception as e:
+        logging.user(user, "~FRCouldn't stop renewals made before a team subscription: %r" % e)
+        problem = repr(e)
+    if self.request.retries < self.max_retries:
+        raise self.retry(
+            kwargs=dict(user_id=user_id, started_at=started_at), countdown=60 * 2**self.request.retries
+        )
+    EmailStaffNotification.delay(
+        event_type="team_renewal_unconfirmed",
+        subject="Renewal not confirmed off after a PayPal team change: %s" % user.username,
+        body="%s changed their team's plan through a PayPal subscription made at %s, but their Stripe or PayPal "
+        "subscriptions made before it could not be confirmed off (%s), so they may pay twice."
+        % (user.username, datetime.datetime.fromtimestamp(started_at), problem),
+    )
+
+
 # tasks.py: one task per teammate, queued once a lapse has committed (apps/team/grants.py deactivate_team), so a
 # failed send retries only its own recipient.
 @app.task(
