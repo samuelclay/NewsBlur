@@ -665,6 +665,12 @@ msgid "%(topic)s Subreddits"
 msgstr "%(topic)s सबरेडिट"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "%(total)s में से %(turned_on)s साइट चालू है"
+msgstr[1] "%(total)s में से %(turned_on)s साइटें चालू हैं"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s वापस"
 

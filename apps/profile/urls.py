@@ -24,7 +24,6 @@ urlpatterns = [
         r"^switch_paypal_subscription/?", views.switch_paypal_subscription, name="switch-paypal-subscription"
     ),
     url(r"^is_premium/?", views.profile_is_premium, name="profile-is-premium"),
-    url(r"^is_premium_archive/?", views.profile_is_premium_archive, name="profile-is-premium-archive"),
     url(r"^activate_premium_trial/?", views.activate_premium_trial, name="activate-premium-trial"),
     # url(r'^paypal_ipn/?', include('paypal.standard.ipn.urls'), name='paypal-ipn'),
     url(r"^paypal_ipn/?", views.paypal_ipn, name="paypal-ipn"),

@@ -601,6 +601,11 @@ msgid "%(topic)s Subreddits"
 msgstr "Subreddit %(topic)s"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "Đã bật %(turned_on)s trên tổng số %(total)s trang web"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s Quay lại"
 

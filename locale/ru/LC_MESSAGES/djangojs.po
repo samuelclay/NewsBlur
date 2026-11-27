@@ -738,6 +738,13 @@ msgid "%(topic)s Subreddits"
 msgstr "Сабреддиты: %(topic)s"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "Включён %(turned_on)s из %(total)s сайта"
+msgstr[1] "Включено %(turned_on)s из %(total)s сайтов"
+msgstr[2] "Включено %(turned_on)s из %(total)s сайтов"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s Назад"
 

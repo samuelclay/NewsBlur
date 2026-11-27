@@ -1,34 +1,285 @@
-/* ========== */
-/* = Paypal = */
-/* ========== */
+/* ================== */
+/* = Payment return = */
+/* ================== */
 
-.NB-paypal-return {
-    margin: 176px 0 0;
-    background-color: #D3E7BA;
-    border-top: 1px solid #A0A0A0;
-    border-bottom: 1px solid #A0A0A0;
-    padding: 24px 0;
-    background-image: linear-gradient(to top, rgb(188, 214, 167) 0%, rgb(223, 247, 212) 100%);
+/* templates/reader/payment_return.xhtml: the page shown after a checkout, a plan switch, a redeemed code
+   or a new trial. The account's own sites light up in the plan's color as they are turned on
+   (media/js/newsblur/payments/payment_return.js). Plan colors match the pricing tiers in static_pages.css. */
+
+.NB-payment-return {
+    /* -plan colors text and the check, -glow the light under each site that is on. */
+    --NB-payment-return-plan: #166534;
+    --NB-payment-return-glow: rgba(22, 163, 74, 0.55);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 78px);
+    padding: 48px 24px 96px;
     text-align: center;
 }
 
-.NB-paypal-return .NB-paypal-return-title {
-    font-size: 36px;
-    margin: 0 0 12px;
-    color: #303030;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+.NB-payment-return-plan-archive,
+.NB-payment-return-plan-archive_extra {
+    --NB-payment-return-plan: #115e59;
+    --NB-payment-return-glow: rgba(13, 148, 136, 0.55);
 }
 
-.NB-paypal-return .NB-paypal-return-subtitle {
-    font-size: 24px;
-    color: #324A15;
-    text-shadow: 1px 1px 0 rgba(255, 255, 255, .5);
+.NB-payment-return-plan-pro {
+    --NB-payment-return-plan: #9a3412;
+    --NB-payment-return-glow: rgba(234, 88, 12, 0.55);
 }
 
-.NB-paypal-return .NB-paypal-return-loading {
-    margin: 18px auto 0;
+.NB-payment-return-title {
+    max-width: 760px;
+    margin: 0 0 14px;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.5px;
+    color: #2d261a;
+    text-wrap: balance;
+}
+
+/* One line of status at a time: working, then ready, or slow when the account never catches up. */
+.NB-payment-return-status {
+    max-width: 560px;
+    min-height: 28px;
+    margin: 0 0 40px;
+    font-family: 'Chronicle Display A', 'Chronicle Display B', Georgia, serif;
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.45;
+    color: #705611;
+}
+
+.NB-payment-return-status p {
+    margin: 0;
+}
+
+.NB-payment-return-working {
+    animation: NB-payment-return-breathe 2.2s ease-in-out infinite;
+}
+
+/* A switch to another plan has already happened by the time this page loads, so nothing is "being upgraded". */
+.NB-payment-return-switched .NB-payment-return-working {
+    visibility: hidden;
+}
+
+.NB-payment-return-ready,
+.NB-payment-return-slow,
+.NB-payment-return.NB-ready .NB-payment-return-working,
+.NB-payment-return.NB-slow .NB-payment-return-working {
+    display: none;
+}
+
+.NB-payment-return.NB-ready .NB-payment-return-ready,
+.NB-payment-return.NB-slow .NB-payment-return-slow {
+    display: block;
+}
+
+.NB-payment-return-check {
+    margin: 0;
+    margin-inline-end: 4px;
+    vertical-align: -3px;
+    color: var(--NB-payment-return-plan);
+}
+
+.NB-payment-return-check path {
+    stroke-dasharray: 17;
+    stroke-dashoffset: 17;
+}
+
+.NB-payment-return.NB-ready .NB-payment-return-check path {
+    animation: NB-payment-return-draw 0.35s ease-out 0.1s forwards;
+}
+
+.NB-payment-return-continue {
+    display: inline-block;
+    margin: 20px 0 0;
+    padding: 12px 28px;
+    border-radius: 12px;
+    background: #D9A621;
+    font-family: 'Gotham Narrow A', 'Gotham Narrow B', sans-serif;
+    font-style: normal;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+body.NB-static a.NB-payment-return-continue,
+body.NB-static a.NB-payment-return-continue:hover {
+    color: white;
+}
+
+.NB-payment-return-continue:hover {
+    background: #C4941B;
+}
+
+.NB-payment-return-continue:focus-visible {
+    outline: 2px solid #2d261a;
+    outline-offset: 3px;
+}
+
+/* The account's sites, one tile each. A tile is dim until its site is turned on. */
+.NB-payment-return-sites {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 752px;
+    margin: 0 0 22px;
+}
+
+.NB-payment-return-site {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.26);
+    box-shadow: inset 0 0 0 1px rgba(45, 38, 26, 0.05);
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.NB-payment-return-site img {
+    display: block;
+    width: 16px;
     height: 16px;
-    width: 300px;
+    border-radius: 3px;
+    filter: grayscale(1);
+    opacity: 0.28;
+    transition: filter 0.4s ease, opacity 0.4s ease;
+}
+
+.NB-payment-return-site.NB-on {
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(45, 38, 26, 0.16), 0 9px 16px -6px var(--NB-payment-return-glow);
+    animation: NB-payment-return-pop 0.5s ease-out;
+}
+
+.NB-payment-return-site.NB-on img {
+    filter: none;
+    opacity: 1;
+}
+
+.NB-payment-return-count {
+    min-height: 20px;
+    margin: 0;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    color: rgba(45, 38, 26, 0.72);
+}
+
+.NB-payment-return-count b {
+    font-weight: 600;
+    color: var(--NB-payment-return-plan);
+}
+
+@keyframes NB-payment-return-breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes NB-payment-return-draw {
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes NB-payment-return-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.16); }
+    100% { transform: scale(1); }
+}
+
+.NB-dark .NB-payment-return {
+    --NB-payment-return-plan: #4ade80;
+    --NB-payment-return-glow: rgba(74, 222, 128, 0.5);
+}
+
+.NB-dark .NB-payment-return-plan-archive,
+.NB-dark .NB-payment-return-plan-archive_extra {
+    --NB-payment-return-plan: #2dd4bf;
+    --NB-payment-return-glow: rgba(45, 212, 191, 0.5);
+}
+
+.NB-dark .NB-payment-return-plan-pro {
+    --NB-payment-return-plan: #fb923c;
+    --NB-payment-return-glow: rgba(251, 146, 60, 0.5);
+}
+
+.NB-dark .NB-payment-return-title {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.NB-dark .NB-payment-return-status {
+    color: #FBDB9B;
+}
+
+.NB-dark .NB-payment-return-continue:focus-visible {
+    outline-color: white;
+}
+
+.NB-dark .NB-payment-return-site {
+    background-color: rgba(255, 255, 255, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.NB-dark .NB-payment-return-site.NB-on {
+    background-color: #f3f0e8;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 16px -6px var(--NB-payment-return-glow);
+}
+
+.NB-dark .NB-payment-return-count {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+@media (max-width: 600px) {
+    .NB-payment-return {
+        padding: 32px 16px 72px;
+    }
+
+    .NB-payment-return-title {
+        font-size: 30px;
+    }
+
+    .NB-payment-return-status {
+        margin-bottom: 28px;
+        font-size: 17px;
+    }
+
+    /* Nine tiles across at any phone width, five full rows; the count under them covers the rest. */
+    .NB-payment-return-site {
+        width: calc((100% - 64px) / 9 - 0.1px);
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .NB-payment-return-site:nth-child(n+46) {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .NB-payment-return-working,
+    .NB-payment-return-site.NB-on {
+        animation: none;
+    }
+
+    .NB-payment-return.NB-ready .NB-payment-return-check path {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+
+    .NB-payment-return-site,
+    .NB-payment-return-site img {
+        transition: none;
+    }
 }
 
 /* ========== */

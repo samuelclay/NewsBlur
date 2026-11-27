@@ -270,7 +270,7 @@ def redeem_code(request):
         if form.is_valid():
             gift_code = request.POST["gift_code"]
             MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-            return render(request, "reader/paypal_return.xhtml")
+            return render_payment_return(request)
 
     return render(
         request,
@@ -799,37 +799,62 @@ def paypal_form(request):
     return HttpResponse(form.render(), content_type="text/html")
 
 
-@login_required
-def paypal_return(request):
+# The plans a payment return page can wait for. "trial" is the premium trial.
+PAYMENT_RETURN_PLANS = ("trial", "premium", "archive", "archive_extra", "pro")
+# How many of the account's sites the return page shows.
+PAYMENT_RETURN_SITES = 100
+# The poll on which the return page reads the account's subscriptions from the payment provider, and
+# the poll on which it stops waiting.
+PAYMENT_RETURN_SYNC_RETRY = 8
+PAYMENT_RETURN_LAST_RETRY = 30
+
+
+def payment_return_sites(user):
+    """The account's most opened sites. The return page lights each one up once it is turned on."""
+    subs = UserSubscription.objects.filter(user=user).order_by("-feed_opens", "feed_id")
+    rows = subs.values("feed_id", "active", "user_title", "feed__feed_title")[:PAYMENT_RETURN_SITES]
+    return [
+        {
+            "feed_id": row["feed_id"],
+            "active": row["active"],
+            "title": row["user_title"] or row["feed__feed_title"] or "",
+        }
+        for row in rows
+    ]
+
+
+def render_payment_return(request, plan=None):
+    """The page shown after a checkout, a plan switch, a redeemed code or a new trial
+    (templates/reader/payment_return.xhtml). It polls profile_is_premium until the plan is on."""
+    if plan not in PAYMENT_RETURN_PLANS:
+        plan = None
     return render(
         request,
-        "reader/paypal_return.xhtml",
+        "reader/payment_return.xhtml",
         {
             "user_profile": request.user.profile,
+            "plan": plan,
+            "switched": is_true(request.GET.get("switched")),
+            "sites": payment_return_sites(request.user),
         },
     )
+
+
+@login_required
+def paypal_return(request):
+    # Stripe checkouts and plan switches land here too and name their plan in the query string.
+    return render_payment_return(request, plan=request.GET.get("plan"))
 
 
 @login_required
 def paypal_archive_return(request):
-    return render(
-        request,
-        "reader/paypal_archive_return.xhtml",
-        {
-            "user_profile": request.user.profile,
-        },
-    )
+    plan = request.GET.get("plan")
+    return render_payment_return(request, plan=plan if plan == "archive_extra" else "archive")
 
 
 @login_required
 def paypal_pro_return(request):
-    return render(
-        request,
-        "reader/paypal_pro_return.xhtml",
-        {
-            "user_profile": request.user.profile,
-        },
-    )
+    return render_payment_return(request, plan="pro")
 
 
 @login_required
@@ -846,63 +871,67 @@ def activate_premium_trial(request):
     if not success:
         return HttpResponseRedirect(reverse("index"))
 
-    return render(
-        request,
-        "reader/premium_trial_return.xhtml",
-        {
-            "user_profile": profile,
-        },
-    )
+    return render_payment_return(request, plan="trial")
+
+
+def payment_return_plan_active(profile, plan):
+    """Whether the account holds at least the plan its return page is waiting for."""
+    if plan == "pro":
+        return bool(profile.is_pro)
+    if plan == "archive_extra":
+        return bool(profile.is_archive_extra or profile.is_pro)
+    if plan == "archive":
+        return bool(profile.is_archive)
+    if plan == "trial":
+        return bool(profile.is_premium)
+    # Premium, or a return page that names no plan: paid Premium or anything above it. An account still
+    # on its trial has is_premium set as well, so the trial flag has to be gone.
+    return bool(profile.is_premium and not profile.is_premium_trial)
 
 
 @ajax_login_required
 @json.json_view
 def profile_is_premium(request):
-    # Check tries
-    code = 0
-    retries = int(request.GET["retries"])
+    """What the return page polls (media/js/newsblur/payments/payment_return.js). `ready` tells it to
+    leave: the plan is on, and the account's sites are either all on or their count stopped changing
+    since the last poll. Muted sites and sites past the plan's limit stay off, so the count of sites
+    turned on may never reach the total."""
+    plan = request.GET.get("plan")
+    if plan not in PAYMENT_RETURN_PLANS:
+        plan = None
+    try:
+        retries = int(request.GET.get("retries", 0))
+    except ValueError:
+        retries = 0
+
+    profile = Profile.objects.get(user=request.user)
+    plan_active = payment_return_plan_active(profile, plan)
+    if not plan_active and (retries == PAYMENT_RETURN_SYNC_RETRY or retries >= PAYMENT_RETURN_LAST_RETRY):
+        # The provider's notification is late, so read the account's subscriptions from Stripe and
+        # PayPal now (apps/profile/models.py setup_premium_history).
+        try:
+            profile.setup_premium_history()
+        except stripe.error.StripeError as e:
+            logging.user(request, "~FRPayment return couldn't read the Stripe subscription: %s" % e)
+        profile = Profile.objects.get(user=request.user)
+        plan_active = payment_return_plan_active(profile, plan)
 
     subs = UserSubscription.objects.filter(user=request.user)
     total_subs = subs.count()
     activated_subs = subs.filter(active=True).count()
 
-    if retries >= 30:
-        code = -1
-        if not request.user.profile.is_premium:
-            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
-            message = """User: %s (%s) -- Email: %s""" % (
-                request.user.username,
-                request.user.pk,
-                request.user.email,
-            )
-            mail_admins(subject, message)
-            request.user.profile.activate_premium()
-
-    profile = Profile.objects.get(user=request.user)
-    return {
-        "is_premium": profile.is_premium,
-        "is_premium_archive": profile.is_archive,
-        "code": code,
-        "activated_subs": activated_subs,
-        "total_subs": total_subs,
-    }
-
-
-@ajax_login_required
-@json.json_view
-def profile_is_premium_archive(request):
-    # Check tries
     code = 0
-    retries = int(request.GET["retries"])
-
-    subs = UserSubscription.objects.filter(user=request.user)
-    total_subs = subs.count()
-    activated_subs = subs.filter(feed__archive_subscribers__gte=1).count()
-
-    if retries >= 30:
+    if retries >= PAYMENT_RETURN_LAST_RETRY:
         code = -1
-        if not request.user.profile.is_premium_archive:
-            subject = "Premium archive activation failed: %s (%s/%s)" % (
+        if not plan_active:
+            plan_names = {
+                "trial": "Premium trial",
+                "archive": "Premium archive",
+                "archive_extra": "Premium archive extra",
+                "pro": "Premium pro",
+            }
+            subject = "%s activation failed: %s (%s/%s)" % (
+                plan_names.get(plan, "Premium"),
                 request.user,
                 activated_subs,
                 total_subs,
@@ -913,16 +942,23 @@ def profile_is_premium_archive(request):
                 request.user.email,
             )
             mail_admins(subject, message)
-            request.user.profile.activate_archive()
+            if not profile.is_premium:
+                profile.activate_premium()
+                profile = Profile.objects.get(user=request.user)
+                plan_active = payment_return_plan_active(profile, plan)
+                activated_subs = subs.filter(active=True).count()
 
-    profile = Profile.objects.get(user=request.user)
-
+    sites_settled = activated_subs >= total_subs or request.GET.get("activated") == str(activated_subs)
     return {
+        "code": code,
+        "ready": plan_active and sites_settled,
+        "plan_active": plan_active,
+        # Return pages loaded before payment_return.js read these two.
         "is_premium": profile.is_premium,
         "is_premium_archive": profile.is_archive,
-        "code": code,
         "activated_subs": activated_subs,
         "total_subs": total_subs,
+        "active_feed_ids": [site["feed_id"] for site in payment_return_sites(request.user) if site["active"]],
     }
 
 
@@ -1089,7 +1125,7 @@ def stripe_form(request):
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
 
     if success_updating:
-        return render(request, "reader/paypal_return.xhtml")
+        return render_payment_return(request)
 
     new_user_queue_count = RNewUserQueue.user_count()
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
