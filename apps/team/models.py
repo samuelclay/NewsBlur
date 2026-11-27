@@ -736,6 +736,11 @@ class TeamProGrant(models.Model):
     # models.py: the paid plan they had when the grant began never ends (an empty premium_expire). It goes back
     # without an end, even after a payment synced during the grant gave premium_expire a date.
     own_lifetime = models.BooleanField(null=True, blank=True)
+    # models.py: for a team's owner, when the plan they have on their own ends, as their premium_expire said when the
+    # grant began and moved by a credit given since (record_own_credit). Their premium_expire follows the team's
+    # paid period while they own it (apps/team/billing.py), so it can't say. Empty for a teammate, whose
+    # premium_expire the team never touches.
+    own_premium_expire = models.DateTimeField(null=True, blank=True)
     granted_date = models.DateTimeField(default=datetime.datetime.now)
 
     def __str__(self):
@@ -755,11 +760,11 @@ class TeamProGrant(models.Model):
         """The Profile flags of the plan this person has on their own, for code that compares a payment with it."""
         return SimpleNamespace(**self.TIER_FLAGS[self.own_tier])
 
-    def own_plan_on(self, profile, date):
-        """The plan this person is on by themselves on a date: their tier while premium_expire, their own paid
-        through date, covers it, their trial while it runs, and otherwise free."""
+    def own_plan_on(self, premium_expire, date):
+        """The plan this person is on by themselves on a date: their tier while premium_expire, when the plan they
+        have on their own ends, covers it, their trial while it runs, and otherwise free."""
         if self.own_tier in self.PAID_TIERS and (
-            self.own_lifetime or profile.premium_expire is None or profile.premium_expire > date
+            self.own_lifetime or premium_expire is None or premium_expire > date
         ):
             return self.own_tier
         if self.own_tier == self.TIER_TRIAL and self.own_trial_expire and self.own_trial_expire > date:
@@ -786,6 +791,21 @@ class TeamProGrant(models.Model):
         self.own_lifetime = False
         logging.user(self.user, "~FMTeam Pro: own plan is now %s" % own_tier)
         return True
+
+    def record_own_credit(self, days):
+        """A credit of days given to a team's owner while they hold team Pro (Profile.extend_premium_by_days) moves
+        the end of the plan they have on their own. A teammate's end is their premium_expire, which the credit
+        moves itself."""
+        if not TeamMember.objects.filter(pk=self.member_id, role=TeamMember.ROLE_OWNER).exists():
+            return
+        with transaction.atomic():
+            grant = TeamProGrant.objects.select_for_update().filter(pk=self.pk).first()
+            if not grant:
+                return
+            now = datetime.datetime.now()
+            own_premium_expire = max(grant.own_premium_expire or now, now) + datetime.timedelta(days=days)
+            TeamProGrant.objects.filter(pk=self.pk).update(own_premium_expire=own_premium_expire)
+        self.own_premium_expire = own_premium_expire
 
     def record_own_plan_ended(self):
         """A plan of the person's own expired or was cancelled while they held team Pro."""

@@ -6,10 +6,17 @@ team plan waits for the end of the month already paid for, through a Stripe subs
 import datetime
 
 import stripe
+from django.db import transaction
 
 from apps.profile.models import Profile
-from apps.team.billing import end_team_now, end_team_switched_down, record_team_payment
+from apps.team.billing import (
+    end_team_now,
+    end_team_switched_down,
+    finish_switch_down,
+    record_team_payment,
+)
 from apps.team.models import Team, TeamMember
+from apps.team.tasks import StopRenewalsMadeBefore
 from utils import log as logging
 
 # stripe_billing.py: lowest first. Every other plan is below both.
@@ -39,17 +46,20 @@ def is_team_subscription(profile, subscription_id, price_id):
 
 def sync_stripe_event(profile):
     """What a Stripe subscription or payment event runs. When the sync moves the team's billing to a Stripe
-    subscription, the web subscription that billed the team before, or the owner's own PayPal plan, stops renewing,
-    as when an account moves between Stripe and PayPal."""
+    subscription, every Stripe and PayPal subscription the account made before that payment stops renewing, the web
+    subscription that billed the team before and the owner's own plan, as when a PayPal subscription starts billing
+    the team (apps/team/paypal_billing.py). Stopping retries until Stripe and PayPal confirm it, and staff are told
+    when they can't (apps/team/tasks.py StopRenewalsMadeBefore)."""
     before = _team_billing(profile.user_id)
     profile.setup_premium_history()
     after = _team_billing(profile.user_id)
-    if not after or after[0] != Team.PROVIDER_STRIPE or after == before:
+    if not after or after[0] != Team.PROVIDER_STRIPE or not after[1] or after[:2] == (before or ())[:2]:
         return
-    if before and before[0] == Team.PROVIDER_STRIPE:
-        profile.cancel_premium_stripe(subscription_ids=[before[1]])
-    elif profile.paypal_sub_id:
-        profile.cancel_premium_paypal()
+    user_id, subscription_id = profile.user_id, after[1]
+    started_at = (after[2] or datetime.datetime.now()).timestamp()
+    transaction.on_commit(
+        lambda: StopRenewalsMadeBefore.delay(user_id=user_id, started_at=started_at, kept_id=subscription_id)
+    )
 
 
 def sync_team_subscriptions(profile, subscriptions):
@@ -101,7 +111,11 @@ def release_schedule(subscription):
 
 
 def _team_billing(user_id):
-    return Team.objects.filter(owner_id=user_id).values_list("billing_provider", "billing_reference").first()
+    return (
+        Team.objects.filter(owner_id=user_id)
+        .values_list("billing_provider", "billing_reference", "last_payment_date")
+        .first()
+    )
 
 
 def _team_billed_by(user_id, subscription_id):
@@ -144,7 +158,7 @@ def _apply_team_subscription(user, subscription, plan):
             replaces_own_plan=replaces_own_plan,
         )
     elif status == "reversed":
-        _end_team_now(user, subscription)
+        _end_team_now(user, subscription, invoice)
     _team_billed_by(user.pk, subscription.id).update(pending_plan=_scheduled_plan(subscription))
 
 
@@ -171,24 +185,37 @@ def _paid_period(subscription):
     return "paid", datetime.datetime.fromtimestamp(period_end), invoice
 
 
-def _end_team_now(user, subscription):
-    team = _team_billed_by(user.pk, subscription.id).filter(status=Team.STATUS_ACTIVE).first()
-    if not team:
-        return
-    end_team_now(team)
-    logging.user(user, "~FRTeam %s ended: its Stripe payment was refunded or disputed" % team.pk)
+def _end_team_now(user, subscription, invoice):
+    """The latest invoice's payment was refunded in full or disputed, which ends the team the subscription bills
+    (apps/team/billing.py end_team_now)."""
+    paid_at = (invoice.get("status_transitions") or {}).get("paid_at")
+    team = end_team_now(
+        user,
+        Team.PROVIDER_STRIPE,
+        subscription.id,
+        datetime.datetime.fromtimestamp(paid_at) if paid_at else None,
+    )
+    if team:
+        logging.user(user, "~FRTeam %s ended: its Stripe payment was refunded or disputed" % team.pk)
 
 
 def _end_team_switched_down(user, subscription, plan):
-    """The team's own subscription is on a lower plan now. Once the month paid for has passed, the team ends and the
-    owner is on that plan, or on a higher one of their own they had besides (release_team_pro). Returns True when it
-    ended the team."""
-    team = _team_billed_by(user.pk, subscription.id).filter(status=Team.STATUS_ACTIVE).first()
-    if not team or (team.paid_through and team.paid_through > datetime.datetime.now()):
+    """The team's own subscription is on a lower plan now, one of the owner's own, as a switch down leaves it once
+    the month paid for ends. The team ends then, and the owner is on that plan once Stripe has collected its first
+    payment, or on a higher one of their own they had besides (apps/team/billing.py end_team_switched_down). A plan
+    Stripe collects only after the team ended starts then (finish_switch_down). Returns True when it ended the team or
+    started the plan."""
+    if not _team_billed_by(user.pk, subscription.id).exists():
         return False
-    own_plan = end_team_switched_down(user, team, plan)
-    logging.user(user, "~FCTeam %s ended on its switch down to %s, now on %s" % (team.pk, plan, own_plan))
-    return True
+    plan_paid = _paid_period(subscription)[0] == "paid"
+    team, own_plan = end_team_switched_down(user, Team.PROVIDER_STRIPE, subscription.id, plan, plan_paid)
+    if team:
+        logging.user(user, "~FCTeam %s ended on its switch down to %s, now on %s" % (team.pk, plan, own_plan))
+        return True
+    if plan_paid and finish_switch_down(user, Team.PROVIDER_STRIPE, subscription.id, plan):
+        logging.user(user, "~FCTeam switch down to %s finished once Stripe collected it" % plan)
+        return True
+    return False
 
 
 def _scheduled_plan(subscription):

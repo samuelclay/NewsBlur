@@ -14,9 +14,14 @@ from django.db import transaction
 
 from apps.profile.models import PaypalIds, Profile
 from apps.profile.tasks import EmailStaffNotification
-from apps.team.billing import end_team_now, end_team_switched_down, record_team_payment
+from apps.team.billing import (
+    end_team_now,
+    end_team_switched_down,
+    finish_switch_down,
+    record_team_payment,
+)
 from apps.team.grants import PROVIDER_ERRORS, renewing_subscriptions
-from apps.team.models import Team, TeamProGrant
+from apps.team.models import Team
 from apps.team.stripe_billing import TEAM_PLANS
 from apps.team.tasks import StopRenewalsMadeBefore
 from utils import log as logging
@@ -250,16 +255,9 @@ def _settle_switch(profile, subscriptions):
         _stop_renewals_made_before(user, target)
     if plan in TEAM_PLANS or _paid_period(target, target_transactions)[0] != "paid":
         return False
-    with transaction.atomic():
-        # paypal_billing.py: read again under the team's lock, so a payment that renewed it meanwhile keeps it.
-        team = (
-            Team.objects.select_for_update()
-            .filter(pk=team.pk, status=Team.STATUS_ACTIVE, billing_reference=billing["id"])
-            .first()
-        )
-        if not team or (team.paid_through and team.paid_through > datetime.datetime.now()):
-            return False
-        own_plan = end_team_switched_down(user, team, plan)
+    team, own_plan = end_team_switched_down(user, Team.PROVIDER_PAYPAL, billing["id"], plan)
+    if not team:
+        return False
     logging.user(
         user, "~FCTeam %s ended on its PayPal switch down to %s, now on %s" % (team.pk, plan, own_plan)
     )
@@ -268,9 +266,8 @@ def _settle_switch(profile, subscriptions):
 
 def _complete_switch(profile, subscriptions):
     """Finishes a switch down to a plan of the owner's own when the team ended before PayPal collected that plan, as
-    the hourly task ends a team a day after its month. Once PayPal collects the plan's first payment the owner is on
-    it, unless a plan of their own above it is still valid, and the team's pending plan is cleared so nothing of the
-    switch stays on the team. Returns True when it finished the switch."""
+    the hourly task ends a team a day after its month, once PayPal collects the plan's first payment
+    (apps/team/billing.py finish_switch_down). Returns True when it finished the switch."""
     user = profile.user
     team = (
         Team.objects.filter(owner=user, status=Team.STATUS_INACTIVE, billing_provider=Team.PROVIDER_PAYPAL)
@@ -290,45 +287,17 @@ def _complete_switch(profile, subscriptions):
         for subscription, transactions in subscriptions
     ):
         return False
-    with transaction.atomic():
-        if not Team.objects.select_for_update().filter(pk=team.pk, pending_plan=plan).exists():
-            return False
-        own = Profile.objects.select_for_update().get(user=user)
-        own_plan_valid = own.premium_expire is None or own.premium_expire > datetime.datetime.now()
-        if not own_plan_valid or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(
-            TeamProGrant.tier_of(own)
-        ):
-            Profile.objects.filter(pk=own.pk).update(**TeamProGrant.TIER_FLAGS[plan])
-        Team.objects.filter(pk=team.pk).update(pending_plan=None)
+    if not finish_switch_down(user, Team.PROVIDER_PAYPAL, team.billing_reference, plan):
+        return False
     logging.user(user, "~FCTeam %s switch down to %s finished once PayPal collected it" % (team.pk, plan))
     return True
 
 
 def _end_team_now(user, subscription, taken_back_at):
-    """The team's payment was refunded in full or reversed. The team row is read again under its lock, so a refund
-    of a subscription that no longer bills the team, or of a payment older than the one the team was last renewed
-    by, ends nothing."""
-    with transaction.atomic():
-        team = (
-            Team.objects.select_for_update()
-            .filter(
-                owner=user,
-                status=Team.STATUS_ACTIVE,
-                billing_provider=Team.PROVIDER_PAYPAL,
-                billing_reference=subscription["id"],
-            )
-            .first()
-        )
-        # paypal_billing.py: PayPal's transaction and last payment times for one payment can differ a little.
-        renewed_since = (
-            team
-            and team.last_payment_date
-            and taken_back_at
-            and team.last_payment_date > taken_back_at + datetime.timedelta(days=1)
-        )
-        if not team or renewed_since:
-            return False
-        end_team_now(team)
+    """The team's payment was refunded in full or reversed (apps/team/billing.py end_team_now)."""
+    team = end_team_now(user, Team.PROVIDER_PAYPAL, subscription["id"], taken_back_at)
+    if not team:
+        return False
     logging.user(user, "~FRTeam %s ended: its PayPal payment was refunded or reversed" % team.pk)
     return True
 
@@ -338,13 +307,14 @@ def _stop_renewals_made_before(user, subscription):
     transaction.on_commit(lambda: StopRenewalsMadeBefore.delay(user_id=user.pk, started_at=started_at))
 
 
-def stop_renewals_made_before(user, started_at):
+def stop_renewals_made_before(user, started_at, kept_id=None):
     """Run by StopRenewalsMadeBefore (apps/team/tasks.py): every Stripe and PayPal subscription this account made
     before started_at, a Unix time, that still renews stops at the end of the period paid for, one at a time, since
-    Profile.cancel_premium_paypal stops only the first it finds. The AI filter usage billing subscription keeps
-    running (apps/team/grants.py renewing_subscriptions). Returns True once Stripe and PayPal confirm none of them
-    renews. Errors from Stripe or PayPal reach the task, which retries."""
-    renewing = renewing_subscriptions(user, started_at)
+    Profile.cancel_premium_paypal stops only the first it finds. kept_id, the subscription that bills the team now,
+    and the AI filter usage billing subscription keep running (apps/team/grants.py renewing_subscriptions). Returns
+    True once Stripe and PayPal confirm none of them renews. Errors from Stripe or PayPal reach the task, which
+    retries."""
+    renewing = _renewing_except(user, started_at, kept_id)
     if renewing is None:
         return False
     profile = Profile.objects.get(user=user)
@@ -355,7 +325,16 @@ def stop_renewals_made_before(user, started_at):
             profile.cancel_premium_paypal(force=True, subscription_ids=[subscription_id])
     if renewing:
         logging.user(user, "~FCStopped renewals made before a team subscription: %s" % renewing)
-    return renewing_subscriptions(user, started_at) == []
+    return _renewing_except(user, started_at, kept_id) == []
+
+
+def _renewing_except(user, started_at, kept_id):
+    renewing = renewing_subscriptions(user, started_at)
+    if renewing is None:
+        return None
+    return [
+        (provider, subscription_id) for provider, subscription_id in renewing if subscription_id != kept_id
+    ]
 
 
 def _subscription(subscriptions, subscription_id):

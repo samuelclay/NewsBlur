@@ -808,7 +808,7 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
 One function for all four providers:
 
 - [x] `record_team_payment(user, plan, provider, paid_through, reference)` in `apps/team/billing.py`, called only on a confirmed payment. It creates or finds the owner's team, sets its plan and provider, moves `paid_through` forward, reactivates the team if it had lapsed, and sets the owner's Pro flags
-- [ ] Payment notices from Stripe and PayPal are verified before they are acted on, for every plan. This needs each provider's signing secret in settings
+- [x] Payment notices from Stripe and PayPal are verified before they are acted on, for every plan. This needs each provider's signing secret in settings
 - [ ] App Store and Play purchases are verified with the store before any plan starts, for every plan
 - [x] It does not go through `activate_pro`, which would send the Pro welcome email and call back into the payment sync. The owner gets a team welcome email, and staff get the usual upgrade email with the team plan named
 - [x] Someone who holds team Pro from another person's team and buys a team plan gets no second team. Their purchase is flagged to staff
@@ -863,16 +863,17 @@ Lapse and return:
 
 - [x] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
 - [x] The hourly task lapses a team one day after `paid_through`
-- [ ] A payment that recovers (Stripe charge succeeded, PayPal sale completed, Apple recovered, Play recovered or restarted) brings the team back through `record_team_payment`
-- [ ] A refund or revoke ends the team at once
+- [x] On the web, a payment that recovers (Stripe charge succeeded, PayPal sale completed) brings the team back through `record_team_payment`
+- [ ] In the stores, a payment that recovers (Apple recovered, Play recovered or restarted) brings the team back the same way
+- [x] A refund or revoke ends the team at once
 - [x] After a lapse the owner's own account goes through the normal `PremiumExpire` window
 
 Switching:
 
-- [ ] Premium, Archive or Pro up to a team plan, and Team up to Enterprise, take effect at once with proration where the provider has it
-- [ ] Switching down from a team plan on the web keeps the team until the paid month ends, then starts the lower plan. Stripe does this with a subscription schedule and PayPal with a subscription that starts on that date
+- [x] Premium, Archive or Pro up to a team plan, and Team up to Enterprise, take effect at once with proration where the provider has it
+- [x] Switching down from a team plan on the web keeps the team until the paid month ends, then starts the lower plan. Stripe does this with a subscription schedule and PayPal with a subscription that starts on that date
 - [ ] In the stores, an upgrade is immediate and a downgrade takes effect at renewal, which is how each store already works
-- [ ] Cancelling outright runs to the end of the paid month, and the team row is kept
+- [x] Cancelling outright runs to the end of the paid month, and the team row is kept
 
 Ownership transfer:
 

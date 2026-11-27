@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import time
 from unittest.mock import MagicMock, call, patch
+from urllib.parse import urlencode
 
 import stripe
 from django.conf import settings
@@ -3214,7 +3215,9 @@ class Test_StripeWebhookSignature(TestCase):
         return "t=%d,v1=%s" % (timestamp, hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest())
 
     def deliver(self, signature=None):
-        headers = {"HTTP_STRIPE_SIGNATURE": signature} if signature else {}
+        headers = {"HTTP_USER_AGENT": "Stripe/1.0 (+https://stripe.com/docs/webhooks)"}
+        if signature:
+            headers["HTTP_STRIPE_SIGNATURE"] = signature
         response = Client().post(
             reverse("zebra:webhooks_v2"), self.body, content_type="application/json", **headers
         )
@@ -3230,8 +3233,18 @@ class Test_StripeWebhookSignature(TestCase):
 
         self.assertEqual(self.deliver(self.signature(self.SECRET)), (200, True))
 
-    def test_without_a_secret_events_are_acted_on_as_sent(self):
-        self.assertEqual(self.deliver(), (200, True))
+    def test_without_a_secret_events_are_acted_on_and_each_is_reported_outside_development(self):
+        with patch("utils.log.error") as report:
+            # Development and tests say nothing.
+            self.assertEqual(self.deliver(), (200, True))
+            self.assertFalse(report.called)
+
+            with self.settings(DEBUG=False, TEST_DEBUG=False):
+                for _ in range(2):
+                    self.assertEqual(self.deliver()[0], 200)
+
+        self.assertEqual(report.call_count, 2)
+        self.assertNotIn("cus_webhooksigned", str(report.call_args_list))
 
 
 class Test_PaypalWebhookSignature(TestCase):
@@ -3307,3 +3320,93 @@ class Test_PaypalWebhookSignature(TestCase):
         self.assertEqual(self.user.paypal_ids.count(), 3)
         self.assertEqual(report.call_count, 2)
         self.assertNotIn("I-THIRD", str(report.call_args_list))
+
+
+class Test_PaypalIpnVerification(TestCase):
+    """apps/profile/models.py acts on a PayPal IPN only once PayPal's postback verifies it. A notice PayPal doesn't
+    verify attaches no subscription to an account and starts no plan, then or at a later sync."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="ipnreader", email="ipnreader@test.com")
+        Profile.objects.filter(user=self.user).update(
+            is_premium=False, is_premium_trial=False, premium_expire=None
+        )
+        api = MagicMock()
+        api.get.side_effect = self.paypal_get
+        for patcher in (
+            patch.object(Profile, "paypal_api", return_value=api),
+            patch("apps.profile.tasks.EmailNewPremium.delay"),
+            patch("apps.profile.models.SchedulePremiumSetup"),
+            patch("apps.reader.models.UserSubscription.queue_new_feeds"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def paypal_get(self, path):
+        """PayPal's record of I-PAID, a Premium subscription someone paid for today."""
+        if path == "/v1/billing/subscriptions/I-PAID?fields=plan":
+            return {"status": "ACTIVE", "plan_id": Profile.plan_to_paypal_plan_id("premium")}
+        if path.startswith("/v1/billing/subscriptions/I-PAID/transactions"):
+            paid_at = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+            return {
+                "transactions": [
+                    {
+                        "time": paid_at,
+                        "status": "COMPLETED",
+                        "amount_with_breakdown": {"gross_amount": {"value": "36.00"}},
+                    }
+                ]
+            }
+        raise AssertionError("Unexpected PayPal API path: %s" % path)
+
+    def deliver(self, postback, txn_id, days_ago=0, amount="36.00"):
+        """A subscription payment IPN for I-PAID naming this account, paid days_ago, whose postback PayPal answers
+        with postback."""
+        from paypal.standard.ipn.models import PayPalIPN
+
+        paid_at = datetime.datetime.now() - datetime.timedelta(days=days_ago)
+        with patch.object(PayPalIPN, "_postback", return_value=postback):
+            Client().post(
+                reverse("paypal-ipn"),
+                urlencode(
+                    {
+                        "txn_type": "subscr_payment",
+                        "txn_id": txn_id,
+                        "subscr_id": "I-PAID",
+                        "custom": self.user.username,
+                        "payer_email": self.user.email,
+                        "payment_status": "Completed",
+                        "payment_date": paid_at.strftime("%H:%M:%S %b %d, %Y PST"),
+                        "mc_gross": amount,
+                        "payment_gross": amount,
+                        "mc_currency": "USD",
+                        "charset": "utf-8",
+                    }
+                ),
+                content_type="application/x-www-form-urlencoded",
+            )
+
+    def attached(self):
+        profile = Profile.objects.get(user=self.user)
+        return profile.paypal_sub_id, self.user.paypal_ids.exists(), profile.is_premium
+
+    def payments(self):
+        return sorted(PaymentHistory.objects.filter(user=self.user).values_list("payment_amount", flat=True))
+
+    def test_only_a_notice_paypal_verifies_attaches_a_subscription_or_starts_a_plan(self):
+        self.deliver(b"INVALID", "TX-1")
+        self.assertEqual(self.attached(), (None, False, False))
+
+        # A sync for any other reason doesn't pick it up from the stored notice either.
+        Profile.objects.get(user=self.user).setup_premium_history()
+        self.assertEqual(self.attached(), (None, False, False))
+        self.assertEqual(self.payments(), [])
+
+        self.deliver(b"VERIFIED", "TX-2")
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        self.assertEqual(self.payments(), [36])
+
+        # On an account PayPal bills, a payment notice PayPal doesn't verify adds no payment.
+        self.deliver(b"INVALID", "TX-3", days_ago=30, amount="299.00")
+        Profile.objects.get(user=self.user).setup_premium_history()
+        self.assertEqual(self.payments(), [36])

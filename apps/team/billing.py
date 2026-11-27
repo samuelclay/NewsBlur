@@ -7,7 +7,7 @@ from typing import NamedTuple, Optional
 from django.db import transaction
 from django.utils.translation import gettext
 
-from apps.profile.models import Profile
+from apps.profile.models import PaymentHistory, Profile
 from apps.profile.tasks import EmailStaffNotification, EmailStaffPremiumUpgrade
 from apps.team.grants import (
     activate_team,
@@ -109,27 +109,94 @@ def _owners_team(user, plan, lapsed):
     return team, True, None
 
 
-def end_team_now(team):
-    """A payment for the team was taken back by a full refund, a dispute or a reversal, so the team ends at once
-    (apps/team/grants.py deactivate_team)."""
+def end_team_now(user, provider, reference, taken_back_at):
+    """A payment for the team provider bills through reference was taken back by a full refund, a dispute or a
+    reversal, so the team ends at once (apps/team/grants.py deactivate_team). taken_back_at is when that payment was
+    made. The team row is read again under its lock, so a payment taken back from a subscription that no longer
+    bills the team, or one made before the payment the team was last renewed by, ends nothing. An owner with no plan
+    of their own expires from now, and the payment stops counting toward their paid through date
+    (Profile.setup_premium_history). Returns the team it ended, or None."""
     with transaction.atomic():
+        team = _billed_teams(user, provider, reference, Team.STATUS_ACTIVE).first()
+        # billing.py: PayPal's transaction and last payment times for one payment can differ a little.
+        renewed_since = (
+            team
+            and team.last_payment_date
+            and taken_back_at
+            and team.last_payment_date > taken_back_at + datetime.timedelta(days=1)
+        )
+        if not team or renewed_since:
+            return None
         Team.objects.filter(pk=team.pk).update(paid_through=datetime.datetime.now())
-        deactivate_team(team)
+        deactivate_team(team, taken_back=True)
+        if taken_back_at:
+            PaymentHistory.objects.filter(
+                user=user,
+                payment_provider=provider,
+                payment_amount__gt=0,
+                payment_date__date=taken_back_at.date(),
+            ).update(refunded=True)
+    return team
 
 
-def end_team_switched_down(user, team, plan):
-    """The owner switched the team down to plan, and the month paid for has passed. The team ends and the owner is
-    on that plan, or on a higher one of their own they had besides (release_team_pro). Returns the plan they're
-    on."""
+def end_team_switched_down(user, provider, reference, plan, plan_paid=True):
+    """The owner switched the team provider bills through reference down to plan, one of their own, and the month
+    paid for has passed. The team row is read again under its lock, so a payment that renewed the team or moved its
+    billing meanwhile keeps it. The team ends, and the owner is on plan once the provider has collected its first
+    payment (plan_paid), or on a higher one of their own they had besides (release_team_pro). Until it is collected,
+    Team.pending_plan keeps plan for finish_switch_down. Once nothing of the switch is left the billing reference is
+    cleared too, so later notices for the subscription are for the owner's own plan. Returns (the team, the plan the
+    owner is on, or None while they wait for plan), or (None, None) when the team was kept."""
     with transaction.atomic():
-        team = team.lock()
+        team = _billed_teams(user, provider, reference, Team.STATUS_ACTIVE).first()
+        if not team or (team.paid_through and team.paid_through > datetime.datetime.now()):
+            return None, None
         own_plan = release_team_pro(user, owner=True)
-        if not own_plan or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(own_plan):
+        switched = not own_plan or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(
+            own_plan
+        )
+        if switched and plan_paid:
             own_plan = plan
             Profile.objects.filter(user=user).update(**TeamProGrant.TIER_FLAGS[plan])
         deactivate_team(team)
-        Team.objects.filter(pk=team.pk).update(pending_plan=None)
-    return own_plan
+        if switched and not plan_paid:
+            Team.objects.filter(pk=team.pk).update(pending_plan=plan)
+        else:
+            Team.objects.filter(pk=team.pk).update(pending_plan=None, billing_reference=None)
+    return team, own_plan
+
+
+def finish_switch_down(user, provider, reference, plan):
+    """Finishes a switch down to plan, one of the owner's own, when the team provider billed through reference ended
+    before the provider collected plan's first payment, as the hourly task ends a team a day after its month
+    (apps/team/tasks.py). Once the provider has collected it the owner is on plan, unless a plan of their own above it
+    is still valid, and the team's pending plan and billing reference are cleared so nothing of the switch stays on
+    the team. Pro left from the team until it expires (release_team_pro) isn't a plan of their own. Returns True when
+    it finished the switch."""
+    with transaction.atomic():
+        team = (
+            _billed_teams(user, provider, reference, Team.STATUS_INACTIVE).filter(pending_plan=plan).first()
+        )
+        if not team:
+            return False
+        own = Profile.objects.select_for_update().get(user=user)
+        own_tier = TeamProGrant.tier_of(own)
+        keeps_own_plan = (
+            own_tier != TeamProGrant.TIER_PRO
+            and (own.premium_expire is None or own.premium_expire > datetime.datetime.now())
+            and TeamProGrant.TIER_ORDER.index(own_tier) > TeamProGrant.TIER_ORDER.index(plan)
+        )
+        if not keeps_own_plan:
+            Profile.objects.filter(pk=own.pk).update(**TeamProGrant.TIER_FLAGS[plan])
+        Team.objects.filter(pk=team.pk).update(pending_plan=None, billing_reference=None)
+    return True
+
+
+def _billed_teams(user, provider, reference, status):
+    """The account's team in status that provider bills through reference, locked until the transaction ends."""
+    return Team.objects.select_for_update().filter(
+        owner=user, status=status, billing_provider=provider, billing_reference=reference
+    )
 
 
 def start_comp_team(owner, name, plan):
@@ -245,10 +312,10 @@ def _apply_payment(
 
 def _give_owner_pro(team, user, profile, paid_through, replaces_own_plan):
     """The owner holds Premium Pro through a team grant, as a teammate does (apps/team/grants.py grant_team_pro).
-    The grant remembers the plan they have on their own, records one they buy or are given while it lasts, and
-    puts it back when the team's plan ends (release_team_pro). Their premium_expire moves forward to the paid
-    through date, so an owner with no plan of their own expires through the usual PremiumExpire window once the
-    team ends (apps/profile/tasks.py). A plan with no end of its own keeps its empty premium_expire."""
+    The grant remembers the plan they have on their own and when it ends, records one they buy or are given while
+    it lasts, and puts it back when the team's plan ends (release_team_pro). Their premium_expire moves forward to
+    the paid through date, so an owner with no plan of their own expires through the usual PremiumExpire window once
+    the team ends (apps/profile/tasks.py). A plan with no end of its own keeps its empty premium_expire."""
     if not TeamProGrant.objects.filter(user=user).exists():
         grant_team_pro(team.members.get(user=user), own_plan_replaced=replaces_own_plan)
     open_ended_plan = profile.premium_expire is None and profile.is_premium and not profile.is_premium_trial

@@ -352,6 +352,40 @@ class Profile(models.Model):
         plans = ("premium", "archive", "archive_extra", "pro", "team", "team_enterprise")
         return next((plan for plan in plans if plan_id and plan_id == cls.plan_to_paypal_plan_id(plan)), None)
 
+    @classmethod
+    def stripe_payment_period(cls, charge):
+        """(plan, end of the period paid for) from the invoice a Stripe charge paid: the first line that charges for a
+        plan, with the service period Stripe gives it. (None, None) when the charge paid for no plan or Stripe can't
+        say."""
+        invoice_id = charge.get("invoice")
+        if not isinstance(invoice_id, str):
+            return None, None
+        try:
+            invoice = stripe.Invoice.retrieve(invoice_id)
+        except stripe.error.StripeError as e:
+            logging.debug(" ---> Couldn't read Stripe invoice %s for its plan: %s" % (invoice_id, e))
+            return None, None
+        for line in (invoice.get("lines") or {}).get("data") or []:
+            plan = cls.stripe_price_plan((line.get("price") or {}).get("id"))
+            if plan and (line.get("amount") or 0) > 0:
+                return plan, datetime.datetime.fromtimestamp(line["period"]["end"])
+        return None, None
+
+    @classmethod
+    def paypal_payment_period(cls, paypal_subscription, paid_on):
+        """(plan, end of the period paid for) for a payment a PayPal subscription took on paid_on: the subscription's
+        plan, and the billing cycle PayPal gives that plan when the subscription was read with it."""
+        plan = cls.paypal_plan(paypal_subscription.get("plan_id"))
+        for cycle in (paypal_subscription.get("plan") or {}).get("billing_cycles") or []:
+            frequency = cycle.get("frequency") or {}
+            unit = {"MONTH": "months", "YEAR": "years"}.get(frequency.get("interval_unit"))
+            if cycle.get("tenure_type") == "REGULAR" and unit:
+                interval = dateutil.relativedelta.relativedelta(
+                    **{unit: int(frequency.get("interval_count") or 1)}
+                )
+                return plan, datetime.datetime.combine(paid_on, datetime.time()) + interval
+        return plan, None
+
     @property
     def can_register_oauth_application(self):
         return bool(
@@ -981,6 +1015,7 @@ class Profile(models.Model):
         team_grant = team_pro_grant(self.user_id)
         if team_grant:
             team_grant.record_own_plan(tier or TeamProGrant.TIER_PREMIUM)
+            team_grant.record_own_credit(days)
         if not team_grant or not self.still_holds_team_grant():
             if tier == "pro" and not self.is_pro:
                 self.activate_pro()
@@ -1890,6 +1925,7 @@ class Profile(models.Model):
                         refunded = None
                         if transaction["status"] in ["PARTIALLY_REFUNDED", "REFUNDED"]:
                             refunded = True
+                        plan, period_end = Profile.paypal_payment_period(paypal_subscription, created)
                         try:
                             PaymentHistory.objects.get_or_create(
                                 user=self.user,
@@ -1899,12 +1935,16 @@ class Profile(models.Model):
                                 ),
                                 payment_provider="paypal",
                                 refunded=refunded,
+                                defaults=dict(plan=plan, period_end=period_end),
                             )
                         except PaymentHistory.MultipleObjectsReturned:
                             pass  # Duplicate records exist, skip
 
                     ipns = PayPalIPN.objects.filter(
-                        Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
+                        Q(custom=self.user.username)
+                        | Q(payer_email=self.user.email)
+                        | Q(custom=self.user.pk),
+                        flag=False,
                     ).order_by("-payment_date")
                     for transaction in ipns:
                         if transaction.txn_type != "subscr_payment":
@@ -2003,16 +2043,22 @@ class Profile(models.Model):
                     seen_payments.add(created.date())
                     total_stripe_payments += 1
                     refunded = None
-                    if payment.refunded:
+                    # models.py: a disputed charge is taken back as a refunded one is (apps/team/billing.py).
+                    if payment.refunded or payment.get("disputed") is True:
                         refunded = True
                     try:
-                        PaymentHistory.objects.get_or_create(
+                        row, row_created = PaymentHistory.objects.get_or_create(
                             user=self.user,
                             payment_date=created,
                             payment_amount=payment.amount / 100.0,
                             payment_provider="stripe",
                             refunded=refunded,
                         )
+                        plan, period_end = (
+                            Profile.stripe_payment_period(payment) if row_created else (None, None)
+                        )
+                        if plan:
+                            PaymentHistory.objects.filter(pk=row.pk).update(plan=plan, period_end=period_end)
                     except PaymentHistory.MultipleObjectsReturned:
                         pass  # Duplicate records exist, skip
         else:
@@ -3030,7 +3076,8 @@ class Profile(models.Model):
 
     def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
-            Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
+            Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk),
+            flag=False,
         ).order_by("-payment_date")
         if not len(ipns):
             return
@@ -5132,14 +5179,9 @@ def paypal_payment_was_flagged(sender, **kwargs):
         )
         return {"code": -1, "message": "User doesn't exist."}
 
-    try:
-        paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
-        if paypal_sub_id:
-            user.profile.store_paypal_sub_id(paypal_sub_id)
-        user.profile.setup_premium_history()
-        logging.user(user, "~BC~SB~FBPaypal subscription payment flagged")
-    except:
-        return {"code": -1, "message": "User doesn't exist."}
+    # models.py: a flagged notice attaches no subscription to the account and starts no plan. Only one that passed
+    # PayPal's verification is acted on (paypal_signup, paypal_payment_history_sync).
+    logging.user(user, "~BC~SB~FBPaypal subscription payment flagged: %s" % ipn_obj.flag_info)
 
 
 invalid_ipn_received.connect(paypal_payment_was_flagged)
@@ -5897,6 +5939,11 @@ class PaymentHistory(models.Model):
     apple_original_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
+    # models.py: the plan and the end of the period the provider says this payment was for, as
+    # Profile.setup_premium_history reads them from Stripe and PayPal. Empty for a store payment, one made before they
+    # were recorded, or one the provider can't say.
+    plan = models.CharField(max_length=32, blank=True, null=True)
+    period_end = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return "[%s] $%s/%s %s" % (

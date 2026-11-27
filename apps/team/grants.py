@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext
 
@@ -58,7 +59,8 @@ def grant_team_pro(member, own_plan_replaced=False):
     person, so the snapshot is never team Pro. An owner's can be the Pro a lapse left them until PremiumExpire
     (release_team_pro), which counts for no longer than their premium_expire. The owner's grant comes from
     apps/team/billing.py, and with own_plan_replaced the payment took the place of their own plan, so there is
-    none to go back to."""
+    none to go back to. An owner's grant also keeps when their own plan ends, since their premium_expire follows the
+    team's paid period from then on."""
     user = member.user
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
@@ -70,6 +72,7 @@ def grant_team_pro(member, own_plan_replaced=False):
             own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
             own_premium_trial=profile.is_premium_trial,
             own_lifetime=own_tier in TeamProGrant.PAID_TIERS and profile.premium_expire is None,
+            own_premium_expire=profile.premium_expire if member.role == TeamMember.ROLE_OWNER else None,
         )
         # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets its
         # muted sites back. Anyone else muted theirs on purpose. Either way the sites stay within the team's
@@ -97,25 +100,29 @@ def _reload_feeds(user):
     redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(user.username, "reload:feeds")
 
 
-def release_team_pro(user, owner=False):
+def release_team_pro(user, owner=False, taken_back=False):
     """End a person's team Pro and put them on their own plan: the tier they pay for while their own
     premium_expire covers today, or for good when it never ended, a trial that is still running, or otherwise
     free through Profile.deactivate_premium, which mutes every site until they choose the ones to keep. With
-    owner, the team's owner with no plan of their own to go back to keeps the Pro flags instead, and their
-    account expires through PremiumExpire (apps/profile/tasks.py) as any lapsed plan does. Returns the plan they
-    are on now, or None when they held no grant or are an owner keeping Pro until it expires."""
+    owner, the end of their own plan is the one their grant keeps (_own_plan_expire), and it becomes their
+    premium_expire again. The team's owner with no plan of their own to go back to keeps the Pro flags instead, and
+    their account expires through PremiumExpire (apps/profile/tasks.py) as any lapsed plan does: from the end of the
+    team's paid period, or from now with taken_back, when the payment for that period was taken back. Returns the
+    plan they are on now, or None when they held no grant or are an owner keeping Pro until it expires."""
     now = datetime.datetime.now()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
         grant = TeamProGrant.objects.select_for_update().filter(user=user).first()
         if not grant:
             return None
-        plan = grant.own_plan_on(profile, now)
+        own_expire = _own_plan_expire(user, grant) if owner else profile.premium_expire
+        plan = grant.own_plan_on(own_expire, now)
         grant.delete()
         if plan == TeamProGrant.TIER_FREE and owner:
             plan = None
-            if profile.premium_expire is None:
-                # grants.py: a comp gives its owner no paid through date, so the expiry window starts now.
+            if profile.premium_expire is None or (taken_back and profile.premium_expire > now):
+                # grants.py: a comp gives its owner no paid through date, and a payment taken back no longer pays
+                # for one, so the expiry window starts now.
                 Profile.objects.filter(pk=profile.pk).update(premium_expire=now)
         elif plan == TeamProGrant.TIER_FREE:
             # grants.py: an account that never had a trial can still start one. Any other has used it, including
@@ -126,19 +133,33 @@ def release_team_pro(user, owner=False):
             flags = dict(TeamProGrant.TIER_FLAGS[plan])
             if grant.own_lifetime:
                 flags["premium_expire"] = None
+            elif owner and own_expire:
+                flags["premium_expire"] = own_expire
             Profile.objects.filter(pk=profile.pk).update(**flags)
         transaction.on_commit(lambda: _reload_feeds(profile.user))
     logging.user(profile.user, "~FMTeam Pro released, back on %s" % (plan or "Pro until it expires"))
     return plan
 
 
-def deactivate_team(team, lapsed_at=None):
-    """Billing calls this when the owner's paid period ends without a payment, or the payment was taken back. The
-    team goes inactive, every teammate's Premium Pro ends at once, the owner goes back to a plan of their own
-    (release_team_pro), and each of them gets one email. Members, roles, invites and settings stay as they are.
-    With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that moment once its row
-    is locked (Team.lapsed), so a renewal committed after the task chose it keeps it. Each email goes out from its
-    own task once the lapse has committed."""
+def _own_plan_expire(user, grant):
+    """grants.py: when the plan a team's owner has on their own ends. Their premium_expire followed the team's paid
+    period (apps/team/billing.py), so it is the later of the end their grant keeps (TeamProGrant.own_premium_expire)
+    and the end their own payments give, leaving out payments for a team plan."""
+    team_plans = [plan for plan, _ in Team.PLAN_CHOICES]
+    team_payments = Q(plan__in=team_plans) | Q(plan__isnull=True, payment_amount__in=Profile.MONTHLY_PRICES)
+    paid_through, _, _ = Profile.premium_expire_from_payments(
+        PaymentHistory.objects.filter(user=user).exclude(team_payments)
+    )
+    return max((end for end in (grant.own_premium_expire, paid_through) if end), default=None)
+
+
+def deactivate_team(team, lapsed_at=None, taken_back=False):
+    """Billing calls this when the owner's paid period ends without a payment, or the payment was taken back
+    (taken_back). The team goes inactive, every teammate's Premium Pro ends at once, the owner goes back to a plan of
+    their own (release_team_pro), and each of them gets one email. Members, roles, invites and settings stay as they
+    are. With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that moment once its
+    row is locked (Team.lapsed), so a renewal committed after the task chose it keeps it. Each email goes out from
+    its own task once the lapse has committed."""
     # grants.py: apps/team/tasks.py imports this module.
     from apps.team.tasks import EmailTeamPlanEnded
 
@@ -154,7 +175,9 @@ def deactivate_team(team, lapsed_at=None):
         members = list(team.active_members())
         plans = {}
         for grant in TeamProGrant.objects.filter(member__in=members).select_related("user"):
-            plans[grant.user_id] = release_team_pro(grant.user, owner=grant.user_id == team.owner_id)
+            plans[grant.user_id] = release_team_pro(
+                grant.user, owner=grant.user_id == team.owner_id, taken_back=taken_back
+            )
         for member in members:
             transaction.on_commit(
                 lambda user_id=member.user_id: EmailTeamPlanEnded.delay(

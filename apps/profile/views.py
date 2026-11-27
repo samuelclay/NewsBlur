@@ -1764,6 +1764,12 @@ def invoice(request, payment_id):
     plan_name = TIER_NAMES.get({79: "team", 129: "team_enterprise"}.get(payment.payment_amount))
     if plan_name:
         coverage_end = coverage_start + dateutil.relativedelta.relativedelta(months=1)
+    # views.py: what Stripe or PayPal said the payment was for, where the history sync recorded it
+    # (Profile.setup_premium_history).
+    if payment.plan:
+        plan_name = TIER_NAMES.get(payment.plan)
+    if payment.period_end:
+        coverage_end = payment.period_end
 
     return render(
         request,

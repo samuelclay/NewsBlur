@@ -58,6 +58,7 @@ from apps.rss_feeds.models import Feed
 from apps.rss_feeds.tasks import ScheduleImmediateFetches, SchedulePremiumSetup
 from apps.statistics.models import MStatistics
 from apps.statistics.rllm_costs import RLLMCosts
+from apps.team import stripe_billing
 from apps.team.billing import record_team_payment, start_comp_team
 from apps.team.grants import activate_team, deactivate_team, release_team_pro
 from apps.team.models import (
@@ -1062,7 +1063,9 @@ class Test_TeamProPremiumExpire(TeamProMixin, TestCase):
         Team.objects.filter(pk=self.team.pk).update(billing_provider=None, paid_through=None)
         reader = self.reader("reader", "free", feeds=1)
         self.join(reader)
+        # The owner's own trial ran out 40 days ago.
         Profile.objects.filter(user=self.owner).update(premium_expire=self.now - self.days(40))
+        TeamProGrant.objects.filter(user=self.owner).update(own_trial_expire=self.now - self.days(40))
 
         # The hourly task lapses the team first, and the nightly expiry then reaches its owner.
         TeamProGrants()
@@ -2769,13 +2772,26 @@ class FakeStripeBilling:
 
     def invoice(self, subscription, status, amount, billing_reason="subscription_cycle"):
         """A new latest invoice for the subscription. A paid one has its charge. billing_reason is why Stripe made
-        it: the subscription starting, a new period, or a change to the subscription such as a switch."""
+        it: the subscription starting, a new period, or a change to the subscription such as a switch. Its line
+        charges for the subscription's price over its current period."""
         invoice_id = "in_%s" % (len(self.invoices) + 1)
         self.invoices[invoice_id] = {
             "id": invoice_id,
             "status": status,
             "subscription": subscription.id,
             "billing_reason": billing_reason,
+            "lines": {
+                "data": [
+                    {
+                        "amount": amount * 100,
+                        "price": {"id": subscription["items"].data[0].price.id},
+                        "period": {
+                            "start": subscription.current_period_start,
+                            "end": subscription.current_period_end,
+                        },
+                    }
+                ]
+            },
         }
         subscription["latest_invoice"] = invoice_id
         if status == "paid":
@@ -2827,7 +2843,7 @@ class FakeStripeBilling:
     def pay_latest_invoice(self, subscription):
         invoice = self.invoices[subscription.latest_invoice]
         invoice["status"] = "paid"
-        self.charge_invoice(invoice["id"], 79)
+        self.charge_invoice(invoice["id"], self.AMOUNTS[Profile.stripe_price_plan(subscription.plan.id)])
         subscription["status"] = "active"
 
     def _modify(self, subscription_id, **changes):
@@ -2894,9 +2910,10 @@ class FakeStripeBilling:
                 subscription["schedule"] = None
         self.released.append(schedule_id)
 
-    def reach_next_phase(self, subscription):
-        """The period paid for ends, the schedule moves the subscription to its next phase's price, and that
-        period's invoice is paid."""
+    def reach_next_phase(self, subscription, invoice_status="paid"):
+        """The period paid for ends, the schedule moves the subscription to its next phase's price, and Stripe
+        charges that period's invoice. A charge that fails leaves the invoice open and the subscription past
+        due."""
         schedule = self.schedules[subscription.schedule]
         plan = Profile.stripe_price_plan(schedule["phases"][1]["items"][0]["price"])
         start = subscription.current_period_end
@@ -2904,7 +2921,8 @@ class FakeStripeBilling:
         subscription["current_period_start"] = start
         subscription["current_period_end"] = start + (self.YEAR if plan in self.ANNUAL_PLANS else self.MONTH)
         subscription["schedule"] = None
-        self.invoice(subscription, "paid", self.AMOUNTS[plan])
+        subscription["status"] = "active" if invoice_status == "paid" else "past_due"
+        self.invoice(subscription, invoice_status, self.AMOUNTS[plan])
 
     def refund(self, charge, amount=None):
         charge = self.charge(charge)
@@ -3231,6 +3249,10 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
         self.stripe_event("charge.refunded", {"id": charge.id, "customer": charge.customer})
         self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+        # The owner, with no plan of their own, expires from now through the usual window, not from the end of the
+        # month the refund paid back.
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertLessEqual(self.premium_expire(owner), datetime.datetime.now())
 
     def test_a_refund_made_in_stripe_or_a_dispute_ends_the_team(self):
         refunded, refunded_subscription = self.team_owner("refunded")
@@ -3243,8 +3265,11 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         disputed_charge["disputed"] = True
         self.stripe_event("charge.dispute.created", {"id": "dp_1", "charge": disputed_charge.id})
 
-        for owner in (refunded, disputed):
+        for owner, subscription in ((refunded, refunded_subscription), (disputed, disputed_subscription)):
+            self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
             self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+            self.assertEqual(self.plan_of(owner), "pro")
+            self.assertLessEqual(self.premium_expire(owner), datetime.datetime.now())
 
     def test_a_stripe_purchase_while_paypal_bills_the_team_stops_the_paypal_renewal(self):
         owner = self.reader("teamowner")
@@ -3328,6 +3353,136 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
 
         self.assertEqual(self.owned_team(owner).billing_provider, Team.PROVIDER_APP_STORE)
+
+    def test_a_paypal_renewal_a_stripe_purchase_replaces_is_retried_and_then_goes_to_staff(self):
+        owner = self.reader("teamowner")
+        self.pay(
+            owner,
+            self.now + self.days(20),
+            provider=Team.PROVIDER_PAYPAL,
+            reference="I-TEAM",
+            paid_at=self.now - self.days(11),
+        )
+        Profile.objects.filter(user=owner).update(paypal_sub_id="I-TEAM")
+        PaypalIds.objects.create(user=owner, paypal_sub_id="I-TEAM")
+        paypal = FakePayPal(self, "I-TEAM")
+        # PayPal answers every suspend, but the subscription goes on renewing.
+        paypal.suspends = False
+        self.stripe.known_customer(owner)
+        subscription = self.stripe.subscribe(owner, Team.PLAN_TEAM_ENTERPRISE)
+
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+
+        self.assertEqual(self.owned_team(owner).billing_reference, subscription.id)
+        self.assertEqual(paypal.status, "ACTIVE")
+        self.assertGreater(paypal.posts.count("/v1/billing/subscriptions/I-TEAM/suspend"), 1)
+        self.assertEqual(self.staff_events(), ["team_paid_twice", "team_renewal_unconfirmed"])
+        # The subscription that bills the team now keeps renewing.
+        self.assertFalse(subscription.cancel_at_period_end)
+
+    def test_a_payment_that_renews_the_team_first_keeps_it_from_an_older_refund_or_switch_down(self):
+        refunded, refunded_subscription = self.team_owner("refunded")
+        down, down_subscription = self.team_owner("down", period_end=self.now - datetime.timedelta(hours=1))
+        self.profile_post(down, "switch_stripe_subscription", plan="premium")
+
+        def renewed_first(owner, end_team):
+            def renew_then_end(*args, **kwargs):
+                # An App Store payment commits after the Stripe event read the team and before it ends the team.
+                self.pay(
+                    owner, self.now + self.days(31), provider=Team.PROVIDER_APP_STORE, reference="2000001"
+                )
+                return end_team(*args, **kwargs)
+
+            return renew_then_end
+
+        charge = self.stripe.latest_charge(refunded_subscription)
+        self.stripe.refund(charge.id)
+        with patch.object(
+            stripe_billing, "end_team_now", side_effect=renewed_first(refunded, stripe_billing.end_team_now)
+        ):
+            self.stripe_event("charge.refunded", {"id": charge.id, "customer": charge.customer})
+        self.stripe.reach_next_phase(down_subscription)
+        with patch.object(
+            stripe_billing,
+            "end_team_switched_down",
+            side_effect=renewed_first(down, stripe_billing.end_team_switched_down),
+        ):
+            self.stripe_event(
+                "customer.subscription.updated", self.stripe.subscription_event(down_subscription)
+            )
+
+        for owner in (refunded, down):
+            team = self.owned_team(owner)
+            self.assertEqual(
+                (team.status, team.billing_provider), (Team.STATUS_ACTIVE, Team.PROVIDER_APP_STORE)
+            )
+            self.assertEqual(self.plan_of(owner), "pro")
+
+    def test_a_switch_down_whose_first_charge_fails_starts_the_lower_plan_only_once_stripe_collects_it(self):
+        owner, subscription = self.team_owner("teamowner", period_end=self.now - datetime.timedelta(hours=1))
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+        self.profile_post(owner, "switch_stripe_subscription", plan="premium")
+
+        # The month paid for ends and the subscription moves to Premium, whose first charge fails.
+        self.stripe.reach_next_phase(subscription, invoice_status="open")
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.pending_plan), (Team.STATUS_INACTIVE, "premium"))
+        # The owner, with no plan of their own, has the usual expiry window, not a Premium nobody paid for.
+        self.assertEqual((self.plan_of(owner), self.plan_of(member)), ("pro", "free"))
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.assertEqual(self.plan_of(owner), "pro")
+
+        # Stripe collects it on a later try.
+        self.stripe.pay_latest_invoice(subscription)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        self.assertEqual(self.plan_of(owner), "premium")
+        self.assertIsNone(self.owned_team(owner).pending_plan)
+
+    def test_an_owner_gets_back_a_plan_of_their_own_only_until_it_ends(self):
+        own_end = self.now + self.days(3)
+        archive_owner = self.reader("archiveowner", "archive", premium_expire=own_end)
+        lapsed = self.reader("lapsed", "archive", premium_expire=own_end)
+        credited = self.reader("credited")
+        owners = (archive_owner, lapsed, credited)
+        for owner in owners:
+            self.stripe.known_customer(owner)
+            subscription = self.stripe.subscribe(owner, Team.PLAN_TEAM)
+            self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+            self.assertGreater(self.premium_expire(owner), own_end)
+        # Ten days of Premium given while owning the team are a plan of their own.
+        Profile.objects.get(user=credited).extend_premium_by_days(10)
+
+        for owner in (archive_owner, credited):
+            self.profile_post(self.staff, "refund_premium", user_id=owner.pk)
+        self.lapse(lapsed)
+
+        for owner in (archive_owner, lapsed):
+            self.assertEqual((self.plan_of(owner), self.premium_expire(owner)), ("archive", own_end))
+        self.assertEqual(self.plan_of(credited), "premium")
+        self.assertLess(self.premium_expire(credited), self.now + self.days(11))
+
+    def test_a_subscription_switched_down_to_an_own_plan_is_that_plan_from_then_on(self):
+        owner, subscription = self.team_owner("teamowner", period_end=self.now - datetime.timedelta(hours=1))
+        self.profile_post(owner, "switch_stripe_subscription", plan="archive")
+        self.stripe.reach_next_phase(subscription)
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.assertEqual(self.plan_of(owner), "archive")
+        self.assertFalse(subscription.cancel_at_period_end)
+
+        # The owner changes that subscription's plan again, to Pro, and then back up to Premium Team.
+        self.profile_post(owner, "switch_stripe_subscription", plan="pro")
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.profile_post(owner, "switch_stripe_subscription", plan=Team.PLAN_TEAM)
+
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.billing_reference), (Team.STATUS_ACTIVE, subscription.id))
+        # Pro was switched into the team with proration, so it isn't a plan of their own to go back to.
+        self.assertEqual(TeamProGrant.objects.get(user=owner).own_tier, TeamProGrant.TIER_FREE)
 
 
 def paypal_time(moment):
@@ -3468,7 +3623,11 @@ class FakePayPalBilling:
         if path.startswith("/v1/billing/subscriptions/"):
             if parts[3] not in self.subscriptions:
                 raise paypalrestsdk.ResourceNotFound(MagicMock())
-            return copy.deepcopy(self.subscriptions[parts[3]])
+            subscription = copy.deepcopy(self.subscriptions[parts[3]])
+            if "fields=plan" in url:
+                # tests.py: asked for, PayPal includes the subscription's plan with its billing cycles.
+                subscription["plan"] = self.get("/v1/billing/plans/%s" % subscription["plan_id"])
+            return subscription
         if path.startswith("/v1/billing/plans/"):
             unit = "MONTH" if Profile.paypal_plan(parts[3]) in self.MONTHLY_PLANS else "YEAR"
             return {
@@ -3896,6 +4055,11 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         # Later notices for the subscription, which PayPal still shows active, don't bring the team back.
         self.subscription_event("BILLING.SUBSCRIPTION.UPDATED", reversed_subscription)
         self.assertEqual(self.owned_team(reversed_owner).status, Team.STATUS_INACTIVE)
+        # Owners with no plan of their own expire from now through the usual window, not from the end of the month
+        # the payment taken back bought.
+        for owner in (refunded, reversed_owner):
+            self.assertEqual(self.plan_of(owner), "pro")
+            self.assertLessEqual(self.premium_expire(owner), datetime.datetime.now())
 
     def test_a_teammate_or_an_owner_billed_elsewhere_gets_no_paypal_team_plan(self):
         member = self.reader("member")
@@ -3975,6 +4139,33 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         self.assertFalse(archive_subscription.cancel_at_period_end)
         self.assertGreater(fake_stripe.modify.call_count, 1)
         self.assertEqual(self.staff_events(), ["team_renewal_unconfirmed"])
+
+    def test_a_receipt_names_the_plan_and_the_period_the_provider_billed_for(self):
+        fake_stripe = FakeStripeBilling(self)
+        subscriber = self.reader("subscriber", "premium", premium_expire=self.now + self.days(265))
+        fake_stripe.known_customer(subscriber)
+        subscription = fake_stripe.subscribe(subscriber, "premium")
+        # The Premium year was paid for 100 days ago. Switching to Premium Team now charges what is left of a month
+        # of the team plan after the unused part of that year.
+        fake_stripe.charges[-1]["created"] = int((self.now - self.days(100)).timestamp())
+        self.profile_post(subscriber, "switch_stripe_subscription", plan=Team.PLAN_TEAM)
+        paypal_pro, _, pro_payment = self.own_subscriber("paypalpro", "pro", paid_days_ago=20)
+        Profile.objects.get(user=paypal_pro).setup_premium_history()
+
+        def receipt(user):
+            payment = PaymentHistory.objects.filter(user=user, payment_amount__gt=0).latest("payment_date")
+            return self.client_for(user).get(reverse("profile-invoice", args=[payment.pk])).content.decode()
+
+        def day(moment):
+            return dateformat.format(moment, "F j, Y")
+
+        switch = receipt(subscriber)
+        self.assertIn("NewsBlur Premium Team Subscription", switch)
+        self.assertIn(day(datetime.datetime.fromtimestamp(subscription.current_period_end)), switch)
+        self.assertNotIn(day(self.now + relativedelta(years=1)), switch)
+        pro = receipt(paypal_pro)
+        self.assertIn("NewsBlur Premium Pro Subscription", pro)
+        self.assertIn(day(local_time(pro_payment["time"]) + relativedelta(months=1)), pro)
 
     def test_the_payments_list_shows_when_paypal_bills_next(self):
         owner, subscription = self.team_owner("teamowner")
