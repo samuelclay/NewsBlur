@@ -2236,7 +2236,8 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_traverseButtonsReappearAfterBlankTapPeekAndUpwardScroll() {
-        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES"]
+        app.launchArguments += ["-newsblur-ui-test-animations", "-scroll_stories_horizontally", "YES",
+                                "-story_always_show_navigation", "NO"]
         launch(on: "reader-story-swift-1")
         let story = app.webViews.firstMatch
         XCTAssertTrue(story.waitForExistence(timeout: 10))
@@ -2276,10 +2277,11 @@ final class ReaderUITests: XCTestCase {
         XCTAssertTrue(nextButton.waitForExistence(timeout: 10))
         // ReaderUITests.swift finds the fixture's last paragraph so a scroll that silently stops cannot pass as the end.
         let lastParagraph = story.staticTexts
-            .containing(NSPredicate(format: "label CONTAINS %@", "Fixture paragraph 60 ")).firstMatch
+            .matching(NSPredicate(format: "label CONTAINS %@", "Fixture paragraph 60 ")).firstMatch
         func assertNavigationHeld(_ step: String) {
             XCTAssertFalse(waitForTraverseFadeAlpha({ $0 < 0.99 }, timeout: 1),
                            "\(step) faded navigation; alpha=\(traverseFadeAlpha() ?? -1)")
+            XCTAssertGreaterThanOrEqual(traverseFadeAlpha() ?? -1, 0.99, "\(step) left no readable navigation opacity")
             XCTAssertTrue(app.frame.contains(nextButton.frame) && nextButton.isHittable,
                           "\(step) moved navigation off screen; \(debugVisibility(nextButton))")
         }
@@ -2313,6 +2315,7 @@ final class ReaderUITests: XCTestCase {
     }
 
     func test_traverseButtonsFadeRelativeAfterNextWithHiddenToolbar() {
+        app.launchArguments += ["-story_always_show_navigation", "NO"]
         launch(on: "reader-story-swift-1")
 
         let currentStory = currentStoryProbe()

@@ -2598,6 +2598,7 @@
                 [self.appDelegate.storyPagesViewController.view layoutIfNeeded];
                 self.appDelegate.storyPagesViewController.traverseView.alpha = 1;
             } completion:nil];
+            [appDelegate.storyPagesViewController updateUITestTraverseFadeProbe];
         } else if (appDelegate.storyPagesViewController.traverseView.alpha == 1 &&
                    appDelegate.storyPagesViewController.traversePinned) {
             // Scroll with bottom of scrollview, but smoothly
