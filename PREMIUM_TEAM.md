@@ -35,7 +35,7 @@ Decided on 2026-11-26:
 - [x] The feature page lives on the welcome page, with screenshots for every section
 - [x] A team is one Premium Pro account that happens to have up to 10 people using it. Everything Pro meters is shared across the team: 10,000 sites in total, 10 hours of Listen a week in total, and the same for any other Pro allowance
 - [x] Anyone the team invites can join. No work email or shared domain is required
-- [x] Every step is finished on the web, iOS and Android before the next one starts
+- [x] Every step is finished on the web, iOS, macOS and Android before the next one starts. macOS is the Mac build of the iOS app, so each iOS screen is also checked there
 - [x] The PR is ready for review from the start, and the review bots review every push
 
 - [x] The team is the owner's account. The owner is the one who pays, and everything the team shares falls under the owner's user id: billing, shared read status, team training and metered usage. There are no hidden accounts
@@ -56,6 +56,12 @@ Decided on 2026-11-26:
 - [x] When a site a teammate follows privately becomes a team site, the private copy shows the team badge and nothing else is said
 - [x] With single sign-on required, what happens to a removed teammate's account depends on how it was created. An account that existed before joining stays the person's. An account that single sign-on created is locked, with an export of its private feeds on request
 - [x] One push per build step, so the review bots review each finished step once
+- [x] The team screens on iOS and Android are native: SwiftUI on iOS and Compose on Android, each in that app's own settings style. The web dialog follows the redesigned Preferences, with no Done button and changes saved as made
+- [x] Everything is feature complete on the web, iOS, macOS and Android: every team dialog, every option, every read status indicator. Nothing is web only
+- [x] Both team plans are for sale on every platform: Stripe and PayPal on the web, the App Store on iOS and macOS, and Google Play on Android, the way Premium, Archive and Pro are sold today
+- [x] Store prices are $79.99 and $129.99 a month. Web prices stay $79 and $129
+- [x] The App Store and Play products are created when billing reaches the apps, with their names, prices and descriptions shown to Sam before they are saved
+- [x] Invite links are a path, `/team/join/<token>`, because the apps can claim a path but not a query string. The invite is carried through login or signup the way gift codes are, and the welcome page names the team before signup
 - [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
 - [x] Someone whose private feeds push the team past 10,000 sites can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep
 
@@ -74,6 +80,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A callout in the notifications dialog: "Set these up for your whole team"
 - [ ] A callout in the folder menu: "Share this folder with a team"
 - [ ] A callout in the account dialog for anyone not on a team
+- [ ] The "For teams" row with both plans in the iOS and macOS premium screen, bought through the App Store
+- [ ] The "For teams" row with both plans in the Android premium screen, bought through Google Play
 
 **Premium Team, $79/month.** Up to 10 teammates. Everything in Premium Pro, shared by the whole team, plus:
 
@@ -120,6 +128,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Join with an existing NewsBlur account and keep everything in it
 - [ ] Invite by email
 - [ ] Invite with a join link
+- [ ] Invite links are `/team/join/<token>`. On the web they open the join screen, and on a phone with the app installed they open the app
+- [ ] A logged out visitor who opens an invite sees the team's name on the welcome page, and the invite survives login or signup
 - [ ] Three roles: owner, manager, member
 - [ ] One bill on the owner's account, with invoices
 - [ ] An account is in one team at a time, as owner or member
@@ -252,6 +262,9 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] An activity log of who added, removed and changed what
 - [ ] The team folder dialog: name and icon, who gets it, read mode, assignments, notifications
 - [ ] Works in the Light, Dark, Warm and Gray themes
+- [ ] A native team screen on iOS, in SwiftUI, in the app's four themes
+- [ ] The same screen on macOS, laid out for a Mac window
+- [ ] A native team screen on Android, in Compose, in light, sepia, dark and black
 
 **Screenshots**
 
@@ -288,7 +301,12 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 
 ### 10. Billing
 
-- [ ] Stripe only, on the web
+- [ ] Stripe on the web
+- [ ] PayPal on the web, offered under each team card the way it is for the other plans
+- [ ] App Store subscriptions for both plans on iOS and macOS
+- [ ] Google Play subscriptions for both plans on Android
+- [ ] Whichever store sold the plan, the owner's paid period end is recorded so the team lapses on the right day
+- [ ] A team bought in one place shows as the current plan everywhere, and cannot be bought a second time somewhere else
 - [ ] The owner's account pays. Premium Team and Premium Team Enterprise are plans on the owner's own NewsBlur account, bought the same way as Premium Pro
 - [ ] An owner who already pays for Premium, Archive or Pro is switched to the team plan with the difference prorated
 - [ ] A teammate's own Stripe or PayPal renewal is cancelled when they join. App Store and Play subscribers get a notice with a link
@@ -303,6 +321,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 **Screenshots**
 
 - [ ] The Billing tab
+- [ ] The team plans in the iOS premium screen
+- [ ] The team plans in the Android premium screen
 
 ## Features, part 2: extensions
 
@@ -526,7 +546,9 @@ Things that are not team features but that the team features need.
 - [ ] Each device reports whether notifications are allowed in system settings
 - [ ] Each device acknowledges a test notification
 - [ ] Slack, Microsoft Teams and webhook output. IFTTT is the only outbound integration today
-- [ ] The Preferences dialog's builders (`make_group`, `make_row`, `make_cards`, `make_chips`, the status pill) are shared so other dialogs can use them
+- [ ] The Preferences dialog's builders (`make_group`, `make_row`, `make_cards`, `make_chips`, the status pill) move to a shared mixin in `media/js/newsblur/common/` that both dialogs extend
+- [ ] The team dialog carries the Preferences dialog's class as well as its own, so it gets the row, card and chip styles in all four themes without edits to the hand maintained Warm and Gray stylesheets
+- [ ] The team dialog saves one change per control through the team endpoints. It reuses the "Saved" pill but not the Preferences form diff
 
 ## How it works
 
@@ -759,7 +781,7 @@ The apps and the web client score stories themselves from the classifiers the se
 
 ### Billing
 
-The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing Stripe code already buys, switches, renews and expires plans for a `Profile`, and its webhooks already find the owner.
+The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing code already buys, switches, renews and expires plans for a `Profile` through Stripe, the App Store and Google Play, and its webhooks already find the owner.
 
 - [x] The Stripe products and prices exist in test and live mode, created 2026-11-26, monthly, in USD:
 
@@ -773,6 +795,10 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
 - [ ] Switching to or from a team plan goes through `switch_stripe_subscription`, prorated
 - [ ] When the owner's paid period ends without renewal, the team goes inactive that day and every teammate's grant ends with it. The team plan does not get the 30 days that `PremiumExpire` gives other plans
 - [ ] Joining a team cancels the new teammate's own Stripe or PayPal renewal
+- [ ] App Store products for both plans, in the same subscription group as the existing plans and ranked above Pro, handled by `save_ios_receipt` and `apps/profile/apple_subscriptions.py`
+- [ ] Google Play products for both plans, handled by the existing Play receipt and notification code
+- [ ] Two PayPal subscription plans, in `plan_to_paypal_plan_id`
+- [ ] `Team.paid_through` is written from Stripe's period end, PayPal's next billing time, Apple's expiry date or Play's expiry time, whichever sold the plan
 - [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team section: seat limit, plan, comp
 
 ### Rules from CLAUDE.md that apply to every step
@@ -787,13 +813,13 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
 
 ## Build order
 
-One step at a time, one agent at a time, each ending in passing tests and a commit. A step with screens is built on the server, then the web, then iOS, then Android, and is finished on all three before the next step starts. The web version goes on localhost first so it can be looked at before the apps copy it.
+One step at a time, one agent at a time, each ending in passing tests and a commit. A step with screens is built on the server, then the web, then iOS and macOS, then Android, and is finished on all of them before the next step starts. The web version goes on localhost first so it can be looked at before the apps copy it.
 
 Core:
 
 - [x] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
 - [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, fallback when a seat ends, grace period
-- [ ] 3. Billing: the two team plans on the owner's account, plan switches, lapses, cancelling a new teammate's own renewal, staff controls
+- [ ] 3. Billing: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, staff controls
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
 - [ ] 6. Team folders on screen: badges, manager editing, Folders tab, team folder dialog (web, iOS, Android)
@@ -872,6 +898,8 @@ Written before any code. Each one is a test.
 - [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [ ] A teammate's own Stripe renewal keeps charging after they join
+- [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
+- [ ] One owner ends up paying for a team plan in two places
 - [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
 - [ ] The nightly expiry sends a teammate the grace email because of an old trial date
 - [ ] A new signup who joins during their trial is expired by the trial branch
