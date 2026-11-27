@@ -14,9 +14,15 @@ from apps.team.grants import (
     deactivate_team,
     grant_team_pro,
     release_team_pro,
+    seat_grant_for_former_owner,
 )
-from apps.team.models import Team, TeamMember, TeamProGrant
-from apps.team.tasks import EmailTeamWelcome
+from apps.team.models import Team, TeamActivity, TeamMember, TeamProGrant
+from apps.team.tasks import (
+    EmailTeamNewOwner,
+    EmailTeamWelcome,
+    SettleHandOver,
+    StopRenewalsMadeBefore,
+)
 from utils import log as logging
 from utils.languages import account_translation
 
@@ -61,8 +67,13 @@ def record_team_payment(user, plan, provider, paid_through, reference, paid_at, 
     subscription group, a Play subscription replaced with proration. The owner then has no plan of their own to
     go back to when the team ends.
 
+    The teammate a team's owner asked to take it over pays for it this way too, and their payment hands them the
+    team (_hand_over_on_payment).
+
     Someone holding a seat on another team gets no team of their own and nothing on their account changes. Staff
-    are told, since the provider has already taken the payment."""
+    are told, since the provider has already taken the payment, unless the buyer handed that team on themselves:
+    the payment is then the subscription they paid for it with as its owner, which the hand over settled
+    (settle_former_owners_plan)."""
     if plan not in dict(Team.PLAN_CHOICES) or provider not in dict(Team.PROVIDER_CHOICES):
         raise ValueError("Unknown team plan %r or provider %r" % (plan, provider))
     missing_date = None
@@ -81,14 +92,248 @@ def record_team_payment(user, plan, provider, paid_through, reference, paid_at, 
 
     now = datetime.datetime.now()
     with transaction.atomic():
+        handed_over = _hand_over_on_payment(
+            user, plan, provider, paid_through, reference, paid_at, replaces_own_plan, now
+        )
+        if handed_over:
+            return handed_over
         team, created, reason = _owners_team(user, plan, Team.period_lapsed(paid_through, now))
         if team:
             return _apply_payment(
                 team, user, plan, provider, paid_through, reference, paid_at, replaces_own_plan, created, now
             )
-    if reason == "on_team":
+    if reason == "on_team" and not _handed_on_their_team(user):
         _tell_staff_buyer_is_on_a_team(user, plan, provider, reference)
     return TeamPayment(None, reason)
+
+
+def _hand_over_on_payment(user, plan, provider, paid_through, reference, paid_at, replaces_own_plan, now):
+    """A payment from the teammate a team's owner asked to take it over, while the request waits for them
+    (Team.request_transfer), hands them the team (_hand_over). The team's plan and billing become this payment's,
+    its paid through date included: this is the one payment that may move paid_through back, since the period before
+    it was the old owner's, paid on their own subscription, whose unused part is refunded
+    (settle_former_owners_plan). A comp has nothing to pay for, so a payment for one hands nothing over and staff are
+    told, and one for a period that has already lapsed hands nothing over either. Returns what the payment did, or
+    None when it is no such payment."""
+    membership = TeamMember.active_membership(user)
+    if not membership or membership.team.pending_owner_id != user.pk:
+        return None
+    team = membership.team.lock()
+    if not team.transfer_waits_for(user, now):
+        return None
+    if team.is_comped:
+        _tell_staff(
+            "team_comp_paid",
+            "Payment for a comped team: %s" % user.username,
+            "%s paid for %s through %s (%s) to take over %s, but it is comped with no end, so it has nothing to pay "
+            "and the team was not changed." % (user.username, plan, provider, reference, team.name),
+        )
+        return TeamPayment(None, "comped")
+    if Team.period_lapsed(paid_through, now):
+        return TeamPayment(None, "lapsed")
+
+    grant = TeamProGrant.objects.filter(user=user).first()
+    previous_tier = grant.own_tier if grant else TeamProGrant.tier_of(Profile.objects.get(user=user))
+    former_billing = (team.billing_provider, team.billing_reference)
+    reactivated = team.status == Team.STATUS_INACTIVE
+    team.plan = plan
+    team.billing_provider = provider
+    team.billing_reference = reference
+    team.last_payment_date = paid_at
+    team.paid_through = paid_through
+    if not _hand_over(team, user, paid_through, replaces_own_plan, former_billing, now):
+        return None
+    transaction.on_commit(
+        lambda: EmailStaffPremiumUpgrade.delay(user_id=user.pk, tier=plan, previous_tier=previous_tier)
+    )
+    logging.user(
+        user,
+        "~FM~SBTeam %s payment~SN: %s through %s (%s), taking it over%s"
+        % (team.pk, plan, provider, paid_through, ", reactivated" if reactivated else ""),
+    )
+    return TeamPayment(team, None, False, reactivated)
+
+
+def accept_comped_transfer(user, team_id):
+    """The teammate a comped team's owner asked to take it over accepts, with nothing to pay, and the team changes
+    hands at once and stays comped (_hand_over). A team that is paid for changes hands only on its new owner's payment
+    (record_team_payment). Returns a failure reason or None."""
+    now = datetime.datetime.now()
+    with transaction.atomic():
+        team = Team.objects.select_for_update().filter(pk=team_id).first()
+        if not team or not team.transfer_waits_for(user, now):
+            return "no_transfer"
+        if not team.is_comped:
+            return "transfer_needs_payment"
+        if team.status != Team.STATUS_ACTIVE:
+            return "team_inactive"
+        former_billing = (team.billing_provider, team.billing_reference)
+        if not _hand_over(team, user, None, False, former_billing, now):
+            return "not_found"
+    return None
+
+
+def _hand_over(team, new_owner, paid_through, replaces_own_plan, former_billing, now):
+    """Hands the locked team to new_owner, the teammate its owner asked to take it over, in one transaction. The old
+    owner becomes a manager and keeps their seat, the new owner's grant becomes an owner's (_owner_grant_from_seat)
+    and the old owner's a teammate's (seat_grant_for_former_owner), and no grant is released, so nobody's Premium Pro
+    or sites change on the way. A team that had lapsed comes back. Once it commits, the old owner's subscription for
+    the team, former_billing, is settled (settle_former_owners_plan) and both of them are emailed. Returns the team, or
+    None when either seat is gone and nothing was changed."""
+    seats = TeamMember.objects.select_related("user").filter(team=team, status=TeamMember.STATUS_ACTIVE)
+    old_seat = seats.filter(user_id=team.owner_id, role=TeamMember.ROLE_OWNER).first()
+    new_seat = seats.filter(user=new_owner).exclude(role=TeamMember.ROLE_OWNER).first()
+    if not old_seat or not new_seat:
+        return None
+    old_owner = old_seat.user
+    reactivated = team.status == Team.STATUS_INACTIVE
+    if not reactivated:
+        seat_grant_for_former_owner(old_owner, held_as_owner=True)
+
+    old_seat.role = TeamMember.ROLE_MANAGER
+    old_seat.save(update_fields=["role"])
+    new_seat.role = TeamMember.ROLE_OWNER
+    new_seat.save(update_fields=["role"])
+    team.owner = new_owner
+    team.pending_owner = None
+    team.transfer_requested_date = None
+    # billing.py: a switch down the old owner scheduled was on their own subscription.
+    team.pending_plan = None
+    team.save(
+        update_fields=[
+            "owner",
+            "pending_owner",
+            "transfer_requested_date",
+            "pending_plan",
+            "plan",
+            "billing_provider",
+            "billing_reference",
+            "last_payment_date",
+            "paid_through",
+            "updated_date",
+        ]
+    )
+    TeamActivity.log(
+        team, old_owner, "ownership_transferred", user_id=new_owner.pk, username=new_owner.username
+    )
+    _owner_grant_from_seat(team, new_owner, paid_through, replaces_own_plan)
+    if reactivated:
+        activate_team(team)
+        team.status = Team.STATUS_ACTIVE
+        seat_grant_for_former_owner(old_owner, held_as_owner=False)
+
+    provider, reference = former_billing
+    handed_over_at = now.timestamp()
+    transaction.on_commit(
+        lambda: SettleHandOver.delay(
+            team_id=team.pk,
+            user_id=old_owner.pk,
+            provider=provider,
+            reference=reference,
+            handed_over_at=handed_over_at,
+        )
+    )
+    transaction.on_commit(
+        lambda: EmailTeamNewOwner.delay(team_id=team.pk, user_id=new_owner.pk, former_owner_id=old_owner.pk)
+    )
+    return team
+
+
+def _owner_grant_from_seat(team, user, paid_through, replaces_own_plan):
+    """The grant of a teammate who now owns the team, shaped as _give_owner_pro and grant_team_pro shape a first
+    payment's owner's: it keeps when the plan they have on their own ends (TeamProGrant.own_premium_expire), since
+    their premium_expire follows the team's paid period from now on, and a purchase that replaced that plan leaves
+    none to go back to. Someone whose grant a lapse released gets a new one from _give_owner_pro."""
+    profile = Profile.objects.select_for_update().get(user=user)
+    grant = TeamProGrant.objects.select_for_update().filter(user=user).first()
+    if not grant:
+        _give_owner_pro(team, user, profile, paid_through, replaces_own_plan)
+        return
+    own = dict(own_premium_expire=profile.premium_expire)
+    if replaces_own_plan:
+        own.update(own_tier=TeamProGrant.TIER_FREE, own_trial_expire=None, own_lifetime=False)
+    TeamProGrant.objects.filter(pk=grant.pk).update(**own)
+    own_tier = own.get("own_tier", grant.own_tier)
+    # billing.py: the flags show team Pro, so whether their own plan never ends is read from the grant.
+    open_ended_plan = profile.premium_expire is None and own_tier in TeamProGrant.PAID_TIERS
+    if paid_through and not open_ended_plan:
+        if profile.premium_expire is None or paid_through > profile.premium_expire:
+            Profile.objects.filter(pk=profile.pk).update(premium_expire=paid_through)
+
+
+def _handed_on_their_team(user):
+    """Whether this account handed the team it holds a seat on to a teammate (_hand_over)."""
+    membership = TeamMember.active_membership(user)
+    return bool(membership) and (
+        TeamActivity.objects.filter(
+            team_id=membership.team_id, action="ownership_transferred", actor=user
+        ).exists()
+    )
+
+
+def settle_former_owners_plan(user, team, provider, reference, handed_over_at):
+    """Run by SettleHandOver (apps/team/tasks.py) once a team has changed hands (_hand_over), for its old owner, user,
+    whose subscription provider billed it through reference. A Stripe or PayPal subscription is refunded the unused
+    part of the month it last paid for, prorated over the period that payment paid for, and stops renewing, which is
+    retried until Stripe or PayPal confirms it (StopRenewalsMadeBefore). The refund is tried once, so it can't be made
+    twice, and when none is made staff are told and the hand over stands. An App Store or Google Play subscription
+    only its owner can cancel, and NewsBlur can't refund it, so staff are told. Returns the dollars refunded, or
+    None."""
+    # billing.py: apps/team/stripe_billing.py imports this module.
+    from apps.team.stripe_billing import refund_unused_month
+
+    new_owner = team.owner.username if team.owner else "nobody"
+    if provider in (Team.PROVIDER_APP_STORE, Team.PROVIDER_PLAY):
+        EmailStaffNotification.delay(
+            event_type="team_handed_over_in_store",
+            subject="Team handed over, old owner still subscribed in a store: %s" % user.username,
+            body="%s handed %s to %s, but still pays for it through %s (%s), which NewsBlur can't cancel or refund. "
+            "They were sent the link to cancel it there."
+            % (user.username, team.name, new_owner, provider, reference),
+        )
+        return None
+    if provider not in (Team.PROVIDER_STRIPE, Team.PROVIDER_PAYPAL):
+        return None
+
+    refund, problem = None, "nothing was refunded"
+    try:
+        if provider == Team.PROVIDER_STRIPE:
+            refund = refund_unused_month(user, reference, handed_over_at)
+        else:
+            refunded = Profile.objects.get(user=user).refund_paypal_payment_from_subscription(
+                reference, prorate=True
+            )
+            if isinstance(refunded, int):
+                refund = _paypal_refund_since(user, handed_over_at)
+            elif refunded is not None:
+                problem = str(refunded)
+    except Exception as e:
+        # billing.py: whatever went wrong, the old owner may be owed money, so this never ends silently.
+        problem = repr(e)
+    if refund is None:
+        logging.user(user, "~FRNo refund for a team handed over: %s" % problem)
+        EmailStaffNotification.delay(
+            event_type="team_handover_not_refunded",
+            subject="Team handed over, unused month not refunded: %s" % user.username,
+            body="%s handed %s to %s, but the unused part of the month their %s subscription %s last paid for wasn't "
+            "refunded (%s). It needs a look, and a refund by hand if one is due."
+            % (user.username, team.name, new_owner, provider, reference, problem),
+        )
+    StopRenewalsMadeBefore.delay(user_id=user.pk, started_at=handed_over_at.timestamp())
+    return refund
+
+
+def _paypal_refund_since(user, since):
+    """The dollars of the refund Profile.refund_paypal_payment_from_subscription recorded since a moment, as its
+    payment row holds them, in whole dollars."""
+    refund = (
+        PaymentHistory.objects.filter(
+            user=user, payment_provider="paypal", payment_amount__lt=0, payment_date__gte=since
+        )
+        .order_by("-payment_date")
+        .first()
+    )
+    return -refund.payment_amount if refund else None
 
 
 def _owners_team(user, plan, lapsed):

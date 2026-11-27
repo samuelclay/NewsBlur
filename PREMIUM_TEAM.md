@@ -880,12 +880,15 @@ Switching:
 
 Ownership transfer:
 
-- [ ] `transfer_ownership` no longer swaps at once. It records the pending owner, and the request expires after 7 days
-- [ ] The new owner buys the team's plan on any platform. `record_team_payment` then completes the transfer in one transaction: roles swap, `paid_through` becomes the new owner's period end, and the team never lapses in between
-- [ ] The new owner's team Pro grant is removed directly, without the release path that could mute their sites
-- [ ] The old owner becomes a manager holding a grant whose own plan is recorded as free, not as the team Pro they just had
-- [ ] The old owner's Stripe or PayPal subscription is cancelled and the unused part of the month refunded. A store subscriber gets a notice with the link to cancel, and staff are emailed
-- [ ] The old owner's later payment notices do nothing to the team
+- [x] `transfer_ownership` is a request, not a swap. It records the pending owner, and the request runs out after 7 days. The owner can cancel it and the pending owner can decline it, and it ends if the pending owner leaves the team
+- [x] The pending owner accepts by buying a team plan on any platform. `record_team_payment` then completes the transfer in one transaction: roles swap, the team's plan, provider, reference and paid period become the new owner's payment's, and the team never lapses in between
+- [x] Only the pending owner of a team may buy a team plan while holding a seat on it, on all four providers
+- [x] Nobody's grant is released and nobody's flags change at the handover. The new owner's grant becomes an owner's, with the end of their own plan recorded. The old owner's becomes a teammate's, remembering the plan they have on their own, never the team's
+- [x] A team plan's payments count toward the expiry of the account that owns the team and nobody else's, so the old owner's team payments do not become a plan of their own
+- [x] The old owner's Stripe or PayPal subscription is stopped and the unused part of the month refunded, prorated over the real period. A refund that fails leaves the transfer standing and staff are emailed. A store subscriber gets an email with the link to cancel, and staff are emailed once
+- [x] The old owner's later payment notices do nothing to the team
+- [x] A comped team is handed over on acceptance with nothing to pay, and stays comped
+- [x] The shared allowances, AI filter billing and the nightly expiry exemption follow the new owner
 
 Staff and the contact form:
 
@@ -1004,8 +1007,8 @@ Written before any code. Each one is a test.
 - [ ] A team is started without a payment the provider confirms
 - [x] Two payment notices at once create the team twice
 - [x] A team owner's switch between providers refunds most of a month
-- [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
-- [ ] The old owner's store subscription keeps renewing the team after a transfer
+- [x] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
+- [x] The old owner's store subscription keeps renewing the team after a transfer
 - [x] A Play expiry notice for an upgraded token ends the team
 - [x] A staff refund leaves the team running
 - [x] A comp is set on a paid team by mistake, so it never lapses

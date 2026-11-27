@@ -174,6 +174,14 @@ class Profile(models.Model):
     # one of them.
     TIER_FLAG_FIELDS = ("is_premium", "is_premium_trial", "is_archive", "is_archive_extra", "is_pro")
 
+    @classmethod
+    def team_payments(cls):
+        """models.py: the payment rows for a team plan, those that name one and older ones at a team plan's
+        price."""
+        return Q(plan__in=[plan for plan, _ in Team.PLAN_CHOICES]) | Q(
+            plan__isnull=True, payment_amount__in=cls.TEAM_MONTHLY_PRICES
+        )
+
     @property
     def is_self_hosted_ai(self):
         """True when Stripe billing is not configured but AI provider keys are.
@@ -2108,6 +2116,10 @@ class Profile(models.Model):
 
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
+        if not Team.objects.filter(owner_id=self.user_id).exists():
+            # models.py: a team plan's payments pay for the team of the account that owns it, so they're no plan of
+            # its own for an account that owns none, such as an owner who handed theirs on (apps/team/billing.py).
+            payment_history = payment_history.exclude(Profile.team_payments())
         (
             new_premium_expire,
             free_lifetime_premium,

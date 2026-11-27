@@ -1,0 +1,12 @@
+{% load i18n utils_tags %}{% autoescape off %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% blocktrans with username=new_owner.username team=team_name %}{{ username }} owns {{ team }} now. You stay on the team as a manager and keep Premium Pro.{% endblocktrans %}
+{% if provider == "app_store" %}
+{% blocktrans %}You paid for the team through the App Store, and only you can cancel that. So you aren't charged for it again, cancel it in your App Store subscriptions:{% endblocktrans %} {{ manage_url }}
+{% elif provider == "play" %}
+{% blocktrans %}You paid for the team through Google Play, and only you can cancel that. So you aren't charged for it again, cancel it in your Google Play subscriptions:{% endblocktrans %} {{ manage_url }}
+{% elif provider == "stripe" or provider == "paypal" %}
+{% trans "The subscription you paid for the team with won't renew." %}{% if refund %} {% blocktrans with amount=refund|floatformat:"-2" %}You've been refunded ${{ amount }}, the unused part of the month you paid for.{% endblocktrans %}{% endif %}
+{% endif %}
+Sam
+{% endautoescape %}

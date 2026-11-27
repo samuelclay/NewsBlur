@@ -1,5 +1,5 @@
-"""Team tasks: invite emails, what joining does to a teammate's own plan, and the hourly upkeep of teammates'
-Premium Pro (apps/team/grants.py)."""
+"""Team tasks: invite emails, what joining does to a teammate's own plan, handing a team to a new owner, and the hourly
+upkeep of teammates' Premium Pro (apps/team/grants.py)."""
 
 import datetime
 
@@ -11,8 +11,11 @@ from apps.profile.tasks import EmailStaffNotification
 from apps.team.grants import (
     deactivate_team,
     own_subscription,
+    send_former_owner_email,
+    send_new_owner_email,
     send_team_plan_ended_email,
     send_team_welcome_email,
+    send_transfer_requested_email,
     settle_own_plan_on_join,
 )
 from apps.team.models import Team, TeamInvite, TeamProGrant
@@ -132,6 +135,66 @@ def EmailTeamWelcome(team_id):
     send_team_welcome_email(team)
 
 
+# tasks.py: queued once a request to hand a team over has committed (Team.request_transfer). One replaced, ended or
+# run out before its turn isn't sent.
+@app.task(
+    name="email-team-transfer-requested",
+    autoretry_for=(Exception,),
+    retry_backoff=60,
+    retry_kwargs={"max_retries": 3},
+)
+def EmailTeamTransferRequested(team_id, pending_owner_id):
+    team = Team.objects.select_related("owner", "pending_owner").filter(pk=team_id).first()
+    if not team or not team.owner or not team.pending_owner:
+        return
+    if team.pending_owner_id != pending_owner_id or not team.transfer_waits_for(team.pending_owner):
+        return
+    send_transfer_requested_email(team)
+
+
+# tasks.py: queued once a team has changed hands (apps/team/billing.py _hand_over), for its old owner, with the
+# subscription that billed the team until then. Never retried, so its refund can't be made twice. Then the old owner
+# is emailed what happened to that subscription.
+@app.task(name="team-settle-hand-over")
+def SettleHandOver(team_id, user_id, provider, reference, handed_over_at):
+    # tasks.py: apps/team/billing.py imports this module.
+    from apps.team.billing import settle_former_owners_plan
+
+    team = Team.objects.select_related("owner").filter(pk=team_id).first()
+    user = User.objects.filter(pk=user_id).first()
+    if not team or not user:
+        return
+    handed_over_at = datetime.datetime.fromtimestamp(handed_over_at)
+    refund = settle_former_owners_plan(user, team, provider, reference, handed_over_at)
+    EmailTeamFormerOwner.delay(team_id=team_id, user_id=user_id, provider=provider, refund=refund)
+
+
+@app.task(
+    name="email-team-former-owner",
+    autoretry_for=(Exception,),
+    retry_backoff=60,
+    retry_kwargs={"max_retries": 3},
+)
+def EmailTeamFormerOwner(team_id, user_id, provider, refund=None):
+    team = Team.objects.select_related("owner").filter(pk=team_id).first()
+    user = User.objects.filter(pk=user_id).first()
+    if not team or not team.owner or not user:
+        return
+    send_former_owner_email(user, team, provider, refund)
+
+
+# tasks.py: queued once a team has changed hands (apps/team/billing.py _hand_over).
+@app.task(
+    name="email-team-new-owner", autoretry_for=(Exception,), retry_backoff=60, retry_kwargs={"max_retries": 3}
+)
+def EmailTeamNewOwner(team_id, user_id, former_owner_id):
+    team = Team.objects.select_related("owner").filter(pk=team_id).first()
+    # tasks.py: a team handed on again before this email's turn isn't theirs to be told about.
+    if not team or team.owner_id != user_id:
+        return
+    send_new_owner_email(team, User.objects.filter(pk=former_owner_id).first())
+
+
 @app.task(name="team-pro-grants")
 def TeamProGrants():
     now = datetime.datetime.now()
@@ -142,6 +205,10 @@ def TeamProGrants():
     for team in lapsed_teams:
         logging.debug(" ---> Team %s lapsed, ending its teammates' Premium Pro" % team)
         deactivate_team(team, lapsed_at=now)
+
+    # tasks.py: a request to hand a team over that its teammate didn't take up in time ends.
+    for team in Team.transfers_run_out(now):
+        team.expire_transfer(now)
 
     # tasks.py: a change to a teammate's own plan already under way when they join (PremiumExpire in
     # apps/profile/tasks.py ending a trial it loaded before the join, a payment webhook mid activation) writes

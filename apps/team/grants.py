@@ -13,7 +13,6 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
-from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext
 
@@ -145,14 +144,34 @@ def _own_plan_expire(user, grant):
     """grants.py: when the plan a team's owner has on their own ends. Their premium_expire followed the team's paid
     period (apps/team/billing.py), so it is the later of the end their grant keeps (TeamProGrant.own_premium_expire)
     and the end their own payments give, leaving out payments for a team plan."""
-    team_plans = [plan for plan, _ in Team.PLAN_CHOICES]
-    team_payments = Q(plan__in=team_plans) | Q(
-        plan__isnull=True, payment_amount__in=Profile.TEAM_MONTHLY_PRICES
-    )
     paid_through, _, _ = Profile.premium_expire_from_payments(
-        PaymentHistory.objects.filter(user=user).exclude(team_payments)
+        PaymentHistory.objects.filter(user=user).exclude(Profile.team_payments())
     )
     return max((end for end in (grant.own_premium_expire, paid_through) if end), default=None)
+
+
+def seat_grant_for_former_owner(user, held_as_owner):
+    """The grant of a team's owner who handed it to a teammate and keeps a seat on it (apps/team/billing.py
+    _hand_over), shaped as a teammate's: it remembers the plan they are on by themselves now, never the team's Pro or
+    the team plan they paid for, and keeps no end of it, since their premium_expire, which followed the team's paid
+    period while they owned it, is that end again. held_as_owner is False for the grant a lapsed team gave them as a
+    teammate when it came back (activate_team), which snapshot their profile after the lapse: the Pro a lapse leaves
+    an owner with no plan of their own until it expires (release_team_pro) is no plan of theirs."""
+    now = datetime.datetime.now()
+    with transaction.atomic():
+        profile = Profile.objects.select_for_update().get(user=user)
+        grant = TeamProGrant.objects.select_for_update().filter(user=user).first()
+        if not grant:
+            return
+        own_expire = _own_plan_expire(user, grant) if held_as_owner else profile.premium_expire
+        own_tier = grant.own_plan_on(own_expire, now)
+        TeamProGrant.objects.filter(pk=grant.pk).update(own_tier=own_tier, own_premium_expire=None)
+        if held_as_owner:
+            open_ended_plan = grant.own_lifetime and own_tier in TeamProGrant.PAID_TIERS
+            Profile.objects.filter(pk=profile.pk).update(
+                premium_expire=None if open_ended_plan else own_expire
+            )
+    logging.user(user, "~FMTeam Pro: handed the team on, own plan is %s" % own_tier)
 
 
 def deactivate_team(team, lapsed_at=None, taken_back=False):
@@ -422,6 +441,87 @@ def send_team_welcome_email(team):
         html = render_to_string("mail/email_team_welcome.xhtml", data)
         subject = gettext("Your %(plan)s plan has started") % {"plan": TIER_NAMES.get(team.plan)}
     _send(profile, subject, text, html, "team_welcome")
+
+
+def send_transfer_requested_email(team):
+    """Sent by EmailTeamTransferRequested (apps/team/tasks.py) to the teammate the owner asked to take the team over
+    (Team.request_transfer). It says what taking it over costs them, and the link opens the team dialog, where they
+    accept or decline."""
+    user = team.pending_owner
+    profile = Profile.objects.get(user=user)
+    if not user.email:
+        logging.user(user, "~FMNot sending team transfer request email, no email address")
+        return
+
+    data = dict(
+        user=user,
+        owner=team.owner,
+        team_name=team.name,
+        plan_name=TIER_NAMES.get(team.plan),
+        comped=team.is_comped,
+        price=Team.MONTHLY_PRICES[team.plan],
+        store_price=Team.STORE_MONTHLY_PRICES[team.plan],
+        expire_date=team.transfer_expire_date,
+    )
+    with account_translation(profile):
+        text = render_to_string("mail/email_team_transfer_requested.txt", data)
+        html = render_to_string("mail/email_team_transfer_requested.xhtml", data)
+        subject = gettext("%(username)s asked you to take over %(team)s") % {
+            "username": team.owner.username,
+            "team": team.name,
+        }
+    _send(profile, subject, text, html, "team_transfer_requested")
+
+
+def send_new_owner_email(team, former_owner):
+    """Sent by EmailTeamNewOwner (apps/team/tasks.py) once a team has changed hands (apps/team/billing.py
+    _hand_over)."""
+    user = team.owner
+    profile = Profile.objects.get(user=user)
+    if not user.email:
+        logging.user(user, "~FMNot sending team new owner email, no email address")
+        return
+
+    data = dict(
+        user=user,
+        former_owner=former_owner,
+        team_name=team.name,
+        plan_name=TIER_NAMES.get(team.plan),
+        comped=team.is_comped,
+    )
+    with account_translation(profile):
+        text = render_to_string("mail/email_team_new_owner.txt", data)
+        html = render_to_string("mail/email_team_new_owner.xhtml", data)
+        subject = gettext("You own %(team)s now") % {"team": team.name}
+    _send(profile, subject, text, html, "team_new_owner")
+
+
+def send_former_owner_email(user, team, provider, refund):
+    """Sent by SettleHandOver (apps/team/tasks.py) to a team's old owner once its hand over has committed and their
+    subscription for it was settled (apps/team/billing.py settle_former_owners_plan). It says what happens to that
+    subscription: the dollars refunded on Stripe or PayPal, and the link to cancel it in a store, which only they
+    can do."""
+    profile = Profile.objects.get(user=user)
+    if not user.email:
+        logging.user(user, "~FMNot sending team former owner email, no email address")
+        return
+
+    data = dict(
+        user=user,
+        new_owner=team.owner,
+        team_name=team.name,
+        provider=provider,
+        refund=refund,
+        manage_url=STORE_SUBSCRIPTION_URLS.get(provider),
+    )
+    with account_translation(profile):
+        text = render_to_string("mail/email_team_former_owner.txt", data)
+        html = render_to_string("mail/email_team_former_owner.xhtml", data)
+        subject = gettext("%(username)s owns %(team)s now") % {
+            "username": team.owner.username,
+            "team": team.name,
+        }
+    _send(profile, subject, text, html, "team_former_owner")
 
 
 def send_own_plan_email(user, team, subscription):

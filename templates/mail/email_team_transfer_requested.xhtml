@@ -1,0 +1,19 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    {% current_domain as domain %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with owner=owner.username team=team_name %}{{ owner }} asked you to take over {{ team }} and become its owner on NewsBlur.{% endblocktrans %}</p>
+    {% if comped %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with owner=owner.username %}The team's plan is free, so there's nothing to pay. Once you accept, the team is yours and {{ owner }} stays on it as a manager.{% endblocktrans %}</p>
+    {% else %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with owner=owner.username plan=plan_name %}As its owner you pay for the team's {{ plan }} plan yourself from then on. It's ${{ price }} a month, or ${{ store_price }} a month through the App Store or Google Play. Once you've paid, the team is yours and {{ owner }} stays on it as a manager.{% endblocktrans %}</p>
+    {% endif %}
+    <p style="line-height: 20px;">{% trans "Accept or decline in your team:" %} <a href="https://{{ domain }}/?next=team">{% trans "Open your team" %}</a></p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with date=expire_date|language_date:"F j, Y" %}The request runs out on {{ date }}.{% endblocktrans %}</p>
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

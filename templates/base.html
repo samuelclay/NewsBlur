@@ -63,6 +63,9 @@
       'team_paid_through'       : {% if team.team_paid_through %}new Date({{ team.team_paid_through }} * 1000){% else %}null{% endif %},
       'team_pending_plan'       : {% if team.team_pending_plan %}"{{ team.team_pending_plan|escapejs }}"{% else %}null{% endif %},
       'team_pending_owner'      : {% if team.team_pending_owner %}"{{ team.team_pending_owner|escapejs }}"{% else %}null{% endif %},
+      'team_transfer_expire_date': {% if team.team_transfer_expire_date %}new Date({{ team.team_transfer_expire_date }} * 1000){% else %}null{% endif %},
+      'team_is_pending_owner'   : {% if team.team_is_pending_owner is None %}null{% else %}{{ team.team_is_pending_owner|yesno:"true,false" }}{% endif %},
+      'team_transfer_monthly_price': {% if team.team_transfer_monthly_price is None %}null{% else %}{{ team.team_transfer_monthly_price }}{% endif %},
       {% endwith %}
       'max_feed_limit'          : {% if user_profile.max_feed_limit %}{{ user_profile.max_feed_limit }}{% else %}null{% endif %},
       'add_feed_limit'          : {% if user_profile.add_feed_limit %}{{ user_profile.add_feed_limit }}{% else %}null{% endif %},

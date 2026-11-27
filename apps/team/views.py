@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy
 
 from apps.profile.apple_subscriptions import app_account_token
 from apps.profile.models import Profile
-from apps.team.billing import start_comp_team
+from apps.team.billing import accept_comped_transfer, start_comp_team
 from apps.team.grants import own_plan_on_join
 from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember
 from apps.team.play_billing import play_account_id
@@ -40,6 +40,11 @@ FAILURE_MESSAGES = {
     "on_team": gettext_lazy("You can only be on one team at a time. Leave your current team first."),
     "team_billed_elsewhere": gettext_lazy(
         "Your team is already paid for another way, so it can't be bought here."
+    ),
+    "no_transfer": gettext_lazy("That request to take over the team isn't open anymore."),
+    "transfer_needs_payment": gettext_lazy("To take over this team, buy its plan."),
+    "team_comped": gettext_lazy(
+        "This team's plan is free, so there's nothing to pay. Accept the request to take it over instead."
     ),
 }
 
@@ -364,6 +369,7 @@ def leave_team(request):
 @ajax_login_required
 @json.json_view
 def transfer_ownership(request):
+    """views.py: the owner asks a teammate to take the team over (Team.request_transfer)."""
     user = get_user(request)
     membership = _membership(user, request.POST["team_id"])
     if not membership:
@@ -374,7 +380,54 @@ def transfer_ownership(request):
     if not member:
         return _failure("not_found")
 
-    reason = membership.team.transfer_ownership(membership, member)
+    reason = membership.team.request_transfer(membership, member)
+    if reason:
+        return _failure(reason)
+    return _team_response(user, membership.team_id)
+
+
+@required_params(team_id=int)
+@ajax_login_required
+@json.json_view
+def cancel_transfer(request):
+    user = get_user(request)
+    membership = _membership(user, request.POST["team_id"])
+    if not membership:
+        return _failure("not_found")
+
+    reason = membership.team.cancel_transfer(user)
+    if reason:
+        return _failure(reason)
+    return _team_response(user, membership.team_id)
+
+
+@required_params(team_id=int)
+@ajax_login_required
+@json.json_view
+def decline_transfer(request):
+    user = get_user(request)
+    membership = _membership(user, request.POST["team_id"])
+    if not membership:
+        return _failure("not_found")
+
+    reason = membership.team.decline_transfer(user)
+    if reason:
+        return _failure(reason)
+    return _team_response(user, membership.team_id)
+
+
+@required_params(team_id=int)
+@ajax_login_required
+@json.json_view
+def accept_transfer(request):
+    """views.py: the teammate asked takes over a comped team, which has nothing to pay. A team that is paid for is
+    taken over by buying its plan (apps/team/billing.py record_team_payment)."""
+    user = get_user(request)
+    membership = _membership(user, request.POST["team_id"])
+    if not membership:
+        return _failure("not_found")
+
+    reason = accept_comped_transfer(user, membership.team_id)
     if reason:
         return _failure(reason)
     return _team_response(user, membership.team_id)

@@ -49,6 +49,12 @@ class Team(models.Model):
     # day has passed without one, rather than lapsing and coming straight back on every renewal.
     LAPSE_AFTER = datetime.timedelta(days=1)
 
+    # models.py: what each team plan costs a month on the web, and through the App Store or Google Play.
+    MONTHLY_PRICES = {PLAN_TEAM: 79, PLAN_TEAM_ENTERPRISE: 129}
+    STORE_MONTHLY_PRICES = {PLAN_TEAM: "79.99", PLAN_TEAM_ENTERPRISE: "129.99"}
+    # models.py: how long a request to hand the team to a teammate waits for them (request_transfer).
+    TRANSFER_DAYS = 7
+
     DEFAULT_SEAT_LIMIT = 10
     NAME_MAX_LENGTH = 100
     # models.py: counts invite_sent activity, so re-sending a live invite counts against it too.
@@ -60,8 +66,8 @@ class Team(models.Model):
     slug = models.SlugField(max_length=120, unique=True)
     # models.py: the account that pays, and the user id everything the team shares falls under
     # (team_owner_id). An account owns at most one team. TeamMember holds the owner role too; create_team and
-    # transfer_ownership keep the two in step. Deleting the owner's account leaves the team for staff to
-    # reassign.
+    # the hand over (apps/team/billing.py) keep the two in step. Deleting the owner's account leaves the team for
+    # staff to reassign.
     owner = models.OneToOneField(
         User, related_name="owned_team", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -81,6 +87,7 @@ class Team(models.Model):
     # models.py: the plan the owner switched down to, a team plan or one of their own, which starts once the month
     # paid for ends (apps/team/stripe_billing.py). Until then plan stays the one paid for.
     pending_plan = models.CharField(max_length=32, null=True, blank=True)
+    # models.py: the teammate the owner asked to take the team over, and when (request_transfer).
     pending_owner = models.ForeignKey(
         User, related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -116,6 +123,32 @@ class Team(models.Model):
     def paid_for(cls, now):
         """The active teams whose plan hasn't lapsed at a moment (lapsed)."""
         return cls.objects.filter(status=cls.STATUS_ACTIVE).exclude(cls.lapsed(now))
+
+    @property
+    def is_comped(self):
+        """A comp with no end, which no payment changes (apps/team/billing.py)."""
+        return self.billing_provider == self.PROVIDER_COMP and self.paid_through is None
+
+    @property
+    def transfer_expire_date(self):
+        """When the request to hand this team to a teammate runs out, or None when there is none."""
+        if not self.pending_owner_id or not self.transfer_requested_date:
+            return None
+        return self.transfer_requested_date + datetime.timedelta(days=self.TRANSFER_DAYS)
+
+    def transfer_waits_for(self, user, now=None):
+        """Whether a request to hand this team over is waiting for this account to take it up."""
+        expire_date = self.transfer_expire_date
+        now = now or datetime.datetime.now()
+        return bool(expire_date) and self.pending_owner_id == user.pk and expire_date > now
+
+    @classmethod
+    def transfers_run_out(cls, now):
+        """The teams whose request to hand them over had run out at a moment (expire_transfer)."""
+        return cls.objects.filter(
+            pending_owner__isnull=False,
+            transfer_requested_date__lte=now - datetime.timedelta(days=cls.TRANSFER_DAYS),
+        )
 
     @classmethod
     def create_team(cls, owner, name, plan=PLAN_TEAM, name_confirmed=True):
@@ -319,29 +352,84 @@ class Team(models.Model):
             )
         return None
 
-    def transfer_ownership(self, owner_membership, new_owner_membership):
-        """The new owner must be another active member. The old owner stays on as a manager.
-        Returns a failure reason or None."""
+    def request_transfer(self, owner_membership, new_owner_membership):
+        """The owner asks another active teammate to take the team over. The team changes hands once that teammate
+        pays for a team plan, or accepts a comp, within TRANSFER_DAYS (apps/team/billing.py), and until then the
+        owner still owns and pays for it. A new request replaces the one before, and the teammate is emailed once it
+        commits. Returns a failure reason or None."""
+        # models.py: apps/team/tasks.py imports apps/team/grants.py, which imports apps.profile, which imports
+        # this module.
+        from apps.team.tasks import EmailTeamTransferRequested
+
         with transaction.atomic():
             owner, new_owner = self._locked_seats(owner_membership, new_owner_membership)
             if not owner or owner.role != TeamMember.ROLE_OWNER:
                 return "not_allowed"
             if not new_owner or new_owner.pk == owner.pk:
                 return "not_found"
-            owner.role = TeamMember.ROLE_MANAGER
-            owner.save(update_fields=["role"])
-            new_owner.role = TeamMember.ROLE_OWNER
-            new_owner.save(update_fields=["role"])
-            self.owner = new_owner.user
-            self.save(update_fields=["owner", "updated_date"])
+            self.pending_owner = new_owner.user
+            self.transfer_requested_date = datetime.datetime.now()
+            self.save(update_fields=["pending_owner", "transfer_requested_date", "updated_date"])
             TeamActivity.log(
                 self,
                 owner.user,
-                "ownership_transferred",
+                "transfer_requested",
                 user_id=new_owner.user_id,
                 username=new_owner.user.username,
             )
+            transaction.on_commit(
+                lambda: EmailTeamTransferRequested.delay(team_id=self.pk, pending_owner_id=new_owner.user_id)
+            )
         return None
+
+    def cancel_transfer(self, user):
+        """Only the owner cancels the request. Returns a failure reason or None."""
+        with transaction.atomic():
+            team = self.lock()
+            if team.owner_id != user.pk:
+                return "not_allowed"
+            return team._end_transfer(user, "transfer_cancelled")
+
+    def decline_transfer(self, user):
+        """Only the teammate asked declines the request. Returns a failure reason or None."""
+        with transaction.atomic():
+            team = self.lock()
+            if team.pending_owner_id != user.pk:
+                return "no_transfer"
+            return team._end_transfer(user, "transfer_declined")
+
+    def expire_transfer(self, now):
+        """The hourly task (apps/team/tasks.py) ends a request that ran out, read again under the team row lock so a
+        request made since is kept."""
+        with transaction.atomic():
+            team = self.lock()
+            if team.transfer_expire_date and team.transfer_expire_date <= now:
+                team._end_transfer(None, "transfer_expired")
+
+    def _end_transfer(self, actor, action):
+        if not self.pending_owner_id:
+            return "no_transfer"
+        TeamActivity.log(self, actor, action, user_id=self.pending_owner_id)
+        self.pending_owner = None
+        self.transfer_requested_date = None
+        self.save(update_fields=["pending_owner", "transfer_requested_date", "updated_date"])
+        return None
+
+    def transfer_canonical(self, viewer_id):
+        """The request waiting on this team for every client's team dialog, or None: who was asked, when it runs
+        out, whether the viewer is the one asked, and what taking it over costs a month, nothing for a comp.
+        """
+        expire_date = self.transfer_expire_date
+        if not expire_date or expire_date <= datetime.datetime.now():
+            return None
+        return {
+            "pending_owner_id": self.pending_owner_id,
+            "pending_owner": self.pending_owner.username,
+            "expire_date": expire_date,
+            "is_pending_owner": viewer_id == self.pending_owner_id,
+            "plan": self.plan,
+            "monthly_price": 0 if self.is_comped else self.MONTHLY_PRICES[self.plan],
+        }
 
     def canonical(self, membership):
         members = list(self.active_members().order_by("joined_date"))
@@ -356,6 +444,7 @@ class Team(models.Model):
             "seats_used": len(members),
             "role": membership.role,
             "members": [member.canonical() for member in members],
+            "transfer": self.transfer_canonical(membership.user_id),
         }
         if membership.is_manager:
             invites = self.pending_invites().select_related("created_by").order_by("-created_date")
@@ -447,6 +536,10 @@ class TeamMember(models.Model):
         self.departure = departure
         self.removed_date = datetime.datetime.now()
         self.save(update_fields=["status", "removed_by", "departure", "removed_date"])
+        # models.py: a request to hand the team to this teammate ends with their seat.
+        Team.objects.filter(pk=self.team_id, pending_owner_id=self.user_id).update(
+            pending_owner=None, transfer_requested_date=None
+        )
 
         plan = release_team_pro(self.user)
         if plan is None:
@@ -916,9 +1009,11 @@ def team_plan_fields(profile):
     """The team plan an account is on, for every client's profile payload (Profile.canonical and
     templates/base.html), where an owner and a teammate otherwise both look like Premium Pro. Owners and
     teammates alike get the plan and their role; only the owner gets the billing provider, the paid through
-    date, as a Unix time, and the plan a switch down moves them to on that date. Each is None for an account on no
-    active team. Everyone on an active team carries the Pro flags, so other accounts skip the lookup, and the rest
-    take one query."""
+    date, as a Unix time, and the plan a switch down moves them to on that date. While the owner's request to hand
+    the team over waits (Team.request_transfer), everyone gets who was asked, when it runs out, as a Unix time,
+    whether they are the one asked, and what taking it over costs a month, 0 for a comp. Each is None for an account
+    on no active team. Everyone on an active team carries the Pro flags, so other accounts skip the lookup, and the
+    rest take one query."""
     fields = dict(
         team_plan=None,
         team_role=None,
@@ -926,6 +1021,9 @@ def team_plan_fields(profile):
         team_paid_through=None,
         team_pending_plan=None,
         team_pending_owner=None,
+        team_transfer_expire_date=None,
+        team_is_pending_owner=None,
+        team_transfer_monthly_price=None,
     )
     if not profile.is_pro:
         return fields
@@ -939,17 +1037,31 @@ def team_plan_fields(profile):
             "team__billing_provider",
             "team__paid_through",
             "team__pending_plan",
+            "team__pending_owner_id",
             "team__pending_owner__username",
+            "team__transfer_requested_date",
         )
         .first()
     )
     if not seat:
         return fields
-    fields.update(
-        team_plan=seat["team__plan"],
-        team_role=seat["role"],
-        team_pending_owner=seat["team__pending_owner__username"],
+    fields.update(team_plan=seat["team__plan"], team_role=seat["role"])
+    # models.py: the team as this query read it, so the request is judged by Team's own rules.
+    team = Team(
+        plan=seat["team__plan"],
+        billing_provider=seat["team__billing_provider"],
+        paid_through=seat["team__paid_through"],
+        pending_owner_id=seat["team__pending_owner_id"],
+        transfer_requested_date=seat["team__transfer_requested_date"],
     )
+    expire_date = team.transfer_expire_date
+    if expire_date and expire_date > datetime.datetime.now():
+        fields.update(
+            team_pending_owner=seat["team__pending_owner__username"],
+            team_transfer_expire_date=int(expire_date.strftime("%s")),
+            team_is_pending_owner=team.pending_owner_id == profile.user_id,
+            team_transfer_monthly_price=0 if team.is_comped else Team.MONTHLY_PRICES[team.plan],
+        )
     if seat["role"] == TeamMember.ROLE_OWNER:
         paid_through = seat["team__paid_through"]
         fields.update(

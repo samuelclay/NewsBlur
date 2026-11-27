@@ -74,12 +74,17 @@ from apps.team.models import (
     TeamMember,
     TeamProGrant,
     team_owner_id,
+    team_scope,
 )
 from apps.team.play_billing import play_account_id
 from apps.team.tasks import (
+    EmailTeamFormerOwner,
+    EmailTeamNewOwner,
     EmailTeamPlanEnded,
+    EmailTeamTransferRequested,
     EmailTeamWelcome,
     SendTeamInviteEmail,
+    SettleHandOver,
     SettleOwnPlanOnJoin,
     StopRenewalsMadeBefore,
     TeamProGrants,
@@ -123,8 +128,18 @@ class TeamClientMixin:
             SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
         )
         # apps/team/tests.py: apply runs a task's retries in place too, and get() raises what its last try raised.
-        for task in (SettleOwnPlanOnJoin, EmailTeamPlanEnded, StopRenewalsMadeBefore):
+        for task in (
+            SettleOwnPlanOnJoin,
+            EmailTeamPlanEnded,
+            StopRenewalsMadeBefore,
+            EmailTeamTransferRequested,
+            EmailTeamNewOwner,
+            EmailTeamFormerOwner,
+        ):
             self.patch(task, "delay", side_effect=lambda task=task, **kwargs: task.apply(kwargs=kwargs).get())
+        # apps/team/tests.py: settling an old owner's subscription asks its provider, so a test that hands over a team
+        # whose provider it doesn't stand in for leaves it queued (settle_hand_overs).
+        self.patch(SettleHandOver, "delay")
         self.patch(EmailTeamWelcome, "delay", side_effect=lambda team_id: EmailTeamWelcome(team_id))
         for task in (EmailNewPremiumTrial, EmailStaffPremiumUpgrade, EmailStaffNotification):
             self.patch(task, "delay")
@@ -139,6 +154,13 @@ class TeamClientMixin:
         patcher = patch.object(target, attribute, **kwargs)
         self.addCleanup(patcher.stop)
         return patcher.start()
+
+    def settle_hand_overs(self):
+        """apps/team/tests.py: a team handed over settles its old owner's subscription in place, for a test that stands
+        in for that subscription's provider."""
+        self.patch(
+            SettleHandOver, "delay", side_effect=lambda **kwargs: SettleHandOver.apply(kwargs=kwargs).get()
+        )
 
     def client_for(self, user):
         client = Client(HTTP_USER_AGENT="Mozilla/5.0")
@@ -355,12 +377,13 @@ class Test_TeamConcurrentChanges(TeamClientMixin, TransactionTestCase):
         member = User.objects.create_user(username="member")
         team = self.create_team(owner, "Desk")
         self.add_member(team, member)
+        self.request(owner, "transfer_ownership", team_id=team.pk, user_id=member.pk)()
 
-        # The member's leave passes its role check, then waits while the owner hands them the team.
+        # The member's leave passes its role check, then waits while they take the comped team over.
         transfer_response, leave_response = self.while_held(
             team.lock,
             self.request(member, "leave", team_id=team.pk),
-            self.request(owner, "transfer_ownership", team_id=team.pk, user_id=member.pk),
+            self.request(member, "accept_transfer", team_id=team.pk),
         )
 
         self.assertEqual(transfer_response["code"], 1)
@@ -489,7 +512,8 @@ class Test_TeamRoles(TeamClientMixin, TestCase):
         )
 
     def test_transferring_ownership_hands_over_every_owner_power(self):
-        response = self.post(self.owner, "transfer_ownership", team_id=self.team.pk, user_id=self.member.pk)
+        self.post(self.owner, "transfer_ownership", team_id=self.team.pk, user_id=self.member.pk)
+        response = self.post(self.member, "accept_transfer", team_id=self.team.pk)
 
         roles = {member["username"]: member["role"] for member in response["team"]["members"]}
         self.assertEqual(roles["member"], TeamMember.ROLE_OWNER)
@@ -1826,6 +1850,28 @@ class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
         self.assertAlmostEqual(Profile.objects.get(user=self.owner).get_usage_billing_spend()[0], 0.30)
         self.assertAlmostEqual(Profile.objects.get(user=reader).get_usage_billing_spend()[0], 4.00)
 
+    def test_after_a_hand_over_ai_filters_bill_the_new_owner(self):
+        self.turn_on_owner_billing()
+        heir, reader = self.reader("heir", "free"), self.reader("reader", "free")
+        for user in (heir, reader):
+            self.join(user)
+        self.classify(reader)
+        Profile.objects.filter(user=heir).update(stripe_id="cus_heir", is_usage_billing=True)
+        self.addCleanup(self.forget_cached_limit, heir)
+
+        self.post(self.owner, "transfer_ownership", team_id=self.team.pk, user_id=heir.pk)
+        self.post(heir, "accept_transfer", team_id=self.team.pk)
+        self.classify(reader, input_tokens=500_000)
+        self.classify(self.owner, input_tokens=250_000)
+
+        self.assertEqual(
+            [call.kwargs["payload"]["stripe_customer_id"] for call in self.meter_events.call_args_list],
+            ["cus_owner", "cus_heir", "cus_heir"],
+        )
+        # What was billed before the hand over stays with whoever it was billed to.
+        self.assertAlmostEqual(MLLMCost.get_current_cycle_spend(self.owner.pk), 2.00)
+        self.assertAlmostEqual(Profile.objects.get(user=reader).get_usage_billing_spend()[0], 1.50)
+
     def test_only_the_owner_turns_on_usage_billing_for_the_team(self):
         reader = self.reader("reader", "free")
         self.join(reader)
@@ -2281,6 +2327,25 @@ class Test_TeamSharedAllowances(TeamProMixin, TestCase):
         self.used(MAITranscriptionUsage, self.brooke, 10)
         self.assertTrue(TranscriptionUsageTracker(self.fresh(self.alexis)).is_over_quota())
 
+    def test_after_a_hand_over_the_teams_allowances_follow_its_new_owner(self):
+        Profile.objects.filter(user=self.alexis).update(timezone="Asia/Tokyo")
+        self.listened(self.owner, 6)
+        self.used(MAskAIUsage, self.owner, 99)
+        self.post(self.owner, "transfer_ownership", team_id=self.team.pk, user_id=self.alexis.pk)
+        self.post(self.alexis, "accept_transfer", team_id=self.team.pk)
+        self.listened(self.brooke, 4)
+        self.used(MAskAIUsage, self.alexis, 1)
+
+        # What the old owner used before the hand over counts as a teammate's, in the new owner's days and weeks.
+        scope = team_scope(self.fresh(self.brooke))
+        self.assertEqual((scope.owner_id, str(scope.owner_timezone)), (self.alexis.pk, "Asia/Tokyo"))
+        self.assertFalse(self.can_listen(self.alexis)[0])
+        self.assertFalse(AskAIUsageTracker(self.fresh(self.brooke)).can_use()[0])
+        # A staff reset for any of them starts the team's week over.
+        staff = User.objects.create_user(username="staffer", is_staff=True)
+        self.client_for(staff).post("/listen/staff_usage", {"user_id": self.owner.pk})
+        self.assertTrue(self.can_listen(self.brooke)[0])
+
     def test_the_archive_assistant_is_one_daily_allowance_for_the_team(self):
         self.used(MArchiveAssistantUsage, self.owner, 60)
         self.used(MArchiveAssistantUsage, self.alexis, 39)
@@ -2579,6 +2644,9 @@ class Test_TeamBilling(TeamProMixin, TestCase):
                 team_paid_through=int(paid_through.strftime("%s")),
                 team_pending_plan=None,
                 team_pending_owner=None,
+                team_transfer_expire_date=None,
+                team_is_pending_owner=None,
+                team_transfer_monthly_price=None,
             ),
         )
         self.assertEqual(
@@ -2590,6 +2658,9 @@ class Test_TeamBilling(TeamProMixin, TestCase):
                 team_paid_through=None,
                 team_pending_plan=None,
                 team_pending_owner=None,
+                team_transfer_expire_date=None,
+                team_is_pending_owner=None,
+                team_transfer_monthly_price=None,
             ),
         )
         for user in (solo_pro, free):
@@ -2654,6 +2725,392 @@ class Test_TeamBillingAtOnce(TeamClientMixin, TransactionTestCase):
         self.assertEqual(Team.objects.filter(owner=buyer).count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         EmailStaffPremiumUpgrade.delay.assert_called_once()
+
+
+class Test_TeamTransfer(TeamProMixin, TestCase):
+    """A team's owner hands it to a teammate, who takes it over by paying for its plan or, for a comp, by accepting.
+    The paid teams here are billed through the App Store, whose subscription only its owner can cancel, so handing
+    one over asks no provider anything."""
+
+    STORE_REFERENCE = "2000000000001"
+
+    def setUp(self):
+        super().setUp()
+        self.settle_hand_overs()
+
+    def store_team(self, owner, paid_through=None):
+        """apps/team/tests.py: owner's team, paid for through the App Store 11 days ago, and a token to join it."""
+        team = self.pay(
+            owner,
+            paid_through or self.now + self.days(20),
+            provider=Team.PROVIDER_APP_STORE,
+            reference=self.STORE_REFERENCE,
+            paid_at=self.now - self.days(11),
+        ).team
+        return team, self.join_link_token(team, owner)
+
+    def ask(self, owner, user, team=None):
+        return self.post(owner, "transfer_ownership", team_id=(team or self.team).pk, user_id=user.pk)
+
+    def take_over(self, user, paid_through=None, **payment):
+        """apps/team/tests.py: user pays for a team plan through Stripe."""
+        return self.pay(
+            user, paid_through or self.now + self.days(31), reference="sub_%s" % user.username, **payment
+        )
+
+    def grant(self, user):
+        return TeamProGrant.objects.get(user=user)
+
+    def pending_owner_id(self, team=None):
+        return Team.objects.get(pk=(team or self.team).pk).pending_owner_id
+
+    def test_only_the_owner_asks_another_teammate_and_a_new_request_replaces_the_last(self):
+        manager, member, outsider = (self.reader(username) for username in ("manager", "member", "outsider"))
+        for user in (manager, member):
+            self.join(user)
+        self.post(self.owner, "change_role", team_id=self.team.pk, user_id=manager.pk, role="manager")
+        mail.outbox = []
+
+        self.assertEqual(self.ask(manager, member)["reason"], "not_allowed")
+        self.assertEqual(self.ask(member, manager)["reason"], "not_allowed")
+        self.assertEqual(self.ask(self.owner, outsider)["reason"], "not_found")
+        self.assertEqual(self.ask(self.owner, self.owner)["reason"], "not_found")
+        self.assertIsNone(self.pending_owner_id())
+
+        self.ask(self.owner, member)
+        self.ask(self.owner, manager)
+
+        self.assertEqual(self.pending_owner_id(), manager.pk)
+        self.assertEqual(self.post(member, "accept_transfer", team_id=self.team.pk)["reason"], "no_transfer")
+        self.assertEqual(len(self.mail_to(member)), 1)
+        [request_email] = self.mail_to(manager)
+        self.assertIn("?next=team", request_email.body)
+        self.assertIn(
+            dateformat.format(Team.objects.get(pk=self.team.pk).transfer_expire_date, "F j, Y"),
+            request_email.body,
+        )
+        # A comp has nothing to pay for.
+        self.assertNotIn("$", request_email.body)
+
+    def test_a_request_ends_when_cancelled_declined_or_its_teammate_leaves(self):
+        stays, leaves, removed = (self.reader(username) for username in ("stays", "leaves", "removed"))
+        for user in (stays, leaves, removed):
+            self.join(user)
+
+        self.ask(self.owner, stays)
+        self.assertEqual(self.post(leaves, "decline_transfer", team_id=self.team.pk)["reason"], "no_transfer")
+        self.assertEqual(self.post(stays, "cancel_transfer", team_id=self.team.pk)["reason"], "not_allowed")
+        self.assertEqual(self.post(stays, "decline_transfer", team_id=self.team.pk)["code"], 1)
+        self.assertIsNone(self.pending_owner_id())
+        self.ask(self.owner, stays)
+        self.assertEqual(self.post(self.owner, "cancel_transfer", team_id=self.team.pk)["code"], 1)
+        self.assertIsNone(self.pending_owner_id())
+
+        self.ask(self.owner, leaves)
+        self.leave(leaves)
+        self.assertIsNone(self.pending_owner_id())
+        self.ask(self.owner, removed)
+        self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=removed.pk)
+        self.assertIsNone(self.pending_owner_id())
+
+        # Coming back doesn't bring the request back.
+        self.join(leaves)
+        self.assertEqual(self.post(leaves, "accept_transfer", team_id=self.team.pk)["reason"], "no_transfer")
+        self.assertEqual(
+            list(
+                TeamActivity.objects.filter(action__in=("transfer_declined", "transfer_cancelled"))
+                .order_by("pk")
+                .values_list("action", "actor")
+            ),
+            [("transfer_declined", stays.pk), ("transfer_cancelled", self.owner.pk)],
+        )
+
+    def test_a_request_runs_out_after_a_week(self):
+        member = self.reader("member")
+        self.join(member)
+        self.ask(self.owner, member)
+        other_owner, heir = self.reader("otherowner"), self.reader("heir")
+        other_team, token = self.store_team(other_owner)
+        self.join(heir, token)
+        self.ask(other_owner, heir, other_team)
+        Team.objects.filter(pk=self.team.pk).update(transfer_requested_date=self.now - self.days(8))
+        Team.objects.filter(pk=other_team.pk).update(transfer_requested_date=self.now - self.days(6))
+
+        self.assertIsNone(self.get(member, "")["team"]["transfer"])
+        self.assertIsNone(Profile.objects.get(user=member).canonical()["team_pending_owner"])
+        self.assertEqual(self.post(member, "accept_transfer", team_id=self.team.pk)["reason"], "no_transfer")
+        self.assertEqual(self.get(member, "paypal_plan", plan=Team.PLAN_TEAM)["reason"], "on_team")
+
+        TeamProGrants()
+
+        self.assertEqual([self.pending_owner_id(team) for team in (self.team, other_team)], [None, heir.pk])
+        self.assertTrue(TeamActivity.objects.filter(team=self.team, action="transfer_expired").exists())
+
+    def test_both_people_see_the_request_with_when_it_runs_out_and_what_it_costs(self):
+        member = self.reader("member")
+        self.join(member)
+        self.ask(self.owner, member)
+        old_owner, heir = self.reader("oldowner"), self.reader("heir")
+        team, token = self.store_team(old_owner)
+        self.join(heir, token)
+        self.ask(old_owner, heir, team)
+
+        def seen(user):
+            payload = Profile.objects.get(user=user).canonical()
+            transfer = self.get(user, "")["team"]["transfer"]
+            return (
+                payload["team_pending_owner"],
+                payload["team_is_pending_owner"],
+                payload["team_transfer_monthly_price"],
+                transfer["is_pending_owner"],
+                transfer["monthly_price"],
+            )
+
+        self.assertEqual(seen(old_owner), ("heir", False, 79, False, 79))
+        self.assertEqual(seen(heir), ("heir", True, 79, True, 79))
+        self.assertEqual(seen(member), ("member", True, 0, True, 0))
+        runs_out = Profile.objects.get(user=heir).canonical()["team_transfer_expire_date"]
+        self.assertAlmostEqual(runs_out, (self.now + self.days(Team.TRANSFER_DAYS)).timestamp(), delta=60)
+
+    def test_paying_hands_the_team_over_on_the_new_owners_billing_with_no_moment_off_pro(self):
+        old_owner = self.reader("oldowner", "premium", premium_expire=self.now + self.days(15))
+        team, token = self.store_team(old_owner, paid_through=self.now + self.days(40))
+        heir = self.reader("heir", "archive", premium_expire=self.now + self.days(5), feeds=2)
+        teammate = self.reader("teammate", "free", feeds=2)
+        for user in (heir, teammate):
+            self.join(user, token)
+        grants = {user.username: self.grant(user).pk for user in (old_owner, heir, teammate)}
+        self.ask(old_owner, heir, team)
+        [request_email] = self.mail_to(heir)
+        self.assertIn("$79", request_email.body)
+        self.assertIn("$79.99", request_email.body)
+        mail.outbox = []
+
+        # Only the teammate asked takes the team over by paying.
+        self.assertEqual(self.take_over(teammate).reason, "on_team")
+        self.assertEqual(self.owned_team(old_owner), team)
+        # The new owner's month ends before the old owner's did, and it is the team's from now on.
+        heir_paid_through = self.now + self.days(31)
+        payment = self.take_over(heir, heir_paid_through, plan=Team.PLAN_TEAM_ENTERPRISE)
+
+        team.refresh_from_db()
+        self.assertEqual(payment.team.pk, team.pk)
+        self.assertEqual(
+            (
+                team.owner,
+                team.pending_owner,
+                team.status,
+                team.plan,
+                team.billing_provider,
+                team.billing_reference,
+            ),
+            (heir, None, Team.STATUS_ACTIVE, Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_STRIPE, "sub_heir"),
+        )
+        self.assertEqual(team.paid_through, heir_paid_through)
+        self.assertEqual(
+            dict(team.active_members().values_list("user__username", "role")),
+            {"oldowner": "manager", "heir": "owner", "teammate": "member"},
+        )
+        held = TeamProGrant.objects.filter(user__in=(old_owner, heir, teammate))
+        self.assertEqual({grant.user.username: grant.pk for grant in held}, grants)
+        for user in (old_owner, heir, teammate):
+            self.assertEqual((self.plan_of(user), self.muted_sites(user)), ("pro", 0))
+        heir_grant, old_owner_grant = self.grant(heir), self.grant(old_owner)
+        self.assertEqual(
+            (heir_grant.own_tier, heir_grant.own_premium_expire), ("archive", self.now + self.days(5))
+        )
+        self.assertEqual(self.premium_expire(heir), heir_paid_through)
+        self.assertEqual((old_owner_grant.own_tier, old_owner_grant.own_premium_expire), ("premium", None))
+        self.assertEqual(self.premium_expire(old_owner), self.now + self.days(15))
+        self.assertEqual(len(self.mail_to(heir)), 1)
+        [old_owner_email] = self.mail_to(old_owner)
+        self.assertIn("https://apps.apple.com/account/subscriptions", old_owner_email.body)
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team", "team_handed_over_in_store"])
+
+        # The old owner's store subscription renewing changes nothing on the team and tells staff nothing more.
+        self.pay(
+            old_owner,
+            self.now + self.days(70),
+            provider=Team.PROVIDER_APP_STORE,
+            reference=self.STORE_REFERENCE,
+        )
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.plan, team.billing_reference, team.paid_through),
+            (heir, Team.PLAN_TEAM_ENTERPRISE, "sub_heir", heir_paid_through),
+        )
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team", "team_handed_over_in_store"])
+
+    def test_the_old_owners_team_payments_give_them_no_plan_of_their_own(self):
+        old_owner = self.reader("oldowner")
+        team, token = self.store_team(old_owner)
+        PaymentHistory.objects.create(
+            user=old_owner,
+            payment_date=self.now - self.days(11),
+            payment_amount=79,
+            payment_provider="paypal",
+            plan=Team.PLAN_TEAM,
+        )
+        heir = self.reader("heir")
+        self.join(heir, token)
+        self.ask(old_owner, heir, team)
+        self.take_over(heir)
+
+        Profile.objects.get(user=old_owner).setup_premium_history()
+
+        self.assertEqual((self.grant(old_owner).own_tier, self.premium_expire(old_owner)), ("free", None))
+        self.leave(old_owner, team)
+        self.assertEqual(self.plan_of(old_owner), "free")
+
+    def test_a_hand_over_then_a_lapse_puts_each_on_their_own_plan_and_a_payment_brings_everyone_back(self):
+        old_owner = self.reader("oldowner", "premium", premium_expire=self.now + self.days(15), feeds=2)
+        team, token = self.store_team(old_owner, paid_through=self.now + self.days(40))
+        heir = self.reader("heir", "free", feeds=2)
+        teammate = self.reader("teammate", "free", feeds=2)
+        for user in (heir, teammate):
+            self.join(user, token)
+        self.ask(old_owner, heir, team)
+        heir_paid_through = self.now + self.days(31)
+        self.take_over(heir, heir_paid_through)
+        # The new owner never paid for a plan of their own, so their account expires from the team's paid period.
+        self.assertEqual(self.premium_expire(heir), heir_paid_through)
+
+        self.lapse(heir)
+
+        self.assertEqual(
+            [self.plan_of(user) for user in (old_owner, heir, teammate)], ["premium", "pro", "free"]
+        )
+        self.assertEqual(self.premium_expire(old_owner), self.now + self.days(15))
+        self.assertEqual([self.muted_sites(user) for user in (old_owner, heir, teammate)], [0, 0, 2])
+        # Once that period is long past, the new owner expires like any lapsed plan.
+        Profile.objects.filter(user=heir).update(premium_expire=self.now - self.days(40))
+        PremiumExpire()
+        self.assertEqual(self.plan_of(heir), "free")
+
+        self.take_over(heir)
+
+        self.assertEqual([self.plan_of(user) for user in (old_owner, heir, teammate)], ["pro", "pro", "pro"])
+        self.assertEqual([self.muted_sites(user) for user in (old_owner, heir, teammate)], [0, 0, 0])
+        self.assertEqual(self.grant(old_owner).own_tier, TeamProGrant.TIER_PREMIUM)
+
+    def test_the_old_owners_own_plan_running_out_keeps_their_seat_and_sites(self):
+        old_owner = self.reader("oldowner", "premium", premium_expire=self.now + self.days(5), feeds=2)
+        team, token = self.store_team(old_owner)
+        heir = self.reader("heir")
+        self.join(heir, token)
+        self.ask(old_owner, heir, team)
+        self.take_over(heir)
+
+        # The plan the old owner pays for on their own runs out, past the usual 30 days, and in the store.
+        Profile.objects.filter(user=old_owner).update(premium_expire=self.now - self.days(40))
+        PremiumExpire()
+        Profile.objects.get(user=old_owner).deactivate_premium()
+
+        self.assertEqual((self.plan_of(old_owner), self.muted_sites(old_owner)), ("pro", 0))
+        self.leave(old_owner, team)
+        self.assertEqual(self.plan_of(old_owner), "free")
+
+    def test_a_payment_that_cant_take_the_team_over_changes_nothing(self):
+        old_owner = self.reader("oldowner")
+        team, token = self.store_team(old_owner)
+        heir = self.reader("heir")
+        self.join(heir, token)
+        billing = Team.objects.filter(pk=team.pk).values_list("owner", "billing_reference", "paid_through")
+        before = billing.get()
+        self.ask(old_owner, heir, team)
+
+        lapsed = self.take_over(heir, self.now - self.days(3), paid_at=self.now - self.days(34))
+        Team.objects.filter(pk=team.pk).update(transfer_requested_date=self.now - self.days(8))
+        ran_out = self.take_over(heir)
+
+        self.assertEqual((lapsed.reason, ran_out.reason), ("lapsed", "on_team"))
+        self.assertEqual(billing.get(), before)
+        self.assertEqual(self.plan_of(heir), "pro")
+
+    def test_a_team_that_lapsed_after_the_request_comes_back_with_its_new_owner(self):
+        old_owner = self.reader("oldowner")
+        team, token = self.store_team(old_owner)
+        heir = self.reader("heir", "archive", premium_expire=self.now + self.days(5))
+        teammate = self.reader("teammate")
+        for user in (heir, teammate):
+            self.join(user, token)
+        self.ask(old_owner, heir, team)
+        # The team was paid through two days ago, and its owner has no plan of their own.
+        Profile.objects.filter(user=old_owner).update(premium_expire=self.now - self.days(2))
+        self.lapse(old_owner)
+        self.assertEqual(self.plan_of(teammate), "free")
+
+        self.take_over(heir)
+
+        team.refresh_from_db()
+        self.assertEqual((team.owner, team.status), (heir, Team.STATUS_ACTIVE))
+        self.assertEqual([self.plan_of(user) for user in (old_owner, heir, teammate)], ["pro", "pro", "pro"])
+        # The Pro the lapse left the old owner until it expired is no plan of theirs.
+        self.assertEqual(self.grant(old_owner).own_tier, TeamProGrant.TIER_FREE)
+        heir_grant = self.grant(heir)
+        self.assertEqual(
+            (heir_grant.own_tier, heir_grant.own_premium_expire), ("archive", self.now + self.days(5))
+        )
+
+    def test_a_lapse_landing_while_the_new_owner_pays_keeps_the_team(self):
+        old_owner = self.reader("oldowner")
+        team, token = self.store_team(old_owner)
+        heir, teammate = self.reader("heir"), self.reader("teammate")
+        for user in (heir, teammate):
+            self.join(user, token)
+        self.ask(old_owner, heir, team)
+        Team.objects.filter(pk=team.pk).update(paid_through=self.now - self.days(2))
+
+        def paid_first(team, **kwargs):
+            # The new owner's payment commits after the task chose the team and before it locks the team's row.
+            self.take_over(heir)
+            return deactivate_team(team, **kwargs)
+
+        with patch("apps.team.tasks.deactivate_team", side_effect=paid_first):
+            TeamProGrants()
+
+        team.refresh_from_db()
+        self.assertEqual((team.owner, team.status), (heir, Team.STATUS_ACTIVE))
+        self.assertEqual(self.plan_of(teammate), "pro")
+
+    def test_a_comped_team_changes_hands_on_accepting_and_stays_comped(self):
+        heir = self.reader("heir", "archive", premium_expire=self.now + self.days(5))
+        self.join(heir)
+        mail.outbox = []
+        self.ask(self.owner, heir)
+        self.assertEqual(self.get(heir, "paypal_plan", plan=Team.PLAN_TEAM)["reason"], "team_comped")
+        self.assertEqual(self.pay(heir, self.now + self.days(31)).reason, "comped")
+        self.assertEqual(Team.objects.get(pk=self.team.pk).owner, self.owner)
+
+        response = self.post(heir, "accept_transfer", team_id=self.team.pk)
+
+        self.team.refresh_from_db()
+        self.assertEqual(
+            (
+                response["code"],
+                self.team.owner,
+                self.team.status,
+                self.team.billing_provider,
+                self.team.paid_through,
+            ),
+            (1, heir, Team.STATUS_ACTIVE, Team.PROVIDER_COMP, None),
+        )
+        self.assertEqual(self.grant(heir).own_premium_expire, self.now + self.days(5))
+        self.assertEqual(self.premium_expire(heir), self.now + self.days(5))
+        self.assertIsNone(self.grant(self.owner).own_premium_expire)
+        [old_owner_email] = self.mail_to(self.owner)
+        self.assertNotIn("$", old_owner_email.body)
+        self.assertEqual(self.staff_events(), ["team_comp_paid"])
+
+        # A team that is paid for changes hands only on a payment.
+        old_owner, other = self.reader("oldowner"), self.reader("other")
+        team, token = self.store_team(old_owner)
+        self.join(other, token)
+        self.ask(old_owner, other, team)
+        self.assertEqual(
+            self.post(other, "accept_transfer", team_id=team.pk)["reason"], "transfer_needs_payment"
+        )
+        self.assertEqual(Team.objects.get(pk=team.pk).owner, old_owner)
 
 
 class FakeStripeBilling:
@@ -3506,6 +3963,94 @@ class Test_TeamStripeBilling(TeamProMixin, TestCase):
         # Pro was switched into the team with proration, so it isn't a plan of their own to go back to.
         self.assertEqual(TeamProGrant.objects.get(user=owner).own_tier, TeamProGrant.TIER_FREE)
 
+    def heir_of(self, owner):
+        """apps/team/tests.py: a teammate the owner asked to take their team over."""
+        team = self.owned_team(owner)
+        heir = self.reader("heir")
+        self.join(heir, self.join_link_token(team, owner))
+        self.post(owner, "transfer_ownership", team_id=team.pk, user_id=heir.pk)
+        return heir, team
+
+    def test_the_teammate_asked_to_take_a_team_over_may_buy_it_with_any_provider(self):
+        owner, _ = self.team_owner("teamowner")
+        heir, team = self.heir_of(owner)
+        teammate = self.reader("teammate")
+        self.join(teammate, self.join_link_token(team, owner))
+        comped_heir = self.reader("compedheir")
+        self.join(comped_heir)
+        self.post(self.owner, "transfer_ownership", team_id=self.team.pk, user_id=comped_heir.pk)
+
+        def answers(user):
+            checkout = self.profile_post(user, "stripe_checkout", plan=Team.PLAN_TEAM)["Location"]
+            refused = re.search(r"team_purchase=(\w+)", checkout)
+            return [refused.group(1) if refused else checkout] + [
+                self.get(user, path, plan=Team.PLAN_TEAM).get("reason")
+                for path in ("paypal_plan", "app_store_purchase", "play_purchase")
+            ]
+
+        self.assertEqual(answers(heir), ["https://checkout.stripe.com/c/pay/cs_1", None, None, None])
+        self.assertEqual(answers(teammate), ["on_team"] * 4)
+        self.assertEqual(answers(comped_heir), ["team_comped"] * 4)
+        # Once the request runs out, the teammate asked is on the team like anyone else.
+        Team.objects.filter(pk=team.pk).update(transfer_requested_date=self.now - self.days(8))
+        self.assertEqual(answers(heir), ["on_team"] * 4)
+
+    def test_paying_through_stripe_takes_a_team_over_and_refunds_the_rest_of_the_old_owners_month(self):
+        self.settle_hand_overs()
+        owner, old_subscription = self.team_owner("teamowner", period_end=self.now + self.days(10))
+        heir, team = self.heir_of(owner)
+        mail.outbox = []
+
+        self.stripe.known_customer(heir)
+        subscription = self.stripe.subscribe(heir, Team.PLAN_TEAM)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.billing_reference, team.paid_through),
+            (heir, subscription.id, self.paid_through(subscription)),
+        )
+        # 10 days were left of the old owner's 31 day month.
+        old_charge = self.stripe.latest_charge(old_subscription)
+        self.assertAlmostEqual(old_charge.amount_refunded, 7900 * 10 / 31, delta=1)
+        self.assertTrue(old_subscription.cancel_at_period_end)
+        self.assertFalse(subscription.cancel_at_period_end)
+        [old_owner_email] = self.mail_to(owner)
+        self.assertIn("$%.2f" % (old_charge.amount_refunded / 100), old_owner_email.body)
+        self.assertEqual(self.staff_events(), [])
+
+        # Stripe's notice of the old subscription winding down changes nothing on the team and tells no one.
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(old_subscription))
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.billing_reference, team.paid_through),
+            (heir, subscription.id, self.paid_through(subscription)),
+        )
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.staff_events(), [])
+
+    def test_a_refund_stripe_refuses_goes_to_staff_and_the_team_keeps_its_new_owner(self):
+        self.settle_hand_overs()
+        owner, old_subscription = self.team_owner("teamowner", period_end=self.now + self.days(10))
+        heir, team = self.heir_of(owner)
+        mail.outbox = []
+        self.patch(
+            stripe.Refund,
+            "create",
+            side_effect=stripe.error.APIConnectionError("Stripe can't be reached"),
+        )
+
+        self.stripe.known_customer(heir)
+        subscription = self.stripe.subscribe(heir, Team.PLAN_TEAM)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        team.refresh_from_db()
+        self.assertEqual((team.owner, team.billing_reference), (heir, subscription.id))
+        self.assertTrue(old_subscription.cancel_at_period_end)
+        self.assertEqual(self.staff_events(), ["team_handover_not_refunded"])
+        [old_owner_email] = self.mail_to(owner)
+        self.assertNotIn("$", old_owner_email.body)
+
 
 def paypal_time(moment):
     """apps/team/tests.py: a local time as PayPal writes times, in UTC to the second."""
@@ -4197,6 +4742,38 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         next_billing = dateutil.parser.parse(subscription["billing_info"]["next_billing_time"])
         self.assertEqual(response["next_invoice"]["payment_date"], str(next_billing.replace(tzinfo=None)))
 
+    def test_paying_through_paypal_takes_a_team_over_and_refunds_the_rest_of_the_old_owners_month(self):
+        self.settle_hand_overs()
+        owner, old_subscription = self.team_owner("teamowner", paid_at=self.now - self.days(20))
+        old_payment = self.paypal.latest_payment(old_subscription)
+        team = self.owned_team(owner)
+        heir = self.reader("heir")
+        self.join(heir, self.join_link_token(team, owner))
+        self.post(owner, "transfer_ownership", team_id=team.pk, user_id=heir.pk)
+        mail.outbox = []
+        self.assertEqual(self.get(heir, "paypal_plan", plan=Team.PLAN_TEAM)["code"], 1)
+
+        subscription = self.paypal.subscribe(heir, Team.PLAN_TEAM)
+        self.paypal.charge(subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.billing_reference, team.paid_through),
+            (heir, subscription["id"], self.paypal.next_billing(subscription)),
+        )
+        self.assertEqual(self.paypal.refunds, [(old_payment["id"], self.month_left(79, 20))])
+        self.assertEqual((old_subscription["status"], subscription["status"]), ("SUSPENDED", "ACTIVE"))
+        [old_owner_email] = self.mail_to(owner)
+        self.assertIn("$%d" % round(float(self.month_left(79, 20))), old_owner_email.body)
+
+        # PayPal's notice of the old subscription stopping changes nothing on the team and tells no one.
+        self.subscription_event("BILLING.SUBSCRIPTION.SUSPENDED", old_subscription)
+        team.refresh_from_db()
+        self.assertEqual((team.owner, team.billing_reference), (heir, subscription["id"]))
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.staff_events(), [])
+
 
 class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
     """apps/team/app_store_billing.py: team plans bought, renewed, switched and taken back in the App Store, with what
@@ -4584,6 +5161,39 @@ class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
 
         self.assertIn("NewsBlur Premium Team Enterprise Subscription", receipt)
         self.assertIn(dateformat.format(self.now + self.days(35), "F j, Y"), receipt)
+
+    def test_buying_in_the_app_store_takes_a_team_over_and_the_old_owners_subscription_tells_staff_once(self):
+        self.settle_hand_overs()
+        owner = self.reader("teamowner")
+        self.buy(owner, self.transaction(owner, "3000001", days_ago=10))
+        team = self.owned_team(owner)
+        heir = self.reader("heir")
+        self.join(heir, self.join_link_token(team, owner))
+        self.post(owner, "transfer_ownership", team_id=team.pk, user_id=heir.pk)
+        mail.outbox = []
+        self.assertEqual(self.get(heir, "app_store_purchase")["code"], 1)
+
+        response = self.buy(heir, self.transaction(heir, "3000010"))
+
+        team.refresh_from_db()
+        self.assertEqual(
+            (response["code"], team.owner, team.billing_reference, team.paid_through),
+            (1, heir, "3000010", self.now + self.days(31)),
+        )
+        [old_owner_email] = self.mail_to(owner)
+        self.assertIn("https://apps.apple.com/account/subscriptions", old_owner_email.body)
+        self.assertEqual(self.staff_events(), ["team_handed_over_in_store"])
+
+        # Apple renews the old owner's subscription until they cancel it, which changes nothing on the team.
+        renewal = self.transaction(owner, "3000002", original="3000001")
+        self.assertEqual(self.notify("DID_RENEW", renewal), 200)
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.billing_reference, team.paid_through),
+            (heir, "3000010", self.now + self.days(31)),
+        )
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.staff_events(), ["team_handed_over_in_store"])
 
 
 def google_time(moment):
@@ -5152,3 +5762,37 @@ class Test_TeamPlayBilling(TeamProMixin, TestCase):
         self.assertEqual(self.owned_team(owner).plan, Team.PLAN_TEAM_ENTERPRISE)
         self.assertIn("NewsBlur Premium Team Enterprise Subscription", receipt)
         self.assertIn(dateformat.format(expires, "F j, Y"), receipt)
+
+    def test_buying_on_google_play_takes_a_team_over_and_the_old_owners_subscription_tells_staff_once(self):
+        self.settle_hand_overs()
+        owner = self.reader("teamowner")
+        self.subscribe(owner, "token-owner")
+        self.buy(owner, "token-owner")
+        team = self.owned_team(owner)
+        heir = self.reader("heir")
+        self.join(heir, self.join_link_token(team, owner))
+        self.post(owner, "transfer_ownership", team_id=team.pk, user_id=heir.pk)
+        mail.outbox = []
+        self.assertEqual(self.get(heir, "play_purchase")["code"], 1)
+
+        self.subscribe(heir, "token-heir")
+        response = self.buy(heir, "token-heir")
+
+        team.refresh_from_db()
+        self.assertEqual(
+            (response["code"], team.owner, team.billing_reference, team.paid_through),
+            (1, heir, "token-heir", self.month_from_now),
+        )
+        [old_owner_email] = self.mail_to(owner)
+        self.assertIn("https://play.google.com/store/account/subscriptions", old_owner_email.body)
+        self.assertEqual(self.staff_events(), ["team_handed_over_in_store"])
+
+        # Google renews the old owner's subscription until they cancel it, which changes nothing on the team.
+        self.play.renew("token-owner", "GPA.token-owner..0", self.month_from_now + relativedelta(months=1))
+        self.assertEqual(self.notify("token-owner", self.RENEWED), 200)
+        team.refresh_from_db()
+        self.assertEqual(
+            (team.owner, team.billing_reference, team.paid_through), (heir, "token-heir", self.month_from_now)
+        )
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.staff_events(), ["team_handed_over_in_store"])

@@ -6,9 +6,10 @@ team plan waits for the end of the month already paid for, through a Stripe subs
 import datetime
 
 import stripe
+from django.conf import settings
 from django.db import transaction
 
-from apps.profile.models import Profile
+from apps.profile.models import PaymentHistory, Profile
 from apps.team.billing import (
     end_team_now,
     end_team_switched_down,
@@ -24,13 +25,18 @@ TEAM_PLANS = (Team.PLAN_TEAM, Team.PLAN_TEAM_ENTERPRISE)
 
 
 def team_purchase_refusal(user, provider=Team.PROVIDER_STRIPE):
-    """Why this account can't buy a team plan on the web through provider, Stripe or PayPal, or None. Someone
-    holding a seat on another person's team is on one team already, and a team another provider bills, or staff
-    comp, is already paid for there. An owner whose team the same provider bills switches between the two team
-    plans."""
+    """Why this account can't buy a team plan through provider, or None. Someone holding a seat on another person's
+    team is on one team already, unless its owner asked them to take it over (Team.request_transfer): buying its plan
+    with any provider is how they accept, except for a comp, which has nothing to pay. A team another provider bills,
+    or staff comp, is already paid for there. An owner whose team the same provider bills switches between the two
+    team plans."""
     membership = TeamMember.active_membership(user)
     if membership and membership.team.owner_id != user.pk:
-        return "on_team"
+        if not membership.team.transfer_waits_for(user):
+            return "on_team"
+        if membership.team.is_comped:
+            return "team_comped"
+        return None
     if Team.paid_for(datetime.datetime.now()).filter(owner=user).exclude(billing_provider=provider).exists():
         return "team_billed_elsewhere"
     return None
@@ -108,6 +114,50 @@ def release_schedule(subscription):
     schedule_id = subscription.get("schedule")
     if isinstance(schedule_id, str):
         stripe.SubscriptionSchedule.release(schedule_id)
+
+
+def refund_unused_month(user, subscription_id, at):
+    """Refunds, on the charge a team's Stripe subscription last made, what is left after at of the period that charge
+    paid for, prorated over that period, as when its owner hands the team on (apps/team/billing.py
+    settle_former_owners_plan). Profile.refund_prorated_stripe_payment prorates the account's latest charge over a
+    year instead. What was refunded on the charge already counts toward it. Returns the dollars refunded, or None when
+    Stripe shows nothing paid that is left to refund. Errors from Stripe reach the caller."""
+    stripe.api_key = settings.STRIPE_SECRET
+    status, _, invoice = _paid_period(stripe.Subscription.retrieve(subscription_id))
+    charge = invoice.get("charge") if status == "paid" else None
+    period = _charged_period(invoice) if charge else None
+    if not period or period[1] <= at:
+        return None
+    start, end = period
+    cents = int(charge["amount"] * ((end - at) / (end - start))) - (charge.get("amount_refunded") or 0)
+    if cents <= 0:
+        return None
+    refund = stripe.Refund.create(charge=charge["id"], amount=cents)
+    dollars = cents / 100.0
+    PaymentHistory.objects.create(
+        user=user,
+        payment_date=datetime.datetime.now(),
+        payment_amount=-int(round(dollars)),
+        payment_provider="stripe",
+        payment_identifier=refund.id,
+        refunded=True,
+    )
+    logging.user(
+        user, "~FRRefunded the unused month of team subscription %s: $%.2f" % (subscription_id, dollars)
+    )
+    return dollars
+
+
+def _charged_period(invoice):
+    """(start, end) of the service period an invoice charged for, from its first line that charged anything, as
+    Profile.stripe_payment_period reads it."""
+    for line in (invoice.get("lines") or {}).get("data") or []:
+        period = line.get("period") or {}
+        if (line.get("amount") or 0) > 0 and period.get("start") and period.get("end"):
+            return datetime.datetime.fromtimestamp(period["start"]), datetime.datetime.fromtimestamp(
+                period["end"]
+            )
+    return None
 
 
 def _team_billing(user_id):
