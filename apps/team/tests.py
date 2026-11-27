@@ -977,6 +977,31 @@ class Test_TeamProPremiumExpire(TeamProMixin, TestCase):
         self.assertEqual(self.muted_sites(lapsed), 1)
 
 
+class Test_TeamProStaleProfiles(TeamProMixin, TestCase):
+    """A request or task that loaded a teammate's profile before their seat began or ended, and saves the whole
+    row after, leaves the plan as the seat left it."""
+
+    def test_a_profile_saved_after_leaving_does_not_give_pro_back(self):
+        # An account that never paid has no premium_expire, so nothing would ever take back a Pro written here.
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        stale_profile = Profile.objects.get(user=reader)
+
+        self.leave(reader)
+        stale_profile.save()
+
+        self.assertEqual(self.plan_of(reader), "free")
+
+    def test_a_profile_saved_after_joining_does_not_take_pro_away(self):
+        reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
+        stale_profile = Profile.objects.get(user=reader)
+
+        self.join(reader)
+        stale_profile.save()
+
+        self.assertEqual(self.plan_of(reader), "pro")
+
+
 class Test_TeamLapse(TeamProMixin, TestCase):
     def roles(self):
         return dict(self.team.active_members().values_list("user__username", "role"))
@@ -1275,6 +1300,83 @@ class Test_TeamJoinOwnPlan(TeamProMixin, TestCase):
         self.assertEqual(mail.outbox, [])
 
 
+class Test_TeamProSeatEndsMidChange(TeamProMixin, TestCase):
+    """A plan of the teammate's own that changes at the moment their seat ends is applied to the plan the seat's
+    end left them on."""
+
+    def ending_the_seat_at_the_grant_lookup(self, user):
+        """apps/team/tests.py: the seat ends right after apps/profile/models.py has looked up the grant, before it
+        records anything on it."""
+        lookup = profile_models.team_pro_grant
+        seat = TeamMember.active_membership(user)
+        ended = []
+
+        def lookup_then_seat_ends(user_id):
+            grant = lookup(user_id)
+            if not ended:
+                ended.append(True)
+                seat.leave()
+            return grant
+
+        return patch.object(profile_models, "team_pro_grant", side_effect=lookup_then_seat_ends)
+
+    def test_a_plan_bought_as_the_seat_ends_is_applied(self):
+        reader = self.reader("reader", "free", feeds=2)
+        self.join(reader)
+        # Loaded during the seat, as a payment webhook loads it.
+        profile = Profile.objects.get(user=reader)
+
+        with self.ending_the_seat_at_the_grant_lookup(reader):
+            profile.activate_archive_extra()
+
+        self.assertEqual(self.plan_of(reader), "archive_extra")
+        self.assertEqual(self.muted_sites(reader), 0)
+
+    def test_an_own_plan_ending_as_the_seat_ends_is_not_put_back(self):
+        reader = self.reader("reader", "premium", premium_expire=self.now + self.days(100))
+        self.join(reader)
+        profile = Profile.objects.get(user=reader)
+
+        with self.ending_the_seat_at_the_grant_lookup(reader):
+            profile.deactivate_premium()
+
+        self.assertEqual(self.plan_of(reader), "free")
+
+    def test_a_credit_given_as_the_seat_ends_is_applied(self):
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        profile = Profile.objects.get(user=reader)
+
+        with self.ending_the_seat_at_the_grant_lookup(reader):
+            profile.extend_premium_by_days(365, tier="archive")
+
+        self.assertEqual(self.plan_of(reader), "archive")
+
+    def test_a_stripe_purchase_whose_history_sync_overlaps_the_seat_ending_is_applied(self):
+        # The trial this account once had ran out long ago, so a seat ending before the purchase's paid through
+        # date is synced puts it on free.
+        reader = self.reader("reader", "free", premium_expire=self.now - self.days(100))
+        Profile.objects.filter(user=reader).update(stripe_id="cus_reader")
+        StripeIds.objects.create(user=reader, stripe_id="cus_reader")
+        self.join(reader)
+        FakeStripe(
+            self, "cus_reader", [stripe_subscription("sub_pro", [Profile.plan_to_stripe_price("pro")])]
+        )
+        seat = TeamMember.active_membership(reader)
+        charge = MagicMock(created=int(self.now.timestamp()), status="succeeded", amount=2900, refunded=False)
+
+        def charges_as_the_seat_ends(**kwargs):
+            seat.leave()
+            return MagicMock(data=[charge])
+
+        self.patch(stripe.Charge, "list", side_effect=charges_as_the_seat_ends)
+
+        Profile.objects.get(user=reader).activate_pro()
+
+        self.assertEqual(self.plan_of(reader), "pro")
+        self.assertGreater(self.premium_expire(reader), self.now)
+
+
 @override_settings(**USAGE_PRICES)
 class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
     """AI filters are pay per use on the owner's Stripe customer, against the owner's spending limit."""
@@ -1416,14 +1518,14 @@ class Test_TeamProUpkeep(TeamProMixin, TestCase):
             {"premium": "1", "archive": "1", "pro": "1", "team_seats": "3"},
         )
 
-    def test_the_hourly_task_puts_back_pro_a_stale_profile_save_took_away(self):
-        reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
+    def test_the_hourly_task_puts_back_pro_a_trial_expiry_took_from_a_new_teammate(self):
+        reader = self.reader("reader", "trial", premium_expire=self.now - self.days(1))
         outsider = self.reader("outsider", "free")
-        # Loaded before the grant, as LastSeenMiddleware does, and saved whole after it.
-        stale_profile = Profile.objects.get(user=reader)
-        self.join(reader)
-        stale_profile.save()
-        self.assertEqual(self.plan_of(reader), "trial")
+        # The nightly expiry loaded the trial before the reader joined. They join while its email goes out, and
+        # it then ends the trial on the profile it loaded.
+        with patch.object(Profile, "send_premium_trial_expire_email", side_effect=lambda: self.join(reader)):
+            PremiumExpire()
+        self.assertEqual(self.plan_of(reader), "premium")
 
         TeamProGrants()
 

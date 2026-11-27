@@ -55,9 +55,9 @@ def TeamProGrants():
         logging.debug(" ---> Team %s lapsed, ending its teammates' Premium Pro" % team)
         deactivate_team(team)
 
-    # tasks.py: a request that loaded a teammate's profile before their grant and saves the whole row after it
-    # (LastSeenMiddleware in apps/profile/middleware.py) writes their old flags back, so Pro is put back on
-    # everyone holding a grant.
+    # tasks.py: a change to a teammate's own plan already under way when they join (PremiumExpire in
+    # apps/profile/tasks.py ending a trial it loaded before the join, a payment webhook mid activation) writes
+    # the plan it loaded over the Pro the join set, so Pro is put back on everyone holding a grant.
     pro_flags = TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO]
     restored = (
         Profile.objects.filter(user__team_pro_grant__isnull=False).exclude(**pro_flags).update(**pro_flags)

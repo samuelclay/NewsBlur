@@ -144,6 +144,9 @@ class Profile(models.Model):
     # transaction id. They carry no uniqueness, so only the 3-day recent-payment
     # check can dedupe them.
     STORE_PLACEHOLDER_IDENTIFIERS = ("missing", "in-progress")
+    # models.py: the columns that hold the account's plan, which save() writes only from an instance that changed
+    # one of them.
+    TIER_FLAG_FIELDS = ("is_premium", "is_premium_trial", "is_archive", "is_archive_extra", "is_pro")
 
     @property
     def is_self_hosted_ai(self):
@@ -471,13 +474,51 @@ class Profile(models.Model):
             "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
         }
 
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        profile = super().from_db(db, field_names, values)
+        profile._remember_tier_flags()
+        return profile
+
+    def refresh_from_db(self, using=None, fields=None):
+        refreshed = None if fields is None else list(fields)
+        super().refresh_from_db(using=using, fields=fields)
+        self._remember_tier_flags(refreshed)
+
+    def _remember_tier_flags(self, fields=None):
+        """Note the loaded tier flags, or only those named, as this instance last read or wrote them. A deferred
+        flag isn't loaded here."""
+        remembered = dict(self.__dict__.get("_tier_flags_in_db") or {})
+        for name in self.TIER_FLAG_FIELDS:
+            if name in self.__dict__ and (fields is None or name in fields):
+                remembered[name] = self.__dict__[name]
+        self._tier_flags_in_db = remembered
+
+    def _tier_flags_unchanged(self):
+        remembered = self.__dict__.get("_tier_flags_in_db")
+        loaded = {name: self.__dict__[name] for name in self.TIER_FLAG_FIELDS if name in self.__dict__}
+        return remembered is not None and loaded == remembered
+
     def save(self, *args, **kwargs):
         if not self.secret_token:
             self.secret_token = generate_secret_token(self.user.username, 12)
+        # models.py: a request or task that loaded this profile before the plan changed elsewhere (a team seat
+        # starting or ending in apps/team/grants.py, another payment webhook) and saves the whole row after must
+        # not write the old plan back, so the tier flags are written only when this instance changed one.
+        if not args and kwargs.get("update_fields") is None and self._tier_flags_unchanged():
+            kwargs["update_fields"] = [
+                field.attname
+                for field in self._meta.concrete_fields
+                if not field.primary_key
+                and field.attname in self.__dict__
+                and field.attname not in self.TIER_FLAG_FIELDS
+            ]
         try:
             super(Profile, self).save(*args, **kwargs)
         except DatabaseError as e:
             print(f" ---> Profile not saved: {e}")
+        else:
+            self._remember_tier_flags(kwargs.get("update_fields"))
 
     def archive_deleted_user(self):
         """Archive user data before deletion for analytics and tracking."""
@@ -856,13 +897,23 @@ class Profile(models.Model):
     def record_plan_on_team_grant(self, tier, downgrade_extra=False):
         """A teammate's flags show team Pro (apps/team/grants.py), so a plan they buy or are given on their own is
         recorded on their grant for when the seat ends, with no emails or flag changes, and its paid through date
-        is synced from their payments as the activate_* methods do. Returns False when they hold no grant."""
+        is synced from their payments as the activate_* methods do. Returns False when they hold no grant,
+        including one whose seat ended while this ran."""
         team_grant = team_pro_grant(self.user_id)
         if not team_grant:
             return False
         if team_grant.record_own_plan(tier, downgrade_extra=downgrade_extra):
             self.setup_premium_history()
-        return True
+        return self.still_holds_team_grant()
+
+    def still_holds_team_grant(self):
+        """Asked once a plan of this account's own has been recorded on its team grant. A seat that ended in the
+        meantime (apps/team/grants.py release_team_pro) may have missed it and has rewritten the tier flags, so
+        they are reloaded for the caller to apply the plan to, as for anyone else."""
+        if team_pro_grant(self.user_id):
+            return True
+        self.refresh_from_db(fields=list(self.TIER_FLAG_FIELDS))
+        return False
 
     def extend_premium_by_days(self, days, tier=None):
         # A referral or gift must not replace the lifetime grant from apps/oauth/reader_grants.py.
@@ -876,14 +927,15 @@ class Profile(models.Model):
         team_grant = team_pro_grant(self.user_id)
         if team_grant:
             team_grant.record_own_plan(tier or TeamProGrant.TIER_PREMIUM)
-        elif tier == "pro" and not self.is_pro:
-            self.activate_pro()
-        elif tier == "archive" and not self.is_archive:
-            self.activate_archive()
-        elif tier == "archive_extra" and not self.is_archive_extra:
-            self.activate_archive_extra()
-        elif not self.is_premium:
-            self.activate_premium()
+        if not team_grant or not self.still_holds_team_grant():
+            if tier == "pro" and not self.is_pro:
+                self.activate_pro()
+            elif tier == "archive" and not self.is_archive:
+                self.activate_archive()
+            elif tier == "archive_extra" and not self.is_archive_extra:
+                self.activate_archive_extra()
+            elif not self.is_premium:
+                self.activate_premium()
 
         # Extend premium_expire
         if self.premium_expire and self.premium_expire > now:
@@ -1216,7 +1268,8 @@ class Profile(models.Model):
         team_grant = team_pro_grant(self.user_id)
         if team_grant:
             team_grant.record_own_plan_ended()
-            return
+            if self.still_holds_team_grant():
+                return
 
         logging.user(
             self.user,

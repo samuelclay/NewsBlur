@@ -46,6 +46,9 @@ class LastSeenMiddleware(object):
 
             request.user.profile.last_seen_on = datetime.datetime.utcnow()
             request.user.profile.last_seen_ip = ip[-15:]
+            # middleware.py: only the columns set here, so an open reader tab's polls never write back a profile
+            # that a payment or a team seat changed while the request ran.
+            seen_fields = ["last_seen_on", "last_seen_ip"]
             # middleware.py records the same activity used by the existing monthly-active user metric.
             from utils.languages import normalize_language
 
@@ -56,7 +59,8 @@ class LastSeenMiddleware(object):
             )
             if language and language != "auto" and has_language_context:
                 request.user.profile.last_read_language = language
-            request.user.profile.save()
+                seen_fields.append("last_read_language")
+            request.user.profile.save(update_fields=seen_fields)
 
         return response
 

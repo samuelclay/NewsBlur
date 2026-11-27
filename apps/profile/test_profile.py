@@ -559,6 +559,52 @@ class Test_ConcurrentArchiveActivation(TestCase):
         self.assertEqual(self.archive_fetch.call_count, 1, "the archive backfill must be scheduled once")
 
 
+class Test_StaleProfileSaves(TestCase):
+    """A request that loaded a profile before another request changed it doesn't write the old values back."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="stalesave", password="password", email="stale@test.com"
+        )
+        self.now = datetime.datetime.now()
+
+    def test_a_partly_loaded_profile_saves_in_one_query_and_keeps_the_plan(self):
+        profile = Profile.objects.only("is_pro", "last_seen_on", "secret_token").get(user=self.user)
+        Profile.objects.filter(user=self.user).update(is_pro=True, is_archive=True, is_premium_trial=False)
+        profile.last_seen_on = self.now.replace(microsecond=0)
+
+        with self.assertNumQueries(1):
+            profile.save()
+
+        saved = Profile.objects.get(user=self.user)
+        self.assertEqual((saved.last_seen_on, saved.is_pro), (self.now.replace(microsecond=0), True))
+
+    def test_a_payment_synced_while_a_reader_tab_polls_keeps_its_new_date(self):
+        yesterday = self.now - datetime.timedelta(days=1)
+        Profile.objects.filter(user=self.user).update(
+            is_premium_trial=False,
+            premium_expire=self.now + datetime.timedelta(days=5),
+            last_seen_on=yesterday,
+        )
+        PaymentHistory.objects.create(
+            user=self.user, payment_date=self.now, payment_amount=36, payment_provider="paypal"
+        )
+        client = Client(HTTP_USER_AGENT="Mozilla/5.0")
+        client.force_login(self.user)
+
+        # The payment webhook syncs the history while LastSeenMiddleware (apps/profile/middleware.py), holding the
+        # profile it loaded, queues CleanupUser for a visitor back after an hour.
+        with patch(
+            "apps.profile.tasks.CleanupUser.delay",
+            side_effect=lambda **kwargs: Profile.objects.get(user=self.user).setup_premium_history(),
+        ):
+            client.get("/reader/refresh_feeds")
+
+        saved = Profile.objects.get(user=self.user)
+        self.assertGreater(saved.premium_expire, self.now + datetime.timedelta(days=300))
+        self.assertGreater(saved.last_seen_on, yesterday)
+
+
 class Test_SetupPremiumHistoryStripe(TestCase):
     """Tests for Stripe subscription handling in setup_premium_history (apps/profile/models.py)."""
 
