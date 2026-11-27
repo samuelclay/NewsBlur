@@ -6,6 +6,7 @@ from django.db import transaction
 from django.db.models import Max, Q
 
 from apps.profile.models import PaymentHistory, Profile
+from apps.team.models import team_pro_grant
 
 APPLE_PRODUCTS = {
     "newsblur_premium_auto_renew_36": ("premium", "ios-subscription", 36, 1),
@@ -15,6 +16,18 @@ APPLE_PRODUCTS = {
     "newsblur_premium_pro": ("pro", "ios-pro-subscription", 29, 3),
 }
 APPLE_PROVIDERS = tuple(product[1] for product in APPLE_PRODUCTS.values())
+TIER_RANKS = {tier: rank for tier, _provider, _amount, rank in APPLE_PRODUCTS.values()}
+
+
+def _paid_rank(profile):
+    """The rank of the plan the account pays for itself, or 0 for none. A teammate's flags show team Pro, so
+    theirs is the tier they hold on their own (apps/team/models.py TeamProGrant)."""
+    team_grant = team_pro_grant(profile.user_id)
+    if team_grant:
+        return TIER_RANKS.get(team_grant.own_tier, 0)
+    if not profile.is_premium or profile.is_premium_trial:
+        return 0
+    return 3 if profile.is_pro else 2 if profile.is_archive else 1
 
 
 def _apple_date(value):
@@ -77,10 +90,10 @@ def apply_verified_apple_transaction(transaction_data, now=None):
         profile = Profile.objects.select_for_update().select_related("user").get(user_id=user_id)
         if owners() != {user_id}:
             return {"status": "ambiguous"}
-        paid = profile.is_premium and not profile.is_premium_trial
+        current_rank = _paid_rank(profile)
+        paid = current_rank > 0
         if paid and profile.premium_expire is None:
             return {"status": "ignored", "reason": "lifetime", "user_id": user_id}
-        current_rank = (3 if profile.is_pro else 2 if profile.is_archive else 1) if paid else 0
         if paid and current_rank != rank:
             # apps/profile/models.py has one shared tier/expiry, so a lower-tier
             # or upgrade transaction needs separate entitlement reconciliation.
@@ -162,8 +175,7 @@ def apply_verified_apple_transaction(transaction_data, now=None):
         getattr(profile, "activate_%s" % tier)()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user_id=user_id)
-        fresh_rank = 3 if profile.is_pro else 2 if profile.is_archive else 1
-        if profile.premium_expire is None or fresh_rank != rank:
+        if profile.premium_expire is None or _paid_rank(profile) != rank:
             return {"status": "duplicate" if duplicate else "processed", "user_id": user_id}
         latest_expiration = (
             PaymentHistory.objects.filter(

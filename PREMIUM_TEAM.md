@@ -694,38 +694,38 @@ Two things the first draft of this plan got wrong, found by reading the code:
 
 The grant:
 
-- [ ] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, when the grant began, and when grace began and ends
-- [ ] `grant_team_pro` sets the Pro flags on the teammate's `Profile` without calling `activate_pro`, so no welcome email, staff email or payment row is produced
-- [ ] The grant never writes `premium_expire`. That stays the teammate's own paid through date
+- [x] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, when the grant began, and when grace began and ends
+- [x] `grant_team_pro` sets the Pro flags on the teammate's `Profile` without calling `activate_pro`, so no welcome email, staff email or payment row is produced
+- [x] The grant never writes `premium_expire`. That stays the teammate's own paid through date
 - [ ] On a new grant: the teammate's muted sites are reactivated up to what the team has room for, feeds are scheduled at Pro speed, and the archive backfill starts if they were not already on Archive
-- [ ] `release_team_pro` restores exactly the snapshotted tier if it is still paid for, restores a trial that is still running, and otherwise calls `deactivate_premium`
-- [ ] One row per person, so someone who rejoins during grace keeps their original snapshot instead of snapshotting team Pro as their own tier
+- [x] `release_team_pro` restores exactly the snapshotted tier if it is still paid for, restores a trial that is still running, and otherwise calls `deactivate_premium`
+- [x] One row per person, so someone who rejoins during grace keeps their original snapshot instead of snapshotting team Pro as their own tier
 
 Guards on the existing premium code (`apps/profile/models.py` and `apps/profile/tasks.py`):
 
-- [ ] The `PremiumExpire` task skips anyone holding a grant and the owner of an active team
-- [ ] `deactivate_premium` on a grant holder lowers their snapshot to free and returns, so a store expiry cannot strip team Pro
-- [ ] `activate_premium`, `activate_archive` and `activate_pro` on a grant holder raise the snapshot and return. That one guard covers store receipts, gift redemption, Stripe webhooks and referral credit
-- [ ] The App Store renewal handler (`apps/profile/apple_subscriptions.py`) ranks a teammate by their own tier, so their renewal is not dropped as a cross tier purchase
-- [ ] Referral credit (`MReferral.award_credit`) is computed from the person's own tier
-- [ ] `can_register_oauth_application` accepts a grant
+- [x] The `PremiumExpire` task skips anyone holding a grant and the owner of an active team
+- [x] `deactivate_premium` on a grant holder lowers their snapshot to free and returns, so a store expiry cannot strip team Pro
+- [x] `activate_premium`, `activate_archive` and `activate_pro` on a grant holder raise the snapshot and return. That one guard covers store receipts, gift redemption, Stripe webhooks and referral credit
+- [x] The App Store renewal handler (`apps/profile/apple_subscriptions.py`) ranks a teammate by their own tier, so their renewal is not dropped as a cross tier purchase
+- [x] Referral credit (`MReferral.award_credit`) is computed from the person's own tier
+- [x] `can_register_oauth_application` accepts a grant
 
 A seat's life:
 
-- [ ] none to active: an invite is accepted on an active team
-- [ ] active to grace: the teammate leaves or is removed while the team is active. 14 days, with an email on day 1 and day 10
-- [ ] grace to ended: an hourly Celery beat task releases the grant when grace runs out
-- [ ] grace to active: the person rejoins. The row and its snapshot are reused
-- [ ] active to ended at once: the team lapses
-- [ ] Someone already in grace when their old team lapses keeps the date their day 1 email promised
-- [ ] A teammate whose own plan ran out while they were on the team drops to free when grace ends, with no further 30 days from `PremiumExpire`
+- [x] none to active: an invite is accepted on an active team
+- [x] active to grace: the teammate leaves or is removed while the team is active. 14 days, with an email on day 1 and day 10
+- [x] grace to ended: an hourly Celery beat task releases the grant when grace runs out
+- [x] grace to active: the person rejoins. The row and its snapshot are reused
+- [x] active to ended at once: the team lapses
+- [x] Someone already in grace when their old team lapses keeps the date their day 1 email promised
+- [x] A teammate whose own plan ran out while they were on the team drops to free when grace ends, with no further 30 days from `PremiumExpire`
 
 A team's life:
 
 - [ ] `Team.paid_through` holds the end of the owner's paid period. The lapse cannot use `premium_expire`, which counts every payment as a year
-- [ ] `activate_team` and `deactivate_team` are the two functions billing calls. Deactivating releases every teammate's grant at once and sends one email to everyone. Activating grants again with fresh snapshots
-- [ ] The same beat task lapses a team whose `paid_through` has passed
-- [ ] If the owner's account is deleted, the team goes inactive and its teammates are released
+- [x] `activate_team` and `deactivate_team` are the two functions billing calls. Deactivating releases every teammate's grant at once and sends one email to everyone. Activating grants again with fresh snapshots
+- [x] The same beat task lapses a team whose `paid_through` has passed
+- [x] If the owner's account is deleted, the team goes inactive and its teammates are released
 
 A new teammate's own subscription:
 
@@ -890,10 +890,10 @@ Written before any code. Each one is a test.
 
 - [x] Two invites are accepted at once and the team ends up with 11 seats
 - [ ] A teammate with a personal Premium Archive subscription leaves the team and drops to free
-- [ ] A team's payment fails and teammates keep Pro after the paid period ends
-- [ ] A teammate removed from an active team loses Pro before their 14 days are up
+- [x] A team's payment fails and teammates keep Pro after the paid period ends
+- [x] A teammate removed from an active team loses Pro before their 14 days are up
 - [ ] A lapsed team pays again and its folders, roles or settings are gone
-- [ ] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
+- [x] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
 - [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
 - [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
@@ -901,22 +901,22 @@ Written before any code. Each one is a test.
 - [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
 - [ ] One owner ends up paying for a team plan in two places
 - [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
-- [ ] The nightly expiry sends a teammate the grace email because of an old trial date
-- [ ] A new signup who joins during their trial is expired by the trial branch
-- [ ] An App Store renewal during the seat is dropped, and the person falls to free after leaving
-- [ ] A Play expiry notice strips team Pro
-- [ ] Archive bought or gifted during the seat is lost when the seat ends
-- [ ] Rejoining during grace snapshots team Pro as the person's own tier, so they keep Pro for good
-- [ ] A plan that is still paid for drops to free when the seat ends, or a plan that ran out survives it
+- [x] The nightly expiry sends a teammate the grace email because of an old trial date
+- [x] A new signup who joins during their trial is expired by the trial branch
+- [x] An App Store renewal during the seat is dropped, and the person falls to free after leaving
+- [x] A Play expiry notice strips team Pro
+- [x] Archive bought or gifted during the seat is lost when the seat ends
+- [x] Rejoining during grace snapshots team Pro as the person's own tier, so they keep Pro for good
+- [x] A plan that is still paid for drops to free when the seat ends, or a plan that ran out survives it
 - [ ] A webhook that saves the whole profile row overwrites the grant
-- [ ] Joining sends the Pro welcome email or the staff upgrade email, or writes a payment row
-- [ ] The day 10 email goes out twice or never
-- [ ] Removal from an inactive team gives 14 days of grace
+- [x] Joining sends the Pro welcome email or the staff upgrade email, or writes a payment row
+- [x] The day 10 email goes out twice or never
+- [x] Removal from an inactive team gives 14 days of grace
 - [ ] A shared meter counts usage from before someone joined, gives each person their own 10 hours, or keeps counting someone in grace
 - [ ] AI filters bill the teammate's own Stripe customer or ignore the owner's spending limit
 - [ ] The team passes 10,000 sites through add a site, OPML import, unmute or the feed chooser
 - [ ] A site several teammates follow is counted more than once, or muted sites are counted
-- [ ] Deleting the owner's account leaves teammates on Pro for good
+- [x] Deleting the owner's account leaves teammates on Pro for good
 
 **Notifications**
 

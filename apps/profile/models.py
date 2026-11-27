@@ -47,6 +47,7 @@ from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.team.models import TeamProGrant, team_pro_grant
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
@@ -292,7 +293,11 @@ class Profile(models.Model):
             and self.is_premium
             and not self.is_premium_trial
             and self.user.is_active
-            and (self.premium_expire is None or self.premium_expire > datetime.datetime.now())
+            and (
+                self.premium_expire is None
+                or self.premium_expire > datetime.datetime.now()
+                or team_pro_grant(self.user_id)
+            )
         )
 
     @property
@@ -733,6 +738,8 @@ class Profile(models.Model):
             "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s, trial=%s)"
             % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+        if self.record_plan_on_team_grant(TeamProGrant.TIER_PREMIUM):
+            return True
 
         # Capture trial status before the atomic update clears it
         was_trial = self.is_premium_trial is True
@@ -830,6 +837,17 @@ class Profile(models.Model):
             self.user.payments.filter(payment_provider="oauth-reader-grant").exclude(refunded=True).exists()
         )
 
+    def record_plan_on_team_grant(self, tier, downgrade_extra=False):
+        """A teammate's flags show team Pro (apps/team/grants.py), so a plan they buy or are given on their own is
+        recorded on their grant for when the seat ends, with no emails or flag changes, and its paid through date
+        is synced from their payments as the activate_* methods do. Returns False when they hold no grant."""
+        team_grant = team_pro_grant(self.user_id)
+        if not team_grant:
+            return False
+        if team_grant.record_own_plan(tier, downgrade_extra=downgrade_extra):
+            self.setup_premium_history()
+        return True
+
     def extend_premium_by_days(self, days, tier=None):
         # A referral or gift must not replace the lifetime grant from apps/oauth/reader_grants.py.
         if self.is_pro and self.premium_expire is None and self.has_oauth_reader_grant():
@@ -837,8 +855,12 @@ class Profile(models.Model):
 
         now = datetime.datetime.now()
 
-        # Ensure user is at the required tier
-        if tier == "pro" and not self.is_pro:
+        # Ensure user is at the required tier. A teammate's flags already show team Pro, so the credit's tier is
+        # recorded on their grant (apps/team/grants.py) and applies once the seat ends.
+        team_grant = team_pro_grant(self.user_id)
+        if team_grant:
+            team_grant.record_own_plan(tier or TeamProGrant.TIER_PREMIUM)
+        elif tier == "pro" and not self.is_pro:
             self.activate_pro()
         elif tier == "archive" and not self.is_archive:
             self.activate_archive()
@@ -961,6 +983,8 @@ class Profile(models.Model):
                 self.is_premium_trial,
             ),
         )
+        if self.record_plan_on_team_grant(tier, downgrade_extra=downgrade_extra):
+            return True
 
         was_trial = self.is_premium_trial
 
@@ -1077,6 +1101,8 @@ class Profile(models.Model):
             "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s, trial=%s)"
             % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+        if self.record_plan_on_team_grant(TeamProGrant.TIER_PRO):
+            return True
 
         was_trial = self.is_premium_trial
 
@@ -1169,6 +1195,11 @@ class Profile(models.Model):
     def deactivate_premium(self):
         # A canceled store subscription is independent of the grant in apps/oauth/reader_grants.py.
         if self.is_pro and self.has_oauth_reader_grant():
+            return
+        # A teammate keeps team Pro (apps/team/grants.py). The plan that ended was their own.
+        team_grant = team_pro_grant(self.user_id)
+        if team_grant:
+            team_grant.record_own_plan_ended()
             return
 
         logging.user(
@@ -1850,12 +1881,16 @@ class Profile(models.Model):
             % (total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire),
         )
 
+        # A teammate's flags show team Pro (apps/team/grants.py), so the plan they pay for is compared with the
+        # tier they hold on their own, and the activate_* calls below record it on their grant.
+        team_grant = team_pro_grant(self.user_id)
+        own = team_grant.own_flags() if team_grant else self
         has_current_paid_period = self.premium_expire and self.premium_expire > datetime.datetime.now()
         has_recent_paid_payment = recent_payments_count > 0
         if (
             set_premium_expire
             and has_current_paid_period
-            and (not self.is_premium or (self.is_premium_trial and has_recent_paid_payment))
+            and (not own.is_premium or (own.is_premium_trial and has_recent_paid_payment))
         ):
             self.activate_premium()
 
@@ -1874,13 +1909,13 @@ class Profile(models.Model):
             Profile.plan_to_stripe_price("archive_extra"),
             Profile.plan_to_paypal_plan_id("archive_extra"),
         )
-        if active_plan == Profile.plan_to_stripe_price("pro") and not self.is_pro:
+        if active_plan == Profile.plan_to_stripe_price("pro") and not own.is_pro:
             self.activate_pro()
-        elif active_plan == Profile.plan_to_paypal_plan_id("pro") and not self.is_pro:
+        elif active_plan == Profile.plan_to_paypal_plan_id("pro") and not own.is_pro:
             self.activate_pro()
-        elif active_plan and active_plan in archive_extra_plans and not self.is_archive_extra:
+        elif active_plan and active_plan in archive_extra_plans and not own.is_archive_extra:
             self.activate_archive_extra()
-        elif active_plan and active_plan in archive_plans and (not self.is_archive or self.is_archive_extra):
+        elif active_plan and active_plan in archive_plans and (not own.is_archive or own.is_archive_extra):
             # Also covers an Archive Extra subscriber whose live subscription went back to plain Archive.
             self.activate_archive(downgrade_extra=True)
 
@@ -5973,7 +6008,12 @@ class MReferral(mongo.Document):
 
         # Determine referrer's current tier for credit calculation
         profile = referrer.profile
-        if profile.is_pro:
+        team_grant = team_pro_grant(referrer.pk)
+        if team_grant:
+            # A teammate's flags show team Pro (apps/team/grants.py); their credit follows the plan they have.
+            own_tier = team_grant.own_tier
+            referrer_tier = own_tier if own_tier in cls.TIER_YEARLY_COST else "premium"
+        elif profile.is_pro:
             referrer_tier = "pro"
         elif profile.is_archive and profile.is_archive_extra:
             referrer_tier = "archive_extra"

@@ -1,0 +1,14 @@
+{% load i18n utils_tags %}{% autoescape off %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% blocktrans with team=team_name %}The Premium Team plan for {{ team }} has ended, so its teammates no longer get Premium Pro from the team.{% endblocktrans %}
+{% if plan == "free" %}
+{% trans "Your account is back on the free plan. All of your sites are muted, and you choose up to 64 of them to keep:" %} https://{{ domain }}{{ user.profile.autologin_url }}?next=feedchooser
+{% elif plan == "trial" %}
+{% blocktrans with date=trial_date|language_date:"F j, Y" %}Your account is back on your free trial, which ends on {{ date }}.{% endblocktrans %}
+{% elif plan %}
+{% blocktrans with plan=plan_name %}Your account is back on the plan you have on your own, {{ plan }}.{% endblocktrans %}
+{% endif %}
+{% trans "The team and its members are still there. When the team's plan starts again, everyone on it gets Premium Pro back." %}
+
+Sam
+{% endautoescape %}

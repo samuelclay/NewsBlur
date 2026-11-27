@@ -1,0 +1,20 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    {% current_domain as domain %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with team=team_name %}The Premium Team plan for {{ team }} has ended, so its teammates no longer get Premium Pro from the team.{% endblocktrans %}</p>
+    {% if plan == "free" %}
+    <p style="line-height: 20px;">{% trans "Your account is back on the free plan. All of your sites are muted, and you choose up to 64 of them to keep:" %} <a href="https://{{ domain }}{{ user.profile.autologin_url }}?next=feedchooser">{% trans "Choose your sites" %}</a></p>
+    {% elif plan == "trial" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with date=trial_date|language_date:"F j, Y" %}Your account is back on your free trial, which ends on {{ date }}.{% endblocktrans %}</p>
+    {% elif plan %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with plan=plan_name %}Your account is back on the plan you have on your own, {{ plan }}.{% endblocktrans %}</p>
+    {% endif %}
+    <p style="line-height: 20px;">{% trans "The team and its members are still there. When the team's plan starts again, everyone on it gets Premium Pro back." %}</p>
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

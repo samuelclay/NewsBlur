@@ -1,5 +1,6 @@
 import datetime
 import secrets
+from types import SimpleNamespace
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -47,6 +48,9 @@ class Team(models.Model):
     plan = models.CharField(max_length=32, choices=PLAN_CHOICES, default=PLAN_TEAM)
     seat_limit = models.PositiveIntegerField(default=DEFAULT_SEAT_LIMIT)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    # models.py: the end of the owner's paid period, written by billing. The hourly team-pro-grants task
+    # (apps/team/tasks.py) lapses the team once it passes. Empty means the team doesn't lapse on a date.
+    paid_through = models.DateTimeField(null=True, blank=True)
     created_date = models.DateTimeField(default=datetime.datetime.now)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -301,10 +305,23 @@ class TeamMember(models.Model):
         return self.role == self.ROLE_MANAGER and member.role == self.ROLE_MEMBER
 
     def mark_removed(self, removed_by):
+        # models.py: apps/team/grants.py imports apps.profile, which imports this module.
+        from apps.team.grants import begin_seat_grace, release_team_pro
+
         self.status = self.STATUS_REMOVED
         self.removed_by = removed_by
         self.removed_date = datetime.datetime.now()
         self.save(update_fields=["status", "removed_by", "removed_date"])
+
+        # models.py: a seat on an active team keeps its Premium Pro through 14 days of grace, and one on an
+        # inactive team has none left to keep. Grace from an earlier team's seat runs to the date it promised.
+        grant = team_pro_grant(self.user)
+        if not grant or grant.member_id != self.pk:
+            return
+        if self.team.status == Team.STATUS_ACTIVE:
+            begin_seat_grace(self)
+        else:
+            release_team_pro(self.user)
 
     def leave(self):
         """Returns a failure reason or None."""
@@ -380,6 +397,9 @@ class TeamInvite(models.Model):
         """Join the team, reusing the user's earlier seat row if they had one. Returns a failure reason or
         None. The team row lock makes the seat count and the single use of an email invite hold when several
         people accept at once."""
+        # models.py: apps/team/grants.py imports apps.profile, which imports this module.
+        from apps.team.grants import grant_team_pro
+
         try:
             with transaction.atomic():
                 team = self.team.lock()
@@ -421,6 +441,9 @@ class TeamInvite(models.Model):
                     invite.accepted_date = now
                     invite.save(update_fields=["accepted_by", "accepted_date"])
                 TeamActivity.log(team, user, "member_joined", role=invite.role, via=invite.kind)
+                # models.py: granted in the seat's own transaction, so a seat never commits without its Pro.
+                if team.status == Team.STATUS_ACTIVE:
+                    grant_team_pro(member)
         except IntegrityError:
             # models.py: the same account joined another team at the same moment, and the one active team
             # constraint on TeamMember refused this join.
@@ -504,8 +527,117 @@ class TeamActivity(models.Model):
         }
 
 
+class TeamProGrant(models.Model):
+    """The Premium Pro a team gives one teammate (apps/team/grants.py). Their Profile carries the real Pro flags
+    while they hold it, so this row keeps the plan they have on their own to go back to when the seat ends."""
+
+    TIER_FREE = "free"
+    TIER_TRIAL = "trial"
+    TIER_PREMIUM = "premium"
+    TIER_ARCHIVE = "archive"
+    TIER_ARCHIVE_EXTRA = "archive_extra"
+    TIER_PRO = "pro"
+    # models.py: lowest first. A plan bought during the seat only ever raises own_tier along this order.
+    TIER_ORDER = (TIER_FREE, TIER_TRIAL, TIER_PREMIUM, TIER_ARCHIVE, TIER_ARCHIVE_EXTRA, TIER_PRO)
+    TIER_CHOICES = tuple((tier, tier) for tier in TIER_ORDER)
+    PAID_TIERS = (TIER_PREMIUM, TIER_ARCHIVE, TIER_ARCHIVE_EXTRA, TIER_PRO)
+    # models.py: the Profile flags (apps/profile/models.py) that hold each plan.
+    TIER_FLAGS = {
+        TIER_FREE: dict(
+            is_premium=False, is_premium_trial=False, is_archive=False, is_archive_extra=False, is_pro=False
+        ),
+        TIER_TRIAL: dict(
+            is_premium=True, is_premium_trial=True, is_archive=False, is_archive_extra=False, is_pro=False
+        ),
+        TIER_PREMIUM: dict(
+            is_premium=True, is_premium_trial=False, is_archive=False, is_archive_extra=False, is_pro=False
+        ),
+        TIER_ARCHIVE: dict(
+            is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=False
+        ),
+        TIER_ARCHIVE_EXTRA: dict(
+            is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=True, is_pro=False
+        ),
+        TIER_PRO: dict(
+            is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=True
+        ),
+    }
+
+    user = models.OneToOneField(User, related_name="team_pro_grant", on_delete=models.CASCADE)
+    # models.py: the seat the grant came from. A rejoin points it at the new seat and keeps own_tier.
+    member = models.ForeignKey(TeamMember, related_name="+", null=True, blank=True, on_delete=models.SET_NULL)
+    own_tier = models.CharField(max_length=16, choices=TIER_CHOICES)
+    own_trial_expire = models.DateTimeField(null=True, blank=True)
+    granted_date = models.DateTimeField(default=datetime.datetime.now)
+    grace_started = models.DateTimeField(null=True, blank=True)
+    grace_until = models.DateTimeField(null=True, blank=True)
+    day10_sent_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "Team Pro for %s (own %s, grace until %s)" % (self.user_id, self.own_tier, self.grace_until)
+
+    @classmethod
+    def tier_of(cls, profile):
+        if profile.is_pro:
+            return cls.TIER_PRO
+        if profile.is_archive:
+            return cls.TIER_ARCHIVE_EXTRA if profile.is_archive_extra else cls.TIER_ARCHIVE
+        if profile.is_premium:
+            return cls.TIER_TRIAL if profile.is_premium_trial else cls.TIER_PREMIUM
+        return cls.TIER_FREE
+
+    def own_flags(self):
+        """The Profile flags of the plan this person has on their own, for code that compares a payment with it."""
+        return SimpleNamespace(**self.TIER_FLAGS[self.own_tier])
+
+    def own_plan_on(self, profile, date):
+        """The plan this person is on by themselves on a date: their tier while premium_expire, their own paid
+        through date, covers it, their trial while it runs, and otherwise free."""
+        if self.own_tier in self.PAID_TIERS and (
+            profile.premium_expire is None or profile.premium_expire > date
+        ):
+            return self.own_tier
+        if self.own_tier == self.TIER_TRIAL and self.own_trial_expire and self.own_trial_expire > date:
+            return self.TIER_TRIAL
+        return self.TIER_FREE
+
+    def record_own_plan(self, tier, downgrade_extra=False):
+        """The person bought, renewed or was given a plan of their own while holding team Pro. It can only raise
+        the tier they go back to, except that a confirmed switch from Archive Extra to Archive lowers it, as in
+        Profile.activate_archive. Returns True when the tier changed."""
+        with transaction.atomic():
+            grant = TeamProGrant.objects.select_for_update().filter(pk=self.pk).first()
+            if not grant:
+                return False
+            if downgrade_extra and tier == self.TIER_ARCHIVE and grant.own_tier == self.TIER_ARCHIVE_EXTRA:
+                own_tier = self.TIER_ARCHIVE
+            elif self.TIER_ORDER.index(tier) > self.TIER_ORDER.index(grant.own_tier):
+                own_tier = tier
+            else:
+                return False
+            TeamProGrant.objects.filter(pk=self.pk).update(own_tier=own_tier)
+        self.own_tier = own_tier
+        logging.user(self.user, "~FMTeam Pro: own plan is now %s" % own_tier)
+        return True
+
+    def record_own_plan_ended(self):
+        """A plan of the person's own expired or was cancelled while they held team Pro."""
+        TeamProGrant.objects.filter(pk=self.pk).update(own_tier=self.TIER_FREE, own_trial_expire=None)
+        self.own_tier = self.TIER_FREE
+        self.own_trial_expire = None
+        logging.user(self.user, "~FMTeam Pro: own plan ended, now free")
+
+
+def team_pro_grant(user):
+    """The Premium Pro this account holds from a team, or None. apps/profile reads it here, where it can
+    without importing apps/team/grants.py."""
+    return TeamProGrant.objects.filter(user=user).first()
+
+
 def team_owner_id(user):
     """The user id this account's team usage falls under: the owner of the one team it is active on, which is
-    its own id when it owns the team, or None when it is on no team."""
+    its own id when it owns the team, or None when it is on no team or its team is inactive."""
     membership = TeamMember.active_membership(user)
-    return membership.team.owner_id if membership else None
+    if not membership or membership.team.status != Team.STATUS_ACTIVE:
+        return None
+    return membership.team.owner_id

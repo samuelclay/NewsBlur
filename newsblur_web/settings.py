@@ -624,6 +624,7 @@ CELERY_IMPORTS = (
     "apps.archive_assistant.tasks",
     "apps.briefing.tasks",
     "apps.clustering.tasks",
+    "apps.team.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -725,6 +726,12 @@ CELERY_BEAT_SCHEDULE = {
     "premium-expire": {
         "task": "premium-expire",
         "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Ends teammates' Premium Pro when grace runs out and lapses teams past their paid period (apps/team/tasks.py).
+    "team-pro-grants": {
+        "task": "team-pro-grants",
+        "schedule": datetime.timedelta(hours=1),
         "options": {"queue": "cron_queue"},
     },
     # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).

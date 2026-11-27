@@ -4,13 +4,14 @@ import datetime
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext, gettext_lazy, ngettext
 
 from apps.profile.models import MGiftCode, MSentEmail, Profile, RNewUserQueue
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.social.models import MActivity, MInteraction, MSocialServices
+from apps.team.models import Team
 from newsblur_web.celeryapp import app
 from utils import log as logging
 from utils.languages import account_translation, localized_number
@@ -119,13 +120,17 @@ def EmailStaffPremiumUpgrade(user_id, tier, previous_tier):
 @app.task(name="premium-expire")
 def PremiumExpire(**kwargs):
     now = datetime.datetime.now()
+    # A teammate's flags show team Pro and the owner of an active team pays through the team, so neither
+    # expires on their own premium_expire here. apps/team/tasks.py ends a teammate's grant and lapses the team,
+    # after which its owner is expired here as usual.
+    on_team = Q(user__team_pro_grant__isnull=False) | Q(user__owned_team__status=Team.STATUS_ACTIVE)
 
     # Handle trial expirations FIRST (no grace period for trials)
     expired_trials = Profile.objects.filter(
         is_premium=True,
         is_premium_trial=True,
         premium_expire__lte=now,
-    )
+    ).exclude(on_team)
     logging.debug(" ---> %s trial users have expired, downgrading..." % expired_trials.count())
     for profile in expired_trials:
         logging.debug(" ---> Expiring trial for user: %s" % profile.user.username)
@@ -138,11 +143,15 @@ def PremiumExpire(**kwargs):
     # Exclude trial users (is_premium_trial != True)
     two_days_ago = now - datetime.timedelta(days=2)
     thirty_days_ago = now - datetime.timedelta(days=30)
-    expired_profiles = Profile.objects.filter(
-        is_premium=True,
-        premium_expire__lte=two_days_ago,
-        premium_expire__gt=thirty_days_ago,
-    ).exclude(is_premium_trial=True)
+    expired_profiles = (
+        Profile.objects.filter(
+            is_premium=True,
+            premium_expire__lte=two_days_ago,
+            premium_expire__gt=thirty_days_ago,
+        )
+        .exclude(is_premium_trial=True)
+        .exclude(on_team)
+    )
     logging.debug(" ---> %s users have expired premiums, emailing grace..." % expired_profiles.count())
     for profile in expired_profiles:
         if profile.grace_period_email_sent():
@@ -153,10 +162,14 @@ def PremiumExpire(**kwargs):
 
     # Get fully expired paid premium users (30+ days expired)
     # Exclude trial users (is_premium_trial != True)
-    expired_profiles = Profile.objects.filter(
-        is_premium=True,
-        premium_expire__lte=thirty_days_ago,
-    ).exclude(is_premium_trial=True)
+    expired_profiles = (
+        Profile.objects.filter(
+            is_premium=True,
+            premium_expire__lte=thirty_days_ago,
+        )
+        .exclude(is_premium_trial=True)
+        .exclude(on_team)
+    )
     logging.debug(
         " ---> %s users have expired premiums, deactivating and emailing..." % expired_profiles.count()
     )

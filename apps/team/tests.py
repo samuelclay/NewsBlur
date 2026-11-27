@@ -5,12 +5,72 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import User
 from django.core import mail
-from django.db import connection, transaction
+from django.db import DatabaseError, connection, transaction
 from django.test import Client, TestCase, TransactionTestCase
 
-from apps.profile.tasks import EmailNewPremiumTrial
-from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember, team_owner_id
+from apps.profile.apple_subscriptions import apply_verified_apple_transaction
+from apps.profile.models import (
+    MGiftCode,
+    MRedeemedCode,
+    MReferral,
+    PaymentHistory,
+    Profile,
+)
+from apps.profile.tasks import (
+    EmailNewPremium,
+    EmailNewPremiumPro,
+    EmailNewPremiumTrial,
+    EmailReferralCredit,
+    EmailStaffNotification,
+    EmailStaffPremiumUpgrade,
+    PremiumExpire,
+)
+from apps.reader.models import UserSubscription
+from apps.rss_feeds.models import Feed
+from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.team.grants import activate_team, deactivate_team
+from apps.team.models import (
+    Team,
+    TeamActivity,
+    TeamInvite,
+    TeamMember,
+    TeamProGrant,
+    team_owner_id,
+)
+from apps.team.tasks import TeamProGrants
 from utils import json_functions as json
+
+# apps/team/tests.py: the Profile flags of each plan, written out here so the tests don't read them from the code
+# under test.
+PLANS = {
+    "free": dict(
+        is_premium=False, is_premium_trial=False, is_archive=False, is_archive_extra=False, is_pro=False
+    ),
+    "trial": dict(
+        is_premium=True, is_premium_trial=True, is_archive=False, is_archive_extra=False, is_pro=False
+    ),
+    "premium": dict(
+        is_premium=True, is_premium_trial=False, is_archive=False, is_archive_extra=False, is_pro=False
+    ),
+    "archive": dict(
+        is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=False
+    ),
+    "pro": dict(
+        is_premium=True, is_premium_trial=False, is_archive=True, is_archive_extra=False, is_pro=True
+    ),
+}
+
+
+def patch_pro_feed_setup(testcase):
+    """apps/team/tests.py: keeps the Celery tasks a committed grant starts off the dev broker. Returns the
+    archive backfill mock."""
+    patcher = patch.object(SchedulePremiumSetup, "apply_async")
+    patcher.start()
+    testcase.addCleanup(patcher.stop)
+    patcher = patch.object(UserSubscription, "schedule_fetch_archive_feeds_for_user")
+    backfill = patcher.start()
+    testcase.addCleanup(patcher.stop)
+    return backfill
 
 
 class TeamClientMixin:
@@ -98,6 +158,7 @@ class Test_TeamConcurrentJoins(TeamClientMixin, TransactionTestCase):
         patcher = patch.object(EmailNewPremiumTrial, "delay")
         patcher.start()
         self.addCleanup(patcher.stop)
+        patch_pro_feed_setup(self)
 
     def accept_at_once(self, team, token):
         """apps/team/tests.py: two new accounts accept the same token. The first holds the team row while it
@@ -489,14 +550,367 @@ class Test_TeamActivity(TeamClientMixin, TestCase):
         self.post(member, "accept_invite", token=self.join_link_token(team, owner))
         self.post(owner, "remove_member", team_id=team.pk, user_id=member.pk)
 
-        with patch.object(TeamActivity, "PAGE_SIZE", 3):
+        with patch.object(TeamActivity, "PAGE_SIZE", 4):
             first_page = self.get(owner, "activity", team_id=team.pk)
             second_page = self.get(owner, "activity", team_id=team.pk, page=2)
 
         self.assertEqual(
             [entry["action"] for entry in first_page["activities"]],
-            ["member_removed", "member_joined", "join_link_created"],
+            ["member_removed", "team_pro_granted", "member_joined", "join_link_created"],
         )
         self.assertTrue(first_page["has_more"])
         self.assertEqual([entry["action"] for entry in second_page["activities"]], ["team_created"])
         self.assertFalse(second_page["has_more"])
+
+
+class TeamProMixin(TeamClientMixin):
+    def setUp(self):
+        super().setUp()
+        self.now = datetime.datetime.now()
+        self.welcome_tasks = []
+        for task in (EmailNewPremium, EmailNewPremiumPro, EmailStaffPremiumUpgrade):
+            patcher = patch.object(task, "delay")
+            self.welcome_tasks.append(patcher.start())
+            self.addCleanup(patcher.stop)
+        for task in (EmailStaffNotification, EmailReferralCredit):
+            patcher = patch.object(task, "delay")
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        patch_pro_feed_setup(self)
+        self.owner = User.objects.create_user(username="owner", email="owner@example.com")
+        self.team = self.create_team(self.owner)
+        self.token = self.join_link_token(self.team, self.owner)
+
+    def days(self, count):
+        return datetime.timedelta(days=count)
+
+    def reader(self, username, plan="free", premium_expire=None, feeds=0):
+        user = User.objects.create_user(username=username, email="%s@example.com" % username)
+        Profile.objects.filter(user=user).update(premium_expire=premium_expire, **PLANS[plan])
+        for number in range(feeds):
+            feed = Feed.objects.create(feed_address="https://%s.example/%s" % (username, number))
+            UserSubscription.objects.create(user=user, feed=feed, active=plan != "free")
+        return user
+
+    def plan_of(self, user):
+        flags = Profile.objects.filter(user=user).values(*PLANS["free"]).get()
+        return next((name for name, plan_flags in PLANS.items() if plan_flags == flags), flags)
+
+    def premium_expire(self, user):
+        return Profile.objects.get(user=user).premium_expire
+
+    def muted_sites(self, user):
+        return UserSubscription.objects.filter(user=user, active=False).count()
+
+    def join(self, user, token=None):
+        self.assertEqual(self.post(user, "accept_invite", token=token or self.token)["code"], 1)
+
+    def leave(self, user, team=None):
+        self.assertEqual(self.post(user, "leave", team_id=(team or self.team).pk)["code"], 1)
+
+    def grace_day(self, user, day):
+        """apps/team/tests.py: moves the user's grace so that today is its given day, where day 1 is the day it
+        began, then runs the hourly task."""
+        started = self.now - self.days(day - 1) - datetime.timedelta(minutes=1)
+        TeamProGrant.objects.filter(user=user).update(
+            grace_started=started, grace_until=started + self.days(14)
+        )
+        TeamProGrants()
+
+    def mail_to(self, user):
+        return [message for message in mail.outbox if user.email in message.to[0]]
+
+
+class Test_TeamProSeat(TeamProMixin, TestCase):
+    def test_joining_gives_pro_without_welcome_emails_or_payment_rows(self):
+        expired = self.now - self.days(100)
+        reader = self.reader("reader", "free", premium_expire=expired, feeds=2)
+
+        self.join(reader)
+
+        self.assertEqual(self.plan_of(reader), "pro")
+        self.assertEqual(self.premium_expire(reader), expired)
+        self.assertEqual(self.muted_sites(reader), 0)
+        self.assertTrue(Profile.objects.get(user=reader).can_register_oauth_application)
+        self.assertFalse(PaymentHistory.objects.filter(user=reader).exists())
+        self.assertEqual(mail.outbox, [])
+        for task in self.welcome_tasks:
+            task.assert_not_called()
+
+    def test_a_removed_teammate_keeps_pro_for_14_days_with_an_email_on_day_1_and_day_10(self):
+        reader = self.reader("reader", "free", feeds=2)
+        self.join(reader)
+
+        self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=reader.pk)
+        self.assertEqual(len(self.mail_to(reader)), 1)
+
+        self.grace_day(reader, 9)
+        self.assertEqual(len(self.mail_to(reader)), 1)
+        self.grace_day(reader, 10)
+        TeamProGrants()
+        self.assertEqual(len(self.mail_to(reader)), 2)
+
+        self.grace_day(reader, 14)
+        self.assertEqual(self.plan_of(reader), "pro")
+        self.assertEqual(self.muted_sites(reader), 0)
+
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "free")
+        self.assertEqual(self.muted_sites(reader), 2)
+        self.assertEqual(len(self.mail_to(reader)), 2)
+
+    def test_leaving_returns_a_paying_teammate_to_their_own_plan(self):
+        paid_through = self.now + self.days(200)
+        reader = self.reader("reader", "archive", premium_expire=paid_through, feeds=2)
+        self.join(reader)
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+
+        self.assertEqual(self.plan_of(reader), "archive")
+        self.assertEqual(self.premium_expire(reader), paid_through)
+        self.assertEqual(self.muted_sites(reader), 0)
+
+    def test_a_failed_grant_leaves_no_seat_without_pro(self):
+        reader = self.reader("reader", "free")
+
+        with patch("apps.team.grants.grant_team_pro", side_effect=DatabaseError("connection lost")):
+            with self.assertRaises(DatabaseError):
+                self.team.live_join_link().accept(reader)
+
+        self.assertIsNone(TeamMember.active_membership(reader))
+
+
+class Test_TeamProOwnPlans(TeamProMixin, TestCase):
+    """A plan the teammate gets, loses or renews on their own during the seat is the one they go back to."""
+
+    def test_rejoining_during_grace_keeps_the_plan_from_before_the_first_seat(self):
+        reader = self.reader("reader", "free", feeds=1)
+        other_owner = User.objects.create_user(username="otherowner")
+        other_team = self.create_team(other_owner, "Elsewhere")
+        self.join(reader)
+        self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=reader.pk)
+
+        # The first grace has run out, but the hourly task hasn't run yet when the reader joins another team.
+        started = self.now - self.days(15)
+        TeamProGrant.objects.filter(user=reader).update(
+            grace_started=started, grace_until=started + self.days(14)
+        )
+        self.join(reader, self.join_link_token(other_team, other_owner))
+        TeamProGrants()
+        self.assertEqual(self.plan_of(reader), "pro")
+
+        self.leave(reader, other_team)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "free")
+
+    def test_a_store_expiry_during_the_seat_keeps_team_pro_and_ends_the_own_plan(self):
+        reader = self.reader("reader", "premium", premium_expire=self.now + self.days(10), feeds=2)
+        self.join(reader)
+
+        Profile.objects.get(user=reader).deactivate_premium()
+        self.assertEqual(self.plan_of(reader), "pro")
+        self.assertEqual(self.muted_sites(reader), 0)
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "free")
+
+    def test_archive_gifted_during_the_seat_is_kept_after_it(self):
+        reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
+        self.join(reader)
+        gift = MGiftCode.objects.create(
+            gifting_user_id=self.owner.pk, gift_code="TEAMGIFT", payment_amount=99, gift_tier="archive"
+        )
+        self.addCleanup(gift.delete)
+        self.addCleanup(lambda: MRedeemedCode.objects.filter(gift_code="TEAMGIFT").delete())
+
+        MRedeemedCode.redeem(reader, "TEAMGIFT")
+        self.assertEqual(self.plan_of(reader), "pro")
+        self.assertEqual(mail.outbox, [])
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "archive")
+        self.assertGreater(self.premium_expire(reader), self.now + self.days(300))
+
+    def test_a_payment_synced_during_the_seat_is_kept_after_it(self):
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        PaymentHistory.objects.create(
+            user=reader, payment_date=self.now, payment_amount=36, payment_provider="paypal"
+        )
+
+        Profile.objects.get(user=reader).setup_premium_history()
+        self.assertEqual(self.plan_of(reader), "pro")
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "premium")
+
+    def test_an_app_store_renewal_during_the_seat_is_kept_after_it(self):
+        now = self.now.replace(microsecond=0)
+        reader = self.reader("reader", "premium", premium_expire=now + self.days(5))
+        PaymentHistory.objects.create(
+            user=reader,
+            payment_date=now - self.days(360),
+            payment_amount=36,
+            payment_provider="ios-subscription",
+            payment_identifier="2000000000001",
+        )
+        self.join(reader)
+        purchase = now - self.days(1)
+        expiration = purchase + self.days(365)
+
+        result = apply_verified_apple_transaction(
+            {
+                "environment": "Production",
+                "productId": "newsblur_premium_auto_renew_36",
+                "transactionId": "2000000000002",
+                "originalTransactionId": "2000000000001",
+                "purchaseDate": int(purchase.timestamp() * 1000),
+                "expiresDate": int(expiration.timestamp() * 1000),
+            },
+            now=now,
+        )
+        self.assertEqual(result["status"], "processed")
+        self.assertEqual(self.plan_of(reader), "pro")
+
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "premium")
+        self.assertEqual(self.premium_expire(reader), expiration)
+
+    def test_referral_credit_follows_the_teammates_own_plan(self):
+        reader = self.reader("reader", "free")
+        friend = User.objects.create_user(username="friend")
+        self.addCleanup(lambda: MReferral.objects(referred_user_id=friend.pk).delete())
+        self.join(reader)
+
+        MReferral.create_referral(reader.pk, friend.pk, friend.username)
+        MReferral.award_credit(friend.pk, 36, "premium")
+
+        # A year of Premium credit for a $36 referral, not the two months it would buy at Pro's price.
+        self.assertGreater(self.premium_expire(reader), self.now + self.days(300))
+        self.leave(reader)
+        self.grace_day(reader, 15)
+        self.assertEqual(self.plan_of(reader), "premium")
+
+
+class Test_TeamProPremiumExpire(TeamProMixin, TestCase):
+    def test_the_nightly_expiry_leaves_teammates_and_active_team_owners_alone(self):
+        trial_joiner = self.reader("trialjoiner", "trial", premium_expire=self.now - self.days(1))
+        lapsed = self.reader("lapsed", "premium", premium_expire=self.now - self.days(10), feeds=1)
+        long_lapsed = self.reader("longlapsed", "premium", premium_expire=self.now - self.days(40))
+        for user in (trial_joiner, lapsed, long_lapsed):
+            self.join(user)
+        Profile.objects.filter(user=self.owner).update(
+            is_premium_trial=False, premium_expire=self.now - self.days(40)
+        )
+        outsider = self.reader("outsider", "premium", premium_expire=self.now - self.days(40))
+
+        PremiumExpire()
+
+        for user, days_ago in ((trial_joiner, 1), (lapsed, 10), (long_lapsed, 40)):
+            self.assertEqual(self.plan_of(user), "pro")
+            self.assertEqual(self.premium_expire(user), self.now - self.days(days_ago))
+        self.assertEqual(self.plan_of(self.owner), "premium")
+        # Someone on no team still expires as before.
+        self.assertEqual(self.plan_of(outsider), "free")
+        self.assertEqual([message.to for message in mail.outbox], [["outsider <outsider@example.com>"]])
+
+        # The plan that ran out during the seat ends with the grace, with no further 30 days.
+        self.leave(lapsed)
+        self.grace_day(lapsed, 15)
+        self.assertEqual(self.plan_of(lapsed), "free")
+        self.assertEqual(self.muted_sites(lapsed), 1)
+
+
+class Test_TeamLapse(TeamProMixin, TestCase):
+    def roles(self):
+        return dict(self.team.active_members().values_list("user__username", "role"))
+
+    def test_a_lapse_ends_pro_at_once_and_a_payment_brings_it_back(self):
+        free_reader = self.reader("freereader", "free", feeds=2)
+        archive_reader = self.reader("archivereader", "archive", premium_expire=self.now + self.days(100))
+        leaver = self.reader("leaver", "free")
+        for user in (free_reader, archive_reader, leaver):
+            self.join(user)
+        self.post(self.owner, "change_role", team_id=self.team.pk, user_id=archive_reader.pk, role="manager")
+        self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=leaver.pk)
+        leaver_grace_until = TeamProGrant.objects.get(user=leaver).grace_until
+        roles = self.roles()
+        Team.objects.filter(pk=self.team.pk).update(paid_through=self.now - datetime.timedelta(hours=1))
+        mail.outbox = []
+
+        TeamProGrants()
+        TeamProGrants()
+
+        self.team.refresh_from_db()
+        self.assertEqual(self.team.status, Team.STATUS_INACTIVE)
+        self.assertEqual(self.plan_of(free_reader), "free")
+        self.assertEqual(self.muted_sites(free_reader), 2)
+        self.assertEqual(self.plan_of(archive_reader), "archive")
+        self.assertIsNone(team_owner_id(free_reader))
+        # Someone already in grace keeps the date their first email gave them.
+        self.assertEqual(self.plan_of(leaver), "pro")
+        self.assertEqual(TeamProGrant.objects.get(user=leaver).grace_until, leaver_grace_until)
+        self.assertEqual(
+            sorted(message.to[0] for message in mail.outbox),
+            sorted("%s <%s>" % (user, user.email) for user in (self.owner, free_reader, archive_reader)),
+        )
+        self.assertEqual(self.roles(), roles)
+
+        activate_team(self.team)
+
+        self.assertEqual(self.plan_of(free_reader), "pro")
+        self.assertEqual(self.muted_sites(free_reader), 0)
+        self.assertEqual(self.plan_of(archive_reader), "pro")
+        self.assertEqual(team_owner_id(free_reader), self.owner.pk)
+        self.assertEqual(self.roles(), roles)
+
+    def test_an_inactive_team_neither_grants_pro_nor_gives_grace(self):
+        deactivate_team(self.team)
+        reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
+        mail.outbox = []
+
+        self.join(reader)
+        self.assertEqual(self.plan_of(reader), "trial")
+        self.leave(reader)
+
+        self.assertEqual(self.plan_of(reader), "trial")
+        self.assertEqual(mail.outbox, [])
+        self.assertFalse(TeamProGrant.objects.filter(user=reader).exists())
+
+    def test_deleting_the_owners_account_ends_the_team(self):
+        reader = self.reader("reader", "free", feeds=1)
+        self.join(reader)
+
+        self.owner.delete()
+        TeamProGrants()
+
+        self.assertEqual(self.plan_of(reader), "free")
+        self.team.refresh_from_db()
+        self.assertEqual(self.team.status, Team.STATUS_INACTIVE)
+
+
+class Test_TeamProFeedSetup(TeamClientMixin, TransactionTestCase):
+    """Real commits, so the feed setup a grant starts after it commits runs."""
+
+    def setUp(self):
+        patcher = patch.object(EmailNewPremiumTrial, "delay")
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.backfill = patch_pro_feed_setup(self)
+
+    def test_joining_starts_the_archive_backfill_only_for_teammates_without_archive(self):
+        owner = User.objects.create_user(username="owner")
+        token = self.join_link_token(self.create_team(owner), owner)
+        trial_reader = User.objects.create_user(username="trialreader")
+        archive_reader = User.objects.create_user(username="archivereader")
+        Profile.objects.filter(user=archive_reader).update(is_archive=True, is_premium_trial=False)
+
+        for user in (trial_reader, archive_reader):
+            self.assertEqual(self.post(user, "accept_invite", token=token)["code"], 1)
+
+        self.backfill.assert_called_once_with(trial_reader.pk)
