@@ -61,6 +61,11 @@ Decided on 2026-11-26:
 - [x] Both team plans are for sale on every platform: Stripe and PayPal on the web, the App Store on iOS and macOS, and Google Play on Android, the way Premium, Archive and Pro are sold today
 - [x] Store prices are $79.99 and $129.99 a month. Web prices stay $79 and $129
 - [x] The App Store and Play products are created when billing reaches the apps, with their names, prices and descriptions shown to Sam before they are saved
+- [x] The team's name is asked for after purchase, on every platform. The team starts with a default name and the first thing shown afterwards is the team dialog asking for the real one
+- [x] An owner who switches down from a team plan keeps the team until the month already paid for runs out, then the lower plan starts
+- [x] On an ownership transfer, the old owner is refunded the unused part of their month when they paid by Stripe or PayPal. App Store and Play purchases cannot be refunded by us
+- [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
+- [x] If one owner ends up paying for a team plan in two places, the newest purchase wins, the older web renewal is cancelled, and staff are emailed. The stores take the money before the server hears of a purchase, so this cannot be refused up front
 - [x] Invite links are a path, `/team/join/<token>`, because the apps can claim a path but not a query string. The invite is carried through login or signup the way gift codes are, and the welcome page names the team before signup
 - [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
 - [x] Someone whose private feeds push the team past 10,000 sites can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep
@@ -735,7 +740,7 @@ A new teammate's own subscription:
 
 Shared allowances. The scope is the owner plus each teammate for the period they were on the team. Usage rows keep the teammate's own user id, which is the per teammate breakdown, so no field is added to any Mongo document.
 
-- [ ] Sites: a new `team_site_refusal` check wherever a site becomes active: adding a site and OPML import (which have no server limit for premium accounts today), batch subscribe, the feed chooser, unmute and `auto_activate`. A site any teammate already follows costs nothing
+- [ ] Sites: a new `team_site_refusal` check wherever a site becomes active: adding a site, OPML import, batch subscribe, the feed chooser, unmute and `auto_activate`. A site any teammate already follows costs nothing
 - [ ] The count is distinct active sites across the team, exact when enforcing and cached for five minutes when displayed
 - [ ] Someone whose private feeds push the team past 10,000 can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep in the feed chooser
 - [ ] Listen: the 10 hours a week are counted across the scope (`apps/listen/usage.py`), and the message at the cap names the team and its owner
@@ -781,8 +786,23 @@ The apps and the web client score stories themselves from the classifiers the se
 
 ### Billing
 
-The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing code already buys, switches, renews and expires plans for a `Profile` through Stripe, the App Store and Google Play, and its webhooks already find the owner.
+The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing code already buys, switches, renews and expires plans for a `Profile` through Stripe, PayPal, the App Store and Google Play. Findings from reading it that shape this step:
 
+- A team is started only from a payment confirmed with the provider's own API or a signed receipt, never from a notification's contents alone.
+- `premium_expire` counts one payment as a year (`billing_period_days` in `apps/profile/models.py`). The $79 and $129 payments have to count as a month, or an owner who paid once would keep Pro for a year.
+- Stripe charges a renewal about an hour after the period ends, and PayPal later than that. A team that lapsed at the exact end of its period would tell everyone the plan had ended and then come straight back. So the hourly task lapses a team one day after `paid_through`.
+- Nothing listens for Stripe's subscription deleted event today.
+- Switching a monthly plan on PayPal prorates over the real paid period.
+- Team products on iOS are bought with StoreKit 2, and the signed transaction is verified on the server.
+- `setup_premium_history` picks the first listed Stripe subscription without skipping the AI filter usage subscription, which would hide a team subscription once the owner turns usage billing on.
+
+One function for all four providers:
+
+- [ ] `record_team_payment(user, plan, provider, paid_through, reference)` in `apps/team/billing.py`, called only on a confirmed payment. It creates or finds the owner's team, sets its plan and provider, moves `paid_through` forward, reactivates the team if it had lapsed, and sets the owner's Pro flags
+- [ ] It does not go through `activate_pro`, which would send the Pro welcome email and call back into the payment sync. The owner gets a team welcome email, and staff get the usual upgrade email with the team plan named
+- [ ] Someone who holds team Pro from another person's team and buys a team plan gets no second team. Their purchase is flagged to staff
+- [ ] New columns on `Team`: the billing provider and its reference, the pending owner and when the transfer was requested, and when the name was confirmed
+- [ ] `Profile.canonical` and the web globals carry the team plan, the person's role, the billing provider, the paid through date and any pending transfer, so every client can show the current plan. Today the clients read only the tier flags, where an owner and a teammate both look like Pro
 - [x] The Stripe products and prices exist in test and live mode, created 2026-11-26, monthly, in USD:
 
   | Plan | Lookup key | Live price | Test price |
@@ -790,16 +810,72 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
   | Premium Team, $79 | `newsblur-premium-team-79` | `price_0UgCfDwdsmP8XBlaft9XCHfp` | `price_0UgCfCwdsmP8XBlakBsOX3AZ` |
   | Premium Team Enterprise, $129 | `newsblur-premium-team-enterprise-129` | `price_0UgCfDwdsmP8XBlaqkniOnJy` | `price_0UgCfDwdsmP8XBlakzTInxlu` |
 
-- [ ] Two more plans, `team` and `team_enterprise`, in `plan_to_stripe_price` (`apps/profile/models.py`), using those price ids the way the Pro and Archive plans do
-- [ ] Activating either plan gives the owner Pro and creates or reactivates the owner's `Team`
-- [ ] Switching to or from a team plan goes through `switch_stripe_subscription`, prorated
-- [ ] When the owner's paid period ends without renewal, the team goes inactive that day and every teammate's grant ends with it. The team plan does not get the 30 days that `PremiumExpire` gives other plans
-- [ ] Joining a team cancels the new teammate's own Stripe or PayPal renewal
-- [ ] App Store products for both plans, in the same subscription group as the existing plans and ranked above Pro, handled by `save_ios_receipt` and `apps/profile/apple_subscriptions.py`
-- [ ] Google Play products for both plans, handled by the existing Play receipt and notification code
-- [ ] Two PayPal subscription plans, in `plan_to_paypal_plan_id`
-- [ ] `Team.paid_through` is written from Stripe's period end, PayPal's next billing time, Apple's expiry date or Play's expiry time, whichever sold the plan
-- [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team section: seat limit, plan, comp
+Stripe:
+
+- [ ] `team` and `team_enterprise` in `plan_to_stripe_price`
+- [ ] The Stripe loop in `setup_premium_history` skips the usage billing subscription and hands a team subscription's status and period end to `record_team_payment`
+- [ ] `stripe_signup` and `stripe_subscription_updated` know the team plans
+- [ ] The subscription deleted event and the invoice paid event are connected
+- [ ] `stripe_checkout` refuses a team purchase from a teammate who is not the owner, and when a store already bills the team
+
+PayPal:
+
+- [ ] Two monthly PayPal plans, live and sandbox, in `plan_to_paypal_plan_id` and in the upgrade dialog's copy of those ids
+- [ ] `paid_through` comes from the subscription's next billing time, only while it is active with no failed payments
+- [ ] Proration uses the real paid period, not 365 days
+
+App Store (iOS and macOS, one bundle id, one set of products):
+
+- [ ] Products `newsblur_premium_team` and `newsblur_premium_team_enterprise` in the existing subscription group, above Pro, at $79.99 and $129.99 a month, with names and descriptions in the 21 languages the other products have
+- [ ] Both in `APPLE_PRODUCTS` (`apps/profile/apple_subscriptions.py`) at their own rank, with the newest purchase deciding which of the two the owner has
+- [ ] A team owner's rank is the team rank, so their renewals are not dropped as a cross tier purchase
+- [ ] Team purchases call `record_team_payment` with Apple's signed expiry date
+- [ ] The app buys team products with StoreKit 2 and posts the signed transaction, which the server verifies
+- [ ] Refund and revoke notices for team products end the team
+
+Google Play:
+
+- [ ] Products `nb.premium.team.79` and `nb.premium.team.enterprise.129`, each with one monthly base plan, with a title, description and benefits in the 21 languages the other products have
+- [ ] The server maps them, checking the enterprise id first since one id contains the other
+- [ ] The app sends the purchase token, and the server verifies a team purchase with Google before starting a team
+- [ ] Real time notifications pass Google's expiry time to `record_team_payment`
+- [ ] An expiry notice for a token that was replaced by an upgrade does not end the team
+
+Lapse and return:
+
+- [ ] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
+- [ ] The hourly task lapses a team one day after `paid_through`
+- [ ] A payment that recovers (Stripe charge succeeded, PayPal sale completed, Apple recovered, Play recovered or restarted) brings the team back through `record_team_payment`
+- [ ] A refund or revoke ends the team at once
+- [ ] After a lapse the owner's own account goes through the normal `PremiumExpire` window
+
+Switching:
+
+- [ ] Premium, Archive or Pro up to a team plan, and Team up to Enterprise, take effect at once with proration where the provider has it
+- [ ] Switching down from a team plan on the web keeps the team until the paid month ends, then starts the lower plan. Stripe does this with a subscription schedule and PayPal with a subscription that starts on that date
+- [ ] In the stores, an upgrade is immediate and a downgrade takes effect at renewal, which is how each store already works
+- [ ] Cancelling outright runs to the end of the paid month, and the team row is kept
+
+Ownership transfer:
+
+- [ ] `transfer_ownership` no longer swaps at once. It records the pending owner, and the request expires after 7 days
+- [ ] The new owner buys the team's plan on any platform. `record_team_payment` then completes the transfer in one transaction: roles swap, `paid_through` becomes the new owner's period end, and the team never lapses in between
+- [ ] The new owner's team Pro grant is removed directly, without the release path that could mute their sites
+- [ ] The old owner becomes a manager holding a grant whose own plan is recorded as free, not as the team Pro they just had
+- [ ] The old owner's Stripe or PayPal subscription is cancelled and the unused part of the month refunded. A store subscriber gets a notice with the link to cancel, and staff are emailed
+- [ ] The old owner's later payment notices do nothing to the team
+
+Staff and the contact form:
+
+- [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team block: seat limit, plan, comp a team with no payment and no lapse date, and end a comp
+- [ ] A full staff refund for an owner ends the team now
+- [ ] "More than 10 teammates? Get in touch" posts to a login required view that emails staff through the existing staff notification task
+
+The web dialog:
+
+- [ ] The two team cards get their own buttons, since they sit beside the plan ladder and a Pro reader can also start a team
+- [ ] A team billed through a store shows "Billed through the App Store" or "Billed through Google Play" with no button
+- [ ] The page after checkout waits for the team to exist, then opens the team dialog asking for its name
 
 ### Rules from CLAUDE.md that apply to every step
 
@@ -900,6 +976,18 @@ Written before any code. Each one is a test.
 - [ ] A teammate's own Stripe renewal keeps charging after they join
 - [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
 - [ ] One owner ends up paying for a team plan in two places
+- [ ] The hourly task lapses a team between the end of its period and the renewal arriving
+- [ ] The owner keeps personal Pro for a year after paying once
+- [ ] The AI filter usage subscription hides the team subscription
+- [ ] A team is started without a payment the provider confirms
+- [ ] Two payment notices at once create the team twice
+- [ ] A team owner's switch between providers refunds most of a month
+- [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
+- [ ] The old owner's store subscription keeps renewing the team after a transfer
+- [ ] A Play expiry notice for an upgraded token ends the team
+- [ ] A staff refund leaves the team running
+- [ ] A comp is set on a paid team by mistake, so it never lapses
+- [ ] A switch down from a team plan ends the team before the paid month is over
 - [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
 - [x] The nightly expiry sends a teammate the grace email because of an old trial date
 - [x] A new signup who joins during their trial is expired by the trial branch
