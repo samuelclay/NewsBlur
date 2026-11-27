@@ -20,6 +20,9 @@ class MLLMCost(mongo.Document):
     """
 
     user_id = mongo.IntField()  # Optional - some features may be system-level
+    # models.py: whose usage billing paid for an AI classifier call when it was made, which is the team owner's
+    # for a teammate (Profile.usage_billing_profile). Rows written before this field have only user_id.
+    billed_user_id = mongo.IntField()
     timestamp = mongo.DateTimeField(default=datetime.utcnow, required=True)
 
     # Provider/Model identification
@@ -52,6 +55,7 @@ class MLLMCost(mongo.Document):
             {"fields": ["model", "-timestamp"]},
             {"fields": ["user_id", "-timestamp"]},
             {"fields": ["user_id", "feature", "-timestamp"]},
+            {"fields": ["billed_user_id", "feature", "-timestamp"]},
         ],
         "db_alias": "nbanalytics",
     }
@@ -64,9 +68,8 @@ class MLLMCost(mongo.Document):
     def get_current_cycle_spend(cls, user_id):
         """Get total classifier spend for a user in the current billing month.
 
-        A team's owner pays for each teammate's classifiers while they hold a seat
-        (apps/team/models.py team_owner_id), so the owner's spend also counts each
-        teammate's for the time they were on the team.
+        Counts the calls billed to the user when they were made (billed_user_id),
+        which for a team's owner includes each teammate's while they held a seat.
 
         Returns:
             float: Total cost in USD for current month's classifier usage, or
@@ -74,22 +77,13 @@ class MLLMCost(mongo.Document):
                 Callers treat unknown spend as over-limit so that an analytics
                 outage can't hand out unmetered AI usage.
         """
-        from apps.team.models import teammate_seat_windows
-
         now = datetime.utcnow()
         month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-        billed_to_user = [{"user_id": user_id}]
-        for teammate_id, joined_date, removed_date in teammate_seat_windows(user_id, month_start):
-            seat_window = {"$gte": joined_date}
-            if removed_date:
-                seat_window["$lt"] = removed_date
-            billed_to_user.append({"user_id": teammate_id, "timestamp": seat_window})
 
         pipeline = [
             {
                 "$match": {
-                    "$or": billed_to_user,
+                    "$or": [{"billed_user_id": user_id}, {"billed_user_id": None, "user_id": user_id}],
                     "feature": {"$in": ["story_classification", "vision_classification"]},
                     "timestamp": {"$gte": month_start},
                 }

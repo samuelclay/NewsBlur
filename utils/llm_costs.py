@@ -261,7 +261,8 @@ class LLMCostTracker:
         total_tokens = input_tokens + output_tokens
 
         # Check billing status for classifier features (reused for Redis and Stripe). A teammate's usage
-        # bills their team's owner (Profile.usage_billing_profile), while the cost row keeps the teammate.
+        # bills their team's owner (Profile.usage_billing_profile), while the cost row keeps the teammate
+        # in user_id and the owner in billed_user_id.
         is_billing_user = False
         profile = None
         if feature in ("story_classification", "vision_classification") and user_id:
@@ -292,6 +293,7 @@ class LLMCostTracker:
         try:
             cost_record = MLLMCost(
                 user_id=user_id,
+                billed_user_id=profile.user_id if profile else None,
                 provider=provider,
                 model=model,
                 feature=feature,

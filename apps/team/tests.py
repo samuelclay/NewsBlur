@@ -1,5 +1,6 @@
 import datetime
 import re
+import smtplib
 import threading
 from decimal import Decimal
 from unittest.mock import MagicMock, patch
@@ -9,6 +10,7 @@ import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import DatabaseError, connection, transaction
 from django.test import Client, TestCase, TransactionTestCase, override_settings
 from django.test.utils import CaptureQueriesContext
@@ -47,11 +49,11 @@ from apps.profile.tasks import (
 from apps.reader.models import UserSubscription, UserSubscriptionFolders
 from apps.reader.tasks import MaintainFeedSubscriptions
 from apps.rss_feeds.models import Feed
-from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.rss_feeds.tasks import ScheduleImmediateFetches, SchedulePremiumSetup
 from apps.statistics.models import MStatistics
 from apps.statistics.rllm_costs import RLLMCosts
 from apps.team.billing import record_team_payment, start_comp_team
-from apps.team.grants import activate_team, deactivate_team
+from apps.team.grants import activate_team, deactivate_team, release_team_pro
 from apps.team.models import (
     Team,
     TeamActivity,
@@ -61,6 +63,7 @@ from apps.team.models import (
     team_owner_id,
 )
 from apps.team.tasks import (
+    EmailTeamPlanEnded,
     EmailTeamWelcome,
     SendTeamInviteEmail,
     SettleOwnPlanOnJoin,
@@ -104,7 +107,9 @@ class TeamClientMixin:
         self.invite_email_task = self.patch(
             SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
         )
-        self.patch(SettleOwnPlanOnJoin, "delay", side_effect=lambda **kwargs: SettleOwnPlanOnJoin(**kwargs))
+        # apps/team/tests.py: apply runs a task's retries in place too, and get() raises what its last try raised.
+        for task in (SettleOwnPlanOnJoin, EmailTeamPlanEnded):
+            self.patch(task, "delay", side_effect=lambda task=task, **kwargs: task.apply(kwargs=kwargs).get())
         self.patch(EmailTeamWelcome, "delay", side_effect=lambda team_id: EmailTeamWelcome(team_id))
         for task in (EmailNewPremiumTrial, EmailStaffPremiumUpgrade, EmailStaffNotification):
             self.patch(task, "delay")
@@ -785,15 +790,19 @@ class TeamProMixin(TeamClientMixin):
     def pay(
         self, user, paid_through, plan=Team.PLAN_TEAM, provider=Team.PROVIDER_STRIPE, reference="sub_team"
     ):
-        """apps/team/tests.py: a payment the provider confirmed, with what it queued for after its commit run in
-        place, as the commit at the end of a real webhook would."""
+        """apps/team/tests.py: a payment the provider confirmed."""
+        return self.committed(record_team_payment, user, plan, provider, paid_through, reference)
+
+    def committed(self, change, *args, **kwargs):
+        """apps/team/tests.py: a change with what it queued for after its commit run in place, as the commit at the
+        end of a real webhook or task would."""
         queued = len(connection.run_on_commit)
-        payment = record_team_payment(user, plan, provider, paid_through, reference)
+        result = change(*args, **kwargs)
         callbacks = connection.run_on_commit[queued:]
         del connection.run_on_commit[queued:]
         for _, callback in callbacks:
             callback()
-        return payment
+        return result
 
 
 class Test_TeamProSeat(TeamProMixin, TestCase):
@@ -1069,8 +1078,8 @@ class Test_TeamLapse(TeamProMixin, TestCase):
         Team.objects.filter(pk=self.team.pk).update(paid_through=self.now - self.days(2))
         mail.outbox = []
 
-        TeamProGrants()
-        TeamProGrants()
+        self.committed(TeamProGrants)
+        self.committed(TeamProGrants)
 
         self.team.refresh_from_db()
         self.assertEqual(self.team.status, Team.STATUS_INACTIVE)
@@ -1097,13 +1106,50 @@ class Test_TeamLapse(TeamProMixin, TestCase):
     def test_a_teammate_removed_after_the_lapse_gets_no_second_email(self):
         reader = self.reader("reader", "free", feeds=1)
         self.join(reader)
-        deactivate_team(self.team)
+        self.committed(deactivate_team, self.team)
 
         self.post(self.owner, "remove_member", team_id=self.team.pk, user_id=reader.pk)
 
         self.assertEqual(len(self.mail_to(reader)), 1)
         self.assertFalse(TeamProGrant.objects.filter(user=reader).exists())
         self.assertEqual(self.plan_of(reader), "free")
+
+    def test_a_failed_plan_ended_email_holds_up_no_other_teammate(self):
+        readers = [self.reader(username, "free") for username in ("first", "second", "third")]
+        for user in readers:
+            self.join(user)
+        mail.outbox = []
+        send = EmailMultiAlternatives.send
+        attempts = []
+
+        def first_send_fails(message, fail_silently=False):
+            attempts.append(message.to[0])
+            if len(attempts) == 1:
+                raise smtplib.SMTPServerDisconnected("connection lost")
+            return send(message, fail_silently)
+
+        with patch.object(EmailMultiAlternatives, "send", autospec=True, side_effect=first_send_fails):
+            self.committed(deactivate_team, self.team)
+
+        self.assertEqual(
+            sorted(message.to[0] for message in mail.outbox),
+            sorted("%s <%s>" % (user, user.email) for user in [self.owner] + readers),
+        )
+
+    def test_a_payment_before_the_plan_ended_email_goes_out_cancels_it(self):
+        reader = self.reader("reader", "free")
+        self.join(reader)
+        queued = len(connection.run_on_commit)
+        deactivate_team(self.team)
+        plan_ended_emails = connection.run_on_commit[queued:]
+        del connection.run_on_commit[queued:]
+
+        activate_team(self.team)
+        for _, send_plan_ended_email in plan_ended_emails:
+            send_plan_ended_email()
+
+        self.assertEqual(self.mail_to(reader), [])
+        self.assertEqual(self.plan_of(reader), "pro")
 
     def test_an_inactive_team_takes_no_new_teammates(self):
         self.post(self.owner, "invite", team_id=self.team.pk, emails="invited@example.com")
@@ -1132,6 +1178,18 @@ class Test_TeamLapse(TeamProMixin, TestCase):
         self.assertEqual(self.plan_of(reader), "free")
         self.team.refresh_from_db()
         self.assertEqual(self.team.status, Team.STATUS_INACTIVE)
+
+
+class Test_TeamProRepairAtOnce(TeamProMixin, TransactionTestCase):
+    def test_the_hourly_repair_leaves_alone_a_plan_released_while_it_waited(self):
+        reader = self.reader("reader", "archive", premium_expire=self.now + self.days(100))
+        self.join(reader)
+        # A stale save took the reader's Pro, which makes them one the hourly task repairs.
+        Profile.objects.filter(user=reader).update(**PLANS["premium"])
+
+        self.while_held(lambda: release_team_pro(reader), TeamProGrants)
+
+        self.assertEqual(self.plan_of(reader), "archive")
 
 
 class Test_TeamProFeedSetup(TeamClientMixin, TransactionTestCase):
@@ -1176,6 +1234,7 @@ def stripe_subscription(subscription_id, prices):
             "object": "subscription",
             "status": "active",
             "cancel_at": None,
+            "cancel_at_period_end": False,
             "plan": items[0]["plan"] if len(items) == 1 else None,
             "items": {"object": "list", "data": items},
         },
@@ -1194,16 +1253,21 @@ class FakeStripe:
         test.patch(stripe.Customer, "list", return_value=[customer])
         test.patch(stripe.Charge, "list", return_value=MagicMock(data=[]))
         test.patch(
-            stripe.Subscription, "list", side_effect=lambda **kwargs: MagicMock(data=self.subscriptions)
+            stripe.Subscription, "list", side_effect=lambda **kwargs: MagicMock(data=list(self.subscriptions))
         )
+        test.patch(stripe.Subscription, "retrieve", side_effect=self._subscription)
         self.modify = test.patch(stripe.Subscription, "modify", side_effect=self._modify)
         self.cancel = test.patch(stripe.Subscription, "cancel")
         self.delete = test.patch(stripe.Subscription, "delete")
         self.refund = test.patch(stripe.Refund, "create")
 
+    def _subscription(self, subscription_id):
+        return next(sub for sub in self.subscriptions if sub.id == subscription_id)
+
     def _modify(self, subscription_id, cancel_at_period_end=False, **changes):
         if cancel_at_period_end:
-            subscription = next(sub for sub in self.subscriptions if sub.id == subscription_id)
+            subscription = self._subscription(subscription_id)
+            subscription["cancel_at_period_end"] = True
             subscription["cancel_at"] = int(datetime.datetime.now().timestamp())
 
     def renewals_turned_off(self):
@@ -1216,6 +1280,7 @@ class FakePayPal:
     def __init__(self, test, subscription_id):
         self.subscription_id = subscription_id
         self.status = "ACTIVE"
+        self.suspends = True
         self.posts = []
         test.patch(profile_models.paypalrestsdk, "Api", return_value=self)
 
@@ -1226,7 +1291,7 @@ class FakePayPal:
 
     def post(self, url, data):
         self.posts.append(url)
-        if url.endswith("/suspend"):
+        if url.endswith("/suspend") and self.suspends:
             self.status = "SUSPENDED"
         return {}
 
@@ -1300,6 +1365,96 @@ class Test_TeamJoinOwnPlan(TeamProMixin, TestCase):
         self.assertEqual(fake_paypal.posts, ["/v1/billing/subscriptions/I-TEAMJOINER/suspend"])
         self.assertFalse(Profile.objects.get(user=reader).premium_renewal)
         self.assertEqual(len(self.mail_to(reader)), 1)
+
+    def stripe_subscriber(self, username):
+        user = self.subscriber(username, "archive", "stripe", self.now + self.days(200))
+        Profile.objects.filter(user=user).update(stripe_id="cus_%s" % username)
+        StripeIds.objects.create(user=user, stripe_id="cus_%s" % username)
+        return user
+
+    def held_join_task(self):
+        """apps/team/tests.py: the next join's own plan task, kept in the queue until the test runs it."""
+        held = self.patch(SettleOwnPlanOnJoin, "delay")
+        return lambda: SettleOwnPlanOnJoin.apply(kwargs=held.call_args_list[0].kwargs).get()
+
+    def test_a_join_task_turns_off_only_what_renewed_at_the_join(self):
+        reader = self.stripe_subscriber("reader")
+        archive_sub = stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])
+        fake_stripe = FakeStripe(self, "cus_reader", [archive_sub])
+        run_join_task = self.held_join_task()
+        self.accept(reader)
+
+        fake_stripe.subscriptions.append(
+            stripe_subscription("sub_pro", [Profile.plan_to_stripe_price("pro")])
+        )
+        run_join_task()
+
+        self.assertEqual(fake_stripe.renewals_turned_off(), [("sub_archive", {"cancel_at_period_end": True})])
+        self.assertEqual(len(self.mail_to(reader)), 1)
+
+    def test_a_join_task_whose_seat_ended_first_turns_nothing_off(self):
+        reader = self.stripe_subscriber("reader")
+        archive_sub = stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])
+        fake_stripe = FakeStripe(self, "cus_reader", [archive_sub])
+        run_join_task = self.held_join_task()
+        self.accept(reader)
+        self.leave(reader)
+        fake_stripe.subscriptions.append(
+            stripe_subscription("sub_pro", [Profile.plan_to_stripe_price("pro")])
+        )
+        mail.outbox = []
+
+        run_join_task()
+
+        self.assertEqual(fake_stripe.renewals_turned_off(), [])
+        self.assertEqual(self.mail_to(reader), [])
+
+    def test_a_renewal_stripe_or_paypal_wont_confirm_off_goes_to_staff_not_the_teammate(self):
+        stripe_reader = self.stripe_subscriber("stripereader")
+        fake_stripe = FakeStripe(
+            self,
+            "cus_stripereader",
+            [stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])],
+        )
+        fake_stripe.modify.side_effect = stripe.error.InvalidRequestError("No such subscription", None)
+        paypal_reader = self.subscriber("paypalreader", "premium", "paypal", self.now + self.days(300))
+        Profile.objects.filter(user=paypal_reader).update(paypal_sub_id="I-TEAMJOINER")
+        PaypalIds.objects.create(user=paypal_reader, paypal_sub_id="I-TEAMJOINER")
+        fake_paypal = FakePayPal(self, "I-TEAMJOINER")
+        fake_paypal.suspends = False
+
+        for user in (stripe_reader, paypal_reader):
+            self.accept(user)
+
+        for user in (stripe_reader, paypal_reader):
+            self.assertEqual(self.mail_to(user), [])
+        self.assertGreater(fake_stripe.modify.call_count, 1)
+        self.assertGreater(len(fake_paypal.posts), 1)
+        staff_notices = [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
+        self.assertEqual(staff_notices.count("team_own_plan_unconfirmed"), 2)
+
+    def test_a_renewal_stripe_couldnt_read_at_the_join_goes_to_staff_not_the_teammate(self):
+        reader = self.stripe_subscriber("reader")
+        fake_stripe = FakeStripe(
+            self,
+            "cus_reader",
+            [stripe_subscription("sub_archive", [Profile.plan_to_stripe_price("archive")])],
+        )
+        listed = []
+
+        def unreachable_only_at_the_join(**kwargs):
+            listed.append(kwargs)
+            if len(listed) == 1:
+                raise stripe.error.APIConnectionError("timed out")
+            return MagicMock(data=list(fake_stripe.subscriptions))
+
+        with patch.object(stripe.Subscription, "list", side_effect=unreachable_only_at_the_join):
+            self.accept(reader)
+
+        self.assertEqual(self.mail_to(reader), [])
+        self.assertEqual(fake_stripe.renewals_turned_off(), [])
+        staff_notices = [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
+        self.assertEqual(staff_notices.count("team_own_plan_unconfirmed"), 1)
 
     def test_store_subscribers_are_told_to_cancel_in_their_own_store(self):
         ios_reader = self.store_subscriber("iosreader", "ios-subscription")
@@ -1469,12 +1624,13 @@ class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
             timestamp=timestamp,
         ).save()
 
-    def classify(self, user):
+    def classify(self, user, input_tokens=1_000_000):
+        """apps/team/tests.py: one AI filter call, which costs $2.00 for a million input tokens."""
         LLMCostTracker.record_usage(
             provider="anthropic",
             model="claude-sonnet-5-5",
             feature="story_classification",
-            input_tokens=1_000_000,
+            input_tokens=input_tokens,
             user_id=user.pk,
         )
 
@@ -1507,20 +1663,20 @@ class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
         stayer = self.reader("stayer", "free")
         leaver = self.reader("leaver", "free")
         outsider = self.reader("outsider", "free")
+        # A cost row written before rows named who was billed counts for the account that used it.
+        self.cost(self.owner, 0.40, self.at(0.1))
+        self.cost(stayer, 3.00, self.at(0.1), feature="ask_ai")
+        for user in (stayer, leaver, outsider):
+            self.classify(user)
         for user in (stayer, leaver):
             self.join(user)
-        self.leave(leaver)
-        TeamMember.objects.filter(user__in=(stayer, leaver)).update(joined_date=self.at(0.3))
-        TeamMember.objects.filter(user=leaver).update(removed_date=self.at(0.6))
 
-        self.cost(self.owner, 0.40, self.at(0.1))
-        self.cost(stayer, 5.00, self.at(0.2))
-        self.cost(stayer, 0.20, self.at(0.5))
-        self.cost(stayer, 0.10, self.at(0.5), feature="vision_classification")
-        self.cost(stayer, 3.00, self.at(0.5), feature="ask_ai")
-        self.cost(leaver, 0.20, self.at(0.4))
-        self.cost(leaver, 2.00, self.at(0.8))
-        self.cost(outsider, 4.00, self.at(0.5))
+        self.classify(stayer, input_tokens=100_000)
+        self.classify(leaver, input_tokens=100_000)
+        self.leave(leaver)
+        self.classify(leaver)
+        self.join(leaver)
+        self.classify(leaver, input_tokens=50_000)
 
         spend, limit, reached = Profile.objects.get(user=stayer).get_usage_billing_spend()
         self.assertAlmostEqual(spend, 0.90)
@@ -1535,21 +1691,23 @@ class Test_TeamAIFilterBilling(TeamProMixin, TestCase):
         self.assertTrue(Profile.objects.get(user=stayer).is_usage_limit_reached)
         self.assertTrue(Profile.objects.get(user=self.owner).is_usage_limit_reached)
 
-    def test_a_teammate_who_left_and_came_back_counts_for_both_seats(self):
+    def test_what_a_teammate_uses_off_the_team_or_while_it_is_inactive_is_their_own(self):
         self.turn_on_owner_billing()
         reader = self.reader("reader", "free")
+        Profile.objects.filter(user=reader).update(stripe_id="cus_reader", is_usage_billing=True)
         self.join(reader)
-        TeamMember.objects.filter(user=reader).update(joined_date=self.at(0.1))
+        self.classify(reader, input_tokens=100_000)
         self.leave(reader)
-        TeamMember.objects.filter(user=reader).update(removed_date=self.at(0.4))
+        self.classify(reader)
         self.join(reader)
-        TeamMember.objects.filter(user=reader).update(joined_date=self.at(0.8))
+        deactivate_team(self.team)
+        self.classify(reader)
+        activate_team(self.team)
+        self.classify(reader, input_tokens=50_000)
+        self.leave(reader)
 
-        self.cost(reader, 0.30, self.at(0.2))
-        self.cost(reader, 5.00, self.at(0.6))
-        self.cost(reader, 0.20, self.at(0.9))
-
-        self.assertAlmostEqual(Profile.objects.get(user=self.owner).get_usage_billing_spend()[0], 0.50)
+        self.assertAlmostEqual(Profile.objects.get(user=self.owner).get_usage_billing_spend()[0], 0.30)
+        self.assertAlmostEqual(Profile.objects.get(user=reader).get_usage_billing_spend()[0], 4.00)
 
     def test_only_the_owner_turns_on_usage_billing_for_the_team(self):
         reader = self.reader("reader", "free")
@@ -1816,13 +1974,27 @@ class Test_TeamSiteLimit(TeamSitesMixin, TestCase):
     def test_timed_mutes_running_out_come_back_only_as_far_as_the_limit(self):
         self.follow(self.casey, self.new)
         self.follow(self.casey, self.newer, self.followed, active=False)
-        UserSubscription.objects.filter(user=self.casey, active=False).update(
-            mute_expires_at=self.now - self.days(1)
+        UserSubscriptionFolders.objects.create(
+            user=self.casey, folders=json.encode([self.new.pk, self.newer.pk, self.followed.pk])
         )
+        fetches = self.patch(ScheduleImmediateFetches, "apply_async")
 
-        self.client_for(self.casey).get("/reader/feeds", {"flat": "true"})
+        for flat in ("true", "false"):
+            UserSubscription.objects.filter(user=self.casey, feed__in=(self.newer, self.followed)).update(
+                active=False, mute_expires_at=self.now - self.days(1)
+            )
+            fetches.reset_mock()
 
-        self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+            response = self.client_for(self.casey).get("/reader/feeds", {"flat": flat})
+            feeds = json.decode(response.content)["feeds"]
+
+            self.assertEqual(self.active_sites(self.casey), {"new", "followed"})
+            listed_active = {feed["feed_title"] for feed in feeds.values() if feed["active"]}
+            self.assertEqual(listed_active, {"new", "followed"})
+            scheduled = {
+                feed_id for call in fetches.call_args_list for feed_id in call.kwargs["kwargs"]["feed_ids"]
+            }
+            self.assertNotIn(self.newer.pk, scheduled)
 
     def test_joining_past_the_limit_mutes_only_the_joiners_newest_sites(self):
         joiner = self.reader("joiner", "premium", premium_expire=self.now + self.days(30))
@@ -1851,17 +2023,15 @@ class Test_TeamSiteLimit(TeamSitesMixin, TestCase):
         unmuted = self.reader_post(solo, "set_feed_mute", feed_id=self.new.pk, mute="false")
         self.assertEqual(unmuted["code"], 1)
 
-    @override_settings(CACHES={"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}})
-    def test_the_web_client_checks_against_its_own_sites_plus_the_teams_room(self):
-        self.follow(self.casey, self.followed)
+    def test_a_full_team_leaves_the_web_client_to_ask_the_server_about_each_site(self):
+        self.follow(self.casey, self.new)
         solo = self.reader("solo", "pro", premium_expire=self.now + self.days(30))
 
         def limits_shown(user):
             page = self.client_for(user).get(reverse("index")).content.decode("utf-8")
             return re.findall(r"'(?:max|add)_feed_limit'\s*:\s*(\w+)", page)
 
-        self.assertEqual(limits_shown(self.casey), ["2", "2"])
-        self.assertEqual(limits_shown(solo), ["3", "3"])
+        self.assertEqual(limits_shown(self.casey), limits_shown(solo))
 
 
 class Test_TeamSiteLimitAtOnce(TeamSitesMixin, TransactionTestCase):

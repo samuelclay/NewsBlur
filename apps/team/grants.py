@@ -4,7 +4,10 @@ own, releasing it back to the person's own plan the moment the seat ends, and a 
 
 import datetime
 
+import paypalrestsdk
 import redis
+import requests
+import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
@@ -32,6 +35,15 @@ STORE_SUBSCRIPTION_URLS = {
     % settings.GOOGLE_PLAY_PACKAGE_NAME,
 }
 STORE_PAYMENT_DAYS = 365
+# grants.py: what Stripe and PayPal report for a subscription that renews, and for one that won't renew again.
+STRIPE_ENDED_STATUSES = ("canceled", "incomplete_expired")
+PAYPAL_RENEWING_STATUSES = ("ACTIVE", "APPROVED", "APPROVAL_PENDING")
+PAYPAL_STOPPED_STATUSES = ("SUSPENDED", "CANCELLED", "EXPIRED")
+PROVIDER_ERRORS = (
+    stripe.error.StripeError,
+    paypalrestsdk.exceptions.ConnectionError,
+    requests.exceptions.RequestException,
+)
 
 
 def grant_team_pro(member):
@@ -106,7 +118,11 @@ def deactivate_team(team, lapsed_at=None):
     """Billing calls this when the owner's paid period ends without a payment. The team goes inactive and every
     teammate's Premium Pro ends at once, and each teammate gets one email. Members, roles, invites and settings
     stay as they are. With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that
-    moment once its row is locked (Team.lapsed), so a renewal committed after the task chose it keeps it."""
+    moment once its row is locked (Team.lapsed), so a renewal committed after the task chose it keeps it. Each email
+    goes out from its own task once the lapse has committed."""
+    # grants.py: apps/team/tasks.py imports this module.
+    from apps.team.tasks import EmailTeamPlanEnded
+
     with transaction.atomic():
         team = team.lock()
         if team.status == Team.STATUS_INACTIVE:
@@ -120,8 +136,12 @@ def deactivate_team(team, lapsed_at=None):
         plans = {}
         for grant in TeamProGrant.objects.filter(member__in=members).select_related("user"):
             plans[grant.user_id] = release_team_pro(grant.user)
-    for member in members:
-        send_team_plan_ended_email(member.user, team, plans.get(member.user_id))
+        for member in members:
+            transaction.on_commit(
+                lambda user_id=member.user_id: EmailTeamPlanEnded.delay(
+                    user_id=user_id, team_id=team.pk, plan=plans.get(user_id)
+                )
+            )
 
 
 def activate_team(team):
@@ -197,16 +217,81 @@ def own_plan_on_join(user):
     return own_plan
 
 
-def settle_own_plan_on_join(user, team, subscription):
-    """Run by SettleOwnPlanOnJoin (apps/team/tasks.py) once a join has committed. A Stripe or PayPal renewal stops
-    at the end of the period already paid for, with no refund, and the AI filter usage billing subscription keeps
-    running. Either way the person gets one email saying what happened to their own plan."""
+def renewing_subscriptions(user):
+    """The Stripe and PayPal subscriptions this person pays for on their own that renew, as [provider, id] pairs,
+    read as their join commits (apps/team/tasks.py queue_own_plan_on_join). The AI filter usage billing
+    subscription isn't one. None when Stripe or PayPal couldn't be asked."""
+    profile = Profile.objects.get(user=user)
+    renewing = []
+    try:
+        if profile.stripe_id:
+            stripe.api_key = settings.STRIPE_SECRET
+            for customer_id in user.stripe_ids.values_list("stripe_id", flat=True):
+                for subscription in stripe.Subscription.list(customer=customer_id).data:
+                    if (
+                        subscription.cancel_at_period_end
+                        or subscription.status in STRIPE_ENDED_STATUSES
+                        or Profile.is_usage_billing_subscription(subscription)
+                    ):
+                        continue
+                    renewing.append(["stripe", subscription.id])
+        paypal_api = profile.paypal_api()
+        paypal_ids = user.paypal_ids.values_list("paypal_sub_id", flat=True) if paypal_api else []
+        for paypal_id in paypal_ids:
+            try:
+                paypal_subscription = paypal_api.get("/v1/billing/subscriptions/%s" % paypal_id)
+            except paypalrestsdk.ResourceNotFound:
+                # grants.py: as in Profile.setup_premium_history, an id the subscriptions API doesn't know is no
+                # renewal.
+                continue
+            if paypal_subscription["status"] in PAYPAL_RENEWING_STATUSES:
+                renewing.append(["paypal", paypal_id])
+    except PROVIDER_ERRORS as e:
+        logging.user(user, "~FRCouldn't read own subscriptions on joining a team: %s" % e)
+        return None
+    return renewing
+
+
+def settle_own_plan_on_join(user, team, subscription, renewing):
+    """Run by SettleOwnPlanOnJoin (apps/team/tasks.py) once a join has committed. The Stripe and PayPal renewals
+    in renewing, read at the join, stop at the end of the period already paid for, with no refund, and the AI
+    filter usage billing subscription keeps running. The person gets one email saying what happened to their own
+    plan, sent only once Stripe or PayPal confirms each renewal is off. Returns False when that can't be
+    confirmed, and then nothing is sent."""
     if subscription in RENEWALS_TURNED_OFF_ON_JOIN:
-        profile = Profile.objects.get(user=user)
-        profile.cancel_premium_stripe()
-        profile.cancel_premium_paypal()
-        profile.setup_premium_history()
+        if renewing is None or not _turn_off_renewals(user, renewing):
+            return False
     send_own_plan_email(user, team, subscription)
+    return True
+
+
+def _turn_off_renewals(user, renewing):
+    profile = Profile.objects.get(user=user)
+    stripe_ids = [subscription_id for provider, subscription_id in renewing if provider == "stripe"]
+    paypal_ids = [subscription_id for provider, subscription_id in renewing if provider == "paypal"]
+    try:
+        if stripe_ids:
+            profile.cancel_premium_stripe(subscription_ids=stripe_ids)
+        if paypal_ids:
+            profile.cancel_premium_paypal(force=True, subscription_ids=paypal_ids)
+        stopped = all(
+            _renewal_stopped(profile, provider, subscription_id) for provider, subscription_id in renewing
+        )
+    except PROVIDER_ERRORS as e:
+        logging.user(user, "~FRCouldn't turn off own renewal on joining a team: %s" % e)
+        return False
+    profile.setup_premium_history()
+    return stopped
+
+
+def _renewal_stopped(profile, provider, subscription_id):
+    """Whether Stripe or PayPal says this subscription won't renew again."""
+    if provider == "stripe":
+        stripe.api_key = settings.STRIPE_SECRET
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        return bool(subscription.cancel_at_period_end) or subscription.status in STRIPE_ENDED_STATUSES
+    paypal_subscription = profile.paypal_api().get("/v1/billing/subscriptions/%s" % subscription_id)
+    return paypal_subscription["status"] in PAYPAL_STOPPED_STATUSES
 
 
 def _plan_context(plan, profile):

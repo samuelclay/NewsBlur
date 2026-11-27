@@ -4,10 +4,15 @@ Premium Pro (apps/team/grants.py)."""
 import datetime
 
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from apps.profile.models import Profile
+from apps.profile.tasks import EmailStaffNotification
 from apps.team.grants import (
+    RENEWALS_TURNED_OFF_ON_JOIN,
     deactivate_team,
+    renewing_subscriptions,
+    send_team_plan_ended_email,
     send_team_welcome_email,
     settle_own_plan_on_join,
 )
@@ -29,20 +34,59 @@ def SendTeamInviteEmail(invite_id):
     invite.send_email()
 
 
-# tasks.py: queued once a join has committed (TeamInvite.accept). Turning off a renewal again is harmless, so a
-# retry after a failed email repeats the whole thing.
+def queue_own_plan_on_join(grant, team, subscription):
+    """Run as a join commits (TeamInvite.accept). The Stripe and PayPal subscriptions renewing at that moment are
+    read here, so the task turns off only those, and only while the grant this join made is still held."""
+    renewing = renewing_subscriptions(grant.user) if subscription in RENEWALS_TURNED_OFF_ON_JOIN else []
+    SettleOwnPlanOnJoin.delay(
+        user_id=grant.user_id,
+        team_id=team.pk,
+        subscription=subscription,
+        grant_id=grant.pk,
+        renewing=renewing,
+    )
+
+
+# tasks.py: turning off a renewal again is harmless, so a retry repeats the whole thing. A renewal Stripe or PayPal
+# can't confirm is off is retried, and after the last retry staff are told instead of the teammate.
 @app.task(
-    name="team-own-plan-on-join",
+    name="team-own-plan-on-join", bind=True, autoretry_for=(Exception,), retry_backoff=60, max_retries=3
+)
+def SettleOwnPlanOnJoin(self, user_id, team_id, subscription, grant_id, renewing):
+    grant = TeamProGrant.objects.select_related("user").filter(pk=grant_id, user_id=user_id).first()
+    team = Team.objects.filter(pk=team_id).first()
+    # tasks.py: a seat that ended before the task's turn released this grant, and whatever the person pays for
+    # since is theirs to keep.
+    if not grant or not team:
+        return
+    if settle_own_plan_on_join(grant.user, team, subscription, renewing):
+        return
+    if renewing is not None and self.request.retries < self.max_retries:
+        raise self.retry(countdown=60 * 2**self.request.retries)
+    EmailStaffNotification.delay(
+        event_type="team_own_plan_unconfirmed",
+        subject="Own renewal not confirmed off after joining a team: %s" % grant.user.username,
+        body="%s joined %s, which covers Premium Pro, but %s could not confirm that their own renewal is off "
+        "(subscriptions renewing at the join: %s). They were not emailed about their own plan."
+        % (grant.user.username, team.name, subscription, renewing if renewing is not None else "unknown"),
+    )
+
+
+# tasks.py: one task per teammate, queued once a lapse has committed (apps/team/grants.py deactivate_team), so a
+# failed send retries only its own recipient.
+@app.task(
+    name="email-team-plan-ended",
     autoretry_for=(Exception,),
     retry_backoff=60,
     retry_kwargs={"max_retries": 3},
 )
-def SettleOwnPlanOnJoin(user_id, team_id, subscription):
+def EmailTeamPlanEnded(user_id, team_id, plan):
     user = User.objects.filter(pk=user_id).first()
     team = Team.objects.filter(pk=team_id).first()
-    if not user or not team:
+    # tasks.py: a payment that brought the team back before this email's turn makes it untrue.
+    if not user or not team or team.status != Team.STATUS_INACTIVE:
         return
-    settle_own_plan_on_join(user, team, subscription)
+    send_team_plan_ended_email(user, team, plan)
 
 
 # tasks.py: queued once the first payment for a team has committed (apps/team/billing.py).
@@ -69,10 +113,16 @@ def TeamProGrants():
 
     # tasks.py: a change to a teammate's own plan already under way when they join (PremiumExpire in
     # apps/profile/tasks.py ending a trial it loaded before the join, a payment webhook mid activation) writes
-    # the plan it loaded over the Pro the join set, so Pro is put back on everyone holding a grant.
+    # the plan it loaded over the Pro the join set, so Pro is put back on everyone holding a grant. Each profile is
+    # locked before its grant is read, the order release_team_pro takes them in, so a profile whose grant was
+    # released meanwhile keeps the plan the release wrote.
     pro_flags = TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO]
-    restored = (
-        Profile.objects.filter(user__team_pro_grant__isnull=False).exclude(**pro_flags).update(**pro_flags)
-    )
+    overwritten = Profile.objects.filter(user__team_pro_grant__isnull=False).exclude(**pro_flags)
+    restored = 0
+    for profile_id in list(overwritten.values_list("pk", flat=True)):
+        with transaction.atomic():
+            profile = Profile.objects.select_for_update().filter(pk=profile_id).first()
+            if profile and TeamProGrant.objects.filter(user_id=profile.user_id).exists():
+                restored += Profile.objects.filter(pk=profile_id).exclude(**pro_flags).update(**pro_flags)
     if restored:
         logging.debug(" ---> Put team Premium Pro back on %s overwritten profiles" % restored)

@@ -447,16 +447,6 @@ class Profile(models.Model):
         """
         return self.max_feed_limit
 
-    @property
-    def feed_limit_shown(self):
-        """The site limit the web client checks itself against before adding or choosing sites
-        (templates/base.html). A teammate's is their own active sites plus what their team has left of its shared
-        limit (apps/team/sites.py), which the server checks again exactly."""
-        from apps.team.sites import site_limit_shown
-
-        shown = site_limit_shown(self.user)
-        return self.max_feed_limit if shown is None else shown
-
     def can_use_ask_ai(self):
         return AskAIUsageTracker(self.user).can_use()
 
@@ -2655,7 +2645,10 @@ class Profile(models.Model):
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
-    def cancel_premium_paypal(self, cancel_older_subscriptions_only=False, force=False):
+    def cancel_premium_paypal(
+        self, cancel_older_subscriptions_only=False, force=False, subscription_ids=None
+    ):
+        """subscription_ids, when given, are the only PayPal subscriptions this may suspend (apps/team/grants.py)."""
         self.retrieve_paypal_ids()
         if not self.paypal_sub_id:
             logging.user(self.user, "~FRUser doesn't have a Paypal subscription, how did we get here?")
@@ -2670,6 +2663,8 @@ class Profile(models.Model):
         today = datetime.datetime.now().strftime("%B %d, %Y")
         for paypal_id_model in self.user.paypal_ids.all():
             paypal_id = paypal_id_model.paypal_sub_id
+            if subscription_ids is not None and paypal_id not in subscription_ids:
+                continue
             if cancel_older_subscriptions_only and paypal_id == self.paypal_sub_id:
                 logging.user(
                     self.user, "~FBNot canceling active Paypal subscription: %s" % self.paypal_sub_id
@@ -2739,7 +2734,8 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
-    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False, subscription_ids=None):
+        """subscription_ids, when given, are the only Stripe subscriptions this may turn off (apps/team/grants.py)."""
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
@@ -2753,6 +2749,8 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    if subscription_ids is not None and subscription["id"] not in subscription_ids:
+                        continue
                     # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
                     # The AI classifier usage billing sub keeps running unless the account is
                     # being deleted (apps/profile/models.py delete_user).

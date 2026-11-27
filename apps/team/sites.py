@@ -3,17 +3,12 @@ active sites of its owner and everyone holding a seat (apps/team/models.py TeamS
 already follows costs nothing more, muted sites cost nothing, and a teammate's sites stop counting when their seat
 ends. Accounts on no team keep the limits they have on their own."""
 
-from django.core.cache import cache
 from django.utils.translation import gettext
 
 from apps.profile.models import Profile
 from apps.reader.models import UserSubscription
 from apps.team.models import Team, TeamMember, team_scope
 from utils.languages import localized_number
-
-# sites.py: how long the count shown to the web client (site_limit_shown) is reused. Every check before a site
-# becomes active counts again.
-SHOWN_COUNT_SECONDS = 5 * 60
 
 
 def site_limit():
@@ -99,19 +94,3 @@ def fit_sites_on_join(member, reactivate_muted):
     fitting = TeamSites(member.team_id).fitting(candidates, without_user_id=member.user_id)
     subscriptions.filter(active=True).exclude(feed_id__in=fitting).update(active=False)
     subscriptions.filter(active=False, feed_id__in=fitting).update(active=True)
-
-
-def site_limit_shown(user):
-    """The site limit the web client checks itself against (templates/base.html): this account's active sites
-    plus what its team has left, with the team's count from a short cache. None when it is on no active team.
-    """
-    scope = team_scope(user)
-    if not scope:
-        return None
-    cache_key = "team:%s:active_sites" % scope.team_id
-    team_count = cache.get(cache_key)
-    if team_count is None:
-        team_count = _active_sites(scope.member_ids).values("feed_id").distinct().count()
-        cache.set(cache_key, team_count, SHOWN_COUNT_SECONDS)
-    own_count = UserSubscription.objects.filter(user=user, active=True).count()
-    return own_count + max(0, site_limit() - team_count)

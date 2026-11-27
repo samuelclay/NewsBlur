@@ -63,10 +63,8 @@
       'team_paid_through'       : {% if team.team_paid_through %}new Date({{ team.team_paid_through }} * 1000){% else %}null{% endif %},
       'team_pending_owner'      : {% if team.team_pending_owner %}"{{ team.team_pending_owner|escapejs }}"{% else %}null{% endif %},
       {% endwith %}
-      {% with feed_limit=user_profile.feed_limit_shown %}
-      'max_feed_limit'          : {% if feed_limit %}{{ feed_limit }}{% else %}null{% endif %},
-      'add_feed_limit'          : {% if feed_limit %}{{ feed_limit }}{% else %}null{% endif %},
-      {% endwith %}
+      'max_feed_limit'          : {% if user_profile.max_feed_limit %}{{ user_profile.max_feed_limit }}{% else %}null{% endif %},
+      'add_feed_limit'          : {% if user_profile.add_feed_limit %}{{ user_profile.add_feed_limit }}{% else %}null{% endif %},
       'premium_feed_limit'      : {% firstof user_profile.premium_feed_limit 1024 %},
       'archive_feed_limit'      : {% firstof user_profile.archive_feed_limit 4096 %},
       'pro_feed_limit'          : {% firstof user_profile.pro_feed_limit 10000 %},
