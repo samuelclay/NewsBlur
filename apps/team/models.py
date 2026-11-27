@@ -35,6 +35,8 @@ class Team(models.Model):
     NAME_MAX_LENGTH = 100
     # models.py: counts invite_sent activity, so re-sending a live invite counts against it too.
     EMAIL_INVITES_PER_DAY = 50
+    # models.py: attempts at a free slug when teams with the same name are created at the same moment.
+    SLUG_ATTEMPTS = 3
 
     name = models.CharField(max_length=NAME_MAX_LENGTH)
     slug = models.SlugField(max_length=120, unique=True)
@@ -60,22 +62,25 @@ class Team(models.Model):
     @classmethod
     def create_team(cls, owner, name, plan=PLAN_TEAM):
         """Returns (team, None), or (None, failure reason) when the owner already has a team or is on one."""
-        try:
-            with transaction.atomic():
+        for attempt in range(cls.SLUG_ATTEMPTS):
+            try:
+                with transaction.atomic():
+                    reason = cls._creation_refusal(owner)
+                    if reason:
+                        return None, reason
+                    team = cls.objects.create(name=name, slug=cls._unique_slug(name), owner=owner, plan=plan)
+                    TeamMember.objects.create(team=team, user=owner, role=TeamMember.ROLE_OWNER)
+                    TeamActivity.log(team, owner, "team_created", name=name, plan=plan)
+                return team, None
+            except IntegrityError:
+                # models.py: a create or accept by the same account committed first, so the one team per owner
+                # or one active team per account constraint refused this one, and asking again names which.
+                # Otherwise a team with the same name took the slug first, and the next attempt picks another.
                 reason = cls._creation_refusal(owner)
                 if reason:
                     return None, reason
-                team = cls.objects.create(name=name, slug=cls._unique_slug(name), owner=owner, plan=plan)
-                TeamMember.objects.create(team=team, user=owner, role=TeamMember.ROLE_OWNER)
-                TeamActivity.log(team, owner, "team_created", name=name, plan=plan)
-        except IntegrityError:
-            # models.py: a create or accept by the same account committed first, so the one team per owner or
-            # one active team per account constraint refused this one. Asking again names which.
-            reason = cls._creation_refusal(owner)
-            if not reason:
-                raise
-            return None, reason
-        return team, None
+                if attempt == cls.SLUG_ATTEMPTS - 1:
+                    raise
 
     @classmethod
     def _creation_refusal(cls, owner):
@@ -110,8 +115,8 @@ class Team(models.Model):
         return self.invites.filter(kind=TeamInvite.KIND_LINK, revoked_date__isnull=True).first()
 
     def lock(self):
-        """Lock this team's row until the surrounding transaction ends. Seat counts, the owner and the
-        join link are only changed under this lock."""
+        """Lock this team's row until the surrounding transaction ends. Every change to its seats, roles and
+        owner, every invite sent and every new join link happens under this lock."""
         return Team.objects.select_for_update().get(pk=self.pk)
 
     def rename(self, actor, name):
@@ -121,46 +126,62 @@ class Team(models.Model):
         TeamActivity.log(self, actor, "team_renamed", old_name=old_name, name=name)
 
     def invite_by_email(self, actor, emails, role):
-        """Invite each address, or refresh and resend its live invite. Returns a failure reason or None."""
-        day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
-        sent_today = self.activities.filter(action="invite_sent", created_date__gte=day_ago).count()
-        if sent_today + len(emails) > self.EMAIL_INVITES_PER_DAY:
-            return "invite_limit"
+        """Invite each address, or refresh and resend its live invite. Returns a failure reason or None. The team
+        row lock keeps the daily limit and one live invite per address when invites are sent at once, and each
+        email goes out from its own task once the invites have committed (apps/team/tasks.py)."""
+        # models.py: apps/team/tasks.py imports apps/team/grants.py, which imports apps.profile, which imports
+        # this module.
+        from apps.team.tasks import SendTeamInviteEmail
 
-        expire_date = datetime.datetime.now() + datetime.timedelta(days=TeamInvite.EMAIL_INVITE_DAYS)
-        invites = []
-        for email in emails:
-            invite = self.pending_invites().filter(email__iexact=email).first()
-            if invite:
-                invite.role = role
-                invite.created_by = actor
-                invite.expire_date = expire_date
-                invite.save(update_fields=["role", "created_by", "expire_date"])
-            else:
-                invite = TeamInvite.objects.create(
-                    team=self,
-                    kind=TeamInvite.KIND_EMAIL,
-                    email=email,
-                    token=TeamInvite.new_token(),
-                    role=role,
-                    created_by=actor,
-                    expire_date=expire_date,
+        with transaction.atomic():
+            team = self.lock()
+            if team.status != Team.STATUS_ACTIVE:
+                return "team_inactive"
+            now = datetime.datetime.now()
+            day_ago = now - datetime.timedelta(days=1)
+            sent_today = self.activities.filter(action="invite_sent", created_date__gte=day_ago).count()
+            if sent_today + len(emails) > self.EMAIL_INVITES_PER_DAY:
+                return "invite_limit"
+
+            expire_date = now + datetime.timedelta(days=TeamInvite.EMAIL_INVITE_DAYS)
+            for email in emails:
+                invite = self.pending_invites().filter(email__iexact=email).first()
+                if invite:
+                    # models.py: a resend dates the invite anew, which is what lets it bring back someone
+                    # removed before it (TeamInvite.accept).
+                    invite.role = role
+                    invite.created_by = actor
+                    invite.created_date = now
+                    invite.expire_date = expire_date
+                    invite.save(update_fields=["role", "created_by", "created_date", "expire_date"])
+                else:
+                    invite = TeamInvite.objects.create(
+                        team=self,
+                        kind=TeamInvite.KIND_EMAIL,
+                        email=email,
+                        token=TeamInvite.new_token(),
+                        role=role,
+                        created_by=actor,
+                        created_date=now,
+                        expire_date=expire_date,
+                    )
+                TeamActivity.log(self, actor, "invite_sent", email=email, role=role)
+                transaction.on_commit(
+                    lambda invite_id=invite.pk: SendTeamInviteEmail.delay(invite_id=invite_id)
                 )
-            TeamActivity.log(self, actor, "invite_sent", email=email, role=role)
-            invites.append(invite)
-
-        for invite in invites:
-            invite.send_email()
         return None
 
     def create_join_link(self, actor):
-        """Replace any live join link with a new one, so a team never has two."""
+        """Replace any live join link with a new one, so a team never has two. Returns a failure reason or
+        None."""
         with transaction.atomic():
-            self.lock()
+            team = self.lock()
+            if team.status != Team.STATUS_ACTIVE:
+                return "team_inactive"
             replaced = self.invites.filter(kind=TeamInvite.KIND_LINK, revoked_date__isnull=True).update(
                 revoked_date=datetime.datetime.now()
             )
-            link = TeamInvite.objects.create(
+            TeamInvite.objects.create(
                 team=self,
                 kind=TeamInvite.KIND_LINK,
                 token=TeamInvite.new_token(),
@@ -168,7 +189,7 @@ class Team(models.Model):
                 created_by=actor,
             )
             TeamActivity.log(self, actor, "join_link_created", replaced=bool(replaced))
-        return link
+        return None
 
     def revoke_join_link(self, actor):
         revoked = self.invites.filter(kind=TeamInvite.KIND_LINK, revoked_date__isnull=True).update(
@@ -177,36 +198,64 @@ class Team(models.Model):
         if revoked:
             TeamActivity.log(self, actor, "join_link_revoked")
 
-    def change_role(self, actor, member, role):
-        old_role = member.role
-        if old_role == role:
-            return
-        member.role = role
-        member.save(update_fields=["role"])
-        TeamActivity.log(
-            self,
-            actor,
-            "role_changed",
-            user_id=member.user_id,
-            username=member.user.username,
-            old_role=old_role,
-            role=role,
-        )
+    def _locked_seats(self, actor_membership, member):
+        """Lock the team row and read both seats again, so a role or seat change decided on an earlier read
+        can't cross another one. Every change to who holds which seat goes through this lock. Returns the actor's
+        and the member's active seats; either is None once it is no longer active."""
+        self.lock()
+        seats = TeamMember.objects.select_related("user").filter(team=self, status=TeamMember.STATUS_ACTIVE)
+        return seats.filter(pk=actor_membership.pk).first(), seats.filter(pk=member.pk).first()
 
-    def remove_member(self, actor, member):
-        member.mark_removed(removed_by=actor)
-        TeamActivity.log(self, actor, "member_removed", user_id=member.user_id, username=member.user.username)
+    def change_role(self, actor_membership, member, role):
+        """Only the owner changes roles, and never their own. Returns a failure reason or None."""
+        with transaction.atomic():
+            actor, member = self._locked_seats(actor_membership, member)
+            if not actor or actor.role != TeamMember.ROLE_OWNER:
+                return "not_allowed"
+            if not member:
+                return "not_found"
+            if member.role == TeamMember.ROLE_OWNER:
+                return "not_allowed"
+            old_role = member.role
+            if old_role == role:
+                return None
+            member.role = role
+            member.save(update_fields=["role"])
+            TeamActivity.log(
+                self,
+                actor.user,
+                "role_changed",
+                user_id=member.user_id,
+                username=member.user.username,
+                old_role=old_role,
+                role=role,
+            )
+        return None
+
+    def remove_member(self, actor_membership, member):
+        """Returns a failure reason or None."""
+        with transaction.atomic():
+            actor, member = self._locked_seats(actor_membership, member)
+            if not actor:
+                return "not_allowed"
+            if not member:
+                return "not_found"
+            if not actor.can_remove(member):
+                return "not_allowed"
+            member.mark_removed(removed_by=actor.user, departure=TeamMember.DEPARTURE_REMOVED)
+            TeamActivity.log(
+                self, actor.user, "member_removed", user_id=member.user_id, username=member.user.username
+            )
+        return None
 
     def transfer_ownership(self, owner_membership, new_owner_membership):
         """The new owner must be another active member. The old owner stays on as a manager.
         Returns a failure reason or None."""
         with transaction.atomic():
-            self.lock()
-            owner = TeamMember.objects.get(pk=owner_membership.pk)
-            new_owner = TeamMember.objects.select_related("user").get(pk=new_owner_membership.pk)
-            if owner.role != TeamMember.ROLE_OWNER or owner.status != TeamMember.STATUS_ACTIVE:
+            owner, new_owner = self._locked_seats(owner_membership, new_owner_membership)
+            if not owner or owner.role != TeamMember.ROLE_OWNER:
                 return "not_allowed"
-            if new_owner.status != TeamMember.STATUS_ACTIVE or new_owner.pk == owner.pk:
+            if not new_owner or new_owner.pk == owner.pk:
                 return "not_found"
             owner.role = TeamMember.ROLE_MANAGER
             owner.save(update_fields=["role"])
@@ -264,6 +313,13 @@ class TeamMember(models.Model):
         (STATUS_REMOVED, "Removed"),
     )
 
+    DEPARTURE_LEFT = "left"
+    DEPARTURE_REMOVED = "removed"
+    DEPARTURE_CHOICES = (
+        (DEPARTURE_LEFT, "Left"),
+        (DEPARTURE_REMOVED, "Removed"),
+    )
+
     team = models.ForeignKey(Team, related_name="members", on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name="team_memberships", on_delete=models.CASCADE)
     role = models.CharField(max_length=16, choices=ROLE_CHOICES, default=ROLE_MEMBER)
@@ -271,6 +327,9 @@ class TeamMember(models.Model):
     invited_by = models.ForeignKey(User, related_name="+", null=True, blank=True, on_delete=models.SET_NULL)
     # models.py: who ended the seat. The member themselves when they left, a manager or owner when removed.
     removed_by = models.ForeignKey(User, related_name="+", null=True, blank=True, on_delete=models.SET_NULL)
+    # models.py: whether the seat ended by leaving or by a removal. It outlives removed_by, which empties when the
+    # remover's account is deleted, and decides how the person may come back (TeamInvite.accept).
+    departure = models.CharField(max_length=8, choices=DEPARTURE_CHOICES, null=True, blank=True)
     joined_date = models.DateTimeField(default=datetime.datetime.now)
     removed_date = models.DateTimeField(null=True, blank=True)
 
@@ -304,14 +363,16 @@ class TeamMember(models.Model):
             return True
         return self.role == self.ROLE_MANAGER and member.role == self.ROLE_MEMBER
 
-    def mark_removed(self, removed_by):
+    def mark_removed(self, removed_by, departure):
+        """Called under the team row lock (Team._locked_seats, leave)."""
         # models.py: apps/team/grants.py imports apps.profile, which imports this module.
         from apps.team.grants import begin_seat_grace, release_team_pro
 
         self.status = self.STATUS_REMOVED
         self.removed_by = removed_by
+        self.departure = departure
         self.removed_date = datetime.datetime.now()
-        self.save(update_fields=["status", "removed_by", "removed_date"])
+        self.save(update_fields=["status", "removed_by", "departure", "removed_date"])
 
         # models.py: a seat on an active team keeps its Premium Pro through 14 days of grace, and one on an
         # inactive team has none left to keep. Grace from an earlier team's seat runs to the date it promised.
@@ -324,11 +385,21 @@ class TeamMember(models.Model):
             release_team_pro(self.user)
 
     def leave(self):
-        """Returns a failure reason or None."""
-        if self.role == self.ROLE_OWNER:
-            return "owner_cannot_leave"
-        self.mark_removed(removed_by=self.user)
-        TeamActivity.log(self.team, self.user, "member_left")
+        """Returns a failure reason or None. The role is read again under the team row lock, so a transfer that
+        makes this member the owner at the same moment can't leave the team without one."""
+        with transaction.atomic():
+            self.team.lock()
+            seat = (
+                TeamMember.objects.filter(pk=self.pk, status=self.STATUS_ACTIVE)
+                .select_related("team")
+                .first()
+            )
+            if not seat:
+                return "not_found"
+            if seat.role == self.ROLE_OWNER:
+                return "owner_cannot_leave"
+            seat.mark_removed(removed_by=self.user, departure=self.DEPARTURE_LEFT)
+            TeamActivity.log(seat.team, self.user, "member_left")
         return None
 
     def canonical(self):
@@ -391,7 +462,17 @@ class TeamInvite(models.Model):
             return "invite_used"
         if self.expire_date and self.expire_date <= datetime.datetime.now():
             return "invite_expired"
+        if self.team.status != Team.STATUS_ACTIVE:
+            return "team_inactive"
         return None
+
+    def returns_removed_member(self, member):
+        """Someone a manager removed comes back only by an email invite sent after the removal, so neither a
+        join link they kept nor an older invite still in their inbox reopens the seat. Someone who left can
+        come back with either."""
+        if member.departure != TeamMember.DEPARTURE_REMOVED:
+            return True
+        return self.kind == self.KIND_EMAIL and self.created_date > member.removed_date
 
     def accept(self, user):
         """Join the team, reusing the user's earlier seat row if they had one. Returns a failure reason or
@@ -403,7 +484,7 @@ class TeamInvite(models.Model):
         try:
             with transaction.atomic():
                 team = self.team.lock()
-                invite = TeamInvite.objects.get(pk=self.pk)
+                invite = TeamInvite.objects.select_related("team").get(pk=self.pk)
                 reason = invite.refusal_reason()
                 if reason:
                     return reason
@@ -411,14 +492,7 @@ class TeamInvite(models.Model):
                 member = TeamMember.objects.filter(team=team, user=user).first()
                 if member and member.status == TeamMember.STATUS_ACTIVE:
                     return "already_member"
-                # models.py: a join link is reusable, so someone a manager removed could otherwise walk back
-                # in with the link they kept. Coming back after a removal takes a new email invite.
-                if (
-                    member
-                    and invite.kind == self.KIND_LINK
-                    and member.removed_by_id
-                    and member.removed_by_id != user.pk
-                ):
+                if member and not invite.returns_removed_member(member):
                     return "removed_by_team"
                 if TeamMember.active_membership(user):
                     return "already_on_team"
@@ -433,6 +507,7 @@ class TeamInvite(models.Model):
                 member.invited_by = invite.created_by
                 member.joined_date = now
                 member.removed_by = None
+                member.departure = None
                 member.removed_date = None
                 member.save()
 
@@ -442,8 +517,7 @@ class TeamInvite(models.Model):
                     invite.save(update_fields=["accepted_by", "accepted_date"])
                 TeamActivity.log(team, user, "member_joined", role=invite.role, via=invite.kind)
                 # models.py: granted in the seat's own transaction, so a seat never commits without its Pro.
-                if team.status == Team.STATUS_ACTIVE:
-                    grant_team_pro(member)
+                grant_team_pro(member)
         except IntegrityError:
             # models.py: the same account joined another team at the same moment, and the one active team
             # constraint on TeamMember refused this join.
@@ -458,6 +532,7 @@ class TeamInvite(models.Model):
         TeamActivity.log(self.team, actor, "invite_revoked", email=self.email)
 
     def send_email(self):
+        """Sent by SendTeamInviteEmail (apps/team/tasks.py) once the invite has committed."""
         inviter = self.created_by
         with account_translation(inviter.profile):
             data = dict(inviter=inviter, team=self.team, join_url=self.join_url, expire_date=self.expire_date)
@@ -468,7 +543,7 @@ class TeamInvite(models.Model):
                 "team": self.team.name,
             }
         msg = EmailMultiAlternatives(
-            subject,
+            one_line(subject),
             text,
             from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
             to=[self.email],
@@ -476,7 +551,8 @@ class TeamInvite(models.Model):
         msg.attach_alternative(html, "text/html")
         msg.send()
 
-        logging.user(inviter, "~BB~FM~SBSending team invite to %s for %s" % (self.email, self.team.name))
+        # models.py: the invite id, never the address, which stays in the access controlled invite row.
+        logging.user(inviter, "~BB~FM~SBSending team invite %s for team %s" % (self.pk, self.team_id))
 
     def preview(self):
         """What the join screen shows to whoever holds the token, before they accept."""
@@ -513,7 +589,9 @@ class TeamActivity(models.Model):
 
     @classmethod
     def log(cls, team, actor, action, **details):
-        logging.user(actor, "~FC~SBTeam %s~SN: %s %s" % (team.name, action, details or ""))
+        # models.py: details can hold an invitee's address, so the log line names only their keys. The row keeps
+        # the values, where only the team's managers can read them.
+        logging.user(actor, "~FC~SBTeam %s~SN: %s %s" % (team.pk, action, ", ".join(sorted(details))))
         return cls.objects.create(team=team, actor=actor, action=action, details=details)
 
     def canonical(self):
@@ -626,6 +704,12 @@ class TeamProGrant(models.Model):
         self.own_tier = self.TIER_FREE
         self.own_trial_expire = None
         logging.user(self.user, "~FMTeam Pro: own plan ended, now free")
+
+
+def one_line(text):
+    """An email subject has to be one line, or Django refuses to send it. Team names are checked for line breaks
+    when saved (apps/team/views.py); this keeps a subject one line whatever it was built from."""
+    return " ".join(text.splitlines())
 
 
 def team_pro_grant(user):

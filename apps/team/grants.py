@@ -16,7 +16,7 @@ from apps.profile.models import MSentEmail, Profile
 from apps.profile.tasks import TIER_NAMES
 from apps.reader.models import UserSubscription
 from apps.rss_feeds.tasks import SchedulePremiumSetup
-from apps.team.models import Team, TeamActivity, TeamMember, TeamProGrant
+from apps.team.models import Team, TeamActivity, TeamMember, TeamProGrant, one_line
 from utils import log as logging
 from utils.languages import account_translation
 from utils.templatetags.utils_tags import language_date
@@ -49,10 +49,12 @@ def grant_team_pro(member):
                 own_tier=own_tier,
                 own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
             )
+            # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets
+            # its muted sites back. Anyone else muted theirs on purpose, and a rejoin keeps what they chose.
+            if not profile.is_premium:
+                UserSubscription.objects.filter(user=user, active=False).update(active=True)
         Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO])
         User.objects.filter(pk=user.pk, is_active=False).update(is_active=True)
-        # grants.py: every muted site comes back, as a free account's do on any upgrade.
-        UserSubscription.objects.filter(user=user, active=False).update(active=True)
         TeamActivity.log(member.team, user, "team_pro_granted")
 
         start_archive_backfill = not profile.is_archive
@@ -89,7 +91,7 @@ def begin_seat_grace(member):
         grant.grace_until = now + datetime.timedelta(days=GRACE_DAYS)
         grant.day10_sent_date = None
         grant.save(update_fields=["grace_started", "grace_until", "day10_sent_date"])
-    send_grace_email(grant, member.team, reminder=False)
+        transaction.on_commit(lambda: send_grace_email(grant, member.team, reminder=False))
 
 
 def send_grace_reminder(grant_id, now):
@@ -217,7 +219,7 @@ def send_team_plan_ended_email(user, team, plan):
 def _send(profile, subject, text, html, email_type):
     user = profile.user
     msg = EmailMultiAlternatives(
-        subject,
+        one_line(subject),
         text,
         from_email="NewsBlur <%s>" % settings.HELLO_EMAIL,
         to=["%s <%s>" % (user, user.email)],

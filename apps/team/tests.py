@@ -37,7 +37,7 @@ from apps.team.models import (
     TeamProGrant,
     team_owner_id,
 )
-from apps.team.tasks import TeamProGrants
+from apps.team.tasks import SendTeamInviteEmail, TeamProGrants
 from utils import json_functions as json
 
 # apps/team/tests.py: the Profile flags of each plan, written out here so the tests don't read them from the code
@@ -61,19 +61,25 @@ PLANS = {
 }
 
 
-def patch_pro_feed_setup(testcase):
-    """apps/team/tests.py: keeps the Celery tasks a committed grant starts off the dev broker. Returns the
-    archive backfill mock."""
-    patcher = patch.object(SchedulePremiumSetup, "apply_async")
-    patcher.start()
-    testcase.addCleanup(patcher.stop)
-    patcher = patch.object(UserSubscription, "schedule_fetch_archive_feeds_for_user")
-    backfill = patcher.start()
-    testcase.addCleanup(patcher.stop)
-    return backfill
-
-
 class TeamClientMixin:
+    def setUp(self):
+        super().setUp()
+        # apps/team/tests.py: Celery doesn't run tasks eagerly in tests (test_settings.py's CELERY_ALWAYS_EAGER
+        # isn't a name this Celery reads), so the invite email task runs in place and every other dispatch is
+        # kept off the dev broker.
+        self.invite_email_task = self.patch(
+            SendTeamInviteEmail, "delay", side_effect=lambda invite_id: SendTeamInviteEmail(invite_id)
+        )
+        self.patch(EmailNewPremiumTrial, "delay")
+        self.patch(SchedulePremiumSetup, "apply_async")
+        self.patch(UserSubscription, "queue_new_feeds")
+        self.backfill = self.patch(UserSubscription, "schedule_fetch_archive_feeds_for_user")
+
+    def patch(self, target, attribute, **kwargs):
+        patcher = patch.object(target, attribute, **kwargs)
+        self.addCleanup(patcher.stop)
+        return patcher.start()
+
     def client_for(self, user):
         client = Client(HTTP_USER_AGENT="Mozilla/5.0")
         if user:
@@ -81,7 +87,15 @@ class TeamClientMixin:
         return client
 
     def post(self, user, path, **data):
-        return json.decode(self.client_for(user).post("/team/%s" % path, data).content)
+        """apps/team/tests.py: also runs what the request queued with transaction.on_commit, as the commit at the
+        end of a real request would. Django 3.1's TestCase never commits."""
+        queued = len(connection.run_on_commit)
+        response = self.client_for(user).post("/team/%s" % path, data)
+        callbacks = connection.run_on_commit[queued:]
+        del connection.run_on_commit[queued:]
+        for _, callback in callbacks:
+            callback()
+        return json.decode(response.content)
 
     def get(self, user, path, **data):
         return json.decode(self.client_for(user).get("/team/%s" % path, data).content)
@@ -105,9 +119,34 @@ class TeamClientMixin:
             for message in mail.outbox
         }
 
+    def while_held(self, hold, other_request, during=None):
+        """apps/team/tests.py: this thread opens a transaction and runs hold(), which takes a lock or writes a
+        row another request needs. other_request runs in a second thread and has to wait for it; during() runs
+        before this transaction commits and lets it go. Returns during's result and other_request's."""
+        other_results = []
+
+        def in_another_request():
+            try:
+                other_results.append(other_request())
+            finally:
+                connection.close()
+
+        other_thread = threading.Thread(target=in_another_request)
+        try:
+            with transaction.atomic():
+                hold()
+                other_thread.start()
+                other_thread.join(timeout=1)
+                self.assertTrue(other_thread.is_alive(), "the other request went ahead without waiting")
+                held_result = during() if during else None
+        finally:
+            other_thread.join(timeout=10)
+        return held_result, other_results[0]
+
 
 class Test_TeamSeats(TeamClientMixin, TestCase):
     def setUp(self):
+        super().setUp()
         self.owner = User.objects.create_user(username="owner", password="password")
         self.team = self.create_team(self.owner, "Newsroom")
         self.team.seat_limit = 3
@@ -152,41 +191,37 @@ class Test_TeamSeats(TeamClientMixin, TestCase):
         self.assertEqual(response["team"]["role"], TeamMember.ROLE_MEMBER)
         self.assertEqual(TeamMember.objects.filter(team=self.team, user=manager).count(), 1)
 
+    def test_a_removed_teammate_returns_only_by_an_invite_sent_after_the_removal(self):
+        manager = User.objects.create_user(username="manager")
+        reader = User.objects.create_user(username="reader")
+        self.add_member(self.team, manager, TeamMember.ROLE_MANAGER)
+        self.post(self.owner, "invite", team_id=self.team.pk, emails="reader@example.com")
+        earlier_token = self.invite_tokens_from_mail()["reader@example.com"]
+        self.post(reader, "accept_invite", token=self.token)
+        self.post(manager, "remove_member", team_id=self.team.pk, user_id=reader.pk)
+        # The remover's account going away doesn't make the removal a departure of the reader's own.
+        manager.delete()
+
+        self.assertEqual(self.post(reader, "accept_invite", token=self.token)["reason"], "removed_by_team")
+        self.assertEqual(self.post(reader, "accept_invite", token=earlier_token)["reason"], "removed_by_team")
+
+        mail.outbox = []
+        self.post(self.owner, "invite", team_id=self.team.pk, emails="reader@example.com")
+        resent_token = self.invite_tokens_from_mail()["reader@example.com"]
+        self.assertEqual(self.post(reader, "accept_invite", token=resent_token)["code"], 1)
+
 
 class Test_TeamConcurrentJoins(TeamClientMixin, TransactionTestCase):
-    def setUp(self):
-        patcher = patch.object(EmailNewPremiumTrial, "delay")
-        patcher.start()
-        self.addCleanup(patcher.stop)
-        patch_pro_feed_setup(self)
-
     def accept_at_once(self, team, token):
         """apps/team/tests.py: two new accounts accept the same token. The first holds the team row while it
         joins, and the second, already inside its own request, has to wait for it. Returns both responses."""
         first_client = self.client_for(User.objects.create_user(username="first"))
         second_client = self.client_for(User.objects.create_user(username="second"))
-        second_results = []
-
-        def accept_in_another_request():
-            try:
-                response = second_client.post("/team/accept_invite", {"token": token})
-                second_results.append(json.decode(response.content))
-            finally:
-                connection.close()
-
-        second_request = threading.Thread(target=accept_in_another_request)
-        try:
-            with transaction.atomic():
-                team.lock()
-                second_request.start()
-                second_request.join(timeout=1)
-                self.assertTrue(second_request.is_alive(), "accept_invite went ahead without the team lock")
-                first_response = json.decode(
-                    first_client.post("/team/accept_invite", {"token": token}).content
-                )
-        finally:
-            second_request.join(timeout=10)
-        return first_response, second_results[0]
+        return self.while_held(
+            team.lock,
+            lambda: json.decode(second_client.post("/team/accept_invite", {"token": token}).content),
+            lambda: json.decode(first_client.post("/team/accept_invite", {"token": token}).content),
+        )
 
     def test_two_people_taking_the_last_seat_at_once_leaves_one_out(self):
         owner = User.objects.create_user(username="owner")
@@ -250,8 +285,57 @@ class Test_TeamConcurrentJoins(TeamClientMixin, TransactionTestCase):
         self.assertEqual(team_owner_id(reader), alpha_owner.pk)
 
 
+class Test_TeamConcurrentChanges(TeamClientMixin, TransactionTestCase):
+    def request(self, user, path, **data):
+        return lambda: json.decode(self.client_for(user).post("/team/%s" % path, data).content)
+
+    def test_a_transfer_and_a_leave_at_once_keep_an_owner(self):
+        owner = User.objects.create_user(username="owner")
+        member = User.objects.create_user(username="member")
+        team = self.create_team(owner, "Desk")
+        self.add_member(team, member)
+
+        # The member's leave passes its role check, then waits while the owner hands them the team.
+        transfer_response, leave_response = self.while_held(
+            team.lock,
+            self.request(member, "leave", team_id=team.pk),
+            self.request(owner, "transfer_ownership", team_id=team.pk, user_id=member.pk),
+        )
+
+        self.assertEqual(transfer_response["code"], 1)
+        self.assertEqual(leave_response["reason"], "owner_cannot_leave")
+        team.refresh_from_db()
+        self.assertEqual(team.owner, member)
+        self.assertEqual(team.active_members().get(role=TeamMember.ROLE_OWNER).user, member)
+
+    def test_two_invites_to_one_address_at_once_leave_one_live_invite(self):
+        owner = User.objects.create_user(username="owner")
+        team = self.create_team(owner, "Desk")
+
+        self.while_held(
+            team.lock,
+            self.request(owner, "invite", team_id=team.pk, emails="shared@example.com"),
+            self.request(owner, "invite", team_id=team.pk, emails="shared@example.com"),
+        )
+
+        self.assertEqual(team.pending_invites().filter(email="shared@example.com").count(), 1)
+
+    def test_two_teams_with_one_name_at_once_both_get_made(self):
+        first = User.objects.create_user(username="first", is_staff=True)
+        second = User.objects.create_user(username="second", is_staff=True)
+
+        # The first team's slug is written but not committed, so the second picks the same one and waits on it.
+        _, second_response = self.while_held(
+            self.request(first, "create", name="Desk"), self.request(second, "create", name="Desk")
+        )
+
+        self.assertEqual(second_response["code"], 1)
+        self.assertEqual(sorted(Team.objects.values_list("slug", flat=True)), ["desk", "desk-2"])
+
+
 class Test_TeamRoles(TeamClientMixin, TestCase):
     def setUp(self):
+        super().setUp()
         self.owner = User.objects.create_user(username="owner")
         self.manager = User.objects.create_user(username="manager")
         self.member = User.objects.create_user(username="member")
@@ -384,6 +468,7 @@ class Test_TeamRoles(TeamClientMixin, TestCase):
 
 class Test_TeamInvites(TeamClientMixin, TestCase):
     def setUp(self):
+        super().setUp()
         self.owner = User.objects.create_user(username="owner")
         self.team = self.create_team(self.owner, "Newsroom")
 
@@ -468,6 +553,36 @@ class Test_TeamInvites(TeamClientMixin, TestCase):
 
         self.assertEqual(len(mail.outbox), 2)
 
+    def test_invitee_addresses_stay_out_of_the_logs(self):
+        with self.assertLogs("newsblur", level="INFO") as logs:
+            self.post(self.owner, "invite", team_id=self.team.pk, emails="private@example.com")
+            pending = TeamInvite.objects.get(email="private@example.com")
+            self.post(self.owner, "revoke_invite", team_id=self.team.pk, invite_id=pending.pk)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual([line for line in logs.output if "private@example.com" in line], [])
+        revoked = self.get(self.owner, "activity", team_id=self.team.pk)["activities"][0]
+        self.assertEqual(revoked["details"]["email"], "private@example.com")
+
+    def test_invite_emails_are_queued_one_per_invite_once_the_invites_commit(self):
+        queued = self.patch(SendTeamInviteEmail, "delay")
+        commit_callbacks = len(connection.run_on_commit)
+
+        response = self.client_for(self.owner).post(
+            "/team/invite", {"team_id": self.team.pk, "emails": "ana@example.com, bo@example.com"}
+        )
+        self.assertEqual(json.decode(response.content)["code"], 1)
+        queued.assert_not_called()
+        for _, callback in connection.run_on_commit[commit_callbacks:]:
+            callback()
+
+        invite_ids = TeamInvite.objects.filter(team=self.team, kind=TeamInvite.KIND_EMAIL).values_list(
+            "pk", flat=True
+        )
+        self.assertEqual(
+            sorted(call.kwargs["invite_id"] for call in queued.call_args_list), sorted(invite_ids)
+        )
+
 
 class Test_TeamCreate(TeamClientMixin, TestCase):
     def test_only_staff_start_a_team_and_an_account_owns_one(self):
@@ -482,9 +597,26 @@ class Test_TeamCreate(TeamClientMixin, TestCase):
         self.assertEqual(self.post(staff, "create", name="Second desk")["reason"], "already_owns_team")
         self.assertEqual(Team.objects.count(), 1)
 
+    def test_a_team_name_and_every_invite_subject_stay_on_one_line(self):
+        staff = User.objects.create_user(username="staffer", is_staff=True)
+
+        response = self.post(staff, "create", name="Desk\r\nBcc: someone@example.com")
+        self.assertEqual(response["reason"], "invalid_name")
+        team = self.create_team(staff, "Desk")
+        self.assertEqual(
+            self.post(staff, "rename", team_id=team.pk, name="Desk\nTwo")["reason"], "invalid_name"
+        )
+
+        # A name saved with a line break before names were checked still sends a one line subject.
+        Team.objects.filter(pk=team.pk).update(name="Desk\nTwo")
+        self.assertEqual(self.post(staff, "invite", team_id=team.pk, emails="friend@example.com")["code"], 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject.splitlines(), [mail.outbox[0].subject])
+
 
 class Test_TeamOneTeamPerAccount(TeamClientMixin, TestCase):
     def setUp(self):
+        super().setUp()
         self.alpha_owner = User.objects.create_user(username="alphaowner")
         self.beta_owner = User.objects.create_user(username="betaowner")
         self.alpha = self.create_team(self.alpha_owner, "Alpha")
@@ -567,16 +699,12 @@ class TeamProMixin(TeamClientMixin):
     def setUp(self):
         super().setUp()
         self.now = datetime.datetime.now()
-        self.welcome_tasks = []
-        for task in (EmailNewPremium, EmailNewPremiumPro, EmailStaffPremiumUpgrade):
-            patcher = patch.object(task, "delay")
-            self.welcome_tasks.append(patcher.start())
-            self.addCleanup(patcher.stop)
+        self.welcome_tasks = [
+            self.patch(task, "delay")
+            for task in (EmailNewPremium, EmailNewPremiumPro, EmailStaffPremiumUpgrade)
+        ]
         for task in (EmailStaffNotification, EmailReferralCredit):
-            patcher = patch.object(task, "delay")
-            patcher.start()
-            self.addCleanup(patcher.stop)
-        patch_pro_feed_setup(self)
+            self.patch(task, "delay")
         self.owner = User.objects.create_user(username="owner", email="owner@example.com")
         self.team = self.create_team(self.owner)
         self.token = self.join_link_token(self.team, self.owner)
@@ -636,6 +764,23 @@ class Test_TeamProSeat(TeamProMixin, TestCase):
         self.assertEqual(mail.outbox, [])
         for task in self.welcome_tasks:
             task.assert_not_called()
+
+    def test_only_a_free_account_gets_its_muted_sites_back(self):
+        paying = self.reader("paying", "premium", premium_expire=self.now + self.days(100), feeds=2)
+        trial = self.reader("trial", "trial", premium_expire=self.now + self.days(20), feeds=2)
+        free = self.reader("free", "free", feeds=2)
+        for user in (paying, trial):
+            UserSubscription.objects.filter(user=user, feed__feed_address__endswith="/0").update(active=False)
+
+        for user in (paying, trial, free):
+            self.join(user)
+        self.assertEqual([self.muted_sites(user) for user in (paying, trial, free)], [1, 1, 0])
+
+        # A site muted during the seat stays muted when the same grant comes back after leaving.
+        UserSubscription.objects.filter(user=free, feed__feed_address__endswith="/0").update(active=False)
+        self.leave(free)
+        self.join(free)
+        self.assertEqual(self.muted_sites(free), 1)
 
     def test_a_removed_teammate_keeps_pro_for_14_days_with_an_email_on_day_1_and_day_10(self):
         reader = self.reader("reader", "free", feeds=2)
@@ -869,18 +1014,22 @@ class Test_TeamLapse(TeamProMixin, TestCase):
         self.assertEqual(team_owner_id(free_reader), self.owner.pk)
         self.assertEqual(self.roles(), roles)
 
-    def test_an_inactive_team_neither_grants_pro_nor_gives_grace(self):
+    def test_an_inactive_team_takes_no_new_teammates(self):
+        self.post(self.owner, "invite", team_id=self.team.pk, emails="invited@example.com")
+        invite_token = self.invite_tokens_from_mail()["invited@example.com"]
         deactivate_team(self.team)
         reader = self.reader("reader", "trial", premium_expire=self.now + self.days(20))
-        mail.outbox = []
 
-        self.join(reader)
-        self.assertEqual(self.plan_of(reader), "trial")
-        self.leave(reader)
+        for token in (self.token, invite_token):
+            self.assertEqual(self.get(None, "invite_preview", token=token)["reason"], "team_inactive")
+            self.assertEqual(self.post(reader, "accept_invite", token=token)["reason"], "team_inactive")
+        response = self.post(self.owner, "invite", team_id=self.team.pk, emails="another@example.com")
+        self.assertEqual(response["reason"], "team_inactive")
+        self.assertEqual(self.post(self.owner, "join_link", team_id=self.team.pk)["reason"], "team_inactive")
 
+        self.assertIsNone(TeamMember.active_membership(reader))
         self.assertEqual(self.plan_of(reader), "trial")
-        self.assertEqual(mail.outbox, [])
-        self.assertFalse(TeamProGrant.objects.filter(user=reader).exists())
+        self.assertFalse(TeamInvite.objects.filter(email="another@example.com").exists())
 
     def test_deleting_the_owners_account_ends_the_team(self):
         reader = self.reader("reader", "free", feeds=1)
@@ -896,12 +1045,6 @@ class Test_TeamLapse(TeamProMixin, TestCase):
 
 class Test_TeamProFeedSetup(TeamClientMixin, TransactionTestCase):
     """Real commits, so the feed setup a grant starts after it commits runs."""
-
-    def setUp(self):
-        patcher = patch.object(EmailNewPremiumTrial, "delay")
-        patcher.start()
-        self.addCleanup(patcher.stop)
-        self.backfill = patch_pro_feed_setup(self)
 
     def test_joining_starts_the_archive_backfill_only_for_teammates_without_archive(self):
         owner = User.objects.create_user(username="owner")

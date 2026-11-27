@@ -30,6 +30,7 @@ FAILURE_MESSAGES = {
     "already_owns_team": gettext_lazy("You already have a team. Each account can own one team."),
     "removed_by_team": gettext_lazy("You were removed from this team. Ask a manager for a new invite."),
     "owner_cannot_leave": gettext_lazy("Transfer ownership to a teammate before you leave the team."),
+    "team_inactive": gettext_lazy("This team's plan has ended, so it can't take new teammates right now."),
 }
 
 
@@ -53,8 +54,9 @@ def _team_response(user, team_id):
 
 
 def _clean_name(name):
+    # views.py: one line only, since the name goes into email subjects.
     name = name.strip()
-    if not name or len(name) > Team.NAME_MAX_LENGTH:
+    if not name or len(name) > Team.NAME_MAX_LENGTH or len(name.splitlines()) > 1:
         return None
     return name
 
@@ -182,7 +184,9 @@ def create_join_link(request):
     if not membership.is_manager:
         return _failure("not_allowed")
 
-    membership.team.create_join_link(user)
+    reason = membership.team.create_join_link(user)
+    if reason:
+        return _failure(reason)
     return _team_response(user, membership.team_id)
 
 
@@ -250,7 +254,9 @@ def change_role(request):
     if role not in (TeamMember.ROLE_MANAGER, TeamMember.ROLE_MEMBER):
         return _failure("invalid_role")
 
-    membership.team.change_role(user, member, role)
+    reason = membership.team.change_role(membership, member, role)
+    if reason:
+        return _failure(reason)
     return _team_response(user, membership.team_id)
 
 
@@ -270,7 +276,9 @@ def remove_member(request):
     if not membership.can_remove(member):
         return _failure("not_allowed")
 
-    membership.team.remove_member(user, member)
+    reason = membership.team.remove_member(membership, member)
+    if reason:
+        return _failure(reason)
     return _team_response(user, membership.team_id)
 
 

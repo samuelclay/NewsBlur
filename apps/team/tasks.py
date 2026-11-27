@@ -1,4 +1,4 @@
-"""Team tasks: the hourly upkeep of teammates' Premium Pro (apps/team/grants.py)."""
+"""Team tasks: invite emails, and the hourly upkeep of teammates' Premium Pro (apps/team/grants.py)."""
 
 import datetime
 
@@ -10,9 +10,22 @@ from apps.team.grants import (
     release_team_pro,
     send_grace_reminder,
 )
-from apps.team.models import Team, TeamProGrant
+from apps.team.models import Team, TeamInvite, TeamProGrant
 from newsblur_web.celeryapp import app
 from utils import log as logging
+
+
+# tasks.py: one task per invite, queued once the invite has committed (Team.invite_by_email), so a failed send
+# retries only its own recipient.
+@app.task(
+    name="email-team-invite", autoretry_for=(Exception,), retry_backoff=60, retry_kwargs={"max_retries": 3}
+)
+def SendTeamInviteEmail(invite_id):
+    invite = TeamInvite.objects.select_related("team", "created_by").filter(pk=invite_id).first()
+    # tasks.py: an invite revoked, used or expired before its turn in the queue isn't sent.
+    if not invite or not invite.created_by or invite.refusal_reason():
+        return
+    invite.send_email()
 
 
 @app.task(name="team-pro-grants")
