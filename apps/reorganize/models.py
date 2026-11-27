@@ -25,9 +25,12 @@ LEVELS = ("tidy", "reorganize", "fresh")
 class MReorganizeProposal(mongo.Document):
     """One request to reorganize a user's sites and folders, from the model's answer to its undo.
 
-    `applied_date` is when the apply started. `result` counts what the apply did and lists the
-    items plan.py skipped. `undo` is {"folders": the stored tree before, as its JSON text,
-    "carried": what apps/reorganize/state.py moved, "muted_feed_ids": the sites the apply muted}.
+    apps/reorganize/tasks.py makes the proposal. While it works, `progress` is {"step", "done",
+    "total"}. Once ready, `answer` is the model's answer and `stats` what generate_proposal() in
+    apps/reorganize/generate.py counted. `applied_date` is when the apply started. `result` counts
+    what the apply did and lists the items plan.py skipped. `undo` is {"folders": the stored tree
+    before, as its JSON text, "carried": what apps/reorganize/state.py moved, "muted_feed_ids": the
+    sites the apply muted}.
     """
 
     user_id = mongo.IntField(required=True)
@@ -36,8 +39,12 @@ class MReorganizeProposal(mongo.Document):
     level = mongo.StringField(choices=LEVELS)
     find_dead = mongo.BooleanField(default=False)
     instructions = mongo.StringField()
+    language = mongo.StringField()
     locks = mongo.DictField()
+    progress = mongo.DictField()
     proposal = mongo.DictField()
+    answer = mongo.DictField()
+    stats = mongo.DictField()
     decisions = mongo.DictField()
     revisions = mongo.IntField(default=0)
     error = mongo.StringField()

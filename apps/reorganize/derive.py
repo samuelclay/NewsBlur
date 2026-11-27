@@ -3,8 +3,8 @@
 model_view() is what the model may see: the open folders by key, and where each site it may file
 sits. The model answers with targets (the folders the result should have) and assignments (one
 folder per site); dead sites come from the rule in apps/reorganize/sites.py. build_proposal()
-resolves all of that against the stored folders into a proposal in plan.py's shape. The answer may be malformed or name folders and sites that do not
-exist; whatever cannot be used is dropped.
+resolves all of that against the stored folders into a proposal in plan.py's shape. The answer may
+be malformed or name folders and sites that do not exist; whatever cannot be used is dropped.
 
 This module imports only the standard library and apps/reorganize/plan.py.
 """
