@@ -141,6 +141,8 @@ class Test_ApplicationRegistration(TestCase):
             self.assertEqual(apps[0]["usage"]["readers"], 1)
             self.assertIsNotNone(apps[0]["usage"]["last_used"])
             self.assertFalse(apps[0]["paused"])
+            # The exemption only decides paused; its row id stays out of the response on every plan.
+            self.assertNotIn("applicationexemption__id", apps[0])
             self.assertEqual(api.get(url, HTTP_AUTHORIZATION="Bearer publisher").status_code, 403)
             self.client.force_login(self.reader)
             rows = self.client.get(url).json()["applications"]

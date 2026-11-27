@@ -136,7 +136,8 @@ def owned_applications(request):
         app["website"] = app.pop("applicationwebsite__website")
         app["usage"] = traffic.get(app["id"])
         # media/js/newsblur/reader/reader_oauth_applications.js warns the owner about paused applications.
-        app["paused"] = not (has_pro or app.pop("applicationexemption__id"))
+        exempt = app.pop("applicationexemption__id") is not None
+        app["paused"] = not (has_pro or exempt)
     return JsonResponse({"applications": apps})
 
 
