@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET, require_http_methods
 from oauth2_provider.models import Application
 
-from apps.oauth.access import application_is_active, application_is_exempt
+from apps.oauth.access import application_is_exempt
 from apps.oauth.models import ApplicationWebsite
 from apps.oauth.traffic import application_usage
 
@@ -109,7 +109,14 @@ def owned_applications(request):
 
     apps = list(
         Application.objects.filter(user=request.user)
-        .values("id", "name", "client_id", "redirect_uris", "applicationwebsite__website")
+        .values(
+            "id",
+            "name",
+            "client_id",
+            "redirect_uris",
+            "applicationwebsite__website",
+            "applicationexemption__id",
+        )
         .annotate(
             connected=Count(
                 "accesstoken__user_id", distinct=True, filter=Q(accesstoken__expires__gt=timezone.now())
@@ -117,13 +124,9 @@ def owned_applications(request):
         )
         .order_by("-id")
     )
-    active = {
-        application.pk
-        for application in Application.objects.filter(user=request.user).select_related(
-            "user__profile", "applicationexemption"
-        )
-        if application_is_active(application)
-    }
+    # The signed-in owner's account is active, so an application works while the owner has Premium Pro or
+    # staff exempted it, as application_is_active in apps/oauth/access.py decides.
+    has_pro = request.user.profile.can_register_oauth_application
     try:
         traffic = application_usage([app["id"] for app in apps])
     except redis.RedisError:
@@ -133,7 +136,7 @@ def owned_applications(request):
         app["website"] = app.pop("applicationwebsite__website")
         app["usage"] = traffic.get(app["id"])
         # media/js/newsblur/reader/reader_oauth_applications.js warns the owner about paused applications.
-        app["paused"] = app["id"] not in active
+        app["paused"] = not (has_pro or app.pop("applicationexemption__id"))
     return JsonResponse({"applications": apps})
 
 
