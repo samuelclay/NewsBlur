@@ -262,7 +262,8 @@ class LLMCostTracker:
 
         # Check billing status for classifier features (reused for Redis and Stripe). A teammate's usage
         # bills their team's owner (Profile.usage_billing_profile), while the cost row keeps the teammate
-        # in user_id and the owner in billed_user_id.
+        # in user_id and the owner in billed_user_id. Only a teammate's row carries billed_user_id, which
+        # the release that declared the field can read; every other row counts for its user_id.
         is_billing_user = False
         profile = None
         if feature in ("story_classification", "vision_classification") and user_id:
@@ -293,7 +294,7 @@ class LLMCostTracker:
         try:
             cost_record = MLLMCost(
                 user_id=user_id,
-                billed_user_id=profile.user_id if profile else None,
+                billed_user_id=profile.user_id if profile and profile.user_id != user_id else None,
                 provider=provider,
                 model=model,
                 feature=feature,

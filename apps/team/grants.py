@@ -4,6 +4,7 @@ own, releasing it back to the person's own plan the moment the seat ends, and a 
 
 import datetime
 
+import dateutil.parser
 import paypalrestsdk
 import redis
 import requests
@@ -39,6 +40,9 @@ STORE_PAYMENT_DAYS = 365
 STRIPE_ENDED_STATUSES = ("canceled", "incomplete_expired")
 PAYPAL_RENEWING_STATUSES = ("ACTIVE", "APPROVED", "APPROVAL_PENDING")
 PAYPAL_STOPPED_STATUSES = ("SUSPENDED", "CANCELLED", "EXPIRED")
+# grants.py: the same for a subscription made through PayPal's Classic API (GetRecurringPaymentsProfileDetails).
+PAYPAL_CLASSIC_RENEWING_STATUSES = ("Active", "Pending")
+PAYPAL_CLASSIC_STOPPED_STATUSES = ("Cancelled", "Suspended", "Expired")
 PROVIDER_ERRORS = (
     stripe.error.StripeError,
     paypalrestsdk.exceptions.ConnectionError,
@@ -46,22 +50,26 @@ PROVIDER_ERRORS = (
 )
 
 
-def grant_team_pro(member):
+def grant_team_pro(member, own_plan_replaced=False):
     """Give an active teammate Premium Pro by setting the real tier flags on their profile. Unlike
     Profile.activate_pro it sends no welcome or staff email, writes no payment row and leaves premium_expire
     as the person's own paid through date. Every grant, a rejoin's too, snapshots the plan the person has on their
     own from their profile. A profile carries team Pro only while its grant exists, and there is one grant per
-    person, so the snapshot is never team Pro."""
+    person, so the snapshot is never team Pro. An owner's can be the Pro a lapse left them until PremiumExpire
+    (release_team_pro), which counts for no longer than their premium_expire. The owner's grant comes from
+    apps/team/billing.py, and with own_plan_replaced the payment took the place of their own plan, so there is
+    none to go back to."""
     user = member.user
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
-        own_tier = TeamProGrant.tier_of(profile)
+        own_tier = TeamProGrant.TIER_FREE if own_plan_replaced else TeamProGrant.tier_of(profile)
         grant = TeamProGrant.objects.create(
             user=user,
             member=member,
             own_tier=own_tier,
             own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
             own_premium_trial=profile.is_premium_trial,
+            own_lifetime=own_tier in TeamProGrant.PAID_TIERS and profile.premium_expire is None,
         )
         # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets its
         # muted sites back. Anyone else muted theirs on purpose. Either way the sites stay within the team's
@@ -89,11 +97,13 @@ def _reload_feeds(user):
     redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(user.username, "reload:feeds")
 
 
-def release_team_pro(user):
+def release_team_pro(user, owner=False):
     """End a person's team Pro and put them on their own plan: the tier they pay for while their own
-    premium_expire covers today, a trial that is still running, or otherwise free through
-    Profile.deactivate_premium, which mutes every site until they choose the ones to keep. Returns the plan they
-    are on now, or None when they held no grant."""
+    premium_expire covers today, or for good when it never ended, a trial that is still running, or otherwise
+    free through Profile.deactivate_premium, which mutes every site until they choose the ones to keep. With
+    owner, the team's owner with no plan of their own to go back to keeps the Pro flags instead, and their
+    account expires through PremiumExpire (apps/profile/tasks.py) as any lapsed plan does. Returns the plan they
+    are on now, or None when they held no grant or are an owner keeping Pro until it expires."""
     now = datetime.datetime.now()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
@@ -102,24 +112,33 @@ def release_team_pro(user):
             return None
         plan = grant.own_plan_on(profile, now)
         grant.delete()
-        if plan == TeamProGrant.TIER_FREE:
+        if plan == TeamProGrant.TIER_FREE and owner:
+            plan = None
+            if profile.premium_expire is None:
+                # grants.py: a comp gives its owner no paid through date, so the expiry window starts now.
+                Profile.objects.filter(pk=profile.pk).update(premium_expire=now)
+        elif plan == TeamProGrant.TIER_FREE:
             # grants.py: an account that never had a trial can still start one. Any other has used it, including
             # one whose trial ran out during the seat.
             profile.is_premium_trial = None if grant.own_premium_trial is None else False
             profile.deactivate_premium()
         else:
-            Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[plan])
+            flags = dict(TeamProGrant.TIER_FLAGS[plan])
+            if grant.own_lifetime:
+                flags["premium_expire"] = None
+            Profile.objects.filter(pk=profile.pk).update(**flags)
         transaction.on_commit(lambda: _reload_feeds(profile.user))
-    logging.user(profile.user, "~FMTeam Pro released, back on %s" % plan)
+    logging.user(profile.user, "~FMTeam Pro released, back on %s" % (plan or "Pro until it expires"))
     return plan
 
 
 def deactivate_team(team, lapsed_at=None):
-    """Billing calls this when the owner's paid period ends without a payment. The team goes inactive and every
-    teammate's Premium Pro ends at once, and each teammate gets one email. Members, roles, invites and settings
-    stay as they are. With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that
-    moment once its row is locked (Team.lapsed), so a renewal committed after the task chose it keeps it. Each email
-    goes out from its own task once the lapse has committed."""
+    """Billing calls this when the owner's paid period ends without a payment, or the payment was taken back. The
+    team goes inactive, every teammate's Premium Pro ends at once, the owner goes back to a plan of their own
+    (release_team_pro), and each of them gets one email. Members, roles, invites and settings stay as they are.
+    With lapsed_at, as from the hourly task, the team ends only if it has still lapsed at that moment once its row
+    is locked (Team.lapsed), so a renewal committed after the task chose it keeps it. Each email goes out from its
+    own task once the lapse has committed."""
     # grants.py: apps/team/tasks.py imports this module.
     from apps.team.tasks import EmailTeamPlanEnded
 
@@ -135,7 +154,7 @@ def deactivate_team(team, lapsed_at=None):
         members = list(team.active_members())
         plans = {}
         for grant in TeamProGrant.objects.filter(member__in=members).select_related("user"):
-            plans[grant.user_id] = release_team_pro(grant.user)
+            plans[grant.user_id] = release_team_pro(grant.user, owner=grant.user_id == team.owner_id)
         for member in members:
             transaction.on_commit(
                 lambda user_id=member.user_id: EmailTeamPlanEnded.delay(
@@ -146,7 +165,8 @@ def deactivate_team(team, lapsed_at=None):
 
 def activate_team(team):
     """Billing calls this when a payment for the team succeeds. The team is active again and every teammate
-    gets Premium Pro back, with a fresh snapshot of their own plan. The owner's Pro is their own plan."""
+    gets Premium Pro back, with a fresh snapshot of their own plan. The owner's grant comes from the payment
+    (apps/team/billing.py)."""
     with transaction.atomic():
         team = team.lock()
         if team.status == Team.STATUS_ACTIVE:
@@ -217,48 +237,79 @@ def own_plan_on_join(user):
     return own_plan
 
 
-def renewing_subscriptions(user):
-    """The Stripe and PayPal subscriptions this person pays for on their own that renew, as [provider, id] pairs,
-    read as their join commits (apps/team/tasks.py queue_own_plan_on_join). The AI filter usage billing
-    subscription isn't one. None when Stripe or PayPal couldn't be asked."""
+def renewing_subscriptions(user, joined_at):
+    """The Stripe and PayPal subscriptions this person pays for on their own that renew and were made before they
+    joined, at joined_at, a Unix time, as [provider, id] pairs. One made after joining is a plan they bought since,
+    which is theirs to keep. The AI filter usage billing subscription isn't one. None when PayPal can't say whether
+    one renews. Errors from Stripe or PayPal reach the caller (apps/team/tasks.py SettleOwnPlanOnJoin), which
+    retries."""
     profile = Profile.objects.get(user=user)
     renewing = []
-    try:
-        if profile.stripe_id:
-            stripe.api_key = settings.STRIPE_SECRET
-            for customer_id in user.stripe_ids.values_list("stripe_id", flat=True):
-                for subscription in stripe.Subscription.list(customer=customer_id).data:
-                    if (
-                        subscription.cancel_at_period_end
-                        or subscription.status in STRIPE_ENDED_STATUSES
-                        or Profile.is_usage_billing_subscription(subscription)
-                    ):
-                        continue
-                    renewing.append(["stripe", subscription.id])
-        paypal_api = profile.paypal_api()
-        paypal_ids = user.paypal_ids.values_list("paypal_sub_id", flat=True) if paypal_api else []
-        for paypal_id in paypal_ids:
-            try:
-                paypal_subscription = paypal_api.get("/v1/billing/subscriptions/%s" % paypal_id)
-            except paypalrestsdk.ResourceNotFound:
-                # grants.py: as in Profile.setup_premium_history, an id the subscriptions API doesn't know is no
-                # renewal.
-                continue
-            if paypal_subscription["status"] in PAYPAL_RENEWING_STATUSES:
-                renewing.append(["paypal", paypal_id])
-    except PROVIDER_ERRORS as e:
-        logging.user(user, "~FRCouldn't read own subscriptions on joining a team: %s" % e)
-        return None
+    if profile.stripe_id:
+        stripe.api_key = settings.STRIPE_SECRET
+        for customer_id in user.stripe_ids.values_list("stripe_id", flat=True):
+            for subscription in stripe.Subscription.list(customer=customer_id).data:
+                if (
+                    subscription.cancel_at_period_end
+                    or subscription.status in STRIPE_ENDED_STATUSES
+                    or Profile.is_usage_billing_subscription(subscription)
+                    or subscription["created"] >= joined_at
+                ):
+                    continue
+                renewing.append(["stripe", subscription.id])
+    paypal_ids = user.paypal_ids.values_list("paypal_sub_id", flat=True) if profile.paypal_sub_id else []
+    for paypal_id in paypal_ids:
+        renews, created = _paypal_subscription(profile, paypal_id)
+        if renews is None:
+            logging.user(user, "~FRCouldn't read own PayPal subscription %s on joining a team" % paypal_id)
+            return None
+        if renews and created < joined_at:
+            renewing.append(["paypal", paypal_id])
     return renewing
 
 
-def settle_own_plan_on_join(user, team, subscription, renewing):
+def _paypal_subscription(profile, paypal_id):
+    """(renews, created) for one of this person's PayPal subscriptions: True or False once PayPal says whether it
+    renews, None when it can't be read, and when it was made, as a Unix time. A subscription made through PayPal's
+    Classic API is unknown to the REST API, so it is read through the Classic path, as
+    Profile.cancel_premium_paypal cancels it."""
+    try:
+        subscription = profile.paypal_api().get("/v1/billing/subscriptions/%s" % paypal_id)
+    except paypalrestsdk.ResourceNotFound:
+        classic_api = profile.paypal_classic_api()
+        if not classic_api:
+            return None, None
+        details = classic_api.get_recurring_payments_profile_details(paypal_id)
+        return (
+            _renews(details["STATUS"], PAYPAL_CLASSIC_RENEWING_STATUSES, PAYPAL_CLASSIC_STOPPED_STATUSES),
+            _unix_time(details["PROFILESTARTDATE"]),
+        )
+    return (
+        _renews(subscription["status"], PAYPAL_RENEWING_STATUSES, PAYPAL_STOPPED_STATUSES),
+        _unix_time(subscription["create_time"]),
+    )
+
+
+def _renews(status, renewing_statuses, stopped_statuses):
+    if status in renewing_statuses:
+        return True
+    if status in stopped_statuses:
+        return False
+    return None
+
+
+def _unix_time(provider_date):
+    return dateutil.parser.parse(provider_date).timestamp()
+
+
+def settle_own_plan_on_join(user, team, subscription, joined_at):
     """Run by SettleOwnPlanOnJoin (apps/team/tasks.py) once a join has committed. The Stripe and PayPal renewals
-    in renewing, read at the join, stop at the end of the period already paid for, with no refund, and the AI
-    filter usage billing subscription keeps running. The person gets one email saying what happened to their own
-    plan, sent only once Stripe or PayPal confirms each renewal is off. Returns False when that can't be
-    confirmed, and then nothing is sent."""
+    made before the join stop at the end of the period already paid for, with no refund, and the AI filter usage
+    billing subscription keeps running. The person gets one email saying what happened to their own plan, sent
+    only once Stripe or PayPal confirms each renewal is off. Returns False when that can't be confirmed, and then
+    nothing is sent."""
     if subscription in RENEWALS_TURNED_OFF_ON_JOIN:
+        renewing = renewing_subscriptions(user, joined_at)
         if renewing is None or not _turn_off_renewals(user, renewing):
             return False
     send_own_plan_email(user, team, subscription)
@@ -290,8 +341,8 @@ def _renewal_stopped(profile, provider, subscription_id):
         stripe.api_key = settings.STRIPE_SECRET
         subscription = stripe.Subscription.retrieve(subscription_id)
         return bool(subscription.cancel_at_period_end) or subscription.status in STRIPE_ENDED_STATUSES
-    paypal_subscription = profile.paypal_api().get("/v1/billing/subscriptions/%s" % subscription_id)
-    return paypal_subscription["status"] in PAYPAL_STOPPED_STATUSES
+    renews, _ = _paypal_subscription(profile, subscription_id)
+    return renews is False
 
 
 def _plan_context(plan, profile):

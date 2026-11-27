@@ -75,6 +75,9 @@ class Team(models.Model):
     # apps/team/billing.py record_team_payment. Empty until the first payment.
     billing_provider = models.CharField(max_length=16, choices=PROVIDER_CHOICES, null=True, blank=True)
     billing_reference = models.TextField(null=True, blank=True)
+    # models.py: when the newest payment record_team_payment applied was made, so an older one arriving late
+    # can't change the plan, provider or reference a newer one set.
+    last_payment_date = models.DateTimeField(null=True, blank=True)
     # models.py: the plan the owner switched down to, a team plan or one of their own, which starts once the month
     # paid for ends (apps/team/stripe_billing.py). Until then plan stays the one paid for.
     pending_plan = models.CharField(max_length=32, null=True, blank=True)
@@ -102,6 +105,12 @@ class Team(models.Model):
             | Q(paid_through__isnull=True)
             & (Q(billing_provider__isnull=True) | Q(billing_provider__in=cls.PAID_PROVIDERS))
         )
+
+    @classmethod
+    def period_lapsed(cls, paid_through, now):
+        """lapsed's rule for one paid period, for a payment before it is written (apps/team/billing.py). An empty
+        paid_through is a comp's, which doesn't lapse."""
+        return paid_through is not None and paid_through < now - cls.LAPSE_AFTER
 
     @classmethod
     def paid_for(cls, now):
@@ -541,7 +550,7 @@ class TeamInvite(models.Model):
         people accept at once."""
         # models.py: apps/team/grants.py and apps/team/tasks.py import apps.profile, which imports this module.
         from apps.team.grants import grant_team_pro, own_subscription
-        from apps.team.tasks import queue_own_plan_on_join
+        from apps.team.tasks import SettleOwnPlanOnJoin
 
         try:
             with transaction.atomic():
@@ -586,10 +595,12 @@ class TeamInvite(models.Model):
                 # models.py: granted in the seat's own transaction, so a seat never commits without its Pro.
                 grant = grant_team_pro(member)
                 # models.py: the plan the joiner pays for on their own is settled once the seat commits, and only
-                # on a join. A lapsed team coming back (apps/team/grants.py activate_team) leaves it alone.
-                subscription = own_subscription(user)
-                if subscription:
-                    transaction.on_commit(lambda: queue_own_plan_on_join(grant, team, subscription))
+                # on a join. A lapsed team coming back (apps/team/grants.py activate_team) leaves it alone. Stripe
+                # and PayPal are asked only from the task, never during the join request.
+                if own_subscription(user):
+                    transaction.on_commit(
+                        lambda: SettleOwnPlanOnJoin.delay(grant_id=grant.pk, joined_at=now.timestamp())
+                    )
         except IntegrityError:
             # models.py: the same account joined another team at the same moment, and the one active team
             # constraint on TeamMember refused this join.
@@ -678,9 +689,9 @@ class TeamActivity(models.Model):
 
 
 class TeamProGrant(models.Model):
-    """The Premium Pro a team gives one teammate (apps/team/grants.py). Their Profile carries the real Pro flags
-    while they hold it, so this row keeps the plan they have on their own to go back to when the seat ends. It
-    exists exactly as long as the seat is held on an active team."""
+    """The Premium Pro a team gives one person on it, its owner included (apps/team/grants.py). Their Profile
+    carries the real Pro flags while they hold it, so this row keeps the plan they have on their own to go back to
+    when the seat or the team's plan ends. It exists exactly as long as the seat is held on an active team."""
 
     TIER_FREE = "free"
     TIER_TRIAL = "trial"
@@ -722,6 +733,9 @@ class TeamProGrant(models.Model):
     # models.py: Profile.is_premium_trial when the grant began. None means the account never had a trial and
     # can still start one (Profile.start_premium_trial), which team Pro's flags would otherwise take away.
     own_premium_trial = models.BooleanField(null=True, blank=True)
+    # models.py: the paid plan they had when the grant began never ends (an empty premium_expire). It goes back
+    # without an end, even after a payment synced during the grant gave premium_expire a date.
+    own_lifetime = models.BooleanField(null=True, blank=True)
     granted_date = models.DateTimeField(default=datetime.datetime.now)
 
     def __str__(self):
@@ -745,7 +759,7 @@ class TeamProGrant(models.Model):
         """The plan this person is on by themselves on a date: their tier while premium_expire, their own paid
         through date, covers it, their trial while it runs, and otherwise free."""
         if self.own_tier in self.PAID_TIERS and (
-            profile.premium_expire is None or profile.premium_expire > date
+            self.own_lifetime or profile.premium_expire is None or profile.premium_expire > date
         ):
             return self.own_tier
         if self.own_tier == self.TIER_TRIAL and self.own_trial_expire and self.own_trial_expire > date:
@@ -766,8 +780,10 @@ class TeamProGrant(models.Model):
                 own_tier = tier
             else:
                 return False
-            TeamProGrant.objects.filter(pk=self.pk).update(own_tier=own_tier)
+            # models.py: a plan bought or given during the grant has an end of its own.
+            TeamProGrant.objects.filter(pk=self.pk).update(own_tier=own_tier, own_lifetime=False)
         self.own_tier = own_tier
+        self.own_lifetime = False
         logging.user(self.user, "~FMTeam Pro: own plan is now %s" % own_tier)
         return True
 

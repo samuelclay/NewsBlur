@@ -69,6 +69,8 @@ Decided on 2026-11-26:
 - [x] A team that is active must be paid for or comped. One that is neither, with no paid through date, is lapsed by the hourly task, and only the owner of a team that is paid for or comped is spared the nightly expiry
 - [x] Only staff can comp a team, and a comped team stays comped: a later payment for it changes nothing and staff are emailed
 - [x] A new team is named after its owner ("samuel's team") until the owner renames it
+- [x] When a team's coverage ends, an owner who still has a valid plan of their own goes back to exactly that plan: a lifetime plan, or one bought elsewhere that is still paid for. An owner with no other plan goes through the normal expiry window. The owner's own plan is remembered the same way a teammate's is
+- [x] A payment notice that arrives late or twice cannot undo a newer one, and a payment for a period that has already lapsed starts and revives nothing
 - [x] On Stripe a payment counts as confirmed when the subscription is active and its latest invoice is paid. A full refund or a dispute ends the team at once. A partial refund does not
 - [x] A switch down from a team plan on Stripe is a subscription schedule: the paid plan until the period ends, then the lower one. `Team.pending_plan` shows the owner what is coming
 - [x] Voice previews and transcription are shared across the team like Listen and Ask AI. Days and weeks follow the owner's timezone, and a staff Listen reset for any teammate resets the team's hours

@@ -21,7 +21,8 @@ class MLLMCost(mongo.Document):
 
     user_id = mongo.IntField()  # Optional - some features may be system-level
     # models.py: whose usage billing paid for an AI classifier call when it was made, which is the team owner's
-    # for a teammate (Profile.usage_billing_profile). Rows written before this field have only user_id.
+    # for a teammate (Profile.usage_billing_profile). Only a teammate's row has it; every other row has only
+    # user_id, which is also who was billed.
     billed_user_id = mongo.IntField()
     timestamp = mongo.DateTimeField(default=datetime.utcnow, required=True)
 

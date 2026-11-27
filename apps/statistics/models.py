@@ -127,9 +127,12 @@ class MStatistics(mongo.Document):
         last_day = datetime.datetime.now() - datetime.timedelta(hours=24)
 
         # models.py: teammates carry Premium Pro's flags from their team's plan (apps/team/grants.py), not their own.
-        premium_users = Profile.objects.filter(
-            last_seen_on__gte=last_day, is_premium=True, user__team_pro_grant__isnull=True
-        ).count()
+        # A team's owner holds a grant too, and pays.
+        premium_users = (
+            Profile.objects.filter(last_seen_on__gte=last_day, is_premium=True)
+            .exclude(user__team_pro_grant__isnull=False, user__owned_team__isnull=True)
+            .count()
+        )
         cls.objects(key="premium_users").update_one(
             upsert=True, set__key="premium_users", set__value=premium_users
         )

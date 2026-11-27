@@ -17,8 +17,9 @@ class Users(View):
         expiration_sec = 60 * 60  # 1 hour
         expiration_sec_short = 60 * 5  # 5 minutes
         # newsblur_users.py: teammates carry Premium Pro's flags from their team's plan (apps/team/grants.py), so
-        # the paid counts leave them out and team_seats counts them.
-        paying = Profile.objects.filter(user__team_pro_grant__isnull=True)
+        # the paid counts leave them out and team_seats counts them. A team's owner holds a grant too, and pays.
+        teammates = dict(user__team_pro_grant__isnull=False, user__owned_team__isnull=True)
+        paying = Profile.objects.exclude(**teammates)
 
         data = {
             "all": MStatistics.get(
@@ -77,7 +78,7 @@ class Users(View):
             ),
             "team_seats": MStatistics.get(
                 "munin:users_team_seats",
-                lambda: TeamProGrant.objects.count(),
+                lambda: TeamProGrant.objects.filter(user__owned_team__isnull=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),

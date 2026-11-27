@@ -9,9 +9,8 @@ from django.db import transaction
 from apps.profile.models import Profile
 from apps.profile.tasks import EmailStaffNotification
 from apps.team.grants import (
-    RENEWALS_TURNED_OFF_ON_JOIN,
     deactivate_team,
-    renewing_subscriptions,
+    own_subscription,
     send_team_plan_ended_email,
     send_team_welcome_email,
     settle_own_plan_on_join,
@@ -34,41 +33,40 @@ def SendTeamInviteEmail(invite_id):
     invite.send_email()
 
 
-def queue_own_plan_on_join(grant, team, subscription):
-    """Run as a join commits (TeamInvite.accept). The Stripe and PayPal subscriptions renewing at that moment are
-    read here, so the task turns off only those, and only while the grant this join made is still held."""
-    renewing = renewing_subscriptions(grant.user) if subscription in RENEWALS_TURNED_OFF_ON_JOIN else []
-    SettleOwnPlanOnJoin.delay(
-        user_id=grant.user_id,
-        team_id=team.pk,
-        subscription=subscription,
-        grant_id=grant.pk,
-        renewing=renewing,
-    )
-
-
-# tasks.py: turning off a renewal again is harmless, so a retry repeats the whole thing. A renewal Stripe or PayPal
-# can't confirm is off is retried, and after the last retry staff are told instead of the teammate.
-@app.task(
-    name="team-own-plan-on-join", bind=True, autoretry_for=(Exception,), retry_backoff=60, max_retries=3
-)
-def SettleOwnPlanOnJoin(self, user_id, team_id, subscription, grant_id, renewing):
-    grant = TeamProGrant.objects.select_related("user").filter(pk=grant_id, user_id=user_id).first()
-    team = Team.objects.filter(pk=team_id).first()
+# tasks.py: queued once a join commits (TeamInvite.accept), with the time of the join, so the Stripe and PayPal
+# subscriptions it turns off are the ones made before it, and only while the grant this join made is still held.
+# Turning off a renewal again is harmless, so a retry repeats the whole thing. A renewal Stripe or PayPal can't read
+# or confirm is off, and any other error, is retried, and after the last retry staff are told instead of the
+# teammate. subscription is the kind of plan read on the first try, kept through the retries.
+@app.task(name="team-own-plan-on-join", bind=True, max_retries=3)
+def SettleOwnPlanOnJoin(self, grant_id, joined_at, subscription=None):
+    grant = TeamProGrant.objects.select_related("user", "member__team").filter(pk=grant_id).first()
     # tasks.py: a seat that ended before the task's turn released this grant, and whatever the person pays for
     # since is theirs to keep.
-    if not grant or not team:
+    if not grant or not grant.member:
         return
-    if settle_own_plan_on_join(grant.user, team, subscription, renewing):
+    user, team = grant.user, grant.member.team
+    subscription = subscription or own_subscription(user)
+    if not subscription:
         return
-    if renewing is not None and self.request.retries < self.max_retries:
-        raise self.retry(countdown=60 * 2**self.request.retries)
+    problem = "a renewal that isn't confirmed off"
+    try:
+        if settle_own_plan_on_join(user, team, subscription, joined_at):
+            return
+    except Exception as e:
+        # tasks.py: whatever went wrong, the person's renewal may still be on, so this never ends silently.
+        logging.user(user, "~FRCouldn't settle own plan on joining a team: %r" % e)
+        problem = repr(e)
+    if self.request.retries < self.max_retries:
+        raise self.retry(
+            kwargs=dict(grant_id=grant_id, joined_at=joined_at, subscription=subscription),
+            countdown=60 * 2**self.request.retries,
+        )
     EmailStaffNotification.delay(
         event_type="team_own_plan_unconfirmed",
-        subject="Own renewal not confirmed off after joining a team: %s" % grant.user.username,
-        body="%s joined %s, which covers Premium Pro, but %s could not confirm that their own renewal is off "
-        "(subscriptions renewing at the join: %s). They were not emailed about their own plan."
-        % (grant.user.username, team.name, subscription, renewing if renewing is not None else "unknown"),
+        subject="Own renewal not confirmed off after joining a team: %s" % user.username,
+        body="%s joined %s, which covers Premium Pro, but their own %s renewal could not be confirmed off (%s). "
+        "They were not emailed about their own plan." % (user.username, team.name, subscription, problem),
     )
 
 

@@ -10,7 +10,7 @@ from django.db import transaction
 
 from apps.profile.models import Profile
 from apps.team.billing import record_team_payment
-from apps.team.grants import deactivate_team
+from apps.team.grants import deactivate_team, release_team_pro
 from apps.team.models import Team, TeamMember, TeamProGrant
 from utils import log as logging
 
@@ -132,35 +132,49 @@ def _apply_team_subscription(user, subscription, plan):
     if winding_down and team and team.billing_reference and team.billing_reference != subscription.id:
         # stripe_billing.py: a subscription set to end doesn't take the team back from the one that bills it now.
         return
-    status, paid_through = _paid_period(subscription)
+    status, paid_through, invoice = _paid_period(subscription)
     if status == "paid":
-        record_team_payment(user, plan, Team.PROVIDER_STRIPE, paid_through, subscription.id)
+        paid_at = (invoice.get("status_transitions") or {}).get("paid_at")
+        # stripe_billing.py: a subscription that starts billing the team on an invoice for changing it was the
+        # owner's own plan, switched to the team plan with proration (Profile.switch_stripe_subscription).
+        replaces_own_plan = invoice.get("billing_reason") == "subscription_update" and (
+            not team or team.billing_reference != subscription.id
+        )
+        record_team_payment(
+            user,
+            plan,
+            Team.PROVIDER_STRIPE,
+            paid_through,
+            subscription.id,
+            datetime.datetime.fromtimestamp(paid_at) if paid_at else None,
+            replaces_own_plan=replaces_own_plan,
+        )
     elif status == "reversed":
         _end_team_now(user, subscription)
     _team_billed_by(user.pk, subscription.id).update(pending_plan=_scheduled_plan(subscription))
 
 
 def _paid_period(subscription):
-    """("paid", the end of the period paid for) while the subscription is active and its latest invoice is paid.
-    Stripe starts a renewal's period before charging it, and a renewal it couldn't charge is past due, so neither
-    counts. ("reversed", None) when the latest invoice's charge was refunded in full or disputed, and (None, None)
-    otherwise."""
+    """("paid", the end of the period paid for, the latest invoice) while the subscription is active and its
+    latest invoice is paid. Stripe starts a renewal's period before charging it, and a renewal it couldn't charge
+    is past due, so neither counts. ("reversed", None, the invoice) when the latest invoice's charge was refunded
+    in full or disputed, and (None, None, None) otherwise."""
     if subscription.get("status") != "active" or not subscription.get("latest_invoice"):
-        return None, None
+        return None, None, None
     invoice = stripe.Invoice.retrieve(subscription["latest_invoice"], expand=["charge"])
     if invoice.get("status") != "paid":
-        return None, None
+        return None, None, None
     charge = invoice.get("charge")
     if charge and (charge.get("refunded") or charge.get("disputed")):
-        return "reversed", None
+        return "reversed", None, invoice
     period_end = subscription.get("current_period_end")
     if not period_end:
         # stripe_billing.py: newer Stripe API versions keep the period on each subscription item.
         items = (subscription.get("items") or {}).get("data") or []
         period_end = items[0].get("current_period_end") if items else None
     if not period_end:
-        return None, None
-    return "paid", datetime.datetime.fromtimestamp(period_end)
+        return None, None, None
+    return "paid", datetime.datetime.fromtimestamp(period_end), invoice
 
 
 def _end_team_now(user, subscription):
@@ -175,15 +189,20 @@ def _end_team_now(user, subscription):
 
 def _end_team_switched_down(user, subscription, plan):
     """The team's own subscription is on a lower plan now. Once the month paid for has passed, the team ends and the
-    owner is on that plan. Returns True when it ended the team."""
+    owner is on that plan, or on a higher one of their own they had besides (release_team_pro). Returns True when it
+    ended the team."""
     team = _team_billed_by(user.pk, subscription.id).filter(status=Team.STATUS_ACTIVE).first()
     if not team or (team.paid_through and team.paid_through > datetime.datetime.now()):
         return False
     with transaction.atomic():
+        team = team.lock()
+        own_plan = release_team_pro(user, owner=True)
+        if not own_plan or TeamProGrant.TIER_ORDER.index(plan) > TeamProGrant.TIER_ORDER.index(own_plan):
+            own_plan = plan
+            Profile.objects.filter(user=user).update(**TeamProGrant.TIER_FLAGS[plan])
         deactivate_team(team)
         Team.objects.filter(pk=team.pk).update(pending_plan=None)
-        Profile.objects.filter(user=user).update(**TeamProGrant.TIER_FLAGS[plan])
-    logging.user(user, "~FCTeam %s ended on its switch down to %s" % (team.pk, plan))
+    logging.user(user, "~FCTeam %s ended on its switch down to %s, now on %s" % (team.pk, plan, own_plan))
     return True
 
 
