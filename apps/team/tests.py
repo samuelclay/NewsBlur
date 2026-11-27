@@ -2375,6 +2375,7 @@ class Test_TeamBilling(TeamProMixin, TestCase):
                 team_role=TeamMember.ROLE_OWNER,
                 team_billing_provider=Team.PROVIDER_STRIPE,
                 team_paid_through=int(paid_through.strftime("%s")),
+                team_pending_plan=None,
                 team_pending_owner=None,
             ),
         )
@@ -2385,6 +2386,7 @@ class Test_TeamBilling(TeamProMixin, TestCase):
                 team_role=TeamMember.ROLE_MEMBER,
                 team_billing_provider=None,
                 team_paid_through=None,
+                team_pending_plan=None,
                 team_pending_owner=None,
             ),
         )
@@ -2447,3 +2449,641 @@ class Test_TeamBillingAtOnce(TeamClientMixin, TransactionTestCase):
         self.assertEqual(Team.objects.filter(owner=buyer).count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         EmailStaffPremiumUpgrade.delay.assert_called_once()
+
+
+class FakeStripeBilling:
+    """apps/team/tests.py: Stripe's records for every customer in a test: subscriptions with their latest invoice
+    and any schedule, the charges, and what switching, scheduling, cancelling and refunding do there, including what
+    Stripe refuses. A test that reaches Stripe's API anyway fails."""
+
+    MONTH = 31 * 24 * 3600
+    YEAR = 365 * 24 * 3600
+    ANNUAL_PLANS = ("premium", "archive", "archive_extra")
+    AMOUNTS = {
+        "premium": 36,
+        "archive": 99,
+        "archive_extra": 159,
+        "pro": 29,
+        "team": 79,
+        "team_enterprise": 129,
+    }
+
+    def __init__(self, test):
+        self.subscriptions = []
+        self.invoices = {}
+        self.charges = []
+        self.schedules = {}
+        self.released = []
+        test.patch(
+            stripe._api_requestor._APIRequestor,
+            "request_raw",
+            side_effect=AssertionError("a test reached Stripe's API"),
+        )
+        test.patch(stripe.Customer, "retrieve", side_effect=self._customer)
+        test.patch(
+            stripe.Customer,
+            "list",
+            side_effect=lambda email: [self._customer(self.customer_id(User.objects.get(email=email)))],
+        )
+        test.patch(stripe.Charge, "list", side_effect=self._charges)
+        test.patch(stripe.Charge, "retrieve", side_effect=self.charge)
+        test.patch(stripe.Subscription, "list", side_effect=self._subscriptions)
+        test.patch(stripe.Subscription, "retrieve", side_effect=self.subscription)
+        self.modify = test.patch(stripe.Subscription, "modify", side_effect=self._modify)
+        test.patch(stripe.Invoice, "retrieve", side_effect=self._invoice)
+        test.patch(stripe.SubscriptionSchedule, "create", side_effect=self._create_schedule)
+        test.patch(stripe.SubscriptionSchedule, "modify", side_effect=self._modify_schedule)
+        test.patch(stripe.SubscriptionSchedule, "release", side_effect=self._release_schedule)
+        test.patch(
+            stripe.SubscriptionSchedule,
+            "retrieve",
+            side_effect=lambda schedule_id: self.schedules[schedule_id],
+        )
+        self.checkout = test.patch(
+            stripe.checkout.Session,
+            "create",
+            return_value=MagicMock(url="https://checkout.stripe.com/c/pay/cs_1"),
+        )
+        test.patch(stripe.Refund, "create", side_effect=self.refund)
+
+    def customer_id(self, user):
+        return "cus_%s" % user.username
+
+    def _customer(self, customer_id):
+        return MagicMock(id=customer_id, email=None, stripe_id=customer_id)
+
+    def known_customer(self, user):
+        """The account paid through Stripe before, so Stripe's events find it by its customer id."""
+        Profile.objects.filter(user=user).update(stripe_id=self.customer_id(user))
+        StripeIds.objects.get_or_create(user=user, stripe_id=self.customer_id(user))
+
+    def _charges(self, customer, limit=None):
+        return MagicMock(
+            data=[charge for charge in self.charges[::-1] if charge.customer == customer][:limit]
+        )
+
+    def _subscriptions(self, customer, **kwargs):
+        # tests.py: cancel_premium_stripe passes the customer object, the others its id.
+        customer_id = getattr(customer, "id", customer)
+        return MagicMock(
+            data=[
+                sub
+                for sub in self.subscriptions[::-1]
+                if sub.customer == customer_id and sub.status != "canceled"
+            ]
+        )
+
+    def subscription(self, subscription_id):
+        return next(sub for sub in self.subscriptions if sub.id == subscription_id)
+
+    def charge(self, charge_id):
+        return next(charge for charge in self.charges if charge.id == charge_id)
+
+    def subscribe(self, user, plan, period_end=None, invoice_status="paid", status="active", prices=None):
+        """A subscription as Stripe Checkout leaves it, its first invoice paid unless told otherwise. prices gives
+        it several items, as the AI filter usage billing subscription has."""
+        annual = plan in self.ANNUAL_PLANS
+        end = period_end or datetime.datetime.now() + datetime.timedelta(days=365 if annual else 31)
+        end = int(end.timestamp())
+        index = len(self.subscriptions) + 1
+        prices = prices or [Profile.plan_to_stripe_price(plan)]
+        subscription = stripe.Subscription.construct_from(
+            {
+                "id": "sub_%s" % index,
+                "object": "subscription",
+                "customer": self.customer_id(user),
+                "status": status,
+                "cancel_at": None,
+                "cancel_at_period_end": False,
+                "schedule": None,
+                "current_period_start": end - (self.YEAR if annual else self.MONTH),
+                "current_period_end": end,
+                "items": {
+                    "object": "list",
+                    "data": [
+                        {"id": "si_%s_%s" % (index, n), "object": "subscription_item", "quantity": 1}
+                        for n in range(len(prices))
+                    ],
+                },
+                "latest_invoice": None,
+            },
+            "sk_test",
+        )
+        for item, price in zip(subscription["items"].data, prices):
+            item["price"] = stripe.Price.construct_from({"id": price, "object": "price"}, "sk_test")
+            item["plan"] = stripe.Plan.construct_from(
+                {"id": price, "object": "plan", "active": True}, "sk_test"
+            )
+        subscription["plan"] = subscription["items"].data[0].plan if len(prices) == 1 else None
+        self.subscriptions.append(subscription)
+        self.invoice(subscription, invoice_status, self.AMOUNTS.get(plan, 1))
+        return subscription
+
+    def set_plan(self, subscription, plan):
+        price = Profile.plan_to_stripe_price(plan)
+        item = subscription["items"].data[0]
+        item["price"] = stripe.Price.construct_from({"id": price, "object": "price"}, "sk_test")
+        item["plan"] = stripe.Plan.construct_from({"id": price, "object": "plan", "active": True}, "sk_test")
+        subscription["plan"] = item.plan
+
+    def invoice(self, subscription, status, amount):
+        """A new latest invoice for the subscription. A paid one has its charge."""
+        invoice_id = "in_%s" % (len(self.invoices) + 1)
+        self.invoices[invoice_id] = {"id": invoice_id, "status": status, "subscription": subscription.id}
+        subscription["latest_invoice"] = invoice_id
+        if status == "paid":
+            self.charge_invoice(invoice_id, amount)
+
+    def charge_invoice(self, invoice_id, amount):
+        subscription = self.subscription(self.invoices[invoice_id]["subscription"])
+        charge = stripe.Charge.construct_from(
+            {
+                "id": "ch_%s" % (len(self.charges) + 1),
+                "object": "charge",
+                "customer": subscription.customer,
+                "invoice": invoice_id,
+                "amount": amount * 100,
+                "amount_refunded": 0,
+                "created": int(datetime.datetime.now().timestamp()),
+                "status": "succeeded",
+                "refunded": False,
+                "disputed": False,
+            },
+            "sk_test",
+        )
+        self.charges.append(charge)
+        self.invoices[invoice_id]["charge"] = charge.id
+        return charge
+
+    def _invoice(self, invoice_id, expand=None):
+        invoice = dict(self.invoices[invoice_id])
+        charge_id = invoice.pop("charge", None)
+        invoice["charge"] = self.charge(charge_id).to_dict_recursive() if charge_id else None
+        return stripe.Invoice.construct_from(invoice, "sk_test")
+
+    def latest_charge(self, subscription):
+        return self.charge(self.invoices[subscription.latest_invoice]["charge"])
+
+    def renew(self, subscription, invoice_status="draft", status="active"):
+        """The next period starts. Stripe charges its invoice about an hour later, and a failed charge leaves the
+        subscription past due."""
+        start = subscription.current_period_end
+        subscription["current_period_start"] = start
+        subscription["current_period_end"] = start + self.MONTH
+        subscription["status"] = status
+        self.invoice(subscription, invoice_status, 79)
+
+    def pay_latest_invoice(self, subscription):
+        invoice = self.invoices[subscription.latest_invoice]
+        invoice["status"] = "paid"
+        self.charge_invoice(invoice["id"], 79)
+        subscription["status"] = "active"
+
+    def _modify(self, subscription_id, **changes):
+        subscription = self.subscription(subscription_id)
+        if subscription.schedule and ("items" in changes or "cancel_at_period_end" in changes):
+            raise stripe.error.InvalidRequestError(
+                "The subscription is managed by the subscription schedule `%s`." % subscription.schedule, None
+            )
+        if "cancel_at_period_end" in changes:
+            subscription["cancel_at_period_end"] = changes["cancel_at_period_end"]
+            subscription["cancel_at"] = (
+                subscription.current_period_end if changes["cancel_at_period_end"] else None
+            )
+        if changes.get("items"):
+            old_plan = Profile.stripe_price_plan(subscription.plan.id)
+            new_plan = Profile.stripe_price_plan(changes["items"][0]["price"])
+            self.set_plan(subscription, new_plan)
+            if (old_plan in self.ANNUAL_PLANS) != (new_plan in self.ANNUAL_PLANS):
+                # tests.py: a new billing interval starts its first period now.
+                now = int(datetime.datetime.now().timestamp())
+                subscription["current_period_start"] = now
+                subscription["current_period_end"] = now + self.MONTH
+            if changes.get("proration_behavior") == "always_invoice":
+                self.invoice(subscription, "paid", 50)
+        return subscription
+
+    def _create_schedule(self, from_subscription):
+        subscription = self.subscription(from_subscription)
+        if subscription.schedule or subscription.cancel_at_period_end:
+            raise stripe.error.InvalidRequestError("This subscription can't take a schedule.", None)
+        schedule_id = "sub_sched_%s" % (len(self.schedules) + 1)
+        phase = {
+            "start_date": subscription.current_period_start,
+            "end_date": subscription.current_period_end,
+            "items": [{"price": subscription.plan.id, "quantity": 1}],
+        }
+        self.schedules[schedule_id] = stripe.SubscriptionSchedule.construct_from(
+            {
+                "id": schedule_id,
+                "object": "subscription_schedule",
+                "subscription": subscription.id,
+                "current_phase": {"start_date": phase["start_date"], "end_date": phase["end_date"]},
+                "phases": [phase],
+            },
+            "sk_test",
+        )
+        subscription["schedule"] = schedule_id
+        return self.schedules[schedule_id]
+
+    def _modify_schedule(self, schedule_id, phases, **settings):
+        schedule = self.schedules[schedule_id]
+        built = []
+        for phase in phases:
+            start = phase.get("start_date") or built[-1]["end_date"]
+            end = phase.get("end_date") or start + self.MONTH * phase.get("iterations", 1)
+            built.append(dict(phase, start_date=start, end_date=end))
+        schedule["phases"] = built
+        schedule["end_behavior"] = settings.get("end_behavior")
+        return schedule
+
+    def _release_schedule(self, schedule_id):
+        for subscription in self.subscriptions:
+            if subscription.schedule == schedule_id:
+                subscription["schedule"] = None
+        self.released.append(schedule_id)
+
+    def reach_next_phase(self, subscription):
+        """The period paid for ends, the schedule moves the subscription to its next phase's price, and that
+        period's invoice is paid."""
+        schedule = self.schedules[subscription.schedule]
+        plan = Profile.stripe_price_plan(schedule["phases"][1]["items"][0]["price"])
+        start = subscription.current_period_end
+        self.set_plan(subscription, plan)
+        subscription["current_period_start"] = start
+        subscription["current_period_end"] = start + (self.YEAR if plan in self.ANNUAL_PLANS else self.MONTH)
+        subscription["schedule"] = None
+        self.invoice(subscription, "paid", self.AMOUNTS[plan])
+
+    def refund(self, charge, amount=None):
+        charge = self.charge(charge)
+        charge["amount_refunded"] = amount or charge.amount
+        charge["refunded"] = charge.amount_refunded >= charge.amount
+        return MagicMock(id="re_%s" % charge.id)
+
+    def subscription_event(self, subscription):
+        """customer.subscription.* as the webhook delivers it."""
+        return {
+            "id": subscription.id,
+            "customer": subscription.customer,
+            "status": "active",
+            "plan": {"id": subscription.plan.id, "active": True},
+            "cancel_at": subscription.cancel_at,
+            "items": {"data": []},
+        }
+
+    def invoice_event(self, subscription):
+        """invoice.paid as the webhook delivers it."""
+        return {"id": subscription.latest_invoice, "customer": subscription.customer}
+
+
+@override_settings(**USAGE_PRICES)
+class Test_TeamStripeBilling(TeamProMixin, TestCase):
+    """apps/team/stripe_billing.py: team plans bought, renewed, switched, cancelled and refunded through Stripe."""
+
+    def setUp(self):
+        super().setUp()
+        self.stripe = FakeStripeBilling(self)
+        self.staff = User.objects.create_user(username="staff", is_staff=True)
+
+    def stripe_event(self, event_type, obj):
+        """apps/team/tests.py: a Stripe event posted to the webhook, with what it queued for after its commit run in
+        place."""
+        queued = len(connection.run_on_commit)
+        response = Client().post(
+            reverse("zebra:webhooks_v2"),
+            json.encode({"type": event_type, "data": {"object": obj}}),
+            content_type="application/json",
+        )
+        callbacks = connection.run_on_commit[queued:]
+        del connection.run_on_commit[queued:]
+        for _, callback in callbacks:
+            callback()
+        self.assertEqual(response.status_code, 200)
+
+    def profile_post(self, user, path, **data):
+        """apps/team/tests.py: a POST to /profile/, with what it queued for after its commit run in place."""
+        queued = len(connection.run_on_commit)
+        response = self.client_for(user).post("/profile/%s" % path, data)
+        callbacks = connection.run_on_commit[queued:]
+        del connection.run_on_commit[queued:]
+        for _, callback in callbacks:
+            callback()
+        return response
+
+    def owned_team(self, user):
+        return Team.objects.filter(owner=user).first()
+
+    def paid_through(self, subscription):
+        return datetime.datetime.fromtimestamp(subscription.current_period_end)
+
+    def team_owner(self, username, plan=Team.PLAN_TEAM, period_end=None):
+        """apps/team/tests.py: an owner whose team a paid Stripe subscription bills, and the subscription."""
+        owner = self.reader(username)
+        self.stripe.known_customer(owner)
+        subscription = self.stripe.subscribe(owner, plan, period_end=period_end)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+        self.assertEqual(self.owned_team(owner).billing_reference, subscription.id)
+        return owner, subscription
+
+    def staff_events(self):
+        return [call.kwargs["event_type"] for call in EmailStaffNotification.delay.call_args_list]
+
+    def test_a_checkout_starts_one_team_whatever_order_its_events_arrive_in(self):
+        buyer = self.reader("buyer", "free", feeds=2)
+        subscription = self.stripe.subscribe(buyer, Team.PLAN_TEAM)
+        # A usage billing subscription started after the team's, which Stripe lists ahead of it.
+        self.stripe.subscribe(
+            buyer, "usage", invoice_status="draft", prices=["price_text_classifier", "price_image_classifier"]
+        )
+        charge = self.stripe.latest_charge(subscription)
+
+        # Stripe sends these before checkout.session.completed stores the customer on the account.
+        self.stripe_event("customer.subscription.created", self.stripe.subscription_event(subscription))
+        self.stripe_event("charge.succeeded", {"id": charge.id, "customer": charge.customer})
+        self.assertIsNone(self.owned_team(buyer))
+        self.stripe_event(
+            "checkout.session.completed",
+            {
+                "customer": subscription.customer,
+                "subscription": subscription.id,
+                "metadata": {"newsblur_user_id": str(buyer.pk)},
+            },
+        )
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        [team] = Team.objects.filter(owner=buyer)
+        self.assertEqual(
+            (team.plan, team.status, team.billing_provider, team.billing_reference, team.paid_through),
+            (
+                Team.PLAN_TEAM,
+                Team.STATUS_ACTIVE,
+                Team.PROVIDER_STRIPE,
+                subscription.id,
+                self.paid_through(subscription),
+            ),
+        )
+        self.assertEqual(self.plan_of(buyer), "pro")
+        self.assertEqual(self.muted_sites(buyer), 0)
+        [welcome] = self.mail_to(buyer)
+        self.assertIn("?next=team", welcome.body)
+        EmailNewPremium.delay.assert_not_called()
+        EmailNewPremiumPro.delay.assert_not_called()
+        EmailStaffPremiumUpgrade.delay.assert_called_once_with(
+            user_id=buyer.pk, tier=Team.PLAN_TEAM, previous_tier="free"
+        )
+
+    def test_a_team_starts_only_once_stripe_shows_its_invoice_paid(self):
+        buyer = self.reader("buyer")
+        self.stripe.known_customer(buyer)
+        subscription = self.stripe.subscribe(
+            buyer, Team.PLAN_TEAM, invoice_status="open", status="incomplete"
+        )
+
+        # The event says the subscription is active on the team price. Stripe says otherwise.
+        self.stripe_event("customer.subscription.created", self.stripe.subscription_event(subscription))
+        self.assertIsNone(self.owned_team(buyer))
+
+        # Charged, but the invoice isn't marked paid yet: neither a team nor Premium.
+        subscription["status"] = "active"
+        charge = self.stripe.charge_invoice(subscription.latest_invoice, 79)
+        self.stripe_event("charge.succeeded", {"id": charge.id, "customer": charge.customer})
+        self.assertIsNone(self.owned_team(buyer))
+        self.assertEqual(self.plan_of(buyer), "free")
+        EmailNewPremium.delay.assert_not_called()
+
+        self.stripe.invoices[subscription.latest_invoice]["status"] = "paid"
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+        self.assertEqual(self.owned_team(buyer).paid_through, self.paid_through(subscription))
+        self.assertEqual(self.plan_of(buyer), "pro")
+
+    def test_only_a_charged_renewal_moves_the_paid_period(self):
+        owner, subscription = self.team_owner("teamowner")
+        first_period = self.paid_through(subscription)
+
+        # The new period starts before Stripe charges it, and then the charge fails.
+        self.stripe.renew(subscription)
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.assertEqual(self.owned_team(owner).paid_through, first_period)
+        self.stripe.invoices[subscription.latest_invoice]["status"] = "open"
+        subscription["status"] = "past_due"
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        TeamProGrants()
+        team = self.owned_team(owner)
+        self.assertEqual((team.paid_through, team.status), (first_period, Team.STATUS_ACTIVE))
+
+        self.stripe.pay_latest_invoice(subscription)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+        self.assertEqual(self.owned_team(owner).paid_through, self.paid_through(subscription))
+
+    def test_a_recovered_payment_brings_a_lapsed_team_back(self):
+        owner, subscription = self.team_owner("teamowner", period_end=self.now - self.days(2))
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+        self.stripe.renew(subscription, invoice_status="open", status="past_due")
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.committed(TeamProGrants)
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+        self.assertEqual(self.plan_of(member), "free")
+
+        self.stripe.pay_latest_invoice(subscription)
+        self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.paid_through), (Team.STATUS_ACTIVE, self.paid_through(subscription))
+        )
+        self.assertEqual(self.plan_of(member), "pro")
+
+    def test_a_teammate_or_an_owner_billed_elsewhere_cannot_buy_a_team(self):
+        member = self.reader("member")
+        self.join(member)
+        store_owner = self.reader("storeowner")
+        self.pay(store_owner, self.now + self.days(20), provider=Team.PROVIDER_APP_STORE, reference="2000001")
+        for buyer, reason in ((member, "on_team"), (store_owner, "team_billed_elsewhere")):
+            self.stripe.known_customer(buyer)
+            self.stripe.subscribe(buyer, "premium")
+            for path in ("stripe_checkout", "switch_stripe_subscription"):
+                response = self.profile_post(buyer, path, plan=Team.PLAN_TEAM_ENTERPRISE)
+                self.assertIn("team_purchase=%s" % reason, response["Location"])
+        self.stripe.checkout.assert_not_called()
+        self.stripe.modify.assert_not_called()
+        self.assertIsNone(self.owned_team(member))
+        self.assertEqual(self.owned_team(store_owner).billing_provider, Team.PROVIDER_APP_STORE)
+
+        # Anyone else goes to Stripe Checkout, and comes back to a page that waits for the team.
+        buyer = self.reader("buyer")
+        response = self.profile_post(buyer, "stripe_checkout", plan=Team.PLAN_TEAM)
+        self.assertEqual(response["Location"], "https://checkout.stripe.com/c/pay/cs_1")
+        session = self.stripe.checkout.call_args.kwargs
+        self.assertEqual(session["line_items"][0]["price"], Profile.plan_to_stripe_price(Team.PLAN_TEAM))
+        self.assertTrue(session["success_url"].endswith("%s?plan=team" % reverse("stripe-return")))
+
+    def test_a_stripe_plan_switches_up_to_a_team_plan_at_once_on_the_same_subscription(self):
+        subscriber = self.reader("subscriber", "premium", premium_expire=self.now + self.days(200))
+        self.stripe.known_customer(subscriber)
+        subscription = self.stripe.subscribe(subscriber, "premium")
+
+        response = self.profile_post(subscriber, "switch_stripe_subscription", plan=Team.PLAN_TEAM)
+
+        self.assertTrue(response["Location"].endswith("%s?plan=team" % reverse("stripe-return")))
+        [switch] = self.stripe.modify.call_args_list
+        self.assertEqual(switch.args, (subscription.id,))
+        self.assertEqual(switch.kwargs["proration_behavior"], "always_invoice")
+        self.assertEqual(switch.kwargs["items"][0]["price"], Profile.plan_to_stripe_price(Team.PLAN_TEAM))
+        self.stripe.checkout.assert_not_called()
+        self.assertEqual(len(self.stripe.subscriptions), 1)
+        team = self.owned_team(subscriber)
+        self.assertEqual((team.plan, team.billing_reference), (Team.PLAN_TEAM, subscription.id))
+        self.assertEqual(self.plan_of(subscriber), "pro")
+
+        # Team up to Enterprise is at once too.
+        self.profile_post(subscriber, "switch_stripe_subscription", plan=Team.PLAN_TEAM_ENTERPRISE)
+        self.assertEqual(self.stripe.modify.call_args.kwargs["proration_behavior"], "always_invoice")
+        self.assertEqual(self.owned_team(subscriber).plan, Team.PLAN_TEAM_ENTERPRISE)
+
+    def test_switching_down_from_a_team_plan_keeps_the_team_until_the_paid_month_ends(self):
+        owner, subscription = self.team_owner("teamowner", plan=Team.PLAN_TEAM_ENTERPRISE)
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+        period_end = subscription.current_period_end
+
+        for plan in (Team.PLAN_TEAM, "pro"):
+            self.profile_post(owner, "switch_stripe_subscription", plan=plan)
+
+            schedule = self.stripe.schedules[subscription.schedule]
+            self.assertEqual(schedule["phases"][0]["end_date"], period_end)
+            self.assertEqual(schedule["phases"][1]["items"][0]["price"], Profile.plan_to_stripe_price(plan))
+            team = self.owned_team(owner)
+            self.assertEqual(
+                (team.plan, team.status, team.paid_through),
+                (Team.PLAN_TEAM_ENTERPRISE, Team.STATUS_ACTIVE, self.paid_through(subscription)),
+            )
+            self.assertEqual(Profile.objects.get(user=owner).canonical()["team_pending_plan"], plan)
+            self.assertIsNone(Profile.objects.get(user=member).canonical()["team_pending_plan"])
+        self.stripe.modify.assert_not_called()
+        self.assertEqual(self.plan_of(member), "pro")
+
+        # Choosing the plan paid for again drops the scheduled switch.
+        self.profile_post(owner, "switch_stripe_subscription", plan=Team.PLAN_TEAM_ENTERPRISE)
+        self.assertIsNone(subscription.schedule)
+        self.assertIsNone(Profile.objects.get(user=owner).canonical()["team_pending_plan"])
+
+        # A lower price put on the subscription some other way still waits for the month paid for.
+        self.stripe.set_plan(subscription, "pro")
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_ACTIVE)
+
+    def test_a_switch_down_starts_the_lower_plan_once_the_paid_month_ends(self):
+        # Both months ended an hour ago, which is when Stripe moves a subscription on to its next phase.
+        period_end = self.now - datetime.timedelta(hours=1)
+        down, down_subscription = self.team_owner("down", period_end=period_end)
+        member = self.reader("member", "archive", premium_expire=self.now + self.days(100))
+        self.join(member, self.join_link_token(self.owned_team(down), down))
+        enterprise, enterprise_subscription = self.team_owner(
+            "enterprise", plan=Team.PLAN_TEAM_ENTERPRISE, period_end=period_end
+        )
+        self.profile_post(down, "switch_stripe_subscription", plan="premium")
+        self.profile_post(enterprise, "switch_stripe_subscription", plan=Team.PLAN_TEAM)
+        self.assertEqual(self.owned_team(down).status, Team.STATUS_ACTIVE)
+
+        for subscription in (down_subscription, enterprise_subscription):
+            self.stripe.reach_next_phase(subscription)
+            self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+            self.stripe_event("invoice.paid", self.stripe.invoice_event(subscription))
+
+        team = self.owned_team(down)
+        self.assertEqual((team.status, team.pending_plan), (Team.STATUS_INACTIVE, None))
+        self.assertEqual(self.plan_of(down), "premium")
+        self.assertEqual(self.plan_of(member), "archive")
+        team = self.owned_team(enterprise)
+        self.assertEqual(
+            (team.plan, team.status, team.paid_through, team.pending_plan),
+            (Team.PLAN_TEAM, Team.STATUS_ACTIVE, self.paid_through(enterprise_subscription), None),
+        )
+        self.assertEqual(self.plan_of(enterprise), "pro")
+
+    def test_cancelling_runs_to_the_end_of_the_paid_month_and_keeps_the_team(self):
+        owner, subscription = self.team_owner("teamowner")
+        self.profile_post(owner, "switch_stripe_subscription", plan="pro")
+        schedule_id = subscription.schedule
+
+        self.profile_post(owner, "cancel_premium")
+
+        self.assertEqual(self.stripe.released, [schedule_id])
+        self.assertTrue(subscription.cancel_at_period_end)
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.paid_through, team.pending_plan),
+            (Team.STATUS_ACTIVE, self.paid_through(subscription), None),
+        )
+        # Stripe ending the subscription changes nothing until the month paid for has passed (apps/team/tasks.py).
+        subscription["status"] = "canceled"
+        self.stripe_event("customer.subscription.deleted", self.stripe.subscription_event(subscription))
+        TeamProGrants()
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_ACTIVE)
+
+    def test_a_full_refund_ends_the_team_at_once_for_good(self):
+        owner, subscription = self.team_owner("teamowner")
+        member = self.reader("member")
+        self.join(member, self.join_link_token(self.owned_team(owner), owner))
+
+        # A partial refund is a credit, not the end of the team.
+        self.profile_post(self.staff, "refund_premium", user_id=owner.pk, partial="true")
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_ACTIVE)
+
+        self.profile_post(self.staff, "refund_premium", user_id=owner.pk)
+
+        team = self.owned_team(owner)
+        self.assertEqual(team.status, Team.STATUS_INACTIVE)
+        self.assertLess(team.paid_through, datetime.datetime.now())
+        self.assertEqual(self.plan_of(member), "free")
+        # Later events for the subscription, which Stripe still shows as paid up, don't bring it back.
+        charge = self.stripe.latest_charge(subscription)
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+        self.stripe_event("charge.refunded", {"id": charge.id, "customer": charge.customer})
+        self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+
+    def test_a_refund_made_in_stripe_or_a_dispute_ends_the_team(self):
+        refunded, refunded_subscription = self.team_owner("refunded")
+        disputed, disputed_subscription = self.team_owner("disputed")
+
+        refunded_charge = self.stripe.latest_charge(refunded_subscription)
+        self.stripe.refund(refunded_charge.id)
+        self.stripe_event("charge.refunded", {"id": refunded_charge.id, "customer": refunded_charge.customer})
+        disputed_charge = self.stripe.latest_charge(disputed_subscription)
+        disputed_charge["disputed"] = True
+        self.stripe_event("charge.dispute.created", {"id": "dp_1", "charge": disputed_charge.id})
+
+        for owner in (refunded, disputed):
+            self.assertEqual(self.owned_team(owner).status, Team.STATUS_INACTIVE)
+
+    def test_a_stripe_purchase_while_paypal_bills_the_team_stops_the_paypal_renewal(self):
+        owner = self.reader("teamowner")
+        self.pay(owner, self.now + self.days(20), provider=Team.PROVIDER_PAYPAL, reference="I-TEAM")
+        Profile.objects.filter(user=owner).update(paypal_sub_id="I-TEAM")
+        PaypalIds.objects.create(user=owner, paypal_sub_id="I-TEAM")
+        paypal = FakePayPal(self, "I-TEAM")
+        self.stripe.known_customer(owner)
+        subscription = self.stripe.subscribe(owner, Team.PLAN_TEAM_ENTERPRISE)
+
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.billing_provider, team.billing_reference),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_STRIPE, subscription.id),
+        )
+        self.assertEqual(paypal.posts, ["/v1/billing/subscriptions/I-TEAM/suspend"])
+        self.assertEqual(self.staff_events(), ["team_paid_twice"])
+
+    def test_a_stripe_subscription_set_to_end_leaves_the_team_with_the_provider_billing_it(self):
+        owner, subscription = self.team_owner("teamowner")
+        subscription["cancel_at_period_end"] = True
+        subscription["cancel_at"] = subscription.current_period_end
+        self.pay(owner, self.now + self.days(31), provider=Team.PROVIDER_APP_STORE, reference="2000001")
+
+        self.stripe_event("customer.subscription.updated", self.stripe.subscription_event(subscription))
+
+        self.assertEqual(self.owned_team(owner).billing_provider, Team.PROVIDER_APP_STORE)

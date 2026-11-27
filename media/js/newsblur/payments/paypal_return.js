@@ -9,7 +9,11 @@
     NEWSBLUR.PaypalReturn = function () {
         this.retries = 0;
         _.delay(_.bind(function () {
-            if (_.string.include(window.location.pathname, 'paypal_archive')) {
+            // paypal_return.js: a team plan's payment starts a team, never Premium (apps/profile/views.py).
+            if (/[?&]plan=team(_enterprise)?(&|$)/.test(window.location.search)) {
+                this.detect_team();
+                setInterval(_.bind(function () { this.detect_team(); }, this), 2000);
+            } else if (_.string.include(window.location.pathname, 'paypal_archive')) {
                 this.detect_premium_archive();
                 setInterval(_.bind(function () { this.detect_premium_archive(); }, this), 2000);
             } else {
@@ -73,6 +77,29 @@
                     }
                 }, this)
             });
+        },
+
+        detect_team: function () {
+            $.ajax({
+                'url': '/team/',
+                'dataType': 'json',
+                'success': _.bind(function (resp) {
+                    this.retries += 1;
+                    if ((resp.team && resp.team.role == 'owner') || this.retries > 30) {
+                        this.team_dialog();
+                    }
+                }, this),
+                'error': _.bind(function () {
+                    this.retries += 1;
+                    if (this.retries > 30) {
+                        this.team_dialog();
+                    }
+                }, this)
+            });
+        },
+
+        team_dialog: function () {
+            window.location.href = '/?next=team';
         },
 
         homepage: function () {

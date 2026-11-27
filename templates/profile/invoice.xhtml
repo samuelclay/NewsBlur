@@ -336,7 +336,7 @@
     <tbody>
         <tr>
             <td>
-                <div class="description">{% trans "NewsBlur Premium Subscription" %}</div>
+                <div class="description">{% if plan_name %}{% blocktrans with plan=plan_name %}NewsBlur {{ plan }} Subscription{% endblocktrans %}{% else %}{% trans "NewsBlur Premium Subscription" %}{% endif %}</div>
                 <div class="description-sub">{% blocktrans with start=coverage_start|date:"F j, Y" end=coverage_end|date:"F j, Y" %}Coverage period: {{ start }} &ndash; {{ end }}{% endblocktrans %}</div>
             </td>
             <td class="amount">${{ payment.payment_amount }}.00</td>

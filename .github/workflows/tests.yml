@@ -43,6 +43,9 @@ jobs:
       - name: Test feed and folder icons
         run: node --test node/tests/favicon.test.js
 
+      - name: Test the page a purchase returns to
+        run: node --test node/tests/paypal_return.test.js
+
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs
 

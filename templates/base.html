@@ -61,6 +61,7 @@
       'team_role'               : {% if team.team_role %}"{{ team.team_role|escapejs }}"{% else %}null{% endif %},
       'team_billing_provider'   : {% if team.team_billing_provider %}"{{ team.team_billing_provider|escapejs }}"{% else %}null{% endif %},
       'team_paid_through'       : {% if team.team_paid_through %}new Date({{ team.team_paid_through }} * 1000){% else %}null{% endif %},
+      'team_pending_plan'       : {% if team.team_pending_plan %}"{{ team.team_pending_plan|escapejs }}"{% else %}null{% endif %},
       'team_pending_owner'      : {% if team.team_pending_owner %}"{{ team.team_pending_owner|escapejs }}"{% else %}null{% endif %},
       {% endwith %}
       'max_feed_limit'          : {% if user_profile.max_feed_limit %}{{ user_profile.max_feed_limit }}{% else %}null{% endif %},

@@ -69,6 +69,8 @@ Decided on 2026-11-26:
 - [x] A team that is active must be paid for or comped. One that is neither, with no paid through date, is lapsed by the hourly task, and only the owner of a team that is paid for or comped is spared the nightly expiry
 - [x] Only staff can comp a team, and a comped team stays comped: a later payment for it changes nothing and staff are emailed
 - [x] A new team is named after its owner ("samuel's team") until the owner renames it
+- [x] On Stripe a payment counts as confirmed when the subscription is active and its latest invoice is paid. A full refund or a dispute ends the team at once. A partial refund does not
+- [x] A switch down from a team plan on Stripe is a subscription schedule: the paid plan until the period ends, then the lower one. `Team.pending_plan` shows the owner what is coming
 - [x] Voice previews and transcription are shared across the team like Listen and Ask AI. Days and weeks follow the owner's timezone, and a staff Listen reset for any teammate resets the team's hours
 - [x] The message at a shared limit names the team. Only the site limit message names the owner, since making room for sites is something the owner can do
 - [x] If one owner ends up paying for a team plan in two places, the newest purchase wins, the older web renewal is cancelled, and staff are emailed. The stores take the money before the server hears of a purchase, so this cannot be refused up front
@@ -818,11 +820,11 @@ One function for all four providers:
 
 Stripe:
 
-- [ ] `team` and `team_enterprise` in `plan_to_stripe_price`
-- [ ] The Stripe loop in `setup_premium_history` skips the usage billing subscription and hands a team subscription's status and period end to `record_team_payment`
-- [ ] `stripe_signup` and `stripe_subscription_updated` know the team plans
-- [ ] The subscription deleted event and the invoice paid event are connected
-- [ ] `stripe_checkout` refuses a team purchase from a teammate who is not the owner, and when a store already bills the team
+- [x] `team` and `team_enterprise` in `plan_to_stripe_price`
+- [x] The Stripe loop in `setup_premium_history` skips the usage billing subscription and hands a team subscription's status and period end to `record_team_payment`
+- [x] `stripe_signup` and `stripe_subscription_updated` know the team plans
+- [x] The subscription deleted event and the invoice paid event are connected
+- [x] `stripe_checkout` refuses a team purchase from a teammate who is not the owner, and when a store already bills the team
 
 PayPal:
 
@@ -849,7 +851,7 @@ Google Play:
 
 Lapse and return:
 
-- [ ] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
+- [x] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
 - [x] The hourly task lapses a team one day after `paid_through`
 - [ ] A payment that recovers (Stripe charge succeeded, PayPal sale completed, Apple recovered, Play recovered or restarted) brings the team back through `record_team_payment`
 - [ ] A refund or revoke ends the team at once
@@ -881,7 +883,7 @@ The web dialog:
 
 - [ ] The two team cards get their own buttons, since they sit beside the plan ladder and a Pro reader can also start a team
 - [ ] A team billed through a store shows "Billed through the App Store" or "Billed through Google Play" with no button
-- [ ] The page after checkout waits for the team to exist, then opens the team dialog asking for its name
+- [x] The page after checkout waits for the team to exist, then opens the team dialog asking for its name
 
 ### Rules from CLAUDE.md that apply to every step
 
@@ -984,16 +986,16 @@ Written before any code. Each one is a test.
 - [ ] One owner ends up paying for a team plan in two places
 - [x] The hourly task lapses a team between the end of its period and the renewal arriving
 - [x] The owner keeps personal Pro for a year after paying once
-- [ ] The AI filter usage subscription hides the team subscription
+- [x] The AI filter usage subscription hides the team subscription
 - [ ] A team is started without a payment the provider confirms
 - [x] Two payment notices at once create the team twice
 - [ ] A team owner's switch between providers refunds most of a month
 - [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
 - [ ] The old owner's store subscription keeps renewing the team after a transfer
 - [ ] A Play expiry notice for an upgraded token ends the team
-- [ ] A staff refund leaves the team running
+- [x] A staff refund leaves the team running
 - [x] A comp is set on a paid team by mistake, so it never lapses
-- [ ] A switch down from a team plan ends the team before the paid month is over
+- [x] A switch down from a team plan ends the team before the paid month is over
 - [x] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
 - [x] The nightly expiry sends a teammate the expiry email because of an old trial date
 - [x] A new signup who joins during their trial is expired by the trial branch

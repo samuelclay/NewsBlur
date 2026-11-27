@@ -66,6 +66,7 @@ from apps.profile.models import (
     Profile,
     RNewUserQueue,
 )
+from apps.profile.tasks import TIER_NAMES
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
@@ -77,6 +78,7 @@ from apps.social.models import (
     MSocialSubscription,
 )
 from apps.team.models import team_owner_id
+from apps.team.stripe_billing import TEAM_PLANS, team_purchase_refusal
 from utils import json_functions as json
 from utils import log as logging
 from utils.languages import normalize_language
@@ -1129,6 +1131,10 @@ def switch_stripe_subscription(request):
     elif plan == "change_paypal":
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
 
     switch_successful = request.user.profile.switch_stripe_subscription(plan)
 
@@ -1139,9 +1145,27 @@ def switch_stripe_subscription(request):
     )
 
     if switch_successful:
-        return HttpResponseRedirect(reverse("stripe-return"))
+        return HttpResponseRedirect(_stripe_return_path(plan))
 
     return stripe_checkout(request)
+
+
+def _stripe_return_path(plan):
+    """views.py: after paying for a team plan the return page waits for the team, not for Premium
+    (media/js/newsblur/payments/paypal_return.js)."""
+    if plan in TEAM_PLANS:
+        return "%s?%s" % (reverse("stripe-return"), urlencode({"plan": plan}))
+    return reverse("stripe-return")
+
+
+def _team_purchase_refused(request, reason):
+    """views.py: the reader opens the team dialog with the reason (apps/team/stripe_billing.py
+    team_purchase_refusal)."""
+    logging.user(request, "~BR~FRTeam purchase refused: %s" % reason)
+    domain = Site.objects.get_current().domain
+    return HttpResponseRedirect(
+        "https://%s%s?%s" % (domain, reverse("index"), urlencode({"next": "team", "team_purchase": reason}))
+    )
 
 
 def switch_paypal_subscription(request):
@@ -1186,6 +1210,11 @@ def stripe_checkout(request):
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
+
     price = Profile.plan_to_stripe_price(plan)
 
     session_dict = {
@@ -1197,7 +1226,7 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "success_url": "https://%s%s" % (domain, _stripe_return_path(plan)),
         "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:
@@ -1675,6 +1704,10 @@ def invoice(request, payment_id):
     # Calculate coverage period (1 year from payment date)
     coverage_start = payment.payment_date
     coverage_end = coverage_start + dateutil.relativedelta.relativedelta(years=1)
+    # views.py: Premium Team's $79 and Premium Team Enterprise's $129 each pay for a month (Profile.MONTHLY_PRICES).
+    plan_name = TIER_NAMES.get({79: "team", 129: "team_enterprise"}.get(payment.payment_amount))
+    if plan_name:
+        coverage_end = coverage_start + dateutil.relativedelta.relativedelta(months=1)
 
     return render(
         request,
@@ -1686,6 +1719,7 @@ def invoice(request, payment_id):
             "user": payment.user,
             "coverage_start": coverage_start,
             "coverage_end": coverage_end,
+            "plan_name": plan_name,
         },
     )
 

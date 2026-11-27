@@ -32,11 +32,14 @@ from django.utils.translation import gettext, ngettext
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
 from zebra.signals import (
+    zebra_webhook_charge_dispute_created,
     zebra_webhook_charge_refunded,
     zebra_webhook_charge_succeeded,
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
+    zebra_webhook_customer_subscription_deleted,
     zebra_webhook_customer_subscription_updated,
+    zebra_webhook_invoice_paid,
     zebra_webhook_invoice_payment_failed,
     zebra_webhook_invoice_payment_succeeded,
 )
@@ -48,6 +51,7 @@ from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
 from apps.team.models import (
+    Team,
     TeamProGrant,
     team_owner_id,
     team_plan_fields,
@@ -272,7 +276,23 @@ class Profile(models.Model):
             price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        elif plan == "team":
+            # models.py: $79/month "Premium Team" (lookup key newsblur-premium-team-79), created 2026-11-26.
+            price = "price_0UgCfDwdsmP8XBlaft9XCHfp"
+            if settings.DEBUG:
+                price = "price_0UgCfCwdsmP8XBlakBsOX3AZ"
+        elif plan == "team_enterprise":
+            # models.py: $129/month "Premium Team Enterprise" (lookup key newsblur-premium-team-enterprise-129).
+            price = "price_0UgCfDwdsmP8XBlaqkniOnJy"
+            if settings.DEBUG:
+                price = "price_0UgCfDwdsmP8XBlakzTInxlu"
         return price
+
+    @classmethod
+    def stripe_price_plan(cls, price_id):
+        """The plan a Stripe price is for, as plan_to_stripe_price names it, or None."""
+        plans = ("premium", "archive", "archive_extra", "pro", "team", "team_enterprise")
+        return next((plan for plan in plans if price_id and price_id == cls.plan_to_stripe_price(plan)), None)
 
     @staticmethod
     def is_usage_billing_subscription(subscription):
@@ -1357,6 +1377,14 @@ class Profile(models.Model):
         if not existing_subscription:
             return
 
+        # models.py: a switch down from a team plan waits for the end of the month already paid for
+        # (apps/team/stripe_billing.py). Anything else switches at once below.
+        from apps.team.stripe_billing import switch_team_subscription
+
+        if switch_team_subscription(self, existing_subscription, plan):
+            self.setup_premium_history()
+            return True
+
         target_price = Profile.plan_to_stripe_price(plan)
         # Idempotent: if already on the target price, do nothing (safe to re-run).
         if existing_plan and existing_plan.id == target_price:
@@ -1755,6 +1783,7 @@ class Profile(models.Model):
         # Track whether PayPal has a non-suspended primary so the Stripe loop
         # below doesn't silently override it when both providers have rows.
         paypal_has_active_primary = False
+        team_billed = False
 
         # Find modern Paypal payments
         self.retrieve_paypal_ids()
@@ -1893,13 +1922,23 @@ class Profile(models.Model):
                 )
 
             stripe.api_key = settings.STRIPE_SECRET
+            from apps.team.stripe_billing import sync_team_subscriptions
+
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
                 stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
+                # models.py: a team subscription Stripe shows as paid starts or renews the owner's team, whatever
+                # else the customer pays for (apps/team/stripe_billing.py).
+                if sync_team_subscriptions(self, stripe_subscriptions):
+                    team_billed = True
 
                 for subscription in stripe_subscriptions:
+                    # models.py: the AI classifier usage billing sub isn't a plan, and Stripe lists it ahead of
+                    # an older tier sub.
+                    if Profile.is_usage_billing_subscription(subscription):
+                        continue
                     plan = subscription.plan
                     if not plan:
                         # Newer subscriptions may not have a top-level plan;
@@ -1943,6 +1982,10 @@ class Profile(models.Model):
                         pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Stripe payments")
+
+        if team_billed:
+            # models.py: apps/team/billing.py writes the owner's plan and premium_expire by queryset.
+            self.refresh_from_db(fields=[*self.TIER_FLAG_FIELDS, "premium_expire"])
 
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
@@ -1992,9 +2035,11 @@ class Profile(models.Model):
         own = team_grant.own_flags() if team_grant else self
         has_current_paid_period = self.premium_expire and self.premium_expire > datetime.datetime.now()
         has_recent_paid_payment = recent_payments_count > 0
+        # models.py: a payment for a team plan starts the team or nothing, never Premium.
         if (
             set_premium_expire
             and has_current_paid_period
+            and not team_billed
             and (not own.is_premium or (own.is_premium_trial and has_recent_paid_payment))
         ):
             self.activate_premium()
@@ -2336,6 +2381,11 @@ class Profile(models.Model):
             if original_payment:
                 original_payment.refunded = True
                 original_payment.save()
+            if Team.objects.filter(
+                owner_id=self.user_id, status=Team.STATUS_ACTIVE, billing_provider=Team.PROVIDER_STRIPE
+            ).exists():
+                # models.py: the sync ends at once a team this payment was for (apps/team/stripe_billing.py).
+                self.setup_premium_history()
 
         PaymentHistory.objects.create(
             user=self.user,
@@ -2742,6 +2792,8 @@ class Profile(models.Model):
             if not self.stripe_id:
                 return
 
+        from apps.team.stripe_billing import release_schedule
+
         stripe.api_key = settings.STRIPE_SECRET
         for stripe_id_model in self.user.stripe_ids.all():
             stripe_id = stripe_id_model.stripe_id
@@ -2760,6 +2812,8 @@ class Profile(models.Model):
                             "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
                         )
                         continue
+                    # models.py: a team plan's scheduled switch down is dropped so the cancel can go through.
+                    release_schedule(subscription)
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -5137,7 +5191,9 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
         # and those handlers look the profile up by stripe_id, so for a new customer they
         # can't find it and bail. Sync from Stripe here so the paid tier is activated no
         # matter which webhook lands first. (apps/profile/models.py)
-        profile.setup_premium_history()
+        from apps.team.stripe_billing import sync_stripe_event
+
+        sync_stripe_event(profile)
     else:
         logging.debug(
             " ---> Couldn't find Stripe user for checkout: user_id=%s stripe_id=%s"
@@ -5212,6 +5268,13 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
+        # models.py: a team plan starts only on what Stripe reports as paid, never on this event's contents
+        # (apps/team/stripe_billing.py).
+        from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
+
+        if is_team_subscription(profile, full_json["data"]["object"].get("id"), plan_id):
+            sync_stripe_event(profile)
+            return
         plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
@@ -5262,6 +5325,12 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     plan_id = plan["id"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
+        # models.py: a team plan renews and switches only on what Stripe reports (apps/team/stripe_billing.py).
+        from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
+
+        if is_team_subscription(profile, full_json["data"]["object"].get("id"), plan_id):
+            sync_stripe_event(profile)
+            return
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         logging.user(
@@ -5307,11 +5376,13 @@ zebra_webhook_customer_subscription_updated.connect(stripe_subscription_updated)
 
 
 def stripe_payment_history_sync(sender, full_json, **kwargs):
+    from apps.team.stripe_billing import sync_stripe_event
+
     stripe_id = full_json["data"]["object"]["customer"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
-        profile.setup_premium_history()
+        sync_stripe_event(profile)
     except Profile.DoesNotExist:
         logging.debug(
             " ---> Stripe charge for unknown stripe_id=%s, deferring to checkout.session.completed"
@@ -5322,6 +5393,29 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
 
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
+# models.py: a paid invoice, including a renewal recovered after failing, and a subscription that ended each change
+# what the account has paid for (apps/team/stripe_billing.py).
+zebra_webhook_invoice_paid.connect(stripe_payment_history_sync)
+zebra_webhook_customer_subscription_deleted.connect(stripe_payment_history_sync)
+
+
+def stripe_charge_disputed(sender, full_json, **kwargs):
+    """A dispute takes a payment back, so the account is synced from Stripe, which ends a team the payment was for
+    (apps/team/stripe_billing.py). The dispute names only its charge, and the charge names the customer."""
+    from apps.team.stripe_billing import sync_stripe_event
+
+    stripe.api_key = settings.STRIPE_SECRET
+    charge = stripe.Charge.retrieve(full_json["data"]["object"]["charge"])
+    customer = charge.get("customer")
+    profile = customer and Profile.objects.filter(stripe_id=customer).first()
+    if not profile:
+        logging.debug(" ---> Stripe dispute for unknown stripe_id=%s" % customer)
+        return
+    logging.user(profile.user, "~BC~SB~FRStripe charge disputed")
+    sync_stripe_event(profile)
+
+
+zebra_webhook_charge_dispute_created.connect(stripe_charge_disputed)
 
 
 def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):

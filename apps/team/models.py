@@ -75,6 +75,9 @@ class Team(models.Model):
     # apps/team/billing.py record_team_payment. Empty until the first payment.
     billing_provider = models.CharField(max_length=16, choices=PROVIDER_CHOICES, null=True, blank=True)
     billing_reference = models.TextField(null=True, blank=True)
+    # models.py: the plan the owner switched down to, a team plan or one of their own, which starts once the month
+    # paid for ends (apps/team/stripe_billing.py). Until then plan stays the one paid for.
+    pending_plan = models.CharField(max_length=32, null=True, blank=True)
     pending_owner = models.ForeignKey(
         User, related_name="+", null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -876,14 +879,16 @@ def team_scope(user):
 def team_plan_fields(profile):
     """The team plan an account is on, for every client's profile payload (Profile.canonical and
     templates/base.html), where an owner and a teammate otherwise both look like Premium Pro. Owners and
-    teammates alike get the plan and their role; only the owner gets the billing provider and the paid through
-    date, as a Unix time. Each is None for an account on no active team. Everyone on an active team carries the
-    Pro flags, so other accounts skip the lookup, and the rest take one query."""
+    teammates alike get the plan and their role; only the owner gets the billing provider, the paid through
+    date, as a Unix time, and the plan a switch down moves them to on that date. Each is None for an account on no
+    active team. Everyone on an active team carries the Pro flags, so other accounts skip the lookup, and the rest
+    take one query."""
     fields = dict(
         team_plan=None,
         team_role=None,
         team_billing_provider=None,
         team_paid_through=None,
+        team_pending_plan=None,
         team_pending_owner=None,
     )
     if not profile.is_pro:
@@ -897,6 +902,7 @@ def team_plan_fields(profile):
             "team__plan",
             "team__billing_provider",
             "team__paid_through",
+            "team__pending_plan",
             "team__pending_owner__username",
         )
         .first()
@@ -913,6 +919,7 @@ def team_plan_fields(profile):
         fields.update(
             team_billing_provider=seat["team__billing_provider"],
             team_paid_through=int(paid_through.strftime("%s")) if paid_through else None,
+            team_pending_plan=seat["team__pending_plan"],
         )
     return fields
 

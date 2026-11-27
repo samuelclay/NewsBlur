@@ -147,3 +147,17 @@ class Test_InvoiceDetails(TestCase):
         self.client.post("/profile/set_preference", {"invoice_text": "x" * 2001, "hide_read_feeds": "true"})
         self.assertEqual(self.preferences()["invoice_text"], "Original")
         self.assertTrue(self.preferences()["hide_read_feeds"])
+
+    def test_a_team_plan_payment_is_a_month_of_its_plan(self):
+        # test_invoice.py: Premium Team and Premium Team Enterprise are only billed monthly, at $79 and $129.
+        team_payment = PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime(2025, 3, 15),
+            payment_amount=129,
+            payment_provider="stripe",
+        )
+        response = self.client.get(reverse("profile-invoice", args=[team_payment.pk]))
+        self.assertContains(response, "NewsBlur Premium Team Enterprise Subscription")
+        self.assertContains(response, "April 15, 2025")
+        self.assertNotContains(response, "March 15, 2026")
+        self.assertContains(self.client.get(self.url), "January 15, 2026")

@@ -504,6 +504,8 @@ INSTALLED_APPS = (
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+# The signing secret of the Stripe webhook endpoint, which vendor/zebra/views.py checks each event against.
+STRIPE_WEBHOOK_SECRET = ""
 ZEBRA_ENABLE_APP = True
 
 # Stripe Metered Billing for AI Classifiers

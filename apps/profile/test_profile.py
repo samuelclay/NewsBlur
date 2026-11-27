@@ -1,4 +1,7 @@
 import datetime
+import hashlib
+import hmac
+import time
 from unittest.mock import MagicMock, call, patch
 
 import stripe
@@ -2698,6 +2701,38 @@ class Test_UsageBillingSubscriptionIsolation(TestCase):
         self.assertEqual(kwargs["items"][0]["id"], archive_sub["items"].data[0].id)
         self.assertEqual(kwargs["items"][0]["price"], Profile.plan_to_stripe_price("pro"))
 
+    @patch("apps.profile.tasks.EmailNewPremiumPro.delay")
+    @patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay")
+    @patch("apps.profile.models.SchedulePremiumSetup")
+    @patch("apps.reader.models.UserSubscription.queue_new_feeds")
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    @patch("stripe.Charge.list", return_value=MagicMock(data=[]))
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Customer.retrieve")
+    def test_history_sync_reads_the_tier_sub_behind_a_newer_usage_billing_sub(
+        self, mock_retrieve, mock_list, *mocks
+    ):
+        """An Archive subscriber switched to Pro, and Stripe lists the newer usage billing sub first."""
+        Profile.objects.filter(pk=self.profile.pk).update(is_premium=True, is_archive=True)
+        mock_retrieve.return_value = MagicMock(id=self.STRIPE_ID)
+        pro_sub = self._tier_sub("pro")
+        pro_sub["cancel_at"] = None
+        usage_sub = self._usage_sub()
+        usage_sub["cancel_at"] = None
+        mock_list.return_value = MagicMock(data=[usage_sub, pro_sub])
+
+        Profile.objects.get(pk=self.profile.pk).setup_premium_history()
+
+        profile = Profile.objects.get(pk=self.profile.pk)
+        self.assertTrue(profile.is_pro)
+        self.assertEqual((profile.active_provider, profile.premium_renewal), ("stripe", True))
+
+        # Turning off the Pro renewal turns off the account's, though usage billing still renews.
+        pro_sub["cancel_at"] = 1900000000
+        profile.setup_premium_history()
+        self.assertFalse(Profile.objects.get(pk=self.profile.pk).premium_renewal)
+
     # --- Canceling Stripe ----------------------------------------------------
 
     @patch("stripe.Subscription.modify")
@@ -3147,3 +3182,53 @@ class Test_AccountLogout(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/")
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class Test_StripeWebhookSignature(TestCase):
+    """vendor/zebra/views.py acts on a Stripe event only once its Stripe-Signature header matches the endpoint's
+    secret, settings.STRIPE_WEBHOOK_SECRET."""
+
+    SECRET = "whsec_newsblur_test"
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="webhooksigned", email="webhooksigned@test.com")
+        threshold = patch("stripe.Subscription.modify")
+        threshold.start()
+        self.addCleanup(threshold.stop)
+        self.body = json.encode(
+            {
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "customer": "cus_webhooksigned",
+                        "subscription": "sub_usage",
+                        "metadata": {"newsblur_user_id": str(self.user.pk), "purpose": "usage_billing"},
+                    }
+                },
+            }
+        )
+
+    def signature(self, secret, body=None):
+        timestamp = int(time.time())
+        signed = ("%d.%s" % (timestamp, body or self.body)).encode()
+        return "t=%d,v1=%s" % (timestamp, hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest())
+
+    def deliver(self, signature=None):
+        headers = {"HTTP_STRIPE_SIGNATURE": signature} if signature else {}
+        response = Client().post(
+            reverse("zebra:webhooks_v2"), self.body, content_type="application/json", **headers
+        )
+        return response.status_code, Profile.objects.get(user=self.user).is_usage_billing
+
+    @override_settings(STRIPE_WEBHOOK_SECRET=SECRET)
+    def test_only_an_event_stripe_signed_is_acted_on(self):
+        self.assertEqual(self.deliver(), (400, False))
+        self.assertEqual(self.deliver(self.signature("whsec_someone_else")), (400, False))
+        self.assertEqual(
+            self.deliver(self.signature(self.SECRET, body=self.body.replace("usage", "other"))), (400, False)
+        )
+
+        self.assertEqual(self.deliver(self.signature(self.SECRET)), (200, True))
+
+    def test_without_a_secret_events_are_acted_on_as_sent(self):
+        self.assertEqual(self.deliver(), (200, True))

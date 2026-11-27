@@ -16,6 +16,7 @@ v2
 - zebra_webhook_charge_failed
 - zebra_webhook_charge_refunded
 - zebra_webhook_charge_disputed
+- zebra_webhook_charge_dispute_created
 - zebra_webhook_customer_created
 - zebra_webhook_customer_updated
 - zebra_webhook_customer_deleted
@@ -28,6 +29,7 @@ v2
 - zebra_webhook_customer_discount_deleted
 - zebra_webhook_invoice_created
 - zebra_webhook_invoice_updated
+- zebra_webhook_invoice_paid
 - zebra_webhook_invoice_payment_succeeded
 - zebra_webhook_invoice_payment_failed
 - zebra_webhook_invoiceitem_created
@@ -61,6 +63,7 @@ zebra_webhook_charge_succeeded = django.dispatch.Signal(providing_args=WEBHOOK2_
 zebra_webhook_charge_failed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_charge_refunded = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_charge_disputed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
+zebra_webhook_charge_dispute_created = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_checkout_session_completed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_customer_created = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_customer_updated = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
@@ -74,6 +77,7 @@ zebra_webhook_customer_discount_updated = django.dispatch.Signal(providing_args=
 zebra_webhook_customer_discount_deleted = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_invoice_created = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_invoice_updated = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
+zebra_webhook_invoice_paid = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_invoice_payment_succeeded = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_invoice_payment_failed = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
 zebra_webhook_invoiceitem_created = django.dispatch.Signal(providing_args=WEBHOOK2_ARGS)
@@ -94,6 +98,7 @@ WEBHOOK_MAP = {
     "charge_failed": zebra_webhook_charge_failed,
     "charge_refunded": zebra_webhook_charge_refunded,
     "charge_disputed": zebra_webhook_charge_disputed,
+    "charge_dispute_created": zebra_webhook_charge_dispute_created,
     "checkout_session_completed": zebra_webhook_checkout_session_completed,
     "customer_created": zebra_webhook_customer_created,
     "customer_updated": zebra_webhook_customer_updated,
@@ -107,6 +112,7 @@ WEBHOOK_MAP = {
     "customer_discount_deleted": zebra_webhook_customer_discount_deleted,
     "invoice_created": zebra_webhook_invoice_created,
     "invoice_updated": zebra_webhook_invoice_updated,
+    "invoice_paid": zebra_webhook_invoice_paid,
     "invoice_payment_succeeded": zebra_webhook_invoice_payment_succeeded,
     "invoice_payment_failed": zebra_webhook_invoice_payment_failed,
     "invoiceitem_created": zebra_webhook_invoiceitem_created,
