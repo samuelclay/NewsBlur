@@ -5338,6 +5338,9 @@ msgstr "Jeda mendengarkan"
 msgid "Pause or resume reading aloud (y)"
 msgstr "Jeda atau lanjutkan pembacaan suara (y)"
 
+msgid "Paused"
+msgstr ""
+
 msgid "Payment history"
 msgstr "Riwayat pembayaran"
 

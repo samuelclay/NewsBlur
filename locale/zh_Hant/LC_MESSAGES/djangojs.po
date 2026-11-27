@@ -5143,6 +5143,9 @@ msgstr "暫停聆聽"
 msgid "Pause or resume reading aloud (y)"
 msgstr "暫停或繼續朗讀（y）"
 
+msgid "Paused"
+msgstr ""
+
 msgid "Payment history"
 msgstr "付款紀錄"
 

@@ -5143,6 +5143,9 @@ msgstr "読み上げを一時停止"
 msgid "Pause or resume reading aloud (y)"
 msgstr "読み上げを一時停止／再開（y）"
 
+msgid "Paused"
+msgstr ""
+
 msgid "Payment history"
 msgstr "支払い履歴"
 

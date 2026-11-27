@@ -86,8 +86,9 @@ NEWSBLUR.AccountOAuthApplications.prototype = {
             self.$list.empty();
             data.applications.forEach(function (app) { self.$list.append(self.application_row(app)); });
             // apps/oauth/applications.py marks apps paused unless the owner has Premium Pro or staff exempted them.
-            var paused = _.some(data.applications, function (app) { return app.paused; });
-            self.$upgrade_text.text(paused
+            // application_row labels each paused app, so the banner only says so when none of them works.
+            var all_paused = data.applications.length > 0 && _.every(data.applications, function (app) { return app.paused; });
+            self.$upgrade_text.text(all_paused
                 ? gettext('Your applications are paused until your account has active Premium Pro.')
                 : self.upgrade_text);
             if (data.applications.length) {
@@ -120,8 +121,12 @@ NEWSBLUR.AccountOAuthApplications.prototype = {
         metric(gettext('Active readers · 7 days'), usage ? usage.readers.toLocaleString(lang) : unavailable);
         metric(gettext('API requests'), usage ? usage.requests.toLocaleString(lang) : unavailable);
         metric(gettext('Last activity'), usage ? last_used : unavailable);
+        var $summary = $.make('summary').text(app.name || app.client_id);
+        if (app.paused) {
+            $summary.append($.make('span', { className: 'NB-oauth-paused' }, gettext('Paused')));
+        }
         var $details = $.make('details', { className: 'NB-oauth-app-details' }, [
-            $.make('summary').text(app.name || app.client_id),
+            $summary,
             this.field(gettext('Client ID'), { type: 'text', readonly: true, value: app.client_id }),
             app.website && this.field(gettext('Application website'), { type: 'url', readonly: true, value: app.website }),
             $.make('div', {}, [

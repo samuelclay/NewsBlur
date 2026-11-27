@@ -5297,6 +5297,9 @@ msgstr "השהיית ההאזנה"
 msgid "Pause or resume reading aloud (y)"
 msgstr "השהיה או חידוש של הקראה בקול (y)"
 
+msgid "Paused"
+msgstr ""
+
 msgid "Payment history"
 msgstr "היסטוריית תשלומים"
 
