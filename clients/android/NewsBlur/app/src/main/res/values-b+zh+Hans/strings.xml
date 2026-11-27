@@ -664,8 +664,8 @@
     <string name="settings_social">分享文章</string>
     <string name="settings_show_public_comments">显示公开评论</string>
     <string name="settings_reading">阅读</string>
-    <string name="settings_always_show_reading_controls">始终显示阅读控件</string>
-    <string name="settings_always_show_reading_controls_sum">滚动时始终显示“上一条”“下一条”等阅读控件。</string>
+    <string name="settings_always_show_reading_controls">始终显示文章导航</string>
+    <string name="settings_always_show_reading_controls_sum">滚动时始终显示上一篇、下一篇和其他阅读按钮。</string>
     <string name="settings_show_ask_ai">显示“询问 AI”</string>
     <string name="settings_content_preview">内容预览文字…</string>
     <string name="settings_thumbnails_style">图片预览缩略图…</string>

@@ -664,8 +664,8 @@
     <string name="settings_social">記事の共有</string>
     <string name="settings_show_public_comments">公開コメントを表示</string>
     <string name="settings_reading">閲覧</string>
-    <string name="settings_always_show_reading_controls">閲覧操作を常に表示</string>
-    <string name="settings_always_show_reading_controls_sum">スクロール中も「前へ」「次へ」などの閲覧操作を常に表示します。</string>
+    <string name="settings_always_show_reading_controls">常に記事ナビゲーションを表示</string>
+    <string name="settings_always_show_reading_controls_sum">スクロール中も、前へ、次へ、その他の閲覧ボタンを表示したままにします。</string>
     <string name="settings_show_ask_ai">「AIに質問」を表示</string>
     <string name="settings_content_preview">コンテンツのプレビュー文…</string>
     <string name="settings_thumbnails_style">画像プレビューのサムネイル…</string>

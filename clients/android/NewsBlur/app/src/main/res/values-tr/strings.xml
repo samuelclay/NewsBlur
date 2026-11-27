@@ -672,8 +672,8 @@ bir araya getiren kişisel haber okuyucusu.</string>
     <string name="settings_social">Haber paylaşımı</string>
     <string name="settings_show_public_comments">Herkese açık yorumları göster</string>
     <string name="settings_reading">Okuma</string>
-    <string name="settings_always_show_reading_controls">Okuma denetimlerini her zaman göster</string>
-    <string name="settings_always_show_reading_controls_sum">Kaydırırken Önceki, Sonraki ve diğer okuma denetimlerini görünür tutun.</string>
+    <string name="settings_always_show_reading_controls">Haber gezinme düğmelerini her zaman göster</string>
+    <string name="settings_always_show_reading_controls_sum">Önceki, Sonraki ve diğer okuma düğmelerini kaydırırken görünür tutun.</string>
     <string name="settings_show_ask_ai">Yapay Zekâya Sor\'u göster</string>
     <string name="settings_content_preview">İçerik önizleme metni…</string>
     <string name="settings_thumbnails_style">Resim önizleme küçük resimleri…</string>

@@ -688,8 +688,8 @@
     <string name="settings_social">Поширення статей</string>
     <string name="settings_show_public_comments">Показувати публічні коментарі</string>
     <string name="settings_reading">Читання</string>
-    <string name="settings_always_show_reading_controls">Завжди показувати елементи керування читанням</string>
-    <string name="settings_always_show_reading_controls_sum">Залишайте кнопки «Попередня», «Наступна» та інші елементи керування читанням видимими під час прокручування.</string>
+    <string name="settings_always_show_reading_controls">Завжди показувати навігацію між статтями</string>
+    <string name="settings_always_show_reading_controls_sum">Залишати кнопки «Назад», «Далі» та інші кнопки читання видимими під час прокручування.</string>
     <string name="settings_show_ask_ai">Показувати «Запитати ШІ»</string>
     <string name="settings_content_preview">Текст попереднього перегляду вмісту…</string>
     <string name="settings_thumbnails_style">Мініатюри для попереднього перегляду зображень…</string>

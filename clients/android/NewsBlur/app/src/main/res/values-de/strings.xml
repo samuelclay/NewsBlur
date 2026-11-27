@@ -672,8 +672,8 @@ Menschen zusammenbringt, um über die Welt zu sprechen.</string>
     <string name="settings_social">Artikel teilen</string>
     <string name="settings_show_public_comments">Öffentliche Kommentare anzeigen</string>
     <string name="settings_reading">Lesen</string>
-    <string name="settings_always_show_reading_controls">Lesesteuerungen immer anzeigen</string>
-    <string name="settings_always_show_reading_controls_sum">Vorherige, Nächste und andere Lesesteuerungen beim Scrollen sichtbar lassen.</string>
+    <string name="settings_always_show_reading_controls">Artikelnavigation immer anzeigen</string>
+    <string name="settings_always_show_reading_controls_sum">Vorherigen, Nächsten und die anderen Leseschaltflächen beim Scrollen sichtbar lassen.</string>
     <string name="settings_show_ask_ai">„KI fragen“ anzeigen</string>
     <string name="settings_content_preview">Text der Inhaltsvorschau…</string>
     <string name="settings_thumbnails_style">Vorschaubilder…</string>

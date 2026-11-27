@@ -688,8 +688,8 @@
     <string name="settings_social">Udostępnianie artykułów</string>
     <string name="settings_show_public_comments">Pokaż publiczne komentarze</string>
     <string name="settings_reading">Czytanie</string>
-    <string name="settings_always_show_reading_controls">Zawsze pokazuj przyciski nawigacji po artykułach</string>
-    <string name="settings_always_show_reading_controls_sum">Podczas przewijania zawsze wyświetlaj przyciski nawigacji po artykułach, takie jak Poprzedni i Następny.</string>
+    <string name="settings_always_show_reading_controls">Zawsze pokazuj nawigację po artykułach</string>
+    <string name="settings_always_show_reading_controls_sum">Przyciski Poprzedni, Następny i pozostałe przyciski nawigacyjne pozostają widoczne podczas przewijania.</string>
     <string name="settings_show_ask_ai">Pokaż Zapytaj AI</string>
     <string name="settings_content_preview">Tekst podglądu treści…</string>
     <string name="settings_thumbnails_style">Miniatury podglądu obrazów…</string>

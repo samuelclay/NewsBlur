@@ -680,8 +680,8 @@
     <string name="settings_social">שיתוף כתבות</string>
     <string name="settings_show_public_comments">הצגת תגובות ציבוריות</string>
     <string name="settings_reading">קריאה</string>
-    <string name="settings_always_show_reading_controls">הצגת פקדי הקריאה תמיד</string>
-    <string name="settings_always_show_reading_controls_sum">השאירו את לחצני הקודם, הבא ושאר פקדי הקריאה גלויים בזמן הגלילה.</string>
+    <string name="settings_always_show_reading_controls">הצגת ניווט בין כתבות תמיד</string>
+    <string name="settings_always_show_reading_controls_sum">הכפתורים הקודמת, הבאה ושאר כפתורי הקריאה יישארו גלויים בזמן הגלילה.</string>
     <string name="settings_show_ask_ai">הצגת ״שאלו את ה-AI״</string>
     <string name="settings_content_preview">טקסט תצוגה מקדימה של התוכן…</string>
     <string name="settings_thumbnails_style">תמונות ממוזערות לתצוגה מקדימה של תמונות…</string>

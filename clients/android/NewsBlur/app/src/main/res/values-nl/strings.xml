@@ -672,8 +672,8 @@ om over de wereld te praten.</string>
     <string name="settings_social">Artikelen delen</string>
     <string name="settings_show_public_comments">Openbare reacties weergeven</string>
     <string name="settings_reading">Lezen</string>
-    <string name="settings_always_show_reading_controls">Leesknoppen altijd weergeven</string>
-    <string name="settings_always_show_reading_controls_sum">Houd Vorige, Volgende en andere leesknoppen zichtbaar tijdens het scrollen.</string>
+    <string name="settings_always_show_reading_controls">Artikelbediening altijd weergeven</string>
+    <string name="settings_always_show_reading_controls_sum">Houd Vorige, Volgende en de andere leesknoppen zichtbaar tijdens het scrollen.</string>
     <string name="settings_show_ask_ai">Vraag AI weergeven</string>
     <string name="settings_content_preview">Voorbeeldtekst van inhoud…</string>
     <string name="settings_thumbnails_style">Voorbeeldminiaturen van afbeeldingen…</string>

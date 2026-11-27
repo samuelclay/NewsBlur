@@ -704,8 +704,8 @@
     <string name="settings_social">مشاركة القصص</string>
     <string name="settings_show_public_comments">إظهار التعليقات العامة</string>
     <string name="settings_reading">القراءة</string>
-    <string name="settings_always_show_reading_controls">إظهار عناصر التحكم في القراءة دائمًا</string>
-    <string name="settings_always_show_reading_controls_sum">أبقِ عناصر التحكم في القراءة، مثل السابق والتالي، ظاهرة أثناء التمرير.</string>
+    <string name="settings_always_show_reading_controls">إظهار التنقل بين القصص دائمًا</string>
+    <string name="settings_always_show_reading_controls_sum">أبقِ زري السابق والتالي وأزرار القراءة الأخرى ظاهرة أثناء التمرير.</string>
     <string name="settings_show_ask_ai">إظهار «اسأل الذكاء الاصطناعي»</string>
     <string name="settings_content_preview">نص معاينة المحتوى…</string>
     <string name="settings_thumbnails_style">صور مصغّرة لمعاينة الصور…</string>
