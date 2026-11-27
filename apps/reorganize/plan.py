@@ -306,6 +306,39 @@ def apply_plan(folders, proposal, decisions, locks):
     return applier.result()
 
 
+def restore_folders(snapshot_folders, current_folders, subscribed_feed_ids):
+    """The stored list an undo saves: `snapshot_folders`, the tree before a reorganization, kept
+    up to date with the sites the user has subscribed to or left since.
+
+    Sites missing from `subscribed_feed_ids` are dropped. A site in `current_folders` that the
+    snapshot lacks goes to each folder it is in now whose path the snapshot also has, after what
+    the snapshot keeps there, and to the top level when it is in none of them.
+    """
+    subscribed = set(subscribed_feed_ids)
+    tree = FolderTree.from_list(snapshot_folders)
+    snapshot_feeds = tree.feed_ids()
+    for folder in tree.root.walk():
+        folder.items = [item for item in folder.items if isinstance(item, _Folder) or item in subscribed]
+
+    unplaced = []
+    for folder in FolderTree.from_list(current_folders).root.walk():
+        destination = tree._find(folder.path())
+        for feed_id in folder.feeds():
+            if feed_id in snapshot_feeds or feed_id not in subscribed:
+                continue
+            if destination is None:
+                unplaced.append(feed_id)
+            elif feed_id not in destination.items:
+                destination.append(feed_id)
+
+    placed = tree.feed_ids()
+    for feed_id in unplaced:
+        if feed_id not in placed:
+            tree.root.append(feed_id)
+            placed.add(feed_id)
+    return tree.to_list()
+
+
 def sanitize_proposal(proposal, folders, locks):
     """A copy of `proposal` without anything that cannot apply to `folders` under `locks`.
 

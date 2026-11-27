@@ -8,6 +8,7 @@ from apps.reorganize.plan import (
     FolderTree,
     apply_plan,
     resolve_decisions,
+    restore_folders,
     sanitize_proposal,
 )
 
@@ -794,6 +795,37 @@ class Test_RandomPlans(unittest.TestCase):
                 for path in [[]] + list(end.folder_keys().values()):
                     names = [child[-1].lower() for child in child_paths(end, path)]
                     self.assertEqual(len(names), len(set(names)))
+
+
+SNAPSHOT = [1, {"Tech": [2, 3]}, {"Blogs": [4, {"People": [5]}]}, {"Old": [6]}]
+
+
+class Test_RestoreFolders(unittest.TestCase):
+    def test_the_snapshot_comes_back_without_the_sites_left_since(self):
+        # Since the snapshot the user moved 2 and 4 and left 3 and 6.
+        current = [1, {"Gadgets": [2]}, {"Blogs": [{"People": [5, 4]}]}]
+
+        restored = restore_folders(SNAPSHOT, current, {1, 2, 4, 5})
+
+        self.assertEqual(restored, [1, {"Tech": [2]}, {"Blogs": [4, {"People": [5]}]}, {"Old": []}])
+
+    def test_a_site_added_since_stays_in_a_folder_the_snapshot_has_and_otherwise_goes_to_the_top(self):
+        # 7 to 11 were subscribed to since the snapshot, and 12 is listed without a subscription.
+        current = [
+            1,
+            7,
+            {"Gadgets": [2, 3, 8, 9, 11, 12]},
+            {"Blogs": [4, 9, {"People": [5, 10]}]},
+            {"Old": [6, 8]},
+            {"News": [11]},
+        ]
+
+        restored = restore_folders(SNAPSHOT, current, range(1, 12))
+
+        self.assertEqual(
+            restored,
+            [1, {"Tech": [2, 3]}, {"Blogs": [4, {"People": [5, 10]}, 9]}, {"Old": [6, 8]}, 7, 11],
+        )
 
 
 if __name__ == "__main__":
