@@ -3174,11 +3174,9 @@ msgid ""
 msgstr "ההאזנה שולפת את הכתבה המלאה מהאתר ומקריאה אותה במקום זאת. תמונות, כיתובים, קוד וטבלאות אינם נכללים."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"ההאזנה כלולה במינוי Premium Archive ($99 לשנה) וב־Premium Pro. בתוכניות אחרות אפשר להאזין לתצוגה מקדימה של "
-"30 שניות לכמה כתבות ביום."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "האזנה באינטרנט, ב־iPad, ב־iPhone וב־Android"
@@ -3188,9 +3186,6 @@ msgstr "האזנה פועלת ב־MacBook, ב־iPad, ב־iPhone ובטלפון A
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "האזנה להקראה של כתבות במשך שעה בשבוע"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "האזנה להקראה של כתבות במשך 10 שעות בשבוע"
@@ -3408,6 +3403,9 @@ msgstr "חסר story_hash"
 
 msgid "Missing story_hash."
 msgstr "חסר story_hash."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "שם המשתמש חסר."

@@ -2989,9 +2989,9 @@ msgid ""
 msgstr "読み上げ機能はサイトから記事全文を取得し、全文を読み上げます。画像、キャプション、コード、表は読み飛ばします。"
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
-msgstr "読み上げはプレミアムアーカイブ（年額99ドル）とプレミアム Proに含まれています。他のプランでは、1日に数件の記事を30秒間プレビューできます。"
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
+msgstr ""
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "ウェブ、iPad、iPhone、Androidで読み上げ"
@@ -3001,9 +3001,6 @@ msgstr "MacBook、iPad、iPhone、Androidスマートフォンで読み上げを
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "読み上げ記事を週1時間聴取"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "読み上げ記事を週10時間聴取"
@@ -3210,6 +3207,9 @@ msgstr "story_hash がありません"
 
 msgid "Missing story_hash."
 msgstr "story_hashがありません。"
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "ユーザー名がありません。"

@@ -3332,11 +3332,9 @@ msgstr ""
 "والرموز البرمجية والجداول."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"ميزة الاستماع مشمولة في Premium Archive (99 دولارًا سنويًا) وPremium Pro. في الخطط الأخرى، يمكنك سماع "
-"معاينة مدتها 30 ثانية لبضع قصص يوميًا."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "استمع على الويب وiPad وiPhone وAndroid"
@@ -3346,9 +3344,6 @@ msgstr "ميزة الاستماع تعمل على MacBook وiPad وiPhone وها
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا"
@@ -3569,6 +3564,9 @@ msgstr "قيمة story_hash مفقودة"
 
 msgid "Missing story_hash."
 msgstr "قيمة story_hash مفقودة."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "اسم المستخدم مفقود."

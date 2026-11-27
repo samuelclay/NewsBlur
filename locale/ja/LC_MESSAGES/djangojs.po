@@ -533,6 +533,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -949,9 +953,6 @@ msgstr "記事の閲覧、操作、学習、検索などに使える28個のツ�
 
 msgid "2x daily"
 msgstr "1日2回"
-
-msgid "30 second preview"
-msgstr "30秒間プレビュー"
 
 msgid "3x daily"
 msgstr "1日3回"

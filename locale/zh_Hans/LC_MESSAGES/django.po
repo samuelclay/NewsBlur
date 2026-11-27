@@ -3000,9 +3000,9 @@ msgid ""
 msgstr "收听功能会从网站获取完整文章并朗读全文，不会朗读图片、说明文字、代码和表格。"
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
-msgstr "高级归档版（每年 99 美元）和高级专业版包含收听功能。其他套餐每天可试听几篇文章的 30 秒片段。"
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
+msgstr ""
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "在网页、iPad、iPhone 和 Android 上使用收听功能"
@@ -3012,9 +3012,6 @@ msgstr "收听功能正在 MacBook、iPad、iPhone 和 Android 手机上播放"
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "每周可收听 1 小时文章朗读"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "每周可收听 10 小时文章朗读"
@@ -3223,6 +3220,9 @@ msgstr "缺少 story_hash"
 
 msgid "Missing story_hash."
 msgstr "缺少 story_hash。"
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "缺少用户名。"

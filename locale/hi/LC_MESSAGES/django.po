@@ -3255,11 +3255,9 @@ msgid ""
 msgstr "Listen साइट से पूरा लेख लाता है और उसी को पढ़ता है। तस्वीरें, कैप्शन, कोड और तालिकाएँ छोड़ दी जाती हैं।"
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Listen, Premium Archive ($99/year) और Premium Pro के साथ शामिल है। अन्य प्लान पर आप रोज़ कुछ लेखों का 30 "
-"सेकंड का पूर्वावलोकन सुन सकते हैं।"
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "वेब, iPad, iPhone और Android पर Listen करें"
@@ -3269,9 +3267,6 @@ msgstr "MacBook, iPad, iPhone और Android फ़ोन पर Listen चल �
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 1 घंटा सुनें"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
@@ -3495,6 +3490,9 @@ msgstr "story_hash मौजूद नहीं है"
 
 msgid "Missing story_hash."
 msgstr "story_hash अनुपलब्ध है।"
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "उपयोगकर्ता नाम नहीं दिया गया।"

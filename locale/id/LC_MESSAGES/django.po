@@ -3277,11 +3277,9 @@ msgstr ""
 " akan dilewati."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Fitur Dengarkan termasuk dalam Premium Archive ($99/tahun) dan Premium Pro. Dengan paket lain, Anda dapat "
-"mendengarkan pratinjau 30 detik dari beberapa artikel per hari."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Dengarkan di web, iPad, iPhone, dan Android"
@@ -3291,9 +3289,6 @@ msgstr "Fitur Dengarkan diputar di MacBook, iPad, iPhone, dan ponsel Android"
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Dengarkan artikel yang dibacakan hingga 1 jam per minggu"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
@@ -3517,6 +3512,9 @@ msgstr "story_hash tidak ada"
 
 msgid "Missing story_hash."
 msgstr "story_hash tidak ada."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Nama pengguna belum diisi."

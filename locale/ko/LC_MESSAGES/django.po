@@ -3060,9 +3060,9 @@ msgid ""
 msgstr "듣기는 사이트에서 전체 기사를 가져와 대신 읽어 줍니다. 이미지, 캡션, 코드, 표는 건너뜁니다."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
-msgstr "듣기는 프리미엄 아카이브(연간 $99)와 프리미엄 프로에 포함됩니다. 다른 요금제에서는 하루에 몇 개 스토리의 30초 미리 듣기를 이용할 수 있습니다."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
+msgstr ""
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "웹, iPad, iPhone, Android에서 듣기"
@@ -3072,9 +3072,6 @@ msgstr "MacBook, iPad, iPhone, Android 휴대폰에서 재생 중인 듣기"
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 1시간 이용"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용"
@@ -3289,6 +3286,9 @@ msgstr "story_hash가 없습니다"
 
 msgid "Missing story_hash."
 msgstr "story_hash가 없습니다."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "사용자 이름이 없습니다."

@@ -5799,6 +5799,10 @@
                 var is_listening = NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.is_listening_to(story.get('story_hash'));
                 var listen_title = is_listening && NEWSBLUR.app.media_player.is_playing ?
                     gettext('Pause listening') : gettext('Listen to this story');
+                // reader.js: How long a Free or Premium preview lasts, from the server's Listen usage once the
+                // player has it (apps/listen/usage.py SAMPLE_SECONDS), as in story_detail_view.js.
+                var listen_usage = NEWSBLUR.app.media_player && NEWSBLUR.app.media_player.listen_usage;
+                var listen_preview_seconds = (listen_usage && listen_usage.preview_seconds) || 60;
                 var listen_queued = NEWSBLUR.app.media_player &&
                     NEWSBLUR.app.media_player.listen_queue_state(story.get('story_hash')) === 'queued';
                 var order = NEWSBLUR.assets.view_setting(this.active_feed, 'order');
@@ -5936,7 +5940,8 @@
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, listen_title),
                         (!NEWSBLUR.Globals.is_archive && !NEWSBLUR.Globals.is_pro &&
-                            $.make('div', { className: 'NB-menu-manage-subtitle' }, gettext('30 second preview')))
+                            $.make('div', { className: 'NB-menu-manage-subtitle' },
+                                interpolate(gettext('%(seconds)s second preview'), { seconds: listen_preview_seconds }, true)))
                     ]),
                     (!is_listening && $.make('li', { className: 'NB-menu-item NB-menu-manage-story-listen-queue', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),

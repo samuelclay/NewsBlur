@@ -26412,8 +26412,8 @@ h5.NB-classifier-section-header {
     /* indigo */
 }
 
-/* reader.css: Premium Archive's Listen line is a two-position toggle between 1 hour a week (Premium Archive)
-   and 2 hours a week (Premium Archive Extra). The thumb slides under the chosen option; inset-inline-start keeps
+/* reader.css: Premium Archive's Listen line is a two-position toggle between 1 hour a month (Premium Archive)
+   and 10 hours a month (Premium Archive Extra). The thumb slides under the chosen option; inset-inline-start keeps
    it on the right side in right-to-left languages. */
 .NB-premium-tier-features li.NB-feature-listen-hours {
     padding-bottom: 8px;

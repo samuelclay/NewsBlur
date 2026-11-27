@@ -854,6 +854,10 @@ msgid "%(price)s/year"
 msgstr ""
 
 #, python-format
+msgid "%(seconds)s second preview"
+msgstr ""
+
+#, python-format
 msgid "%(seconds)ss preview"
 msgstr ""
 
@@ -1290,9 +1294,6 @@ msgstr "تتوفر 28 أداة للقراءة والإجراءات والتدر�
 
 msgid "2x daily"
 msgstr "مرتان يوميًا"
-
-msgid "30 second preview"
-msgstr "معاينة لمدة 30 ثانية"
 
 msgid "3x daily"
 msgstr "3 مرات يوميًا"

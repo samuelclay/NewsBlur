@@ -3192,11 +3192,9 @@ msgid ""
 msgstr "ฟังจะดึงบทความฉบับเต็มจากเว็บไซต์มาอ่านแทน โดยจะข้ามรูปภาพ คำบรรยาย โค้ด และตาราง"
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"ฟีเจอร์ฟังรวมอยู่ใน Premium Archive ($99/year) และ Premium Pro สำหรับแพ็กเกจอื่น "
-"คุณสามารถฟังตัวอย่างความยาว 30 วินาทีของบทความไม่กี่รายการต่อวันได้"
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "ฟังบนเว็บ, iPad, iPhone และ Android"
@@ -3206,9 +3204,6 @@ msgstr "ฟังกำลังเล่นบน MacBook, iPad, iPhone แล�
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
@@ -3431,6 +3426,9 @@ msgstr "ไม่มี story_hash"
 
 msgid "Missing story_hash."
 msgstr "ไม่มี story_hash"
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "ไม่มีชื่อผู้ใช้"

@@ -3272,11 +3272,9 @@ msgstr ""
 " tabellen worden overgeslagen."
 
 msgid ""
-"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear a 30 second"
-" preview of a few stories a day."
+"Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
+"60 seconds of any story."
 msgstr ""
-"Luisteren is inbegrepen bij Premium Archive ($99/jaar) en Premium Pro. Met andere abonnementen kun je "
-"dagelijks een voorbeeld van 30 seconden van enkele artikelen beluisteren."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Luisteren op het web, iPad, iPhone en Android"
@@ -3286,9 +3284,6 @@ msgstr "Luisteren afgespeeld op een MacBook, iPad, iPhone en Android-telefoon"
 
 msgid "Listen to 1 hour of stories read aloud a month"
 msgstr ""
-
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "Luister elke week 1 uur naar artikelen die worden voorgelezen"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Luister elke week 10 uur naar artikelen die worden voorgelezen"
@@ -3514,6 +3509,9 @@ msgstr "story_hash ontbreekt"
 
 msgid "Missing story_hash."
 msgstr "story_hash ontbreekt."
+
+msgid "Missing token."
+msgstr ""
 
 msgid "Missing username."
 msgstr "Gebruikersnaam ontbreekt."
