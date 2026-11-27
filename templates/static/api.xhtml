@@ -34,8 +34,7 @@
   <div class="NB-api-section">
     <h2 class="NB-api-section-title">{% trans "A Note about OAuth" %}</h2>
     <div class="NB-api-section-content">
-      <p>{% blocktrans trimmed %}NewsBlur supports OAuth but to have an OAuth enabled client you must
-          <a href="mailto:samuel@newsblur.com">email Samuel</a> to request a client ID and secret. You will need to provide your NewsBlur username, redirect URI (often just your client app's website), and app name.{% endblocktrans %}</p>
+      <p>{% blocktrans trimmed %}With an active Premium Pro account, you can <a href="/account/applications/register/">create an OAuth application</a>. Enter the application name, website, and redirect URL to receive a client ID and secret. People who connect their accounts can use any NewsBlur plan.{% endblocktrans %}</p>
 
       <p>{% blocktrans trimmed with authorize_path="/oauth/authorize" token_path="/oauth/token" %}To use OAuth when authenticating requests, be sure to pass the Bearer HTTP header with every request, just as you would on any other OAuth API. Use the <code>{{ authorize_path }}</code>
           endpoint to begin the OAuth authentication procedure. Use the <code>{{ token_path }}</code>

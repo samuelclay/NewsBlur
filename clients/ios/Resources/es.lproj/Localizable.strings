@@ -10,6 +10,7 @@
 "%1$@ folder, %2$@" = "Carpeta %1$@, %2$@";
 "%1$@ folder, collapsed, %2$@" = "Carpeta %1$@, contraída, %2$@";
 "%1$@ followed %2$@." = "%1$@ empezó a seguir a %2$@.";
+"%1$@ of %2$@ of listening left this month" = "Te quedan %1$@ de %2$@ de escucha este mes";
 "%1$@ of %2$@ of listening left this week" = "Te quedan %1$@ de %2$@ de escucha esta semana";
 "%1$@ of %2$@ sites indexed" = "%1$@ de %2$@ sitios indexados";
 "%1$@ of %2$@ story previews used today" = "%1$@ de %2$@ vistas previas de artículos usadas hoy";
@@ -46,6 +47,7 @@
 "%@ left in this preview" = "Queda %@ en esta vista previa";
 "%@ left this week" = "Te queda %@ esta semana";
 "%@ match" = "%@ coincidencia";
+"%@ new stories" = "%@ artículos nuevos";
 "%@ opens" = "%@ aperturas";
 "%@ or search" = "%@ o buscar";
 "%@ public comments" = "%@ comentarios públicos";
@@ -81,7 +83,6 @@
 "2,000 stories" = "2.000 artículos";
 "20 stories" = "20 artículos";
 "2x daily" = "2 veces al día";
-"30s preview" = "Vista previa de 30 s";
 "3x daily" = "3 veces al día";
 "5 stories" = "5 artículos";
 "5,000 stories" = "5000 artículos";
@@ -270,6 +271,7 @@
 "Couldn't save your spending limit. Please try again." = "No se pudo guardar tu límite de gasto. Inténtalo de nuevo.";
 "Couldn’t load the full image. You can try opening it in your browser." = "No se pudo cargar la imagen completa. Puedes intentar abrirla en el navegador.";
 "Counting is difficult..." = "Contar es difícil...";
+"Create OAuth applications" = "Crear aplicaciones OAuth";
 "Create a feed from any web page" = "Crear un feed desde cualquier página web";
 "Create a new account instead" = "Crear una cuenta nueva";
 "Create account" = "Crear cuenta";
@@ -534,7 +536,6 @@
 "List style" = "Estilo de lista";
 "Listen" = "Escuchar";
 "Listen Settings" = "Configuración de escucha";
-"Listen to 1 hour of stories read aloud a week" = "Escucha 1 hora de artículos en voz alta a la semana";
 "Listen to 10 hours of stories read aloud a week" = "Escucha 10 horas de artículos en voz alta a la semana";
 "Listen to story" = "Escuchar artículo";
 "Listening isn't available right now." = "La lectura no está disponible en este momento.";
@@ -990,6 +991,7 @@
 "Show feed list" = "Mostrar lista de feeds";
 "Show feeds after being read" = "Mostrar feeds después de leerlos";
 "Show hidden stories" = "Mostrar artículos ocultos";
+"Show new stories as they arrive" = "Mostrar los artículos nuevos a medida que llegan";
 "Show original story" = "Mostrar artículo original";
 "Show original text" = "Mostrar texto original";
 "Show public comments" = "Mostrar comentarios públicos";
@@ -998,6 +1000,7 @@
 "Show unread count" = "Mostrar cantidad de artículos sin leer";
 "Show with feed icons" = "Mostrar con los iconos de los feeds";
 "Show without icons" = "Mostrar sin iconos";
+"Shows an \"N new stories\" pill when stories arrive in the open feed or folder." = "Muestra una etiqueta con «N artículos nuevos» cuando llegan artículos al feed o la carpeta abiertos.";
 "Shows the music settings" = "Muestra la configuración de música";
 "Sidebar" = "Barra lateral";
 "Sign Up" = "Registrarse";
@@ -1125,7 +1128,6 @@
 "Text from yesterday" = "Texto de ayer";
 "Text view" = "Vista de texto";
 "Text view conveniently extracts the story" = "La vista de texto extrae cómodamente el artículo";
-"That was a 30 second preview. Premium Archive unlocks full stories." = "Esa fue una vista previa de 30 segundos. Premium Archive permite escuchar los artículos completos.";
 "The audio couldn't be loaded. Try again in a moment." = "No se pudo cargar el audio. Inténtalo de nuevo en un momento.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "La vista de texto completo es una <a href=\"http://ios.newsblur.com/premium\">función premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "El simulador de iOS no pudo cambiar el icono de la pantalla de inicio. Inténtalo en un dispositivo.";

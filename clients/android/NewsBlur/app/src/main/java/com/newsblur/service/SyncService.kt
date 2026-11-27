@@ -24,6 +24,7 @@ import com.newsblur.network.domain.NewsBlurResponse
 import com.newsblur.network.domain.StoriesResponse
 import com.newsblur.preference.ListenPreferences
 import com.newsblur.preference.PrefsRepo
+import com.newsblur.realtime.RealtimeUpdates
 import com.newsblur.service.NbSyncManager.UPDATE_DB_READY
 import com.newsblur.service.NbSyncManager.UPDATE_METADATA
 import com.newsblur.service.NbSyncManager.UPDATE_REBUILD
@@ -118,6 +119,11 @@ open class SyncService :
     private var scheduledJob: Job? = null
     private var foregroundRequested = false
     private var metadataSubSyncPending = false
+
+    // SyncService.kt decides this once per run in syncForeground, before any step of the run reads it.
+    private var syncMode = SyncMode.FULL
+
+    val isNotificationsOnlySync: Boolean get() = syncMode == SyncMode.NOTIFICATIONS_ONLY
 
     override val coroutineContext: CoroutineContext =
         CoroutineName("SyncService") +
@@ -244,9 +250,19 @@ open class SyncService :
                 return@supervisorScope false
             }
 
-            if (!isAppForeground && !prefsRepo.isBackgroundNetworkAllowed(this@SyncService)) {
+            // SyncService.kt keeps notifications working on a network the Download using setting rules out.
+            syncMode =
+                SyncMode.decide(
+                    isAppForeground = isAppForeground,
+                    isBackgroundNetworkAllowed = prefsRepo.isBackgroundNetworkAllowed(this@SyncService),
+                    isEnableNotifications = prefsRepo.isEnableNotifications(),
+                )
+            if (syncMode == SyncMode.SKIP) {
                 Log.d(this.javaClass.name, "Skipping sync: network type not appropriate for background sync.")
                 return@supervisorScope false
+            }
+            if (isNotificationsOnlySync) {
+                Log.d(this.javaClass.name, "Syncing notification feeds only: network type not appropriate for background sync.")
             }
 
             // first: catch up
@@ -274,7 +290,8 @@ open class SyncService :
     private suspend fun syncBackground() =
         supervisorScope {
             val subSyncJobs = mutableListOf<Job>()
-            if (metadataSubSyncPending) {
+            // SyncService.kt keeps the cleanup and saved story sub syncs pending until a full sync can run them.
+            if (metadataSubSyncPending && !isNotificationsOnlySync) {
                 subSyncJobs += cleanupSubService.launchIn(this)
                 subSyncJobs += starredSubService.launchIn(this)
             }
@@ -288,7 +305,7 @@ open class SyncService :
             pushNotifications()
 
             subSyncJobs.joinAll()
-            metadataSubSyncPending = false
+            if (!isNotificationsOnlySync) metadataSubSyncPending = false
 
             Log.d(this, "Finishing primary sync")
 
@@ -434,10 +451,29 @@ open class SyncService :
             return
         }
 
-        if (syncServiceState.doFeedsFolders || prefsRepo.isTimeToAutoSync()) {
+        if (isNotificationsOnlySync) {
+            // SyncService.kt leaves the large feed list reload for an allowed network. UnreadsSubService.kt
+            // only refreshes the unread stories of notification feeds, on the unread download schedule below.
+            if (prefsRepo.isTimeToSyncUnreads()) {
+                prefsRepo.updateLastUnreadSyncTime()
+                unreadsSubService.doMetadata()
+            }
+            return
+        }
+
+        // RealtimeUpdates.kt keeps counts current while its socket is live, so the periodic reload can wait.
+        val realtimeKeepsCountsCurrent = RealtimeUpdates.from(this).keepsCountsCurrent(prefsRepo.getLastSyncTime())
+        val isTimeToAutoSync = prefsRepo.isTimeToAutoSync() && !realtimeKeepsCountsCurrent
+        if (syncServiceState.doFeedsFolders || isTimeToAutoSync) {
             prefsRepo.updateLastSyncTime()
             syncServiceState.doFeedsFolders = false
         } else {
+            // The feed list reload also started the unread story download, which keeps offline reading and
+            // notifications current. That download keeps its schedule while realtime holds the reload off.
+            if (realtimeKeepsCountsCurrent && prefsRepo.isTimeToSyncUnreads()) {
+                prefsRepo.updateLastUnreadSyncTime()
+                unreadsSubService.doMetadata()
+            }
             return
         }
 
@@ -488,6 +524,7 @@ open class SyncService :
 
             prefsRepo.setPremium(feedResponse.isPremium, feedResponse.premiumExpire)
             prefsRepo.setArchive(feedResponse.isArchive, feedResponse.premiumExpire)
+            prefsRepo.setArchiveExtra(feedResponse.isArchiveExtra)
             prefsRepo.setPro(feedResponse.isPro, feedResponse.premiumExpire)
             feedResponse.usageBillingState?.let(prefsRepo::setUsageBillingState)
             prefsRepo.setIsStaff(feedResponse.isStaff)

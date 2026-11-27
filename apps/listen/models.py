@@ -20,16 +20,19 @@ def length_bucket(seconds):
 
 
 class MListenUsage(mongo.Document):
-    """One served Listen segment or voice preview, or a refused request, for caps, daily samples and analytics.
+    """One served Listen segment or voice preview, a refused request, or a staff reset, for caps, daily samples
+    and analytics.
 
     `seconds` is the estimated audio length. Only freshly generated segments (`cached=False`) count against the
-    weekly cap; samples count stories, cached or not. Refusals (`kind="denied"`) record which limit was hit in
-    `reason` and never count toward anything. See apps/listen/usage.py.
+    weekly cap and the daily sample budget. Refusals (`kind="denied"`) record which limit was hit in `reason` and
+    never count toward anything. A `kind="reset"` row (`reason="manual"`) marks where staff started an account's
+    usage over; counting starts again after the latest one. See apps/listen/usage.py.
     """
 
     user_id = mongo.IntField(required=True)
-    kind = mongo.StringField(choices=("segment", "preview", "denied"), default="segment")
-    reason = mongo.StringField()  # denied only: sample_limit, cap_reached, preview_ended, preview_limit
+    kind = mongo.StringField(choices=("segment", "preview", "denied", "reset"), default="segment")
+    # denied: sample_limit, cap_reached, preview_ended, preview_limit. reset: manual.
+    reason = mongo.StringField()
     story_hash = mongo.StringField()
     manifest_id = mongo.StringField()
     segment_index = mongo.IntField()
@@ -37,7 +40,7 @@ class MListenUsage(mongo.Document):
     seconds = mongo.FloatField(default=0)
     cached = mongo.BooleanField(default=False)
     is_sample = mongo.BooleanField(default=False)
-    plan_tier = mongo.StringField()  # free, premium, archive, pro
+    plan_tier = mongo.StringField()  # free, premium, archive, archive_extra, pro
     voice_id = mongo.StringField()
     model = mongo.StringField()
     language = mongo.StringField()
@@ -49,6 +52,8 @@ class MListenUsage(mongo.Document):
             {"fields": ["user_id", "-created_at"]},
             {"fields": ["-created_at"]},
             {"fields": ["kind", "-created_at"]},
+            # apps/listen/usage.py last_reset: finds an account's latest reset without walking its history.
+            {"fields": ["user_id", "kind", "-created_at"]},
         ],
         "allow_inheritance": False,
     }

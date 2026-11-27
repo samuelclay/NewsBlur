@@ -17,6 +17,8 @@ import SwiftUI
     
     let settings = StorySettings()
     let motionSession = ReaderMotionSession()
+    /// NewStoriesPill.swift's plan for the cards the new stories pill slides into the list.
+    let newStoryArrivals = NewStoryArrivals()
     
     var isDarkTheme: Bool {
         return ThemeManager.shared.isDarkTheme
@@ -71,6 +73,8 @@ import SwiftUI
     @Published var before = [Story]()
     @Published var selected: Story?
     @Published var after = [Story]()
+    /// NewStoriesPill.swift's inline "N new stories" row, standing in for a tucked-away pill.
+    @Published var newStoriesRow: NewStoriesRowState?
     @Published var openSwipeStoryID: String?
     
     static private(set) var cachedDashboard = [DashList]()

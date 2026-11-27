@@ -189,23 +189,19 @@ def AskAIQuestion(
         try:
             stream_answer(provider, model_id, thinking_config)
         except LLM_EXCEPTIONS as e:
-            # tasks.py: SpaceXSI (formerly xAI) refuses outright once its account runs out of
-            # credits or hits its spending limit. Answer Grok users with the default model
-            # instead of an error, as briefings do in apps/briefing/summary.py. Only before any
-            # text has streamed, so an answer never switches models halfway through.
-            if (
-                MODEL_VENDORS.get(model_name) != "xai"
-                or model_name == DEFAULT_MODEL
-                or full_response
-                or not is_refused_llm_error(e)
-            ):
+            # tasks.py: A vendor refuses outright once its account runs out of credits or hits
+            # its spending limit: SpaceXSI (formerly xAI) answers 403, Google answers 402 when
+            # Gemini's prepaid credits are depleted. Answer with the default model instead of
+            # an error, as briefings do in apps/briefing/summary.py. Only before any text has
+            # streamed, so an answer never switches models halfway through.
+            if model_name == DEFAULT_MODEL or full_response or not is_refused_llm_error(e):
                 raise
             fallback = get_provider(DEFAULT_MODEL, thinking=thinking)
             if not fallback[0].is_configured():
                 raise
             logging.user(
                 user,
-                f"~BB~FGAsk AI: ~FRGrok refused~FG ({e}), answering with ~SB{DEFAULT_MODEL}~SN instead",
+                f"~BB~FGAsk AI: ~FR{model_name} refused~FG ({e}), answering with ~SB{DEFAULT_MODEL}~SN instead",
             )
             model_name = DEFAULT_MODEL
             cache_model_key = f"{model_name}:thinking" if thinking else model_name

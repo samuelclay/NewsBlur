@@ -28,18 +28,22 @@ import kotlin.math.max
 
 /**
  * ListenUsageText.kt words the usage line the same way as the web player: the hours and minutes of new audio left
- * this week for Premium Archive and Pro (the allowance resets on Sunday, apps/listen/usage.py), or the free story
- * and voice previews left today for everyone else.
+ * this month for Premium Archive and Archive Extra or this week for Pro (usage.period, apps/listen/usage.py), or
+ * the free story and voice previews left today for everyone else.
  */
 @Composable
 fun listenUsageSummary(usage: ListenUsage?): String? {
     usage ?: return null
     val parts = mutableListOf<String>()
-    if (usage.isArchiveTier) {
+    if (usage.hasTimeAllowance) {
         val remaining = usage.secondsRemaining ?: return null
         val timeLeft = listenDurationText(listenHoursAndMinutes(remaining))
-        parts += stringResource(R.string.listen_time_left_this_week, timeLeft)
-        listenResetDate(usage.resetsAt)?.let { parts += stringResource(R.string.listen_resets_on, it) }
+        parts +=
+            stringResource(
+                if (usage.isMonthly) R.string.listen_time_left_this_month else R.string.listen_time_left_this_week,
+                timeLeft,
+            )
+        listenResetDate(usage.resetsAt, usage.period)?.let { parts += stringResource(R.string.listen_resets_on, it) }
     } else {
         usage.samplesLimit?.let { limit ->
             val left = max(0, limit - usage.samplesUsed)
@@ -64,7 +68,7 @@ fun ListenUsageFooter(
     val summary = listenUsageSummary(usage) ?: return
     Row(modifier = modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(text = summary, color = colors.textSecondary, fontSize = 12.sp, modifier = Modifier.weight(1f, fill = false))
-        if (usage?.isArchiveTier != true) {
+        if (usage?.hasTimeAllowance != true) {
             Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.listen_upgrade),
@@ -97,14 +101,17 @@ private fun listenDurationText(hoursAndMinutes: Pair<Int, Int>): String {
 }
 
 /**
- * "Sunday" (or "Sonntag" in German) for the day the weekly allowance resets, in the reader's own language. The
- * server sends midnight in the account's timezone (apps/listen/usage.py), so the day is read in that offset
- * rather than the device's, matching the web.
+ * When the allowance resets, in the reader's own language: "December 1" (or "1. Dezember" in German) for a monthly
+ * allowance, "Sunday" (or "Sonntag") for a weekly one. The server sends midnight at the start of the next period in
+ * the account's timezone (apps/listen/usage.py), so the date is read in that offset rather than the device's,
+ * matching the web. bestPattern turns a skeleton into the locale's pattern, android.text.format.DateFormat on a
+ * device.
  */
 internal fun listenResetDate(
     resetsAt: String?,
+    period: String?,
     locale: Locale = Locale.getDefault(),
-    pattern: String = DateFormat.getBestDateTimePattern(locale, WEEKDAY_SKELETON),
+    bestPattern: (skeleton: String) -> String = { DateFormat.getBestDateTimePattern(locale, it) },
 ): String? {
     if (resetsAt.isNullOrBlank()) return null
     val resetsAtTime =
@@ -113,7 +120,9 @@ internal fun listenResetDate(
         } catch (_: DateTimeParseException) {
             return null
         }
-    return DateTimeFormatter.ofPattern(pattern, locale).format(resetsAtTime)
+    val skeleton = if (period == ListenUsage.PERIOD_MONTH) MONTH_DAY_SKELETON else WEEKDAY_SKELETON
+    return DateTimeFormatter.ofPattern(bestPattern(skeleton), locale).format(resetsAtTime)
 }
 
 private const val WEEKDAY_SKELETON = "EEEE"
+private const val MONTH_DAY_SKELETON = "MMMMd"

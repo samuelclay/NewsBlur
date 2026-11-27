@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "whats_new": "Nous avons corrigé un problème qui pouvait rendre des paragraphes entiers inaudibles lorsque vous écoutiez un article avec l’écran verrouillé. Quand plus de 20 nouveaux articles arrivent dans un flux, les premiers s’affichent désormais plus vite lorsque vous touchez le bouton des nouveaux articles."
+  }
+}

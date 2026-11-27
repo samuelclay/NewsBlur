@@ -272,6 +272,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic) NSDictionary *dictSocialServices;
 @property (nonatomic) BOOL isPremium;
 @property (nonatomic) BOOL isPremiumArchive;
+@property (nonatomic) BOOL isPremiumArchiveExtra;
 @property (nonatomic) BOOL isPremiumPro;
 @property (nonatomic) BOOL briefingEnabled;
 @property (nonatomic) NSInteger premiumExpire;
@@ -289,6 +290,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 @property (nonatomic, strong) NSString *pendingFolder;
 @property (nonatomic, strong) NSString *pendingDailyBriefingStoryHash;
 @property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingNotificationStory;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *pendingWidgetNavigation;
 
 @property (nonatomic) NSArray *categories;
 @property (nonatomic) NSDictionary *categoryFeeds;
@@ -341,6 +343,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)showPremiumDialog;
 - (void)showPremiumDialogForArchive;
 - (void)showPremiumDialogForPro;
+- (void)updatePremiumTiersFromProfile:(NSDictionary *)profile;
 - (void)showUsageBillingDialog;
 - (void)updateSplitBehavior:(BOOL)refresh;
 - (void)addSplitControlToMenuController:(MenuViewController *)menuViewController;
@@ -487,6 +490,7 @@ SFSafariViewControllerDelegate, UIGestureRecognizerDelegate>  {
 - (void)failedMarkAsUnsaved:(NSDictionary *)params;
 - (NSInteger)adjustSavedStoryCount:(NSString *)tagName direction:(NSInteger)direction;
 - (NSArray *)updateStarredStoryCounts:(NSDictionary *)results;
+- (void)refreshVisibleInteractions;
 - (NSArray *)updateSavedSearches:(NSDictionary *)results;
 - (void)renameFeed:(NSString *)newTitle;
 - (void)renameFolder:(NSString *)newTitle;

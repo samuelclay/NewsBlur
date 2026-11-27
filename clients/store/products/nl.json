@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Blijvend archief en 1 uur luistertijd per week"
+        "description": "Blijvend archief en 1 uur luistertijd per maand"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "Frequente feedupdates en 10 uur luistertijd per week"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "Blijvend archief en 10 uur luistertijd per maand"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive-abonnement",
-        "description": "Alle Premium-functies, een blijvend doorzoekbaar archief en 1 uur luistertijd per week. Laat artikelen zo lang ongelezen als je wilt. Het luistertegoed wordt zondag vernieuwd.",
+        "description": "Alle Premium-functies, een blijvend doorzoekbaar archief en 1 uur luistertijd per maand. Laat artikelen zo lang ongelezen als je wilt. Het luistertegoed wordt elke 1e van de maand vernieuwd.",
         "benefits": [
           "Alles van Premium",
           "Bewaar artikelen onbeperkt ongelezen",
           "Blijvend doorzoekbaar artikelarchief",
-          "1 uur luistertijd per week"
+          "1 uur luistertijd per maand"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "NewsBlur Premium Archive Extra-abonnement",
+        "description": "Alle Premium-functies, een blijvend doorzoekbaar archief en 10 uur luistertijd per maand. Laat artikelen zo lang ongelezen als je wilt. Het luistertegoed wordt elke 1e van de maand vernieuwd.",
+        "benefits": [
+          "Alles van Premium",
+          "Bewaar artikelen onbeperkt ongelezen",
+          "Blijvend doorzoekbaar artikelarchief",
+          "10 uur luistertijd per maand"
         ]
       }
     }

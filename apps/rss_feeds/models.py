@@ -623,12 +623,19 @@ class Feed(models.Model):
 
     def index_stories_for_discover(self, force=False):
         if self.discover_indexed and not force:
-            return
+            return True
 
-        # If there are no premium archive subscribers, don't index stories for discover.
-        if not self.archive_subscribers or self.archive_subscribers <= 0:
-            logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
-            return
+        if (self.archive_subscribers or 0) <= 0:
+            # Repair a stale count once so new stories also pass the queue and worker
+            # checks in apps/rss_feeds/models.py and apps/rss_feeds/tasks.py.
+            archive_count = self.active_archive_subscriptions().count()
+            if not archive_count:
+                logging.debug(f" ---> ~FBNo premium archive subscribers, skipping discover index for {self}")
+                return False
+            Feed.objects.filter(pk=self.pk, archive_subscribers=self.archive_subscribers).update(
+                archive_subscribers=archive_count
+            )
+            self.archive_subscribers = archive_count
 
         stories = MStory.objects(story_feed_id=self.pk).order_by("-story_date").no_cache()[:1000]
         for index, story in enumerate(stories):
@@ -636,8 +643,8 @@ class Feed(models.Model):
                 logging.debug(f" ---> ~FBIndexing discover story {index} in {self}")
             story.index_story_for_discover()
 
-        self.discover_indexed = True
-        self.save()
+        self.discover_indexed = bool(Feed.objects.filter(pk=self.pk).update(discover_indexed=True))
+        return self.discover_indexed
 
     def sync_redis(self, allow_skip_resync=False):
         return MStory.sync_feed_redis(self.pk, allow_skip_resync=allow_skip_resync)
@@ -1149,10 +1156,13 @@ class Feed(models.Model):
         from apps.profile.tasks import FetchArchiveFeedsChunk
 
         logging.debug(f"~FC~SBScheduling fetch of archive feed ~SB{self.log_title}")
+        # models.py: A walk that outlasts the hard limit is SIGKILLed mid-page. The soft limit
+        # lets FeedFetcherWorker.process_feed_wrapper (utils/feed_fetcher.py) end it cleanly.
         FetchArchiveFeedsChunk.apply_async(
             kwargs=dict(feed_ids=[self.pk]),
             queue="search_indexer",
             time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED,
+            soft_time_limit=settings.MAX_SECONDS_ARCHIVE_FETCH_SINGLE_FEED - 30,
         )
 
     def check_feed_link_for_feed_address(self):
@@ -2572,15 +2582,13 @@ class Feed(models.Model):
             user__profile__last_seen_on__gte=unread_window_start,
         ).exists()
 
-    def has_archive_subscriber(self):
-        """Whether an Archive subscriber still keeps this feed's stories, asked of Postgres directly
-        as count_subscribers counts archive_subscribers, so stale stored counts don't matter.
-        apps/rss_feeds/models.py"""
+    def active_archive_subscriptions(self):
+        """Active Archive subscriptions across the original feed and its branches (apps/rss_feeds/models.py)."""
         from apps.reader.models import UserSubscription
 
         return UserSubscription.objects.filter(
             feed__in=self.subscriber_feed_ids(), active=True, user__profile__is_archive=True
-        ).exists()
+        )
 
     @classmethod
     def abandoned_feed_candidates(cls):
@@ -2624,7 +2632,7 @@ class Feed(models.Model):
         if dryrun:
             # A dry run writes nothing, so instead of recounting it asks what a recount would find,
             # then estimates with the counts that recount would store for an abandoned feed.
-            if feed.has_archive_subscriber() or feed.has_reader_within_unread_window():
+            if feed.active_archive_subscriptions().exists() or feed.has_reader_within_unread_window():
                 return 0
             feed.active_subscribers = 0
             feed.active_premium_subscribers = 0

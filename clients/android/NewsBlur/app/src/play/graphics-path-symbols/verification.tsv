@@ -1,0 +1,5 @@
+abi	vendor/companion build ID	rebuild build ID	function ranges	address	private symbol and source
+arm64-v8a	a7846ae06d6bf6cf63fa7c5e056b5de493c71567	19ce7e7b57bb0291335ecae906a899551a898517	20	00000000000013c8	PathIterator::count() at ./graphics/graphics-path/src/main/cpp/PathIterator.cpp:19
+armeabi-v7a	fa98a997cdd9b43f190a4bd20f3dad441b4062f0	d0d13f6b555bbbd7e27e699cda744d11965f32a5	21	00000ea4	PathIterator::count() at ./graphics/graphics-path/src/main/cpp/PathIterator.cpp:19
+x86	56b3f97a7efb05fc89674cf68f6c27847a93860b	d463e191c7a9b3e196f75b9e96d82c1a1d9db1fa	20	00001430	PathIterator::count() at ./graphics/graphics-path/src/main/cpp/PathIterator.cpp:19
+x86_64	f3e82b0a78f4c567cca77fe6c132199d806987d1	f5662eb1b52cf7a8b7947bcc82dcbf46d0082331	20	00000000000016e0	PathIterator::count() at ./graphics/graphics-path/src/main/cpp/PathIterator.cpp:19

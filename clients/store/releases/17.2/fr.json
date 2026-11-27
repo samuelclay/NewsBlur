@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Premium Archive inclut désormais 1 heure d’écoute par mois, et la nouvelle offre Premium Archive Extra inclut 10 heures par mois. Passez de l’une à l’autre avec le sélecteur 1 heure / 10 heures de l’offre Premium Archive. Les comptes gratuits et Premium peuvent maintenant écouter les 60 premières secondes de tout article lu à voix haute. NewsBlur se reconnecte aussi de manière plus fiable lorsque vous retrouvez une connexion, y compris après l’identification sur un réseau Wi-Fi."
+  },
+  "macos": {
+    "whats_new": "Premium Archive inclut désormais 1 heure d’écoute par mois, et la nouvelle offre Premium Archive Extra inclut 10 heures par mois. Passez de l’une à l’autre avec le sélecteur 1 heure / 10 heures de l’offre Premium Archive. Les comptes gratuits et Premium peuvent maintenant écouter les 60 premières secondes de tout article lu à voix haute. NewsBlur se reconnecte aussi de manière plus fiable lorsque vous retrouvez une connexion, y compris après l’identification sur un réseau Wi-Fi. Si plus de 20 nouveaux articles arrivent dans un flux, le bouton des nouveaux articles affiche désormais plus vite une première série quand vous cliquez dessus."
+  },
+  "android": {
+    "release_notes": "Premium Archive inclut désormais 1 heure d’écoute par mois, et la nouvelle offre Premium Archive Extra inclut 10 heures par mois. Passez de l’une à l’autre avec le sélecteur 1 heure / 10 heures de l’offre Premium Archive. Les comptes gratuits et Premium peuvent maintenant écouter les 60 premières secondes de tout article lu à voix haute. Si plus de 20 nouveaux articles arrivent dans un flux, le bouton des nouveaux articles affiche désormais plus vite une première série quand vous le touchez."
+  }
+}

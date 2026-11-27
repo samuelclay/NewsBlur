@@ -109,6 +109,11 @@
             android:summary="@string/settings_auto_open_first_unread_sum" />
         <CheckBoxPreference
             android:defaultValue="true"
+            android:key="show_new_stories_pill"
+            android:title="@string/settings_show_new_stories"
+            android:summary="@string/settings_show_new_stories_summary" />
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="story_clustering"
             android:title="@string/settings_story_clustering"
             android:summary="@string/settings_story_clustering_summary" />

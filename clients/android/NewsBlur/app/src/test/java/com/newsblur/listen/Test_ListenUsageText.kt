@@ -6,7 +6,7 @@ import org.junit.Test
 import java.util.Locale
 import java.util.TimeZone
 
-/** Test_ListenUsageText.kt checks how ListenUsageText.kt words the weekly allowance: the time left and the reset day. */
+/** Test_ListenUsageText.kt checks how ListenUsageText.kt words the listening allowance: the time left and the reset day. */
 class Test_ListenUsageText {
     @Test
     fun test_hours_and_minutes_split_the_seconds_left() {
@@ -24,20 +24,28 @@ class Test_ListenUsageText {
     }
 
     // android.text.format.DateFormat picks these per locale on a device; here they're given directly.
-    private val usWeekday = "EEEE"
+    private val usPatterns = mapOf("EEEE" to "EEEE", "MMMMd" to "MMMM d")
 
     @Test
     fun test_reset_dates_read_iso_timestamps_as_the_weekday() {
-        // The week starts on Sunday (apps/listen/usage.py), and 2026-11-01 is one.
-        assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00+00:00", Locale.US, usWeekday))
-        assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00Z", Locale.US, usWeekday))
-        assertNull(listenResetDate("soon", Locale.US, usWeekday))
-        assertNull(listenResetDate(null, Locale.US, usWeekday))
+        // Pro's week starts on Sunday (apps/listen/usage.py), and 2026-11-01 is one.
+        assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00+00:00", "week", Locale.US, usPatterns::getValue))
+        assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00Z", "week", Locale.US, usPatterns::getValue))
+        assertNull(listenResetDate("soon", "week", Locale.US, usPatterns::getValue))
+        assertNull(listenResetDate(null, "week", Locale.US, usPatterns::getValue))
+    }
+
+    @Test
+    fun test_a_monthly_allowance_resets_on_a_date_and_a_weekly_one_on_a_weekday() {
+        // Premium Archive's month starts at midnight on the 1st in the account's timezone; 2026-12-01 is a Tuesday.
+        assertEquals("December 1", listenResetDate("2026-12-01T00:00:00-05:00", "month", Locale.US, usPatterns::getValue))
+        assertEquals("Tuesday", listenResetDate("2026-12-01T00:00:00-05:00", "week", Locale.US, usPatterns::getValue))
+        assertEquals("Tuesday", listenResetDate("2026-12-01T00:00:00-05:00", null, Locale.US, usPatterns::getValue))
     }
 
     @Test
     fun test_reset_dates_follow_the_locales_language() {
-        assertEquals("Sonntag", listenResetDate("2026-11-01T00:00:00Z", Locale.GERMANY, "EEEE"))
+        assertEquals("Sonntag", listenResetDate("2026-11-01T00:00:00Z", "week", Locale.GERMANY) { "EEEE" })
     }
 
     @Test
@@ -48,7 +56,9 @@ class Test_ListenUsageText {
         val deviceZone = TimeZone.getDefault()
         try {
             TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"))
-            assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00-04:00", Locale.US, usWeekday))
+            assertEquals("Sunday", listenResetDate("2026-11-01T00:00:00-04:00", "week", Locale.US, usPatterns::getValue))
+            // The first of the month at Eastern midnight is still November 30 in Los Angeles.
+            assertEquals("December 1", listenResetDate("2026-12-01T00:00:00-05:00", "month", Locale.US, usPatterns::getValue))
         } finally {
             TimeZone.setDefault(deviceZone)
         }

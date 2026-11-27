@@ -10,6 +10,8 @@ from apps.profile.models import PaymentHistory, Profile
 APPLE_PRODUCTS = {
     "newsblur_premium_auto_renew_36": ("premium", "ios-subscription", 36, 1),
     "newsblur_premium_archive": ("archive", "ios-archive-subscription", 99, 2),
+    # Archive Extra shares Archive's rank, so switching between them is a same-tier change of the Listen allowance.
+    "newsblur_premium_archive_extra": ("archive_extra", "ios-archive-extra-subscription", 159, 2),
     "newsblur_premium_pro": ("pro", "ios-pro-subscription", 29, 3),
 }
 APPLE_PROVIDERS = tuple(product[1] for product in APPLE_PRODUCTS.values())
@@ -128,7 +130,36 @@ def apply_verified_apple_transaction(transaction_data, now=None):
 
     # Commit the durable receipt before apps/profile/models.py sends activation
     # tasks. A failed activation can be retried even when the receipt exists.
-    getattr(profile, "activate_%s" % tier)()
+    if tier in ("archive", "archive_extra"):
+        # Archive and Archive Extra share a rank, so a replayed or late notification for an older transaction
+        # of either one also gets here. Only the newer of the two verified purchases decides between them, which
+        # is what an App Store crossgrade produces. Extra billed by Stripe, PayPal or Google Play
+        # (Profile.active_provider in apps/profile/models.py) isn't in Apple's history, so an Apple Archive
+        # transaction never takes that away.
+        other_provider = (
+            "ios-archive-subscription" if tier == "archive_extra" else "ios-archive-extra-subscription"
+        )
+        other_latest = (
+            PaymentHistory.objects.filter(
+                user_id=user_id, payment_provider=other_provider, apple_expires_date__isnull=False
+            )
+            .exclude(refunded=True)
+            .aggregate(latest=Max("payment_date"))["latest"]
+        )
+        # Purchases at the same moment keep Extra rather than take it away.
+        if not other_latest:
+            newest_purchase = True
+        elif tier == "archive_extra":
+            newest_purchase = purchase >= other_latest
+        else:
+            newest_purchase = purchase > other_latest
+        if tier == "archive_extra" and newest_purchase:
+            profile.activate_archive_extra()
+        else:
+            downgrade = tier == "archive" and newest_purchase and not profile.active_provider
+            profile.activate_archive(downgrade_extra=downgrade)
+    else:
+        getattr(profile, "activate_%s" % tier)()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user_id=user_id)
         fresh_rank = 3 if profile.is_pro else 2 if profile.is_archive else 1

@@ -450,18 +450,15 @@ def generate_briefing_summary(
                 provider, messages, model_id, max_tokens, thinking_config, user_id
             )
         except LLM_EXCEPTIONS as e:
-            # summary.py: SpaceXSI (formerly xAI) refuses outright once its account runs out of
-            # credits or hits its spending limit. Users who picked Grok get their briefing from
-            # the default model instead of none at all.
-            if (
-                model_config.get("vendor") != "xai"
-                or model_name == DEFAULT_BRIEFING_MODEL
-                or not is_refused_llm_error(e)
-            ):
+            # summary.py: A vendor refuses outright once its account runs out of credits or hits
+            # its spending limit: SpaceXSI (formerly xAI) answers 403, Google answers 402 when
+            # Gemini's prepaid credits are depleted. Users who picked that vendor's model get
+            # their briefing from the default model instead of none at all.
+            if model_name == DEFAULT_BRIEFING_MODEL or not is_refused_llm_error(e):
                 raise
             logging.info(
-                " ---> Briefing summary for user %s refused by SpaceXSI, using %s instead: %s"
-                % (user_id, DEFAULT_BRIEFING_MODEL, str(e))
+                " ---> Briefing summary for user %s refused by %s, using %s instead: %s"
+                % (user_id, model_name, DEFAULT_BRIEFING_MODEL, str(e))
             )
             model_name, model_config = get_briefing_model_config(DEFAULT_BRIEFING_MODEL)
             provider, model_id = get_briefing_provider(model_name)

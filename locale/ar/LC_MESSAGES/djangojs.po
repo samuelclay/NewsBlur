@@ -422,6 +422,16 @@ msgstr[4] "%(count)s شهرًا"
 msgstr[5] "%(count)s شهر"
 
 #, python-format
+msgid "%(count)s new story"
+msgid_plural "%(count)s new stories"
+msgstr[0] "%(count)s قصة جديدة"
+msgstr[1] "%(count)s قصة جديدة"
+msgstr[2] "%(count)s قصتان جديدتان"
+msgstr[3] "%(count)s 3 قصص جديدة"
+msgstr[4] "%(count)s 11 قصة جديدة"
+msgstr[5] "%(count)s 100 قصة جديدة"
+
+#, python-format
 msgid "%(count)s newsletter"
 msgid_plural "%(count)s newsletters"
 msgstr[0] "%(count)s نشرة"
@@ -776,6 +786,10 @@ msgid "%(date_from)s → %(date_to)s"
 msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
+msgid "%(duration)s left this month"
+msgstr ""
+
+#, python-format
 msgid "%(duration)s left this week"
 msgstr "تبقّى %(duration)s هذا الأسبوع"
 
@@ -834,6 +848,14 @@ msgstr "%(price)s · iPhone &amp; iPad"
 #, python-format
 msgid "%(price)s · iPhone, iPad &amp; Mac"
 msgstr "%(price)s · iPhone وiPad &amp; Mac"
+
+#, python-format
+msgid "%(price)s/year"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)ss preview"
+msgstr ""
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1245,11 +1267,23 @@ msgstr "/شهريًا"
 msgid "/year"
 msgstr "/السنة"
 
+msgid "1 hour"
+msgstr ""
+
 msgid "1 month"
 msgstr "شهر واحد"
 
 msgid "1 year"
 msgstr "سنة واحدة"
+
+msgid "10 hours"
+msgstr ""
+
+msgid "12-hour"
+msgstr "12 ساعة"
+
+msgid "24-hour"
+msgstr "24 ساعة"
 
 msgid "28 tools are available, covering reading, actions, training, and discovery."
 msgstr "تتوفر 28 أداة للقراءة والإجراءات والتدريب والاستكشاف."
@@ -1258,9 +1292,6 @@ msgid "2x daily"
 msgstr "مرتان يوميًا"
 
 msgid "30 second preview"
-msgstr "معاينة لمدة 30 ثانية"
-
-msgid "30s preview"
 msgstr "معاينة لمدة 30 ثانية"
 
 msgid "3x daily"
@@ -1319,6 +1350,9 @@ msgstr "مدونة Blurblog للقصص التي تشاركها"
 msgid "A clearer, closer sound"
 msgstr "صوت أوضح وأقرب"
 
+msgid "A folder"
+msgstr "مجلد واحد"
+
 msgid "A folder of feeds read as one stream"
 msgstr "مجلد من الخلاصات يُقرأ كتدفّق واحد"
 
@@ -1332,11 +1366,23 @@ msgstr "تمت إضافة هدية من %(value_1)s إلى حسابك."
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "تستخدم المحاولة الثانية تلميحك للعثور على النمط الصحيح في الصفحة."
 
+msgid "A short list of titles above the open story"
+msgstr "قائمة قصيرة بالعناوين فوق القصة المفتوحة"
+
 msgid "A single like overrides any number of dislikes"
 msgstr "إعجاب واحد يتغلب على أي عدد من حالات عدم الإعجاب"
 
 msgid "A story diff with additions and deletions"
 msgstr "مقارنة تغييرات القصة مع الإضافات والحذف"
+
+msgid "A story is read as soon as it is selected"
+msgstr "تُعدّ القصة مقروءة بمجرد اختيارها"
+
+msgid "A story is read once it has been open for the time set below"
+msgstr "تُعد القصة مقروءة بعد فتحها للمدة المحددة أدناه"
+
+msgid "A to Z"
+msgstr "من أ إلى ي"
 
 msgid "AI Filter"
 msgstr "فلتر الذكاء الاصطناعي"
@@ -1361,6 +1407,9 @@ msgstr "تحليل للقصص مدعوم بالذكاء الاصطناعي وم�
 msgid "ALL CATEGORIES (%(value_1)s)"
 msgstr "جميع الفئات (%(value_1)s)"
 
+msgid "API requests"
+msgstr "طلبات API"
+
 msgid "Absolutely. Open the trainer and remove any thumbs up or down to reset it."
 msgstr "بالتأكيد. افتح أداة التدريب وأزل أي إشارة إعجاب أو عدم إعجاب لإعادة ضبطها."
 
@@ -1379,6 +1428,9 @@ msgstr "الإجراءات"
 
 msgid "Active"
 msgstr "نشط"
+
+msgid "Active readers · 7 days"
+msgstr "القراء النشطون · 7 أيام"
 
 msgid "Activities"
 msgstr "الأنشطة"
@@ -1503,11 +1555,20 @@ msgstr[3] "بعد %(slider)s %(count)s ثوانٍ."
 msgstr[4] "بعد %(slider)s %(count)s ثانية."
 msgstr[5] "بعد %(slider)s %(count)s ثانية."
 
+msgid "After a delay"
+msgstr "بعد تأخير"
+
+msgid "After a reader authorizes your app, NewsBlur sends them to this URL with an authorization code."
+msgstr "بعد أن يمنح أحد القراء تطبيقك الإذن، يرسله NewsBlur إلى عنوان URL هذا مصحوبًا برمز تفويض."
+
 msgid "After marking feed/folder read"
 msgstr "بعد وضع علامة «مقروء» على الخلاصة/المجلد"
 
 msgid "Afternoon"
 msgstr "بعد الظهر"
+
+msgid "Afterwards"
+msgstr "لاحقًا"
 
 msgctxt "voice filter"
 msgid "Age"
@@ -1661,9 +1722,6 @@ msgstr "تتطلب إشعارات Android اشتراك Premium Archive"
 msgid "Animals"
 msgstr "الحيوانات"
 
-msgid "Animations"
-msgstr "الرسوم المتحركة"
-
 msgid "Any"
 msgstr "أي تاريخ"
 
@@ -1679,6 +1737,12 @@ msgstr "في أي وقت"
 
 msgid "Appearance"
 msgstr "المظهر"
+
+msgid "Application name"
+msgstr "اسم التطبيق"
+
+msgid "Application website"
+msgstr "موقع التطبيق"
 
 #, python-format
 msgid "Applied %(count)s merge (%(stories)s)"
@@ -1742,6 +1806,9 @@ msgstr "هل التطبيقات مجانية؟"
 msgid "Are the apps open source?"
 msgstr "هل التطبيقات مفتوحة المصدر؟"
 
+msgid "Arrow keys"
+msgstr "مفاتيح الأسهم"
+
 msgid "Arrows"
 msgstr "الأسهم"
 
@@ -1781,6 +1848,9 @@ msgstr "اطرح سؤالًا..."
 msgid "Ask about your browsing history..."
 msgstr "اسأل عن سجل التصفح..."
 
+msgid "Ask first"
+msgstr "السؤال أولًا"
+
 msgid ""
 "Ask questions about everything you've read. I can search your browsing history and find relevant "
 "information."
@@ -1817,6 +1887,9 @@ msgstr "اسم الكاتب"
 msgid "Author: "
 msgstr "المؤلف: "
 
+msgid "Authorization link"
+msgstr "رابط التفويض"
+
 msgid "Authors"
 msgstr "المؤلفون"
 
@@ -1825,6 +1898,9 @@ msgstr "تلقائي"
 
 msgid "Auto Mark as Read"
 msgstr "وضع علامة «مقروء» تلقائيًا"
+
+msgid "Auto follows system appearance"
+msgstr "اتباع مظهر النظام تلقائيًا"
 
 msgid "Auto mark as read"
 msgstr "وضع علامة «مقروء» تلقائيًا"
@@ -1902,6 +1978,15 @@ msgstr "بناءً على اهتماماتك"
 msgid "Begin Training"
 msgstr "بدء التدريب"
 
+msgid "Behavior"
+msgstr "السلوك"
+
+msgid "Below the story"
+msgstr "أسفل القصة"
+
+msgid "Beside the story"
+msgstr "بجوار القصة"
+
 msgid "Bio"
 msgstr "نبذة"
 
@@ -1950,6 +2035,9 @@ msgstr "عنوان Blurblog"
 
 msgid "Blurblogs"
 msgstr "مدونات Blurblog"
+
+msgid "Blurblogs, shared stories and comments"
+msgstr "مدونات Blurblog والقصص المشتركة والتعليقات"
 
 msgid "Bookmarklet"
 msgstr "أداة الإشارات المرجعية"
@@ -2017,11 +2105,23 @@ msgstr "المتصفح"
 msgid "Browser Extensions"
 msgstr "إضافات المتصفح"
 
+msgid "Browser menu"
+msgstr "قائمة المتصفح"
+
+msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
+msgstr "هل تطوّر قارئ RSS عامًا يمكن لأي شخص استخدامه؟ قد تكون مؤهلًا للحصول على حساب NewsBlur Premium Pro مجاني."
+
+msgid "Built-in story lists in the sidebar"
+msgstr "قوائم القصص المضمّنة في الشريط الجانبي"
+
 msgid "Bullet points"
 msgstr "نقاط التعداد"
 
 msgid "Bullets"
 msgstr "نقاط"
+
+msgid "Buttons"
+msgstr "الأزرار"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -2202,9 +2302,6 @@ msgstr "اختر نموذج الذكاء الاصطناعي الذي يكتب م
 msgid "Choose which feeds are used to build your briefing"
 msgstr "اختر الخلاصات التي ستُستخدم لإنشاء موجزك"
 
-msgid "Choose which feeds to include"
-msgstr "اختر الخلاصات المراد تضمينها"
-
 msgid "Choose which sections appear in your briefing"
 msgstr "اختر الأقسام التي تظهر في موجزك"
 
@@ -2285,6 +2382,18 @@ msgstr "انقر على أي مصدر لقراءة تلك النسخة بدلً�
 msgid "Click to block"
 msgstr "انقر للحظر"
 
+msgid "Clicks"
+msgstr "النقرات"
+
+msgid "Client ID"
+msgstr "معرّف العميل"
+
+msgid "Client secret"
+msgstr "سر العميل"
+
+msgid "Clock"
+msgstr "الساعة"
+
 msgid "Close"
 msgstr "إغلاق"
 
@@ -2324,6 +2433,9 @@ msgstr "طيّ القصة"
 msgid "Collapsed"
 msgstr "مطوي"
 
+msgid "Collapsed folders"
+msgstr "المجلدات المطوية"
+
 msgid "Color"
 msgstr "اللون"
 
@@ -2342,8 +2454,8 @@ msgstr "تعرض الأوامر نتائج بصيغة JSON يمكنك تمرير
 msgid "Comment"
 msgstr "تعليق"
 
-msgid "Comment on stories"
-msgstr "علّق على القصص"
+msgid "Comments"
+msgstr "التعليقات"
 
 msgid "Comments:"
 msgstr "التعليقات:"
@@ -2387,11 +2499,31 @@ msgstr ""
 "اربط NewsBlur بمئات الخدمات. احفظ القصص في Pocket أو Instapaper أو Evernote أو Notion، وانشر المشاركات في "
 "Slack، وشغّل مهام سير عمل مخصصة بناءً على تدريبك."
 
+msgid ""
+"Connect your app to NewsBlur so readers can grant access to their stories and feeds. Readers on any plan "
+"can connect."
+msgstr ""
+"اربط تطبيقك بـ NewsBlur ليتمكن القراء من منحك إمكانية الوصول إلى قصصهم وخلاصاتهم. يمكن للقراء على أي خطة "
+"إجراء الربط."
+
 msgid "Connected"
 msgstr "متصل"
 
 msgid "Connected accounts"
 msgstr "الحسابات المتصلة"
+
+msgid ""
+"Connected accounts have an unexpired access token. Active readers are estimated over seven UTC days. API "
+"requests and last activity are measured from the start of tracking."
+msgstr ""
+"تملك الحسابات المتصلة رمز وصول غير منتهي الصلاحية. يُقدَّر عدد القراء النشطين على مدى سبعة أيام بتوقيت UTC."
+" تُحتسب طلبات API وآخر نشاط منذ بدء التتبع."
+
+msgid "Consent screen preview"
+msgstr "معاينة شاشة الموافقة"
+
+msgid "Contact Samuel"
+msgstr "تواصل مع صموئيل"
 
 msgid "Content"
 msgstr "المحتوى"
@@ -2426,8 +2558,14 @@ msgstr "نسخ النص"
 msgid "Copy URL"
 msgstr "نسخ الرابط"
 
+msgid "Copy your client secret now. You will only see it once."
+msgstr "انسخ سر العميل الآن. لن تتمكن من رؤيته إلا مرة واحدة."
+
 msgid "Could not add this classifier. Try again."
 msgstr "تعذّر إضافة هذا المصنّف. حاول مرة أخرى."
+
+msgid "Could not create the application. Please try again."
+msgstr "تعذر إنشاء التطبيق. يُرجى المحاولة مرة أخرى."
 
 msgid "Could not disconnect this account. Please try again."
 msgstr "تعذّر فصل هذا الحساب. يُرجى المحاولة مرة أخرى."
@@ -2438,8 +2576,14 @@ msgstr "تعذّر العثور على خلاصة RSS لهذا الرابط"
 msgid "Could not load FAQ. Please try again."
 msgstr "تعذّر تحميل الأسئلة الشائعة. يُرجى المحاولة مجددًا."
 
+msgid "Could not load your applications. Try refreshing."
+msgstr "تعذّر تحميل تطبيقاتك. حاول تحديث الصفحة."
+
 msgid "Couldn't load audio for this story."
 msgstr "تعذّر تحميل الصوت لهذه القصة."
+
+msgid "Couldn't load listening."
+msgstr ""
 
 msgid "Counting is difficult"
 msgstr "العد صعب"
@@ -2456,20 +2600,38 @@ msgstr "إنشاء حساب"
 msgid "Create Gift Link"
 msgstr "إنشاء رابط هدية"
 
+msgid "Create OAuth applications"
+msgstr "إنشاء تطبيقات OAuth"
+
 msgid "Create a feed for any website, even without RSS."
 msgstr "أنشئ خلاصة لأي موقع، حتى إن لم يكن يدعم RSS."
+
+msgid "Create a new OAuth application"
+msgstr "إنشاء تطبيق OAuth جديد"
 
 msgid "Create a new subfolder"
 msgstr "إنشاء مجلد فرعي جديد"
 
+msgid "Create another application"
+msgstr "إنشاء تطبيق آخر"
+
+msgid "Create application"
+msgstr "إنشاء تطبيق"
+
 msgid "Created:"
 msgstr "تاريخ الإنشاء:"
+
+msgid "Creating OAuth applications requires NewsBlur Premium Pro."
+msgstr "يتطلب إنشاء تطبيقات OAuth اشتراك NewsBlur Premium Pro."
 
 msgid "Creative"
 msgstr "إبداعي"
 
 msgid "Credit"
 msgstr "رصيد"
+
+msgid "Current plan"
+msgstr ""
 
 msgid "Current voice"
 msgstr "الصوت الحالي"
@@ -2511,9 +2673,6 @@ msgstr "نطاق زمني مخصص"
 msgid "Custom icon"
 msgstr "أيقونة مخصصة"
 
-msgid "Customizable writing style and length"
-msgstr "أسلوب الكتابة وطولها قابلان للتخصيص"
-
 msgid "Customize auto-read by site or folder"
 msgstr "تخصيص القراءة التلقائية حسب الموقع أو المجلد"
 
@@ -2551,6 +2710,9 @@ msgstr "التوزيع اليومي للقصص"
 msgid "Dark"
 msgstr "داكن"
 
+msgid "Dark appearance"
+msgstr "المظهر الداكن"
+
 msgid "Dark mode and reading customization"
 msgstr "الوضع الداكن وتخصيص القراءة"
 
@@ -2581,9 +2743,6 @@ msgstr "افتراضي"
 
 msgid "Default Blocklist"
 msgstr "قائمة الحظر الافتراضية"
-
-msgid "Default folder"
-msgstr "المجلد الافتراضي"
 
 msgid "Default layout"
 msgstr "التخطيط الافتراضي"
@@ -2670,15 +2829,6 @@ msgstr "مفصل"
 
 msgid "Devices"
 msgstr "الأجهزة"
-
-msgid "Disable daily briefings"
-msgstr "تعطيل الموجزات اليومية"
-
-msgid "Disable social features"
-msgstr "تعطيل الميزات الاجتماعية"
-
-msgid "Disable story clustering"
-msgstr "تعطيل تجميع القصص"
 
 msgid "Disable the highlighter"
 msgstr "تعطيل أداة التمييز"
@@ -2784,6 +2934,9 @@ msgstr "تم!"
 
 msgid "Double-clicking a site"
 msgstr "النقر مرتين على موقع"
+
+msgid "Double-clicking a site's unread count marks the whole site as read"
+msgstr "يؤدي النقر المزدوج على عدد القصص غير المقروءة في موقع إلى وضع علامة مقروءة على الموقع بأكمله"
 
 msgid "Double-clicking an unread count"
 msgstr "النقر المزدوج على عدد غير المقروء"
@@ -2920,17 +3073,11 @@ msgstr "تفعيل التسميات التوضيحية/الترجمة المصا
 msgid "Enable daily briefings"
 msgstr "تفعيل الموجزات اليومية"
 
-msgid "Enable highlighting"
-msgstr "تفعيل التمييز"
-
 msgid "Enable microphone in browser settings to use voice input"
 msgstr "فعّل الميكروفون من إعدادات المتصفح لاستخدام الإدخال الصوتي"
 
 msgid "Enable social features"
 msgstr "تفعيل الميزات الاجتماعية"
-
-msgid "Enable story clustering"
-msgstr "تفعيل تجميع القصص"
 
 msgid "Enable the sites you want"
 msgstr "فعّل المواقع التي تريدها"
@@ -3015,6 +3162,9 @@ msgstr "المساء"
 msgid "Every"
 msgstr "كل"
 
+msgid "Every folder"
+msgstr "كل مجلد"
+
 msgid "Every new story is archived permanently"
 msgstr "تُؤرشف كل قصة جديدة نهائيًا"
 
@@ -3027,10 +3177,19 @@ msgstr "أرشفة كل قصة وإمكانية البحث عنها إلى ال�
 msgid "Every story archived and searchable forever. Your personal knowledge base."
 msgstr "تُؤرشف كل قصة وتبقى قابلة للبحث إلى الأبد. قاعدة معارفك الشخصية."
 
+msgid "Every story as the site published it in its feed"
+msgstr "كل قصة كما نشرها الموقع في خلاصته"
+
+msgid "Every story in full, one after another"
+msgstr "كل قصة كاملة، واحدة تلو الأخرى"
+
 msgid "Every tag gets its own RSS feed. Share the link or pipe it into IFTTT or Zapier."
 msgstr "لكل وسم خلاصة RSS خاصة به. شارك الرابط أو أرسله إلى IFTTT أو Zapier."
 
 msgid "Everybody"
+msgstr "الجميع"
+
+msgid "Everyone"
 msgstr "الجميع"
 
 msgid "Everything NewsBlur can do, and how to try it"
@@ -3407,6 +3566,9 @@ msgstr "أعداد غير المقروء في المجلدات"
 msgid "Folders"
 msgstr "المجلدات"
 
+msgid "Folders only"
+msgstr "المجلدات فقط"
+
 msgid "Folders, feeds, and story titles"
 msgstr "المجلدات والخلاصات وعناوين القصص"
 
@@ -3582,6 +3744,9 @@ msgstr "الأصدقاء &amp; المتابعون"
 
 msgid "Friends and Followers"
 msgstr "الأصدقاء والمتابعون"
+
+msgid "Friends only"
+msgstr "الأصدقاء فقط"
 
 msgctxt "date range"
 msgid "From"
@@ -3773,6 +3938,10 @@ msgstr "المزايا &amp; تطبيقات الهاتف"
 msgid "Google News"
 msgstr "أخبار Google"
 
+msgctxt "theme"
+msgid "Gray"
+msgstr "رمادي"
+
 msgid "Green marks additions, red marks deletions."
 msgstr "يشير الأخضر إلى الإضافات، والأحمر إلى الحذف."
 
@@ -3791,6 +3960,9 @@ msgstr "تجميع القصص المكررة عبر خلاصاتك"
 msgid "Group stories that share:"
 msgstr "جمّع القصص التي تتشارك:"
 
+msgid "Grouped"
+msgstr "مجمّع"
+
 msgid "Groups similar stories from different feeds"
 msgstr "يجمع القصص المتشابهة من خلاصات مختلفة"
 
@@ -3806,8 +3978,15 @@ msgstr "العناوين"
 msgid "Health"
 msgstr "الصحة"
 
-msgid "Hear the first 30 seconds read aloud. Premium Archive reads whole stories."
-msgstr "استمع إلى أول 30 ثانية مقروءة بصوت عالٍ. يقرأ اشتراك Premium Archive القصص كاملة."
+#, python-format
+msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
+msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "Hearts"
 msgstr "القلوب"
@@ -3860,6 +4039,9 @@ msgstr "تمييز الفقرة التي تُقرأ"
 msgid "Highlight words in the title to train on specific phrases."
 msgstr "ميّز كلمات في العنوان لتدريب المصنّف على عبارات محددة."
 
+msgid "Highlighter"
+msgstr "أداة التمييز"
+
 msgid "History"
 msgstr "السجل"
 
@@ -3895,6 +4077,9 @@ msgstr "مقدار التعبير العاطفي"
 
 msgid "How often"
 msgstr "عدد المرات"
+
+msgid "How panes and stories move"
+msgstr "كيفية تحرك اللوحات والقصص"
 
 msgid "I'm Following"
 msgstr "أتابع"
@@ -3981,6 +4166,9 @@ msgstr ""
 
 msgid "In a new window"
 msgstr "في نافذة جديدة"
+
+msgid "In a pill"
+msgstr "في كبسولة"
 
 msgid "In rotation"
 msgstr "ضمن التناوب"
@@ -4115,6 +4303,9 @@ msgstr "إبقاء الأزرار على الجانب الأيمن ظاهرة أ
 msgid "Keep stories separate"
 msgstr "إبقاء القصص منفصلة"
 
+msgid "Keep unread counts out of the window title"
+msgstr "إبقاء أعداد القصص غير المقروءة خارج عنوان النافذة"
+
 msgid "Keep up-to-date with NewsBlur"
 msgstr "ابقَ على اطلاع بآخر أخبار NewsBlur"
 
@@ -4140,11 +4331,20 @@ msgstr "أقسام الكلمات المفتاحية"
 msgid "Language"
 msgstr "اللغة"
 
+msgid "Language and time"
+msgstr "اللغة والوقت"
+
 msgid "Large image thumbnail on the left"
 msgstr "صورة مصغّرة كبيرة على اليسار"
 
 msgid "Large image thumbnail on the right"
 msgstr "صورة مصغّرة كبيرة على اليمين"
+
+msgid "Large, left"
+msgstr "كبير، يسار"
+
+msgid "Large, right"
+msgstr "كبير، إلى اليمين"
 
 msgid "Last 30 Days"
 msgstr "آخر 30 يومًا"
@@ -4160,6 +4360,13 @@ msgstr "آخر عنوان IP:"
 
 msgid "Last Update"
 msgstr "آخر تحديث"
+
+msgid "Last activity"
+msgstr "آخر نشاط"
+
+#, python-format
+msgid "Last manual reset: %(date)s."
+msgstr ""
 
 msgid "Last seen:"
 msgstr "آخر ظهور:"
@@ -4181,6 +4388,9 @@ msgstr "لنبدأ بإضافة بعض المواقع لقراءتها."
 
 msgid "Light"
 msgstr "فاتح"
+
+msgid "Light appearance"
+msgstr "المظهر الفاتح"
 
 msgid ""
 "Light, dark, and auto themes across web, iOS, and Android. Fonts, text sizes, line spacing, density, and "
@@ -4210,6 +4420,12 @@ msgstr "الربط مباشرةً بالقصة الأصلية"
 msgid "Link to my blurblog and shared comments"
 msgstr "رابط إلى مدونتي على Blurblog والتعليقات التي شاركتها"
 
+msgid "Links in stories open in a new window or tab"
+msgstr "تُفتح روابط القصص في نافذة أو علامة تبويب جديدة"
+
+msgid "Links in stories replace NewsBlur in this window"
+msgstr "تفتح الروابط في القصص بدلًا من NewsBlur في هذه النافذة"
+
 msgid "List"
 msgstr "قائمة"
 
@@ -4225,8 +4441,11 @@ msgstr "استمع"
 msgid "Listen timed out. Try again in a moment."
 msgstr "انتهت مهلة الاستماع. حاول مرة أخرى بعد قليل."
 
-msgid "Listen to 1 hour of stories read aloud a week"
-msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة ساعة واحدة أسبوعيًا"
+msgid "Listen to 1 hour of stories read aloud a month"
+msgstr ""
+
+msgid "Listen to 10 hours of stories read aloud a month"
+msgstr ""
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا"
@@ -4242,6 +4461,9 @@ msgstr "جارٍ تحميل PayPal..."
 
 msgid "Loading Training..."
 msgstr "جارٍ تحميل التدريب..."
+
+msgid "Loading applications…"
+msgstr "جارٍ تحميل التطبيقات…"
 
 msgid "Loading checkout..."
 msgstr "جارٍ تحميل صفحة الدفع..."
@@ -4302,9 +4524,6 @@ msgstr "يتطلب الوصول إلى خادم MCP اشتراك Premium Archive
 
 msgid "Magazine"
 msgstr "مجلة"
-
-msgid "Make changes above..."
-msgstr "أجرِ التغييرات أعلاه..."
 
 msgid "Manage Categories"
 msgstr "إدارة الفئات"
@@ -4441,9 +4660,6 @@ msgstr[3] "وضع علامة «غير مقروء» على القصص خلال آ
 msgstr[4] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يومًا</b>"
 msgstr[5] "وضع علامة «غير مقروء» على القصص خلال آخر <b>%(value_1)s يوم</b>"
 
-msgid "Mark stories read on scroll"
-msgstr "تحديد القصص كمقروءة عند التمرير"
-
 msgid "Mark the site as read"
 msgstr "وضع علامة «مقروء» على الموقع"
 
@@ -4455,6 +4671,12 @@ msgstr "جارٍ وضع علامة مقروء..."
 
 msgid "Marking as unread..."
 msgstr "جارٍ وضع علامة «غير مقروء»..."
+
+msgid "Marking sites as read"
+msgstr "وضع المواقع كمقروءة"
+
+msgid "Marking stories as read"
+msgstr "وضع علامة «مقروءة» على القصص"
 
 msgid "Match"
 msgstr "مطابقة"
@@ -4541,6 +4763,9 @@ msgstr "الاثنين"
 msgid "Monday"
 msgstr "الاثنين"
 
+msgid "Monthly listening"
+msgstr ""
+
 msgid "Monthly spending limit"
 msgstr "حد الإنفاق الشهري"
 
@@ -4576,6 +4801,12 @@ msgstr "الخلاصات الأكثر اشتراكًا هذا الأسبوع"
 
 msgid "Most used at top, then alphabetical"
 msgstr "الأكثر استخدامًا في الأعلى، ثم أبجديًا"
+
+msgid "Most used first"
+msgstr "الأكثر استخدامًا أولًا"
+
+msgid "Motion"
+msgstr "الحركة"
 
 msgid "Move"
 msgstr "نقل"
@@ -4660,6 +4891,9 @@ msgstr "أبدًا"
 msgid "Name"
 msgstr "الاسم"
 
+msgid "Name only"
+msgstr "الاسم فقط"
+
 msgid "Native Apps"
 msgstr "التطبيقات الأصلية"
 
@@ -4716,6 +4950,9 @@ msgstr "لا تنتهي صلاحيتها أبدًا"
 msgid "Never gonna expire. Congrats!"
 msgstr "لن تنتهي صلاحيتها أبدًا. تهانينا!"
 
+msgid "Never reset."
+msgstr ""
+
 msgid "New Arrivals"
 msgstr "الإضافات الجديدة"
 
@@ -4747,11 +4984,20 @@ msgstr "كلمة المرور الجديدة"
 msgid "New posts from feeds you recently read"
 msgstr "منشورات جديدة من الخلاصات التي قرأتها مؤخرًا"
 
+msgid "New stories"
+msgstr "قصص جديدة"
+
 msgid "New tag name"
 msgstr "اسم الوسم الجديد"
 
 msgid "New to me"
 msgstr "جديد بالنسبة إليّ"
+
+msgid "New window"
+msgstr "نافذة جديدة"
+
+msgid "New window, marked read"
+msgstr "نافذة جديدة، مع وضع علامة «مقروءة»"
 
 msgid "Newer:"
 msgstr "بعد تاريخ:"
@@ -4777,6 +5023,9 @@ msgstr "NewsBlur متوقف حاليًا. <br> حاول مرة أخرى قريب
 
 msgid "NewsBlur is in maintenance mode. <br> Try again soon."
 msgstr "NewsBlur في وضع الصيانة. <br> حاول مجددًا قريبًا."
+
+msgid "NewsBlur menu"
+msgstr "قائمة NewsBlur"
 
 msgid "NewsBlur monitors the page for changes automatically"
 msgstr "يراقب NewsBlur الصفحة تلقائيًا لاكتشاف التغييرات"
@@ -4816,6 +5065,12 @@ msgstr "القصة التالية"
 
 msgid "Next unread"
 msgstr "غير المقروءة التالية"
+
+msgid "Next unread at the end"
+msgstr "التالي غير المقروء في النهاية"
+
+msgid "Next unread halfway"
+msgstr "التالي غير المقروء في المنتصف"
 
 msgid "Next, create a filter with all of your newsletters so that they forward to the custom address on NewsBlur."
 msgstr "بعد ذلك، أنشئ فلترًا يضم جميع نشراتك الإخبارية لإعادة توجيهها إلى العنوان المخصص على NewsBlur."
@@ -4938,6 +5193,9 @@ msgstr "لا توجد أسئلة تطابق هذا البحث."
 
 msgid "No recency filter"
 msgstr "بلا فلتر زمني"
+
+msgid "No recorded activity"
+msgstr "لا يوجد نشاط مسجّل"
 
 msgid "No referrals yet. Share your link to get started!"
 msgstr "لا توجد إحالات بعد. شارك رابطك للبدء!"
@@ -5092,6 +5350,12 @@ msgstr "عدد القصص التي يتضمنها كل موجز"
 msgid "Numbers & Symbols"
 msgstr "الأرقام والرموز"
 
+msgid "OAuth application created"
+msgstr "تم إنشاء تطبيق OAuth"
+
+msgid "OAuth applications"
+msgstr "تطبيقات OAuth"
+
 msgid "OFF"
 msgstr "معطّل"
 
@@ -5106,6 +5370,9 @@ msgstr "أكتوبر"
 
 msgid "Off"
 msgstr "معطّل"
+
+msgid "Offer them in an \"N new stories\" pill"
+msgstr "اعرضها في شارة «N قصة جديدة»"
 
 msgid "Official NewsBlur Android App"
 msgstr "تطبيق Android الرسمي من NewsBlur"
@@ -5159,6 +5426,9 @@ msgstr "في Premium Archive، يشمل البحث كل قصة أُرشفت عل
 
 msgid "On Premium, search covers your recent stories. On Premium Archive, every story ever archived is searchable."
 msgstr "في Premium، يشمل البحث أحدث قصصك. وفي Premium Archive، يمكنك البحث في كل القصص المؤرشفة على الإطلاق."
+
+msgid "On reload"
+msgstr "عند إعادة التحميل"
 
 msgid "One command with Docker"
 msgstr "أمر واحد باستخدام Docker"
@@ -5249,6 +5519,9 @@ msgstr "إظهار تعليقات الأصدقاء فقط"
 msgid "Only show counts on collapsed folders"
 msgstr "إظهار الأعداد في المجلدات المطوية فقط"
 
+msgid "Only show them when the list reloads"
+msgstr "لا تعرضها إلا عند إعادة تحميل القائمة"
+
 msgid "Only truncate long shared stories in blurblogs"
 msgstr "اقتصر على اقتطاع القصص الطويلة المشتركة في مدونات Blurblog"
 
@@ -5315,6 +5588,12 @@ msgstr "افتح قائمة الخلاصة وعنوان القصة"
 msgid "Open the first story"
 msgstr "افتح القصة الأولى"
 
+msgid "Open the folder chosen below when loading NewsBlur"
+msgstr "افتح المجلد المحدد أدناه عند تحميل NewsBlur"
+
+msgid "Open the next one"
+msgstr "فتح التالي"
+
 msgid "Open the next site/folder"
 msgstr "افتح الموقع/المجلد التالي"
 
@@ -5335,6 +5614,12 @@ msgstr "افتح الموجز اليومي"
 
 msgid "Open your saved stories"
 msgstr "افتح قصصك المحفوظة"
+
+msgid "Opening a site also opens its first story"
+msgstr "فتح موقع يفتح أيضًا أول قصة فيه"
+
+msgid "Opening a site shows its stories and waits for you to pick one"
+msgstr "عند فتح موقع، تظهر قصصه وتنتظر اختيارك لإحداها"
 
 msgid "Opens"
 msgstr "مرات الفتح"
@@ -5474,8 +5759,23 @@ msgstr "اختر الباقة وادفع."
 msgid "Pick the language you'd like NewsBlur to use. You can change this anytime in Preferences."
 msgstr "اختر اللغة التي تريد أن يستخدمها NewsBlur. يمكنك تغيير هذا في أي وقت من التفضيلات."
 
+msgid "Placement"
+msgstr "الموضع"
+
 msgid "Places"
 msgstr "الأماكن"
+
+#, python-format
+msgid "Plan: %(tier)s. %(count)s stories previewed today."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
+msgstr ""
+
+#, python-format
+msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
+msgstr ""
 
 msgid "Platform"
 msgstr "المنصة"
@@ -5485,6 +5785,9 @@ msgstr "التشغيل في آخر القائمة"
 
 msgid "Play Next"
 msgstr "التشغيل تاليًا"
+
+msgid "Play YouTube videos without captions"
+msgstr "تشغيل فيديوهات YouTube بلا ترجمة مكتوبة"
 
 msgid "Play in Mini Media Player"
 msgstr "التشغيل في مشغل الوسائط المصغر"
@@ -5575,6 +5878,9 @@ msgstr "Premium"
 
 msgid "Premium Archive"
 msgstr "Premium Archive"
+
+msgid "Premium Archive Extra"
+msgstr ""
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "يقرأ Premium Archive القصص كاملةً بصوت مسموع."
@@ -5715,9 +6021,6 @@ msgstr "محمي:"
 msgid "Public blurblog sharing"
 msgstr "مشاركة علنية عبر Blurblog"
 
-msgid "Public comments"
-msgstr "التعليقات العامة"
-
 msgid "Public:"
 msgstr "عام:"
 
@@ -5820,6 +6123,9 @@ msgstr ""
 msgid "Read aloud"
 msgstr "القراءة بصوت عالٍ"
 
+msgid "Read and unread stories are both listed"
+msgstr "تُعرض القصص المقروءة وغير المقروءة معًا"
+
 #, python-format
 msgid "Read by %(voice)s"
 msgstr "قرأها %(voice)s"
@@ -5920,11 +6226,11 @@ msgstr "مجتمعات Reddit"
 msgid "Redeemed"
 msgstr "تم الاسترداد"
 
-msgid "Reduce clutter in your river of stories"
-msgstr "قلّل الفوضى في سيل القصص لديك"
+msgid "Redirect URL"
+msgstr "عنوان URL لإعادة التوجيه"
 
-msgid "Reduce motion"
-msgstr "تقليل الحركة"
+msgid "Reduced"
+msgstr "مخفّض"
 
 msgid "Refer"
 msgstr "إحالة"
@@ -5937,6 +6243,9 @@ msgstr "سجل الإحالات"
 
 msgid "Refine with a hint"
 msgstr "حسّن النتيجة بتلميح"
+
+msgid "Refresh"
+msgstr "تحديث"
 
 msgid "Refund $12"
 msgstr "استرداد 12 دولارًا"
@@ -5963,6 +6272,9 @@ msgstr "ذو صلة"
 
 msgid "Related Sites"
 msgstr "مواقع ذات صلة"
+
+msgid "Related sites above the story titles"
+msgstr "المواقع ذات الصلة أعلى عناوين القصص"
 
 msgid "Related stories are only available for premium subscribers."
 msgstr "القصص ذات الصلة متاحة لمشتركي Premium فقط."
@@ -6058,6 +6370,9 @@ msgstr "يتطلب Premium Archive"
 msgid "Reset"
 msgstr "إعادة تعيين"
 
+msgid "Reset Listen usage"
+msgstr ""
+
 msgid "Reset to original favicon"
 msgstr "إعادة ضبط الأيقونة المفضلة إلى الأصلية"
 
@@ -6110,6 +6425,12 @@ msgstr "تدفّق الأخبار"
 
 msgid "River of News (reading by folder)"
 msgstr "تدفّق الأخبار (القراءة حسب المجلد)"
+
+msgid "Roomy rows with a picture and a preview"
+msgstr "صفوف واسعة مع صورة ومعاينة"
+
+msgid "Rows in the sidebar and the story list"
+msgstr "الصفوف في الشريط الجانبي وقائمة القصص"
 
 msgid "Run newsblur auth login to authorize via OAuth"
 msgstr "شغّل newsblur auth login للتفويض عبر OAuth"
@@ -6175,9 +6496,6 @@ msgstr "حفظ إعدادات Blurblog"
 
 msgid "Save My Profile"
 msgstr "حفظ ملفي الشخصي"
-
-msgid "Save Preferences"
-msgstr "حفظ التفضيلات"
 
 msgid "Save Search"
 msgstr "حفظ البحث"
@@ -6255,15 +6573,21 @@ msgid ""
 " you use the Generate button."
 msgstr "تتطلب الموجزات المجدولة اشتراك Premium Archive. في باقتك، لا تُنشأ الموجزات إلا عند استخدام زر «إنشاء»."
 
-msgid "Scheduled delivery (daily or twice daily)"
-msgstr "التسليم المجدول (يوميًا أو مرتين يوميًا)"
-
 msgid "Science"
 msgstr "علوم"
 
 #, python-format
 msgid "Scoped classifiers are only available to %(plan)s subscribers."
 msgstr "المصنّفات ذات النطاق المخصص متاحة فقط لمشتركي %(plan)s."
+
+msgid "Scroll only"
+msgstr "التمرير فقط"
+
+msgid "Scroll the story"
+msgstr "مرّر خلال القصة"
+
+msgid "Scroll the story by the distance set below"
+msgstr "مرّر القصة بالمسافة المحددة أدناه"
 
 msgid "Scroll to comments"
 msgstr "انتقل إلى التعليقات"
@@ -6400,14 +6724,8 @@ msgstr ""
 "اطّلع على كيفية تطور القصة بعد نشرها لأول مرة. يتتبع NewsBlur المراجعات ويعرض مقارنة توضح التغييرات، مع "
 "تمييزها بالأخضر والأحمر."
 
-msgid "See shared stories"
-msgstr "عرض القصص المشتركة"
-
 msgid "See the story title and a short content preview"
 msgstr "اعرض عنوان القصة ومعاينة قصيرة لمحتواها"
-
-msgid "See which feeds cover the same story"
-msgstr "اطّلع على الخلاصات التي تغطي القصة نفسها"
 
 msgid "Select"
 msgstr "اختيار"
@@ -6466,6 +6784,9 @@ msgstr "أرسل هذه القصة"
 msgid "Sending…"
 msgstr "جارٍ الإرسال…"
 
+msgid "Separate"
+msgstr "منفصل"
+
 msgid "September"
 msgstr "سبتمبر"
 
@@ -6508,9 +6829,6 @@ msgstr "شارك قصة مع تعليق، وستُنشر على مدونتك ف�
 
 msgid "Share on NewsBlur"
 msgstr "مشاركة على NewsBlur"
-
-msgid "Share stories"
-msgstr "مشاركة القصص"
 
 msgid ""
 "Share stories with your own comments on your public blurblog. Follow friends to see what they're reading "
@@ -6579,35 +6897,26 @@ msgctxt "card height"
 msgid "Short"
 msgstr "قصير"
 
+msgid "Shorten all"
+msgstr "اختصار الكل"
+
+msgid "Shorten shared"
+msgstr "اختصار القصص المشتركة"
+
+msgid "Shortened stories open with a click"
+msgstr "تُفتح القصص المختصرة بنقرة"
+
 msgid "Show"
 msgstr "عرض"
 
 msgid "Show Folders"
 msgstr "إظهار المجلدات"
 
-msgid "Show Global Shared Stories"
-msgstr "إظهار القصص المشتركة عالميًا"
-
-msgid "Show Good Reads"
-msgstr "إظهار قراءات جيدة"
-
-msgid "Show Infrequent Site Stories"
-msgstr "إظهار قصص المواقع قليلة التحديث"
-
-msgid "Show Long Reads"
-msgstr "إظهار القراءات الطويلة"
-
-msgid "Show Widely Read Stories"
-msgstr "إظهار القصص الأكثر قراءة"
-
 msgid "Show a preview of the story"
 msgstr "عرض معاينة للقصة"
 
 msgid "Show all animations"
 msgstr "إظهار كل الرسوم المتحركة"
-
-msgid "Show all comments"
-msgstr "عرض كل التعليقات"
 
 msgid "Show all stories"
 msgstr "عرض كل القصص"
@@ -6639,8 +6948,14 @@ msgstr "إظهار أداة التمييز عند تحديد النص"
 msgid "Show history"
 msgstr "عرض السجل"
 
+msgid "Show in full"
+msgstr "العرض كاملًا"
+
 msgid "Show more related stories"
 msgstr "عرض المزيد من القصص ذات الصلة"
+
+msgid "Show new stories as they arrive"
+msgstr "أظهر القصص الجديدة فور وصولها"
 
 msgid "Show on Load"
 msgstr "إظهار عند التحميل"
@@ -6679,6 +6994,9 @@ msgstr "عرض القصص في <b>%(date)s</b>"
 msgid "Shows a toolbar button with your unread count"
 msgstr "يعرض زرًا في شريط الأدوات مع عدد العناصر غير المقروءة"
 
+msgid "Sidebar"
+msgstr "الشريط الجانبي"
+
 msgid "Sign in and your feeds, training, and saved stories sync instantly"
 msgstr "سجّل الدخول لمزامنة خلاصاتك وتدريبك والقصص المحفوظة فورًا"
 
@@ -6715,17 +7033,20 @@ msgstr "عنوان الموقع أو ابحث بالاسم..."
 msgid "Site by Site"
 msgstr "موقعًا تلو الآخر"
 
+msgid "Site order"
+msgstr "ترتيب المواقع"
+
 msgid "Site settings"
 msgstr "إعدادات الموقع"
-
-msgid "Site sidebar order"
-msgstr "ترتيب الشريط الجانبي للمواقع"
 
 msgid "Site stats"
 msgstr "إحصاءات الموقع"
 
 msgid "Sites"
 msgstr "المواقع"
+
+msgid "Sites and folders"
+msgstr "المواقع والمجلدات"
 
 msgid "Sites updated up to 5x more often"
 msgstr "تُحدّث المواقع بمعدل يصل إلى 5 أضعاف"
@@ -6748,6 +7069,12 @@ msgstr "صورة مصغّرة صغيرة على اليسار"
 msgid "Small image thumbnail on the right"
 msgstr "صورة مصغّرة صغيرة على اليمين"
 
+msgid "Small, left"
+msgstr "صغير، إلى اليسار"
+
+msgid "Small, right"
+msgstr "صغير، إلى اليمين"
+
 msgid "So much time and so little to do. Strike that! Reverse it."
 msgstr "كل هذا الوقت ولا شيء نفعله. بل على العكس! اعكسها."
 
@@ -6756,6 +7083,9 @@ msgstr "اجتماعي"
 
 msgid "Social Connections"
 msgstr "الاتصالات الاجتماعية"
+
+msgid "Social features"
+msgstr "الميزات الاجتماعية"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6807,8 +7137,11 @@ msgstr "خيارات الترتيب والتصفية والعرض"
 msgid "Source feeds"
 msgstr "الخلاصات المصدرية"
 
-msgid "Spacing between feeds and story titles"
-msgstr "المسافة بين الخلاصات وعناوين القصص"
+msgid "Space bar"
+msgstr "مفتاح المسافة"
+
+msgid "Spacing"
+msgstr "التباعد"
 
 msgid "Spanish"
 msgstr "الإسبانية"
@@ -6924,6 +7257,9 @@ msgstr "الحالة"
 msgid "Stay on the same feed/folder"
 msgstr "ابقَ في الخلاصة/المجلد نفسه"
 
+msgid "Stay put"
+msgstr "ابقَ في مكانك"
+
 msgid "Steadier or more varied"
 msgstr "أكثر ثباتًا أو تنوعًا"
 
@@ -6952,6 +7288,9 @@ msgstr "تُبرز القصص باللون الأخضر (إعجاب) أو تُخ
 
 msgid "Stories arrive in real-time"
 msgstr "تصل القصص في الوقت الفعلي"
+
+msgid "Stories as cards in a grid"
+msgstr "القصص كبطاقات في شبكة"
 
 msgid "Stories cache for offline reading with automatic background refresh."
 msgstr "تُخزّن القصص مؤقتًا لقراءتها دون اتصال بالإنترنت، مع تحديث تلقائي في الخلفية."
@@ -7015,6 +7354,12 @@ msgstr "القصص شهريًا"
 msgid "Stories readers finished, saved, and shared"
 msgstr "القصص التي أنهى القراء قراءتها وحفظوها وشاركوها"
 
+msgid "Stories scrolled past in the story titles"
+msgstr "القصص التي مررت عليها أثناء تصفح العناوين"
+
+msgid "Stories shown"
+msgstr "القصص المعروضة"
+
 msgid "Stories that held the most attention across NewsBlur."
 msgstr "القصص التي حظيت بأكبر قدر من الاهتمام عبر NewsBlur."
 
@@ -7023,6 +7368,9 @@ msgstr "لن يتم <b>أبدًا</b> وضع علامة «مقروء» على ا
 
 msgid "Stories will <b>never</b> be marked as read"
 msgstr "لن <b>يتم أبدًا</b> وضع علامة «مقروء» على القصص"
+
+msgid "Stories you have read are left out"
+msgstr "تُستثنى القصص التي قرأتها"
 
 msgid "Story"
 msgstr "القصة"
@@ -7057,6 +7405,9 @@ msgstr "تنسيق القصة"
 msgid "Story URL"
 msgstr "رابط القصة"
 
+msgid "Story buttons"
+msgstr "أزرار القصة"
+
 msgid "Story cards open on their own screen"
 msgstr "تُفتح بطاقات القصص على شاشة مستقلة"
 
@@ -7075,23 +7426,20 @@ msgstr "لغة القصة"
 msgid "Story layout"
 msgstr "تخطيط القصة"
 
+msgid "Story list"
+msgstr "قائمة القصص"
+
 msgid "Story preview"
 msgstr "معاينة القصة"
 
 msgid "Story shows in Focus view"
 msgstr "تظهر القصة في عرض التركيز"
 
-msgid "Story side options"
-msgstr "خيارات جانب القصة"
-
-msgid "Story side options buttons"
-msgstr "أزرار خيارات جانب القصة"
-
-msgid "Story side options placement"
-msgstr "موضع خيارات جانب القصة"
-
 msgid "Story title styling"
 msgstr "تنسيق عنوان القصة"
+
+msgid "Story titles beside the open story"
+msgstr "عناوين القصص بجوار القصة المفتوحة"
 
 msgid "Stream interrupted. No response received for 10 seconds."
 msgstr "انقطع الاتصال. لم نتلقَّ أي استجابة خلال 10 ثوانٍ."
@@ -7276,6 +7624,9 @@ msgctxt "card height"
 msgid "Tall"
 msgstr "طويل"
 
+msgid "Tall stories"
+msgstr "قصص طويلة"
+
 msgid "Target category name"
 msgstr "اسم الفئة المستهدفة"
 
@@ -7341,6 +7692,9 @@ msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Archive%(bold_e
 msgid "Thank you! You have a %(bold_start)spremium pro account%(bold_end)s."
 msgstr "شكرًا لك! لديك %(bold_start)sحساب Premium Pro%(bold_end)s."
 
+msgid "That change could not be saved"
+msgstr "تعذّر حفظ هذا التغيير"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "استغرق رد خدمة الذكاء الاصطناعي وقتًا طويلًا. يُرجى المحاولة مرة أخرى."
 
@@ -7392,6 +7746,9 @@ msgstr "تدفّق الأخبار الكامل ميزة %(link_start)sمدفوع
 msgid "The full shortcut list"
 msgstr "قائمة الاختصارات كاملة"
 
+msgid "The full text of the story, fetched from the site"
+msgstr "النص الكامل للقصة، الذي جُلب من الموقع"
+
 msgid "The gift has been applied to your account."
 msgstr "تم تطبيق الهدية على حسابك."
 
@@ -7413,14 +7770,29 @@ msgstr ""
 msgid "The most important stories from your feeds"
 msgstr "أهم القصص من خلاصاتك"
 
+msgid "The most recent stories come first"
+msgstr "تظهر القصص الأحدث أولًا"
+
+msgid "The oldest stories come first"
+msgstr "تظهر القصص الأقدم أولًا"
+
 msgid "The original page has been disabled by the publisher."
 msgstr "عطّل الناشر الصفحة الأصلية."
 
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "يُجلب HTML الصفحة ويُحلل لاستخراج بنية المحتوى."
 
+msgid "The site itself, as you would see it in a browser"
+msgstr "الموقع نفسه كما تراه في المتصفح"
+
+msgid "The story on its own page on the site"
+msgstr "القصة في صفحتها الخاصة على الموقع"
+
 msgid "The view you pick is remembered per-site, so summary-only feeds can default to Text."
 msgstr "يُحفظ العرض الذي تختاره لكل موقع، لذا يمكن ضبط الخلاصات التي تعرض الملخصات فقط على عرض النص افتراضيًا."
+
+msgid "Theme"
+msgstr "السمة"
 
 msgid "Themes & Customization"
 msgstr "السمات والتخصيص"
@@ -7526,6 +7898,11 @@ msgstr "هذا الأسبوع"
 msgid "This Year"
 msgstr "هذا العام"
 
+msgid ""
+"This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
+"reader returns."
+msgstr "يطلب هذا المثال صلاحية القراءة. أنشئ قيمة state جديدة لكل عملية تسجيل دخول، وتحقق منها عند عودة القارئ."
+
 msgid "This is just the demo."
 msgstr "هذا مجرد عرض تجريبي."
 
@@ -7630,6 +8007,9 @@ msgstr "عبارات العناوين"
 msgid "Title Regex"
 msgstr "تعبير نمطي للعنوان"
 
+msgid "Title and preview"
+msgstr "العنوان والمعاينة"
+
 #, python-format
 msgid "Title filters found no stories in %(context)s."
 msgstr "لم تعثر عوامل تصفية العناوين على أي قصص في %(context)s."
@@ -7709,9 +8089,6 @@ msgstr "الأدوات"
 msgid "Tooltips"
 msgstr "تلميحات الأدوات"
 
-msgid "Tooltips like this"
-msgstr "تلميحات الأدوات مثل هذه"
-
 msgid "Top"
 msgstr "الأعلى"
 
@@ -7769,6 +8146,9 @@ msgstr "درّب على هذه القصة"
 msgid "Train your feeds to filter stories you like and dislike."
 msgstr "درّب خلاصاتك لتصفية القصص التي تعجبك أو لا تعجبك."
 
+msgid "Train, Save, Share and the rest"
+msgstr "التدريب والحفظ والمشاركة وغيرها"
+
 msgid "Train, tag, search, and organize newsletters like any feed"
 msgstr "درّب النشرات الإخبارية ووسّمها وابحث فيها ونظّمها كأي خلاصة"
 
@@ -7792,9 +8172,6 @@ msgstr "الرائج"
 
 msgid "Trending Sites"
 msgstr "المواقع الرائجة"
-
-msgid "Truncate stories"
-msgstr "اقتطاع القصص"
 
 msgid "Try"
 msgstr "جرّب"
@@ -7875,6 +8252,9 @@ msgstr "عنوان URL:"
 msgid "Un-mute this site"
 msgstr "إلغاء كتم هذا الموقع"
 
+msgid "Unavailable"
+msgstr "غير متاح"
+
 msgid "Uncategorized"
 msgstr "غير مصنّف"
 
@@ -7925,6 +8305,9 @@ msgstr "تم إلغاء الكتم"
 
 msgid "Unread"
 msgstr "غير مقروء"
+
+msgid "Unread count"
+msgstr "عدد القصص غير المقروءة"
 
 msgid "Unread only"
 msgstr "غير المقروءة فقط"
@@ -8193,6 +8576,10 @@ msgstr "مرئي"
 msgid "Voice"
 msgstr "الصوت"
 
+#, python-format
+msgid "Voice previews today: %(used)s of %(limit)s."
+msgstr ""
+
 msgid "Voice recording failed. Please try again."
 msgstr "فشل التسجيل الصوتي. يُرجى المحاولة مرة أخرى."
 
@@ -8204,6 +8591,10 @@ msgstr "إعدادات الصوت"
 
 msgid "Voices"
 msgstr "الأصوات"
+
+msgctxt "theme"
+msgid "Warm"
+msgstr "دافئ"
 
 msgid "Warning: This is actually permanent"
 msgstr "تحذير: هذا الإجراء نهائي بالفعل"
@@ -8304,8 +8695,14 @@ msgstr "ما السياق والخلفية؟"
 msgid "What's the difference between CLI and MCP?"
 msgstr "ما الفرق بين CLI وMCP؟"
 
+msgid "When NewsBlur opens"
+msgstr "عند فتح NewsBlur"
+
 msgid "When a feed updates, NewsBlur checks for duplicates across all your subscriptions"
 msgstr "عند تحديث خلاصة، يتحقق NewsBlur من التكرارات عبر جميع اشتراكاتك"
+
+msgid "When clicked"
+msgstr "عند النقر"
 
 msgid "When multiple feeds cover the same story, NewsBlur groups them together so you only see it once."
 msgstr "عندما تغطي عدة خلاصات القصة نفسها، يجمعها NewsBlur معًا لتراها مرة واحدة فقط."
@@ -8329,6 +8726,9 @@ msgstr "عند الاشتراك في خلاصة جديدة، يُستكمل سج
 
 msgid "Which AI models are available?"
 msgstr "ما نماذج الذكاء الاصطناعي المتاحة؟"
+
+msgid "While scrolling"
+msgstr "أثناء التمرير"
 
 msgid "Whoops! Something went wrong. Try again."
 msgstr "عذرًا! حدث خطأ ما. حاول مرة أخرى."
@@ -8359,6 +8759,9 @@ msgstr "عنوان النافذة"
 
 msgid "Windows &amp; Linux"
 msgstr "Windows &amp; Linux"
+
+msgid "With the keyboard"
+msgstr "باستخدام لوحة المفاتيح"
 
 msgid "Word Matching"
 msgstr "مطابقة الكلمات"
@@ -8556,6 +8959,9 @@ msgstr "ليس لديك قصص غير مقروءة."
 msgid "You have not yet subscribed to anybody's shared stories."
 msgstr "لم تشترك بعد في القصص المشتركة لأي شخص."
 
+msgid "You haven’t registered any OAuth applications yet."
+msgstr "لم تسجّل أي تطبيقات OAuth بعد."
+
 #, python-format
 msgid "You must be following %(value_1)s to reply"
 msgstr "يجب أن تتابع %(value_1)s لتتمكن من الرد"
@@ -8628,11 +9034,20 @@ msgstr "نطاقاتك المؤرشفة"
 msgid "Your Blurblog"
 msgstr "مدونة Blurblog الخاصة بك"
 
+msgid "Your OAuth applications"
+msgstr "تطبيقات OAuth الخاصة بك"
+
 msgid "Your Referral Link"
 msgstr "رابط الإحالة الخاص بك"
 
 msgid "Your Referral Stats"
 msgstr "إحصاءات الإحالات الخاصة بك"
+
+msgid "Your app name"
+msgstr "اسم تطبيقك"
+
+msgid "Your applications are paused until your account has active Premium Pro."
+msgstr "تطبيقاتك متوقفة مؤقتًا حتى يصبح لديك اشتراك Premium Pro نشط."
 
 msgid "Your archived stories remain accessible, but new stories follow the standard retention policy."
 msgstr "ستظل قصصك المؤرشفة متاحة، لكن القصص الجديدة تخضع لسياسة الاحتفاظ المعتادة."

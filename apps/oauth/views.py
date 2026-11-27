@@ -254,6 +254,7 @@ def api_user_info(request):
                 "email": user.email,
                 "is_premium": user.profile.is_premium,
                 "is_archive": user.profile.is_archive,
+                "is_archive_extra": bool(user.profile.is_archive_extra),
                 "is_pro": user.profile.is_pro,
                 "feed_count": feed_count,
                 "premium_expire": int(user.profile.premium_expire.strftime("%s"))

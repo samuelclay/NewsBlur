@@ -170,7 +170,7 @@ private fun miniPlayerSubtitle(state: ListenUiState): String =
         state.phase == ListenPhase.LOADING ->
             stringResource(if (state.isMedia) R.string.listen_media_loading else R.string.listen_loading)
         state.phase == ListenPhase.PREVIEW_ENDED -> stringResource(R.string.listen_preview_finished)
-        state.isPreview -> stringResource(R.string.listen_preview_pill)
+        state.isPreview -> pluralStringResource(R.plurals.listen_preview_pill_seconds, state.previewSeconds, state.previewSeconds)
         else -> {
             val feed = state.story?.feedTitle.orEmpty()
             val voice = state.voice?.name.orEmpty()

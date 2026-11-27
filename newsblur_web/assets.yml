@@ -150,6 +150,10 @@ stylesheets:
     - css/jquery-ui/jquery-ui.theme.css
     - css/jquery-ui/jquery-ui.structure.css
     - css/vendor/jquery.tagit.css
+    # assets.yml: graymode.css and sepiamode.css answer the dark and light rules above at those rules'
+    # own specificity, so they win only by loading after every other stylesheet.
+    - css/reader/graymode.css
+    - css/reader/sepiamode.css
   # mobile:
   #     - css/mobile/jquery.mobile-1.0b1.css
   #     - css/mobile/mobile.css

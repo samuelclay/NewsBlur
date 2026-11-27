@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Permanent story archive and 1 hour of Listen per week"
+        "description": "Permanent story archive and 1 hour of Listen per month"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "Frequent feed updates and 10 hours of Listen per week"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "Permanent archive and 10 hours of Listen per month"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "NewsBlur Premium Archive Subscription",
-        "description": "Every Premium feature, a permanent searchable story archive, and 1 hour of Listen per week. Keep stories unread as long as you want. Listening resets Sunday.",
+        "description": "Every Premium feature, a permanent searchable story archive, and 1 hour of Listen per month. Keep stories unread as long as you want. Listening resets on the 1st.",
         "benefits": [
           "Everything in Premium",
           "Keep stories unread forever",
           "Permanent searchable story archive",
-          "1 hour of Listen per week"
+          "1 hour of Listen per month"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "NewsBlur Premium Archive Extra Subscription",
+        "description": "Every Premium feature, a permanent searchable story archive, and 10 hours of Listen per month. Keep stories unread as long as you want. Listening resets on the 1st.",
+        "benefits": [
+          "Everything in Premium",
+          "Keep stories unread forever",
+          "Permanent searchable story archive",
+          "10 hours of Listen per month"
         ]
       }
     }

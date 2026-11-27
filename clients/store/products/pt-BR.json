@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Arquivo permanente e 1 hora de áudio por semana"
+        "description": "Arquivo permanente e 1 hora de áudio por mês"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "Feeds atualizados com frequência e 10 h de áudio/semana"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "Arquivo permanente e 10 horas de áudio por mês"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "Assinatura do NewsBlur Premium Archive",
-        "description": "Todos os recursos Premium, arquivo permanente com busca e 1 hora de áudio por semana. Mantenha artigos não lidos pelo tempo que quiser. O limite de áudio é renovado no domingo.",
+        "description": "Todos os recursos Premium, arquivo permanente com busca e 1 hora de áudio por mês. Mantenha artigos não lidos pelo tempo que quiser. O limite de áudio é renovado no dia 1 de cada mês.",
         "benefits": [
           "Tudo do Premium",
           "Artigos não lidos sem limite de tempo",
           "Arquivo permanente com busca",
-          "1 hora de áudio por semana"
+          "1 hora de áudio por mês"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "Assinatura do NewsBlur Premium Archive Extra",
+        "description": "Todos os recursos Premium, arquivo permanente com busca e 10 horas de áudio por mês. Mantenha artigos não lidos pelo tempo que quiser. O limite de áudio é renovado no dia 1 de cada mês.",
+        "benefits": [
+          "Tudo do Premium",
+          "Artigos não lidos sem limite de tempo",
+          "Arquivo permanente com busca",
+          "10 horas de áudio por mês"
         ]
       }
     }

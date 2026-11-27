@@ -10,5 +10,6 @@ urlpatterns = [
     url(r"^segment$", views.listen_segment, name="listen-segment"),
     url(r"^preview$", views.listen_preview, name="listen-preview"),
     url(r"^usage$", views.listen_usage, name="listen-usage"),
+    url(r"^staff_usage$", views.listen_staff_usage, name="listen-staff-usage"),
     url(r"^progress$", views.listen_progress, name="listen-progress"),
 ]

@@ -369,13 +369,13 @@ _.extend(NEWSBLUR.ReaderStatistics.prototype, {
                 _.map(_.range(24), function (hour) {
                     var count = data.story_hours_history[hour] || data.story_hours_history["" + hour] || 0;
                     var opacity = 1 - (count * 1.0 / max_count);
-                    var theme = NEWSBLUR.assets && NEWSBLUR.assets.theme ? NEWSBLUR.assets.theme() : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                    if (theme == 'light') {
-                        return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
-                    } else if (theme == 'dark') {
+                    // reader_statistics.js: gray draws like dark and sepia like light (assetmodel.js is_dark_theme).
+                    var is_dark = NEWSBLUR.assets && NEWSBLUR.assets.is_dark_theme ? NEWSBLUR.assets.is_dark_theme() : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    if (is_dark) {
                         opacity = 1 - opacity;
                         return $.make('td', { style: "background-color: rgba(151, 187, 205, " + opacity + ");" });
                     }
+                    return $.make('td', { style: "background-color: rgba(255, 255, 255, " + opacity + ");" });
                 })
             ]),
             $.make('tr', { className: 'NB-statistics-history-chart-hours-text-row' }, [

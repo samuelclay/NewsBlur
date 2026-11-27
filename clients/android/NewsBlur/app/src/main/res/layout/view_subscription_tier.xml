@@ -110,6 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/whitney"
+                        android:gravity="center_horizontal"
                         android:textColor="@color/white"
                         android:textSize="17sp"
                         android:textStyle="bold"

@@ -3,4 +3,23 @@ dependencies {
     add("implementation", "com.google.mlkit:language-id:17.0.6")
     add("implementation", "com.android.billingclient:billing:8.0.0")
     add("implementation", "com.google.android.play:review:2.0.2")
+    // dependencies.gradle: PushMessaging.kt receives story notifications over Firebase Cloud Messaging.
+    add("implementation", "com.google.firebase:firebase-messaging:26.0.2")
+}
+
+// dependencies.gradle: the Firebase project's ids are kept out of this public repo. A build that finds the file
+// gets push. One without it still builds, PushMessaging.kt stays off and SyncService.kt keeps polling.
+def googleServicesFile = file(findProperty("googleServicesJson") ?: "/srv/secrets-newsblur/android/google-services.json")
+if (googleServicesFile.isFile()) {
+    def config = new groovy.json.JsonSlurper().parse(googleServicesFile)
+    def client = config.client.find {
+        it.client_info.android_client_info.package_name == android.defaultConfig.applicationId
+    }
+    if (client != null) {
+        // These are the string resources Firebase reads at startup, the same ones the google-services plugin generates.
+        android.defaultConfig.resValue("string", "google_app_id", client.client_info.mobilesdk_app_id)
+        android.defaultConfig.resValue("string", "google_api_key", client.api_key[0].current_key)
+        android.defaultConfig.resValue("string", "gcm_defaultSenderId", config.project_info.project_number)
+        android.defaultConfig.resValue("string", "project_id", config.project_info.project_id)
+    }
 }

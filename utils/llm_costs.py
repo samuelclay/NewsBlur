@@ -22,6 +22,8 @@ Usage:
     cost = LLMCostTracker.calculate_cost("claude-sonnet-4-20250514", 1000, 500)
 """
 
+import pymongo.errors
+
 from utils import log as logging
 
 # Model pricing per 1M tokens (USD)
@@ -313,6 +315,16 @@ class LLMCostTracker:
 
             return cost_record
 
+        except pymongo.errors.ConnectionFailure as e:
+            # llm_costs.py: A server selection timeout's text ends in a topology dump with a
+            # random id, and Sentry groups log messages by their text, so one two-minute DNS
+            # blip on 2026-11-26 opened 26 issues. The error stays the same for every failure;
+            # the detail goes to the debug log.
+            logging.error(
+                f"Failed to record LLM cost to MongoDB, analytics database unreachable: {type(e).__name__}"
+            )
+            logging.debug(f"LLM cost not recorded to MongoDB: {e}")
+            return None
         except Exception as e:
             logging.error(f"Failed to record LLM cost to MongoDB: {e}")
             return None

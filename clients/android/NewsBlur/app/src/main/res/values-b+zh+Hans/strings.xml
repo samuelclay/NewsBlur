@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">最多关注 10,000 个网站</string>
     <string name="pro_all_feeds_fetched">所有订阅源每 5–15 分钟抓取一次</string>
     <string name="pro_regex_train">使用正则表达式训练文章</string>
+    <string name="pro_oauth_applications">创建 OAuth 应用</string>
     <string name="pro_priority_support">优先支持</string>
     <string name="pro_natural_language_search">自然语言搜索</string>
     <string name="settings_cat_offline">离线阅读</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">滚动浏览时自动将看过的文章标记为已读</string>
     <string name="settings_story_clustering">聚类相关文章</string>
     <string name="settings_story_clustering_summary">在文章标题下方显示其他订阅源中的重复文章</string>
+    <string name="settings_show_new_stories">新文章到达时显示</string>
+    <string name="settings_show_new_stories_summary">打开的网站或文件夹中有新文章时，显示“有 N 篇新文章”提示条</string>
     <string name="settings_cluster_matches">聚类匹配</string>
     <string name="settings_cluster_matches_summary">选择聚类中仅显示重复标题，还是同时显示相关文章</string>
     <string name="settings_story_clustering_save_failed">无法保存文章聚类偏好设置</string>
@@ -906,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">没有订阅源通知</string>
+    <string name="notifications_device_off">此设备上的通知已关闭。在 Android 上设置为发送通知的网站，在你开启通知前不会在此设备上发出提醒。</string>
     <string name="notification_permissions_context">显示通知需要权限</string>
     <string name="notification_permissions_rationale">请先在应用设置中手动授予通知权限，然后再试着启用通知</string>
     <string name="write_storage_permission_opml">导出 OPML 需要写入存储空间的权限</string>
@@ -1342,7 +1346,6 @@
     <string name="listen_resume">继续</string>
     <string name="listen_pause">暂停</string>
     <string name="listen_play">播放</string>
-    <string name="listen_preview_pill">试听 30 秒</string>
     <string name="listen_open_player">打开播放器</string>
     <string name="listen_close">关闭播放器</string>
     <string name="listen_loading">正在准备文章…</string>
@@ -1396,7 +1399,6 @@
     <string name="listen_speed_exact">精确播放速度</string>
     <string name="listen_speed_slider">播放速度滑块</string>
     <string name="listen_speed_button">播放速度 %1$s×</string>
-    <string name="listen_preview_banner">正在试听 30 秒。升级到高级归档版即可解锁完整文章。</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">还剩 %1$d 秒</item>
     </plurals>
@@ -1479,6 +1481,8 @@
     <string name="settings_listen_voices_summary">为每种语言选择语音及朗读方式</string>
     <string name="settings_listen_delivery">表达方式</string>
     <string name="settings_listen_speed">播放速度</string>
-    <string name="archive_listen">每周可收听 1 小时文章朗读</string>
     <string name="pro_listen">每周可收听 10 小时文章朗读</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">%d 篇新文章</item>
+    </plurals>
 </resources>

@@ -20,6 +20,14 @@
     mode: "0700"
   tags: env
 
+- name: Install OAuth metrics scrape credential
+  copy:
+    content: "{{ lookup('ansible.builtin.password', '/srv/secrets-newsblur/keys/oauth-metrics-token length=48 chars=ascii_letters,digits') }}"
+    dest: /srv/newsblur/config/secrets/oauth-metrics-token
+    mode: "0600"
+  no_log: true
+  tags: env
+
 - name: Copy Sign in with Apple signing key
   copy:
     src: /srv/secrets-newsblur/keys/apple-signin.p8

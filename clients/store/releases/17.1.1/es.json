@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "whats_new": "Hemos corregido un error que podía dejar párrafos enteros sin sonido al escuchar un artículo con la pantalla bloqueada. Cuando llegan más de 20 artículos nuevos a un feed, ahora verás los primeros más rápido al tocar el botón de artículos nuevos."
+  }
+}

@@ -344,6 +344,8 @@ Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.cou
 ### Theme Switching
 - `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode
 - `NEWSBLUR.reader.switch_theme('light')` - Switch to light mode
+- `NEWSBLUR.reader.switch_theme('sepia')` - Switch to the Warm theme
+- `NEWSBLUR.reader.switch_theme('gray')` - Switch to the Gray theme
 - `NEWSBLUR.reader.switch_theme('auto')` - Switch to auto/system theme
 
 ### Opening Modals

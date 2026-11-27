@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Artikel yang Anda baca di ponsel langsung ditandai sudah dibaca di Mac dan web. Artikel tersimpan dan jumlah artikel yang belum dibaca juga diperbarui di semua perangkat yang sedang membuka NewsBlur. Saat ada artikel baru di situs atau folder yang sedang Anda baca, jumlahnya muncul pada tombol. Anda bisa terus membaca, lalu menekan tombol itu untuk menambahkan artikel baru ke daftar saat Anda siap."
+  },
+  "macos": {
+    "whats_new": "Artikel yang Anda baca di ponsel langsung ditandai sudah dibaca di Mac dan web. Artikel tersimpan dan jumlah artikel yang belum dibaca juga diperbarui di semua perangkat yang sedang membuka NewsBlur. Saat ada artikel baru di situs atau folder yang sedang Anda baca, jumlahnya muncul pada tombol. Anda bisa terus membaca, lalu menekan tombol itu untuk menambahkan artikel baru ke daftar saat Anda siap."
+  },
+  "android": {
+    "release_notes": "Artikel yang Anda baca di ponsel langsung ditandai sudah dibaca di Mac dan web. Artikel tersimpan dan jumlah artikel yang belum dibaca juga diperbarui di semua perangkat yang sedang membuka NewsBlur. Saat ada artikel baru di situs atau folder yang sedang Anda baca, jumlahnya muncul pada tombol. Anda bisa terus membaca, lalu menekan tombol itu untuk menambahkan artikel baru ke daftar saat Anda siap."
+  }
+}

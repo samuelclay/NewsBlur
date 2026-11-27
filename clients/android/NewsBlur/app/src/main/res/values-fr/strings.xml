@@ -483,6 +483,7 @@ les gens pour parler du monde.</string>
     <string name="pro_enable_sites">Suivez jusqu’à 10 000 sites</string>
     <string name="pro_all_feeds_fetched">Tous les flux sont récupérés toutes les 5 à 15 minutes</string>
     <string name="pro_regex_train">Entraîner le classement des articles avec des expressions régulières</string>
+    <string name="pro_oauth_applications">Créer des applications OAuth</string>
     <string name="pro_priority_support">Assistance prioritaire</string>
     <string name="pro_natural_language_search">Recherche en langage naturel</string>
     <string name="settings_cat_offline">Lecture hors ligne</string>
@@ -630,6 +631,8 @@ les gens pour parler du monde.</string>
     <string name="settings_mark_read_on_feed_scroll_sum">Marquer automatiquement les articles comme lus lorsqu’ils défilent hors de l’écran</string>
     <string name="settings_story_clustering">Regrouper les articles similaires</string>
     <string name="settings_story_clustering_summary">Afficher sous le titre d’un article les doublons provenant d’autres flux</string>
+    <string name="settings_show_new_stories">Afficher les nouveaux articles dès leur arrivée</string>
+    <string name="settings_show_new_stories_summary">Afficher une pastille « N nouveaux articles » lorsque des articles arrivent dans le site ou le dossier ouvert</string>
     <string name="settings_cluster_matches">Correspondances des groupes</string>
     <string name="settings_cluster_matches_summary">Choisir si les groupes affichent uniquement les titres en double ou aussi les articles similaires</string>
     <string name="settings_story_clustering_save_failed">Impossible d’enregistrer la préférence de regroupement des articles</string>
@@ -922,6 +925,7 @@ les gens pour parler du monde.</string>
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Aucune notification de flux</string>
+    <string name="notifications_device_off">Les notifications sont désactivées sur cet appareil. Les sites configurés pour envoyer des notifications sur Android restent silencieux ici jusqu’à ce que vous les activiez.</string>
     <string name="notification_permissions_context">L’autorisation est requise pour envoyer des notifications</string>
     <string name="notification_permissions_rationale">Vous devez autoriser manuellement les notifications dans les réglages de l’app avant de réessayer de les activer</string>
     <string name="write_storage_permission_opml">L’autorisation d’écriture dans le stockage est requise pour exporter au format OPML</string>
@@ -1394,7 +1398,6 @@ les gens pour parler du monde.</string>
     <string name="listen_resume">Reprendre</string>
     <string name="listen_pause">Mettre en pause</string>
     <string name="listen_play">Lire</string>
-    <string name="listen_preview_pill">Aperçu de 30 s</string>
     <string name="listen_open_player">Ouvrir le lecteur</string>
     <string name="listen_close">Fermer le lecteur</string>
     <string name="listen_loading">Préparation de l’article…</string>
@@ -1452,7 +1455,6 @@ les gens pour parler du monde.</string>
     <string name="listen_speed_exact">Vitesse de lecture exacte</string>
     <string name="listen_speed_slider">Curseur de vitesse de lecture</string>
     <string name="listen_speed_button">Vitesse de lecture %1$s×</string>
-    <string name="listen_preview_banner">Aperçu de 30 secondes. Premium Archive donne accès aux articles complets.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="many">%1$d secondes restantes</item>
         <item quantity="one">Il vous reste %1$d seconde</item>
@@ -1547,6 +1549,10 @@ les gens pour parler du monde.</string>
     <string name="settings_listen_voices_summary">Choisissez une voix pour chaque langue et sa façon de lire</string>
     <string name="settings_listen_delivery">Lecture</string>
     <string name="settings_listen_speed">Vitesse de lecture</string>
-    <string name="archive_listen">Écoutez 1 heure d’articles lus à voix haute par semaine</string>
     <string name="pro_listen">Écoutez 10 heures d’articles lus à voix haute par semaine</string>
+    <plurals name="new_stories_pill">
+        <item quantity="many">%d nouveaux articles</item>
+        <item quantity="one">%d nouvel article</item>
+        <item quantity="other">%d nouveaux articles</item>
+    </plurals>
 </resources>

@@ -1,0 +1,5 @@
+{
+  "ios": {
+    "whats_new": "Naprawiliśmy błąd, przez który podczas słuchania artykułu przy zablokowanym ekranie całe akapity mogły być niesłyszalne. Gdy w kanale pojawi się ponad 20 nowych artykułów, po stuknięciu przycisku nowych artykułów pierwsze z nich wyświetlą się teraz szybciej."
+  }
+}

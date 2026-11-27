@@ -6,6 +6,7 @@ cached audio or a /listen/stream/<job>.mp3 URL that HAProxy routes to the node s
 
 import json
 
+from django.contrib.auth.models import User
 from django.utils.translation import gettext
 from django.views.decorators.http import require_http_methods
 
@@ -400,6 +401,27 @@ def listen_preview(request):
 @json_functions.json_view
 def listen_usage(request):
     return {"code": 1, "usage": ListenUsageTracker(request.user).snapshot()}
+
+
+@ajax_login_required
+@require_http_methods(["GET", "POST"])
+@json_functions.json_view
+def listen_staff_usage(request):
+    """Staff only: one account's Listen usage (GET), or a manual reset that starts its weekly cap and daily
+    allowances over (POST). Used by the User Admin dialog (media/js/newsblur/reader/reader_admin.js); the same
+    reset is the reset_listen_usage management command."""
+    if not request.user.is_staff:
+        return _failure("forbidden", gettext("Only staff can see or reset another account's listening."))
+    params = request.POST if request.method == "POST" else request.GET
+    user = (
+        User.objects.filter(pk=params.get("user_id")).first() if params.get("user_id", "").isdigit() else None
+    )
+    if not user:
+        return _failure("not_found", gettext("That account doesn't exist."))
+    tracker = ListenUsageTracker(user)
+    if request.method == "POST":
+        tracker.reset_usage(staff_user=request.user)
+    return {"code": 1, "usage": tracker.snapshot()}
 
 
 @ajax_login_required

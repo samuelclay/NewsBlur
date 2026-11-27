@@ -115,6 +115,9 @@ class Test_OAuthRefreshTokenLifetime(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user("mcp_lifetime", "mcp_lifetime@example.com", "password")
+        self.user.profile.is_premium = self.user.profile.is_pro = True
+        self.user.profile.is_premium_trial = False
+        self.user.profile.save(update_fields=["is_premium", "is_pro", "is_premium_trial"])
         Application = get_application_model()
         self.application = Application.objects.create(
             name="NewsBlur MCP test",

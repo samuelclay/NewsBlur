@@ -73,6 +73,16 @@ scrape_configs:
       scheme: https
       tls_config:
         insecure_skip_verify: true
+    - job_name: 'oauth_usage'
+      static_configs:
+        - targets: ['haproxy']
+      authorization:
+        type: OAuthMetrics
+        credentials: local-oauth-metrics
+      metrics_path: /monitor/oauth-usage
+      scheme: https
+      tls_config:
+        insecure_skip_verify: true
     - job_name: 'notifications'
       static_configs:
         - targets: ['haproxy']

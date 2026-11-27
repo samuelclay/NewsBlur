@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "أرشيف قصص دائم وساعة استماع أسبوعيًا"
+        "description": "أرشيف قصص دائم وساعة استماع شهريًا"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "تحديثات متكررة للخلاصات و10 ساعات استماع أسبوعيًا"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "أرشيف قصص دائم و10 ساعات استماع شهريًا"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "اشتراك NewsBlur Premium Archive",
-        "description": "كل ميزات Premium وأرشيف قصص دائم قابل للبحث وساعة استماع أسبوعيًا. احتفظ بالقصص غير مقروءة ما شئت. تتجدد مدة الاستماع يوم الأحد.",
+        "description": "كل ميزات Premium وأرشيف قصص دائم قابل للبحث وساعة استماع شهريًا. احتفظ بالقصص غير مقروءة ما شئت. تتجدد مدة الاستماع في أول كل شهر.",
         "benefits": [
           "كل ميزات Premium",
           "احتفظ بالقصص غير مقروءة بلا حد زمني",
           "أرشيف قصص دائم قابل للبحث",
-          "ساعة استماع واحدة أسبوعيًا"
+          "ساعة استماع واحدة شهريًا"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "اشتراك NewsBlur Premium Archive Extra",
+        "description": "كل ميزات Premium وأرشيف قصص دائم قابل للبحث و10 ساعات استماع شهريًا. احتفظ بالقصص غير مقروءة ما شئت. تتجدد مدة الاستماع في أول كل شهر.",
+        "benefits": [
+          "كل ميزات Premium",
+          "احتفظ بالقصص غير مقروءة بلا حد زمني",
+          "أرشيف قصص دائم قابل للبحث",
+          "10 ساعات استماع شهريًا"
         ]
       }
     }

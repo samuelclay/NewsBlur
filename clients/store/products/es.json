@@ -7,11 +7,15 @@
       },
       "newsblur_premium_archive": {
         "name": "NewsBlur Premium Archive",
-        "description": "Archivo permanente y 1 hora de escucha semanal"
+        "description": "Archivo permanente y 1 hora de escucha al mes"
       },
       "newsblur_premium_pro": {
         "name": "NewsBlur Premium Pro",
         "description": "Actualizaciones frecuentes y 10 h de escucha semanal"
+      },
+      "newsblur_premium_archive_extra": {
+        "name": "NewsBlur Premium Archive Extra",
+        "description": "Archivo permanente y 10 horas de escucha al mes"
       }
     },
     "subscription_groups": {
@@ -35,12 +39,22 @@
       },
       "nb.premium.archive.99": {
         "title": "Suscripción a NewsBlur Premium Archive",
-        "description": "Todas las funciones Premium, archivo permanente con búsqueda y 1 hora de escucha semanal. Conserva artículos sin leer cuanto quieras. El tiempo de escucha se restablece el domingo.",
+        "description": "Todas las funciones Premium, archivo permanente con búsqueda y 1 hora de escucha al mes. Conserva artículos sin leer cuanto quieras. El tiempo de escucha se restablece el día 1 de cada mes.",
         "benefits": [
           "Todo lo de Premium",
           "Artículos sin leer sin límite de tiempo",
           "Archivo permanente con búsqueda",
-          "1 hora de escucha a la semana"
+          "1 hora de escucha al mes"
+        ]
+      },
+      "nb.premium.archive.extra.159": {
+        "title": "Suscripción a NewsBlur Premium Archive Extra",
+        "description": "Todas las funciones Premium, archivo permanente con búsqueda y 10 horas de escucha al mes. Conserva artículos sin leer cuanto quieras. El tiempo de escucha se restablece el día 1 de cada mes.",
+        "benefits": [
+          "Todo lo de Premium",
+          "Artículos sin leer sin límite de tiempo",
+          "Archivo permanente con búsqueda",
+          "10 horas de escucha al mes"
         ]
       }
     }

@@ -1,5 +1,19 @@
 {
   "topics": {
+    "13926": {
+      "title": "Traversal button not always available",
+      "url": "https://forum.newsblur.com/t/traversal-button-not-always-available/13926",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-11-18T16:48:42.036Z",
+      "last_posted_at": "2026-11-18T16:47:41.252Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2209",
+      "branch": "forum-13926-story-navigation",
+      "worktree": ".worktree/forum-13926-story-navigation",
+      "note": "Sam requested canceled horizontal peek, ordinary story tap, and upward-scroll reveal on Android, iOS, and Mac Catalyst, and corrected the upward threshold to 20pt/20dp. Merged at his request on 2026-11-18 as d50a20d1ed93d50e363c8d4e7b73ff4f3a190f52. Current-head CI passed and all four automated review threads were resolved. Local native regression tests, iOS real gesture UI test, Catalyst build, Android light/dark/black checks, slow tap, and double-tap smoke checks passed. Mac gestures use shared Apple controllers; no separate manual Mac session. Sam posted the prepared reply as forum post 3 on 2026-11-18; assistant did not post. Requires Android and Apple app releases, not yet released. No server deployment required.",
+      "reply": "I've prepared a fix so you can bring those buttons back with a small sideways peek without changing stories, or by tapping ordinary text or blank space in the story. Scrolling up a little also brings them back, and scrolling down hides them again. This will be in the next Android, iOS, and Mac updates.",
+      "question": null
+    },
     "13907": {
       "title": "Global Classifiers Input Button",
       "url": "https://forum.newsblur.com/t/global-classifiers-input-button/13907",
@@ -473,6 +487,34 @@
       "note": "Follow-up to the Feb 26 fix (fd61bcae9c), which never fired for this sender. pws3141's Gmail-forwarded POLITICO Berlin and London Playbooks arrive via ImprovMX with the text part set to the HTML source escaped twice; _get_content wrapped it in linebreaks/linkify and the longer-content check kept it. #2213 decodes while escaped tags outnumber real ones (stopping once markup appears) and uses a text part that decodes to markup as HTML; 4 review rounds. Merged f8400f9706 and deployed with make deploy on 2026-11-15 (all 14 app hosts ok, push servers verified on f8400f9706). Repair run on prod the same day: 238/238 stories in feeds 9896406 and 10358846 rewritten (story_content_z and image_urls only); re-tally shows all HTML, re-run finds 0 candidates. Reply is ready to post.",
       "reply": "Found the real cause this time. My February fix never actually kicked in for Politico. Their emails include a plain text version that is really the whole newsletter's HTML source, escaped twice, and NewsBlur was choosing that version over the real HTML because it was longer. The old fix only looked at the HTML version and only undid one layer. Now both versions get decoded properly, so Berlin Playbook renders correctly again, and so does London Playbook, which had the same problem. I also repaired every issue you've already received, so your older Playbooks should display properly too.",
       "question": null
+    },
+    "13976": {
+      "title": "Turn down the brightness on the new dark mode for web",
+      "url": "https://forum.newsblur.com/t/turn-down-the-brightness-on-the-new-dark-mode-for-web/13976",
+      "status": "merged",
+      "tier": 2,
+      "handled_at": "2026-11-26T04:40:46Z",
+      "last_posted_at": "2026-11-25T22:41:28.667Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2234",
+      "branch": "web-gray-warm-themes",
+      "worktree": ".worktree/web-gray-warm-themes",
+      "note": "PK1 found the Nov 24 slate dark theme too bright; Sam promised a gray option and a sepia theme in the thread. #2234 adds Gray (the new dark structure in neutral grays, softer text) and Warm (sepia) to the web, an iOS style picker (Auto plus four circles), Auto remembering a light and a dark theme, and a redesigned Preferences dialog. Merged ecc1254163 after two review rounds, plus one follow-up fix on main (adefc3223e). Web deployed with make deploy_static on 2026-11-26 (all 14 app hosts ok, new bundles verified live). The blog post is on main and goes out with the #2235 session's deploy (make blog). Reply is ready to post: Gray is live.",
+      "reply": "Gray is live on the web now. It's the new dark mode with the blue taken out, in neutral grays a little lighter than the old dark mode, and the text is a soft gray instead of bright white. Warm, the sepia theme from the apps, is in too.\n\nThe theme row in the manage menu (the gear at the bottom left) is now Auto followed by four circles: Light, Warm, Gray and Dark. Auto remembers which dark theme you picked, so choose Gray once and Auto will use Gray whenever your system goes dark. Let me know if the contrast still feels off and I'll tune it.",
+      "question": null
+    },
+    "13927": {
+      "title": "[Android] Opening a folder intermittently marks top ~6 stories as read",
+      "url": "https://forum.newsblur.com/t/android-opening-a-folder-intermittently-marks-top-6-stories-as-read/13927",
+      "status": "tier2-pending",
+      "tier": 1,
+      "handled_at": "2026-11-11T16:25:00Z",
+      "last_posted_at": "2026-11-10T20:36:41.328Z",
+      "pr": "https://github.com/samuelclay/NewsBlur/pull/2208",
+      "branch": "forum-13927-android-mark-read-replay",
+      "worktree": ".worktree/forum-13927-android-mark-read-replay",
+      "note": "PR #2208 merged 2026-11-11 bounds replayed mark-all-read, but an emulator repro on 2026-11-12 (pre-fix build, Slashdot marked read, new story arrived) showed the new story unread, and logging showed the followup is added, replayed and cleared within 7ms in the normal flow. The merged fix is a narrow hardening and probably NOT the cause of this report. Real cause still unknown. Do not post the earlier 'Found it' reply.",
+      "reply": "I haven't been able to reproduce this yet. A few things would help narrow it down: is the folder set to Unread or All stories, and newest or oldest first? Do you usually mark the folder as read when you finish, or read stories one at a time? And do you use the home screen widget, notifications, or Listen? If it happens again, the names of one or two of the stories that showed up read would let me check what the server thinks happened to them.",
+      "question": "Forum #13927: merged fix is probably not the cause (could not reproduce; followup clears in 7ms). Keep digging, or post a reply asking JeremyCouch for details?"
     }
   }
 }

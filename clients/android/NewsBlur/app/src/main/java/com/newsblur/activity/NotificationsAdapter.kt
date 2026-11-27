@@ -14,8 +14,6 @@ import com.newsblur.util.FeedExt.isNotifyFocus
 import com.newsblur.util.FeedExt.isNotifyIOS
 import com.newsblur.util.FeedExt.isNotifyUnread
 import com.newsblur.util.FeedExt.isNotifyWeb
-import com.newsblur.util.FeedExt.setNotifyFocus
-import com.newsblur.util.FeedExt.setNotifyUnread
 import com.newsblur.util.ImageLoader
 
 class NotificationsAdapter(
@@ -42,7 +40,8 @@ class NotificationsAdapter(
     fun refreshFeeds(feeds: Collection<Feed>) {
         this.feeds.clear()
         this.feeds.addAll(feeds)
-        this.notifyItemRangeInserted(0, feeds.size)
+        // NotificationsActivity.kt replays a complete snapshot whenever collection restarts.
+        notifyDataSetChanged()
     }
 
     class ViewHolder(
@@ -55,6 +54,14 @@ class NotificationsAdapter(
         ) {
             binding.textTitle.text = feed.title
             imageLoader.displayImage(feed.faviconUrl, binding.imgIcon, binding.imgIcon.height, true)
+
+            // NotificationsAdapter.kt: a recycled row still has the previous feed's listeners and checked buttons.
+            // Showing this feed's buttons must not fire those listeners, which would save the previous feed again
+            // and turn the device's notifications on without a tap.
+            binding.groupFilter.clearOnButtonCheckedListeners()
+            binding.groupPlatform.clearOnButtonCheckedListeners()
+            binding.groupFilter.clearChecked()
+            binding.groupPlatform.clearChecked()
 
             with(binding.groupFilter) {
                 if (feed.isNotifyUnread()) {
@@ -78,6 +85,7 @@ class NotificationsAdapter(
             binding.groupPlatform.addOnButtonCheckedListener { _, checkedId, isChecked ->
                 updatePlatform(feed, checkedId, isChecked)
                 listener.onFeedUpdated(feed)
+                if (isChecked && checkedId == binding.btnAndroid.id) listener.onAndroidNotificationsEnabled()
             }
         }
 
@@ -87,8 +95,9 @@ class NotificationsAdapter(
             isChecked: Boolean,
         ) {
             when (checkedBtnId) {
-                binding.btnUnread.id -> if (isChecked) feed.setNotifyUnread()
-                binding.btnFocus.id -> if (isChecked) feed.setNotifyFocus()
+                // NotificationsAdapter.kt: the platform buttons below own the channels, so a filter only changes the filter.
+                binding.btnUnread.id -> if (isChecked) feed.notificationFilter = Feed.NOTIFY_FILTER_UNREAD
+                binding.btnFocus.id -> if (isChecked) feed.notificationFilter = Feed.NOTIFY_FILTER_FOCUS
             }
         }
 
@@ -101,7 +110,7 @@ class NotificationsAdapter(
                 binding.btnEmail.id -> FeedExt.NOTIFY_EMAIL
                 binding.btnWeb.id -> FeedExt.NOTIFY_WEB
                 binding.btnIos.id -> FeedExt.NOTIFY_IOS
-                binding.btnIos.id -> FeedExt.NOTIFY_ANDROID
+                binding.btnAndroid.id -> FeedExt.NOTIFY_ANDROID
                 else -> null
             }?.let {
                 if (isChecked) {
@@ -115,5 +124,8 @@ class NotificationsAdapter(
 
     interface Listener {
         fun onFeedUpdated(feed: Feed)
+
+        /** NotificationsActivity.kt turns this device's notifications on when a feed starts notifying Android. */
+        fun onAndroidNotificationsEnabled()
     }
 }

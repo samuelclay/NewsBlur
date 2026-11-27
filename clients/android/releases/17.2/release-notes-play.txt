@@ -1,0 +1,63 @@
+<en-US>
+Premium Archive now includes 1 hour of Listen a month, and the new Premium Archive Extra includes 10 hours a month. Switch between them with the 1 hour / 10 hours toggle on the Premium Archive plan. Free and Premium accounts can now hear the first 60 seconds of any story read aloud. When more than 20 new stories arrive in a feed, tapping the new stories button now shows the first batch sooner.
+</en-US>
+<es-ES>
+Premium Archive ahora incluye 1 hora de escucha al mes, y el nuevo Premium Archive Extra incluye 10 horas al mes. Cambia entre ellos con el selector 1 hora / 10 horas del plan Premium Archive. Las cuentas gratuitas y Premium ahora pueden escuchar los primeros 60 segundos de cualquier artículo leído en voz alta. Cuando llegan más de 20 artículos nuevos a un feed, al tocar el botón de artículos nuevos, el primer lote ahora aparece antes.
+</es-ES>
+<fr-FR>
+Premium Archive inclut désormais 1 heure d’écoute par mois, et la nouvelle offre Premium Archive Extra inclut 10 heures par mois. Passez de l’une à l’autre avec le sélecteur 1 heure / 10 heures de l’offre Premium Archive. Les comptes gratuits et Premium peuvent maintenant écouter les 60 premières secondes de tout article lu à voix haute. Si plus de 20 nouveaux articles arrivent dans un flux, le bouton des nouveaux articles affiche désormais plus vite une première série quand vous le touchez.
+</fr-FR>
+<de-DE>
+Premium Archive enthält jetzt 1 Stunde Hörzeit pro Monat, und das neue Premium Archive Extra bietet 10 Stunden pro Monat. Mit dem Umschalter 1 Stunde / 10 Stunden beim Tarif Premium Archive wechselst du zwischen beiden. Kostenlose Konten und Premium-Konten können sich jetzt die ersten 60 Sekunden jedes Artikels vorlesen lassen. Treffen mehr als 20 neue Artikel in einem Feed ein, zeigt ein Tippen auf die Schaltfläche für neue Artikel die ersten davon jetzt schneller an.
+</de-DE>
+<pt-BR>
+O Premium Archive agora inclui 1 hora de áudio por mês, e o novo Premium Archive Extra inclui 10 horas por mês. Alterne entre eles com o seletor 1 hora / 10 horas do plano Premium Archive. Contas gratuitas e Premium agora podem ouvir os primeiros 60 segundos de qualquer artigo lido em voz alta. Quando chegam mais de 20 artigos novos a um feed, tocar no botão de artigos novos agora mostra a primeira leva mais rápido.
+</pt-BR>
+<it-IT>
+Premium Archive adesso include 1 ora di ascolto al mese e il nuovo Premium Archive Extra ne include 10 al mese. Passa dall’uno all’altro con il selettore 1 ora / 10 ore del piano Premium Archive. Gli account gratuiti e Premium possono ora ascoltare i primi 60 secondi di qualsiasi articolo letto ad alta voce. Quando in un feed arrivano più di 20 nuovi articoli, toccando il pulsante dei nuovi articoli ora vedi più rapidamente il primo blocco.
+</it-IT>
+<nl-NL>
+Premium Archive bevat nu 1 uur luistertijd per maand en het nieuwe Premium Archive Extra bevat 10 uur per maand. Kies tussen beide met de schakelaar 1 uur / 10 uur bij het Premium Archive-abonnement. Gratis accounts en Premium-accounts kunnen nu van elk artikel de eerste 60 seconden laten voorlezen. Komen er meer dan 20 nieuwe artikelen binnen in een feed? Dan zie je de eerste artikelen nu sneller zodra je op de knop voor nieuwe artikelen tikt.
+</nl-NL>
+<pl-PL>
+Premium Archive obejmuje teraz 1 godzinę słuchania miesięcznie, a nowy plan Premium Archive Extra 10 godzin miesięcznie. Wybierz jeden z nich przełącznikiem 1 godzina / 10 godzin w planie Premium Archive. Konta bezpłatne i Premium mogą teraz posłuchać pierwszych 60 sekund dowolnego artykułu czytanego na głos. Gdy w kanale pojawi się ponad 20 nowych artykułów, po stuknięciu przycisku nowych artykułów pierwsze z nich wyświetlą się teraz szybciej.
+</pl-PL>
+<tr-TR>
+Premium Archive artık ayda 1 saat dinleme içeriyor, yeni Premium Archive Extra ise ayda 10 saat sunuyor. Premium Archive planındaki 1 saat / 10 saat anahtarıyla ikisi arasında geçiş yapın. Ücretsiz ve Premium hesaplar artık herhangi bir haberin ilk 60 saniyesini sesli dinleyebilir. Bir akışa 20’den fazla yeni haber geldiğinde, yeni haberler düğmesine dokununca ilk haberler artık daha çabuk görünüyor.
+</tr-TR>
+<ru-RU>
+Теперь в Premium Archive входит 1 час прослушивания в месяц, а в новый план Premium Archive Extra — 10 часов в месяц. Выбирайте между ними переключателем «1 час / 10 часов» в плане Premium Archive. Бесплатные аккаунты и Premium теперь могут прослушать первые 60 секунд любой статьи. Если в ленте появилось больше 20 новых статей, теперь при нажатии на кнопку новых статей первые из них отображаются быстрее.
+</ru-RU>
+<uk>
+Тепер Premium Archive включає 1 годину прослуховування на місяць, а новий план Premium Archive Extra — 10 годин на місяць. Вибирайте між ними перемикачем «1 година / 10 годин» у плані Premium Archive. Безплатні облікові записи та Premium тепер можуть прослухати перші 60 секунд будь-якої статті. Якщо в стрічці з’явилося понад 20 нових статей, тепер після натискання кнопки нових статей перші з них відображаються швидше.
+</uk>
+<ar>
+يشمل Premium Archive الآن ساعة استماع واحدة شهريًا، ويشمل Premium Archive Extra الجديد 10 ساعات شهريًا. بدّل بينهما بمفتاح «ساعة واحدة / 10 ساعات» في خطة Premium Archive. ويمكن للحسابات المجانية وحسابات Premium الآن الاستماع إلى أول 60 ثانية من أي قصة مقروءة بصوت عالٍ. وعندما تصل أكثر من 20 قصة جديدة إلى الخلاصة، تظهر الآن المجموعة الأولى بشكل أسرع عند الضغط على زر القصص الجديدة.
+</ar>
+<iw-IL>
+מעכשיו Premium Archive כולל שעת האזנה אחת בחודש, ו־Premium Archive Extra החדש כולל 10 שעות בחודש. אפשר לעבור ביניהם עם המתג ״שעה אחת / 10 שעות״ בתוכנית Premium Archive. חשבונות חינמיים וחשבונות Premium יכולים עכשיו לשמוע בהקראה את 60 השניות הראשונות של כל כתבה. כשמגיעות לפיד יותר מ־20 כתבות חדשות, הקשה על כפתור הכתבות החדשות מציגה עכשיו את הכתבות הראשונות מהר יותר.
+</iw-IL>
+<hi-IN>
+Premium Archive में अब हर महीने 1 घंटे सुनने का समय मिलता है, और नए Premium Archive Extra में हर महीने 10 घंटे। Premium Archive प्लान पर ‘1 घंटा / 10 घंटे’ स्विच से दोनों के बीच बदलें। मुफ़्त और Premium खाते अब किसी भी लेख के पहले 60 सेकंड सुन सकते हैं। जब किसी फ़ीड में 20 से ज़्यादा नए लेख आते हैं, तो नए लेखों वाले बटन पर टैप करते ही शुरुआती लेख अब पहले से जल्दी दिखाई देते हैं।
+</hi-IN>
+<id>
+Premium Archive kini mencakup 1 jam mendengarkan per bulan, dan Premium Archive Extra yang baru mencakup 10 jam per bulan. Beralih di antara keduanya dengan pengalih 1 jam / 10 jam di paket Premium Archive. Akun gratis dan Premium kini dapat mendengarkan 60 detik pertama dari artikel apa pun yang dibacakan. Jika ada lebih dari 20 artikel baru di sebuah feed, kini beberapa artikel pertama muncul lebih cepat saat Anda mengetuk tombol artikel baru.
+</id>
+<vi>
+Premium Archive nay bao gồm 1 giờ nghe mỗi tháng, còn gói Premium Archive Extra mới bao gồm 10 giờ mỗi tháng. Chuyển đổi giữa hai gói bằng công tắc 1 giờ / 10 giờ trên gói Premium Archive. Tài khoản miễn phí và Premium nay có thể nghe 60 giây đầu của bất kỳ bài viết nào. Khi một nguồn cấp có hơn 20 bài viết mới, bạn sẽ thấy nhóm bài đầu tiên nhanh hơn sau khi nhấn nút xem bài mới.
+</vi>
+<th>
+ตอนนี้ Premium Archive มีเวลา “ฟัง” 1 ชั่วโมงต่อเดือน และแพ็กเกจใหม่ Premium Archive Extra มี 10 ชั่วโมงต่อเดือน สลับระหว่างสองแพ็กเกจได้ด้วยสวิตช์ 1 ชั่วโมง / 10 ชั่วโมง ในแพ็กเกจ Premium Archive บัญชีฟรีและ Premium ฟังเสียงอ่าน 60 วินาทีแรกของทุกบทความได้แล้ว ตอนนี้เมื่อมีบทความใหม่เข้ามาในฟีดมากกว่า 20 บทความ การแตะปุ่มดูบทความใหม่จะแสดงบทความชุดแรกได้เร็วขึ้น
+</th>
+<ja-JP>
+Premium Archiveで使える「聴く」は月1時間になり、新しいPremium Archive Extraでは月10時間使えます。Premium Archiveプランにある「1時間 / 10時間」の切り替えで、どちらかを選べます。無料アカウントとPremiumでは、どの記事でも読み上げの最初の60秒間を聴けるようになりました。フィードに20件を超える新着記事が届いたとき、新着記事のボタンをタップすると、最初に読み込んだ記事がこれまでより早く表示されるようになりました。
+</ja-JP>
+<ko-KR>
+이제 Premium Archive에서는 ‘듣기’를 월 1시간 이용할 수 있고, 새로운 Premium Archive Extra에서는 월 10시간 이용할 수 있습니다. Premium Archive 요금제의 ‘1시간 / 10시간’ 토글로 두 요금제를 전환할 수 있습니다. 무료 계정과 Premium 계정은 이제 어떤 스토리든 처음 60초를 들을 수 있습니다. 피드에 새 스토리가 20개 넘게 들어오면 새 스토리 버튼을 탭했을 때 처음 몇 개가 더 빨리 표시됩니다.
+</ko-KR>
+<zh-CN>
+Premium Archive 现在每月包含 1 小时“收听”时间，新推出的 Premium Archive Extra 每月包含 10 小时。使用 Premium Archive 套餐上的“1 小时 / 10 小时”开关，即可在两者之间切换。免费账户和 Premium 账户现在可以收听任意文章朗读的前 60 秒。当一个订阅源收到超过 20 篇新文章时，轻点新文章按钮，就能更快看到第一批文章。
+</zh-CN>
+<zh-TW>
+Premium Archive 現在每月包含 1 小時「聆聽」時間，全新的 Premium Archive Extra 則每月包含 10 小時。使用 Premium Archive 方案上的「1 小時 / 10 小時」開關，即可在兩者之間切換。免費帳戶和 Premium 帳戶現在可以聆聽任何文章朗讀的前 60 秒。當一個訂閱來源收到超過 20 篇新文章時，點一下新文章按鈕，就能更快看到第一批文章。
+</zh-TW>

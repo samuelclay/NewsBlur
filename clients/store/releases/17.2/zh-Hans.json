@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "whats_new": "Premium Archive 现在每月包含 1 小时“收听”时间，新推出的 Premium Archive Extra 每月包含 10 小时。使用 Premium Archive 套餐上的“1 小时 / 10 小时”开关，即可在两者之间切换。免费账户和 Premium 账户现在可以收听任意文章朗读的前 60 秒。此外，你恢复联网后，包括登录 Wi-Fi 网络之后，NewsBlur 都能更可靠地重新连接。"
+  },
+  "macos": {
+    "whats_new": "Premium Archive 现在每月包含 1 小时“收听”时间，新推出的 Premium Archive Extra 每月包含 10 小时。使用 Premium Archive 套餐上的“1 小时 / 10 小时”开关，即可在两者之间切换。免费账户和 Premium 账户现在可以收听任意文章朗读的前 60 秒。此外，你恢复联网后，包括登录 Wi-Fi 网络之后，NewsBlur 都能更可靠地重新连接。当一个订阅源收到超过 20 篇新文章时，点击新文章按钮，就能更快看到第一批文章。"
+  },
+  "android": {
+    "release_notes": "Premium Archive 现在每月包含 1 小时“收听”时间，新推出的 Premium Archive Extra 每月包含 10 小时。使用 Premium Archive 套餐上的“1 小时 / 10 小时”开关，即可在两者之间切换。免费账户和 Premium 账户现在可以收听任意文章朗读的前 60 秒。当一个订阅源收到超过 20 篇新文章时，轻点新文章按钮，就能更快看到第一批文章。"
+  }
+}

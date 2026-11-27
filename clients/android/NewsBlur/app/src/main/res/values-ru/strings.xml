@@ -486,6 +486,7 @@
     <string name="pro_enable_sites">Подписка на сайты — до 10 000</string>
     <string name="pro_all_feeds_fetched">Все ленты обновляются каждые 5–15 минут</string>
     <string name="pro_regex_train">Обучать фильтры на статьях с помощью регулярных выражений</string>
+    <string name="pro_oauth_applications">Создать OAuth-приложения</string>
     <string name="pro_priority_support">Приоритетная поддержка</string>
     <string name="pro_natural_language_search">Поиск на естественном языке</string>
     <string name="settings_cat_offline">Чтение офлайн</string>
@@ -638,6 +639,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">Автоматически помечать статьи как прочитанные при прокрутке</string>
     <string name="settings_story_clustering">Группировать похожие статьи</string>
     <string name="settings_story_clustering_summary">Показывать дубликаты статей из других лент под заголовком статьи</string>
+    <string name="settings_show_new_stories">Показывать новые статьи по мере их поступления</string>
+    <string name="settings_show_new_stories_summary">Показывать плашку «N новых статей», когда новые статьи появляются в открытом сайте или папке</string>
     <string name="settings_cluster_matches">Совпадения в группах</string>
     <string name="settings_cluster_matches_summary">Выберите, показывать ли в группах только дубликаты заголовков или также похожие статьи</string>
     <string name="settings_story_clustering_save_failed">Не удалось сохранить настройку группировки статей</string>
@@ -930,6 +933,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">Нет уведомлений от лент</string>
+    <string name="notifications_device_off">На этом устройстве уведомления отключены. Сайты, для которых включены уведомления на Android, не будут присылать их сюда, пока вы не включите уведомления.</string>
     <string name="notification_permissions_context">Для отправки уведомлений требуется разрешение</string>
     <string name="notification_permissions_rationale">Чтобы включить уведомления, сначала вручную разрешите их в настройках приложения и попробуйте снова</string>
     <string name="write_storage_permission_opml">Для экспорта OPML требуется разрешение на запись в хранилище</string>
@@ -1420,7 +1424,6 @@
     <string name="listen_resume">Продолжить</string>
     <string name="listen_pause">Приостановить</string>
     <string name="listen_play">Воспроизвести</string>
-    <string name="listen_preview_pill">Предпрослушивание — 30 с</string>
     <string name="listen_open_player">Открыть плеер</string>
     <string name="listen_close">Закрыть плеер</string>
     <string name="listen_loading">Подготовка статьи…</string>
@@ -1480,7 +1483,6 @@
     <string name="listen_speed_exact">Точная скорость воспроизведения</string>
     <string name="listen_speed_slider">Ползунок скорости воспроизведения</string>
     <string name="listen_speed_button">Скорость воспроизведения %1$s×</string>
-    <string name="listen_preview_banner">Предпрослушивание: 30 секунд. Premium Archive открывает полный доступ к статьям.</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Осталось %1$d секунды</item>
         <item quantity="many">Осталось %1$d секунд</item>
@@ -1581,6 +1583,11 @@
     <string name="settings_listen_voices_summary">Выберите голос для каждого языка и способ чтения</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Скорость воспроизведения</string>
-    <string name="archive_listen">Слушайте озвученные статьи до 1 часа в неделю</string>
     <string name="pro_listen">Слушайте озвученные статьи до 10 часов в неделю</string>
+    <plurals name="new_stories_pill">
+        <item quantity="few">%d новые статьи</item>
+        <item quantity="many">%d новых статей</item>
+        <item quantity="one">%d новая статья</item>
+        <item quantity="other">%d новых статей</item>
+    </plurals>
 </resources>

@@ -134,6 +134,53 @@ class FeedsViewController: FeedsObjCViewController {
         return path as? String
     }
     
+    @objc func selectWidgetSource(_ source: String) -> Bool {
+        guard let folders = appDelegate.dictFoldersArray as? [String] else { return false }
+        let folder: String
+        var site: String?
+        if source.hasPrefix("feed:") {
+            let id = String(source.dropFirst("feed:".count))
+            let path = ClassifierFolderPath.serverPath(forFeed: id, appDelegate: appDelegate)
+            folder = folders.first { ClassifierFolderPath.serverPath(fromNative: $0) == path } ?? "everything"
+            site = id
+        } else if source.hasPrefix("folder:") {
+            let path = String(source.dropFirst("folder:".count))
+            guard let native = folders.first(where: { ClassifierFolderPath.serverPath(fromNative: $0) == path }) else { return false }
+            folder = native
+        } else {
+            guard ["all", "infrequent", "trending:well_read", "trending:long_reads", "trending:good_reads"].contains(source) else { return false }
+            folder = source == "all" ? "everything" : source
+        }
+        guard let section = folders.firstIndex(of: folder) else { return false }
+        for ancestor in parentTitles(for: folder).reversed() { expandFolderIfNecessary(ancestor) }
+        if let site {
+            let ids = ClassifierFolderPath.feedIds(in: appDelegate.dictFolders[folder])
+            guard let row = ids.firstIndex(of: site) else { return false }
+            let hiddenBySearch = searchFeedIds.map { !$0.contains(site) } ?? false
+            let needsReload = hiddenBySearch || !isFeedVisible(site)
+            if hiddenBySearch {
+                searchFeedIds = nil
+                searchField?.text = nil
+            }
+            // FeedsViewController.swift keeps the selected row visible even when the widget opens its last unread story.
+            if stillVisibleFeeds == nil { stillVisibleFeeds = NSMutableDictionary() }
+            stillVisibleFeeds[site] = IndexPath(row: row, section: section)
+            if needsReload {
+                calculateFeedLocations()
+                reloadFeedTitlesTable()
+            }
+            selectFeed(site, inFolder: folder)
+        } else {
+            didSelectSectionHeader(withTag: section)
+            // Infrequent and trending sections in FeedsObjCViewController.m have a header and no feed rows.
+            if let table = feedTitlesTable, section < table.numberOfSections {
+                let header = table.rectForHeader(inSection: section)
+                if !header.isEmpty { table.scrollRectToVisible(header, animated: true) }
+            }
+        }
+        return true
+    }
+
     var dashboardTimer: Timer?
     
     @objc func cancelPendingFeedListWorkForAccountChange() {

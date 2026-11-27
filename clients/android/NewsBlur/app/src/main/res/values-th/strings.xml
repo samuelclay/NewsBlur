@@ -477,6 +477,7 @@
     <string name="pro_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 10,000 แห่ง</string>
     <string name="pro_all_feeds_fetched">ดึงข้อมูลทุกฟีดทุก 5-15 นาที</string>
     <string name="pro_regex_train">ฝึกคัดกรองเรื่องด้วยนิพจน์ทั่วไป</string>
+    <string name="pro_oauth_applications">สร้างแอปพลิเคชัน OAuth</string>
     <string name="pro_priority_support">การสนับสนุนแบบเร่งด่วน</string>
     <string name="pro_natural_language_search">ค้นหาด้วยภาษาธรรมชาติ</string>
     <string name="settings_cat_offline">อ่านแบบออฟไลน์</string>
@@ -614,6 +615,8 @@
     <string name="settings_mark_read_on_feed_scroll_sum">ทำเครื่องหมายบทความว่าอ่านแล้วโดยอัตโนมัติเมื่อเลื่อนผ่าน</string>
     <string name="settings_story_clustering">จัดกลุ่มบทความที่เกี่ยวข้อง</string>
     <string name="settings_story_clustering_summary">แสดงบทความซ้ำจากฟีดอื่นใต้ชื่อเรื่อง</string>
+    <string name="settings_show_new_stories">แสดงบทความใหม่เมื่อเข้ามา</string>
+    <string name="settings_show_new_stories_summary">แสดงป้าย “บทความใหม่ N รายการ” เมื่อมีบทความเข้ามาในเว็บไซต์หรือโฟลเดอร์ที่เปิดอยู่</string>
     <string name="settings_cluster_matches">เกณฑ์การจัดกลุ่ม</string>
     <string name="settings_cluster_matches_summary">เลือกว่าจะแสดงเฉพาะชื่อเรื่องที่ซ้ำกัน หรือรวมเรื่องที่เกี่ยวข้องด้วย</string>
     <string name="settings_story_clustering_save_failed">บันทึกค่ากำหนดการจัดกลุ่มบทความไม่สำเร็จ</string>
@@ -906,6 +909,7 @@
     <string name="notification_ios">iOS</string>
     <string name="notification_android">Android</string>
     <string name="no_feed_notifications">ไม่มีการแจ้งเตือนจากฟีด</string>
+    <string name="notifications_device_off">ปิดการแจ้งเตือนบนอุปกรณ์นี้ เว็บไซต์ที่ตั้งค่าให้แจ้งเตือนบน Android จะไม่มีเสียงเตือนที่นี่จนกว่าจะเปิดใช้งาน</string>
     <string name="notification_permissions_context">ต้องใช้สิทธิ์เพื่อส่งการแจ้งเตือน</string>
     <string name="notification_permissions_rationale">ต้องเพิ่มสิทธิ์การแจ้งเตือนด้วยตนเองในการตั้งค่าของแอปก่อนลองเปิดใช้การแจ้งเตือนอีกครั้ง</string>
     <string name="write_storage_permission_opml">ต้องได้รับอนุญาตให้เขียนลงพื้นที่จัดเก็บเพื่อส่งออก OPML</string>
@@ -1342,7 +1346,6 @@
     <string name="listen_resume">เล่นต่อ</string>
     <string name="listen_pause">หยุดชั่วคราว</string>
     <string name="listen_play">เล่น</string>
-    <string name="listen_preview_pill">ตัวอย่าง 30 วินาที</string>
     <string name="listen_open_player">เปิดเครื่องเล่น</string>
     <string name="listen_close">ปิดเครื่องเล่น</string>
     <string name="listen_loading">กำลังเตรียมบทความ…</string>
@@ -1396,7 +1399,6 @@
     <string name="listen_speed_exact">ความเร็วในการเล่นแบบละเอียด</string>
     <string name="listen_speed_slider">แถบเลื่อนความเร็วในการเล่น</string>
     <string name="listen_speed_button">ความเร็วในการเล่น %1$s×</string>
-    <string name="listen_preview_banner">กำลังฟังตัวอย่าง 30 วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม</string>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">เหลือ %1$d วินาที</item>
     </plurals>
@@ -1479,6 +1481,8 @@
     <string name="settings_listen_voices_summary">เลือกเสียงสำหรับแต่ละภาษาและรูปแบบการอ่าน</string>
     <string name="settings_listen_delivery">การนำเสนอ</string>
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
-    <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อสัปดาห์</string>
     <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
+    <plurals name="new_stories_pill">
+        <item quantity="other">บทความใหม่ %d รายการ</item>
+    </plurals>
 </resources>

@@ -264,6 +264,109 @@ NEWSBLUR.motion = (function () {
         var visible = screen_order(Array.from(elements).filter(function (el) { return visible_in_root(el, null); }));
         visible.forEach(function (el, index) { enter(el, stagger_delay(index, visible.length, 30, 180), distance); });
     }
+    // motion.js times stories joining a list from the new stories pill with the same numbers as iOS
+    // (NewStoriesPill.swift) and Android (NewStoriesPill.kt): each row takes 320ms, and the rows start 70ms apart
+    // unless that would spread them over more than 400ms.
+    var ARRIVAL_DURATION = 320;
+    var ARRIVAL_STAGGER = 70;
+    var ARRIVAL_SPREAD = 400;
+    var ARRIVAL_EASING = 'cubic-bezier(.22,1,.36,1)';
+    function arrival_step(count) {
+        return count > 1 ? Math.min(ARRIVAL_STAGGER, ARRIVAL_SPREAD / (count - 1)) : 0;
+    }
+    function arrival_animation(element, frames, duration, delay, finished) {
+        var previous = running.get(element);
+        if (previous) previous.cancel();
+        var animation = element.animate(frames, {
+            duration: duration, delay: delay, fill: 'backwards', easing: ARRIVAL_EASING
+        });
+        running.set(element, animation);
+        function done() {
+            if (running.get(element) === animation) running.delete(element);
+            if (finished) { var callback = finished; finished = null; callback(); }
+        }
+        animation.addEventListener('finish', done);
+        animation.addEventListener('cancel', done);
+        return animation;
+    }
+    // motion.js grows each row from nothing at its place while its content slides down from above the row's top
+    // edge, so the rows below are pushed down as it opens and nothing is drawn over the rows above. The lowest new
+    // row starts first.
+    function unfold_rows(rows, step) {
+        var heights = rows.map(function (row) { return row.offsetHeight; });
+        rows.forEach(function (row, index) {
+            var height = heights[index];
+            var delay = (rows.length - 1 - index) * step;
+            row.style.overflow = 'hidden';
+            arrival_animation(row, [{ height: '0px', opacity: 0 }, { height: height + 'px', opacity: 1 }],
+                ARRIVAL_DURATION, delay, function () { row.style.overflow = ''; });
+            Array.from(row.children).forEach(function (child) {
+                arrival_animation(child, [{ transform: 'translateY(' + (-height) + 'px)' },
+                    { transform: 'translateY(0)' }], ARRIVAL_DURATION, delay);
+            });
+        });
+    }
+    // motion.js drops a grid's new cards in from above the list's top edge, lowest first, and moves each old card
+    // from where it was drawn to its new cell in step with the new card that lands above it in its column, so the
+    // column is pushed down as that card arrives. A card that changes column follows the first new card.
+    function slide_cards(list, rows, before, step, edge) {
+        var fresh = new Set(rows);
+        var viewport_bottom = window.innerHeight;
+        var arrivals = rows.map(function (card, index) {
+            return { card: card, rect: card.getBoundingClientRect(), delay: (rows.length - 1 - index) * step };
+        });
+        Array.from(list.children).forEach(function (card) {
+            var old = before.get(card);
+            if (!old || fresh.has(card)) return;
+            var now = card.getBoundingClientRect();
+            var dx = old.left - now.left;
+            var dy = old.top - now.top;
+            var on_screen = (old.bottom > 0 && old.top < viewport_bottom) || (now.bottom > 0 && now.top < viewport_bottom);
+            if ((!dx && !dy) || !on_screen) return;
+            var above = _.max(_.filter(arrivals, function (arrival) {
+                return Math.abs(arrival.rect.left - now.left) < 2 && arrival.rect.bottom <= now.top + 1;
+            }), function (arrival) { return arrival.rect.bottom; });
+            arrival_animation(card, [{ transform: 'translate(' + dx + 'px, ' + dy + 'px)' },
+                { transform: 'translate(0, 0)' }], ARRIVAL_DURATION, _.isObject(above) ? above.delay : 0);
+        });
+        arrivals.forEach(function (arrival) {
+            var rise = arrival.rect.bottom - edge;
+            arrival_animation(arrival.card, [{ opacity: 0, transform: 'translateY(' + (-Math.max(rise, 0)) + 'px)' },
+                { opacity: 1, transform: 'translateY(0)' }], ARRIVAL_DURATION, arrival.delay);
+        });
+    }
+    // motion.js animates stories that insert() puts into a story list; insert() returns their rows in list order.
+    // Stories joining the top of a list slide down into it; options.from_bottom has them rise into the end of an
+    // oldest-first list instead. options.root is the pane that scrolls the list, if it isn't the page.
+    function arrive(list, insert, options) {
+        options = options || {};
+        var moving = animations_enabled() && !reduce_motion();
+        var grid = getComputedStyle(list).display.indexOf('grid') !== -1;
+        var before = null;
+        if (moving && grid && !options.from_bottom) {
+            before = new Map();
+            Array.from(list.children).forEach(function (card) { before.set(card, card.getBoundingClientRect()); });
+        }
+        var rows = insert();
+        if (!rows.length || !animations_enabled()) return rows;
+        if (!moving) {
+            rows.forEach(function (row) { arrival_animation(row, [{ opacity: 0 }, { opacity: 1 }], 150, 0); });
+            return rows;
+        }
+        var step = arrival_step(rows.length);
+        if (options.from_bottom) {
+            rows.forEach(function (row, index) {
+                arrival_animation(row, [{ opacity: 0, transform: 'translateY(' + row.offsetHeight + 'px)' },
+                    { opacity: 1, transform: 'translateY(0)' }], ARRIVAL_DURATION, index * step);
+            });
+        } else if (grid) {
+            var edge = options.root ? options.root.getBoundingClientRect().top : list.getBoundingClientRect().top;
+            slide_cards(list, rows, before, step, edge);
+        } else {
+            unfold_rows(rows, step);
+        }
+        return rows;
+    }
     function article(element) {
         // motion.js enters every header item from story_detail_view.js without moving its nested children twice.
         cascade(element.querySelectorAll('.NB-feed-story-header-feed, .NB-feed-story-title-container, ' +
@@ -550,7 +653,7 @@ NEWSBLUR.motion = (function () {
         owner.motion_observer.before_paint();
     }
     reduced.addEventListener('change', preference_changed);
-    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, article: article,
+    return { enter: enter, exit: exit, depart: depart, remove: remove, cascade: cascade, arrive: arrive, article: article,
         article_parts: article_parts, feedbar_parts: feedbar_parts, watch_parts: watch_parts, pause_parts: pause_parts, unwatch_parts: unwatch_parts, watch: watch, refresh_completed: refresh_completed,
         reduced: reduce_motion, preference_changed: preference_changed,
         frames: function (frames) { return reduce_motion() ? opacity_frames(frames) : frames; },
