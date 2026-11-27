@@ -2,13 +2,13 @@ from datetime import timedelta
 from urllib.parse import parse_qs, urlsplit
 
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.utils import timezone
 from django.utils.html import escape
 from oauth2_provider.models import Application
 
 from apps.oauth.access import SELF_SERVICE_LAUNCH
-from apps.oauth.models import ApplicationWebsite
+from apps.oauth.models import ApplicationExemption, ApplicationWebsite
 from apps.profile.models import Profile
 
 
@@ -49,7 +49,7 @@ class Test_ApplicationRegistration(TestCase):
             )
         self.assertFalse(Application.objects.filter(user=self.owner).exists())
 
-    def test_legacy_edit_form_requires_current_pro_and_preserves_credentials(self):
+    def test_edit_form_requires_current_pro_or_an_exemption_and_preserves_credentials(self):
         app = Application.objects.create(
             name="Reader",
             user=self.owner,
@@ -60,6 +60,9 @@ class Test_ApplicationRegistration(TestCase):
         url = f"/account/applications/{app.pk}/update/"
         self.assertEqual(self.client.get(url).status_code, 403)
         self.set_pro(premium_expire=None)
+        self.assertEqual(self.client.get(url).status_code, 200)
+        self.set_pro(premium_expire=timezone.now() - timedelta(seconds=1))
+        ApplicationExemption.objects.create(application=app)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'name="client_secret"')
@@ -76,6 +79,15 @@ class Test_ApplicationRegistration(TestCase):
         self.assertEqual(
             (app.client_id, app.client_secret, app.authorization_grant_type), original_credentials
         )
+
+        # The exemption covers this application only: not new registrations, and not other accounts.
+        self.assertEqual(self.client.post(self.url, self.fields).status_code, 403)
+        self.assertEqual(list(Application.objects.filter(user=self.owner)), [app])
+        self.client.force_login(self.reader)
+        taken = {"name": "Taken", "redirect_uris": "https://taken.example/callback"}
+        self.assertEqual(self.client.post(url, taken).status_code, 404)
+        app.refresh_from_db()
+        self.assertEqual((app.name, app.redirect_uris), (updated["name"], updated["redirect_uris"]))
 
     def test_owner_sees_distinct_connections_and_reader_traffic_for_only_their_apps(self):
         from unittest.mock import patch
@@ -128,9 +140,15 @@ class Test_ApplicationRegistration(TestCase):
             self.assertEqual(apps[0]["usage"]["requests"], 2)
             self.assertEqual(apps[0]["usage"]["readers"], 1)
             self.assertIsNotNone(apps[0]["usage"]["last_used"])
+            self.assertFalse(apps[0]["paused"])
+            # The exemption only decides paused; its row id stays out of the response on every plan.
+            self.assertNotIn("applicationexemption__id", apps[0])
             self.assertEqual(api.get(url, HTTP_AUTHORIZATION="Bearer publisher").status_code, 403)
             self.client.force_login(self.reader)
-            self.assertEqual([row["id"] for row in self.client.get(url).json()["applications"]], [other.pk])
+            rows = self.client.get(url).json()["applications"]
+            self.assertEqual([(row["id"], row["paused"]) for row in rows], [(other.pk, True)])
+            ApplicationExemption.objects.create(application=other)
+            self.assertFalse(self.client.get(url).json()["applications"][0]["paused"])
             with patch("apps.oauth.applications.application_usage", side_effect=redis.ConnectionError()):
                 row = self.client.get(url).json()["applications"][0]
                 self.assertIsNone(row["usage"])
@@ -161,7 +179,7 @@ class Test_ApplicationRegistration(TestCase):
             response = api.get("/oauth/user/info/", HTTP_AUTHORIZATION="Bearer " + token.token)
             self.assertEqual(response.status_code, expected)
 
-    def test_free_reader_can_authorize_until_the_application_owner_expires(self):
+    def test_free_reader_can_authorize_while_the_owner_has_pro_or_staff_exempt_the_application(self):
         self.set_pro(premium_expire=None)
         response = self.client.post(self.url, {**self.fields, "user": self.reader.pk})
         self.assertEqual(response.status_code, 201, response.content)
@@ -214,17 +232,99 @@ class Test_ApplicationRegistration(TestCase):
         self.set_pro(premium_expire=timezone.now() + timedelta(days=1))
         self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
         self.set_pro(premium_expire=timezone.now() - timedelta(seconds=1))
-        # The original launch is an exclusive cutoff, including for previously issued tokens.
-        Application.objects.filter(pk=app.pk).update(created=SELF_SERVICE_LAUNCH)
+        # Registering before self-service launched no longer keeps an application working on its own.
+        Application.objects.filter(pk=app.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(days=1))
         self.assertEqual(api.get("/oauth/user/info/", **bearer).status_code, 403)
-        Application.objects.filter(pk=app.pk).update(created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1))
+
+        staff = Client()
+        staff.force_login(User.objects.create_superuser("oauth-staff", "oauth-staff@example.com", "staff"))
+        added = staff.post("/admin/oauth/applicationexemption/add/", {"application": app.pk})
+        self.assertEqual(added.status_code, 302)
         self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
         self.assertEqual(exchange(authorize()).status_code, 200)
+        code_issued_while_exempt = authorize()
         refresh = self.client.post(
             "/account/token/",
             {**credentials, "grant_type": "refresh_token", "refresh_token": tokens["refresh_token"]},
         )
         self.assertEqual(refresh.status_code, 200)
+        # Refreshing revoked the first access token.
+        bearer = {"HTTP_AUTHORIZATION": "Bearer " + refresh.json()["access_token"]}
+        self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
+
+        User.objects.filter(pk=self.owner.pk).update(is_active=False)
+        self.assertContains(api.get("/reader/feeds", **bearer), "Premium Pro", status_code=403)
+        self.assertContains(self.client.get("/oauth/authorize/", auth), "Premium Pro", status_code=401)
+        User.objects.filter(pk=self.owner.pk).update(is_active=True)
+        self.assertEqual(api.get("/oauth/user/info/", **bearer).json()["data"]["id"], self.reader.pk)
+
+        exemption = ApplicationExemption.objects.get(application=app)
+        removed = staff.post(f"/admin/oauth/applicationexemption/{exemption.pk}/delete/", {"post": "yes"})
+        self.assertEqual(removed.status_code, 302)
+        self.assertContains(api.get("/reader/feeds", **bearer), "Premium Pro", status_code=403)
+        self.assertIn("Premium Pro", exchange(code_issued_while_exempt).json()["error_description"])
+
+
+class Test_ApplicationExemptions(TestCase):
+    def test_backfill_exempts_pre_launch_and_reader_partner_applications_once(self):
+        from django.apps import apps
+
+        from apps.oauth.access import exempt_existing_applications
+
+        owner = User.objects.create_user("legacy-publisher")
+        partner = User.objects.create_user("partner-publisher")
+        namesake = User.objects.create_user("namesake-publisher")
+        old = Application.objects.create(name="Old reader", user=owner)
+        new = Application.objects.create(name="New reader", user=owner)
+        partner_app = Application.objects.create(name="Partner reader", user=partner)
+        namesake_app = Application.objects.create(name="Namesake reader", user=namesake)
+        first_party, _ = Application.objects.get_or_create(client_id="newsblur-cli")
+        Application.objects.filter(pk__in=[old.pk, first_party.pk]).update(
+            created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1)
+        )
+        Application.objects.filter(pk__in=[new.pk, partner_app.pk, namesake_app.pk]).update(
+            created=SELF_SERVICE_LAUNCH
+        )
+        # A listed account only counts when its username matches too, as in apps/oauth/reader_grants.py.
+        owners = [
+            (partner.pk, partner.username, partner_app.pk),
+            (namesake.pk, "someone-else", namesake_app.pk),
+        ]
+        for _ in range(2):
+            exempt_existing_applications(apps, "default", owners=owners)
+        exempted = ApplicationExemption.objects.filter(
+            application__in=[old, new, partner_app, namesake_app, first_party]
+        ).values_list("application_id", flat=True)
+        self.assertEqual(sorted(exempted), sorted([old.pk, partner_app.pk]))
+
+    def test_deleting_an_exempt_application_outside_the_orm_removes_its_exemption(self):
+        from django.db import connection
+
+        owner = User.objects.create_user("retired-publisher")
+        app = Application.objects.create(name="Retired reader", user=owner)
+        ApplicationExemption.objects.create(application=app)
+        # A release that predates ApplicationExemption deletes the application without collecting its
+        # exemption, so the database has to cascade (oauth.0004_applicationexemption).
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM oauth2_provider_application WHERE id = %s", [app.pk])
+        # Postgres checks deferred foreign keys at commit, which a TestCase never reaches.
+        connection.check_constraints()
+        self.assertFalse(ApplicationExemption.objects.filter(application_id=app.pk).exists())
+
+    # Rendering the admin needs collectstatic's manifest, which test runs don't build.
+    @override_settings(STATICFILES_STORAGE="django.contrib.staticfiles.storage.StaticFilesStorage")
+    def test_staff_find_exemptions_by_owner_or_application_name(self):
+        owner = User.objects.create_user("exempt-publisher")
+        app = Application.objects.create(name="Unread for Mac", user=owner)
+        first_party, _ = Application.objects.get_or_create(client_id="newsblur-cli")
+        exemption = ApplicationExemption.objects.create(application=app)
+        ApplicationExemption.objects.create(application=first_party)
+        staff = Client()
+        staff.force_login(User.objects.create_superuser("oauth-staff", "oauth-staff@example.com", "staff"))
+        url = "/admin/oauth/applicationexemption/"
+        self.assertEqual(len(staff.get(url).context["cl"].result_list), 2)
+        for query in [owner.username, app.name]:
+            self.assertEqual(list(staff.get(url, {"q": query}).context["cl"].result_list), [exemption])
 
 
 class Test_ReaderGrants(TestCase):

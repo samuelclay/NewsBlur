@@ -58,8 +58,16 @@ class Test_ArchiveCardPlan {
     }
 
     @Test
-    fun test_pro_keeps_the_card_as_it_was_without_a_toggle() {
-        assertEquals(ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO, null), plan(Account.PRO))
-        assertEquals(ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO, null), plan(Account.PRO, chosenHours = TEN))
+    fun test_pro_compares_both_listen_plans_without_being_sold_either() {
+        // Pro is on neither plan, so the toggle starts on one hour with no "Current plan" caption, and its
+        // subscription includes both, so neither position may offer a purchase. Pro also carries the Archive flag,
+        // which would read as an upgrade from Archive if it were checked first.
+        assertEquals(ArchiveCardPlan(true, ONE, INCLUDED_IN_PRO, null), plan(Account.PRO))
+        assertEquals(ArchiveCardPlan(true, TEN, INCLUDED_IN_PRO, null), plan(Account.PRO, chosenHours = TEN))
+        // Until Play sells Premium Archive Extra, Pro sees the plain card like everyone else.
+        assertEquals(
+            ArchiveCardPlan(false, ONE, INCLUDED_IN_PRO, null),
+            plan(Account.PRO, extraOffered = false, chosenHours = TEN),
+        )
     }
 }

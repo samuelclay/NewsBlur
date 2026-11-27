@@ -5224,6 +5224,9 @@ msgstr "Tạm dừng nghe"
 msgid "Pause or resume reading aloud (y)"
 msgstr "Tạm dừng hoặc tiếp tục đọc thành tiếng (y)"
 
+msgid "Paused"
+msgstr "Đã tạm dừng"
+
 msgid "Payment history"
 msgstr "Lịch sử thanh toán"
 

@@ -23754,13 +23754,13 @@
   },
   {
    "id": 404,
-   "title": "Legacy OAuth applications that would be blocked",
+   "title": "Exempt OAuth applications that would be blocked",
    "type": "table",
    "datasource": {
     "type": "prometheus",
     "uid": "U1-fPO3Mk"
    },
-   "description": "Pre-launch apps that would lose access under Premium Pro enforcement. Requests count authenticated API calls since tracking began. Readers are estimated over the current and previous six UTC days. Apps with no recorded traffic are included.",
+   "description": "Exempt apps whose owners lack Premium Pro, so they would lose access without their exemption. Requests count authenticated API calls since tracking began. Readers are estimated over the current and previous six UTC days. Apps with no recorded traffic are included.",
    "gridPos": {
     "x": 0,
     "y": 897,
