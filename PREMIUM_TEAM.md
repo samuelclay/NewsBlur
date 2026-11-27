@@ -52,10 +52,15 @@ Decided on 2026-11-26:
 - [x] Read status follows the site. Once a site is in a team folder with shared read status or read receipts, it is a team site wherever it appears in a teammate's feed list. A private copy of it shows the team badge and says reads are shared, and the join screen says so. Reading on sites that are in no team folder is never shown to anyone
 - [x] An account is in one team at a time, as owner or member. Agencies separate clients inside one team with folders shared to chosen teammates. No team switcher
 - [x] "More than 10 teammates? Get in touch" opens a short form (team name, seats wanted, a note) that emails Sam with the account attached
+- [x] A team whose payment lapses goes inactive the day its paid period ends, with one email to everyone and no grace. The 14 day grace is only for a teammate who leaves or is removed from a team that is still active. A payment that later succeeds brings the team straight back
+- [x] When a site a teammate follows privately becomes a team site, the private copy shows the team badge and nothing else is said
+- [x] With single sign-on required, what happens to a removed teammate's account depends on how it was created. An account that existed before joining stays the person's. An account that single sign-on created is locked, with an export of its private feeds on request
+- [x] One push per build step, so the review bots review each finished step once
+- [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
+- [x] Someone whose private feeds push the team past 10,000 sites can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep
 
 Still open. Each has a recommendation further down under "Open decisions":
 
-- [ ] Who owns an account when single sign-on is required and a teammate is removed
 - [ ] Price above 10 seats
 
 ## The upgrade dialog
@@ -165,6 +170,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A site in two team folders takes the most shared of their read modes, and the folder dialog says so
 - [ ] Reading on sites that are in no team folder is never shown to anyone
 - [ ] The join screen says which reading the team can see
+- [ ] Only reads made after a site becomes a team site are shared. Earlier reads are never shown
 
 **Screenshots**
 
@@ -268,6 +274,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Single sign-on in the iOS app
 - [ ] Single sign-on in the Android app
 - [ ] Deactivating a teammate signs them out of every device at once
+- [ ] A removed teammate whose account existed before joining keeps it, and gets back in by confirming a personal email address and setting a password
+- [ ] A removed teammate whose account was created by single sign-on is locked, and can ask for an export of their private feeds
 - [ ] Session length limit for the team
 - [ ] Everything marked Enterprise only in section 17 is refused on the $79 tier by the server, not only hidden
 
@@ -286,7 +294,8 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A teammate's own Stripe or PayPal renewal is cancelled when they join. App Store and Play subscribers get a notice with a link
 - [ ] Two monthly prices, $79 and $129, and switching between them prorates
 - [ ] Invoices and card changes through the Stripe customer portal
-- [ ] If payment fails: retries, an email to the owner, a grace period, then read only, then inactive
+- [ ] If the owner cancels or a payment fails, the team goes inactive the day the paid period ends, with one email to every teammate. No grace
+- [ ] A payment that succeeds later brings the team back at once
 - [ ] Team folders and settings are kept when a team goes inactive, so it can come back
 - [ ] Staff can raise a team's seat limit and set a custom price
 - [ ] A warning email and a grace period before a removed teammate's sites are muted
@@ -601,7 +610,7 @@ There is no team, organization or seat concept in the repo today. The nearest th
 All new tables, which the migration rules treat as always safe. Nothing is added to `profile_profile`, `auth_user` or `reader_usersubscription`.
 
 - [ ] `Team`: name, slug, owner (one team per owner), plan (`team` or `team_enterprise`), seat_limit, status
-- [ ] `TeamMember`: team, user, role, status (active, suspended, removed). One active membership per user across all teams
+- [ ] `TeamMember`: team, user, role, status (active, removed). One active membership per user across all teams
 - [ ] `TeamInvite`: team, email, token, role, expiry
 - [ ] `TeamFolder`: team, parent, title, position, read_mode, audience (everyone or chosen members)
 - [ ] `TeamFeed`: team_folder, feed, position, added_by
@@ -622,7 +631,7 @@ What that means in practice:
 - The owner's read state in a shared folder is the team's read state.
 - Team training is folder training on a team folder. It is kept separate from the owner's own training on a site, so what the owner trained privately before a site joined a team folder stays private.
 - Listen, Ask AI and AI filter usage by any teammate is counted against the owner's account, with the teammate recorded for the breakdown.
-- Slack, Teams and webhook posts are scored with the owner's training.
+- Slack, Teams and webhook posts are scored only with the team folder's training, never with the owner's own training on a site.
 - The owner sees team folders the same way every teammate does, under the team's top level folder, and keeps private folders beside it.
 
 ### Team folders: merge at read time, real subscriptions underneath
@@ -631,6 +640,7 @@ The collision: a user's folders are one JSON blob (`UserSubscriptionFolders` in 
 
 - [ ] Each teammate gets a real `UserSubscription` for every team feed, so unread counts, read state, training, mutes, notifications and fetch priority keep working unchanged
 - [ ] Team folders are not written into anyone's blob. `load_feeds` and `load_feeds_flat` (`apps/reader/views.py`) merge them in as one extra top level folder, so web, iOS and Android render them as ordinary folders
+- [ ] One function resolves a user's folders with their team folders merged in, and every server path that maps a folder to its sites uses it, not only `load_feeds`: `flatten_folders` callers, river of a folder, mark a folder read, folder RSS, `load_folder_feed_ids` in `apps/analyzer/models.py`, and `calculate_feed_scores`
 - [ ] A `team_folders` key in the same response maps each team folder path to its id, read mode, assignees and whether this user can edit. Old clients ignore it
 - [ ] Every endpoint that edits folders rejects or reroutes team paths: add, delete, rename and move for feeds and folders
 - [ ] Managers' edits go to the team models and publish `reload:feeds` to every teammate's channel, which all three clients already handle
@@ -653,17 +663,70 @@ Read state is keyed by user id everywhere: the Redis `RS:{user}` sets, `mark_rea
 
 ### Premium Pro for teammates
 
-The premium code recomputes tier from payment history (`setup_premium_history` in `apps/profile/models.py`) and expires accounts on a schedule, so a team grant has to be a source that code respects. `has_oauth_reader_grant` already protects lifetime Pro grants the same way.
+The tier flags on `Profile` (`is_premium`, `is_archive`, `is_pro`) are read in more than 120 places, including database joins that set feed fetch priority (`Feed.count_subscribers` in `apps/rss_feeds/models.py`) and the profile the iOS and Android apps parse. An effective tier computed on the side cannot reach all of those, so a teammate carries the real Pro flags and a new table remembers what they had on their own.
 
-- [ ] An active `TeamMember` grants Pro. The effective tier is the higher of the team's grant and whatever the person pays for
-- [ ] The site limit is counted across the team: distinct sites in team folders plus every teammate's private feeds, against Pro's 10,000 (`max_feed_limit` in `apps/profile/models.py`)
-- [ ] Listen usage is counted across the team against Pro's 10 hours a week (`apps/listen/usage.py`)
-- [ ] Ask AI and AI filter usage are counted across the team against Pro's limits (`apps/ask_ai/usage.py`)
+Two things the first draft of this plan got wrong, found by reading the code:
+
+- `setup_premium_history` cannot bring someone back down to their own plan. It only ever raises a tier, and tiers bought in the App Store, on Play or by gift exist only as the activation call made at the time. So the grant keeps a snapshot of the person's own tier and restores it.
+- `deactivate_premium` mutes every site, not only the ones over the free limit. The person then picks their 64 in the feed chooser. The grace emails have to say that.
+
+The grant:
+
+- [ ] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, when the grant began, and when grace began and ends
+- [ ] `grant_team_pro` sets the Pro flags on the teammate's `Profile` without calling `activate_pro`, so no welcome email, staff email or payment row is produced
+- [ ] The grant never writes `premium_expire`. That stays the teammate's own paid through date
+- [ ] On a new grant: the teammate's muted sites are reactivated up to what the team has room for, feeds are scheduled at Pro speed, and the archive backfill starts if they were not already on Archive
+- [ ] `release_team_pro` restores exactly the snapshotted tier if it is still paid for, restores a trial that is still running, and otherwise calls `deactivate_premium`
+- [ ] One row per person, so someone who rejoins during grace keeps their original snapshot instead of snapshotting team Pro as their own tier
+
+Guards on the existing premium code (`apps/profile/models.py` and `apps/profile/tasks.py`):
+
+- [ ] The `PremiumExpire` task skips anyone holding a grant and the owner of an active team
+- [ ] `deactivate_premium` on a grant holder lowers their snapshot to free and returns, so a store expiry cannot strip team Pro
+- [ ] `activate_premium`, `activate_archive` and `activate_pro` on a grant holder raise the snapshot and return. That one guard covers store receipts, gift redemption, Stripe webhooks and referral credit
+- [ ] The App Store renewal handler (`apps/profile/apple_subscriptions.py`) ranks a teammate by their own tier, so their renewal is not dropped as a cross tier purchase
+- [ ] Referral credit (`MReferral.award_credit`) is computed from the person's own tier
+- [ ] `can_register_oauth_application` accepts a grant
+
+A seat's life:
+
+- [ ] none to active: an invite is accepted on an active team
+- [ ] active to grace: the teammate leaves or is removed while the team is active. 14 days, with an email on day 1 and day 10
+- [ ] grace to ended: an hourly Celery beat task releases the grant when grace runs out
+- [ ] grace to active: the person rejoins. The row and its snapshot are reused
+- [ ] active to ended at once: the team lapses
+- [ ] Someone already in grace when their old team lapses keeps the date their day 1 email promised
+- [ ] A teammate whose own plan ran out while they were on the team drops to free when grace ends, with no further 30 days from `PremiumExpire`
+
+A team's life:
+
+- [ ] `Team.paid_through` holds the end of the owner's paid period. The lapse cannot use `premium_expire`, which counts every payment as a year
+- [ ] `activate_team` and `deactivate_team` are the two functions billing calls. Deactivating releases every teammate's grant at once and sends one email to everyone. Activating grants again with fresh snapshots
+- [ ] The same beat task lapses a team whose `paid_through` has passed
+- [ ] If the owner's account is deleted, the team goes inactive and its teammates are released
+
+A new teammate's own subscription:
+
+- [ ] On join, a Celery task calls `cancel_premium_stripe` and `cancel_premium_paypal`. Both stop renewal at the end of the paid period, with no refund, and leave the separate AI filter billing subscription alone
+- [ ] App Store and Play subscribers are found from their recent payment rows, shown a note on the join screen, and sent one email with the links to cancel
+- [ ] A lapsed team that comes back does not cancel anything again. Cancelling happens only on join
+
+Shared allowances. The scope is the owner plus each teammate for the period they were on the team. Usage rows keep the teammate's own user id, which is the per teammate breakdown, so no field is added to any Mongo document.
+
+- [ ] Sites: a new `team_site_refusal` check wherever a site becomes active: adding a site and OPML import (which have no server limit for premium accounts today), batch subscribe, the feed chooser, unmute and `auto_activate`. A site any teammate already follows costs nothing
+- [ ] The count is distinct active sites across the team, exact when enforcing and cached for five minutes when displayed
+- [ ] Someone whose private feeds push the team past 10,000 can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep in the feed chooser
+- [ ] Listen: the 10 hours a week are counted across the scope (`apps/listen/usage.py`), and the message at the cap names the team and its owner
+- [ ] Ask AI and transcription: counted across the scope (`apps/ask_ai/usage.py`)
+- [ ] Archive Assistant's 100 a day: counted across the scope (`apps/archive_assistant/models.py`)
+- [ ] AI filters are pay per use, not an allowance. A teammate can use them once the owner has turned usage billing on, and the charge goes to the owner's Stripe customer against the owner's spending limit, with the teammate recorded on each cost row
+- [ ] Only the owner can turn usage billing on for the team
 - [ ] When the team hits a shared limit, the teammate who hit it is told it is the team's limit and who to ask
-- [ ] A `has_team_grant` check wherever premium is recomputed or expired
-- [ ] When a seat ends, the account re-runs its premium history and falls back to its own plan or to free
-- [ ] `deactivate_premium` mutes sites over the free limit, so a removed teammate gets a warning email and a grace period first
-- [ ] Feed fetch priority follows: a team feed counts its teammates as Pro subscribers
+
+Counting:
+
+- [ ] Paid subscriber counts and gauges (`apps/monitor/views/newsblur_users.py`, `apps/statistics/models.py`) leave grant holders out, and a new gauge counts team seats
+- [ ] Feed fetch priority follows the flags, so team sites are fetched at Pro speed
 
 This is the riskiest integration in the plan. That code handles Stripe, PayPal, App Store and Play history and has a lot of special cases.
 
@@ -676,13 +739,14 @@ The apps and the web client score stories themselves from the classifiers the se
 - [ ] A teammate who joins or is given the folder later gets a copy of the team's training
 - [ ] Members cannot change classifiers scoped to a team folder. Their own training on a site stays feed scoped and personal
 - [ ] The owner's feed scoped training on a site is personal like anyone else's, including training from before the site joined a team folder
+- [ ] Server side scoring finds team folders through the shared folder resolver, so team training changes unread counts and notifications as well as what the clients show
 
 ### Notifications
 
 - [ ] Team rules become ordinary `MUserFeedNotification` rows, one per teammate and feed, tagged with the rule that created them
 - [ ] A teammate's previous setting is kept and restored when the rule is removed
 - [ ] New fields on that Mongo document are added in one deploy and written in the next
-- [ ] Channel posts run once per story from the feed fetcher hook that calls `push_feed_notifications`, scored with the team's training
+- [ ] Channel posts run once per story from the feed fetcher hook that calls `push_feed_notifications`, scored only with the team folder's classifiers
 
 ### Single sign-on and SCIM
 
@@ -697,10 +761,17 @@ The apps and the web client score stories themselves from the classifiers the se
 
 The owner's account pays, so a team plan is one more plan on a `Profile`, next to Premium, Archive and Pro. The existing Stripe code already buys, switches, renews and expires plans for a `Profile`, and its webhooks already find the owner.
 
-- [ ] Two more plans, `team` and `team_enterprise`, in `plan_to_stripe_price` (`apps/profile/models.py`), with their Stripe prices in settings
+- [x] The Stripe products and prices exist in test and live mode, created 2026-11-26, monthly, in USD:
+
+  | Plan | Lookup key | Live price | Test price |
+  |---|---|---|---|
+  | Premium Team, $79 | `newsblur-premium-team-79` | `price_0UgCfDwdsmP8XBlaft9XCHfp` | `price_0UgCfCwdsmP8XBlakBsOX3AZ` |
+  | Premium Team Enterprise, $129 | `newsblur-premium-team-enterprise-129` | `price_0UgCfDwdsmP8XBlaqkniOnJy` | `price_0UgCfDwdsmP8XBlakzTInxlu` |
+
+- [ ] Two more plans, `team` and `team_enterprise`, in `plan_to_stripe_price` (`apps/profile/models.py`), using those price ids the way the Pro and Archive plans do
 - [ ] Activating either plan gives the owner Pro and creates or reactivates the owner's `Team`
 - [ ] Switching to or from a team plan goes through `switch_stripe_subscription`, prorated
-- [ ] When the owner's plan lapses or is cancelled, the team goes through its grace period and then inactive, and every teammate's grant ends with it
+- [ ] When the owner's paid period ends without renewal, the team goes inactive that day and every teammate's grant ends with it. The team plan does not get the 30 days that `PremiumExpire` gives other plans
 - [ ] Joining a team cancels the new teammate's own Stripe or PayPal renewal
 - [ ] The staff User Admin dialog (`media/js/newsblur/reader/reader_admin.js`) gets a team section: seat limit, plan, comp
 
@@ -771,6 +842,8 @@ Written before any code. Each one is a test.
 - [ ] A manager renames a team folder and a teammate's folder scoped training stops applying
 - [ ] The owner's private training on a site starts applying to every teammate when the site joins a team folder
 - [ ] A member changes team training through the existing classifier endpoint
+- [ ] Team training shows in the apps but the server's unread counts ignore it
+- [ ] A team folder opens in the feed list but its river, mark as read or RSS feed cannot find it
 - [ ] A member calls the rename or delete endpoint directly on a team folder
 - [ ] A team feed pushes a member over their personal site limit and gets muted
 - [ ] A folder is shared with some teammates and another teammate can still load its stories
@@ -783,23 +856,45 @@ Written before any code. Each one is a test.
 - [ ] A teammate joins a shared folder and sees thousands of unread stories the team already cleared
 - [ ] A read on a site that is in no team folder shows up in someone's read receipts
 - [ ] A read in the private copy of a site that is also in a shared team folder is not shared
+- [ ] A manager adds a site a member follows privately and the member's private copy shows no team badge
+- [ ] Reads from before a site became a team site show up in receipts
 - [ ] A site in two team folders with different read modes does not take the most shared one
 
 **Seats and billing**
 
 - [ ] Two invites are accepted at once and the team ends up with 11 seats
 - [ ] A teammate with a personal Premium Archive subscription leaves the team and drops to free
-- [ ] A team's payment fails and teammates lose Pro before the grace period ends
+- [ ] A team's payment fails and teammates keep Pro after the paid period ends
+- [ ] A teammate removed from an active team loses Pro before their 14 days are up
+- [ ] A lapsed team pays again and its folders, roles or settings are gone
 - [ ] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
 - [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
 - [ ] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [ ] A teammate's own Stripe renewal keeps charging after they join
+- [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
+- [ ] The nightly expiry sends a teammate the grace email because of an old trial date
+- [ ] A new signup who joins during their trial is expired by the trial branch
+- [ ] An App Store renewal during the seat is dropped, and the person falls to free after leaving
+- [ ] A Play expiry notice strips team Pro
+- [ ] Archive bought or gifted during the seat is lost when the seat ends
+- [ ] Rejoining during grace snapshots team Pro as the person's own tier, so they keep Pro for good
+- [ ] A plan that is still paid for drops to free when the seat ends, or a plan that ran out survives it
+- [ ] A webhook that saves the whole profile row overwrites the grant
+- [ ] Joining sends the Pro welcome email or the staff upgrade email, or writes a payment row
+- [ ] The day 10 email goes out twice or never
+- [ ] Removal from an inactive team gives 14 days of grace
+- [ ] A shared meter counts usage from before someone joined, gives each person their own 10 hours, or keeps counting someone in grace
+- [ ] AI filters bill the teammate's own Stripe customer or ignore the owner's spending limit
+- [ ] The team passes 10,000 sites through add a site, OPML import, unmute or the feed chooser
+- [ ] A site several teammates follow is counted more than once, or muted sites are counted
+- [ ] Deleting the owner's account leaves teammates on Pro for good
 
 **Notifications**
 
 - [ ] A teammate with a personal setting and a team rule on the same feed gets two notifications
 - [ ] A Slack channel gets one post per teammate instead of one per story
+- [ ] The owner's private training on a site changes what a team channel receives
 - [ ] Removing a rule wipes a teammate's own earlier setting
 - [ ] A required rule is turned off through the existing notifications endpoint
 - [ ] The checkup shows green for a device whose token was revoked
@@ -813,6 +908,7 @@ Written before any code. Each one is a test.
 - [ ] A deactivated teammate's phone stays signed in
 - [ ] An unverified domain is used to claim accounts
 - [ ] Require SSO locks out the owner when the identity provider is misconfigured
+- [ ] An account that existed before joining is locked when its teammate is deprovisioned
 
 ## Open decisions
 
@@ -820,7 +916,7 @@ Written before any code. Each one is a test.
 - [x] **Sites per teammate.** Decided 2026-11-26: the team shares Pro's 10,000 sites.
 - [x] **Splitting a team plan among strangers.** Decided 2026-11-26: accepted. Anyone the team invites can join.
 - [x] **What else belongs in the $129 tier.** Decided 2026-11-26: white label branding, audit log export and SIEM streaming, the IP allow list, session limits and sign in history, groups synced from the identity provider, and data retention with full export. For comparison, Inoreader's 10 seat plan is $119.99 and includes SAML but none of those and no SCIM.
-- [ ] **Who owns an account.** Recommended: the person always does. A team can remove someone but never delete or read their account. With "Require SSO" on, a removed teammate regains password login by confirming a personal email address.
+- [x] **Who owns an account.** Decided 2026-11-26: it depends on how the account was created. One that existed before joining stays the person's. One that single sign-on created is locked on removal, with an export on request. A team can never read anyone's private account.
 - [x] **Teammates who already pay.** Decided 2026-11-26: their Stripe or PayPal renewal is cancelled automatically when they join and they keep what they paid for until it runs out. App Store and Play subscribers get a notice with a link, since only the subscriber can cancel those.
 - [x] **Grace period on removal.** Decided 2026-11-26: 14 days, with an email on day 1 and day 10.
 - [x] **Free trial.** Decided 2026-11-26: none.
