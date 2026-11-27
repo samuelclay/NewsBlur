@@ -2,6 +2,7 @@ import datetime
 import json
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -129,7 +130,8 @@ class Test_AppleSubscriptions(TestCase):
 
     def test_ineligible_transactions_do_not_write_payments(self):
         for changes in (
-            {"environment": "Sandbox"},
+            # Xcode's StoreKit testing, which Apple doesn't sign.
+            {"environment": "Xcode"},
             {"revocationDate": self.payload["purchaseDate"]},
             {"isUpgraded": True},
             {"expiresDate": int((self.now - datetime.timedelta(days=1)).timestamp() * 1000)},
@@ -404,5 +406,28 @@ class Test_AppleReceipts(TestCase):
             purchased_at=datetime.datetime.now() - datetime.timedelta(days=40),
         )
         self.assertEqual(self.post(signed_transaction=self.app_store.sign(ended))["reason"], "ended")
+
+    def test_a_signed_sandbox_purchase_starts_its_plan_and_counts_as_no_revenue(self):
+        """App Review and TestFlight buy in Apple's sandbox, without being charged."""
+        # A real payment a year ago, the month PaymentHistory.report compares this one with.
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - relativedelta(years=1),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+        archive = self.app_store.transaction(
+            self.user, "newsblur_premium_archive", "2000001", days=1, environment="Sandbox"
+        )
+        self.assertEqual(self.post(signed_transaction=self.app_store.sign(archive))["code"], 1)
+        self.assertTrue(self.profile().is_archive)
+        # Pro is above the Archive the account has now, so it starts as the app's purchases always have.
+        pro = self.app_store.transaction(
+            self.user, "newsblur_premium_pro", "2000002", days=1, environment="Sandbox"
+        )
+        self.post(signed_transaction=self.app_store.sign(pro))
+        self.assertTrue(self.profile().is_pro)
+
+        self.assertIn("Total: $36\n", PaymentHistory.report()["output"])
         self.assertFalse(self.profile().is_archive_extra)
         self.assertFalse(PaymentHistory.objects.filter(payment_identifier="2000003").exists())

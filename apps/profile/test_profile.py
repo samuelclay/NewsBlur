@@ -5,6 +5,7 @@ import time
 from unittest.mock import MagicMock, call, patch
 from urllib.parse import urlencode
 
+import pytz
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -1045,6 +1046,30 @@ class Test_ProratedProviderSwitchRefund(TestCase):
             payment_date=datetime.datetime.now() - datetime.timedelta(days=400),
             payment_amount=36,
             payment_provider="ios-subscription",
+        )
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=0)]
+        )
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        self.assertIsNone(refunded)
+        mock_refund.assert_not_called()
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_no_refund_for_a_purchase_made_in_the_app_store_sandbox(
+        self, mock_customer, mock_charges, mock_refund
+    ):
+        # TestFlight and App Review buy in Apple's sandbox, where nobody is charged
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=2),
+            payment_amount=29,
+            payment_provider="ios-pro-subscription",
+            sandbox=True,
         )
         mock_customer.return_value = MagicMock(id="cus_storeswitch")
         mock_charges.return_value = MagicMock(
@@ -3331,6 +3356,9 @@ class Test_PaypalIpnVerification(TestCase):
         Profile.objects.filter(user=self.user).update(
             is_premium=False, is_premium_trial=False, premium_expire=None
         )
+        # test_profile.py: when today's payment was made. PayPal's API gives a payment's time in UTC and its IPN gives
+        # it in Pacific time, and both name this one moment, whatever the time of day the test runs.
+        self.paid_at = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
         api = MagicMock()
         api.get.side_effect = self.paypal_get
         for patcher in (
@@ -3347,11 +3375,10 @@ class Test_PaypalIpnVerification(TestCase):
         if path == "/v1/billing/subscriptions/I-PAID?fields=plan":
             return {"status": "ACTIVE", "plan_id": Profile.plan_to_paypal_plan_id("premium")}
         if path.startswith("/v1/billing/subscriptions/I-PAID/transactions"):
-            paid_at = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")
             return {
                 "transactions": [
                     {
-                        "time": paid_at,
+                        "time": self.paid_at.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                         "status": "COMPLETED",
                         "amount_with_breakdown": {"gross_amount": {"value": "36.00"}},
                     }
@@ -3364,7 +3391,7 @@ class Test_PaypalIpnVerification(TestCase):
         with postback."""
         from paypal.standard.ipn.models import PayPalIPN
 
-        paid_at = datetime.datetime.now() - datetime.timedelta(days=days_ago)
+        paid_at = (self.paid_at - datetime.timedelta(days=days_ago)).astimezone(pytz.timezone("US/Pacific"))
         with patch.object(PayPalIPN, "_postback", return_value=postback):
             Client().post(
                 reverse("paypal-ipn"),
@@ -3376,7 +3403,7 @@ class Test_PaypalIpnVerification(TestCase):
                         "custom": self.user.username,
                         "payer_email": self.user.email,
                         "payment_status": "Completed",
-                        "payment_date": paid_at.strftime("%H:%M:%S %b %d, %Y PST"),
+                        "payment_date": paid_at.strftime("%H:%M:%S %b %d, %Y ") + paid_at.tzname(),
                         "mc_gross": amount,
                         "payment_gross": amount,
                         "mc_currency": "USD",

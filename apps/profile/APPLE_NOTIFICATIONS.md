@@ -27,8 +27,9 @@ Apple to retry. Logs contain notification type/UUID and processing status, never
 This is additive renewal processing. Paid cross-tier changes and lifetime accounts are left
 unchanged. Existing client purchase handling remains responsible for tier upgrades. Refunds,
 revocations, billing retry and expiration events are acknowledged and logged without changing
-entitlements; existing expiration jobs continue to apply. Sandbox transactions are verified but
-never grant access. Apple `TEST` notifications are verified and acknowledged without account writes.
+entitlements; existing expiration jobs continue to apply. Sandbox transactions are verified the same
+way and grant access like production ones, since App Review, TestFlight and sandbox testers buy there.
+Apple `TEST` notifications are verified and acknowledged without account writes.
 Payment amounts retain the existing integer USD plan values, not localized Apple proceeds.
 
 ## Deployment and Apple delivery test

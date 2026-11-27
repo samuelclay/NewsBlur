@@ -67,6 +67,8 @@ Decided on 2026-11-26:
 - [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
 - [x] Verifying payment notices and app purchases for every plan is part of step 3, on this PR
 - [x] If a provider's webhook signing secret is not configured in production, its notices are still handled, and each one reports an error so the missing secret cannot go unnoticed
+- [x] App Store sandbox purchases (App Review, TestFlight, sandbox testers) start and renew a plan like any other, for anyone, and a sandbox team behaves exactly like a paid one. Sandbox payments are kept out of revenue totals
+- [x] Purchases reported by app versions already released are handled as they are today. Only the signed form, used for team plans and by app versions from this release on, is verified with Apple
 - [x] A team that is active must be paid for or comped. One that is neither, with no paid through date, is lapsed by the hourly task, and only the owner of a team that is paid for or comped is spared the nightly expiry
 - [x] Only staff can comp a team, and a comped team stays comped: a later payment for it changes nothing and staff are emailed
 - [x] A new team is named after its owner ("samuel's team") until the owner renames it

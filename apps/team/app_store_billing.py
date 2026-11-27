@@ -34,13 +34,14 @@ def bills_team(user_id):
     )
 
 
-def record_app_store_payment(user, plan, original_transaction_id, purchased_at, expires_at):
+def record_app_store_payment(user, plan, original_transaction_id, purchased_at, expires_at, sandbox=False):
     """A verified App Store transaction for a team plan, for the first purchase or a renewal: Apple's expiry date is
     the paid through date, its purchase date when the payment was made, and the subscription's original transaction
     id the reference. When this moves the team's billing to the App Store, every Stripe and PayPal subscription the
     account made before the purchase stops renewing, as when Stripe or PayPal starts billing a team
-    (apps/team/tasks.py StopRenewalsMadeBefore). A store subscription can't be stopped from here, so record_team_payment
-    tells staff when one billed the team before."""
+    (apps/team/tasks.py StopRenewalsMadeBefore). A sandbox purchase costs nothing, so it stops none of them. A
+    store subscription can't be stopped from here, so record_team_payment tells staff when one billed the team
+    before."""
     billed_before = _billing(user.pk)
     payment = record_team_payment(
         user,
@@ -52,7 +53,8 @@ def record_app_store_payment(user, plan, original_transaction_id, purchased_at, 
         replaces_own_plan=_replaces_own_plan(user, original_transaction_id, purchased_at),
     )
     billed_here = (Team.PROVIDER_APP_STORE, original_transaction_id)
-    if payment.reason is None and _billing(user.pk) == billed_here and billed_before != billed_here:
+    moved_here = _billing(user.pk) == billed_here and billed_before != billed_here
+    if payment.reason is None and moved_here and not sandbox:
         started_at = purchased_at.timestamp()
         transaction.on_commit(lambda: StopRenewalsMadeBefore.delay(user_id=user.pk, started_at=started_at))
     return payment

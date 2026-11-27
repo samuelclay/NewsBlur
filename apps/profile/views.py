@@ -991,7 +991,6 @@ IOS_PURCHASE_MESSAGES = {
         "The App Store couldn't be reached to confirm this purchase. Try again shortly."
     ),
     "other_account": gettext_lazy("This purchase belongs to another NewsBlur account."),
-    "not_production": gettext_lazy("Test purchases from the App Store sandbox don't change your plan."),
     "ended": gettext_lazy("This purchase has ended or was refunded, so your plan hasn't changed."),
     "on_team": gettext_lazy(
         "You're on another team, so this purchase didn't start a team of your own. NewsBlur has been told."

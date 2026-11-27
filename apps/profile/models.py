@@ -621,7 +621,7 @@ class Profile(models.Model):
         from apps.social.models import MSharedStory, MSocialProfile
 
         # Get payment history
-        payments = PaymentHistory.objects.filter(user=self.user)
+        payments = PaymentHistory.objects.filter(user=self.user).exclude(sandbox=True)
         payment_history = []
         total_payments = 0
         for payment in payments:
@@ -1777,6 +1777,8 @@ class Profile(models.Model):
             "ios-archive-subscription",
             "ios-archive-extra-subscription",
             "ios-pro-subscription",
+            "ios-team-subscription",
+            "ios-team-enterprise-subscription",
             "android-subscription",
         ]:
             deleted_count = 0
@@ -1788,7 +1790,11 @@ class Profile(models.Model):
             # a duplicate regardless of age.
             if provider in ("paypal", "stripe"):
                 renewal_window = None
-            elif provider == "ios-pro-subscription":
+            elif provider in (
+                "ios-pro-subscription",
+                "ios-team-subscription",
+                "ios-team-enterprise-subscription",
+            ):
                 renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
             else:
                 renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
@@ -2737,6 +2743,7 @@ class Profile(models.Model):
                 payment_amount__gt=0,
             )
             .exclude(refunded=True)
+            .exclude(sandbox=True)
             .order_by("-payment_date")
             .first()
         )
@@ -3838,7 +3845,7 @@ class Profile(models.Model):
             pass
 
         # Payment history
-        payments = PaymentHistory.objects.filter(user=user)
+        payments = PaymentHistory.objects.filter(user=user).exclude(sandbox=True)
         payment_count = payments.count()
         total_paid = sum(p.payment_amount for p in payments if not p.refunded)
         first_payment = payments.order_by("payment_date").first()
@@ -3956,7 +3963,9 @@ class Profile(models.Model):
         account_age_days = (datetime.datetime.now() - date_joined_naive).days
 
         # Full payment history is the key thing to eyeball before we ever cancel anyone.
-        payments = list(PaymentHistory.objects.filter(user=user).order_by("-payment_date"))
+        payments = list(
+            PaymentHistory.objects.filter(user=user).exclude(sandbox=True).order_by("-payment_date")
+        )
         payment_count = len(payments)
         total_paid = sum(p.payment_amount for p in payments if not p.refunded)
         first_payment_date = payments[-1].payment_date if payments else None
@@ -4503,6 +4512,7 @@ class Profile(models.Model):
         payment = (
             PaymentHistory.objects.filter(user=self.user, payment_amount__gt=0)
             .exclude(refunded=True)
+            .exclude(sandbox=True)
             .order_by("-payment_date")
             .first()
         )
@@ -4846,6 +4856,7 @@ class Profile(models.Model):
                         user=row.user, payment_amount__gte=36, payment_date__gt=charged_since
                     )
                     .exclude(refunded=True)
+                    .exclude(sandbox=True)
                     .exists()
                 )
                 if upgraded:
@@ -4933,8 +4944,10 @@ class Profile(models.Model):
             since = row.paypal_canceled_date or row.email_sent_date
             # >= 29 (not 36) so a pro-monthly resubscribe ($29/mo on iOS) still counts; the old
             # grandfathered rates were $12/$24, so 29 cleanly excludes a stale grandfathered charge.
-            resub = PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29).exclude(
-                refunded=True
+            resub = (
+                PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29)
+                .exclude(refunded=True)
+                .exclude(sandbox=True)
             )
             if since:
                 resub = resub.filter(payment_date__gt=since)
@@ -5958,6 +5971,10 @@ class PaymentHistory(models.Model):
     # one the provider can't say.
     plan = models.CharField(max_length=32, blank=True, null=True)
     period_end = models.DateTimeField(blank=True, null=True)
+    # models.py: a payment made in Apple's sandbox, where App Review, TestFlight and sandbox testers buy without being
+    # charged (apps/profile/apple_subscriptions.py). It starts and renews a plan like any payment, and no revenue
+    # report or payment total counts it.
+    sandbox = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return "[%s] $%s/%s %s" % (
@@ -5987,7 +6004,7 @@ class PaymentHistory(models.Model):
             if not payments:
                 payments = PaymentHistory.objects.filter(
                     payment_date__gte=start_date, payment_date__lte=end_date
-                )
+                ).exclude(sandbox=True)
                 payments = payments.aggregate(
                     avg=Avg("payment_amount"), sum=Sum("payment_amount"), count=Count("user")
                 )
@@ -6121,7 +6138,7 @@ class PaymentHistory(models.Model):
                 last_year_sum = count["sum"] or 0
                 last_year_count = count["count"]
 
-        total = cls.objects.all().aggregate(sum=Sum("payment_amount"))
+        total = cls.objects.exclude(sandbox=True).aggregate(sum=Sum("payment_amount"))
         output += "\nTotal: $%s\n" % total["sum"]
 
         print(output)

@@ -4259,7 +4259,6 @@ class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
             self.buy(buyer, purchase, key=never_certified)["reason"],
             self.buy(buyer, dict(purchase, bundleId="com.example.another"))["reason"],
             self.buy(someone, purchase)["reason"],
-            self.buy(buyer, dict(purchase, environment="Sandbox"))["reason"],
             # Family Sharing would hand the buyer's team plan to the rest of their family.
             self.buy(someone, self.transaction(None, "3000002", inAppOwnershipType="FAMILY_SHARED"))[
                 "reason"
@@ -4273,13 +4272,98 @@ class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
                 "not_verified",
                 "not_verified",
                 "other_account",
-                "not_production",
                 "other_account",
             ],
         )
         for user in (buyer, someone):
             self.assertIsNone(self.owned_team(user))
             self.assertEqual(self.plan_of(user), "free")
+        self.assertFalse(PaymentHistory.objects.exists())
+
+    def test_a_sandbox_purchase_starts_and_renews_a_team_that_lapses_a_day_after_its_last_renewal(self):
+        """App Review, TestFlight and sandbox testers buy in Apple's sandbox, where a month renews every few
+        minutes."""
+        fake_stripe = FakeStripeBilling(self)
+        tester = self.reader("tester", "premium", premium_expire=self.now + self.days(200))
+        fake_stripe.known_customer(tester)
+        own_plan = fake_stripe.subscribe(tester, "premium")
+        minute = datetime.timedelta(minutes=1)
+        purchase = self.transaction(
+            tester,
+            "2000001",
+            purchaseDate=apple_time(self.now - 4 * minute),
+            expiresDate=apple_time(self.now + minute),
+            environment="Sandbox",
+        )
+        renewal = self.transaction(
+            tester,
+            "2000002",
+            original="2000001",
+            expiresDate=apple_time(self.now + 5 * minute),
+            environment="Sandbox",
+        )
+
+        self.assertEqual(self.buy(tester, purchase)["code"], 1)
+        self.assertEqual(self.notify("DID_RENEW", renewal), 200)
+
+        team = self.owned_team(tester)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, self.now + 5 * minute))
+        self.assertEqual(self.plan_of(tester), "pro")
+        # A purchase that cost nothing leaves the plan the tester pays for on the web renewing.
+        self.assertFalse(own_plan.cancel_at_period_end)
+        for hours_later, status in ((23, Team.STATUS_ACTIVE), (25, Team.STATUS_INACTIVE)):
+            with patch("apps.team.tasks.datetime") as clock:
+                clock.datetime.now.return_value = team.paid_through + datetime.timedelta(hours=hours_later)
+                self.committed(TeamProGrants)
+            self.assertEqual(self.owned_team(tester).status, status)
+        self.assertEqual(self.plan_of(tester), "premium")
+
+    def test_only_payments_apple_charged_for_count_as_revenue_and_each_counts_once(self):
+        # A real payment a year ago, the month PaymentHistory.report compares this one with.
+        PaymentHistory.objects.create(
+            user=self.owner,
+            payment_date=self.now - relativedelta(years=1),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+        tester = self.reader("tester")
+        self.buy(tester, self.transaction(tester, "2000001", environment="Sandbox"))
+        self.notify(
+            "DID_RENEW", self.transaction(tester, "2000002", original="2000001", environment="Sandbox")
+        )
+        owner = self.reader("teamowner")
+        purchase = self.transaction(owner, "3000001")
+        self.buy(owner, purchase)
+        # The app and Apple report the purchase at the same moment, and both record it.
+        duplicate = PaymentHistory.objects.get(user=owner)
+        duplicate.pk = None
+        duplicate.save()
+
+        Profile.objects.get(user=owner).setup_premium_history()
+
+        report = PaymentHistory.report()["output"]
+        this_month = re.search(
+            r"^%s - [^\t]+\t\$[\d.]+\t\$(\d+)" % self.now.strftime("%Y-%m-01"), report, re.M
+        )
+        self.assertEqual(this_month.group(1), "79")
+        self.assertIn("Total: $115\n", report)
+        self.assertEqual(self.owned_team(tester).status, Team.STATUS_ACTIVE)
+
+    def test_a_sandbox_purchase_starts_nothing_without_apples_signature_for_this_app_and_this_account(self):
+        buyer = self.reader("buyer")
+        someone = self.reader("someone")
+        purchase = self.transaction(buyer, "2000001", environment="Sandbox")
+        never_certified = ec.generate_private_key(ec.SECP256R1())
+
+        refusals = [
+            self.buy(buyer, purchase, key=never_certified)["reason"],
+            self.buy(buyer, dict(purchase, bundleId="com.example.another"))["reason"],
+            self.buy(someone, purchase)["reason"],
+        ]
+
+        self.assertEqual(refusals, ["not_verified", "not_verified", "other_account"])
+        for user in (buyer, someone):
+            self.assertIsNone(self.owned_team(user))
         self.assertFalse(PaymentHistory.objects.exists())
 
     def test_someone_on_another_team_gets_no_team_and_no_plan_of_their_own_from_a_team_purchase(self):

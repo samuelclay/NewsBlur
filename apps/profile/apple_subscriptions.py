@@ -37,10 +37,13 @@ APPLE_PRODUCTS = {
 }
 APPLE_PROVIDERS = tuple(product[1] for product in APPLE_PRODUCTS.values())
 TIER_RANKS = {tier: rank for tier, _provider, _amount, rank in APPLE_PRODUCTS.values()}
+# apple_subscriptions.py: the environments whose signed transactions start and renew plans. App Review, TestFlight
+# and sandbox testers buy in the sandbox, which Apple signs as it signs production.
+APPLE_ENVIRONMENTS = ("Production", "Sandbox")
 # apple_subscriptions.py: why a purchase the app posted changed nothing, by why apply_verified_apple_transaction
 # ignored it (apply_apple_purchase).
 PURCHASE_REFUSALS = {
-    "environment": "not_production",
+    "environment": "not_verified",
     "revoked-or-upgraded": "ended",
     "expired": "ended",
     "refunded": "ended",
@@ -89,7 +92,7 @@ def _apple_date(value):
 
 
 def apply_verified_apple_transaction(transaction_data, now=None, account=None):
-    """Accept only signature-verified production transactions, never client claims.
+    """Accept only signature-verified production or sandbox transactions, never client claims.
 
     apps/profile/views.py verifies the signed notification and transaction before
     calling here. Existing payment history is the account ownership evidence, and
@@ -102,7 +105,7 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
     a plan of the owner's own, go on to apps/team/app_store_billing.py.
     """
     now = now or datetime.datetime.now()
-    if transaction_data.get("environment") != "Production":
+    if transaction_data.get("environment") not in APPLE_ENVIRONMENTS:
         return {"status": "ignored", "reason": "environment"}
     product = APPLE_PRODUCTS.get(transaction_data.get("productId"))
     if product is None:
@@ -125,6 +128,7 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
 
     tier, provider, amount, rank = product
     team_plan = rank == TEAM_RANK
+    sandbox = transaction_data.get("environment") == "Sandbox"
     if team_plan and transaction_data.get("inAppOwnershipType") == "FAMILY_SHARED":
         # apple_subscriptions.py: a team plan is for the account that bought it, not the buyer's family.
         return {"status": "ignored", "reason": "family-shared"}
@@ -205,6 +209,7 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
         payment.payment_amount = amount
         payment.plan = tier
         payment.period_end = expiration
+        payment.sandbox = sandbox or None
         payment.save()
 
         if not team_plan:
@@ -218,7 +223,14 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
 
     status = "duplicate" if duplicate else "processed"
     if team_plan:
-        team_payment = record_app_store_payment(profile.user, tier, original_identifier, purchase, expiration)
+        team_payment = record_app_store_payment(
+            profile.user,
+            tier,
+            original_identifier,
+            purchase,
+            expiration,
+            sandbox=sandbox,
+        )
         result = {"status": status, "user_id": user_id}
         if team_payment.reason:
             result["reason"] = team_payment.reason
@@ -300,6 +312,10 @@ def apply_apple_purchase(user, transaction_data):
     if status == "ignored" and reason in ("cross-tier", "lifetime"):
         profile = Profile.objects.get(user=user)
         getattr(profile, "activate_ios_%s" % product[0])(transaction_data["transactionId"])
+        if transaction_data.get("environment") == "Sandbox":
+            PaymentHistory.objects.filter(
+                user=user, payment_identifier=transaction_data["transactionId"]
+            ).update(sandbox=True)
         return None
     if status == "ignored":
         return PURCHASE_REFUSALS.get(reason, "ended")
@@ -307,11 +323,14 @@ def apply_apple_purchase(user, transaction_data):
 
 
 def apply_verified_apple_refund(transaction_data):
-    """Apple refunded or revoked a verified production transaction. A payment taken back for a team plan ends the
-    team it paid for at once (apps/team/app_store_billing.py end_refunded_team). Any other plan runs to its
-    expiry."""
+    """Apple refunded or revoked a verified transaction. A payment taken back for a team plan ends the team it paid
+    for at once (apps/team/app_store_billing.py end_refunded_team). Any other plan runs to its expiry."""
     product = APPLE_PRODUCTS.get(transaction_data.get("productId"))
-    if transaction_data.get("environment") != "Production" or not product or product[3] != TEAM_RANK:
+    if (
+        transaction_data.get("environment") not in APPLE_ENVIRONMENTS
+        or not product
+        or product[3] != TEAM_RANK
+    ):
         return {"status": "ignored", "reason": "not_a_team_payment"}
     identifier = transaction_data.get("transactionId")
     original_identifier = transaction_data.get("originalTransactionId")
@@ -329,7 +348,7 @@ def record_apple_pending_plan(renewal_info):
     """The plan a team's App Store subscription renews into, from Apple's verified renewal info
     (apps/team/app_store_billing.py record_pending_plan). It renews into nothing once its owner turns renewal
     off."""
-    if renewal_info.get("environment") != "Production":
+    if renewal_info.get("environment") not in APPLE_ENVIRONMENTS:
         return
     product = APPLE_PRODUCTS.get(renewal_info.get("autoRenewProductId"))
     renews = renewal_info.get("autoRenewStatus") == 1
