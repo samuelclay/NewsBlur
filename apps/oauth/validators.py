@@ -21,10 +21,10 @@ class ProApplicationValidator(RFC8252OAuth2Validator):
         return application
 
     def _load_access_token(self, token):
-        # Join the owner in oauth2_provider's normal token lookup, including for legacy tokens.
+        # Join the owner and any exemption in oauth2_provider's token lookup, including for legacy tokens.
         access_token = (
             get_access_token_model()
-            .objects.select_related("application__user__profile", "user")
+            .objects.select_related("application__user__profile", "application__applicationexemption", "user")
             .filter(token=token)
             .first()
         )

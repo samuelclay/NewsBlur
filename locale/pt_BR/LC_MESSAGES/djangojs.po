@@ -5343,6 +5343,9 @@ msgstr "Pausar reprodução"
 msgid "Pause or resume reading aloud (y)"
 msgstr "Pausar ou retomar a leitura em voz alta (y)"
 
+msgid "Paused"
+msgstr "Pausado"
+
 msgid "Payment history"
 msgstr "Histórico de pagamentos"
 
