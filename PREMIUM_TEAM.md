@@ -41,7 +41,7 @@ Decided on 2026-11-26:
 - [x] The team is the owner's account. The owner is the one who pays, and everything the team shares falls under the owner's user id: billing, shared read status, team training and metered usage. There are no hidden accounts
 - [x] The $129 tier is called Premium Team Enterprise
 - [x] When someone who pays for their own plan joins a team, their Stripe or PayPal renewal is cancelled automatically and they keep what they already paid for until it runs out. App Store and Play subscriptions cannot be cancelled by us, so those teammates get a notice with a link
-- [x] A removed teammate keeps Premium Pro on their private feeds for 14 days, with an email on day 1 and day 10
+- [x] No grace period. Leaving a team or being removed downgrades the account at once, to the plan the person has on their own or to free, with one email saying so. This replaces an earlier 14 day grace, dropped on 2026-11-26 because it let people rotate through a team's seats and keep Premium Pro for two weeks each
 - [x] No free trial
 - [x] The shared site limit counts distinct sites: every different site in team folders or in any teammate's private feeds counts once, however many teammates follow it
 - [x] An owner can hand the team to another teammate without contacting support. The new owner accepts and enters a card, the team's shared read status and training move to their account, and the old owner's team plan ends
@@ -52,7 +52,7 @@ Decided on 2026-11-26:
 - [x] Read status follows the site. Once a site is in a team folder with shared read status or read receipts, it is a team site wherever it appears in a teammate's feed list. A private copy of it shows the team badge and says reads are shared, and the join screen says so. Reading on sites that are in no team folder is never shown to anyone
 - [x] An account is in one team at a time, as owner or member. Agencies separate clients inside one team with folders shared to chosen teammates. No team switcher
 - [x] "More than 10 teammates? Get in touch" opens a short form (team name, seats wanted, a note) that emails Sam with the account attached
-- [x] A team whose payment lapses goes inactive the day its paid period ends, with one email to everyone and no grace. The 14 day grace is only for a teammate who leaves or is removed from a team that is still active. A payment that later succeeds brings the team straight back
+- [x] A team whose payment lapses goes inactive the day its paid period ends, with one email to everyone and no grace. A payment that later succeeds brings the team straight back
 - [x] When a site a teammate follows privately becomes a team site, the private copy shows the team badge and nothing else is said
 - [x] With single sign-on required, what happens to a removed teammate's account depends on how it was created. An account that existed before joining stays the person's. An account that single sign-on created is locked, with an export of its private feeds on request
 - [x] One push per build step, so the review bots review each finished step once
@@ -65,6 +65,7 @@ Decided on 2026-11-26:
 - [x] An owner who switches down from a team plan keeps the team until the month already paid for runs out, then the lower plan starts
 - [x] On an ownership transfer, the old owner is refunded the unused part of their month when they paid by Stripe or PayPal. App Store and Play purchases cannot be refunded by us
 - [x] When a team lapses, the owner's own account is treated like any lapsed plan: it keeps Premium Pro features through the usual expiry window, with the usual emails, while the team itself is off
+- [x] Verifying payment notices and app purchases for every plan is part of step 3, on this PR
 - [x] If one owner ends up paying for a team plan in two places, the newest purchase wins, the older web renewal is cancelled, and staff are emailed. The stores take the money before the server hears of a purchase, so this cannot be refused up front
 - [x] Invite links are a path, `/team/join/<token>`, because the apps can claim a path but not a query string. The invite is carried through login or signup the way gift codes are, and the welcome page names the team before signup
 - [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
@@ -138,7 +139,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] Three roles: owner, manager, member
 - [ ] One bill on the owner's account, with invoices
 - [ ] An account is in one team at a time, as owner or member
-- [ ] Leave or be removed and, after 14 days of grace, the account drops back to its own plan with its private feeds intact
+- [ ] Leave or be removed and the account drops back to its own plan at once. Its private feeds stay, and on the free plan they are muted until the person picks 64 to keep
 - [ ] Transfer ownership to another teammate, who accepts, enters a card and takes over the bill
 - [ ] On transfer the team's shared read status and training move to the new owner's account
 
@@ -321,7 +322,7 @@ The upgrade dialog (`media/js/newsblur/reader/reader_premium_upgrade.js`) has th
 - [ ] A payment that succeeds later brings the team back at once
 - [ ] Team folders and settings are kept when a team goes inactive, so it can come back
 - [ ] Staff can raise a team's seat limit and set a custom price
-- [ ] A warning email and a grace period before a removed teammate's sites are muted
+- [ ] One email to a teammate who leaves or is removed, saying which plan their account is on now
 
 **Screenshots**
 
@@ -695,16 +696,16 @@ The tier flags on `Profile` (`is_premium`, `is_archive`, `is_pro`) are read in m
 Two things the first draft of this plan got wrong, found by reading the code:
 
 - `setup_premium_history` cannot bring someone back down to their own plan. It only ever raises a tier, and tiers bought in the App Store, on Play or by gift exist only as the activation call made at the time. So the grant keeps a snapshot of the person's own tier and restores it.
-- `deactivate_premium` mutes every site, not only the ones over the free limit. The person then picks their 64 in the feed chooser. The grace emails have to say that.
+- `deactivate_premium` mutes every site, not only the ones over the free limit. The person then picks their 64 in the feed chooser. The email sent when a seat ends has to say that.
 
 The grant:
 
-- [x] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, when the grant began, and when grace began and ends
+- [x] `TeamProGrant` in `apps/team`: one row per person holding team Pro, with their own tier at the moment they joined (free, trial, premium, archive, archive extra, pro), their own trial end if they were on a trial, and when the grant began
 - [x] `grant_team_pro` sets the Pro flags on the teammate's `Profile` without calling `activate_pro`, so no welcome email, staff email or payment row is produced
 - [x] The grant never writes `premium_expire`. That stays the teammate's own paid through date
 - [ ] On a new grant: the teammate's muted sites are reactivated up to what the team has room for, feeds are scheduled at Pro speed, and the archive backfill starts if they were not already on Archive
 - [x] `release_team_pro` restores exactly the snapshotted tier if it is still paid for, restores a trial that is still running, and otherwise calls `deactivate_premium`
-- [x] One row per person, so someone who rejoins during grace keeps their original snapshot instead of snapshotting team Pro as their own tier
+- [x] One row per person, removed when the seat ends, so team Pro is never snapshotted as someone's own tier
 
 Guards on the existing premium code (`apps/profile/models.py` and `apps/profile/tasks.py`):
 
@@ -718,25 +719,23 @@ Guards on the existing premium code (`apps/profile/models.py` and `apps/profile/
 A seat's life:
 
 - [x] none to active: an invite is accepted on an active team
-- [x] active to grace: the teammate leaves or is removed while the team is active. 14 days, with an email on day 1 and day 10
-- [x] grace to ended: an hourly Celery beat task releases the grant when grace runs out
-- [x] grace to active: the person rejoins. The row and its snapshot are reused
-- [x] active to ended at once: the team lapses
-- [x] Someone already in grace when their old team lapses keeps the date their day 1 email promised
-- [x] A teammate whose own plan ran out while they were on the team drops to free when grace ends, with no further 30 days from `PremiumExpire`
+- [x] active to ended: the teammate leaves or is removed, or the team lapses. Team Pro ends at once in every case, with one email
+- [x] No grace state, no reminder emails and no dates to track. The grant row exists exactly as long as the seat is active on an active team
+- [x] A teammate whose own plan ran out while they were on the team drops to free when the seat ends
 
 A team's life:
 
 - [ ] `Team.paid_through` holds the end of the owner's paid period. The lapse cannot use `premium_expire`, which counts every payment as a year
 - [x] `activate_team` and `deactivate_team` are the two functions billing calls. Deactivating releases every teammate's grant at once and sends one email to everyone. Activating grants again with fresh snapshots
+- [x] The hourly task only lapses teams and repairs overwritten flags. It no longer ends grace or sends reminders
 - [x] The same beat task lapses a team whose `paid_through` has passed
 - [x] If the owner's account is deleted, the team goes inactive and its teammates are released
 
 A new teammate's own subscription:
 
-- [ ] On join, a Celery task calls `cancel_premium_stripe` and `cancel_premium_paypal`. Both stop renewal at the end of the paid period, with no refund, and leave the separate AI filter billing subscription alone
-- [ ] App Store and Play subscribers are found from their recent payment rows, shown a note on the join screen, and sent one email with the links to cancel
-- [ ] A lapsed team that comes back does not cancel anything again. Cancelling happens only on join
+- [x] On join, a Celery task calls `cancel_premium_stripe` and `cancel_premium_paypal`. Both stop renewal at the end of the paid period, with no refund, and leave the separate AI filter billing subscription alone
+- [x] App Store and Play subscribers are found from their recent payment rows, shown a note on the join screen, and sent one email with the links to cancel
+- [x] A lapsed team that comes back does not cancel anything again. Cancelling happens only on join
 
 Shared allowances. The scope is the owner plus each teammate for the period they were on the team. Usage rows keep the teammate's own user id, which is the per teammate breakdown, so no field is added to any Mongo document.
 
@@ -746,13 +745,13 @@ Shared allowances. The scope is the owner plus each teammate for the period they
 - [ ] Listen: the 10 hours a week are counted across the scope (`apps/listen/usage.py`), and the message at the cap names the team and its owner
 - [ ] Ask AI and transcription: counted across the scope (`apps/ask_ai/usage.py`)
 - [ ] Archive Assistant's 100 a day: counted across the scope (`apps/archive_assistant/models.py`)
-- [ ] AI filters are pay per use, not an allowance. A teammate can use them once the owner has turned usage billing on, and the charge goes to the owner's Stripe customer against the owner's spending limit, with the teammate recorded on each cost row
-- [ ] Only the owner can turn usage billing on for the team
+- [x] AI filters are pay per use, not an allowance. A teammate can use them once the owner has turned usage billing on, and the charge goes to the owner's Stripe customer against the owner's spending limit, with the teammate recorded on each cost row
+- [x] Only the owner can turn usage billing on for the team
 - [ ] When the team hits a shared limit, the teammate who hit it is told it is the team's limit and who to ask
 
 Counting:
 
-- [ ] Paid subscriber counts and gauges (`apps/monitor/views/newsblur_users.py`, `apps/statistics/models.py`) leave grant holders out, and a new gauge counts team seats
+- [x] Paid subscriber counts and gauges (`apps/monitor/views/newsblur_users.py`, `apps/statistics/models.py`) leave grant holders out, and a new gauge counts team seats
 - [ ] Feed fetch priority follows the flags, so team sites are fetched at Pro speed
 
 This is the riskiest integration in the plan. That code handles Stripe, PayPal, App Store and Play history and has a lot of special cases.
@@ -799,6 +798,8 @@ The owner's account pays, so a team plan is one more plan on a `Profile`, next t
 One function for all four providers:
 
 - [ ] `record_team_payment(user, plan, provider, paid_through, reference)` in `apps/team/billing.py`, called only on a confirmed payment. It creates or finds the owner's team, sets its plan and provider, moves `paid_through` forward, reactivates the team if it had lapsed, and sets the owner's Pro flags
+- [ ] Payment notices from Stripe and PayPal are verified before they are acted on, for every plan. This needs each provider's signing secret in settings
+- [ ] App Store and Play purchases are verified with the store before any plan starts, for every plan
 - [ ] It does not go through `activate_pro`, which would send the Pro welcome email and call back into the payment sync. The owner gets a team welcome email, and staff get the usual upgrade email with the team plan named
 - [ ] Someone who holds team Pro from another person's team and buys a team plan gets no second team. Their purchase is flagged to staff
 - [ ] New columns on `Team`: the billing provider and its reference, the pending owner and when the transfer was requested, and when the name was confirmed
@@ -894,7 +895,7 @@ One step at a time, one agent at a time, each ending in passing tests and a comm
 Core:
 
 - [x] 1. `apps/team`: teams, members, roles, invites, join links, seat limit, activity log
-- [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, fallback when a seat ends, grace period
+- [ ] 2. Premium Pro for teammates, shared allowances counted against the owner, and the fall back to a person's own plan the moment a seat ends
 - [ ] 3. Billing: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, staff controls
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
@@ -967,13 +968,13 @@ Written before any code. Each one is a test.
 - [x] Two invites are accepted at once and the team ends up with 11 seats
 - [ ] A teammate with a personal Premium Archive subscription leaves the team and drops to free
 - [x] A team's payment fails and teammates keep Pro after the paid period ends
-- [x] A teammate removed from an active team loses Pro before their 14 days are up
+- [x] A teammate who leaves or is removed gets no email, or two
 - [ ] A lapsed team pays again and its folders, roles or settings are gone
 - [x] The scheduled premium expiry deactivates a teammate whose only entitlement is the team
 - [ ] A teammate's Listen or Ask AI usage is counted against their own account instead of the team owner's
 - [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
-- [ ] A teammate's own Stripe renewal keeps charging after they join
+- [x] A teammate's own Stripe renewal keeps charging after they join
 - [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
 - [ ] One owner ends up paying for a team plan in two places
 - [ ] The hourly task lapses a team between the end of its period and the renewal arriving
@@ -988,20 +989,19 @@ Written before any code. Each one is a test.
 - [ ] A staff refund leaves the team running
 - [ ] A comp is set on a paid team by mistake, so it never lapses
 - [ ] A switch down from a team plan ends the team before the paid month is over
-- [ ] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
-- [x] The nightly expiry sends a teammate the grace email because of an old trial date
+- [x] Joining refunds the teammate, cancels at once instead of at the end of the period, or cancels their AI filter billing
+- [x] The nightly expiry sends a teammate the expiry email because of an old trial date
 - [x] A new signup who joins during their trial is expired by the trial branch
 - [x] An App Store renewal during the seat is dropped, and the person falls to free after leaving
 - [x] A Play expiry notice strips team Pro
 - [x] Archive bought or gifted during the seat is lost when the seat ends
-- [x] Rejoining during grace snapshots team Pro as the person's own tier, so they keep Pro for good
+- [x] Someone leaves a team and keeps Premium Pro, for a minute or for good
+- [x] Leaving and rejoining records team Pro as the person's own tier
 - [x] A plan that is still paid for drops to free when the seat ends, or a plan that ran out survives it
 - [ ] A webhook that saves the whole profile row overwrites the grant
 - [x] Joining sends the Pro welcome email or the staff upgrade email, or writes a payment row
-- [x] The day 10 email goes out twice or never
-- [x] Removal from an inactive team gives 14 days of grace
-- [ ] A shared meter counts usage from before someone joined, gives each person their own 10 hours, or keeps counting someone in grace
-- [ ] AI filters bill the teammate's own Stripe customer or ignore the owner's spending limit
+- [ ] A shared meter counts usage from before someone joined or after they left, or gives each person their own 10 hours
+- [x] AI filters bill the teammate's own Stripe customer or ignore the owner's spending limit
 - [ ] The team passes 10,000 sites through add a site, OPML import, unmute or the feed chooser
 - [ ] A site several teammates follow is counted more than once, or muted sites are counted
 - [x] Deleting the owner's account leaves teammates on Pro for good
@@ -1034,7 +1034,7 @@ Written before any code. Each one is a test.
 - [x] **What else belongs in the $129 tier.** Decided 2026-11-26: white label branding, audit log export and SIEM streaming, the IP allow list, session limits and sign in history, groups synced from the identity provider, and data retention with full export. For comparison, Inoreader's 10 seat plan is $119.99 and includes SAML but none of those and no SCIM.
 - [x] **Who owns an account.** Decided 2026-11-26: it depends on how the account was created. One that existed before joining stays the person's. One that single sign-on created is locked on removal, with an export on request. A team can never read anyone's private account.
 - [x] **Teammates who already pay.** Decided 2026-11-26: their Stripe or PayPal renewal is cancelled automatically when they join and they keep what they paid for until it runs out. App Store and Play subscribers get a notice with a link, since only the subscriber can cancel those.
-- [x] **Grace period on removal.** Decided 2026-11-26: 14 days, with an email on day 1 and day 10.
+- [x] **Grace period on removal.** Decided 2026-11-26: none. Leaving or being removed downgrades the account at once.
 - [x] **Free trial.** Decided 2026-11-26: none.
 - [x] **Name of the $129 tier.** Decided 2026-11-26: Premium Team Enterprise.
 - [x] **Transferring ownership.** Decided 2026-11-26: self serve. The new owner accepts and enters a card, the team's shared read status and training are copied to their account, and the old owner's team plan ends.

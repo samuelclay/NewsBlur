@@ -77,7 +77,7 @@ class Users(View):
             ),
             "team_seats": MStatistics.get(
                 "munin:users_team_seats",
-                lambda: TeamProGrant.objects.filter(grace_started__isnull=True).count(),
+                lambda: TeamProGrant.objects.count(),
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),

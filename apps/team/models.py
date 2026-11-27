@@ -364,9 +364,11 @@ class TeamMember(models.Model):
         return self.role == self.ROLE_MANAGER and member.role == self.ROLE_MEMBER
 
     def mark_removed(self, removed_by, departure):
-        """Called under the team row lock (Team._locked_seats, leave)."""
+        """Called under the team row lock (Team._locked_seats, leave). Team Pro ends with the seat, in the same
+        transaction, and once that commits the person gets one email saying which plan they are on now. A
+        teammate of a lapsed team has no Pro left to end, and the lapse already emailed them."""
         # models.py: apps/team/grants.py imports apps.profile, which imports this module.
-        from apps.team.grants import begin_seat_grace, release_team_pro
+        from apps.team.grants import release_team_pro, send_seat_ended_email
 
         self.status = self.STATUS_REMOVED
         self.removed_by = removed_by
@@ -374,15 +376,11 @@ class TeamMember(models.Model):
         self.removed_date = datetime.datetime.now()
         self.save(update_fields=["status", "removed_by", "departure", "removed_date"])
 
-        # models.py: a seat on an active team keeps its Premium Pro through 14 days of grace, and one on an
-        # inactive team has none left to keep. Grace from an earlier team's seat runs to the date it promised.
-        grant = team_pro_grant(self.user)
-        if not grant or grant.member_id != self.pk:
+        plan = release_team_pro(self.user)
+        if plan is None:
             return
-        if self.team.status == Team.STATUS_ACTIVE:
-            begin_seat_grace(self)
-        else:
-            release_team_pro(self.user)
+        team = self.team
+        transaction.on_commit(lambda: send_seat_ended_email(self.user, team, plan))
 
     def leave(self):
         """Returns a failure reason or None. The role is read again under the team row lock, so a transfer that
@@ -617,7 +615,8 @@ class TeamActivity(models.Model):
 
 class TeamProGrant(models.Model):
     """The Premium Pro a team gives one teammate (apps/team/grants.py). Their Profile carries the real Pro flags
-    while they hold it, so this row keeps the plan they have on their own to go back to when the seat ends."""
+    while they hold it, so this row keeps the plan they have on their own to go back to when the seat ends. It
+    exists exactly as long as the seat is held on an active team."""
 
     TIER_FREE = "free"
     TIER_TRIAL = "trial"
@@ -652,7 +651,7 @@ class TeamProGrant(models.Model):
     }
 
     user = models.OneToOneField(User, related_name="team_pro_grant", on_delete=models.CASCADE)
-    # models.py: the seat the grant came from. A rejoin points it at the new seat and keeps own_tier.
+    # models.py: the seat the grant came from.
     member = models.ForeignKey(TeamMember, related_name="+", null=True, blank=True, on_delete=models.SET_NULL)
     own_tier = models.CharField(max_length=16, choices=TIER_CHOICES)
     own_trial_expire = models.DateTimeField(null=True, blank=True)
@@ -660,12 +659,9 @@ class TeamProGrant(models.Model):
     # can still start one (Profile.start_premium_trial), which team Pro's flags would otherwise take away.
     own_premium_trial = models.BooleanField(null=True, blank=True)
     granted_date = models.DateTimeField(default=datetime.datetime.now)
-    grace_started = models.DateTimeField(null=True, blank=True)
-    grace_until = models.DateTimeField(null=True, blank=True)
-    day10_sent_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return "Team Pro for %s (own %s, grace until %s)" % (self.user_id, self.own_tier, self.grace_until)
+        return "Team Pro for %s (own %s)" % (self.user_id, self.own_tier)
 
     @classmethod
     def tier_of(cls, profile):

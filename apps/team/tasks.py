@@ -7,14 +7,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from apps.profile.models import Profile
-from apps.team.grants import (
-    REMINDER_AFTER_DAYS,
-    deactivate_team,
-    release_team_pro,
-    send_grace_reminder,
-    settle_own_plan_on_join,
-)
-from apps.team.models import Team, TeamInvite, TeamMember, TeamProGrant
+from apps.team.grants import deactivate_team, settle_own_plan_on_join
+from apps.team.models import Team, TeamInvite, TeamProGrant
 from newsblur_web.celeryapp import app
 from utils import log as logging
 
@@ -61,28 +55,12 @@ def TeamProGrants():
         logging.debug(" ---> Team %s lapsed, ending its teammates' Premium Pro" % team)
         deactivate_team(team)
 
-    for grant in TeamProGrant.objects.filter(grace_until__lte=now).select_related("user"):
-        release_team_pro(grant.user, grace_ended_by=now)
-
-    reminder_due = now - datetime.timedelta(days=REMINDER_AFTER_DAYS)
-    reminders = TeamProGrant.objects.filter(
-        grace_started__lte=reminder_due, grace_until__gt=now, day10_sent_date__isnull=True
-    )
-    for grant_id in reminders.values_list("pk", flat=True):
-        send_grace_reminder(grant_id, now)
-
     # tasks.py: a request that loaded a teammate's profile before their grant and saves the whole row after it
     # (LastSeenMiddleware in apps/profile/middleware.py) writes their old flags back, so Pro is put back on
-    # everyone holding a seat or in grace.
-    holding_pro = TeamProGrant.objects.filter(
-        Q(grace_until__gt=now)
-        | Q(member__status=TeamMember.STATUS_ACTIVE, member__team__status=Team.STATUS_ACTIVE)
-    )
+    # everyone holding a grant.
     pro_flags = TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO]
     restored = (
-        Profile.objects.filter(user_id__in=holding_pro.values("user_id"))
-        .exclude(**pro_flags)
-        .update(**pro_flags)
+        Profile.objects.filter(user__team_pro_grant__isnull=False).exclude(**pro_flags).update(**pro_flags)
     )
     if restored:
         logging.debug(" ---> Put team Premium Pro back on %s overwritten profiles" % restored)

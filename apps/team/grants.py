@@ -1,6 +1,6 @@
 """Premium Pro for teammates: granting it with a seat, what joining does to a plan the person pays for on their
-own, 14 days of grace after a seat on an active team ends, releasing it back to the person's own plan, and a team
-lapsing or coming back (apps/team/models.py TeamProGrant)."""
+own, releasing it back to the person's own plan the moment the seat ends, and a team lapsing or coming back
+(apps/team/models.py TeamProGrant)."""
 
 import datetime
 
@@ -21,10 +21,6 @@ from utils import log as logging
 from utils.languages import account_translation
 from utils.templatetags.utils_tags import language_date
 
-GRACE_DAYS = 14
-# grants.py: the reminder goes out on day 10 of grace, where day 1 is the day grace began.
-REMINDER_AFTER_DAYS = 9
-
 # grants.py: a plan a teammate pays for on their own. Joining turns off a Stripe or PayPal renewal; an App Store
 # or Play subscription only its owner can cancel, so they're told where.
 RENEWALS_TURNED_OFF_ON_JOIN = ("stripe", "paypal")
@@ -40,31 +36,24 @@ STORE_PAYMENT_DAYS = 365
 def grant_team_pro(member):
     """Give an active teammate Premium Pro by setting the real tier flags on their profile. Unlike
     Profile.activate_pro it sends no welcome or staff email, writes no payment row and leaves premium_expire
-    as the person's own paid through date. The first grant keeps the person's own plan to go back to; a rejoin
-    during grace reuses that row, so team Pro never becomes their own plan."""
+    as the person's own paid through date. Every grant, a rejoin's too, snapshots the plan the person has on their
+    own from their profile. A profile carries team Pro only while its grant exists, and there is one grant per
+    person, so the snapshot is never team Pro."""
     user = member.user
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
-        grant = TeamProGrant.objects.select_for_update().filter(user=user).first()
-        if grant:
-            grant.member = member
-            grant.grace_started = None
-            grant.grace_until = None
-            grant.day10_sent_date = None
-            grant.save(update_fields=["member", "grace_started", "grace_until", "day10_sent_date"])
-        else:
-            own_tier = TeamProGrant.tier_of(profile)
-            grant = TeamProGrant.objects.create(
-                user=user,
-                member=member,
-                own_tier=own_tier,
-                own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
-                own_premium_trial=profile.is_premium_trial,
-            )
-            # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets
-            # its muted sites back. Anyone else muted theirs on purpose, and a rejoin keeps what they chose.
-            if not profile.is_premium:
-                UserSubscription.objects.filter(user=user, active=False).update(active=True)
+        own_tier = TeamProGrant.tier_of(profile)
+        grant = TeamProGrant.objects.create(
+            user=user,
+            member=member,
+            own_tier=own_tier,
+            own_trial_expire=profile.premium_expire if own_tier == TeamProGrant.TIER_TRIAL else None,
+            own_premium_trial=profile.is_premium_trial,
+        )
+        # grants.py: as in Profile.activate_pro, only an account that wasn't premium, trial included, gets its
+        # muted sites back. Anyone else muted theirs on purpose.
+        if not profile.is_premium:
+            UserSubscription.objects.filter(user=user, active=False).update(active=True)
         Profile.objects.filter(pk=profile.pk).update(**TeamProGrant.TIER_FLAGS[TeamProGrant.TIER_PRO])
         User.objects.filter(pk=user.pk, is_active=False).update(is_active=True)
 
@@ -87,53 +76,15 @@ def _reload_feeds(user):
     redis.Redis(connection_pool=settings.REDIS_PUBSUB_POOL).publish(user.username, "reload:feeds")
 
 
-def begin_seat_grace(member):
-    """A seat on an active team ended. Its Premium Pro lasts 14 more days, with an email now and on day 10."""
-    now = datetime.datetime.now()
-    with transaction.atomic():
-        grant = (
-            TeamProGrant.objects.select_for_update()
-            .filter(user=member.user, member=member, grace_started__isnull=True)
-            .first()
-        )
-        if not grant:
-            return
-        grant.grace_started = now
-        grant.grace_until = now + datetime.timedelta(days=GRACE_DAYS)
-        grant.day10_sent_date = None
-        grant.save(update_fields=["grace_started", "grace_until", "day10_sent_date"])
-        transaction.on_commit(lambda: send_grace_email(grant, member.team, reminder=False))
-
-
-def send_grace_reminder(grant_id, now):
-    """Day 10 of grace. The row stays locked while the email goes out, so a second run of the hourly task skips
-    it, and a failed send rolls back for the next run to retry."""
-    with transaction.atomic():
-        grant = (
-            TeamProGrant.objects.select_for_update(skip_locked=True)
-            .filter(pk=grant_id, day10_sent_date__isnull=True, grace_until__gt=now, member__isnull=False)
-            .first()
-        )
-        if not grant:
-            return
-        grant.day10_sent_date = now
-        grant.save(update_fields=["day10_sent_date"])
-        send_grace_email(grant, grant.member.team, reminder=True)
-
-
-def release_team_pro(user, grace_ended_by=None):
+def release_team_pro(user):
     """End a person's team Pro and put them on their own plan: the tier they pay for while their own
     premium_expire covers today, a trial that is still running, or otherwise free through
-    Profile.deactivate_premium, which mutes every site until they choose the ones to keep. With grace_ended_by,
-    only a grant whose grace ended by then is released, so a teammate who rejoined meanwhile keeps theirs.
-    Returns the plan they are on now, or None when nothing was released."""
+    Profile.deactivate_premium, which mutes every site until they choose the ones to keep. Returns the plan they
+    are on now, or None when they held no grant."""
     now = datetime.datetime.now()
     with transaction.atomic():
         profile = Profile.objects.select_for_update().get(user=user)
-        grants = TeamProGrant.objects.select_for_update().filter(user=user)
-        if grace_ended_by:
-            grants = grants.filter(grace_until__lte=grace_ended_by)
-        grant = grants.first()
+        grant = TeamProGrant.objects.select_for_update().filter(user=user).first()
         if not grant:
             return None
         plan = grant.own_plan_on(profile, now)
@@ -152,9 +103,8 @@ def release_team_pro(user, grace_ended_by=None):
 
 def deactivate_team(team):
     """Billing calls this when the owner's paid period ends without a payment. The team goes inactive and every
-    teammate's Premium Pro ends at once, with no grace, and each teammate gets one email. Members, roles, invites
-    and settings stay as they are. Someone already in grace from an earlier seat keeps the date they were given.
-    """
+    teammate's Premium Pro ends at once, and each teammate gets one email. Members, roles, invites and settings
+    stay as they are."""
     with transaction.atomic():
         team = team.lock()
         if team.status == Team.STATUS_INACTIVE:
@@ -260,29 +210,20 @@ def _plan_context(plan, profile):
     return {"plan": plan, "plan_name": TIER_NAMES.get(plan), "trial_date": profile.premium_expire}
 
 
-def send_grace_email(grant, team, reminder):
-    user = grant.user
+def send_seat_ended_email(user, team, plan):
+    """Sent once a teammate's leaving or removal has committed (apps/team/models.py TeamMember.mark_removed).
+    plan is what their account is on now."""
     profile = Profile.objects.get(user=user)
     if not user.email:
-        logging.user(user, "~FMNot sending team Pro grace email, no email address")
+        logging.user(user, "~FMNot sending team seat ended email, no email address")
         return
 
-    data = dict(
-        user=user,
-        team_name=team.name,
-        end_date=grant.grace_until,
-        reminder=reminder,
-        **_plan_context(grant.own_plan_on(profile, grant.grace_until), profile),
-    )
+    data = dict(user=user, team_name=team.name, **_plan_context(plan, profile))
     with account_translation(profile):
-        text = render_to_string("mail/email_team_pro_grace.txt", data)
-        html = render_to_string("mail/email_team_pro_grace.xhtml", data)
-        subject_data = {"team": team.name, "date": language_date(grant.grace_until, "F j, Y")}
-        if reminder:
-            subject = gettext("Reminder: your Premium Pro from %(team)s ends on %(date)s") % subject_data
-        else:
-            subject = gettext("Your Premium Pro from %(team)s ends on %(date)s") % subject_data
-    _send(profile, subject, text, html, "team_pro_grace_reminder" if reminder else "team_pro_grace")
+        text = render_to_string("mail/email_team_seat_ended.txt", data)
+        html = render_to_string("mail/email_team_seat_ended.xhtml", data)
+        subject = gettext("You're no longer on %(team)s") % {"team": team.name}
+    _send(profile, subject, text, html, "team_seat_ended")
 
 
 def send_team_plan_ended_email(user, team, plan):

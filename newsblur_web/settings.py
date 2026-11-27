@@ -728,7 +728,7 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": datetime.timedelta(hours=24),
         "options": {"queue": "cron_queue"},
     },
-    # Ends teammates' Premium Pro when grace runs out and lapses teams past their paid period (apps/team/tasks.py).
+    # Lapses teams past their paid period and puts back teammates' overwritten Pro flags (apps/team/tasks.py).
     "team-pro-grants": {
         "task": "team-pro-grants",
         "schedule": datetime.timedelta(hours=1),
