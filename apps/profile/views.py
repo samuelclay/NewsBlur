@@ -1168,9 +1168,10 @@ def switch_stripe_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
 
-    # The plan before the switch, so the return page can say the account moved down to a lower plan.
-    previous_plan = request.user.profile.paid_plan
-    switch_successful = request.user.profile.switch_stripe_subscription(plan)
+    # The plan before the switch, so the return page can say when the account moved down to a lower plan.
+    profile = request.user.profile
+    previous_plan = profile.paid_plan
+    switch_successful = profile.switch_stripe_subscription(plan)
 
     logging.user(
         request,
@@ -1180,7 +1181,8 @@ def switch_stripe_subscription(request):
 
     if switch_successful:
         return_params = {"plan": plan}
-        if Profile.is_lower_plan(plan, previous_plan):
+        # The account stays where it is when something other than this subscription holds its plan.
+        if Profile.is_lower_plan(profile.paid_plan, previous_plan):
             return_params["switched"] = 1
         return HttpResponseRedirect("%s?%s" % (reverse("stripe-return"), urlencode(return_params)))
 
@@ -1190,7 +1192,7 @@ def switch_stripe_subscription(request):
 
 
 def _refuse_lower_plan_sale(request, plan):
-    """views.py: A redirect to the upgrade dialog when plan sits below the account's paid plan, else None.
+    """A redirect to the upgrade dialog when plan sits below the account's paid plan, else None.
 
     A lower plan only comes from switching the subscription that carries the account's plan
     (Profile.switch_stripe_subscription, and lower_plan_from_paypal_activation for PayPal, in
