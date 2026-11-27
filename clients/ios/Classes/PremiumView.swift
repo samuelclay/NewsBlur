@@ -148,15 +148,17 @@ struct PremiumArchiveCard: Equatable {
     var chosenPlan: ArchiveListenPlan?
 
     /// App Review approves a new product on its own schedule, so until StoreKit returns Premium Archive Extra the card
-    /// stays the plain Premium Archive card. Pro already listens longer than either plan.
+    /// stays the plain Premium Archive card. Pro sees the toggle under the same rule, so it can compare both plans,
+    /// though its subscription already includes either one.
     var showsListenToggle: Bool {
-        !isPro && (storeSellsArchiveExtra || isArchiveExtra)
+        storeSellsArchiveExtra || isArchiveExtra
     }
 
-    /// The plan the card shows: the one picked on the toggle, else the one the account is on.
+    /// The plan the card shows: the one picked on the toggle, else the one the account is on. Pro is on neither, so
+    /// its toggle starts on 1 hour.
     var plan: ArchiveListenPlan {
         guard showsListenToggle else { return .archive }
-        return chosenPlan ?? (isArchiveExtra ? .archiveExtra : .archive)
+        return chosenPlan ?? (isArchiveExtra && !isPro ? .archiveExtra : .archive)
     }
 
     var status: Status {
@@ -522,9 +524,11 @@ struct PremiumView: View {
     }
 
     /// The small line under each toggle choice: "Current plan" for the plan the account is on, otherwise the yearly
-    /// price StoreKit returned, so the price change is visible right where the choice is made.
+    /// price StoreKit returned, so the price change is visible right where the choice is made. A Pro account is on
+    /// neither plan, so both of its choices show a price.
     private func archiveToggleCaption(for plan: ArchiveListenPlan, card: PremiumArchiveCard) -> String? {
-        let isCurrent = plan == .archiveExtra ? card.isArchiveExtra : (card.isArchive && !card.isArchiveExtra)
+        let isCurrent = !card.isPro
+            && (plan == .archiveExtra ? card.isArchiveExtra : (card.isArchive && !card.isArchiveExtra))
         if isCurrent {
             return NBLocalization.text("Current plan")
         }
