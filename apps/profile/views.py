@@ -78,6 +78,7 @@ from apps.social.models import (
     MSocialServices,
     MSocialSubscription,
 )
+from apps.team import play_billing
 from apps.team.models import Team, team_owner_id
 from apps.team.paypal_billing import refunded_sale_user, settled_by_team_sync
 from apps.team.stripe_billing import TEAM_PLANS, team_purchase_refusal
@@ -777,7 +778,13 @@ def google_play_rtdn(request):
 
     sub_notification = notification.get("subscriptionNotification")
     if not sub_notification:
-        if notification.get("testNotification"):
+        voided = notification.get("voidedPurchaseNotification")
+        if voided:
+            # views.py: a refund or chargeback of a team plan's payment ends the team (apps/team/play_billing.py).
+            outcome = play_billing.end_voided_team(voided.get("purchaseToken"), voided.get("orderId"))
+            if outcome == "verify_later":
+                return HttpResponse("Retry", status=503)
+        elif notification.get("testNotification"):
             logging.debug(" ---> Google Play RTDN test notification received")
         return HttpResponse("OK")
 
@@ -789,6 +796,16 @@ def google_play_rtdn(request):
         " ---> Google Play RTDN type=%s subscription=%s token=%s..."
         % (notification_type, subscription_id, purchase_token[:20])
     )
+
+    # views.py: a team plan's notifications are read from Google's own record (apps/team/play_billing.py), and one
+    # Google couldn't be asked about is delivered again.
+    if play_billing.is_team_notification(purchase_token, subscription_id):
+        if play_billing.process_play_notification(purchase_token, notification_type) == "verify_later":
+            return HttpResponse("Retry", status=503)
+        return HttpResponse("OK")
+    if subscription_id and subscription_id not in play_billing.PLAY_PLANS:
+        logging.debug(" ---> Google Play RTDN for a product NewsBlur doesn't sell: %s" % subscription_id)
+        return HttpResponse("OK")
 
     # Look up user by purchase token
     user = find_google_play_user(purchase_token)
@@ -1001,12 +1018,20 @@ IOS_PURCHASE_MESSAGES = {
 }
 
 
-def _ios_purchase_response(user, reason=None):
+# views.py: why a Google Play purchase the app posted didn't change the account's plan (save_android_receipt).
+ANDROID_PURCHASE_MESSAGES = dict(
+    IOS_PURCHASE_MESSAGES,
+    not_verified=gettext_lazy("Google Play couldn't confirm this purchase, so your plan hasn't changed."),
+    verify_later=gettext_lazy("Google Play couldn't be reached to confirm this purchase. Try again shortly."),
+)
+
+
+def _ios_purchase_response(user, reason=None, messages=IOS_PURCHASE_MESSAGES):
     """views.py: the account's plan, as the app reads it after a purchase, with code -1 and why when the purchase
     didn't change it."""
     response = dict(Profile.objects.get(user=user).canonical(), code=1)
     if reason:
-        response.update(code=-1, reason=reason, message=str(IOS_PURCHASE_MESSAGES[reason]))
+        response.update(code=-1, reason=reason, message=str(messages[reason]))
     return response
 
 
@@ -1085,6 +1110,16 @@ def save_android_receipt(request):
         "~BM~FBSaving Android Receipt: %s %s (token: %s)"
         % (product_id, order_id, "yes" if purchase_token else "no"),
     )
+
+    # views.py: a team plan's purchase starts or changes a team only on Google's record of it
+    # (apps/team/play_billing.py), and a product NewsBlur doesn't sell starts nothing.
+    team_purchase, reason = play_billing.save_play_purchase(request.user, product_id, purchase_token)
+    if team_purchase:
+        logging.user(request, "~BM~FBSaving Android team purchase: %s" % (reason or "applied"))
+        return _ios_purchase_response(request.user, reason, ANDROID_PURCHASE_MESSAGES)
+    if product_id and product_id not in play_billing.PLAY_PLANS:
+        logging.user(request, "~BM~FRNot saving Android Receipt for an unknown product: %s" % product_id)
+        return _ios_purchase_response(request.user, "unknown_product", ANDROID_PURCHASE_MESSAGES)
 
     if purchase_token:
         request.user.profile.store_google_play_ids(

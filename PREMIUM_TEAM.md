@@ -856,17 +856,17 @@ App Store (iOS and macOS, one bundle id, one set of products):
 Google Play:
 
 - [ ] Products `nb.premium.team.79` and `nb.premium.team.enterprise.129`, each with one monthly base plan, with a title, description and benefits in the 21 languages the other products have
-- [ ] The server maps them, checking the enterprise id first since one id contains the other
+- [x] The server maps them, checking the enterprise id first since one id contains the other
 - [ ] The app sends the purchase token, and the server verifies a team purchase with Google before starting a team
-- [ ] Real time notifications pass Google's expiry time to `record_team_payment`
-- [ ] An expiry notice for a token that was replaced by an upgrade does not end the team
+- [x] Real time notifications pass Google's expiry time to `record_team_payment`
+- [x] An expiry notice for a token that was replaced by an upgrade does not end the team
 
 Lapse and return:
 
 - [x] Only a confirmed payment moves `paid_through`. Past due, on hold, suspended and failed renewal notices change nothing
 - [x] The hourly task lapses a team one day after `paid_through`
 - [x] On the web, a payment that recovers (Stripe charge succeeded, PayPal sale completed) brings the team back through `record_team_payment`
-- [ ] In the stores, a payment that recovers (Apple recovered, Play recovered or restarted) brings the team back the same way
+- [x] In the stores, a payment that recovers (Apple recovered, Play recovered or restarted) brings the team back the same way
 - [x] A refund or revoke ends the team at once
 - [x] After a lapse the owner's own account goes through the normal `PremiumExpire` window
 
@@ -874,7 +874,7 @@ Switching:
 
 - [x] Premium, Archive or Pro up to a team plan, and Team up to Enterprise, take effect at once with proration where the provider has it
 - [x] Switching down from a team plan on the web keeps the team until the paid month ends, then starts the lower plan. Stripe does this with a subscription schedule and PayPal with a subscription that starts on that date
-- [ ] In the stores, an upgrade is immediate and a downgrade takes effect at renewal, which is how each store already works
+- [x] In the stores, an upgrade is immediate and a downgrade takes effect at renewal, which is how each store already works
 - [x] Cancelling outright runs to the end of the paid month, and the team row is kept
 
 Ownership transfer:
@@ -995,7 +995,7 @@ Written before any code. Each one is a test.
 - [x] One account ends up owning two teams, or active in two teams at once
 - [ ] An Enterprise only feature works on the $79 tier when its endpoint is called directly
 - [x] A teammate's own Stripe renewal keeps charging after they join
-- [ ] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
+- [x] A team plan bought in the App Store or on Play does not start a team, or lapses on the wrong day
 - [ ] One owner ends up paying for a team plan in two places
 - [x] The hourly task lapses a team between the end of its period and the renewal arriving
 - [x] The owner keeps personal Pro for a year after paying once
@@ -1005,7 +1005,7 @@ Written before any code. Each one is a test.
 - [x] A team owner's switch between providers refunds most of a month
 - [ ] A transfer mutes the new owner's sites, or records the old owner's team Pro as their own plan
 - [ ] The old owner's store subscription keeps renewing the team after a transfer
-- [ ] A Play expiry notice for an upgraded token ends the team
+- [x] A Play expiry notice for an upgraded token ends the team
 - [x] A staff refund leaves the team running
 - [x] A comp is set on a paid team by mistake, so it never lapses
 - [x] A switch down from a team plan ends the team before the paid month is over

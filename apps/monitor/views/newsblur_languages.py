@@ -24,6 +24,8 @@ PAYMENT_PROVIDERS = (
     "android-archive",
     "android-archive-extra",
     "android-pro",
+    "android-team",
+    "android-team-enterprise",
 )
 
 

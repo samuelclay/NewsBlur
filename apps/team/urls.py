@@ -19,4 +19,5 @@ urlpatterns = [
     url(r"^activity/?$", views.activity, name="team-activity"),
     url(r"^paypal_plan/?$", views.paypal_plan, name="team-paypal-plan"),
     url(r"^app_store_purchase/?$", views.app_store_purchase, name="team-app-store-purchase"),
+    url(r"^play_purchase/?$", views.play_purchase, name="team-play-purchase"),
 ]

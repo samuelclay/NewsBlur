@@ -1780,6 +1780,8 @@ class Profile(models.Model):
             "ios-team-subscription",
             "ios-team-enterprise-subscription",
             "android-subscription",
+            "android-team",
+            "android-team-enterprise",
         ]:
             deleted_count = 0
             # First pass: dedup by payment_identifier (same receipt re-sent). Store
@@ -1794,6 +1796,8 @@ class Profile(models.Model):
                 "ios-pro-subscription",
                 "ios-team-subscription",
                 "ios-team-enterprise-subscription",
+                "android-team",
+                "android-team-enterprise",
             ):
                 renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
             else:
@@ -2070,13 +2074,14 @@ class Profile(models.Model):
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 
-        # models.py: an App Store payment for a team plan that is still current is the team's
-        # (apps/team/app_store_billing.py), as a Stripe or PayPal one is.
+        # models.py: an App Store or Google Play payment for a team plan that is still current is the team's
+        # (apps/team/app_store_billing.py, apps/team/play_billing.py), as a Stripe or PayPal one is.
         if (
             PaymentHistory.objects.filter(
+                Q(apple_expires_date__gt=datetime.datetime.now())
+                | Q(payment_provider__startswith="android-", period_end__gt=datetime.datetime.now()),
                 user=self.user,
                 plan__in=[plan for plan, _ in Team.PLAN_CHOICES],
-                apple_expires_date__gt=datetime.datetime.now(),
             )
             .exclude(refunded=True)
             .exists()
@@ -5966,14 +5971,16 @@ class PaymentHistory(models.Model):
     apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
     # models.py: the plan and the end of the period the provider says this payment was for, as
-    # Profile.setup_premium_history reads them from Stripe and PayPal, and as Apple signs them
-    # (apps/profile/apple_subscriptions.py). Empty for any other store payment, one made before they were recorded, or
-    # one the provider can't say.
+    # Profile.setup_premium_history reads them from Stripe and PayPal, as Apple signs them
+    # (apps/profile/apple_subscriptions.py), and as Google Play's record of a team plan's subscription gives them
+    # (apps/team/play_billing.py). Empty for any other store payment, one made before they were recorded, or one the
+    # provider can't say.
     plan = models.CharField(max_length=32, blank=True, null=True)
     period_end = models.DateTimeField(blank=True, null=True)
     # models.py: a payment made in Apple's sandbox, where App Review, TestFlight and sandbox testers buy without being
-    # charged (apps/profile/apple_subscriptions.py). It starts and renews a plan like any payment, and no revenue
-    # report or payment total counts it.
+    # charged (apps/profile/apple_subscriptions.py), or a Google Play test purchase by a license tester or on a testing
+    # track (apps/team/play_billing.py). It starts and renews a plan like any payment, and no revenue report or payment
+    # total counts it.
     sandbox = models.BooleanField(blank=True, null=True)
 
     def __str__(self):

@@ -235,6 +235,17 @@ class Test_LanguageAnalytics(TestCase):
             self.sample(body, "newsblur_language_payments_dollars", language="fr", period="since_start"), 208
         )
 
+    def test_google_play_team_payments_count_and_test_purchases_do_not(self):
+        user = self.user("playteam", language="fr")
+        self.payment(user, 79, provider="android-team")
+        self.payment(user, 129, provider="android-team-enterprise")
+        # License testers and testing tracks aren't charged.
+        self.payment(user, 129, provider="android-team-enterprise", sandbox=True)
+        body = language_metrics(self.now)
+        self.assertEqual(
+            self.sample(body, "newsblur_language_payments_dollars", language="fr", period="since_start"), 208
+        )
+
     def test_date_only_provider_history_on_signup_day_is_included(self):
         user = self.user("date_only", language="fr")
         self.payment(user, 36, self.start.replace(hour=0))

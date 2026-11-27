@@ -11,6 +11,7 @@ from apps.profile.models import Profile
 from apps.team.billing import start_comp_team
 from apps.team.grants import own_plan_on_join
 from apps.team.models import Team, TeamActivity, TeamInvite, TeamMember
+from apps.team.play_billing import play_account_id
 from apps.team.stripe_billing import team_purchase_refusal
 from utils import json_functions as json
 from utils.user_functions import ajax_login_required, get_user
@@ -149,6 +150,20 @@ def app_store_purchase(request):
     if refusal:
         return _failure(refusal)
     return {"code": 1, "app_account_token": app_account_token(user.pk)}
+
+
+@ajax_login_required
+@json.json_view
+def play_purchase(request):
+    """views.py: what the Android app asks before showing a team plan's buy button, so the server decides who may buy a
+    team on Google Play (apps/team/stripe_billing.py team_purchase_refusal). The app buys with the obfuscated account id
+    it is given, which Google keeps on the subscription and which ties it to this account
+    (apps/team/play_billing.py)."""
+    user = get_user(request)
+    refusal = team_purchase_refusal(user, Team.PROVIDER_PLAY)
+    if refusal:
+        return _failure(refusal)
+    return {"code": 1, "obfuscated_account_id": play_account_id(user.pk)}
 
 
 @required_params("name", team_id=int)

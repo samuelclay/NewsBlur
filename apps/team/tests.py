@@ -1,3 +1,4 @@
+import base64
 import copy
 import datetime
 import re
@@ -34,9 +35,11 @@ from apps.listen.usage import ListenUsageTracker
 from apps.monitor.models import MLLMCost
 from apps.profile import apple_notifications
 from apps.profile import models as profile_models
+from apps.profile import views as profile_views
 from apps.profile.apple_subscriptions import apply_verified_apple_transaction
 from apps.profile.fake_app_store import FakeAppStore, apple_time
 from apps.profile.models import (
+    GooglePlayIds,
     MGiftCode,
     MRedeemedCode,
     MReferral,
@@ -72,6 +75,7 @@ from apps.team.models import (
     TeamProGrant,
     team_owner_id,
 )
+from apps.team.play_billing import play_account_id
 from apps.team.tasks import (
     EmailTeamPlanEnded,
     EmailTeamWelcome,
@@ -4565,3 +4569,571 @@ class Test_TeamAppStoreBilling(TeamProMixin, TestCase):
 
         self.assertIn("NewsBlur Premium Team Enterprise Subscription", receipt)
         self.assertIn(dateformat.format(self.now + self.days(35), "F j, Y"), receipt)
+
+
+def google_time(moment):
+    """apps/team/tests.py: a naive UTC time as Google's API writes one, in RFC 3339."""
+    return moment.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+class FakeGooglePlay:
+    """apps/team/tests.py: Google Play's record of each subscription, as purchases.subscriptionsv2.get returns it
+    (apps/profile/views.py get_google_play_subscription), and its list of voided purchases. A test writes what Google's
+    record says after a purchase, a renewal or a refund. A token Google has no record of reads as one Google couldn't
+    confirm."""
+
+    def __init__(self, test):
+        self.records = {}
+        self.voided = []
+        test.patch(
+            profile_views,
+            "get_google_play_subscription",
+            side_effect=lambda token: copy.deepcopy(self.records.get(token)),
+        )
+        service = MagicMock()
+        service.purchases.return_value.voidedpurchases.return_value.list.side_effect = (
+            lambda **request: MagicMock(
+                execute=MagicMock(return_value={"voidedPurchases": list(self.voided)})
+            )
+        )
+        test.patch(Profile, "_google_play_service", return_value=service)
+
+    def subscribe(
+        self, user, token, product, expires, order_id, started=None, linked=None, items=None, **fields
+    ):
+        """Google's record of a subscription bought with user's obfuscated account id (None for one bought without),
+        paid for until expires by order_id, and started a month before it ends unless started says otherwise.
+        """
+        record = {
+            "kind": "androidpublisher#subscriptionPurchaseV2",
+            "startTime": google_time(started or expires - relativedelta(months=1)),
+            "subscriptionState": "SUBSCRIPTION_STATE_ACTIVE",
+            "latestOrderId": order_id,
+            "acknowledgementState": "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED",
+            "lineItems": items or [self.item(product, expires, order_id)],
+        }
+        if user:
+            record["externalAccountIdentifiers"] = {"obfuscatedExternalAccountId": play_account_id(user.pk)}
+        if linked:
+            record["linkedPurchaseToken"] = linked
+        record.update(fields)
+        self.records[token] = record
+
+    def item(self, product, expires=None, order_id=None, renews_into=None):
+        """A line item paid for until expires by order_id, which renews into another product when renews_into names
+        one. One that waits to replace another at renewal has no expiry or order yet."""
+        item = {"productId": product, "autoRenewingPlan": {"autoRenewEnabled": not renews_into}}
+        if expires:
+            item["expiryTime"] = google_time(expires)
+        if order_id:
+            item["latestSuccessfulOrderId"] = order_id
+        if renews_into:
+            item["deferredItemReplacement"] = {"productId": renews_into}
+        return item
+
+    def renew(self, token, order_id, expires, product=None):
+        """Google charged order_id for the subscription's next period, which runs until expires, on product when the
+        subscription renewed into another."""
+        record = self.records[token]
+        product = product or record["lineItems"][0]["productId"]
+        record.update(
+            subscriptionState="SUBSCRIPTION_STATE_ACTIVE",
+            latestOrderId=order_id,
+            lineItems=[self.item(product, expires, order_id)],
+        )
+
+
+class Test_TeamPlayBilling(TeamProMixin, TestCase):
+    """apps/team/play_billing.py: team plans bought, renewed, switched and taken back on Google Play, with Google's
+    records of them kept by a stand-in for its API (FakeGooglePlay)."""
+
+    TEAM = "nb.premium.team.79"
+    ENTERPRISE = "nb.premium.team.enterprise.129"
+    PRO = "nb.premium.pro.299"
+    # apps/team/tests.py: Google's real time developer notification types.
+    RECOVERED, RENEWED, CANCELED, PURCHASED, ON_HOLD, IN_GRACE_PERIOD, RESTARTED, REVOKED, EXPIRED = (
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        12,
+        13,
+    )
+
+    def setUp(self):
+        super().setUp()
+        self.now = self.now.replace(microsecond=0)
+        self.month_from_now = self.now + relativedelta(months=1)
+        self.play = FakeGooglePlay(self)
+
+    def subscribe(self, user, token, product=TEAM, expires=None, **fields):
+        """Google's record of user's purchase of product, paid for by order GPA.<token> until expires, or a month from
+        now."""
+        self.play.subscribe(user, token, product, expires or self.month_from_now, "GPA.%s" % token, **fields)
+
+    def buy(self, user, token, product=TEAM):
+        """apps/team/tests.py: the app posts the purchase Google Play completed. Returns the response."""
+        data = dict(product_id=product, order_id="GPA.%s" % token)
+        if token:
+            data["purchase_token"] = token
+        return json.decode(self.profile_post(user, "save_android_receipt", **data).content)
+
+    def notify(self, token, kind, product=TEAM):
+        """apps/team/tests.py: Google's real time developer notification about a subscription. Returns the status
+        Pub/Sub gets back."""
+        return self.push(
+            {
+                "version": "1.0",
+                "packageName": "com.newsblur",
+                "subscriptionNotification": {
+                    "version": "1.0",
+                    "notificationType": kind,
+                    "purchaseToken": token,
+                    "subscriptionId": product,
+                },
+            }
+        )
+
+    def push(self, notification):
+        """apps/team/tests.py: a notification as Pub/Sub pushes it, with what it queued after its commit run in
+        place."""
+        body = {
+            "message": {
+                "data": base64.b64encode(json.encode(notification).encode()).decode(),
+                "messageId": "1",
+            }
+        }
+        response = self.committed(
+            self.client_for(None).post,
+            reverse("google-play-rtdn"),
+            data=json.encode(body),
+            content_type="application/json",
+        )
+        return response.status_code
+
+    def voided(self, token):
+        """apps/team/tests.py: Google's voided purchase notification for the order GPA.<token>."""
+        return self.push(
+            {
+                "version": "1.0",
+                "packageName": "com.newsblur",
+                "voidedPurchaseNotification": {
+                    "purchaseToken": token,
+                    "orderId": "GPA.%s" % token,
+                    "productType": 1,
+                    "refundType": 1,
+                },
+            }
+        )
+
+    def test_a_purchase_starts_one_team_whichever_of_the_app_and_google_reports_it_first(self):
+        buyer = self.reader("buyer", "free", feeds=2)
+        self.subscribe(buyer, "token-1")
+
+        response = self.buy(buyer, "token-1")
+        self.assertEqual(self.notify("token-1", self.PURCHASED), 200)
+
+        self.assertEqual((response["code"], response["team_plan"]), (1, Team.PLAN_TEAM))
+        team = self.owned_team(buyer)
+        self.assertEqual(
+            (team.status, team.billing_provider, team.billing_reference, team.paid_through),
+            (Team.STATUS_ACTIVE, Team.PROVIDER_PLAY, "token-1", self.month_from_now),
+        )
+        self.assertEqual(self.plan_of(buyer), "pro")
+        self.assertEqual(self.muted_sites(buyer), 0)
+        self.assertEqual(
+            list(PaymentHistory.objects.filter(user=buyer).values_list("payment_provider", "payment_amount")),
+            [("android-team", 79)],
+        )
+        EmailNewPremiumPro.delay.assert_not_called()
+        self.assertEqual(len(self.mail_to(buyer)), 1)
+
+        # Google's notification can come before the app posts the purchase.
+        other = self.reader("other")
+        self.subscribe(other, "token-2")
+        self.assertEqual(self.notify("token-2", self.PURCHASED), 200)
+        self.assertIsNone(self.owned_team(other))
+        self.buy(other, "token-2")
+        self.notify("token-2", self.PURCHASED)
+        self.assertEqual(self.owned_team(other).status, Team.STATUS_ACTIVE)
+        self.assertEqual(len(self.mail_to(other)), 1)
+
+    def test_a_team_starts_only_from_a_purchase_google_confirms_for_this_account(self):
+        buyer = self.reader("buyer")
+        someone = self.reader("someone")
+        yesterday = self.now - self.days(1)
+        self.subscribe(buyer, "expired", expires=yesterday, subscriptionState="SUBSCRIPTION_STATE_EXPIRED")
+        self.subscribe(buyer, "on-hold", expires=yesterday, subscriptionState="SUBSCRIPTION_STATE_ON_HOLD")
+        self.subscribe(buyer, "pending", subscriptionState="SUBSCRIPTION_STATE_PENDING")
+        self.subscribe(someone, "someones")
+        self.subscribe(None, "no-account")
+
+        refusals = [
+            self.buy(buyer, None)["reason"],
+            self.buy(buyer, "unknown-to-google")["reason"],
+            self.buy(buyer, "expired")["reason"],
+            self.buy(buyer, "on-hold")["reason"],
+            self.buy(buyer, "pending")["reason"],
+            self.buy(buyer, "someones")["reason"],
+            self.buy(buyer, "no-account")["reason"],
+        ]
+
+        self.assertEqual(
+            refusals,
+            ["not_verified", "verify_later", "ended", "ended", "ended", "other_account", "other_account"],
+        )
+        self.assertIsNone(self.owned_team(buyer))
+        self.assertEqual(self.plan_of(buyer), "free")
+        self.assertFalse(PaymentHistory.objects.exists())
+
+    def test_a_product_newsblur_doesnt_sell_starts_nothing(self):
+        buyer = self.reader("buyer")
+        unsold = "nb.premium.team.99"
+        self.subscribe(buyer, "token-1", unsold)
+        # A token the account posted before, which Google's notifications find it by.
+        GooglePlayIds.objects.create(user=buyer, purchase_token="token-1", product_id=unsold)
+
+        response = self.buy(buyer, "token-1", unsold)
+        self.notify("token-1", self.PURCHASED, unsold)
+
+        self.assertEqual(response["reason"], "unknown_product")
+        self.assertEqual(self.plan_of(buyer), "free")
+        self.assertFalse(PaymentHistory.objects.exists())
+
+    def test_someone_on_another_team_gets_no_team_and_no_plan_of_their_own_from_a_team_purchase(self):
+        member = self.reader("member")
+        self.join(member)
+        self.subscribe(member, "token-1")
+
+        response = self.buy(member, "token-1")
+        Profile.objects.get(user=member).setup_premium_history()
+
+        self.assertEqual(response["reason"], "on_team")
+        self.assertIsNone(self.owned_team(member))
+        self.assertEqual(self.staff_events(), ["team_purchase_on_team"])
+        self.leave(member)
+        self.assertEqual(self.plan_of(member), "free")
+
+    def test_only_a_renewal_google_was_paid_for_moves_the_paid_period(self):
+        owner = self.reader("teamowner")
+        self.subscribe(owner, "token-1", expires=self.now + self.days(1))
+        self.buy(owner, "token-1")
+        renewed_through = self.now + self.days(1) + relativedelta(months=1)
+
+        self.play.renew("token-1", "GPA.token-1..0", renewed_through)
+        self.assertEqual(self.notify("token-1", self.RENEWED), 200)
+        # Google extends the expiry through a grace period while it retries the next charge, which it may never
+        # collect. A renewal notice that arrives meanwhile is no payment either.
+        record = self.play.records["token-1"]
+        record["lineItems"][0]["expiryTime"] = google_time(renewed_through + self.days(30))
+        for state, kind in (
+            ("SUBSCRIPTION_STATE_IN_GRACE_PERIOD", self.IN_GRACE_PERIOD),
+            ("SUBSCRIPTION_STATE_IN_GRACE_PERIOD", self.RENEWED),
+            ("SUBSCRIPTION_STATE_ON_HOLD", self.ON_HOLD),
+            ("SUBSCRIPTION_STATE_CANCELED", self.CANCELED),
+            ("SUBSCRIPTION_STATE_EXPIRED", self.EXPIRED),
+        ):
+            record["subscriptionState"] = state
+            self.assertEqual(self.notify("token-1", kind), 200)
+
+        team = self.owned_team(owner)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, renewed_through))
+        self.assertEqual(self.premium_expire(owner), renewed_through)
+        self.assertEqual(PaymentHistory.objects.filter(user=owner).count(), 2)
+
+    def test_a_recovered_or_restarted_subscription_brings_a_lapsed_team_back(self):
+        for kind in (self.RECOVERED, self.RESTARTED):
+            owner = self.reader("owner%s" % kind)
+            token = "token-%s" % kind
+            self.subscribe(owner, token, expires=self.now + self.days(1))
+            self.buy(owner, token)
+            reader = self.reader("reader%s" % kind)
+            self.join(reader, self.join_link_token(self.owned_team(owner), owner))
+            self.lapse(owner)
+            self.assertEqual(self.plan_of(reader), "free")
+
+            self.play.renew(token, "GPA.%s..0" % token, self.month_from_now)
+            self.assertEqual(self.notify(token, kind), 200)
+
+            team = self.owned_team(owner)
+            self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, self.month_from_now))
+            self.assertEqual(self.plan_of(reader), "pro")
+
+    def test_a_revoke_or_refund_ends_the_team_at_once_unless_a_newer_payment_renewed_it(self):
+        revoked, refunded, renewed, kept = (
+            self.reader(username) for username in ("revoked", "refunded", "renewed", "kept")
+        )
+        for user in (revoked, refunded, renewed, kept):
+            self.subscribe(user, user.username, expires=self.now + self.days(1))
+            self.buy(user, user.username)
+        self.play.renew("renewed", "GPA.renewed..0", self.month_from_now)
+        self.notify("renewed", self.RENEWED)
+
+        self.play.records["revoked"]["subscriptionState"] = "SUBSCRIPTION_STATE_EXPIRED"
+        self.assertEqual(self.notify("revoked", self.REVOKED), 200)
+        self.play.voided += [
+            {"purchaseToken": token, "orderId": "GPA.%s" % token} for token in ("refunded", "renewed")
+        ]
+        self.assertEqual(self.voided("refunded"), 200)
+        self.voided("renewed")
+        # Notices Google's own records don't bear out.
+        self.notify("kept", self.REVOKED)
+        self.voided("kept")
+
+        self.assertEqual(
+            [self.owned_team(user).status for user in (revoked, refunded, renewed, kept)],
+            [Team.STATUS_INACTIVE, Team.STATUS_INACTIVE, Team.STATUS_ACTIVE, Team.STATUS_ACTIVE],
+        )
+        self.assertEqual(
+            sorted(PaymentHistory.objects.filter(refunded=True).values_list("payment_identifier", flat=True)),
+            ["GPA.refunded", "GPA.renewed", "GPA.revoked"],
+        )
+
+    def test_enterprise_starts_at_once_and_a_switch_down_waits_for_the_renewal(self):
+        owner = self.reader("teamowner")
+        month_end = self.now + self.days(10)
+        self.subscribe(owner, "team", expires=month_end)
+        self.buy(owner, "team")
+
+        # The upgrade replaces the subscription with one that ends the same day, charged for the rest of the month.
+        self.subscribe(
+            owner, "enterprise", self.ENTERPRISE, expires=month_end, started=self.now, linked="team"
+        )
+        self.play.records["team"]["subscriptionState"] = "SUBSCRIPTION_STATE_EXPIRED"
+        self.buy(owner, "enterprise", self.ENTERPRISE)
+        # The replaced subscription expires, and a refund of it takes back only its own payment.
+        for kind in (self.EXPIRED, self.REVOKED):
+            self.notify("team", kind)
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.plan, team.billing_reference, team.paid_through),
+            (Team.STATUS_ACTIVE, Team.PLAN_TEAM_ENTERPRISE, "enterprise", month_end),
+        )
+
+        # A switch down is a purchase that keeps Enterprise until the month ends and then renews into Team.
+        self.subscribe(
+            owner,
+            "switch",
+            started=self.now,
+            linked="enterprise",
+            items=[
+                self.play.item(self.ENTERPRISE, month_end, "GPA.enterprise", renews_into=self.TEAM),
+                self.play.item(self.TEAM),
+            ],
+        )
+        self.play.records["enterprise"]["subscriptionState"] = "SUBSCRIPTION_STATE_EXPIRED"
+        self.buy(owner, "switch")
+        self.notify("enterprise", self.EXPIRED, self.ENTERPRISE)
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.pending_plan, team.billing_reference, team.paid_through),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.PLAN_TEAM, "switch", month_end),
+        )
+
+        next_month_end = month_end + relativedelta(months=1)
+        self.play.renew("switch", "GPA.switch..0", next_month_end, self.TEAM)
+        self.notify("switch", self.RENEWED)
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.pending_plan, team.paid_through), (Team.PLAN_TEAM, None, next_month_end)
+        )
+        # The switch itself charged nothing.
+        self.assertEqual(
+            sorted(PaymentHistory.objects.filter(user=owner).values_list("payment_identifier", flat=True)),
+            ["GPA.enterprise", "GPA.switch..0", "GPA.team"],
+        )
+
+    def test_a_switch_down_to_pro_ends_the_team_with_the_paid_month_and_leaves_pro_as_the_owners_own(self):
+        owner = self.reader("teamowner")
+        month_end = self.now + self.days(1)
+        self.subscribe(owner, "team", expires=month_end)
+        self.buy(owner, "team")
+        self.subscribe(
+            owner,
+            "switch",
+            started=self.now,
+            linked="team",
+            items=[
+                self.play.item(self.TEAM, month_end, "GPA.team", renews_into=self.PRO),
+                self.play.item(self.PRO),
+            ],
+        )
+        self.buy(owner, "switch", self.PRO)
+        self.assertEqual(self.owned_team(owner).pending_plan, "pro")
+        self.assertEqual(PaymentHistory.objects.filter(user=owner).count(), 1)
+        # The paid month ended an hour ago, and the hourly task hasn't lapsed the team yet.
+        Team.objects.filter(owner=owner).update(paid_through=self.now - datetime.timedelta(hours=1))
+
+        self.play.renew("switch", "GPA.switch..0", self.now + relativedelta(years=1), self.PRO)
+        self.assertEqual(self.notify("switch", self.RENEWED, self.PRO), 200)
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.status, team.pending_plan, team.billing_reference), (Team.STATUS_INACTIVE, None, None)
+        )
+        self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(
+            list(
+                PaymentHistory.objects.filter(user=owner, payment_provider="android-pro").values_list(
+                    "payment_amount", flat=True
+                )
+            ),
+            [299],
+        )
+
+    def test_an_upgrade_from_a_play_plan_of_the_owners_own_replaces_it_but_a_plan_paid_for_elsewhere_is_kept(
+        self,
+    ):
+        upgrader = self.reader("upgrader")
+        self.subscribe(None, "own-pro", self.PRO, expires=self.now + relativedelta(years=1))
+        self.profile_post(
+            upgrader,
+            "save_android_receipt",
+            product_id=self.PRO,
+            order_id="GPA.own-pro",
+            purchase_token="own-pro",
+        )
+        self.assertEqual(self.plan_of(upgrader), "pro")
+        self.subscribe(upgrader, "upgrade", started=self.now, linked="own-pro")
+        self.play.records["own-pro"]["subscriptionState"] = "SUBSCRIPTION_STATE_EXPIRED"
+        self.buy(upgrader, "upgrade")
+        # Google's notice that the Pro subscription the upgrade replaced has expired.
+        self.notify("own-pro", self.EXPIRED, self.PRO)
+        self.assertEqual(
+            (self.plan_of(upgrader), self.owned_team(upgrader).status), ("pro", Team.STATUS_ACTIVE)
+        )
+        kept_until = self.now + self.days(200)
+        archive = self.reader("archive", "archive", premium_expire=kept_until)
+        self.subscribe(archive, "archive-team")
+        self.buy(archive, "archive-team")
+
+        for token in ("upgrade", "archive-team"):
+            self.play.records[token]["subscriptionState"] = "SUBSCRIPTION_STATE_EXPIRED"
+            self.notify(token, self.REVOKED)
+
+        # Google credited what was left of the Pro year toward the team, so with the team's payment taken back the
+        # upgrader has no plan of their own and their account expires from now.
+        self.assertLessEqual(self.premium_expire(upgrader), datetime.datetime.now())
+        self.assertEqual(self.plan_of(archive), "archive")
+        self.assertEqual(self.premium_expire(archive), kept_until)
+
+    def test_the_app_is_told_who_may_buy_a_team_and_buys_with_the_account_id_it_is_given(self):
+        member = self.reader("member")
+        self.join(member)
+        stripe_owner = self.reader("stripeowner")
+        self.pay(stripe_owner, self.now + self.days(20))
+        play_owner = self.reader("playowner")
+        self.subscribe(play_owner, "play-owner")
+        self.buy(play_owner, "play-owner")
+        buyer = self.reader("buyer")
+
+        refused = [self.get(user, "play_purchase")["reason"] for user in (member, stripe_owner, self.owner)]
+        self.assertEqual(refused, ["on_team", "team_billed_elsewhere", "team_billed_elsewhere"])
+        self.assertEqual(self.get(play_owner, "play_purchase")["code"], 1)
+
+        account_id = self.get(buyer, "play_purchase")["obfuscated_account_id"]
+        self.subscribe(None, "buyer", externalAccountIdentifiers={"obfuscatedExternalAccountId": account_id})
+        self.assertEqual(self.buy(member, "buyer")["reason"], "other_account")
+        self.assertEqual(self.buy(buyer, "buyer")["code"], 1)
+        self.assertEqual(self.owned_team(buyer).billing_reference, "buyer")
+
+    def test_a_play_purchase_while_stripe_bills_the_team_stops_the_stripe_renewal(self):
+        """The owner bought the team again on the web while their Play subscription kept renewing, then upgraded that
+        subscription in the app, which Google bills from the same day of the month as before."""
+        fake_stripe = FakeStripeBilling(self)
+        owner = self.reader("teamowner")
+        month_end = self.now + self.days(10)
+        self.subscribe(owner, "team", expires=month_end)
+        self.buy(owner, "team")
+        fake_stripe.known_customer(owner)
+        stripe_subscription = fake_stripe.subscribe(owner, Team.PLAN_TEAM)
+        self.pay(
+            owner,
+            self.now + self.days(20),
+            reference=stripe_subscription.id,
+            paid_at=self.now - self.days(11),
+        )
+        self.subscribe(
+            owner, "enterprise", self.ENTERPRISE, expires=month_end, started=self.now, linked="team"
+        )
+
+        self.buy(owner, "enterprise", self.ENTERPRISE)
+
+        team = self.owned_team(owner)
+        self.assertEqual(
+            (team.plan, team.billing_provider, team.billing_reference),
+            (Team.PLAN_TEAM_ENTERPRISE, Team.PROVIDER_PLAY, "enterprise"),
+        )
+        self.assertTrue(stripe_subscription.cancel_at_period_end)
+        self.assertEqual(self.staff_events(), ["team_paid_twice", "team_paid_twice"])
+
+    def test_a_test_purchase_starts_and_renews_a_team_that_lapses_a_day_after_its_last_renewal(self):
+        """License testers and testing tracks buy without being charged, and a month renews every few minutes."""
+        fake_stripe = FakeStripeBilling(self)
+        tester = self.reader("tester", "premium", premium_expire=self.now + self.days(200))
+        fake_stripe.known_customer(tester)
+        own_plan = fake_stripe.subscribe(tester, "premium")
+        minute = datetime.timedelta(minutes=1)
+        self.subscribe(tester, "test", expires=self.now + 5 * minute, started=self.now, testPurchase={})
+
+        self.assertEqual(self.buy(tester, "test")["code"], 1)
+        self.play.renew("test", "GPA.test..0", self.now + 10 * minute)
+        self.assertEqual(self.notify("test", self.RENEWED), 200)
+
+        team = self.owned_team(tester)
+        self.assertEqual((team.status, team.paid_through), (Team.STATUS_ACTIVE, self.now + 10 * minute))
+        self.assertEqual(self.plan_of(tester), "pro")
+        # A purchase that cost nothing leaves the plan the tester pays for on the web renewing.
+        self.assertFalse(own_plan.cancel_at_period_end)
+        for hours_later, status in ((23, Team.STATUS_ACTIVE), (25, Team.STATUS_INACTIVE)):
+            with patch("apps.team.tasks.datetime") as clock:
+                clock.datetime.now.return_value = team.paid_through + datetime.timedelta(hours=hours_later)
+                self.committed(TeamProGrants)
+            self.assertEqual(self.owned_team(tester).status, status)
+        self.assertEqual(self.plan_of(tester), "premium")
+
+    def test_only_payments_google_charged_for_count_as_revenue_and_each_counts_once(self):
+        # A real payment a year ago, the month PaymentHistory.report compares this one with.
+        PaymentHistory.objects.create(
+            user=self.owner,
+            payment_date=self.now - relativedelta(years=1),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+        tester = self.reader("tester")
+        self.subscribe(tester, "test", started=self.now, testPurchase={})
+        self.buy(tester, "test")
+        owner = self.reader("teamowner")
+        self.subscribe(owner, "token-1", started=self.now)
+        self.buy(owner, "token-1")
+        # The app and Google's notification are read at the same moment, and both record the payment.
+        duplicate = PaymentHistory.objects.get(user=owner)
+        duplicate.pk = None
+        duplicate.save()
+
+        Profile.objects.get(user=owner).setup_premium_history()
+
+        report = PaymentHistory.report()["output"]
+        this_month = re.search(
+            r"^%s - [^\t]+\t\$[\d.]+\t\$(\d+)" % self.now.strftime("%Y-%m-01"), report, re.M
+        )
+        self.assertEqual(this_month.group(1), "79")
+        self.assertIn("Total: $115\n", report)
+        self.assertEqual(self.owned_team(tester).status, Team.STATUS_ACTIVE)
+
+    def test_a_play_receipt_names_the_team_plan_and_the_period_google_billed_for(self):
+        owner = self.reader("teamowner")
+        # A month Google extended by four days.
+        expires = self.month_from_now + self.days(4)
+        self.subscribe(owner, "token-1", self.ENTERPRISE, expires=expires, started=self.now)
+        self.buy(owner, "token-1", self.ENTERPRISE)
+        payment = PaymentHistory.objects.get(user=owner)
+
+        receipt = self.client_for(owner).get(reverse("profile-invoice", args=[payment.pk])).content.decode()
+
+        self.assertEqual(self.owned_team(owner).plan, Team.PLAN_TEAM_ENTERPRISE)
+        self.assertIn("NewsBlur Premium Team Enterprise Subscription", receipt)
+        self.assertIn(dateformat.format(expires, "F j, Y"), receipt)
