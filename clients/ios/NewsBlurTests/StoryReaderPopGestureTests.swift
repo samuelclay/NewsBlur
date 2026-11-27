@@ -13,6 +13,8 @@ import XCTest
         let bundle = Bundle(for: NewsBlurAppDelegate.self).bundleIdentifier ?? ""
         let persisted = UserDefaults.standard.persistentDomain(forName: bundle) ?? [:]
         for key in keys { preferences[key] = persisted[key] }
+        // StoryReaderPopGestureTests.swift starts every case from the default, whatever the simulator has saved.
+        UserDefaults.standard.set(false, forKey: keys[2])
     }
 
     override func tearDown() {
@@ -191,9 +193,7 @@ import XCTest
         UserDefaults.standard.set(true, forKey: keys[2])
         let (pages, _) = makeReaderWithArticles()
         pages.traverseView = UIView()
-        let edge = NSLayoutConstraint(item: pages.view!, attribute: .bottom, relatedBy: .equal,
-                                      toItem: pages.traverseView, attribute: .bottom, multiplier: 1, constant: 0)
-        pages.traverseBottomConstraint = edge
+        let edge = attachTraverseEdge(to: pages, constant: 0)
         let page = pages.currentPage!
         page.view.frame = CGRect(x: 0, y: 0, width: 375, height: 667)
         let scroll = page.webView.scrollView as! ReaderTraversalScroll
@@ -220,6 +220,8 @@ import XCTest
         pages.appDelegate.storiesCollection = StoriesCollection()
         pages.traverseView = UIView()
         pages.traverseView.alpha = 0
+        let edge = attachTraverseEdge(to: pages, constant: -80)
+        pages.traverseFloating = true
         UserDefaults.standard.set(true, forKey: keys[2])
 
         pages.changedAlwaysShowStoryNavigation()
@@ -230,6 +232,16 @@ import XCTest
         pages.changedAlwaysShowStoryNavigation()
         XCTAssertEqual(pages.traverseView.alpha, 1)
         XCTAssertEqual(pages.traverseFadeAccumulator, 0)
+        XCTAssertEqual(edge.constant, pages.traverseBottomGap,
+                       "Navigation resting below the screen with the article end returns to the screen edge")
+    }
+
+    // StoryReaderPopGestureTests.swift stands in for the xib constraint that holds navigation above the bottom edge.
+    private func attachTraverseEdge(to pages: StoryPagesViewController, constant: CGFloat) -> NSLayoutConstraint {
+        let edge = NSLayoutConstraint(item: pages.view!, attribute: .bottom, relatedBy: .equal,
+                                      toItem: pages.traverseView, attribute: .bottom, multiplier: 1, constant: constant)
+        pages.traverseBottomConstraint = edge
+        return edge
     }
 
     // StoryReaderPopGestureTests.swift reports an article offset change the way the production KVO observer receives it.
