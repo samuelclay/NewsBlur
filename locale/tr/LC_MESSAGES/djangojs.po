@@ -5238,7 +5238,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "Sesli okumayı duraklatın veya sürdürün (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "Duraklatıldı"
 
 msgid "Payment history"
 msgstr "Ödeme geçmişi"

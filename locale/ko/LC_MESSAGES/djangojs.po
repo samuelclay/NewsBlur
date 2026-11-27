@@ -5152,7 +5152,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "소리 내어 읽기 일시 정지 또는 다시 시작 (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "일시 중지됨"
 
 msgid "Payment history"
 msgstr "결제 내역"

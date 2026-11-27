@@ -5361,7 +5361,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "Vorlesen pausieren oder fortsetzen (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "Pausiert"
 
 msgid "Payment history"
 msgstr "Zahlungsverlauf"

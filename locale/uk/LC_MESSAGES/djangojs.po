@@ -5448,7 +5448,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "Призупинити або відновити читання вголос (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "Призупинено"
 
 msgid "Payment history"
 msgstr "Історія платежів"

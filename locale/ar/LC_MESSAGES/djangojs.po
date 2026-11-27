@@ -5719,7 +5719,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "إيقاف القراءة بصوت عالٍ مؤقتًا أو استئنافها (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "متوقف مؤقتًا"
 
 msgid "Payment history"
 msgstr "سجل الدفعات"

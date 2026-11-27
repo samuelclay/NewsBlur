@@ -5190,7 +5190,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "หยุดชั่วคราวหรืออ่านออกเสียงต่อ (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "หยุดชั่วคราว"
 
 msgid "Payment history"
 msgstr "ประวัติการชำระเงิน"

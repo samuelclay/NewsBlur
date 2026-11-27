@@ -5454,7 +5454,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "Wstrzymaj lub wznów czytanie na głos (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "Wstrzymano"
 
 msgid "Payment history"
 msgstr "Historia płatności"

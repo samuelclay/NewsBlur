@@ -5320,7 +5320,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "ज़ोर से पढ़ना रोकें या फिर से शुरू करें (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "रुका हुआ"
 
 msgid "Payment history"
 msgstr "भुगतान इतिहास"

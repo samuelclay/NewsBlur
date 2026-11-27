@@ -5350,7 +5350,7 @@ msgid "Pause or resume reading aloud (y)"
 msgstr "Pausar o reanudar la lectura en voz alta (y)"
 
 msgid "Paused"
-msgstr ""
+msgstr "En pausa"
 
 msgid "Payment history"
 msgstr "Historial de pagos"
