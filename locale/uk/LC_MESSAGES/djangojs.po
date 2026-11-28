@@ -2608,13 +2608,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Копію запропоновано для папки %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Копію ще не вирішено"
+msgstr "Копіювання не вирішено"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Скопіюйте секретний ключ клієнта зараз. Побачити його можна буде лише один раз."
 
 msgid "Copy?"
-msgstr "Скопіювати?"
+msgstr "Копіювати?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Не вдалося додати цей класифікатор. Спробуйте ще раз."
@@ -5030,7 +5030,7 @@ msgid "Moved!"
 msgstr "Переміщено!"
 
 msgid "Moves"
-msgstr "Переміщення"
+msgstr "Переміщується"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5321,7 +5321,7 @@ msgid "No content"
 msgstr "Немає вмісту"
 
 msgid "No copy"
-msgstr "Без копій"
+msgstr "Без копії"
 
 msgid "No feeds found"
 msgstr "Стрічок не знайдено"

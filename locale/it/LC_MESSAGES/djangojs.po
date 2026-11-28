@@ -2501,13 +2501,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Copia proposta in %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Copia in attesa di decisione"
+msgstr "Copia da decidere"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Copia subito il segreto client. Potrai visualizzarlo una sola volta."
 
 msgid "Copy?"
-msgstr "Copiare?"
+msgstr "Copia?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Impossibile aggiungere questo classificatore. Riprova."
@@ -4908,7 +4908,7 @@ msgid "Moved!"
 msgstr "Spostato!"
 
 msgid "Moves"
-msgstr "Spostamenti"
+msgstr "Sposta"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7476,7 +7476,7 @@ msgid "Stay put"
 msgstr "Resta qui"
 
 msgid "Stays"
-msgstr "Rimane"
+msgstr "Resta"
 
 msgid "Stays here"
 msgstr "Resta qui"

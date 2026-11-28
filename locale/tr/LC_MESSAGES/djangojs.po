@@ -2391,7 +2391,7 @@ msgid "Copy offered to %(folder)s"
 msgstr "Kopyası %(folder)s klasörüne önerildi"
 
 msgid "Copy undecided"
-msgstr "Kopyalama kararı bekleniyor"
+msgstr "Kopyalama kararı verilmedi"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "İstemci gizli anahtarınızı şimdi kopyalayın. Bu anahtarı yalnızca bir kez görebilirsiniz."
@@ -4065,7 +4065,7 @@ msgid "In a pill"
 msgstr "Hap içinde"
 
 msgid "In both folders"
-msgstr "Her iki klasörde de"
+msgstr "Her iki klasörde"
 
 msgid "In rotation"
 msgstr "Döngüde"
@@ -4782,7 +4782,7 @@ msgid "Moved!"
 msgstr "Taşındı!"
 
 msgid "Moves"
-msgstr "Taşımalar"
+msgstr "Taşınıyor"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5071,7 +5071,7 @@ msgid "No content"
 msgstr "İçerik yok"
 
 msgid "No copy"
-msgstr "Kopya yok"
+msgstr "Kopyalanmıyor"
 
 msgid "No feeds found"
 msgstr "Akış bulunamadı"
@@ -7311,14 +7311,14 @@ msgid "Stay put"
 msgstr "Olduğu yerde kalsın"
 
 msgid "Stays"
-msgstr "Kalır"
+msgstr "Yerinde kalıyor"
 
 msgid "Stays here"
-msgstr "Burada kalır"
+msgstr "Burada kalıyor"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "%(folder)s içinde kalır"
+msgstr "%(folder)s klasöründe kalıyor"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."
@@ -7329,7 +7329,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "İçindeki bir klasör kalacağı için kalır."
 
 msgid "Stays, no folder"
-msgstr "Kalır, klasör yok"
+msgstr "Kalıyor, klasörsüz"
 
 msgid "Steadier or more varied"
 msgstr "Daha dengeli veya daha çeşitli"

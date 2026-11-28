@@ -1439,7 +1439,7 @@ msgstr[0] "Đồng thời xóa %(value_1)s bản lưu trữ hiện có từ mi�
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "Cũng trong %(folder)s"
+msgstr "Cũng ở %(folder)s"
 
 msgid "Also look for"
 msgstr "Đồng thời tìm"
@@ -2383,13 +2383,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Đề xuất sao chép vào %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Đang chờ quyết định về bản sao"
+msgstr "Chưa quyết định sao chép"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Hãy sao chép khóa bí mật của ứng dụng ngay bây giờ. Bạn chỉ xem được khóa này một lần."
 
 msgid "Copy?"
-msgstr "Sao chép?"
+msgstr "Thêm bản sao?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Không thể thêm bộ phân loại này. Hãy thử lại."
@@ -4052,7 +4052,7 @@ msgid "In a pill"
 msgstr "Dạng viên thuốc"
 
 msgid "In both folders"
-msgstr "Trong cả hai thư mục"
+msgstr "Ở cả hai thư mục"
 
 msgid "In rotation"
 msgstr "Đang trong vòng luân phiên"
@@ -4769,7 +4769,7 @@ msgid "Moved!"
 msgstr "Đã chuyển!"
 
 msgid "Moves"
-msgstr "Di chuyển"
+msgstr "Chuyển đi"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7297,11 +7297,11 @@ msgid "Stays"
 msgstr "Giữ nguyên"
 
 msgid "Stays here"
-msgstr "Vẫn ở đây"
+msgstr "Giữ ở đây"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "Vẫn ở trong %(folder)s"
+msgstr "Giữ trong %(folder)s"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."

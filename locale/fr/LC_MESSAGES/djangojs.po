@@ -1543,7 +1543,7 @@ msgstr[1] "Supprimer également %(value_1)s archives existantes de ce domaine"
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "Également dans %(folder)s"
+msgstr "Aussi dans %(folder)s"
 
 msgid "Also look for"
 msgstr "Rechercher aussi"
@@ -2510,13 +2510,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Copie proposée à %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Copie en attente de décision"
+msgstr "Copie à décider"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Copiez votre clé secrète client maintenant. Vous ne pourrez la voir qu’une seule fois."
 
 msgid "Copy?"
-msgstr "Copier ?"
+msgstr "Copie ?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Impossible d’ajouter ce classificateur. Réessayez."
@@ -4930,7 +4930,7 @@ msgid "Moved!"
 msgstr "Déplacé !"
 
 msgid "Moves"
-msgstr "Déplacements"
+msgstr "Se déplace"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5222,7 +5222,7 @@ msgid "No content"
 msgstr "Aucun contenu"
 
 msgid "No copy"
-msgstr "Aucune copie"
+msgstr "Pas de copie"
 
 msgid "No feeds found"
 msgstr "Aucun flux trouvé"
@@ -7506,7 +7506,7 @@ msgid "Stay put"
 msgstr "Rester sur place"
 
 msgid "Stays"
-msgstr "Conservé"
+msgstr "Reste"
 
 msgid "Stays here"
 msgstr "Reste ici"

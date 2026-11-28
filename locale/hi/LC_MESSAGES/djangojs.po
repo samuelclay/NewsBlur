@@ -2489,13 +2489,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "कॉपी %(folder)s में रखने का प्रस्ताव"
 
 msgid "Copy undecided"
-msgstr "कॉपी पर निर्णय बाकी"
+msgstr "कॉपी का फ़ैसला नहीं"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "अपना क्लाइंट सीक्रेट अभी कॉपी करें। यह आपको केवल एक बार दिखेगा।"
 
 msgid "Copy?"
-msgstr "कॉपी करें?"
+msgstr "कॉपी?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "यह क्लासिफ़ायर जोड़ा नहीं जा सका। फिर से कोशिश करें।"
@@ -4887,7 +4887,7 @@ msgid "Moved!"
 msgstr "स्थानांतरित हो गया!"
 
 msgid "Moves"
-msgstr "स्थानांतरण"
+msgstr "दूसरे फ़ोल्डर में जाएगा"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5177,7 +5177,7 @@ msgid "No content"
 msgstr "कोई सामग्री नहीं"
 
 msgid "No copy"
-msgstr "कोई कॉपी नहीं"
+msgstr "कॉपी नहीं"
 
 msgid "No feeds found"
 msgstr "कोई फ़ीड नहीं मिली"
@@ -7431,14 +7431,14 @@ msgid "Stay put"
 msgstr "यहीं रहें"
 
 msgid "Stays"
-msgstr "ज्यों का त्यों रहेगा"
+msgstr "यहीं रहेगा"
 
 msgid "Stays here"
-msgstr "यहीं रहती है"
+msgstr "इस फ़ोल्डर में रहेगा"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "%(folder)s में रहता है"
+msgstr "%(folder)s में रहेगा"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."
@@ -7450,7 +7450,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "ज्यों का त्यों रहेगा, क्योंकि इसके अंदर का एक फ़ोल्डर ज्यों का त्यों रहेगा।"
 
 msgid "Stays, no folder"
-msgstr "रहने दें, कोई फ़ोल्डर नहीं"
+msgstr "यहीं रहेगा, बिना फ़ोल्डर के"
 
 msgid "Steadier or more varied"
 msgstr "ज़्यादा स्थिर या ज़्यादा विविध"

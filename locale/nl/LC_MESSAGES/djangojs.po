@@ -2495,13 +2495,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Kopie aangeboden aan %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Kopiëren nog niet beslist"
+msgstr "Kopie nog open"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Kopieer nu je clientgeheim. Je kunt het maar één keer bekijken."
 
 msgid "Copy?"
-msgstr "Kopiëren?"
+msgstr "Kopie?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Deze classifier kan niet worden toegevoegd. Probeer het opnieuw."
@@ -4892,7 +4892,7 @@ msgid "Moved!"
 msgstr "Verplaatst!"
 
 msgid "Moves"
-msgstr "Verplaatsingen"
+msgstr "Wordt verplaatst"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."

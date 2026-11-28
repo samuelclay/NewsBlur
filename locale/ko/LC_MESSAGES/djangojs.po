@@ -1429,7 +1429,7 @@ msgstr[0] "이 도메인의 기존 아카이브 %(value_1)s개도 삭제"
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "%(folder)s에도 있음"
+msgstr "%(folder)s에도"
 
 msgid "Also look for"
 msgstr "다음 항목도 찾기"
@@ -4001,7 +4001,7 @@ msgid "In a pill"
 msgstr "알약 모양으로"
 
 msgid "In both folders"
-msgstr "두 폴더에 모두 있음"
+msgstr "두 폴더 모두"
 
 msgid "In rotation"
 msgstr "순환 목록에 있음"
@@ -7204,7 +7204,7 @@ msgstr "여기에 유지"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "%(folder)s에 남습니다"
+msgstr "%(folder)s에 유지"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."

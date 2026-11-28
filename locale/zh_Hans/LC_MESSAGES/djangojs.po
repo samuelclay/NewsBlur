@@ -1429,7 +1429,7 @@ msgstr[0] "同时删除此域名下已有的 %(value_1)s 个归档"
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "也在 %(folder)s 中"
+msgstr "也位于 %(folder)s"
 
 msgid "Also look for"
 msgstr "还查找"
@@ -2351,13 +2351,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "已提议复制到 %(folder)s"
 
 msgid "Copy undecided"
-msgstr "待决定是否复制"
+msgstr "复制未定"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "请立即复制客户端密钥。它只会显示一次。"
 
 msgid "Copy?"
-msgstr "复制？"
+msgstr "要复制？"
 
 msgid "Could not add this classifier. Try again."
 msgstr "无法添加此分类器。请重试。"
@@ -3993,7 +3993,7 @@ msgid "In a pill"
 msgstr "胶囊形"
 
 msgid "In both folders"
-msgstr "位于两个文件夹中"
+msgstr "同时位于两个文件夹"
 
 msgid "In rotation"
 msgstr "已加入轮换"
@@ -4700,7 +4700,7 @@ msgid "Moved!"
 msgstr "已移动！"
 
 msgid "Moves"
-msgstr "移动"
+msgstr "移至其他文件夹"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -4987,7 +4987,7 @@ msgid "No content"
 msgstr "没有内容"
 
 msgid "No copy"
-msgstr "不保留副本"
+msgstr "不复制"
 
 msgid "No feeds found"
 msgstr "未找到订阅源"
@@ -7189,10 +7189,10 @@ msgid "Stay put"
 msgstr "保持原位"
 
 msgid "Stays"
-msgstr "保留"
+msgstr "保留原位"
 
 msgid "Stays here"
-msgstr "保留在此处"
+msgstr "保留在此文件夹"
 
 #, python-format
 msgid "Stays in %(folder)s"
@@ -7207,7 +7207,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "予以保留，因为其中的文件夹会保留。"
 
 msgid "Stays, no folder"
-msgstr "保留，不放入文件夹"
+msgstr "保留原位，不归入文件夹"
 
 msgid "Steadier or more varied"
 msgstr "更平稳或更多变化"

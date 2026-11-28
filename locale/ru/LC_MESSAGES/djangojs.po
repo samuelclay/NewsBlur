@@ -2616,13 +2616,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Копия предложена для папки %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Копирование ожидает решения"
+msgstr "Копия не решена"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Скопируйте секретный ключ клиента сейчас. Вы увидите его только один раз."
 
 msgid "Copy?"
-msgstr "Скопировать?"
+msgstr "Добавить копию?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Не удалось добавить этот классификатор. Попробуйте ещё раз."
@@ -5034,7 +5034,7 @@ msgid "Moved!"
 msgstr "Перемещено!"
 
 msgid "Moves"
-msgstr "Перемещения"
+msgstr "Переместится"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5325,7 +5325,7 @@ msgid "No content"
 msgstr "Нет содержимого"
 
 msgid "No copy"
-msgstr "Не копировать"
+msgstr "Без копии"
 
 msgid "No feeds found"
 msgstr "Ленты не найдены"
@@ -7621,14 +7621,14 @@ msgid "Stay put"
 msgstr "Оставаться на месте"
 
 msgid "Stays"
-msgstr "Остаётся"
+msgstr "Останется"
 
 msgid "Stays here"
-msgstr "Остаётся здесь"
+msgstr "Останется здесь"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "Остаётся в %(folder)s"
+msgstr "Останется в %(folder)s"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."
@@ -7641,7 +7641,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "Остаётся, потому что папка внутри неё остаётся."
 
 msgid "Stays, no folder"
-msgstr "Остаётся, без папки"
+msgstr "Останется без папки"
 
 msgid "Steadier or more varied"
 msgstr "Более ровная или разнообразная подача"

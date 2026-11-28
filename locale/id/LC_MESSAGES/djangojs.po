@@ -4902,7 +4902,7 @@ msgid "Moved!"
 msgstr "Dipindahkan!"
 
 msgid "Moves"
-msgstr "Pemindahan"
+msgstr "Dipindahkan"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5192,7 +5192,7 @@ msgid "No content"
 msgstr "Tidak ada konten"
 
 msgid "No copy"
-msgstr "Jangan salin"
+msgstr "Tanpa salinan"
 
 msgid "No feeds found"
 msgstr "Feed tidak ditemukan"

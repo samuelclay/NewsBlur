@@ -1429,7 +1429,7 @@ msgstr[0] "このドメインの既存アーカイブ%(value_1)s件も削除す�
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "%(folder)sにも"
+msgstr "%(folder)sにも追加"
 
 msgid "Also look for"
 msgstr "次も検索"
@@ -2351,13 +2351,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "%(folder)sへのコピーを提案"
 
 msgid "Copy undecided"
-msgstr "コピーを保留中"
+msgstr "コピー未定"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "クライアントシークレットを今すぐコピーしてください。この情報は一度しか表示されません。"
 
 msgid "Copy?"
-msgstr "コピーしますか？"
+msgstr "コピー？"
 
 msgid "Could not add this classifier. Try again."
 msgstr "この分類器を追加できませんでした。もう一度お試しください。"
@@ -4700,7 +4700,7 @@ msgid "Moved!"
 msgstr "移動しました！"
 
 msgid "Moves"
-msgstr "移動"
+msgstr "移動する"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7189,10 +7189,10 @@ msgid "Stay put"
 msgstr "そのままにする"
 
 msgid "Stays"
-msgstr "そのまま残る"
+msgstr "そのまま"
 
 msgid "Stays here"
-msgstr "ここに残す"
+msgstr "ここに残る"
 
 #, python-format
 msgid "Stays in %(folder)s"
@@ -7207,7 +7207,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "内側のフォルダーが残るため、そのまま残ります。"
 
 msgid "Stays, no folder"
-msgstr "残す、フォルダーなし"
+msgstr "フォルダーなしで残る"
 
 msgid "Steadier or more varied"
 msgstr "より安定／より変化に富む"

@@ -1429,7 +1429,7 @@ msgstr[0] "同時刪除此網域中現有的 %(value_1)s 個封存項目"
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "也位於 %(folder)s"
+msgstr "也保留在 %(folder)s"
 
 msgid "Also look for"
 msgstr "也搜尋"
@@ -2351,13 +2351,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "已向 %(folder)s 提供複本"
 
 msgid "Copy undecided"
-msgstr "待決定複本"
+msgstr "複製未決定"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "請立即複製用戶端密鑰。你只有一次機會查看。"
 
 msgid "Copy?"
-msgstr "要複製嗎？"
+msgstr "要複製？"
 
 msgid "Could not add this classifier. Try again."
 msgstr "無法新增此分類器。請再試一次。"
@@ -3993,7 +3993,7 @@ msgid "In a pill"
 msgstr "膠囊狀"
 
 msgid "In both folders"
-msgstr "位於兩個資料夾"
+msgstr "保留在兩個資料夾"
 
 msgid "In rotation"
 msgstr "已加入輪替"
@@ -4700,7 +4700,7 @@ msgid "Moved!"
 msgstr "已移動！"
 
 msgid "Moves"
-msgstr "移動"
+msgstr "移至其他資料夾"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7189,7 +7189,7 @@ msgid "Stay put"
 msgstr "保持原位"
 
 msgid "Stays"
-msgstr "保留"
+msgstr "保留原位"
 
 msgid "Stays here"
 msgstr "保留在此"
@@ -7207,7 +7207,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "保留，因為其中的資料夾會保留。"
 
 msgid "Stays, no folder"
-msgstr "保留，不建立資料夾"
+msgstr "保留原位，不放入資料夾"
 
 msgid "Steadier or more varied"
 msgstr "較穩定或更多變"

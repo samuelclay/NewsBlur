@@ -2499,7 +2499,7 @@ msgid "Copy offered to %(folder)s"
 msgstr "Copia ofrecida a %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Copia pendiente de decisión"
+msgstr "Copia sin decidir"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Copia ahora el secreto de cliente. Solo podrás verlo una vez."
@@ -4913,7 +4913,7 @@ msgid "Moved!"
 msgstr "¡Movido!"
 
 msgid "Moves"
-msgstr "Movimientos"
+msgstr "Se mueve"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7473,7 +7473,7 @@ msgid "Stay put"
 msgstr "Quedarse en el sitio"
 
 msgid "Stays"
-msgstr "Se mantiene"
+msgstr "Se queda"
 
 msgid "Stays here"
 msgstr "Se queda aquí"

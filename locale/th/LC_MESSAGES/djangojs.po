@@ -2375,13 +2375,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "เสนอให้คัดลอกไปยัง %(folder)s"
 
 msgid "Copy undecided"
-msgstr "ยังไม่ได้ตัดสินใจคัดลอก"
+msgstr "ยังไม่ตัดสินใจเรื่องสำเนา"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "คัดลอกรหัสลับไคลเอนต์ตอนนี้ คุณจะดูได้เพียงครั้งเดียว"
 
 msgid "Copy?"
-msgstr "คัดลอกไหม"
+msgstr "เพิ่มสำเนา?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "เพิ่มตัวจำแนกนี้ไม่ได้ โปรดลองอีกครั้ง"
@@ -4744,7 +4744,7 @@ msgid "Moved!"
 msgstr "ย้ายแล้ว!"
 
 msgid "Moves"
-msgstr "การย้าย"
+msgstr "ย้าย"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5033,7 +5033,7 @@ msgid "No content"
 msgstr "ไม่มีเนื้อหา"
 
 msgid "No copy"
-msgstr "ไม่เอาสำเนา"
+msgstr "ไม่เพิ่มสำเนา"
 
 msgid "No feeds found"
 msgstr "ไม่พบฟีด"
@@ -7249,14 +7249,14 @@ msgid "Stay put"
 msgstr "อยู่กับที่"
 
 msgid "Stays"
-msgstr "คงไว้"
+msgstr "คงอยู่"
 
 msgid "Stays here"
-msgstr "ยังอยู่ที่นี่"
+msgstr "คงอยู่ที่นี่"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "ยังอยู่ใน %(folder)s"
+msgstr "คงอยู่ใน %(folder)s"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."
@@ -7267,7 +7267,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "คงไว้ เนื่องจากมีโฟลเดอร์ย่อยที่คงไว้"
 
 msgid "Stays, no folder"
-msgstr "ยังอยู่ โดยไม่มีโฟลเดอร์"
+msgstr "คงอยู่โดยไม่มีโฟลเดอร์"
 
 msgid "Steadier or more varied"
 msgstr "สม่ำเสมอมากขึ้นหรือหลากหลายมากขึ้น"

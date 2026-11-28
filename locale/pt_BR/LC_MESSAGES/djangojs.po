@@ -2495,13 +2495,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Cópia oferecida para %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Cópia pendente de decisão"
+msgstr "Cópia a decidir"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Copie agora o segredo do cliente. Você só poderá vê-lo uma vez."
 
 msgid "Copy?"
-msgstr "Copiar?"
+msgstr "Cópia?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Não foi possível adicionar este classificador. Tente novamente."
@@ -4899,7 +4899,7 @@ msgid "Moved!"
 msgstr "Movido!"
 
 msgid "Moves"
-msgstr "Movimentações"
+msgstr "Será movido"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5191,7 +5191,7 @@ msgid "No content"
 msgstr "Sem conteúdo"
 
 msgid "No copy"
-msgstr "Nenhuma cópia"
+msgstr "Sem cópia"
 
 msgid "No feeds found"
 msgstr "Nenhum feed encontrado"

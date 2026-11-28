@@ -2481,7 +2481,7 @@ msgid "Copy offered to %(folder)s"
 msgstr "עותק מוצע ל־%(folder)s"
 
 msgid "Copy undecided"
-msgstr "העתקה ממתינה להחלטה"
+msgstr "ההעתקה טרם הוחלטה"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "העתיקו עכשיו את הסוד של הלקוח. תוכלו לראות אותו רק פעם אחת."
@@ -4867,7 +4867,7 @@ msgid "Moved!"
 msgstr "הועבר!"
 
 msgid "Moves"
-msgstr "העברות"
+msgstr "עוברת"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5157,7 +5157,7 @@ msgid "No content"
 msgstr "אין תוכן"
 
 msgid "No copy"
-msgstr "אין עותק"
+msgstr "ללא העתקה"
 
 msgid "No feeds found"
 msgstr "לא נמצאו פידים"
@@ -7395,14 +7395,14 @@ msgid "Stay put"
 msgstr "להישאר במקום"
 
 msgid "Stays"
-msgstr "נשארים"
+msgstr "נשארת"
 
 msgid "Stays here"
-msgstr "נשאר כאן"
+msgstr "נשארת כאן"
 
 #, python-format
 msgid "Stays in %(folder)s"
-msgstr "נשאר ב־%(folder)s"
+msgstr "נשארת ב־%(folder)s"
 
 #, python-format
 msgid "Stays, because %(count)s site stays in it."
@@ -7414,7 +7414,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "נשארת, כי תיקייה בתוכה נשארת."
 
 msgid "Stays, no folder"
-msgstr "נשאר, ללא תיקייה"
+msgstr "נשארת, ללא תיקייה"
 
 msgid "Steadier or more varied"
 msgstr "יציב יותר או מגוון יותר"

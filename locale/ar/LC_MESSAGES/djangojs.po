@@ -1924,7 +1924,7 @@ msgstr[5] "احذف أيضًا %(value_1)s أرشيف موجود من هذا ا�
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "موجود أيضًا في %(folder)s"
+msgstr "أيضًا في %(folder)s"
 
 msgid "Also look for"
 msgstr "ابحث أيضًا عن"
@@ -2920,13 +2920,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "نسخة معروضة على %(folder)s"
 
 msgid "Copy undecided"
-msgstr "نسخة بانتظار القرار"
+msgstr "النسخة غير محسومة"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "انسخ سر العميل الآن. لن تتمكن من رؤيته إلا مرة واحدة."
 
 msgid "Copy?"
-msgstr "نسخ؟"
+msgstr "نسخة؟"
 
 msgid "Could not add this classifier. Try again."
 msgstr "تعذّر إضافة هذا المصنّف. حاول مرة أخرى."
@@ -5366,7 +5366,7 @@ msgid "Moved!"
 msgstr "تم النقل!"
 
 msgid "Moves"
-msgstr "عمليات النقل"
+msgstr "ينتقل"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -5660,7 +5660,7 @@ msgid "No content"
 msgstr "لا يوجد محتوى"
 
 msgid "No copy"
-msgstr "لا توجد نسخة"
+msgstr "بلا نسخة"
 
 msgid "No feeds found"
 msgstr "لم يتم العثور على خلاصات"
@@ -8017,7 +8017,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "يبقى، لأن مجلدًا بداخله سيبقى."
 
 msgid "Stays, no folder"
-msgstr "يبقى دون مجلد"
+msgstr "يبقى، بلا مجلد"
 
 msgid "Steadier or more varied"
 msgstr "أكثر ثباتًا أو تنوعًا"

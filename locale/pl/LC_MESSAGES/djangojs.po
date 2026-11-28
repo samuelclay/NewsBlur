@@ -1637,7 +1637,7 @@ msgstr[2] "Usuń także %(value_1)s istniejących archiwów z tej domeny"
 
 #, python-format
 msgid "Also in %(folder)s"
-msgstr "Również w %(folder)s"
+msgstr "Także w %(folder)s"
 
 msgid "Also look for"
 msgstr "Szukaj również"
@@ -2607,13 +2607,13 @@ msgid "Copy offered to %(folder)s"
 msgstr "Zaproponowano kopię dla %(folder)s"
 
 msgid "Copy undecided"
-msgstr "Kopia do rozstrzygnięcia"
+msgstr "Kopia nierozstrzygnięta"
 
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Skopiuj teraz swój tajny klucz klienta. Będzie widoczny tylko raz."
 
 msgid "Copy?"
-msgstr "Skopiować?"
+msgstr "Kopia?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Nie udało się dodać tego klasyfikatora. Spróbuj ponownie."
@@ -5032,7 +5032,7 @@ msgid "Moved!"
 msgstr "Przeniesiono!"
 
 msgid "Moves"
-msgstr "Przeniesienia"
+msgstr "Przenosi się"
 
 #, python-format
 msgid "Moves with %(folder)s as it merges."
@@ -7643,7 +7643,7 @@ msgid "Stays, because a folder inside it stays."
 msgstr "Pozostaje, bo folder w nim pozostaje."
 
 msgid "Stays, no folder"
-msgstr "Pozostaje, bez folderu"
+msgstr "Pozostaje bez folderu"
 
 msgid "Steadier or more varied"
 msgstr "Bardziej jednostajny lub bardziej zróżnicowany"
