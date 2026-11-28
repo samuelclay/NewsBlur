@@ -3258,6 +3258,8 @@ msgid ""
 "Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
 "60 seconds of any story."
 msgstr ""
+"Listen, Premium Archive ($99/वर्ष) और Premium Pro में शामिल है। अन्य प्लान में आप किसी भी लेख के पहले 60 "
+"सेकंड सुन सकते हैं।"
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "वेब, iPad, iPhone और Android पर Listen करें"
@@ -3266,7 +3268,7 @@ msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "MacBook, iPad, iPhone और Android फ़ोन पर Listen चल रहा है"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "महीने में 1 घंटे तक लेखों को ज़ोर से पढ़कर सुनें"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
@@ -3492,7 +3494,7 @@ msgid "Missing story_hash."
 msgstr "story_hash अनुपलब्ध है।"
 
 msgid "Missing token."
-msgstr ""
+msgstr "टोकन मौजूद नहीं है।"
 
 msgid "Missing username."
 msgstr "उपयोगकर्ता नाम नहीं दिया गया।"
@@ -4341,7 +4343,7 @@ msgid "Only premium users can share multiple stories per day from the same site.
 msgstr "केवल प्रीमियम उपयोगकर्ता ही एक ही साइट से प्रतिदिन कई लेख शेयर कर सकते हैं।"
 
 msgid "Only staff can see or reset another account's listening."
-msgstr ""
+msgstr "केवल स्टाफ़ ही दूसरे खाते की सुनने की गतिविधि देख या रीसेट कर सकता है।"
 
 msgid "Open NewsBlur to register your application."
 msgstr "अपना एप्लिकेशन पंजीकृत करने के लिए NewsBlur खोलें।"
@@ -4561,7 +4563,7 @@ msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur की कीमतें"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
@@ -5870,7 +5872,7 @@ msgid "Thanks!"
 msgstr "धन्यवाद!"
 
 msgid "That account doesn't exist."
-msgstr ""
+msgstr "यह खाता मौजूद नहीं है।"
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "यह फ़ोल्डर बदल गया है। अपनी फ़ीड रीफ़्रेश करें और फ़ोल्डर फिर से चुनें।"
@@ -7371,12 +7373,16 @@ msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
 "Archive Extra for %(extra_limit)s a month."
 msgstr ""
+"आपने इस महीने %(limit)s लेख सुने हैं। सुनने का समय %(day)s को रीसेट होगा, या हर महीने %(extra_limit)s के "
+"लिए Premium Archive Extra पर स्विच करें।"
 
 #, python-format
 msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
+"आपने इस महीने %(limit)s लेख सुने हैं। सुनने का समय %(day)s को रीसेट होगा, या हर हफ़्ते %(pro_limit)s के लिए"
+" Premium Pro में अपग्रेड करें।"
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
@@ -7386,6 +7392,8 @@ msgid ""
 "You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
 "listen to full stories."
 msgstr ""
+"आज के सभी लेखों के प्रीव्यू आप सुन चुके हैं। ये आधी रात को फिर उपलब्ध होंगे, या पूरे लेख सुनने के लिए "
+"Premium Archive में अपग्रेड करें।"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "आज के लिए आपने आवाज़ के सभी पूर्वावलोकन चला लिए हैं। ये आधी रात को रीसेट हो जाएँगे।"

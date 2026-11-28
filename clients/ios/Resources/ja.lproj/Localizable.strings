@@ -45,6 +45,7 @@
 "%@ image filters" = "%@件の画像フィルター";
 "%@ is now following you." = "%@さんがあなたをフォローしました。";
 "%@ left in this preview" = "このプレビューの残り%@";
+"%@ left this month" = "今月の残り：%@";
 "%@ left this week" = "今週の残り%@";
 "%@ match" = "%@件一致";
 "%@ new stories" = "新着記事：%@件";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@件の未読記事";
 "%@ voice previews left" = "音声の試聴残り %@ 回";
 "%@/story" = "%@/記事";
+"%@/year" = "%@/年";
+"%@s preview" = "%@のプレビュー";
 "%@×" = "%@×";
 "%ldd ago" = "%ld日前";
 "%ldh ago" = "%ld時間前";
@@ -74,7 +77,9 @@
 "/mo" = "/月";
 "/month" = "/月";
 "1 Widget Site" = "ウィジェットサイト 1 件";
+"1 hour" = "1時間";
 "1,000 stories" = "1,000件の記事";
+"10 hours" = "10時間";
 "10 stories" = "10件の記事";
 "10,000 stories" = "10,000件の記事";
 "100 stories" = "100件の記事";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "代わりに新しいアカウントを作成";
 "Create account" = "アカウントを作成";
 "Create an account" = "アカウントを作成";
+"Current plan" = "現在のプラン";
 "Custom" = "カスタム";
 "Custom Domain" = "カスタムドメイン";
 "Custom RSS feeds for saved stories" = "保存した記事用のカスタムRSSフィード";
@@ -536,6 +542,8 @@
 "List style" = "リストのスタイル";
 "Listen" = "聴く";
 "Listen Settings" = "読み上げ設定";
+"Listen to 1 hour of stories read aloud a month" = "記事の読み上げを月1時間聴く";
+"Listen to 10 hours of stories read aloud a month" = "記事の読み上げを月10時間聴く";
 "Listen to 10 hours of stories read aloud a week" = "読み上げ記事を週10時間聴取";
 "Listen to story" = "記事を聴く";
 "Listening isn't available right now." = "現在、読み上げは利用できません。";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "ミディアム";
 "Model" = "モデル";
 "Monday" = "月曜日";
+"Monthly listening" = "月間のリスニング時間";
 "Monthly spending limit" = "月間利用上限";
 "Monthly spending limit reached. " = "月間利用上限に達しました。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "記事を増やすとディスク容量を多く使いますが、それ以外にパフォーマンスへの目立った影響はありません。";
@@ -807,6 +816,7 @@
 "Preferred time" = "希望時刻";
 "Premium" = "プレミアム";
 "Premium Archive" = "プレミアムアーカイブ";
+"Premium Archive Extra" = "プレミアムアーカイブ追加";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "プレミアム購読";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "プレミアム購読者はNewsBlurアイコンをカスタマイズできます。各デザインにはライト版とダーク版があります。";
@@ -887,6 +897,7 @@
 "Replying" = "返信中";
 "Reset" = "リセット";
 "Resets %@" = "%@にリセット";
+"Resets on %@" = "%@にリセット";
 "Resize sidebar" = "サイドバーのサイズを変更";
 "Restore" = "復元";
 "Resume" = "再開";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "昨日のテキスト";
 "Text view" = "テキスト表示";
 "Text view conveniently extracts the story" = "テキスト表示では記事の本文を手軽に抽出できます";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "%@秒のプレビューでした。プレミアムアーカイブでは記事全文を閲覧できます。";
 "The audio couldn't be loaded. Try again in a moment." = "音声を読み込めませんでした。しばらくしてからもう一度お試しください。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "テキスト表示の全機能は<a href=\"http://ios.newsblur.com/premium\">プレミアム機能</a>です";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOSシミュレーターではホーム画面のアイコンを変更できませんでした。デバイスでお試しください。";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "NewsBlurアカウントは削除されました。接続を解除するには、Apple Accountの設定で「Appleでサインイン」からNewsBlurを削除してください。";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "選択した音声は現在利用できないため、%@がこの記事を読み上げています。";
 "Your identity is verified" = "本人確認が完了しました";
+"Your premium archive extra subscription includes everything above" = "プレミアムアーカイブ追加プランには、上記のすべてが含まれます";
+"Your premium archive extra subscription is active" = "プレミアムアーカイブ追加のサブスクリプションは有効です";
 "Your premium archive subscription includes everything above" = "プレミアムアーカイブの購読には、上記のすべてが含まれます";
 "Your premium archive subscription is active" = "プレミアムアーカイブの購読は有効です";
 "Your premium pro subscription includes everything above" = "プレミアムProの購読には、上記のすべてが含まれます";

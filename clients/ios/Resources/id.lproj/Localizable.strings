@@ -45,6 +45,7 @@
 "%@ image filters" = "filter gambar %@";
 "%@ is now following you." = "%@ kini mengikuti Anda.";
 "%@ left in this preview" = "Sisa %@ dalam pratinjau ini";
+"%@ left this month" = "%@ tersisa bulan ini";
 "%@ left this week" = "Sisa %@ minggu ini";
 "%@ match" = "%@ kecocokan";
 "%@ new stories" = "%@ artikel baru";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ artikel belum dibaca";
 "%@ voice previews left" = "Sisa pratinjau suara: %@";
 "%@/story" = "%@/artikel";
+"%@/year" = "%@/tahun";
+"%@s preview" = "Pratinjau %@s";
 "%@×" = "%@×";
 "%ldd ago" = "%ld hari lalu";
 "%ldh ago" = "%ld jam yang lalu";
@@ -74,7 +77,9 @@
 "/mo" = "/bln";
 "/month" = "/bulan";
 "1 Widget Site" = "1 Situs Widget";
+"1 hour" = "1 jam";
 "1,000 stories" = "1.000 artikel";
+"10 hours" = "10 jam";
 "10 stories" = "10 artikel";
 "10,000 stories" = "10.000 artikel";
 "100 stories" = "100 artikel";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Buat akun baru saja";
 "Create account" = "Buat akun";
 "Create an account" = "Buat akun";
+"Current plan" = "Paket saat ini";
 "Custom" = "Kustom";
 "Custom Domain" = "Domain Khusus";
 "Custom RSS feeds for saved stories" = "Feed RSS khusus untuk artikel tersimpan";
@@ -536,6 +542,8 @@
 "List style" = "Gaya daftar";
 "Listen" = "Dengarkan";
 "Listen Settings" = "Pengaturan Dengarkan";
+"Listen to 1 hour of stories read aloud a month" = "Dengarkan artikel yang dibacakan selama 1 jam per bulan";
+"Listen to 10 hours of stories read aloud a month" = "Dengarkan artikel yang dibacakan selama 10 jam per bulan";
 "Listen to 10 hours of stories read aloud a week" = "Dengarkan artikel yang dibacakan hingga 10 jam per minggu";
 "Listen to story" = "Dengarkan artikel";
 "Listening isn't available right now." = "Fitur mendengarkan sedang tidak tersedia.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Abu-abu";
 "Model" = "Model";
 "Monday" = "Senin";
+"Monthly listening" = "Waktu mendengarkan bulanan";
 "Monthly spending limit" = "Batas pengeluaran bulanan";
 "Monthly spending limit reached. " = "Batas pengeluaran bulanan tercapai. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Semakin banyak artikel, semakin besar ruang disk yang digunakan, tetapi selain itu tidak ada dampak nyata pada kinerja.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Waktu pilihan";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Langganan Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Pelanggan Premium dapat memilih ikon NewsBlur khusus. Setiap varian mencakup versi terang dan gelap.";
@@ -887,6 +897,7 @@
 "Replying" = "Membalas";
 "Reset" = "Atur ulang";
 "Resets %@" = "Direset %@";
+"Resets on %@" = "Diatur ulang pada %@";
 "Resize sidebar" = "Ubah ukuran bilah samping";
 "Restore" = "Pulihkan";
 "Resume" = "Lanjutkan";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Teks dari kemarin";
 "Text view" = "Tampilan teks";
 "Text view conveniently extracts the story" = "Tampilan Teks mengekstrak isi artikel dengan praktis";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Itu adalah pratinjau selama %@ detik. Premium Archive membuka akses ke artikel lengkap.";
 "The audio couldn't be loaded. Try again in a moment." = "Audio tidak dapat dimuat. Coba lagi sebentar.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tampilan Teks penuh adalah <a href=\"http://ios.newsblur.com/premium\">fitur premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Simulator iOS tidak dapat mengubah ikon Layar Utama. Coba di perangkat.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Akun NewsBlur Anda telah dihapus. Hapus NewsBlur dari Masuk dengan Apple di pengaturan Akun Apple Anda untuk menyelesaikan pemutusan koneksi.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Suara yang Anda pilih sedang tidak tersedia, jadi %@ sedang membacakan artikel ini.";
 "Your identity is verified" = "Identitas Anda telah diverifikasi";
+"Your premium archive extra subscription includes everything above" = "Langganan Premium Archive Extra Anda mencakup semua yang disebutkan di atas";
+"Your premium archive extra subscription is active" = "Langganan Premium Archive Extra Anda aktif";
 "Your premium archive subscription includes everything above" = "Langganan Premium Archive Anda mencakup semua yang disebutkan di atas";
 "Your premium archive subscription is active" = "Langganan Premium Archive Anda aktif";
 "Your premium pro subscription includes everything above" = "Langganan Premium Pro Anda mencakup semua fitur di atas";

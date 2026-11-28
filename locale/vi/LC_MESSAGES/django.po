@@ -3237,6 +3237,8 @@ msgid ""
 "Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
 "60 seconds of any story."
 msgstr ""
+"Tính năng nghe có trong Premium Archive ($99/năm) và Premium Pro. Với các gói khác, bạn có thể nghe 60 giây"
+" đầu tiên của mỗi bài viết."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Nghe trên web, iPad, iPhone và Android"
@@ -3245,7 +3247,7 @@ msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Tính năng Nghe đang phát trên MacBook, iPad, iPhone và điện thoại Android"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Nghe bài viết được đọc thành tiếng trong 1 giờ mỗi tháng"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
@@ -3473,7 +3475,7 @@ msgid "Missing story_hash."
 msgstr "Thiếu story_hash."
 
 msgid "Missing token."
-msgstr ""
+msgstr "Thiếu mã token."
 
 msgid "Missing username."
 msgstr "Thiếu tên người dùng."
@@ -4324,7 +4326,7 @@ msgid "Only premium users can share multiple stories per day from the same site.
 msgstr "Chỉ người dùng trả phí mới có thể chia sẻ nhiều bài viết mỗi ngày từ cùng một trang."
 
 msgid "Only staff can see or reset another account's listening."
-msgstr ""
+msgstr "Chỉ nhân viên mới có thể xem hoặc đặt lại thời lượng nghe của tài khoản khác."
 
 msgid "Open NewsBlur to register your application."
 msgstr "Mở NewsBlur để đăng ký ứng dụng của bạn."
@@ -4542,7 +4544,7 @@ msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Gói Premium Archive - Bảng giá NewsBlur"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
@@ -5852,7 +5854,7 @@ msgid "Thanks!"
 msgstr "Cảm ơn!"
 
 msgid "That account doesn't exist."
-msgstr ""
+msgstr "Tài khoản đó không tồn tại."
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "Thư mục này đã thay đổi. Hãy làm mới các nguồn cấp rồi chọn lại thư mục."
@@ -7355,12 +7357,16 @@ msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
 "Archive Extra for %(extra_limit)s a month."
 msgstr ""
+"Tháng này, bạn đã nghe %(limit)s bài viết. Thời lượng nghe sẽ được đặt lại vào %(day)s, hoặc chuyển sang "
+"Premium Archive Extra với %(extra_limit)s mỗi tháng."
 
 #, python-format
 msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
+"Tháng này, bạn đã nghe %(limit)s bài viết. Thời lượng nghe sẽ được đặt lại vào %(day)s, hoặc nâng cấp lên "
+"Premium Pro để có %(pro_limit)s mỗi tuần."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
@@ -7370,6 +7376,8 @@ msgid ""
 "You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
 "listen to full stories."
 msgstr ""
+"Bạn đã nghe hết bản nghe thử bài viết hôm nay. Bản nghe thử sẽ có lại lúc nửa đêm, hoặc nâng cấp lên "
+"Premium Archive để nghe toàn bộ bài viết."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Bạn đã dùng hết lượt nghe thử giọng hôm nay. Lượt nghe sẽ được đặt lại vào lúc nửa đêm."

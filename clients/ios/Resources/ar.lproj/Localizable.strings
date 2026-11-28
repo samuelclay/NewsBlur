@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ فلتر صورة";
 "%@ is now following you." = "يتابعك الآن %@.";
 "%@ left in this preview" = "تبقّى %@ في هذه المعاينة";
+"%@ left this month" = "يتبقى %@ هذا الشهر";
 "%@ left this week" = "تبقّى %@ هذا الأسبوع";
 "%@ match" = "%@ تطابق";
 "%@ new stories" = "%@ قصة جديدة";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ قصة غير مقروءة";
 "%@ voice previews left" = "تبقّى %@ معاينة صوتية";
 "%@/story" = "%@/قصة";
+"%@/year" = "%@/سنة";
+"%@s preview" = "معاينة لمدة %@ ثانية";
 "%@×" = "%@×";
 "%ldd ago" = "قبل %ld يوم";
 "%ldh ago" = "قبل %ld ساعة";
@@ -74,7 +77,9 @@
 "/mo" = "/شهر";
 "/month" = "/شهر";
 "1 Widget Site" = "موقع واحد في الأداة";
+"1 hour" = "ساعة واحدة";
 "1,000 stories" = "1,000 قصة";
+"10 hours" = "10 ساعات";
 "10 stories" = "10 قصص";
 "10,000 stories" = "10,000 قصة";
 "100 stories" = "100 قصة";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "إنشاء حساب جديد بدلاً من ذلك";
 "Create account" = "إنشاء حساب";
 "Create an account" = "إنشاء حساب";
+"Current plan" = "الخطة الحالية";
 "Custom" = "مخصص";
 "Custom Domain" = "نطاق مخصص";
 "Custom RSS feeds for saved stories" = "خلاصات RSS مخصصة للقصص المحفوظة";
@@ -536,6 +542,8 @@
 "List style" = "نمط القائمة";
 "Listen" = "استمع";
 "Listen Settings" = "إعدادات الاستماع";
+"Listen to 1 hour of stories read aloud a month" = "استمع إلى القصص مقروءةً بصوت عالٍ لمدة ساعة واحدة شهريًا";
+"Listen to 10 hours of stories read aloud a month" = "استمع إلى القصص بصوت مسموع لمدة 10 ساعات شهريًا";
 "Listen to 10 hours of stories read aloud a week" = "استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا";
 "Listen to story" = "استمع إلى القصة";
 "Listening isn't available right now." = "الاستماع غير متاح الآن.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "رمادي";
 "Model" = "النموذج";
 "Monday" = "الاثنين";
+"Monthly listening" = "الاستماع الشهري";
 "Monthly spending limit" = "حد الإنفاق الشهري";
 "Monthly spending limit reached. " = "تم بلوغ حد الإنفاق الشهري. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "تستهلك القصص الإضافية مساحة أكبر على القرص، لكنها لا تؤثر بشكل ملحوظ في الأداء.";
@@ -807,6 +816,7 @@
 "Preferred time" = "الوقت المفضّل";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "اشتراك Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "يمكن لمشتركي Premium اختيار أيقونة مخصصة لـ NewsBlur. يتضمن كل نمط نسختين فاتحة وداكنة.";
@@ -887,6 +897,7 @@
 "Replying" = "جارٍ الرد";
 "Reset" = "إعادة تعيين";
 "Resets %@" = "يُعاد الضبط في %@";
+"Resets on %@" = "يُعاد الضبط في %@";
 "Resize sidebar" = "تغيير حجم الشريط الجانبي";
 "Restore" = "استعادة";
 "Resume" = "استئناف";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "نص من الأمس";
 "Text view" = "عرض نصي";
 "Text view conveniently extracts the story" = "يستخرج عرض النص القصة كاملةً بسهولة";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "كانت تلك معاينة لمدة %@ ثانية. تتيح لك خطة Premium Archive الاستماع إلى القصص كاملة.";
 "The audio couldn't be loaded. Try again in a moment." = "تعذّر تحميل الصوت. حاول مرة أخرى بعد قليل.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "عرض النص الكامل هو <a href=\"http://ios.newsblur.com/premium\">ميزة مدفوعة</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "تعذّر على محاكي iOS تغيير أيقونة الشاشة الرئيسية. جرّب ذلك على جهاز فعلي.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "تم حذف حسابك في NewsBlur. أزل NewsBlur من «تسجيل الدخول باستخدام Apple» في إعدادات حساب Apple لإكمال فصل الحساب.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "الصوت الذي اخترته غير متاح حاليًا، لذا يقرأ %@ هذه القصة.";
 "Your identity is verified" = "تم التحقق من هويتك";
+"Your premium archive extra subscription includes everything above" = "يتضمن اشتراكك في Premium Archive Extra كل ما سبق";
+"Your premium archive extra subscription is active" = "اشتراكك في Premium Archive Extra نشط";
 "Your premium archive subscription includes everything above" = "يشمل اشتراكك في Premium Archive كل ما سبق";
 "Your premium archive subscription is active" = "اشتراكك في Premium Archive نشط";
 "Your premium pro subscription includes everything above" = "يشمل اشتراكك في Premium Pro كل ما سبق";

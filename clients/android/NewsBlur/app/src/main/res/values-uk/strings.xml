@@ -412,6 +412,7 @@
     <string name="main_menu_upgrade_premium">Перейти на Premium</string>
     <string name="main_menu_upgrade_archive">Перейти на Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Форум підтримки</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -432,13 +433,16 @@
     <string name="premium_policies">Докладніше див. у &lt;a href=\"https://newsblur.com/privacy\"&gt;політиці конфіденційності&lt;/a&gt; та &lt;a href=\"https://newsblur.com/tos\"&gt;умовах використання&lt;/a&gt; NewsBlur.</string>
     <string name="premium_subscription_header">Підписка Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">Підписка NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35,99 $ на рік (3,00 $ на місяць)</string>
     <string name="premium_subscription_active">Ваша преміум-підписка активна</string>
     <string name="archive_subscription_active">Ваша підписка Premium Archive активна</string>
+    <string name="archive_extra_subscription_active">Ваша підписка Premium Archive Extra активна</string>
     <string name="pro_subscription_active">Ваша підписка Premium Pro активна</string>
     <string name="subscription_manage">Керувати підпискою</string>
     <string name="subscription_details_error">Не вдалося отримати відомості про підписку</string>
@@ -450,7 +454,10 @@
     <string name="subscription_price_yearly">%1$s/рік (%2$s/місяць)</string>
     <string name="subscription_price_monthly">%1$s/місяць</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/рік</string>
+    <string name="subscription_current_plan">Поточний план</string>
     <string name="premium_archive_includes_above">Підписка Premium Archive включає все перелічене вище</string>
+    <string name="premium_archive_extra_includes_above">Ваша додаткова підписка Premium Archive включає все перелічене вище</string>
     <string name="premium_pro_includes_above">Ваша підписка Premium Pro містить усе перелічене вище</string>
     <string name="premium_enable_sites">Відстежуйте до 1 024 сайтів</string>
     <string name="premium_sync">Сайти оновлюються до 5 разів частіше</string>
@@ -1424,6 +1431,12 @@
     <string name="listen_resume">Продовжити</string>
     <string name="listen_pause">Пауза</string>
     <string name="listen_play">Відтворити</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="few">Попередній перегляд %1$d с</item>
+        <item quantity="many">Попередній перегляд %1$d с</item>
+        <item quantity="one">Попередній перегляд: %1$d секунда</item>
+        <item quantity="other">Попередній перегляд %1$d с</item>
+    </plurals>
     <string name="listen_open_player">Відкрити плеєр</string>
     <string name="listen_close">Закрити програвач</string>
     <string name="listen_loading">Підготовка статті…</string>
@@ -1483,6 +1496,12 @@
     <string name="listen_speed_exact">Точна швидкість відтворення</string>
     <string name="listen_speed_slider">Повзунок швидкості відтворення</string>
     <string name="listen_speed_button">Швидкість відтворення %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="few">Попередній перегляд триває %1$d секунд. Premium Archive відкриває доступ до повних статей.</item>
+        <item quantity="many">Прослуховування фрагмента: %1$d секунд. Premium Archive відкриває повний текст статей.</item>
+        <item quantity="one">Прослуховування фрагмента: %1$d секунду. Premium Archive відкриває повний текст статей.</item>
+        <item quantity="other">Прослуховування фрагмента: %1$d секунд. Premium Archive відкриває повний текст статей.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Залишилося %1$d секунди</item>
         <item quantity="many">Залишилося %1$d секунд</item>
@@ -1556,6 +1575,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">Залишилося на цей тиждень: %1$s</string>
+    <string name="listen_time_left_this_month">Цього місяця залишилося %1$s</string>
     <string name="listen_resets_on">Скидається %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Сьогодні залишилося безкоштовних попередніх переглядів статей: %1$d</item>
@@ -1583,6 +1603,8 @@
     <string name="settings_listen_voices_summary">Виберіть голос для кожної мови та спосіб читання</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Швидкість відтворення</string>
+    <string name="archive_listen">Слухати начитування статей 1 годину на місяць</string>
+    <string name="archive_extra_listen">Слухайте 10 годин озвучених статей на місяць</string>
     <string name="pro_listen">Слухайте озвучення статей до 10 годин на тиждень</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d нові статті</item>

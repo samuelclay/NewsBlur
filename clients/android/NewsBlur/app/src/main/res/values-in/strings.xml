@@ -403,6 +403,7 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="main_menu_upgrade_premium">Upgrade ke Premium</string>
     <string name="main_menu_upgrade_archive">Upgrade ke Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Forum Dukungan</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -423,13 +424,16 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="premium_policies">Lihat &lt;a href=\"https://newsblur.com/privacy\"&gt;kebijakan privasi&lt;/a&gt; dan &lt;a href=\"https://newsblur.com/tos\"&gt;ketentuan penggunaan&lt;/a&gt; NewsBlur untuk detailnya.</string>
     <string name="premium_subscription_header">Langganan Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">Langganan NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 per tahun ($3.00/bulan)</string>
     <string name="premium_subscription_active">Langganan premium Anda aktif</string>
     <string name="archive_subscription_active">Langganan Premium Archive Anda aktif</string>
+    <string name="archive_extra_subscription_active">Langganan Premium Archive Extra Anda aktif</string>
     <string name="pro_subscription_active">Langganan Premium Pro Anda aktif</string>
     <string name="subscription_manage">Kelola Langganan</string>
     <string name="subscription_details_error">Terjadi kesalahan saat mengambil detail langganan</string>
@@ -441,7 +445,10 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="subscription_price_yearly">%1$s/tahun (%2$s/bulan)</string>
     <string name="subscription_price_monthly">%1$s/bulan</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/tahun</string>
+    <string name="subscription_current_plan">Paket saat ini</string>
     <string name="premium_archive_includes_above">Langganan Premium Archive Anda mencakup semua hal di atas</string>
+    <string name="premium_archive_extra_includes_above">Langganan Premium Archive Extra Anda mencakup semua yang disebutkan di atas</string>
     <string name="premium_pro_includes_above">Langganan Premium Pro Anda mencakup semua yang disebutkan di atas</string>
     <string name="premium_enable_sites">Ikuti hingga 1.024 situs</string>
     <string name="premium_sync">Situs diperbarui hingga 5x lebih sering</string>
@@ -1346,6 +1353,9 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_resume">Lanjutkan</string>
     <string name="listen_pause">Jeda</string>
     <string name="listen_play">Putar</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">Pratinjau %1$ds</item>
+    </plurals>
     <string name="listen_open_player">Buka pemutar</string>
     <string name="listen_close">Tutup pemutar</string>
     <string name="listen_loading">Menyiapkan artikel…</string>
@@ -1399,6 +1409,9 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="listen_speed_exact">Kecepatan pemutaran tepat</string>
     <string name="listen_speed_slider">Penggeser kecepatan pemutaran</string>
     <string name="listen_speed_button">Kecepatan pemutaran %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">Mempratinjau %1$d detik. Premium Archive membuka akses ke seluruh artikel.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">Sisa %1$d detik</item>
     </plurals>
@@ -1460,6 +1473,7 @@ orang-orang untuk membicarakan dunia.</string>
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">Sisa %1$s minggu ini</string>
+    <string name="listen_time_left_this_month">%1$s tersisa bulan ini</string>
     <string name="listen_resets_on">Diatur ulang %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">Sisa %1$d pratinjau artikel gratis hari ini</item>
@@ -1481,6 +1495,8 @@ orang-orang untuk membicarakan dunia.</string>
     <string name="settings_listen_voices_summary">Pilih suara untuk setiap bahasa dan cara membacakannya</string>
     <string name="settings_listen_delivery">Penyampaian</string>
     <string name="settings_listen_speed">Kecepatan pemutaran</string>
+    <string name="archive_listen">Dengarkan artikel yang dibacakan selama 1 jam per bulan</string>
+    <string name="archive_extra_listen">Dengarkan artikel yang dibacakan selama 10 jam per bulan</string>
     <string name="pro_listen">Dengarkan artikel yang dibacakan hingga 10 jam per minggu</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d artikel baru</item>

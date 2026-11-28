@@ -406,6 +406,7 @@
     <string name="main_menu_upgrade_premium">Premium में अपग्रेड करें</string>
     <string name="main_menu_upgrade_archive">Archive में अपग्रेड करें</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">सहायता फ़ोरम</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -426,13 +427,16 @@
     <string name="premium_policies">विवरण के लिए NewsBlur की &lt;a href=\"https://newsblur.com/privacy\"&gt;गोपनीयता नीति&lt;/a&gt; और &lt;a href=\"https://newsblur.com/tos\"&gt;उपयोग की शर्तें&lt;/a&gt; देखें।</string>
     <string name="premium_subscription_header">Premium सदस्यता</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium सदस्यता</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 प्रति वर्ष ($3.00/माह)</string>
     <string name="premium_subscription_active">आपकी प्रीमियम सदस्यता सक्रिय है</string>
     <string name="archive_subscription_active">आपकी Premium Archive सदस्यता सक्रिय है</string>
+    <string name="archive_extra_subscription_active">आपकी Premium Archive Extra सदस्यता सक्रिय है</string>
     <string name="pro_subscription_active">आपकी Premium Pro सदस्यता सक्रिय है</string>
     <string name="subscription_manage">सदस्यता प्रबंधित करें</string>
     <string name="subscription_details_error">सदस्यता विवरण प्राप्त करने में त्रुटि</string>
@@ -444,7 +448,10 @@
     <string name="subscription_price_yearly">%1$s/वर्ष (%2$s/माह)</string>
     <string name="subscription_price_monthly">%1$s/माह</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/वर्ष</string>
+    <string name="subscription_current_plan">वर्तमान प्लान</string>
     <string name="premium_archive_includes_above">आपकी Premium Archive सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं</string>
+    <string name="premium_archive_extra_includes_above">आपकी Premium Archive Extra सदस्यता में ऊपर बताई गई सभी सुविधाएँ शामिल हैं</string>
     <string name="premium_pro_includes_above">आपकी Premium Pro सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं</string>
     <string name="premium_enable_sites">1,024 साइटों तक फ़ॉलो करें</string>
     <string name="premium_sync">साइटें 5 गुना तक अधिक बार अपडेट होती हैं</string>
@@ -1372,6 +1379,10 @@
     <string name="listen_resume">फिर से शुरू करें</string>
     <string name="listen_pause">रोकें</string>
     <string name="listen_play">चलाएँ</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="one">%1$d सेकंड का प्रीव्यू</item>
+        <item quantity="other">%1$ds का प्रीव्यू</item>
+    </plurals>
     <string name="listen_open_player">प्लेयर खोलें</string>
     <string name="listen_close">प्लेयर बंद करें</string>
     <string name="listen_loading">लेख तैयार किया जा रहा है…</string>
@@ -1427,6 +1438,10 @@
     <string name="listen_speed_exact">सटीक प्लेबैक गति</string>
     <string name="listen_speed_slider">प्लेबैक गति स्लाइडर</string>
     <string name="listen_speed_button">प्लेबैक गति %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="one">%1$d सेकंड का प्रीव्यू चल रहा है। Premium Archive में पूरे लेख सुनने की सुविधा मिलती है।</item>
+        <item quantity="other">%1$d सेकंड का प्रीव्यू चल रहा है। Premium Archive में पूरे लेख सुनने की सुविधा मिलती है।</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">%1$d सेकंड बाकी</item>
         <item quantity="other">%1$d सेकंड बाकी</item>
@@ -1492,6 +1507,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">इस सप्ताह सुनने का %1$s समय शेष</string>
+    <string name="listen_time_left_this_month">इस महीने %1$s शेष</string>
     <string name="listen_resets_on">%1$s को रीसेट होगा</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">आज %1$d मुफ़्त लेख पूर्वावलोकन बाकी</item>
@@ -1515,6 +1531,8 @@
     <string name="settings_listen_voices_summary">हर भाषा के लिए आवाज़ चुनें और तय करें कि वह कैसे पढ़े</string>
     <string name="settings_listen_delivery">डिलीवरी</string>
     <string name="settings_listen_speed">प्लेबैक गति</string>
+    <string name="archive_listen">महीने में 1 घंटे तक लेखों को ज़ोर से पढ़कर सुनें</string>
+    <string name="archive_extra_listen">महीने में 10 घंटे तक लेखों को ज़ोर से पढ़कर सुनें</string>
     <string name="pro_listen">हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d नया लेख</item>

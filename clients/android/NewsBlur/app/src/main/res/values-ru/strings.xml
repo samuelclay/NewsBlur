@@ -412,6 +412,7 @@
     <string name="main_menu_upgrade_premium">Перейти на Premium</string>
     <string name="main_menu_upgrade_archive">Перейти на Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Форум поддержки</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -432,13 +433,16 @@
     <string name="premium_policies">Подробности смотрите в &lt;a href=\"https://newsblur.com/privacy\"&gt;политике конфиденциальности&lt;/a&gt; NewsBlur и &lt;a href=\"https://newsblur.com/tos\"&gt;условиях использования&lt;/a&gt;.</string>
     <string name="premium_subscription_header">Премиум-подписка</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">Подписка NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35,99 $ в год (3,00 $ в месяц)</string>
     <string name="premium_subscription_active">Ваша премиум-подписка активна</string>
     <string name="archive_subscription_active">Ваша подписка Premium Archive активна</string>
+    <string name="archive_extra_subscription_active">Подписка Premium Archive Extra активна</string>
     <string name="pro_subscription_active">Ваша подписка Premium Pro активна</string>
     <string name="subscription_manage">Управление подпиской</string>
     <string name="subscription_details_error">Не удалось получить сведения о подписке</string>
@@ -450,7 +454,10 @@
     <string name="subscription_price_yearly">%1$s/год (%2$s/месяц)</string>
     <string name="subscription_price_monthly">%1$s/месяц</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/год</string>
+    <string name="subscription_current_plan">Текущий план</string>
     <string name="premium_archive_includes_above">Ваша подписка Premium Archive включает всё перечисленное выше</string>
+    <string name="premium_archive_extra_includes_above">Дополнительная подписка Premium Archive включает всё перечисленное выше</string>
     <string name="premium_pro_includes_above">Подписка Premium Pro включает всё перечисленное выше</string>
     <string name="premium_enable_sites">Отслеживайте до 1 024 сайтов</string>
     <string name="premium_sync">Сайты обновляются до 5 раз чаще</string>
@@ -1424,6 +1431,12 @@
     <string name="listen_resume">Продолжить</string>
     <string name="listen_pause">Приостановить</string>
     <string name="listen_play">Воспроизвести</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="few">Предпросмотр на %1$dс</item>
+        <item quantity="many">Предпросмотр на %1$dс</item>
+        <item quantity="one">предварительный просмотр — %1$d с</item>
+        <item quantity="other">Предпросмотр на %1$dс</item>
+    </plurals>
     <string name="listen_open_player">Открыть плеер</string>
     <string name="listen_close">Закрыть плеер</string>
     <string name="listen_loading">Подготовка статьи…</string>
@@ -1483,6 +1496,12 @@
     <string name="listen_speed_exact">Точная скорость воспроизведения</string>
     <string name="listen_speed_slider">Ползунок скорости воспроизведения</string>
     <string name="listen_speed_button">Скорость воспроизведения %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="few">Предварительный просмотр: %1$d секунды. Premium Archive открывает полный доступ к статьям.</item>
+        <item quantity="many">Предпросмотр: %1$d секунд. Premium Archive открывает доступ к статьям целиком.</item>
+        <item quantity="one">Предпросмотр: %1$d секунду. Premium Archive открывает доступ к статьям целиком.</item>
+        <item quantity="other">Предпросмотр: %1$d секунд. Premium Archive открывает доступ к статьям целиком.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Осталось %1$d секунды</item>
         <item quantity="many">Осталось %1$d секунд</item>
@@ -1556,6 +1575,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">Осталось %1$s на этой неделе</string>
+    <string name="listen_time_left_this_month">В этом месяце осталось %1$s</string>
     <string name="listen_resets_on">Сброс: %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Сегодня осталось бесплатных предпрослушиваний статей: %1$d</item>
@@ -1583,6 +1603,8 @@
     <string name="settings_listen_voices_summary">Выберите голос для каждого языка и способ чтения</string>
     <string name="settings_listen_delivery">Подача</string>
     <string name="settings_listen_speed">Скорость воспроизведения</string>
+    <string name="archive_listen">Слушать озвученные статьи 1 час в месяц</string>
+    <string name="archive_extra_listen">Слушать озвученные статьи 10 часов в месяц</string>
     <string name="pro_listen">Слушайте озвученные статьи до 10 часов в неделю</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d новые статьи</item>

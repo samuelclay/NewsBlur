@@ -3249,6 +3249,8 @@ msgid ""
 "Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
 "60 seconds of any story."
 msgstr ""
+"Listen, Premium Archive'a (yıllık 99 $) ve Premium Pro'ya dahildir. Diğer planlarda herhangi bir haberin "
+"ilk 60 saniyesini dinleyebilirsiniz."
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "Web'de, iPad, iPhone ve Android'de dinleyin"
@@ -3257,7 +3259,7 @@ msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "Dinle, MacBook, iPad, iPhone ve Android telefonda çalışırken"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Ayda 1 saat haberleri sesli dinleyin"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
@@ -3485,7 +3487,7 @@ msgid "Missing story_hash."
 msgstr "story_hash eksik."
 
 msgid "Missing token."
-msgstr ""
+msgstr "Eksik belirteç."
 
 msgid "Missing username."
 msgstr "Kullanıcı adı eksik."
@@ -4341,7 +4343,7 @@ msgid "Only premium users can share multiple stories per day from the same site.
 msgstr "Aynı siteden günde birden fazla haber yalnızca premium kullanıcılar paylaşabilir."
 
 msgid "Only staff can see or reset another account's listening."
-msgstr ""
+msgstr "Başka bir hesabın dinleme süresini yalnızca personel görebilir veya sıfırlayabilir."
 
 msgid "Open NewsBlur to register your application."
 msgstr "Uygulamanızı kaydetmek için NewsBlur adresini açın."
@@ -4562,7 +4564,7 @@ msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - NewsBlur Fiyatlandırması"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr ""
@@ -5880,7 +5882,7 @@ msgid "Thanks!"
 msgstr "Teşekkürler!"
 
 msgid "That account doesn't exist."
-msgstr ""
+msgstr "Bu hesap mevcut değil."
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "Bu klasör değişti. Akışlarınızı yenileyip klasörü yeniden seçin."
@@ -7389,12 +7391,16 @@ msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
 "Archive Extra for %(extra_limit)s a month."
 msgstr ""
+"Bu ay haberleri %(limit)s süre dinlediniz. Dinleme süresi %(day)s tarihinde sıfırlanır veya ayda "
+"%(extra_limit)s karşılığında Premium Archive Extra'ya geçin."
 
 #, python-format
 msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
+"Bu ay haberleri %(limit)s süre dinlediniz. Dinleme süresi %(day)s tarihinde sıfırlanır veya haftada "
+"%(pro_limit)s karşılığında Premium Pro'ya yükseltin."
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
@@ -7404,6 +7410,8 @@ msgid ""
 "You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
 "listen to full stories."
 msgstr ""
+"Bugünün haber ön izlemelerinin tümünü dinlediniz. Ön izlemeler gece yarısı yenilenir. Haberlerin tamamını "
+"dinlemek için Premium Archive'a yükseltin."
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "Bugün tüm ses önizlemelerinizi kullandınız. Önizleme hakkınız gece yarısı sıfırlanır."

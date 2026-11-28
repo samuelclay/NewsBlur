@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ filtros de imagem";
 "%@ is now following you." = "%@ está seguindo você agora.";
 "%@ left in this preview" = "Restam %@ nesta prévia";
+"%@ left this month" = "Restam %@ neste mês";
 "%@ left this week" = "Restam %@ nesta semana";
 "%@ match" = "%@ correspondência";
 "%@ new stories" = "%@ artigos novos";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ artigos não lidos";
 "%@ voice previews left" = "%@ prévias de voz restantes";
 "%@/story" = "%@/artigo";
+"%@/year" = "%@/ano";
+"%@s preview" = "Prévia de %@s";
 "%@×" = "%@×";
 "%ldd ago" = "há %ldd";
 "%ldh ago" = "há %ldh";
@@ -74,7 +77,9 @@
 "/mo" = "/mês";
 "/month" = "/mês";
 "1 Widget Site" = "1 site do widget";
+"1 hour" = "1 hora";
 "1,000 stories" = "1.000 artigos";
+"10 hours" = "10 horas";
 "10 stories" = "10 artigos";
 "10,000 stories" = "10.000 artigos";
 "100 stories" = "100 artigos";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Criar uma nova conta";
 "Create account" = "Criar conta";
 "Create an account" = "Criar uma conta";
+"Current plan" = "Plano atual";
 "Custom" = "Personalizado";
 "Custom Domain" = "Domínio personalizado";
 "Custom RSS feeds for saved stories" = "Feeds RSS personalizados para artigos salvos";
@@ -536,6 +542,8 @@
 "List style" = "Estilo da lista";
 "Listen" = "Ouvir";
 "Listen Settings" = "Configurações de áudio";
+"Listen to 1 hour of stories read aloud a month" = "Ouça 1 hora de artigos lidos em voz alta por mês";
+"Listen to 10 hours of stories read aloud a month" = "Ouça 10 horas de artigos lidos em voz alta por mês";
 "Listen to 10 hours of stories read aloud a week" = "Ouça artigos narrados por até 10 horas por semana";
 "Listen to story" = "Ouvir artigo";
 "Listening isn't available right now." = "A leitura em voz alta não está disponível no momento.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Cinza";
 "Model" = "Modelo";
 "Monday" = "Segunda-feira";
+"Monthly listening" = "Tempo mensal de audição";
 "Monthly spending limit" = "Limite mensal de gastos";
 "Monthly spending limit reached. " = "Limite mensal de gastos atingido. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Mais artigos ocupam mais espaço em disco, mas não afetam o desempenho de forma perceptível.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Horário preferido";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Assinatura Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Assinantes Premium podem escolher um ícone personalizado do NewsBlur. Cada estilo inclui variantes claras e escuras.";
@@ -887,6 +897,7 @@
 "Replying" = "Respondendo";
 "Reset" = "Redefinir";
 "Resets %@" = "Redefine %@";
+"Resets on %@" = "Redefine em %@";
 "Resize sidebar" = "Redimensionar barra lateral";
 "Restore" = "Restaurar";
 "Resume" = "Retomar";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Texto de ontem";
 "Text view" = "Visualização em texto";
 "Text view conveniently extracts the story" = "A visualização de texto extrai o artigo com praticidade";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Essa foi uma prévia de %@ segundos. O Premium Archive libera os artigos completos.";
 "The audio couldn't be loaded. Try again in a moment." = "Não foi possível carregar o áudio. Tente novamente em instantes.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "A visualização de texto completo é um <a href=\"http://ios.newsblur.com/premium\">recurso premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "O simulador do iOS não conseguiu alterar o ícone da Tela de Início. Tente fazer isso em um dispositivo.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Sua conta do NewsBlur foi excluída. Remova o NewsBlur de Iniciar sessão com a Apple nas configurações da sua Conta Apple para concluir a desconexão.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "A voz escolhida não está disponível no momento, então %@ está lendo este artigo.";
 "Your identity is verified" = "Sua identidade foi verificada";
+"Your premium archive extra subscription includes everything above" = "Sua assinatura do Premium Archive Extra inclui tudo o que foi listado acima";
+"Your premium archive extra subscription is active" = "Sua assinatura do Premium Archive Extra está ativa";
 "Your premium archive subscription includes everything above" = "Sua assinatura do Premium Archive inclui tudo o que está acima";
 "Your premium archive subscription is active" = "Sua assinatura do Premium Archive está ativa";
 "Your premium pro subscription includes everything above" = "Sua assinatura Premium Pro inclui tudo o que foi mencionado acima";

@@ -602,7 +602,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "Pozostało na ten miesiąc: %(duration)s"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -660,15 +660,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/rok"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "Podgląd %(seconds)s sekundy"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "Podgląd %(seconds)s s"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1069,7 +1069,7 @@ msgid "/year"
 msgstr "/rok"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 godzina"
 
 msgid "1 month"
 msgstr "1 miesiąc"
@@ -1078,7 +1078,7 @@ msgid "1 year"
 msgstr "1 rok"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 godzin"
 
 msgid "12-hour"
 msgstr "12-godzinny"
@@ -2347,7 +2347,7 @@ msgid "Couldn't load audio for this story."
 msgstr "Nie udało się wczytać dźwięku tego artykułu."
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "Nie udało się wczytać danych o odsłuchu."
 
 msgid "Counting is difficult"
 msgstr "Liczenie jest trudne"
@@ -2395,7 +2395,7 @@ msgid "Credit"
 msgstr "Nagroda"
 
 msgid "Current plan"
-msgstr ""
+msgstr "Obecny plan"
 
 msgid "Current voice"
 msgstr "Bieżący głos"
@@ -3751,9 +3751,9 @@ msgstr "Zdrowie"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Odsłuchaj pierwsze %(count)s sekundy artykułu. Premium Archive odczytuje całe artykuły."
+msgstr[1] "Odsłuchaj pierwsze %(count)s sekundy artykułu. Premium Archive odczytuje całe artykuły."
+msgstr[2] "Odsłuchaj pierwsze %(count)s sekund artykułu. Premium Archive odczytuje całe artykuły."
 
 msgid "Hearts"
 msgstr "Serca"
@@ -4134,7 +4134,7 @@ msgstr "Ostatnia aktywność"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "Ostatni ręczny reset: %(date)s."
 
 msgid "Last seen:"
 msgstr "Ostatnio widziano:"
@@ -4210,10 +4210,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "Przekroczono limit czasu słuchania. Spróbuj ponownie za chwilę."
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Słuchaj 1 godziny artykułów czytanych na głos miesięcznie"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "Słuchaj przez 10 godzin miesięcznie artykułów czytanych na głos"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Słuchaj artykułów czytanych na głos przez 10 godzin tygodniowo"
@@ -4516,7 +4516,7 @@ msgid "Monday"
 msgstr "Poniedziałek"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "Miesięczny limit odsłuchu"
 
 msgid "Monthly spending limit"
 msgstr "Miesięczny limit wydatków"
@@ -4697,7 +4697,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Nigdy nie wygaśnie. Gratulacje!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "Bez resetu."
 
 msgid "New Arrivals"
 msgstr "Nowości"
@@ -5506,15 +5506,15 @@ msgstr "Miejsca"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "Plan: %(tier)s. Dzisiejsze podglądy artykułów: %(count)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "Plan: %(tier)s. %(used)s z %(limit)s minut nowego dźwięku w tym miesiącu. Reset: %(resets)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "Plan: %(tier)s. %(used)s z %(limit)s minut nowego dźwięku w tym tygodniu. Reset: %(resets)s."
 
 msgid "Platform"
 msgstr "Platforma"
@@ -5619,7 +5619,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive odczytuje całe artykuły na głos."
@@ -6105,7 +6105,7 @@ msgid "Reset"
 msgstr "Resetuj"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Zresetuj limit słuchania"
 
 msgid "Reset to original favicon"
 msgstr "Przywróć oryginalną ikonę favicon"
@@ -8296,7 +8296,7 @@ msgstr "Głos"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "Podglądy głosowe dziś: %(used)s z %(limit)s."
 
 msgid "Voice recording failed. Please try again."
 msgstr "Nagrywanie głosu nie powiodło się. Spróbuj ponownie."

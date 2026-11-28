@@ -418,6 +418,7 @@
     <string name="main_menu_upgrade_premium">الترقية إلى Premium</string>
     <string name="main_menu_upgrade_archive">الترقية إلى Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">منتدى الدعم</string>
     <string name="newsblur_opml">ملف OPML من NewsBlur</string>
@@ -438,13 +439,16 @@
     <string name="premium_policies">راجع &lt;a href=\"https://newsblur.com/privacy\"&gt;سياسة الخصوصية&lt;/a&gt; و&lt;a href=\"https://newsblur.com/tos\"&gt;شروط الاستخدام&lt;/a&gt; الخاصة بـ NewsBlur للاطلاع على التفاصيل.</string>
     <string name="premium_subscription_header">اشتراك Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">اشتراك NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35.99 دولارًا سنويًا (3.00 دولارات شهريًا)</string>
     <string name="premium_subscription_active">اشتراكك في Premium نشط</string>
     <string name="archive_subscription_active">اشتراكك في Premium Archive نشط</string>
+    <string name="archive_extra_subscription_active">اشتراكك في Premium Archive Extra نشط</string>
     <string name="pro_subscription_active">اشتراكك في Premium Pro نشط</string>
     <string name="subscription_manage">إدارة الاشتراك</string>
     <string name="subscription_details_error">خطأ في استرداد تفاصيل الاشتراك</string>
@@ -456,7 +460,10 @@
     <string name="subscription_price_yearly">%1$s/سنة (%2$s/شهر)</string>
     <string name="subscription_price_monthly">%1$s/شهر</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/السنة</string>
+    <string name="subscription_current_plan">الخطة الحالية</string>
     <string name="premium_archive_includes_above">يشمل اشتراكك في Premium Archive كل ما سبق</string>
+    <string name="premium_archive_extra_includes_above">يشمل اشتراكك الإضافي في Premium Archive كل ما سبق</string>
     <string name="premium_pro_includes_above">يشمل اشتراكك في Premium Pro كل ما سبق</string>
     <string name="premium_enable_sites">تابع ما يصل إلى 1,024 موقعًا</string>
     <string name="premium_sync">تُحدَّث المواقع بمعدل أسرع يصل إلى 5 أضعاف</string>
@@ -1476,6 +1483,14 @@
     <string name="listen_resume">استئناف</string>
     <string name="listen_pause">إيقاف مؤقت</string>
     <string name="listen_play">تشغيل</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="few">معاينة لمدة %1$d ثانية</item>
+        <item quantity="many">معاينة لمدة %1$d ثانية</item>
+        <item quantity="one">معاينة %1$d ثانية</item>
+        <item quantity="other">معاينة لمدة %1$d ثانية</item>
+        <item quantity="two">معاينة لمدة %1$d ثانية</item>
+        <item quantity="zero">معاينة %1$d ثانية</item>
+    </plurals>
     <string name="listen_open_player">فتح المشغّل</string>
     <string name="listen_close">إغلاق المشغّل</string>
     <string name="listen_loading">جارٍ تجهيز القصة…</string>
@@ -1539,6 +1554,14 @@
     <string name="listen_speed_exact">سرعة التشغيل الدقيقة</string>
     <string name="listen_speed_slider">شريط تمرير سرعة التشغيل</string>
     <string name="listen_speed_button">سرعة التشغيل %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="few">معاينة لمدة %1$d ثانية. تتيح لك خطة Premium Archive الاستماع إلى القصص كاملة.</item>
+        <item quantity="many">تستمع إلى معاينة مدتها %1$d ثانية. يتيح Premium Archive الاستماع إلى القصص كاملة.</item>
+        <item quantity="one">تستمع إلى معاينة مدتها %1$d ثانية. يتيح Premium Archive الاستماع إلى القصص كاملة.</item>
+        <item quantity="other">معاينة لمدة %1$d ثانية. تتيح لك خطة Premium Archive الاستماع إلى القصص كاملة.</item>
+        <item quantity="two">تستمع إلى معاينة مدتها %1$d ثانية. يتيح Premium Archive الاستماع إلى القصص كاملة.</item>
+        <item quantity="zero">تستمع إلى معاينة مدتها %1$d ثانية. يتيح Premium Archive الاستماع إلى القصص كاملة.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">تبقّت %1$d ثوانٍ</item>
         <item quantity="many">تبقّى %1$d ثانية</item>
@@ -1620,6 +1643,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">%1$s متبقٍ هذا الأسبوع</string>
+    <string name="listen_time_left_this_month">متبقي %1$s هذا الشهر</string>
     <string name="listen_resets_on">تُعاد الضبط في %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">تبقّى %1$d معاينات مجانية للقصص اليوم</item>
@@ -1651,6 +1675,8 @@
     <string name="settings_listen_voices_summary">اختر صوتًا لكل لغة وطريقة قراءته</string>
     <string name="settings_listen_delivery">طريقة العرض</string>
     <string name="settings_listen_speed">سرعة التشغيل</string>
+    <string name="archive_listen">استمع إلى القصص مقروءةً بصوت عالٍ لمدة ساعة واحدة شهريًا</string>
+    <string name="archive_extra_listen">استمع إلى القصص مقروءةً بصوت عالٍ لمدة 10 ساعات شهريًا</string>
     <string name="pro_listen">استمع إلى القصص المقروءة بصوت عالٍ لمدة 10 ساعات أسبوعيًا</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d 3 قصص جديدة</item>

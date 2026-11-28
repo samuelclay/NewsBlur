@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ छवि फ़िल्टर";
 "%@ is now following you." = "अब %@ आपको फ़ॉलो कर रहे हैं।";
 "%@ left in this preview" = "इस प्रीव्यू में %@ बाकी";
+"%@ left this month" = "इस महीने %@ शेष";
 "%@ left this week" = "इस सप्ताह %@ शेष";
 "%@ match" = "%@ मिलान";
 "%@ new stories" = "%@ नए लेख";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ अपठित खबरें";
 "%@ voice previews left" = "आवाज़ के %@ पूर्वावलोकन बाकी हैं";
 "%@/story" = "%@/लेख";
+"%@/year" = "%@/वर्ष";
+"%@s preview" = "%@s का प्रीव्यू";
 "%@×" = "%@×";
 "%ldd ago" = "%ld दिन पहले";
 "%ldh ago" = "%ld घंटे पहले";
@@ -74,7 +77,9 @@
 "/mo" = "/माह";
 "/month" = "/महीना";
 "1 Widget Site" = "1 विजेट साइट";
+"1 hour" = "1 घंटा";
 "1,000 stories" = "1,000 लेख";
+"10 hours" = "10 घंटे";
 "10 stories" = "10 लेख";
 "10,000 stories" = "10,000 लेख";
 "100 stories" = "100 लेख";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "इसके बजाय नया खाता बनाएँ";
 "Create account" = "खाता बनाएँ";
 "Create an account" = "खाता बनाएँ";
+"Current plan" = "मौजूदा प्लान";
 "Custom" = "कस्टम";
 "Custom Domain" = "कस्टम डोमेन";
 "Custom RSS feeds for saved stories" = "सहेजे गए लेखों के लिए कस्टम RSS फ़ीड";
@@ -536,6 +542,8 @@
 "List style" = "सूची शैली";
 "Listen" = "सुनें";
 "Listen Settings" = "सुनने की सेटिंग्स";
+"Listen to 1 hour of stories read aloud a month" = "हर महीने 1 घंटे तक लेखों को पढ़कर सुनें";
+"Listen to 10 hours of stories read aloud a month" = "महीने में 10 घंटे तक लेखों को ज़ोर से पढ़कर सुनें";
 "Listen to 10 hours of stories read aloud a week" = "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें";
 "Listen to story" = "लेख सुनें";
 "Listening isn't available right now." = "अभी सुनने की सुविधा उपलब्ध नहीं है।";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "धूसर";
 "Model" = "मॉडल";
 "Monday" = "सोमवार";
+"Monthly listening" = "मासिक सुनने का समय";
 "Monthly spending limit" = "मासिक खर्च की सीमा";
 "Monthly spending limit reached. " = "मासिक खर्च की सीमा पूरी हो गई। ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "ज़्यादा लेखों में डिस्क की जगह ज़्यादा लगती है, लेकिन इसके अलावा प्रदर्शन पर कोई ध्यान देने योग्य असर नहीं पड़ता।";
@@ -807,6 +816,7 @@
 "Preferred time" = "पसंदीदा समय";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium सदस्यता";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium सदस्य अपनी पसंद का NewsBlur आइकन चुन सकते हैं। हर रूप में हल्का और गहरा, दोनों संस्करण शामिल हैं।";
@@ -887,6 +897,7 @@
 "Replying" = "जवाब दिया जा रहा है";
 "Reset" = "रीसेट करें";
 "Resets %@" = "%@ पर रीसेट होता है";
+"Resets on %@" = "%@ को रीसेट होगा";
 "Resize sidebar" = "साइडबार का आकार बदलें";
 "Restore" = "पुनर्स्थापित करें";
 "Resume" = "फिर शुरू करें";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "कल का टेक्स्ट";
 "Text view" = "पाठ दृश्य";
 "Text view conveniently extracts the story" = "टेक्स्ट दृश्य लेख को सुविधाजनक रूप से निकालता है";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "यह %@ सेकंड का प्रीव्यू था। Premium Archive से पूरे लेख अनलॉक होते हैं।";
 "The audio couldn't be loaded. Try again in a moment." = "ऑडियो लोड नहीं हो सका। थोड़ी देर बाद फिर कोशिश करें।";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "पूरा टेक्स्ट दृश्य एक <a href=\"http://ios.newsblur.com/premium\">प्रीमियम सुविधा</a> है";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS सिम्युलेटर होम स्क्रीन का आइकन नहीं बदल सका। इसे किसी डिवाइस पर आज़माएँ।";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "आपका NewsBlur खाता हटा दिया गया है। इसे डिस्कनेक्ट करना पूरा करने के लिए, अपने Apple Account की सेटिंग में Sign in with Apple से NewsBlur हटाएँ।";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "आपकी चुनी हुई आवाज़ अभी उपलब्ध नहीं है, इसलिए %@ यह लेख पढ़कर सुना रहा है।";
 "Your identity is verified" = "आपकी पहचान सत्यापित है";
+"Your premium archive extra subscription includes everything above" = "आपकी Premium Archive Extra सदस्यता में ऊपर बताई गई सभी सुविधाएँ शामिल हैं";
+"Your premium archive extra subscription is active" = "आपकी Premium Archive Extra सदस्यता सक्रिय है";
 "Your premium archive subscription includes everything above" = "आपकी Premium Archive सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं";
 "Your premium archive subscription is active" = "आपकी Premium Archive सदस्यता सक्रिय है";
 "Your premium pro subscription includes everything above" = "आपकी Premium Pro सदस्यता में ऊपर दी गई सभी सुविधाएँ शामिल हैं";

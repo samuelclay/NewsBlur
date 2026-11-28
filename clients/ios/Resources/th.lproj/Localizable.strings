@@ -45,6 +45,7 @@
 "%@ image filters" = "ตัวกรองรูปภาพ %@ รายการ";
 "%@ is now following you." = "%@ กำลังติดตามคุณแล้ว";
 "%@ left in this preview" = "เหลือ %@ ในตัวอย่างนี้";
+"%@ left this month" = "เหลือ %@ ในเดือนนี้";
 "%@ left this week" = "เหลือ %@ ในสัปดาห์นี้";
 "%@ match" = "ตรงกัน %@ รายการ";
 "%@ new stories" = "บทความใหม่ %@ รายการ";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "ยังไม่อ่าน %@ เรื่อง";
 "%@ voice previews left" = "เหลือการลองฟังเสียง %@ ครั้ง";
 "%@/story" = "%@/บทความ";
+"%@/year" = "%@/ปี";
+"%@s preview" = "ตัวอย่าง %@s";
 "%@×" = "%@×";
 "%ldd ago" = "%ld วันที่แล้ว";
 "%ldh ago" = "%ld ชั่วโมงที่แล้ว";
@@ -74,7 +77,9 @@
 "/mo" = "/เดือน";
 "/month" = "/เดือน";
 "1 Widget Site" = "เว็บไซต์สำหรับวิดเจ็ต 1 แห่ง";
+"1 hour" = "1 ชั่วโมง";
 "1,000 stories" = "1,000 เรื่อง";
+"10 hours" = "10 ชั่วโมง";
 "10 stories" = "10 เรื่อง";
 "10,000 stories" = "10,000 เรื่อง";
 "100 stories" = "100 เรื่อง";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "สร้างบัญชีใหม่แทน";
 "Create account" = "สร้างบัญชี";
 "Create an account" = "สร้างบัญชี";
+"Current plan" = "แพ็กเกจปัจจุบัน";
 "Custom" = "กำหนดเอง";
 "Custom Domain" = "โดเมนที่กำหนดเอง";
 "Custom RSS feeds for saved stories" = "ฟีด RSS แบบกำหนดเองสำหรับบทความที่บันทึกไว้";
@@ -536,6 +542,8 @@
 "List style" = "รูปแบบรายการ";
 "Listen" = "ฟัง";
 "Listen Settings" = "การตั้งค่าการฟัง";
+"Listen to 1 hour of stories read aloud a month" = "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อเดือน";
+"Listen to 10 hours of stories read aloud a month" = "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อเดือน";
 "Listen to 10 hours of stories read aloud a week" = "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์";
 "Listen to story" = "ฟังบทความ";
 "Listening isn't available right now." = "ยังไม่สามารถฟังได้ในขณะนี้";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "สีเทา";
 "Model" = "โมเดล";
 "Monday" = "วันจันทร์";
+"Monthly listening" = "เวลาฟังรายเดือน";
 "Monthly spending limit" = "วงเงินใช้จ่ายรายเดือน";
 "Monthly spending limit reached. " = "ถึงวงเงินใช้จ่ายรายเดือนแล้ว ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "บทความจำนวนมากขึ้นใช้พื้นที่ดิสก์มากขึ้น แต่ไม่มีผลต่อประสิทธิภาพอย่างเห็นได้ชัด";
@@ -807,6 +816,7 @@
 "Preferred time" = "เวลาที่ต้องการ";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "การสมัครสมาชิก Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "สมาชิก Premium เลือกไอคอน NewsBlur แบบกำหนดเองได้ แต่ละแบบมีทั้งเวอร์ชันสว่างและมืด";
@@ -887,6 +897,7 @@
 "Replying" = "กำลังตอบกลับ";
 "Reset" = "รีเซ็ต";
 "Resets %@" = "รีเซ็ต %@";
+"Resets on %@" = "รีเซ็ตวันที่ %@";
 "Resize sidebar" = "ปรับขนาดแถบด้านข้าง";
 "Restore" = "กู้คืน";
 "Resume" = "ดำเนินการต่อ";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "ข้อความจากเมื่อวาน";
 "Text view" = "มุมมองข้อความ";
 "Text view conveniently extracts the story" = "มุมมองข้อความช่วยดึงเนื้อหาบทความออกมา";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "นั่นเป็นตัวอย่างบทความความยาว %@ วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม";
 "The audio couldn't be loaded. Try again in a moment." = "โหลดเสียงไม่ได้ โปรดลองอีกครั้งในอีกสักครู่";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "มุมมองข้อความฉบับเต็มเป็น<a href=\"http://ios.newsblur.com/premium\">ฟีเจอร์พรีเมียม</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "ตัวจำลอง iOS ไม่สามารถเปลี่ยนไอคอนหน้าจอโฮมได้ ลองทำบนอุปกรณ์จริง";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "บัญชี NewsBlur ของคุณถูกลบแล้ว นำ NewsBlur ออกจากการลงชื่อเข้าใช้ด้วย Apple ในการตั้งค่าบัญชี Apple เพื่อยกเลิกการเชื่อมต่อให้เสร็จสิ้น";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "เสียงที่เลือกยังไม่พร้อมใช้งานในขณะนี้ %@ จึงกำลังอ่านบทความนี้";
 "Your identity is verified" = "ยืนยันตัวตนของคุณแล้ว";
+"Your premium archive extra subscription includes everything above" = "การสมัคร Premium Archive Extra ของคุณรวมทุกอย่างข้างต้น";
+"Your premium archive extra subscription is active" = "การสมัคร Premium Archive Extra ของคุณใช้งานอยู่";
 "Your premium archive subscription includes everything above" = "การสมัครสมาชิก Premium Archive ของคุณมีทุกอย่างข้างต้น";
 "Your premium archive subscription is active" = "การสมัครสมาชิก Premium Archive ของคุณใช้งานอยู่";
 "Your premium pro subscription includes everything above" = "การสมัครสมาชิก Premium Pro ของคุณมีทุกอย่างตามรายการข้างต้น";

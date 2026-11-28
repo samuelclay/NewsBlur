@@ -412,6 +412,7 @@
     <string name="main_menu_upgrade_premium">Przejdź na Premium</string>
     <string name="main_menu_upgrade_archive">Przejdź na plan Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Forum pomocy</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -432,13 +433,16 @@
     <string name="premium_policies">Szczegóły znajdziesz w &lt;a href=\"https://newsblur.com/privacy\"&gt;polityce prywatności&lt;/a&gt; serwisu NewsBlur oraz w &lt;a href=\"https://newsblur.com/tos\"&gt;warunkach korzystania&lt;/a&gt;.</string>
     <string name="premium_subscription_header">Subskrypcja Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">Subskrypcja NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35,99 USD rocznie (3,00 USD/miesiąc)</string>
     <string name="premium_subscription_active">Twoja subskrypcja Premium jest aktywna</string>
     <string name="archive_subscription_active">Twoja subskrypcja Premium Archive jest aktywna</string>
+    <string name="archive_extra_subscription_active">Twoja subskrypcja Premium Archive Extra jest aktywna</string>
     <string name="pro_subscription_active">Twoja subskrypcja Premium Pro jest aktywna</string>
     <string name="subscription_manage">Zarządzaj subskrypcją</string>
     <string name="subscription_details_error">Błąd pobierania szczegółów subskrypcji</string>
@@ -450,7 +454,10 @@
     <string name="subscription_price_yearly">%1$s/rok (%2$s/miesiąc)</string>
     <string name="subscription_price_monthly">%1$s/miesiąc</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/rok</string>
+    <string name="subscription_current_plan">Obecny plan</string>
     <string name="premium_archive_includes_above">Twoja subskrypcja Premium Archive obejmuje wszystko powyżej</string>
+    <string name="premium_archive_extra_includes_above">Dodatkowa subskrypcja Premium Archive obejmuje wszystko powyżej</string>
     <string name="premium_pro_includes_above">Twoja subskrypcja Premium Pro obejmuje wszystko powyżej</string>
     <string name="premium_enable_sites">Obserwuj do 1 024 witryn</string>
     <string name="premium_sync">Witryny aktualizowane nawet 5 razy częściej</string>
@@ -1424,6 +1431,12 @@
     <string name="listen_resume">Wznów</string>
     <string name="listen_pause">Wstrzymaj</string>
     <string name="listen_play">Odtwórz</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="few">Podgląd %1$d s</item>
+        <item quantity="many">Podgląd %1$d s</item>
+        <item quantity="one">Podgląd: %1$d s</item>
+        <item quantity="other">Podgląd %1$d s</item>
+    </plurals>
     <string name="listen_open_player">Otwórz odtwarzacz</string>
     <string name="listen_close">Zamknij odtwarzacz</string>
     <string name="listen_loading">Przygotowywanie artykułu…</string>
@@ -1483,6 +1496,12 @@
     <string name="listen_speed_exact">Dokładna szybkość odtwarzania</string>
     <string name="listen_speed_slider">Suwak szybkości odtwarzania</string>
     <string name="listen_speed_button">Prędkość odtwarzania %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="few">Podgląd przez %1$d sekund. Premium Archive odblokowuje pełne artykuły.</item>
+        <item quantity="many">Odsłuchujesz podgląd %1$d sekund. Premium Archive odblokowuje pełne artykuły.</item>
+        <item quantity="one">Odsłuchujesz podgląd %1$d sekundy. Premium Archive odblokowuje pełne artykuły.</item>
+        <item quantity="other">Odsłuchujesz podgląd %1$d sekund. Premium Archive odblokowuje pełne artykuły.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="few">Pozostały %1$d sekundy</item>
         <item quantity="many">Pozostało %1$d sekund</item>
@@ -1556,6 +1575,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">Pozostało %1$s w tym tygodniu</string>
+    <string name="listen_time_left_this_month">%1$s pozostało w tym miesiącu</string>
     <string name="listen_resets_on">Resetuje się %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="few">Pozostało dziś %1$d bezpłatnych podglądów artykułów</item>
@@ -1583,6 +1603,8 @@
     <string name="settings_listen_voices_summary">Wybierz głos dla każdego języka i sposób czytania</string>
     <string name="settings_listen_delivery">Sposób przekazywania</string>
     <string name="settings_listen_speed">Szybkość odtwarzania</string>
+    <string name="archive_listen">Słuchaj przez 1 godzinę miesięcznie artykułów czytanych na głos</string>
+    <string name="archive_extra_listen">Słuchaj 10 godzin artykułów czytanych na głos miesięcznie</string>
     <string name="pro_listen">Słuchaj artykułów czytanych na głos przez 10 godzin tygodniowo</string>
     <plurals name="new_stories_pill">
         <item quantity="few">%d nowe artykuły</item>

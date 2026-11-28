@@ -476,7 +476,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "Còn %(duration)s trong tháng này"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -532,15 +532,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/năm"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "Bản nghe thử %(seconds)s giây"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "Bản nghe thử %(seconds)s giây"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -933,7 +933,7 @@ msgid "/year"
 msgstr "/năm"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 giờ"
 
 msgid "1 month"
 msgstr "1 tháng"
@@ -942,7 +942,7 @@ msgid "1 year"
 msgstr "1 năm"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 giờ"
 
 msgid "12-hour"
 msgstr "12 giờ"
@@ -2175,7 +2175,7 @@ msgid "Couldn't load audio for this story."
 msgstr "Không tải được âm thanh cho bài viết này."
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "Không thể tải nội dung nghe."
 
 msgid "Counting is difficult"
 msgstr "Đếm thật khó"
@@ -2223,7 +2223,7 @@ msgid "Credit"
 msgstr "Tín dụng"
 
 msgid "Current plan"
-msgstr ""
+msgstr "Gói hiện tại"
 
 msgid "Current voice"
 msgstr "Giọng đọc hiện tại"
@@ -3562,7 +3562,7 @@ msgstr "Sức khỏe"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
+msgstr[0] "Nghe %(count)s giây đầu tiên được đọc thành tiếng. Premium Archive đọc toàn bộ bài viết."
 
 msgid "Hearts"
 msgstr "Tim"
@@ -3941,7 +3941,7 @@ msgstr "Hoạt động gần nhất"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "Lần đặt lại thủ công gần nhất: %(date)s."
 
 msgid "Last seen:"
 msgstr "Lần cuối hoạt động:"
@@ -4017,10 +4017,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "Đã hết thời gian chờ khi nghe. Hãy thử lại sau ít phút."
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Nghe bài viết được đọc thành tiếng trong 1 giờ mỗi tháng"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "Nghe bài viết được đọc thành tiếng trong 10 giờ mỗi tháng"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần"
@@ -4311,7 +4311,7 @@ msgid "Monday"
 msgstr "Thứ Hai"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "Thời lượng nghe mỗi tháng"
 
 msgid "Monthly spending limit"
 msgstr "Giới hạn chi tiêu hàng tháng"
@@ -4488,7 +4488,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Sẽ không bao giờ hết hạn. Chúc mừng!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "Không bao giờ đặt lại."
 
 msgid "New Arrivals"
 msgstr "Mới thêm"
@@ -5277,15 +5277,15 @@ msgstr "Địa điểm"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "Gói: %(tier)s. Hôm nay đã nghe thử %(count)s bài viết."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "Gói: %(tier)s. %(used)s trên %(limit)s phút âm thanh mới trong tháng này, đặt lại vào %(resets)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "Gói: %(tier)s. %(used)s trên %(limit)s phút âm thanh mới trong tuần này, đặt lại vào %(resets)s."
 
 msgid "Platform"
 msgstr "Nền tảng"
@@ -5388,7 +5388,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive đọc toàn bộ bài viết thành tiếng."
@@ -5856,7 +5856,7 @@ msgid "Reset"
 msgstr "Đặt lại"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Đặt lại thời lượng nghe"
 
 msgid "Reset to original favicon"
 msgstr "Khôi phục favicon ban đầu"
@@ -7999,7 +7999,7 @@ msgstr "Giọng đọc"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "Lượt nghe thử bằng giọng nói hôm nay: %(used)s trên %(limit)s."
 
 msgid "Voice recording failed. Please try again."
 msgstr "Không thể ghi âm giọng nói. Vui lòng thử lại."

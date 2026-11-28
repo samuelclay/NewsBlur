@@ -538,7 +538,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "इस महीने %(duration)s बाकी"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -594,15 +594,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/वर्ष"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "%(seconds)s सेकंड का प्रीव्यू"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "%(seconds)ss का प्रीव्यू"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -999,7 +999,7 @@ msgid "/year"
 msgstr "/वर्ष"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 घंटा"
 
 msgid "1 month"
 msgstr "1 महीना"
@@ -1008,7 +1008,7 @@ msgid "1 year"
 msgstr "1 वर्ष"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 घंटे"
 
 msgid "12-hour"
 msgstr "12-घंटे का"
@@ -2255,7 +2255,7 @@ msgid "Couldn't load audio for this story."
 msgstr "इस लेख के लिए ऑडियो लोड नहीं हो सका।"
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "सुनने की सामग्री लोड नहीं हो सकी।"
 
 msgid "Counting is difficult"
 msgstr "गिनना मुश्किल है"
@@ -2303,7 +2303,7 @@ msgid "Credit"
 msgstr "श्रेय"
 
 msgid "Current plan"
-msgstr ""
+msgstr "मौजूदा प्लान"
 
 msgid "Current voice"
 msgstr "मौजूदा आवाज़"
@@ -3643,8 +3643,8 @@ msgstr "स्वास्थ्य"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "पहले %(count)s सेकंड ज़ोर से पढ़कर सुनें। Premium Archive पूरे लेख पढ़कर सुनाता है।"
+msgstr[1] "पहले %(count)s सेकंड ज़ोर से पढ़कर सुनें। Premium Archive पूरे लेख पढ़कर सुनाता है।"
 
 msgid "Hearts"
 msgstr "दिल"
@@ -4022,7 +4022,7 @@ msgstr "पिछली गतिविधि"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "आख़िरी मैन्युअल रीसेट: %(date)s।"
 
 msgid "Last seen:"
 msgstr "आख़िरी बार देखा गया:"
@@ -4098,10 +4098,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "सुनने का समय समाप्त हो गया। थोड़ी देर में फिर से कोशिश करें।"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "हर महीने 1 घंटे तक लेखों को पढ़कर सुनें"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "महीने में 10 घंटे तक लेखों को ज़ोर से पढ़कर सुनें"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "हर सप्ताह लेखों को पढ़कर सुनाने के लिए 10 घंटे सुनें"
@@ -4398,7 +4398,7 @@ msgid "Monday"
 msgstr "सोमवार"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "मासिक सुनना"
 
 msgid "Monthly spending limit"
 msgstr "मासिक खर्च सीमा"
@@ -4577,7 +4577,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "अब कभी समाप्त नहीं होगा। बधाई!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "कभी रीसेट नहीं होता।"
 
 msgid "New Arrivals"
 msgstr "नए आगमन"
@@ -5372,15 +5372,15 @@ msgstr "स्थान"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "प्लान: %(tier)s। आज %(count)s लेखों का प्रीव्यू सुना गया।"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "प्लान: %(tier)s। इस महीने के नए ऑडियो के %(limit)s मिनटों में से %(used)s, रीसेट %(resets)s।"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "प्लान: %(tier)s। इस सप्ताह के नए ऑडियो के %(limit)s मिनटों में से %(used)s, रीसेट %(resets)s।"
 
 msgid "Platform"
 msgstr "प्लैटफ़ॉर्म"
@@ -5483,7 +5483,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive पूरे लेख ज़ोर से पढ़कर सुनाता है।"
@@ -5958,7 +5958,7 @@ msgid "Reset"
 msgstr "रीसेट करें"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Listen के उपयोग को रीसेट करें"
 
 msgid "Reset to original favicon"
 msgstr "मूल फ़ेविकॉन पर रीसेट करें"
@@ -8113,7 +8113,7 @@ msgstr "आवाज़"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "आज के आवाज़ प्रीव्यू: %(limit)s में से %(used)s।"
 
 msgid "Voice recording failed. Please try again."
 msgstr "आवाज़ रिकॉर्ड नहीं हो सकी। कृपया फिर से कोशिश करें।"

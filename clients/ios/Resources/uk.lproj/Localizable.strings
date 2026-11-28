@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ фільтрів зображень";
 "%@ is now following you." = "Тепер %@ стежить за вами.";
 "%@ left in this preview" = "У попередньому прослуховуванні залишилося %@";
+"%@ left this month" = "Залишилося на цей місяць: %@";
 "%@ left this week" = "Цього тижня залишилося %@";
 "%@ match" = "%@ збіг";
 "%@ new stories" = "%@ нових статей";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ непрочитаних статей";
 "%@ voice previews left" = "Залишилося голосових попередніх прослуховувань: %@";
 "%@/story" = "%@/статтю";
+"%@/year" = "%@/рік";
+"%@s preview" = "Попередній перегляд %@s";
 "%@×" = "%@×";
 "%ldd ago" = "%ld дн. тому";
 "%ldh ago" = "%ld год тому";
@@ -74,7 +77,9 @@
 "/mo" = "/міс.";
 "/month" = "/місяць";
 "1 Widget Site" = "1 сайт віджета";
+"1 hour" = "1 година";
 "1,000 stories" = "1 000 статей";
+"10 hours" = "10 годин";
 "10 stories" = "10 статей";
 "10,000 stories" = "10 000 статей";
 "100 stories" = "100 статей";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Натомість створити новий обліковий запис";
 "Create account" = "Створити обліковий запис";
 "Create an account" = "Створити обліковий запис";
+"Current plan" = "Поточний план";
 "Custom" = "Власний";
 "Custom Domain" = "Власний домен";
 "Custom RSS feeds for saved stories" = "Власні RSS-стрічки для збережених статей";
@@ -536,6 +542,8 @@
 "List style" = "Стиль списку";
 "Listen" = "Слухати";
 "Listen Settings" = "Налаштування прослуховування";
+"Listen to 1 hour of stories read aloud a month" = "Слухайте 1 годину озвучених статей на місяць";
+"Listen to 10 hours of stories read aloud a month" = "Слухати начитування статей 10 годин на місяць";
 "Listen to 10 hours of stories read aloud a week" = "Слухайте озвучення статей до 10 годин на тиждень";
 "Listen to story" = "Прослухати статтю";
 "Listening isn't available right now." = "Прослуховування зараз недоступне.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Сіра";
 "Model" = "Модель";
 "Monday" = "Понеділок";
+"Monthly listening" = "Прослуховування за місяць";
 "Monthly spending limit" = "Місячний ліміт витрат";
 "Monthly spending limit reached. " = "Місячний ліміт витрат вичерпано. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Більша кількість статей займає більше місця на диску, але майже не впливає на продуктивність.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Бажаний час";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Підписка Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Передплатники Premium можуть вибрати власну іконку NewsBlur. Для кожного варіанта доступні світла й темна версії.";
@@ -887,6 +897,7 @@
 "Replying" = "Надсилання відповіді";
 "Reset" = "Скинути";
 "Resets %@" = "Скидання: %@";
+"Resets on %@" = "Скидається %@";
 "Resize sidebar" = "Змінити розмір бічної панелі";
 "Restore" = "Відновити";
 "Resume" = "Продовжити";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Текст за вчора";
 "Text view" = "Текстовий вигляд";
 "Text view conveniently extracts the story" = "Режим перегляду тексту зручно витягує текст статті";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Це був попередній перегляд тривалістю %@ секунд. Premium Archive відкриває доступ до повних статей.";
 "The audio couldn't be loaded. Try again in a moment." = "Не вдалося завантажити аудіо. Спробуйте ще раз за мить.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Повний перегляд тексту — це <a href=\"http://ios.newsblur.com/premium\">функція Premium</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Симулятор iOS не зміг змінити іконку на головному екрані. Спробуйте зробити це на пристрої.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Ваш обліковий запис NewsBlur видалено. Щоб завершити від’єднання, видаліть NewsBlur зі списку «Вхід через Apple» у налаштуваннях облікового запису Apple.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Вибраний вами голос зараз недоступний, тому цю статтю читає %@.";
 "Your identity is verified" = "Вашу особу підтверджено";
+"Your premium archive extra subscription includes everything above" = "Ваша підписка Premium Archive Extra включає все перелічене вище";
+"Your premium archive extra subscription is active" = "Ваша підписка Premium Archive Extra активна";
 "Your premium archive subscription includes everything above" = "Ваша підписка Premium Archive містить усе перелічене вище";
 "Your premium archive subscription is active" = "Ваша підписка Premium Archive активна";
 "Your premium pro subscription includes everything above" = "Ваша підписка Premium Pro містить усе перелічене вище";
