@@ -32595,6 +32595,1655 @@ h5.NB-classifier-section-header {
     margin: 6px 0 2px;
 }
 
+/* ================================= */
+/* = Organizer: Reorganize with AI = */
+/* ================================= */
+
+/* reader.css: every color the Reorganize with AI tab paints with, named for the job it does there.
+ * css/reader/darkmode.css, graymode.css and sepiamode.css give these names their own colors, so
+ * the rules below need no theme overrides. Green is a move or an approval, red a rejection or an
+ * unsubscribe, purple a site kept in two folders, amber a copy on offer or a warning, and the
+ * gray-blue lock color a folder the AI leaves alone. A solid color carries on-solid text. */
+.NB-modal-organizer {
+    --nb-reorg-surface: #FFFFFF;
+    --nb-reorg-picked: #FFFFFF;
+    --nb-reorg-wash: #F7F8F5;
+    --nb-reorg-control: #F0F1EC;
+    --nb-reorg-hover: #F0F1EC;
+    --nb-reorg-fill: #ECEEE7;
+    --nb-reorg-selected: #ECEEE7;
+    --nb-reorg-track: #E3E5DE;
+    --nb-reorg-line: #ECEEE7;
+    --nb-reorg-divider: #CFD1CA;
+    --nb-reorg-border: #CFD1CA;
+    --nb-reorg-border-hover: #A0A0A0;
+    --nb-reorg-frame: rgba(0, 0, 0, .2);
+    --nb-reorg-shadow: rgba(0, 0, 0, .18);
+    --nb-reorg-text-strong: #202020;
+    --nb-reorg-text: #303030;
+    --nb-reorg-text-soft: #404040;
+    --nb-reorg-text-muted: #707070;
+    --nb-reorg-text-quiet: #808080;
+    --nb-reorg-text-faint: #A0A0A0;
+    --nb-reorg-on-solid: #FFFFFF;
+    --nb-reorg-accent: #E0703A;
+    --nb-reorg-link: #405BA8;
+    --nb-reorg-lock: #E9EDF3;
+    --nb-reorg-lock-text: #707070;
+    --nb-reorg-green: #3F7426;
+    --nb-reorg-green-wash: #E6F1DD;
+    --nb-reorg-green-solid: #3F7426;
+    --nb-reorg-amber: #8A5A06;
+    --nb-reorg-amber-wash: #FBF0D9;
+    --nb-reorg-amber-solid: #9A6408;
+    --nb-reorg-amber-mark: #C8820F;
+    --nb-reorg-red: #A2342B;
+    --nb-reorg-red-wash: #F7E3DF;
+    --nb-reorg-red-solid: #B23A30;
+    --nb-reorg-error: #7F080A;
+    --nb-reorg-purple: #6A47A6;
+    --nb-reorg-purple-wash: #ECE4F7;
+    --nb-reorg-purple-solid: #7A55B8;
+    --nb-reorg-question-wash: #FBF3F1;
+    --nb-reorg-question-edge: #E8C7C1;
+    --nb-reorg-spinner-filter: none;
+}
+
+/* reader_organizer.js: both tabs grow with their content instead of the fixed height other
+   dialogs give their tabs, so the By hand tab lays out as it did before it had tabs. These
+   outrank the .NB-modal .NB-tab rules in modals.css, which loads after this file. */
+.NB-modal.NB-modal-organizer .NB-tab {
+    height: auto;
+    overflow: visible;
+    font-size: inherit;
+}
+
+.NB-modal.NB-modal-organizer .NB-tab.NB-active {
+    display: flow-root;
+}
+
+.NB-modal-organizer label.NB-organizer-sidebar-title {
+    display: block;
+}
+
+/* Keyboard focus draws the same ring on every control in the tab. */
+.NB-modal-organizer .NB-organizer-ai :is(button, [tabindex="0"]):focus-visible {
+    outline: 2px solid var(--nb-reorg-link);
+    outline-offset: 1px;
+}
+
+/* Steps: Set up, Review, Apply */
+
+.NB-modal-organizer .NB-organizer-ai-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 10px 0 8px;
+    padding: 0;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-steps-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-steps-item + .NB-organizer-ai-steps-item::before {
+    content: "\203A";
+    padding: 0 2px;
+    color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 4px;
+    border: 0;
+    border-radius: 12px;
+    font: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-step:disabled {
+    cursor: default;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step:not(:disabled):not(.NB-active):hover {
+    background-color: var(--nb-reorg-hover);
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-step.NB-active {
+    font-weight: bold;
+    background-color: var(--nb-reorg-selected);
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: var(--nb-reorg-track);
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-step.NB-active .NB-organizer-ai-step-number {
+    background-color: var(--nb-reorg-accent);
+    color: var(--nb-reorg-on-solid);
+}
+
+/* Setup: locks on the left, the run's options on the right */
+
+.NB-modal-organizer .NB-organizer-ai-setup {
+    display: flex;
+    align-items: flex-start;
+    gap: 3%;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-folders {
+    flex: 0 0 70%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-options {
+    flex: 1 1 27%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup .NB-organizer-sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folders {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 4px;
+    border: 1px solid;
+    border-color: var(--nb-reorg-frame);
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    padding: 3px 8px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-line);
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder:last-child {
+    border-bottom: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-icon-wrap {
+    display: flex;
+    flex: none;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-count {
+    flex: none;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-skip .NB-organizer-ai-folder-title,
+.NB-modal-organizer .NB-organizer-ai-folder-skip .NB-organizer-ai-folder-count {
+    color: var(--nb-reorg-text-faint);
+}
+
+/* The three choices take the width their labels need in the reader's language, and the folder's
+   name gives way. */
+.NB-modal-organizer .NB-organizer-ai-lock {
+    flex: none;
+    min-width: 220px;
+    margin: 0;
+    background-color: var(--nb-reorg-control);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock .NB-organizer-ai-lock-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: auto;
+    padding: 2px 6px 1px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-icon {
+    display: inline-block;
+    flex: none;
+    width: 10px;
+    height: 10px;
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-locked-with-parent {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background-color: var(--nb-reorg-lock);
+    color: var(--nb-reorg-lock-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-level {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 5px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level:has(input:checked) {
+    background-color: var(--nb-reorg-picked);
+}
+
+.NB-modal-organizer .NB-organizer-ai-level input,
+.NB-modal-organizer .NB-organizer-ai-check input {
+    flex: none;
+    margin: 2px 0 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-description {
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 2px 4px;
+    font-size: 12px;
+    line-height: 16px;
+    cursor: pointer;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-instructions {
+    display: block;
+    width: 100%;
+    min-height: 72px;
+    margin: 0;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-options .NB-organizer-ai-propose {
+    display: block;
+    width: 100%;
+    margin: 12px 0 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-note {
+    margin: 6px 0 0;
+    font-size: 11px;
+    line-height: 15px;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-note-limit {
+    font-weight: bold;
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-error {
+    margin: 8px 0 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-red-wash);
+    color: var(--nb-reorg-error);
+}
+
+/* Progress, review and applied: a centered panel */
+
+.NB-modal-organizer .NB-organizer-ai-center {
+    padding: 40px 24px 44px;
+    text-align: center;
+    border: 1px solid;
+    border-color: var(--nb-reorg-frame);
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-center .NB-organizer-ai-error {
+    display: inline-block;
+}
+
+.NB-modal-organizer .NB-organizer-ai-retry {
+    display: block;
+    margin: 12px auto 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-text {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-progress-track {
+    max-width: 320px;
+    height: 6px;
+    margin: 0 auto;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: var(--nb-reorg-track);
+}
+
+.NB-modal-organizer .NB-organizer-ai-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .3s ease;
+    background-color: var(--nb-reorg-accent);
+}
+
+.NB-reduce-motion .NB-modal-organizer .NB-organizer-ai-progress-bar {
+    transition: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist {
+    max-width: 320px;
+    margin: 16px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-done {
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-current {
+    font-weight: bold;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 2px solid;
+    border-radius: 50%;
+    border-color: var(--nb-reorg-border);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-done .NB-organizer-ai-checklist-icon {
+    border: 0;
+    border-radius: 0;
+    background-image: url('/media/embed/icons/nouns/check-fat.svg');
+    background-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-current .NB-organizer-ai-checklist-icon {
+    border: 0;
+    background-image: url('/media/embed/reader/ring_spinner.svg');
+    background-size: 14px;
+    filter: var(--nb-reorg-spinner-filter);
+}
+
+/* Review: the proposal's changes by folder or as one list on the left, the decisions on the right */
+
+.NB-modal-organizer .NB-organizer-ai-review {
+    display: flex;
+    align-items: flex-start;
+    gap: 3%;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review .NB-hidden {
+    display: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-main {
+    flex: 0 0 70%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-side {
+    flex: 1 1 27%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-side > .NB-organizer-sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-error {
+    margin: 0 0 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin: 0 0 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch {
+    display: inline-flex;
+    border: 1px solid;
+    border-radius: 4px;
+    overflow: hidden;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-control);
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option {
+    padding: 1px 10px;
+    border: 0;
+    font: inherit;
+    font-size: 12px;
+    line-height: 18px;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option + .NB-organizer-ai-switch-option {
+    border-inline-start: 1px solid;
+    border-inline-start-color: var(--nb-reorg-border);
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option.NB-active {
+    font-weight: bold;
+    background-color: var(--nb-reorg-picked);
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip {
+    padding: 1px 10px;
+    border: 1px solid;
+    border-radius: 11px;
+    font: inherit;
+    font-size: 12px;
+    line-height: 18px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip:hover {
+    border-color: var(--nb-reorg-border-hover);
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip[aria-pressed="true"] {
+    font-weight: bold;
+    border-color: var(--nb-reorg-text-soft);
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip-both[aria-pressed="true"] {
+    border-color: var(--nb-reorg-purple);
+    color: var(--nb-reorg-purple);
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-list {
+    max-height: 560px;
+    overflow-y: auto;
+    border: 1px solid;
+    border-color: var(--nb-reorg-frame);
+    background-color: var(--nb-reorg-wash);
+}
+
+.NB-modal-organizer .NB-organizer-ai-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-divider);
+    font-size: 11px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-legend-text {
+    flex-basis: 100%;
+}
+
+/* All moves sets its rows on the same surface as the cards of By folder. */
+.NB-modal-organizer .NB-organizer-ai-moves {
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-empty {
+    padding: 32px 16px;
+    text-align: center;
+    font-size: 13px;
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-quiet);
+}
+
+/* Review: a card for each folder the proposal touches */
+
+.NB-modal-organizer .NB-organizer-ai-card {
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-divider);
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    min-height: 22px;
+    padding: 6px 10px 5px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-line);
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-menu-open .NB-organizer-ai-card-head {
+    z-index: 4;
+}
+
+/* The parent's name and the folder's own read as one line of text, so a long path wraps between
+   words instead of squeezing the folder's name. */
+.NB-modal-organizer .NB-organizer-ai-card-name {
+    flex: 0 1 auto;
+    min-width: 0;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-card-icon, .NB-organizer-ai-dead-icon) {
+    display: inline-block;
+    margin-inline-end: 6px;
+    vertical-align: -2px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-icon {
+    width: 14px;
+    height: 14px;
+    background-image: url('/media/embed/icons/nouns/folder-closed.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 14px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-parent {
+    font-weight: normal;
+    overflow-wrap: anywhere;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-parent::after {
+    content: "\203A";
+    padding: 0 6px;
+    color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-title {
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-gone .NB-organizer-ai-card-title {
+    text-decoration: line-through;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-count {
+    flex: none;
+    font-size: 11px;
+    font-weight: normal;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-tools {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin-inline-start: auto;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-note {
+    padding: 4px 10px 8px;
+    font-size: 11px;
+    line-height: 15px;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-dead-intro {
+    padding-top: 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 6px;
+    border: 1px solid;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    cursor: pointer;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-wash);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button:hover {
+    border-color: var(--nb-reorg-border-hover);
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-locked {
+    font-weight: bold;
+    background-color: var(--nb-reorg-lock);
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-icon {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    background-image: url('/media/embed/icons/nouns/lock-open.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-locked .NB-organizer-ai-lock-button-icon {
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-caret {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    background-image: url('/media/embed/icons/nouns/caret-down.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu {
+    position: absolute;
+    top: 100%;
+    inset-inline-end: 0;
+    z-index: 5;
+    width: 250px;
+    margin-top: 4px;
+    padding: 4px;
+    border: 1px solid;
+    border-radius: 6px;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-surface);
+    box-shadow: 0 8px 24px var(--nb-reorg-shadow);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 4px;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option:hover,
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option[aria-checked="true"] {
+    background-color: var(--nb-reorg-selected);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-title {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-description {
+    display: block;
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--nb-reorg-text-muted);
+}
+
+/* Review: a folder change on a card */
+
+.NB-modal-organizer .NB-organizer-ai-op {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-line);
+    font-size: 12px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-wash);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-what {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag {
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: var(--nb-reorg-fill);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-create {
+    background-color: var(--nb-reorg-green-wash);
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-rename,
+.NB-modal-organizer .NB-organizer-ai-op-tag-nest {
+    background-color: var(--nb-reorg-amber-wash);
+    color: var(--nb-reorg-amber);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-merge,
+.NB-modal-organizer .NB-organizer-ai-op-tag-remove {
+    background-color: var(--nb-reorg-red-wash);
+    color: var(--nb-reorg-red);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-detail {
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-rejected .NB-organizer-ai-op-detail {
+    text-decoration: line-through;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-reason {
+    flex: 1 1 180px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-note {
+    flex-basis: 100%;
+    font-weight: bold;
+    color: var(--nb-reorg-amber);
+}
+
+/* Review: Arriving and Leaving, each a list of site rows */
+
+/* The section's links move under its title, together, when both don't fit on one line. */
+.NB-modal-organizer .NB-organizer-ai-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 10px;
+    padding: 7px 10px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-arriving .NB-organizer-ai-section-title {
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-leaving .NB-organizer-ai-section-title {
+    color: var(--nb-reorg-red);
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    margin-inline-start: auto;
+    font-size: 11px;
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-link {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--nb-reorg-link);
+}
+
+.NB-modal-organizer .NB-organizer-ai-link:hover {
+    text-decoration: underline;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 2px 8px;
+    padding: 4px 10px;
+    transition: background-color .8s ease-out;
+    background-color: transparent;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row:hover {
+    background-color: var(--nb-reorg-wash);
+}
+
+.NB-modal-organizer .NB-organizer-ai-row.NB-organizer-ai-flash {
+    transition: none;
+    background-color: var(--nb-reorg-amber-wash);
+}
+
+.NB-reduce-motion .NB-modal-organizer .NB-organizer-ai-row {
+    transition: none;
+}
+
+/* Three labelled choices sit beside the site while its name keeps 260px, and move under it in a
+   language whose labels need more room. */
+.NB-modal-organizer .NB-organizer-ai-route-row,
+.NB-modal-organizer .NB-organizer-ai-dead-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-site-icon-wrap {
+    flex: none;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-row-main {
+    flex: 1 1 260px;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-choices {
+    margin-inline-start: auto;
+}
+
+.NB-modal-organizer .NB-organizer-ai-site-icon-wrap {
+    display: flex;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-site-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-main {
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-title {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    overflow-wrap: anywhere;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-stay .NB-organizer-ai-row-title {
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-reason,
+.NB-modal-organizer .NB-organizer-ai-row-folder {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-folder {
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    padding: 0 5px;
+    border: 1px solid;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 15px;
+    text-align: start;
+    cursor: pointer;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-wash);
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump:hover {
+    border-color: var(--nb-reorg-link);
+    color: var(--nb-reorg-link);
+}
+
+/* The whole sentence shows, wrapping inside the chip, since a translation can put the folder's
+   name anywhere in it. */
+.NB-modal-organizer .NB-organizer-ai-jump-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-stay .NB-organizer-ai-jump-text {
+    text-decoration: line-through;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump-lock {
+    display: none;
+    flex: none;
+    width: 9px;
+    height: 9px;
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 9px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump-locked .NB-organizer-ai-jump-lock,
+.NB-modal-organizer .NB-organizer-ai-route-locked .NB-organizer-ai-jump-lock {
+    display: inline-block;
+    vertical-align: -1px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill {
+    max-width: 190px;
+    padding: 1px 7px;
+    border-radius: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 15px;
+    background-color: var(--nb-reorg-fill);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-move {
+    background-color: var(--nb-reorg-green-wash);
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-both {
+    background-color: var(--nb-reorg-purple-wash);
+    color: var(--nb-reorg-purple);
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-ask {
+    background-color: var(--nb-reorg-amber-wash);
+    color: var(--nb-reorg-amber);
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-stay {
+    background-color: var(--nb-reorg-fill);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choices {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice:hover {
+    border-color: var(--nb-reorg-border-hover);
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-icon {
+    width: 11px;
+    height: 11px;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center center;
+    mask-position: center center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-yes .NB-organizer-ai-choice-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/check-fat.svg');
+    mask-image: url('/media/embed/icons/nouns/check-fat.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-no .NB-organizer-ai-choice-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/close.svg');
+    mask-image: url('/media/embed/icons/nouns/close.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-yes[aria-pressed="true"] {
+    border-color: var(--nb-reorg-green-solid);
+    background-color: var(--nb-reorg-green-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-no[aria-pressed="true"] {
+    border-color: var(--nb-reorg-red-solid);
+    background-color: var(--nb-reorg-red-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide {
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    border-color: var(--nb-reorg-border);
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide:not(:disabled):not([aria-pressed="true"]):hover {
+    border-color: var(--nb-reorg-border-hover);
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice:not([aria-pressed="true"]):active,
+.NB-modal-organizer .NB-organizer-ai-choice-wide:not(:disabled):not([aria-pressed="true"]):active {
+    background-color: var(--nb-reorg-fill);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-keep[aria-pressed="true"],
+.NB-modal-organizer .NB-organizer-ai-choice-move[aria-pressed="true"] {
+    border-color: var(--nb-reorg-green-solid);
+    background-color: var(--nb-reorg-green-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-mute[aria-pressed="true"] {
+    border-color: var(--nb-reorg-amber-solid);
+    background-color: var(--nb-reorg-amber-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-both[aria-pressed="true"] {
+    border-color: var(--nb-reorg-purple-solid);
+    background-color: var(--nb-reorg-purple-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-unsubscribe[aria-pressed="true"],
+.NB-modal-organizer .NB-organizer-ai-choice-stay[aria-pressed="true"] {
+    border-color: var(--nb-reorg-red-solid);
+    background-color: var(--nb-reorg-red-solid);
+    color: var(--nb-reorg-on-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-route {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route .NB-organizer-ai-jump-lock {
+    margin-inline-end: 4px;
+}
+
+/* A folder name wraps inside its own box, never across the arrow. */
+.NB-modal-organizer .NB-organizer-ai-route-from,
+.NB-modal-organizer .NB-organizer-ai-route-to {
+    display: inline-block;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-to {
+    font-weight: bold;
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-arrow {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    vertical-align: -1px;
+    background-image: url('/media/embed/icons/nouns/arrow-right.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-dead-icon {
+    width: 14px;
+    height: 14px;
+    background-color: var(--nb-reorg-amber-mark);
+    -webkit-mask-image: url('/media/embed/icons/nouns/warning.svg');
+    mask-image: url('/media/embed/icons/nouns/warning.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    padding: 8px 10px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-divider);
+    font-size: 11px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-surface);
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-title {
+    flex-basis: 100%;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-folder {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--nb-reorg-text-faint);
+}
+
+/* Review sidebar: the tally, the folders after, revising and applying */
+
+.NB-modal-organizer .NB-organizer-ai-tally-cells {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    text-align: center;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 2px;
+    border: 1px solid;
+    border-color: var(--nb-reorg-track);
+    background-color: var(--nb-reorg-surface);
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-number {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-approved .NB-organizer-ai-tally-number {
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-rejected .NB-organizer-ai-tally-number {
+    color: var(--nb-reorg-red);
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-label {
+    font-size: 10px;
+    line-height: 13px;
+    color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-box {
+    padding: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline {
+    max-height: 200px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-folder {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 1px 4px;
+    border: 0;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: start;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-folder:hover {
+    background-color: var(--nb-reorg-selected);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-name {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-name-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-gone .NB-organizer-ai-outline-name-text {
+    text-decoration: line-through;
+    color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-counts {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+    color: var(--nb-reorg-text-quiet);
+}
+
+/* A signed count keeps its sign in front on a right-to-left page too. */
+.NB-modal-organizer .NB-organizer-ai-outline-in,
+.NB-modal-organizer .NB-organizer-ai-outline-out {
+    direction: ltr;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-in {
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-out {
+    color: var(--nb-reorg-red);
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-total {
+    min-width: 2ch;
+    text-align: end;
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-input {
+    display: block;
+    width: 100%;
+    min-height: 56px;
+    margin: 0;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-button,
+.NB-modal-organizer .NB-organizer-ai-apply-button {
+    display: block;
+    width: 100%;
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-last {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-apply {
+    margin-top: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-apply .NB-archive-callout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
+}
+
+/* Confirm and applied: what an apply does or did, the way back, and the line above the screen */
+
+.NB-modal-organizer .NB-organizer-ai-notice {
+    margin: 0 0 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-notice-done {
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-green-wash);
+    color: var(--nb-reorg-green);
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-text-first {
+    margin-bottom: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 2px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-line);
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-line:first-child {
+    border-top: 1px solid;
+    border-top-color: var(--nb-reorg-line);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-mark {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--nb-reorg-text-faint);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-move .NB-organizer-ai-summary-mark {
+    background-color: var(--nb-reorg-green-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-copy .NB-organizer-ai-summary-mark {
+    background-color: var(--nb-reorg-purple-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-folder .NB-organizer-ai-summary-mark {
+    background-color: var(--nb-reorg-amber-mark);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-mute .NB-organizer-ai-summary-mark {
+    background-color: var(--nb-reorg-text-quiet);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-unsubscribe .NB-organizer-ai-summary-mark {
+    background-color: var(--nb-reorg-red-solid);
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-count {
+    font-variant-numeric: tabular-nums;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-warning {
+    box-sizing: border-box;
+    max-width: 420px;
+    margin: -6px auto 18px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: start;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: var(--nb-reorg-red-wash);
+    color: var(--nb-reorg-error);
+}
+
+.NB-modal-organizer .NB-organizer-ai-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-buttons .NB-modal-submit-button {
+    min-width: 140px;
+    margin: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-confirm .NB-archive-callout {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped {
+    max-width: 420px;
+    margin: -8px auto 18px;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--nb-reorg-amber);
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-list {
+    max-height: 220px;
+    margin: 6px 0 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid;
+    border-color: var(--nb-reorg-line);
+    background-color: var(--nb-reorg-wash);
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-item {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 8px;
+    border-bottom: 1px solid;
+    border-bottom-color: var(--nb-reorg-line);
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-item:last-child {
+    border-bottom: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-what {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+    color: var(--nb-reorg-text);
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-why {
+    color: var(--nb-reorg-text-muted);
+}
+
+.NB-modal-organizer .NB-organizer-ai-undo-note {
+    margin-top: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-question {
+    box-sizing: border-box;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 12px 14px 14px;
+    border: 1px solid;
+    border-radius: 6px;
+    text-align: start;
+    border-color: var(--nb-reorg-question-edge);
+    background-color: var(--nb-reorg-question-wash);
+}
+
+.NB-modal-organizer .NB-organizer-ai-question-title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--nb-reorg-text-strong);
+}
+
+.NB-modal-organizer .NB-organizer-ai-question-text {
+    margin: 0 0 12px;
+    padding-inline-start: 18px;
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--nb-reorg-text-soft);
+}
+
+.NB-modal-organizer .NB-organizer-ai-question .NB-organizer-ai-buttons {
+    justify-content: flex-end;
+}
+
 /* ================= */
 /* = Feed Selector = */
 /* ================= */

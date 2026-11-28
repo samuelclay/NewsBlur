@@ -3765,6 +3765,32 @@ body:where(.NB-sepia) {
     background-color: var(--nb-sepia-100);
 }
 
+/* sepiamode.css: the grays of the Reorganize with AI tab, by the names css/reader/reader.css gives
+ * them. Its greens, reds, purples and ambers carry meaning and stay as the light theme has them. */
+:where(.NB-sepia) .NB-modal-organizer {
+    --nb-reorg-surface: var(--nb-sepia-0);
+    --nb-reorg-picked: var(--nb-sepia-0);
+    --nb-reorg-wash: var(--nb-sepia-100);
+    --nb-reorg-control: var(--nb-sepia-150);
+    --nb-reorg-hover: var(--nb-sepia-150);
+    --nb-reorg-fill: var(--nb-sepia-200);
+    --nb-reorg-selected: var(--nb-sepia-200);
+    --nb-reorg-track: var(--nb-sepia-250);
+    --nb-reorg-line: var(--nb-sepia-200);
+    --nb-reorg-divider: var(--nb-sepia-300);
+    --nb-reorg-border: var(--nb-sepia-300);
+    --nb-reorg-border-hover: var(--nb-sepia-500);
+    --nb-reorg-text-strong: var(--nb-sepia-900);
+    --nb-reorg-text: var(--nb-sepia-900);
+    --nb-reorg-text-soft: var(--nb-sepia-800);
+    --nb-reorg-text-muted: var(--nb-sepia-700);
+    --nb-reorg-text-quiet: var(--nb-sepia-600);
+    --nb-reorg-text-faint: var(--nb-sepia-500);
+    --nb-reorg-link: var(--nb-sepia-link);
+    --nb-reorg-lock: var(--nb-sepia-250);
+    --nb-reorg-lock-text: var(--nb-sepia-700);
+}
+
 :where(.NB-sepia) .NB-feeds-selector {
     background-color: var(--nb-sepia-800);
     border-bottom-color: var(--nb-sepia-200);

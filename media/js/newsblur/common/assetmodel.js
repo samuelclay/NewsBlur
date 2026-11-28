@@ -1953,6 +1953,65 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, pre_callback, error_callback);
     },
 
+    // Reorganize with AI (apps/reorganize/views.py), for the Organize sites dialog's AI tab in
+    // reader_organizer_ai.js. Each refusal reaches error_callback as {code: -1, reason}.
+
+    reorganize_status: function (callback, error_callback) {
+        this.make_request('/reorganize/status', {}, callback, error_callback, {
+            request_type: 'GET',
+            ajax_group: 'rapid'
+        });
+    },
+
+    reorganize_save_locks: function (keep, skip, callback, error_callback) {
+        this.make_request('/reorganize/locks', {
+            'keep': $.toJSON(keep),
+            'skip': $.toJSON(skip)
+        }, callback, error_callback);
+    },
+
+    reorganize_propose: function (level, find_dead, instructions, callback, error_callback) {
+        this.make_request('/reorganize/propose', {
+            'level': level,
+            'find_dead': find_dead ? 'true' : 'false',
+            'instructions': instructions
+        }, callback, error_callback);
+    },
+
+    reorganize_save_decisions: function (proposal_id, decisions, callback, error_callback) {
+        this.make_request('/reorganize/decisions', {
+            'proposal_id': proposal_id,
+            'decisions': $.toJSON(decisions)
+        }, callback, error_callback);
+    },
+
+    reorganize_revise: function (proposal_id, request, callback, error_callback) {
+        this.make_request('/reorganize/revise', {
+            'proposal_id': proposal_id,
+            'request': request
+        }, callback, error_callback);
+    },
+
+    // An apply or undo rewrites every folder at once and can take a while on a large account. It is
+    // never sent twice: a second apply would be refused, so a lost answer is found out from status.
+    reorganize_apply: function (proposal_id, callback, error_callback) {
+        this.make_request('/reorganize/apply', {
+            'proposal_id': proposal_id
+        }, callback, error_callback, {
+            timeout: 60000,
+            retry: false
+        });
+    },
+
+    reorganize_undo: function (proposal_id, callback, error_callback) {
+        this.make_request('/reorganize/undo', {
+            'proposal_id': proposal_id
+        }, callback, error_callback, {
+            timeout: 60000,
+            retry: false
+        });
+    },
+
     preference: function (preference, value, callback) {
         if (typeof value == 'undefined') {
             var pref = NEWSBLUR.Preferences[preference];

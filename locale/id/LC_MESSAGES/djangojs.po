@@ -153,6 +153,12 @@ msgstr[0] "%(badge)s berlaku hingga %(count)s hari"
 msgstr[1] "%(badge)s berlaku hingga %(count)s hari"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s situs"
+msgstr[1] "%(before)s → %(count)s situs"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "Topik %(category)s"
 
@@ -169,6 +175,12 @@ msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
 msgstr[1] "%(count)s byte"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "%(count)s perubahan tidak dapat dilakukan."
+msgstr[1] "%(count)s perubahan tidak dapat dilakukan."
 
 #, python-format
 msgid "%(count)s channel"
@@ -219,10 +231,34 @@ msgstr[0] "%(count)s hari yang lalu"
 msgstr[1] "%(count)s hari yang lalu"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "%(count)s situs yang tidak aktif akan dibisukan"
+msgstr[1] "%(count)s situs yang tidak aktif akan dibisukan"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "%(count)s situs yang tidak aktif dibisukan"
+msgstr[1] "%(count)s situs yang tidak aktif dibisukan"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s tidak suka"
 msgstr[1] "%(count)s tidak suka"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s folder kosong akan dihapus"
+msgstr[1] "%(count)s folder kosong akan dihapus"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "%(count)s folder kosong dihapus"
+msgstr[1] "%(count)s folder kosong dihapus"
 
 #, python-format
 msgid "%(count)s episode"
@@ -235,6 +271,54 @@ msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s feed"
 msgstr[1] "%(count)s feed"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s ditandai"
+msgstr[1] "%(count)s ditandai"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s folder ditambahkan"
+msgstr[1] "%(count)s folder ditambahkan"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "%(count)s folder akan ditambahkan"
+msgstr[1] "%(count)s folder akan ditambahkan"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s folder akan digabung dengan folder lain"
+msgstr[1] "%(count)s folder akan digabung dengan folder lain"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s folder akan diganti namanya"
+msgstr[1] "%(count)s folder akan diganti namanya"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "%(count)s folder digabung dengan folder lain"
+msgstr[1] "%(count)s folder digabung dengan folder lain"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s folder akan dipindahkan ke dalam folder lain"
+msgstr[1] "%(count)s folder akan dipindahkan ke dalam folder lain"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "%(count)s folder diganti nama atau dipindahkan"
+msgstr[1] "%(count)s folder diganti nama atau dipindahkan"
 
 #, python-format
 msgid "%(count)s follower"
@@ -345,6 +429,12 @@ msgstr[0] "%(count)s kali dibuka"
 msgstr[1] "%(count)s kali dibuka"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s situs lain di sini tidak termasuk dalam perubahan apa pun."
+msgstr[1] "%(count)s situs lain di sini tidak termasuk dalam perubahan apa pun."
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s halaman"
@@ -367,6 +457,12 @@ msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s balasan"
 msgstr[1] "%(count)s balasan"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "Tersisa %(count)s revisi."
+msgstr[1] "Tersisa %(count)s revisi."
 
 #, python-format
 msgid "%(count)s selected"
@@ -393,16 +489,58 @@ msgstr[0] "%(count)s situs"
 msgstr[1] "%(count)s situs"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "%(count)s situs telah ditambahkan ke folder kedua"
+msgstr[1] "%(count)s situs telah ditambahkan ke folder kedua"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "%(count)s situs tersedia"
 msgstr[1] "%(count)s situs tersedia"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s situs di sini, tidak termasuk dalam perubahan apa pun."
+msgstr[1] "%(count)s situs di sini, tidak termasuk dalam perubahan apa pun."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s situs akan ditambahkan ke folder kedua"
+msgstr[1] "%(count)s situs akan ditambahkan ke folder kedua"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "%(count)s situs telah dipindahkan ke folder lain"
+msgstr[1] "%(count)s situs telah dipindahkan ke folder lain"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s situs akan dipindahkan ke folder lain"
+msgstr[1] "%(count)s situs akan dipindahkan ke folder lain"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "%(count)s situs melebihi batas"
 msgstr[1] "%(count)s situs melebihi batas"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s situs belum memiliki keputusan dan tetap seperti semula."
+msgstr[1] "%(count)s situs belum memiliki keputusan dan tetap seperti semula."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "%(count)s belum diputuskan. Apa pun yang belum diputuskan akan tetap seperti semula."
+msgstr[1] "%(count)s belum diputuskan. Apa pun yang belum diputuskan akan tetap seperti semula."
 
 #, python-format
 msgid "%(count)s story"
@@ -990,6 +1128,10 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s situs lainnya"
 msgstr[1] "+ %(value_1)s situs lainnya"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/hari"
 
@@ -1073,6 +1215,9 @@ msgstr "Suara yang lebih jernih dan dekat"
 msgid "A folder"
 msgstr "Sebuah folder"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "Folder yang diperlukan telah diganti namanya, dipindahkan, atau dihapus setelah usulan dibuat."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Folder feed yang dibaca sebagai satu aliran"
 
@@ -1082,6 +1227,12 @@ msgstr "Pilihan artikel terbaru yang dibagikan pembaca NewsBlur, dipilih setiap 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Hadiah dari %(value_1)s telah diterapkan ke akun Anda."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "Penataan ulang yang lebih baru telah diterapkan, sehingga penataan ulang ini tidak dapat diurungkan."
+
+msgid "A proposal is already being made."
+msgstr "Usulan sedang dibuat."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Tahap kedua menggunakan petunjuk Anda untuk menemukan pola yang tepat di halaman."
@@ -1117,6 +1268,12 @@ msgstr "Filter AI disimpan, tetapi tidak akan dijalankan sampai Anda %(billing_l
 msgid "AI finds the stories"
 msgstr "AI menemukan artikel"
 
+msgid "AI is looking through your sites"
+msgstr "AI sedang menelusuri situs Anda"
+
+msgid "AI is revising the proposal"
+msgstr "AI sedang merevisi usulan"
+
 msgid "AI-curated summary of your top stories"
 msgstr "Ringkasan pilihan AI dari artikel teratas Anda"
 
@@ -1136,6 +1293,12 @@ msgstr "Tentu. Buka pelatih, lalu hapus tanda suka atau tidak suka untuk mengatu
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "Aksen"
+
+msgid "Accept all"
+msgstr "Terima semua"
+
+msgid "Accept into this folder"
+msgstr "Terima ke folder ini"
 
 msgid "Account"
 msgstr "Akun"
@@ -1176,6 +1339,9 @@ msgstr "Bookmarklet Tambahkan Situs &amp; Bagikan Artikel"
 
 msgid "Add a classifier"
 msgstr "Tambahkan pengklasifikasi"
+
+msgid "Add a copy here"
+msgstr "Tambahkan salinan di sini"
 
 msgid "Add a forwarding address"
 msgstr "Tambahkan alamat penerusan"
@@ -1218,6 +1384,10 @@ msgstr "Tambahkan situs/folder"
 
 msgid "Add story list"
 msgstr "Tambahkan daftar artikel"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "Tambahkan folder %(folder)s"
 
 msgid "Add to Chrome"
 msgstr "Tambahkan ke Chrome"
@@ -1327,6 +1497,9 @@ msgstr "Selesai!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "Semua feed diambil setiap 5–15 menit"
 
+msgid "All moves"
+msgstr "Semua pemindahan"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1355,11 +1528,21 @@ msgstr "Domain yang Diizinkan"
 msgid "Alphabetical"
 msgstr "Urut abjad"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "Selain itu, tambahkan, ganti nama, gabungkan, jadikan folder bertingkat, dan hapus folder."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Hapus juga %(value_1)s arsip yang sudah ada dari domain ini"
 msgstr[1] "Hapus juga %(value_1)s arsip yang sudah ada dari domain ini"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "Juga di %(folder)s"
+
+msgid "Also look for"
+msgstr "Cari juga"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1422,6 +1605,9 @@ msgstr "Notifikasi Android memerlukan Premium Archive"
 msgid "Animals"
 msgstr "Hewan"
 
+msgid "Another folder there already has this name."
+msgstr "Folder lain di sana sudah menggunakan nama ini."
+
 msgid "Any"
 msgstr "Kapan saja"
 
@@ -1434,6 +1620,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Kapan saja"
+
+msgid "Anything the AI should know"
+msgstr "Hal yang perlu diketahui AI"
 
 msgid "Appearance"
 msgstr "Tampilan"
@@ -1456,11 +1645,27 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
 msgstr[1] "Berhasil menerapkan %(succeeded)s dari %(count)s penggabungan (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "Diterapkan pada %(date)s."
+
 msgid "Applies to"
 msgstr "Berlaku untuk"
 
 msgid "Apply"
 msgstr "Terapkan"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "Terapkan %(count)s perubahan"
+msgstr[1] "Terapkan %(count)s perubahan"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "Terapkan %(count)s perubahan?"
+msgstr[1] "Terapkan %(count)s perubahan?"
 
 msgid "Apply All Merges"
 msgstr "Terapkan Semua Penggabungan"
@@ -1468,11 +1673,29 @@ msgstr "Terapkan Semua Penggabungan"
 msgid "Apply Split"
 msgstr "Terapkan Pemisahan"
 
+msgid "Apply changes"
+msgstr "Terapkan perubahan"
+
 msgid "Apply training across a folder"
 msgstr "Terapkan pelatihan ke seluruh folder"
 
 msgid "Apply training globally"
 msgstr "Terapkan pelatihan secara global"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "Penerapan perubahan memerlukan Premium Archive."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"Menerapkan perubahan memerlukan Premium Archive. Keputusan Anda disimpan dan akan tersedia di sini setelah "
+"Anda meningkatkan."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "Penerapan pada %(date)s terhenti di tengah jalan, sehingga beberapa folder Anda mungkin telah berubah."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "Penerapan terhenti di tengah jalan, sehingga beberapa folder Anda mungkin telah berubah."
 
 msgid "Applying..."
 msgstr "Menerapkan..."
@@ -1497,6 +1720,12 @@ msgstr "Apakah aplikasinya gratis?"
 
 msgid "Are the apps open source?"
 msgstr "Apakah aplikasi ini bersumber terbuka?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "Masuk %(count)s"
+msgstr[1] "Masuk %(count)s"
 
 msgid "Arrow keys"
 msgstr "Tombol panah"
@@ -1527,6 +1756,9 @@ msgstr "Tanya AI dapat mentranskripsikan podcast atau video terlebih dahulu, lal
 
 msgid "Ask AI questions about stories"
 msgstr "Ajukan pertanyaan kepada AI tentang artikel"
+
+msgid "Ask AI to revise"
+msgstr "Minta AI merevisi"
 
 msgid "Ask AI with a choice of models"
 msgstr "Tanya AI dengan pilihan model"
@@ -1650,6 +1882,9 @@ msgstr "Kembali ke pelatih pengklasifikasi"
 msgid "Back to feeds"
 msgstr "Kembali ke feed"
 
+msgid "Back to review"
+msgstr "Kembali ke peninjauan"
+
 msgid "Back to stories"
 msgstr "Kembali ke artikel"
 
@@ -1731,6 +1966,9 @@ msgstr "Blurblog, artikel yang dibagikan, dan komentar"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
+
+msgid "Both"
+msgstr "Keduanya"
 
 msgid "Bottom"
 msgstr "Bawah"
@@ -1814,6 +2052,12 @@ msgstr "Poin-poin"
 
 msgid "Buttons"
 msgstr "Tombol"
+
+msgid "By folder"
+msgstr "Menurut folder"
+
+msgid "By hand"
+msgstr "Secara manual"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1934,6 +2178,9 @@ msgstr "Centang yang Anda suka di atas..."
 msgid "Check your email..."
 msgstr "Periksa email Anda..."
 
+msgid "Checking for dead sites"
+msgstr "Memeriksa situs yang tidak aktif"
+
 msgid "Checking recent pages..."
 msgstr "Memeriksa halaman terbaru..."
 
@@ -1966,6 +2213,9 @@ msgstr "Pilih kategori"
 
 msgid "Choose how many days back"
 msgstr "Pilih berapa hari ke belakang"
+
+msgid "Choose how much to change, then try again."
+msgstr "Pilih seberapa banyak yang ingin diubah, lalu coba lagi."
 
 msgid "Choose model"
 msgstr "Pilih model"
@@ -2236,8 +2486,22 @@ msgstr "Salin Teks"
 msgid "Copy URL"
 msgstr "Salin URL"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "Salin dari %(folder)s"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "Salinan ditawarkan kepada %(folder)s"
+
+msgid "Copy undecided"
+msgstr "Salinan belum diputuskan"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Salin rahasia klien Anda sekarang. Anda hanya dapat melihatnya sekali."
+
+msgid "Copy?"
+msgstr "Salin?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Tidak dapat menambahkan pengklasifikasi ini. Coba lagi."
@@ -2256,6 +2520,9 @@ msgstr "FAQ tidak dapat dimuat. Silakan coba lagi."
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "Tidak dapat memuat aplikasi Anda. Coba segarkan."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "Tidak dapat memuat Atur Ulang dengan AI."
 
 msgid "Couldn't load audio for this story."
 msgstr "Audio untuk artikel ini tidak dapat dimuat."
@@ -2411,8 +2678,20 @@ msgstr "Hari"
 msgid "Days of unreads"
 msgstr "Masa belum dibaca"
 
+msgid "Dead sites"
+msgstr "Situs mati"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "Pembisuan situs mati dibatalkan."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "Situs mati yang berhenti menerbitkan atau terus mengalami kegagalan"
+
 msgid "December"
 msgstr "Desember"
+
+msgid "Decline all copies"
+msgstr "Tolak semua salinan"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Bacaan mendalam yang benar-benar disimak komunitas"
@@ -2575,6 +2854,9 @@ msgstr "Tutup"
 msgid "Do I get a unique email address?"
 msgstr "Apakah saya mendapatkan alamat email unik?"
 
+msgid "Do not put it here"
+msgstr "Jangan taruh di sini"
+
 msgid "Do the apps work offline?"
 msgstr "Apakah aplikasi bisa digunakan secara offline?"
 
@@ -2605,6 +2887,9 @@ msgstr "Jangan tampilkan pratinjau, hanya tampilkan judul artikel"
 
 msgid "Don't show a thumbnail"
 msgstr "Jangan tampilkan gambar mini"
+
+msgid "Done"
+msgstr "Selesai"
 
 msgid "Done!"
 msgstr "Selesai!"
@@ -2852,6 +3137,9 @@ msgstr "Setiap artikel baru diarsipkan secara permanen"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "Setiap tag artikel tersimpan memiliki feed RSS sendiri, cocok untuk diteruskan ke IFTTT atau Zapier."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "Semua situs berada di folder yang Anda kecualikan. Buka folder agar AI dapat melihat situs."
+
 msgid "Every story archived and searchable forever"
 msgstr "Semua artikel diarsipkan dan dapat dicari selamanya"
 
@@ -2873,6 +3161,9 @@ msgstr "Semua orang"
 msgid "Everyone"
 msgstr "Semua orang"
 
+msgid "Everything"
+msgstr "Semua"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "Semua yang dapat dilakukan NewsBlur dan cara mencobanya"
 
@@ -2890,6 +3181,12 @@ msgstr "Semua yang ada di paket Gratis, plus:"
 
 msgid "Everything in Premium, plus:"
 msgstr "Semua yang ada di Premium, ditambah:"
+
+msgid "Everything is decided."
+msgstr "Semua sudah diputuskan."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "Semua perubahan awalnya disetujui. Tolak pemindahan dari salah satu folder."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -3019,6 +3316,13 @@ msgstr "Gagal mengirim kueri"
 msgid "Failed to subscribe"
 msgstr "Gagal berlangganan"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "Gagal diambil dan belum pernah memiliki artikel."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "Gagal mengambil data. Artikel terakhir berasal dari %(month)s."
+
 msgid "Fashion"
 msgstr "Mode"
 
@@ -3119,11 +3423,17 @@ msgstr "Mengambil feed Anda"
 msgid "Fetching..."
 msgstr "Mengambil..."
 
+msgid "File sites into the folders you already have."
+msgstr "Kelompokkan situs ke dalam folder yang sudah Anda miliki."
+
 msgid "Files"
 msgstr "File"
 
 msgid "Filled Icons"
 msgstr "Ikon Terisi"
+
+msgid "Filter"
+msgstr "Filter"
 
 msgid "Filter by date range"
 msgstr "Filter berdasarkan rentang tanggal"
@@ -3251,8 +3561,14 @@ msgstr "Jumlah artikel belum dibaca di folder"
 msgid "Folders"
 msgstr "Folder"
 
+msgid "Folders after"
+msgstr "Folder setelahnya"
+
 msgid "Folders only"
 msgstr "Hanya folder"
+
+msgid "Folders updated"
+msgstr "Folder diperbarui"
 
 msgid "Folders, feeds, and story titles"
 msgstr "Folder, feed, dan judul artikel"
@@ -3429,6 +3745,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "Dari"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "Dari %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "Dari situs yang jarang diperbarui"
 
@@ -3600,6 +3920,10 @@ msgstr "Dapatkan Premium — $36/tahun"
 msgid "Go back to %(breadcrumb)s"
 msgstr "Kembali ke %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "Berada di dalam %(folder)s"
+
 msgid "Good Reads"
 msgstr "Bacaan Bagus"
 
@@ -3703,6 +4027,9 @@ msgstr "Sembunyikan situs yang sudah Anda ikuti"
 msgid "Hide story changes"
 msgstr "Sembunyikan perubahan artikel"
 
+msgid "Hide them"
+msgstr "Sembunyikan"
+
 msgid "Highlight"
 msgstr "Sorot"
 
@@ -3747,6 +4074,9 @@ msgstr "Berapa banyak artikel yang bisa saya simpan?"
 
 msgid "How much emotion"
 msgstr "Seberapa banyak emosi"
+
+msgid "How much to change"
+msgstr "Seberapa banyak yang akan diubah"
 
 msgid "How often"
 msgstr "Seberapa sering"
@@ -3821,6 +4151,10 @@ msgstr[0] "Dalam %(count)s hari, uji coba premium Anda berakhir dan Anda akan ke
 msgstr[1] "Dalam %(count)s hari, uji coba Premium Anda berakhir dan Anda akan kembali ke paket Gratis"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "Di %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "Di Gmail, buka %(settings_menu)s lalu klik %(add_button)s. Tambahkan alamat email NewsBlur khusus Anda."
 
@@ -3841,6 +4175,9 @@ msgstr "Di jendela baru"
 msgid "In a pill"
 msgstr "Dalam kapsul"
 
+msgid "In both folders"
+msgstr "Di kedua folder"
+
 msgid "In rotation"
 msgstr "Dalam rotasi"
 
@@ -3853,6 +4190,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "Di jendela ini"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "Di dua folder: %(count)s"
 
 msgid "Include read"
 msgstr "Sertakan yang sudah dibaca"
@@ -3884,6 +4225,10 @@ msgstr "Artikel yang jarang muncul per bulan"
 msgid "Inline list"
 msgstr "Daftar sebaris"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "Di dalam %(folder)s"
+
 msgid "Insta-fetch stories"
 msgstr "Ambil artikel secara instan"
 
@@ -3910,6 +4255,10 @@ msgid "Interactions"
 msgstr "Interaksi"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "Ke %(folder)s, lalu dihapus"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "Regex tidak valid: %(error)s"
 
@@ -3930,6 +4279,27 @@ msgstr "Apakah ini berbeda dari RSS?"
 
 msgid "Is training free?"
 msgstr "Apakah pelatihan gratis?"
+
+msgid "It has never had a story."
+msgstr "Situs ini belum pernah memiliki artikel."
+
+msgid "It involves a folder you locked."
+msgstr "Ini melibatkan folder yang Anda kunci."
+
+msgid "It needs a new folder you rejected."
+msgstr "Folder baru diperlukan, tetapi Anda menolaknya."
+
+msgid "It would have put a folder inside itself."
+msgstr "Folder akan ditempatkan di dalam dirinya sendiri."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "Sudah lebih dari %(count)s hari, jadi penataan ulang ini tidak dapat dibatalkan lagi."
+msgstr[1] "Sudah lebih dari %(count)s hari, jadi penataan ulang ini tidak dapat dibatalkan lagi."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "Foldernya dikunci agar situs-situsnya tetap berada di dalamnya."
 
 msgid "January"
 msgstr "Januari"
@@ -3961,8 +4331,17 @@ msgstr "Hanya judul dengan sedikit komentar"
 msgid "Just the headlines, no commentary"
 msgstr "Hanya judul, tanpa komentar"
 
+msgid "Keep"
+msgstr "Pertahankan"
+
+msgid "Keep all here"
+msgstr "Simpan semua di sini"
+
 msgid "Keep fades, without movement."
 msgstr "Pertahankan efek pudar, tanpa gerakan."
+
+msgid "Keep it here"
+msgstr "Tetap di sini"
 
 msgid "Keep others unread"
 msgstr "Biarkan yang lain tetap belum dibaca"
@@ -3973,8 +4352,17 @@ msgstr "Pertahankan status telah dibaca"
 msgid "Keep right-side buttons visible while reading"
 msgstr "Tetap tampilkan tombol di sisi kanan saat membaca"
 
+msgid "Keep sites"
+msgstr "Pertahankan situs"
+
 msgid "Keep stories separate"
 msgstr "Pisahkan artikel"
+
+msgid "Keep the new folders"
+msgstr "Pertahankan folder baru"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "Gabungkan blog foto. Pisahkan berita berdasarkan negara."
 
 msgid "Keep unread counts out of the window title"
 msgstr "Jangan tampilkan jumlah artikel belum dibaca di judul jendela"
@@ -4047,11 +4435,29 @@ msgstr "Terakhir terlihat:"
 msgid "Layout"
 msgstr "Tata letak"
 
+msgid "Leave out"
+msgstr "Keluarkan"
+
 msgid "Leave unread"
 msgstr "Biarkan belum dibaca"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "Meninggalkan %(count)s"
+msgstr[1] "Meninggalkan %(count)s"
+
 msgid "Left"
 msgstr "Kiri"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "Dikecualikan. Tidak ada yang berubah di folder ini."
+
+msgid "Let all go"
+msgstr "Biarkan semuanya pindah"
+
+msgid "Let it go"
+msgstr "Biarkan pindah"
 
 msgid "Let's Get Started "
 msgstr "Mari Mulai "
@@ -4168,8 +4574,14 @@ msgstr "Lokasi"
 msgid "Lock"
 msgstr "Kunci"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "Kunci folder yang harus dibiarkan oleh AI"
+
 msgid "Locked"
 msgstr "Terkunci"
+
+msgid "Locked with parent"
+msgstr "Terkunci bersama folder induk"
 
 msgid "Log In or Sign Up"
 msgstr "Masuk atau Daftar"
@@ -4387,6 +4799,10 @@ msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "Gabungkan %(count)s kategori ke:"
 msgstr[1] "Gabungkan %(count)s kategori ke:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "Gabungkan %(folder)s ke dalam %(into)s"
+
 msgid "Merge into:"
 msgstr "Gabungkan ke:"
 
@@ -4469,6 +4885,10 @@ msgstr[0] "Pindahkan %(count)s situs"
 msgstr[1] "Pindahkan %(count)s situs"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "Pindahkan %(site)s ke %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "Pindahkan ke %(folder)s"
 
@@ -4481,6 +4901,13 @@ msgstr "Dipindahkan"
 msgid "Moved!"
 msgstr "Dipindahkan!"
 
+msgid "Moves"
+msgstr "Dipindahkan"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "Ikut dipindahkan bersama %(folder)s saat folder tersebut digabung."
+
 msgid "Moving..."
 msgstr "Memindahkan..."
 
@@ -4492,6 +4919,10 @@ msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "Bisukan %(count)s situs"
 msgstr[1] "Bisukan %(count)s situs"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "Bisukan %(site)s"
 
 msgid "Mute Sites"
 msgstr "Bisukan Situs"
@@ -4577,6 +5008,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "Perlu setidaknya 2 kategori untuk digabungkan"
+
+msgid "Nest"
+msgstr "Jadikan bertingkat"
 
 msgid "Nested"
 msgstr "Bertingkat"
@@ -4742,6 +5176,9 @@ msgstr "Tidak ada kategori. Kategori akan muncul di sini setelah dikonfigurasi."
 msgid "No categories with 10+ stories available for splitting."
 msgstr "Tidak ada kategori dengan 10+ artikel yang tersedia untuk dipisahkan."
 
+msgid "No changes"
+msgstr "Tidak ada perubahan"
+
 msgid "No channels found matching your filter."
 msgstr "Tidak ditemukan kanal yang cocok dengan filter Anda."
 
@@ -4753,6 +5190,9 @@ msgstr "Tidak ada akun yang terhubung"
 
 msgid "No content"
 msgstr "Tidak ada konten"
+
+msgid "No copy"
+msgstr "Tanpa salinan"
 
 msgid "No feeds found"
 msgstr "Feed tidak ditemukan"
@@ -4880,6 +5320,10 @@ msgstr[1] "Belum ada artikel dari %(count)s situs Anda yang diindeks untuk artik
 msgid "No stories published last month"
 msgstr "Tidak ada artikel yang diterbitkan bulan lalu"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "Tidak ada artikel sejak %(month)s."
+
 msgid "No stories to delete"
 msgstr "Tidak ada artikel untuk dihapus"
 
@@ -4951,8 +5395,31 @@ msgstr ""
 msgid "Nothing"
 msgstr "Tidak ada"
 
+msgid "Nothing changed."
+msgstr "Tidak ada yang berubah."
+
+msgid "Nothing changes."
+msgstr "Tidak ada perubahan."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "Tidak ada yang akan dimasukkan ke folder ini, jadi folder tidak akan dibuat."
+
 msgid "Nothing happens without your permission."
 msgstr "Tidak ada yang terjadi tanpa izin Anda."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "Tidak ada yang tersisa di folder ini setelah perubahan lainnya."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr ""
+"Tidak ada yang dipindahkan dan folder tetap seperti semula. Situs di dalamnya masih dapat ditawarkan ke "
+"folder lain sebagai salinan."
+
+msgid "Nothing leaves this folder."
+msgstr "Tidak ada yang keluar dari folder ini."
+
+msgid "Nothing matches this filter."
+msgstr "Tidak ada yang cocok dengan filter ini."
 
 msgid "Nothing recorded."
 msgstr "Tidak ada yang tercatat."
@@ -5015,6 +5482,12 @@ msgstr "Nonaktif"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "Tampilkan dalam pil \"N artikel baru\""
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "Ditawarkan di folder lain sebagai salinan %(count)s"
+msgstr[1] "Ditawarkan di folder lain sebagai salinan %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "Aplikasi Android resmi NewsBlur"
 
@@ -5071,8 +5544,14 @@ msgstr ""
 msgid "On reload"
 msgstr "Saat dimuat ulang"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "Setelah Anda mengajukan usulan lagi, penataan ulang terakhir tidak dapat dibatalkan lagi."
+
 msgid "One command with Docker"
 msgstr "Satu perintah dengan Docker"
+
+msgid "One of the proposed changes"
+msgstr "Salah satu perubahan yang diusulkan"
 
 msgid "One sentence"
 msgstr "Satu kalimat"
@@ -5628,8 +6107,23 @@ msgstr "Detail Profil"
 msgid "Profile picture"
 msgstr "Foto profil"
 
+msgid "Progress"
+msgstr "Progres"
+
 msgid "Prompt"
 msgstr "Prompt"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "Ajukan susunan folder baru. Folder yang dikunci tetap ada."
+
+msgid "Propose changes"
+msgstr "Ajukan perubahan"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "Mengajukan usulan lagi akan menggantikan usulan yang sedang Anda tinjau."
+
+msgid "Proposing..."
+msgstr "Mengajukan usulan..."
 
 msgid "Protected:"
 msgstr "Dilindungi:"
@@ -5648,6 +6142,13 @@ msgstr "Masa Berlaku Push"
 
 msgid "Push expires"
 msgstr "Push kedaluwarsa"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "Letakkan %(folder)s di dalam %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "Menyusun usulan"
 
 msgid "Questions"
 msgstr "Pertanyaan"
@@ -5772,6 +6273,12 @@ msgstr "Baca feed Anda: artikel belum dibaca, folder, pencarian, dan artikel ter
 msgid "Reading"
 msgstr "Membaca"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "Membaca %(count)s situs"
+msgstr[1] "Membaca %(count)s situs"
+
 msgid "Reading article..."
 msgstr "Memuat artikel..."
 
@@ -5879,6 +6386,16 @@ msgstr "Regex"
 msgid "Regex requires %(tier_link)s"
 msgstr "Regex memerlukan %(tier_link)s"
 
+msgid "Reject"
+msgstr "Tolak"
+
+msgid "Reject all"
+msgstr "Tolak semua"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "Ditolak %(count)s"
+
 msgid "Related"
 msgstr "Terkait"
 
@@ -5909,6 +6426,10 @@ msgstr "Hapus %(voice)s dari rotasi"
 
 msgid "Remove from Up Next"
 msgstr "Hapus dari Berikutnya"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "Hapus folder %(folder)s"
 
 msgid "Remove this list"
 msgstr "Hapus daftar ini"
@@ -5941,6 +6462,10 @@ msgstr "Ganti nama folder ini"
 msgid "Rename this site"
 msgstr "Ganti nama situs ini"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "Ganti nama “%(old)s” menjadi “%(new)s”"
+
 msgid "Renamed"
 msgstr "Nama diubah"
 
@@ -5952,6 +6477,15 @@ msgstr[1] "Kategori %(count)s artikel diganti namanya menjadi \"%(category)s\""
 
 msgid "Renaming..."
 msgstr "Mengganti nama..."
+
+msgid "Reorganize"
+msgstr "Atur ulang"
+
+msgid "Reorganize again"
+msgstr "Atur ulang"
+
+msgid "Reorganize with AI"
+msgstr "Atur ulang dengan AI"
 
 msgid "Request timed out"
 msgstr "Waktu permintaan habis"
@@ -6015,6 +6549,19 @@ msgstr "Coba lagi"
 
 msgid "Retry fetching and parsing"
 msgstr "Coba lagi mengambil dan mengurai"
+
+msgid "Review"
+msgstr "Tinjau"
+
+msgid "Revise proposal"
+msgstr "Revisi usulan"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "Direvisi sesuai permintaan Anda: “%(request)s”"
+
+msgid "Revising..."
+msgstr "Merevisi..."
 
 msgid "Rewinding..."
 msgstr "Memutar kembali..."
@@ -6166,6 +6713,9 @@ msgstr "Menyimpan artikel tersedia di semua paket. Tag dan feed RSS tag memerluk
 
 msgid "Saving..."
 msgstr "Menyimpan..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "Sebutkan perubahan yang harus dilakukan AI, lalu coba lagi."
 
 msgid "Schedule when your briefing is generated"
 msgstr "Jadwalkan waktu pembuatan ringkasan Anda"
@@ -6388,6 +6938,20 @@ msgstr "Kirim artikel ini"
 msgid "Sending…"
 msgstr "Mengirim…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"Nama, alamat, dan judul terbaru dari %(count)s situs akan dikirim ke model AI. Tidak ada yang berubah "
+"sampai Anda menyetujuinya."
+msgstr[1] ""
+"Nama, alamat, dan judul terbaru dari %(count)s situs akan dikirim ke model AI. Tidak ada yang berubah "
+"sampai Anda menyetujuinya."
+
 msgid "Separate"
 msgstr "Terpisah"
 
@@ -6400,6 +6964,9 @@ msgstr "Kesalahan server"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "Kesalahan server: %(status)s"
+
+msgid "Set up"
+msgstr "Siapkan"
 
 msgid "Set up billing"
 msgstr "Siapkan penagihan"
@@ -6575,6 +7142,13 @@ msgstr "Tampilkan dasbor saat memuat NewsBlur"
 msgid "Show the entire story, even if really, really long"
 msgstr "Tampilkan seluruh artikel, meskipun sangat, sangat panjang"
 
+msgid "Show them"
+msgstr "Tampilkan"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "Tampilkan pemindahan ini di %(folder)s"
+
 msgid "Show tooltips"
 msgstr "Tampilkan tooltip"
 
@@ -6654,8 +7228,17 @@ msgstr "Situs"
 msgid "Sites and folders"
 msgstr "Situs dan folder"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "Anda tidak akan berlangganan kembali ke situs yang sebelumnya Anda hentikan langganannya."
+
 msgid "Sites updated up to 5x more often"
 msgstr "Situs diperbarui hingga 5 kali lebih sering"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "Situs yang Anda langgani sejak saat itu akan tetap ada."
+
+msgid "Sketching folders"
+msgstr "Menyusun rancangan folder"
 
 msgid "Skip Back"
 msgstr "Mundur"
@@ -6692,6 +7275,12 @@ msgstr "Koneksi Sosial"
 
 msgid "Social features"
 msgstr "Fitur sosial"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "Terjadi kesalahan saat membuat usulan. Silakan coba lagi."
+
+msgid "Something went wrong. Please try again."
+msgstr "Terjadi kesalahan. Silakan coba lagi."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6740,6 +7329,9 @@ msgstr "Urutkan aliran dari yang terlama atau terbaru melalui popover opsi feed.
 msgid "Sort, filter, and display options"
 msgstr "Opsi urutkan, filter, dan tampilan"
 
+msgid "Sorting sites into folders"
+msgstr "Mengurutkan situs ke dalam folder"
+
 msgid "Source feeds"
 msgstr "Feed sumber"
 
@@ -6776,6 +7368,9 @@ msgstr[1] "Pisahkan \"%(category)s\" (%(count)s artikel) menjadi:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "Pisahkan \"%(value_1)s\" menjadi:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Pisahkan Teknologi ke dalam folder-folder yang lebih kecil. Maksimal 40 situs per folder."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6824,6 +7419,9 @@ msgstr "Bintang"
 msgid "Start Training Site by Site"
 msgstr "Mulai Latih per Situs"
 
+msgid "Start fresh"
+msgstr "Mulai dari awal"
+
 msgid "Starting analysis..."
 msgstr "Memulai analisis..."
 
@@ -6848,11 +7446,36 @@ msgstr "Statistik"
 msgid "Status"
 msgstr "Status"
 
+msgid "Stay"
+msgstr "Tetap"
+
 msgid "Stay on the same feed/folder"
 msgstr "Tetap di feed/folder yang sama"
 
 msgid "Stay put"
 msgstr "Tetap di tempat"
+
+msgid "Stays"
+msgstr "Tetap"
+
+msgid "Stays here"
+msgstr "Tetap di sini"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "Tetap di %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "Tetap, karena %(count)s situs tetap berada di dalamnya."
+msgstr[1] "Tetap, karena %(count)s situs tetap berada di dalamnya."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "Tetap karena folder di dalamnya tetap ada."
+
+msgid "Stays, no folder"
+msgstr "Tetap, tanpa folder"
 
 msgid "Steadier or more varied"
 msgstr "Lebih stabil atau lebih bervariasi"
@@ -6873,6 +7496,13 @@ msgstr "Hentikan pratinjau"
 
 msgid "Stop recording"
 msgstr "Hentikan perekaman"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"Berhenti menerbitkan atau gagal diambil. Situs dalam folder terkunci tidak ditandai. Saran untuk membisukan"
+" dipilih secara default. Anda harus mengeklik untuk berhenti berlangganan."
 
 msgid "Stories"
 msgstr "Artikel"
@@ -7129,6 +7759,12 @@ msgstr "Tingkatan langganan"
 msgid "Suggested questions"
 msgstr "Pertanyaan yang disarankan"
 
+msgid "Suggested: mute."
+msgstr "Saran: bisukan."
+
+msgid "Suggested: unsubscribe."
+msgstr "Saran: berhenti berlangganan."
+
 msgid "Summarize"
 msgstr "Ringkas"
 
@@ -7285,6 +7921,30 @@ msgstr "Terima kasih! Anda memiliki %(bold_start)sakun Premium Pro%(bold_end)s."
 msgid "That change could not be saved"
 msgstr "Perubahan tersebut tidak dapat disimpan"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "Situs mati %(count)s yang Anda berhenti ikuti tidak dipulihkan."
+msgstr[1] "Situs-situs mati %(count)s yang Anda berhenti ikuti tidak dipulihkan."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI dapat memindahkan situs, mengganti nama folder, menggabungkannya, atau menjadikannya subfolder."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI tidak dapat menyelesaikan usulan untuk situs Anda. Silakan coba lagi."
+
+msgid "The AI found nothing to change."
+msgstr "AI tidak menemukan apa pun untuk diubah."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI kesulitan menjawab. Silakan coba lagi."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "AI sedang tidak tersedia. Silakan coba lagi nanti."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI tidak pernah melihat folder ini atau situs di dalamnya."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Layanan AI terlalu lama merespons. Silakan coba lagi."
 
@@ -7322,6 +7982,12 @@ msgstr "Blog NewsBlur"
 
 msgid "The audio stream was interrupted."
 msgstr "Aliran audio terputus."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "Perubahan tidak dapat diterapkan. Silakan coba lagi."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "Folder tersebut masih berisi situs atau folder, jadi folder itu tetap ada."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7375,8 +8041,20 @@ msgstr "Halaman asli telah dinonaktifkan oleh penerbit."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML halaman diambil dan diurai untuk mengekstrak struktur konten."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "Usulan tersebut menjelaskannya dengan cara yang tidak dapat diterapkan."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "Proses pembuatan usulan terlalu lama dan dihentikan. Silakan coba lagi."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "Penataan ulang tidak dapat dibatalkan. Silakan coba lagi."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "Situs itu sendiri, seperti yang Anda lihat di browser"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "Situs tersebut tidak lagi berada di lokasi yang diperkirakan oleh usulan."
 
 msgid "The story on its own page on the site"
 msgstr "Artikel di halaman tersendiri pada situs"
@@ -7448,6 +8126,13 @@ msgstr "Terjadi masalah saat mengunggah foto Anda."
 msgid "There was an error trying to logout, ouch."
 msgstr "Terjadi kesalahan saat mencoba keluar. Aduh."
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr ""
+"Tidak ada yang dapat diatur oleh AI. Buka lebih banyak folder Anda, atau pilih Atur ulang agar AI dapat "
+"menambahkan folder."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Tidak ada batas. Simpan artikel sebanyak yang Anda mau, dan semuanya akan disimpan selamanya."
 
@@ -7463,6 +8148,13 @@ msgid ""
 msgstr ""
 "Domain-domain ini diblokir secara default (mesin pencari, media sosial, dll.). Tambahkan ke \"Domain yang "
 "Diizinkan\" di atas untuk mengizinkannya."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"Situs-situs ini tetap berada di folder lama dan juga ditawarkan untuk dipindahkan ke folder baru. Pilih "
+"folder untuk masing-masing situs."
 
 msgid "They redeem it."
 msgstr "Mereka menukarkannya."
@@ -7484,6 +8176,12 @@ msgstr "Minggu Ini"
 
 msgid "This Year"
 msgstr "Tahun Ini"
+
+msgid "This change couldn't be made."
+msgstr "Perubahan ini tidak dapat dilakukan."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "Perubahan ini tidak sesuai dengan pilihan Anda yang lain."
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7510,12 +8208,39 @@ msgstr ""
 "Ini cocok dengan seluruh judul dan hanya akan cocok dengan artikel yang persis sama. Pilih sebagian judul "
 "saja."
 
+msgid "This proposal can't be changed right now."
+msgstr "Usulan ini tidak dapat diubah sekarang."
+
+msgid "This proposal can't be revised again."
+msgstr "Usulan ini tidak dapat direvisi lagi."
+
+msgid "This proposal couldn't be found."
+msgstr "Usulan ini tidak dapat ditemukan."
+
+msgid "This proposal has already been applied."
+msgstr "Usulan ini sudah diterapkan."
+
+msgid "This proposal isn't ready to apply."
+msgstr "Usulan ini belum siap diterapkan."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "Usulan ini telah digantikan oleh usulan yang lebih baru."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Daftar artikel yang telah dibaca ini adalah %(link_start)sfitur premium%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "Ini akan menghapus tag dari semua artikel tersimpan. Artikel akan tetap tersimpan tanpa tag ini."
+
+msgid "This reorganization can no longer be undone."
+msgstr "Penataan ulang ini tidak dapat dibatalkan lagi."
+
+msgid "This reorganization didn't finish"
+msgstr "Penataan ulang ini tidak selesai"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "Penataan ulang ini belum diterapkan, jadi tidak ada yang perlu diurungkan."
 
 msgid "This site"
 msgstr "Situs ini"
@@ -7572,6 +8297,9 @@ msgstr "Beri tanda suka pada penulis, tag, atau kata kunci judul yang Anda sukai
 
 msgid "Thursday"
 msgstr "Kamis"
+
+msgid "Tidy"
+msgstr "Rapikan"
 
 msgid "Tier"
 msgstr "Paket"
@@ -7637,6 +8365,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "Sampai"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "Ke %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "Perlu diputuskan %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7689,6 +8425,9 @@ msgstr "Domain Teratas"
 
 msgid "Top Level"
 msgstr "Level Teratas"
+
+msgid "Top level"
+msgstr "Tingkat teratas"
 
 msgid "Top stories"
 msgstr "Artikel teratas"
@@ -7849,6 +8588,21 @@ msgstr "Tidak tersedia"
 msgid "Uncategorized"
 msgstr "Tanpa kategori"
 
+msgid "Undo"
+msgstr "Urungkan"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "Urungkan untuk mengembalikan folder Anda seperti sebelum proses dimulai."
+
+msgid "Undo this reorganization"
+msgstr "Urungkan penataan ulang ini"
+
+msgid "Undo this reorganization?"
+msgstr "Batalkan penataan ulang ini?"
+
+msgid "Undoing..."
+msgstr "Mengurungkan..."
+
 msgid "Unfavorited"
 msgstr "Dihapus dari favorit"
 
@@ -7920,6 +8674,33 @@ msgstr "Batal simpan artikel ini"
 
 msgid "Unshared"
 msgstr "Tidak dibagikan"
+
+msgid "Unsubscribe"
+msgstr "Berhenti berlangganan"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "Berhenti berlangganan dari %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "Berhenti berlangganan dari %(count)s situs yang tidak aktif"
+msgstr[1] "Berhenti berlangganan dari %(count)s situs yang tidak aktif"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"Berhenti berlangganan dari %(count)s situs yang tidak aktif tidak dapat dibatalkan. Mengurungkan tindakan "
+"ini akan mengembalikan folder Anda, tetapi tidak akan membuat Anda berlangganan lagi."
+msgstr[1] ""
+"Berhenti berlangganan dari %(count)s situs yang tidak aktif tidak dapat dibatalkan. Mengurungkan tindakan "
+"ini akan mengembalikan folder Anda, tetapi tidak akan membuat Anda berlangganan lagi."
 
 msgid "Untitled"
 msgstr "Tanpa judul"
@@ -8482,6 +9263,9 @@ msgstr "Anda dapat mengubah pendapat Anda."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "Anda dapat mengeklik tombol %(like_icon)s%(dislike_icon)s di samping artikel saat membacanya."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "Anda dapat menutup dialog ini. Usulan akan menunggu di sini saat Anda kembali."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Anda dapat mengubah pengaturan ini untuk tiap situs dan folder."
 
@@ -8492,10 +9276,23 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "Anda dapat melatih per feed secara gratis, atau per folder dan secara global dengan Premium Archive."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "Anda dapat membatalkan tindakan ini hingga %(date)s."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "Anda mengikuti %(count)s situs. Premium membuat semuanya lebih baik."
 msgstr[1] "Anda mengikuti %(count)s situs. Premium membuat semuanya lebih baik."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "Anda mendapat %(count)s usulan per bulan. Penerapannya memerlukan Premium Archive."
+msgstr[1] "Anda mendapat %(count)s usulan per bulan. Penerapannya memerlukan Premium Archive."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "Anda mendapat satu usulan per bulan. Untuk menerapkannya, diperlukan Premium Archive."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8540,6 +9337,12 @@ msgstr "Anda harus masuk untuk membalas komentar."
 msgid "You need to be logged in to share a story."
 msgstr "Anda harus masuk untuk membagikan artikel."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "Anda berhenti mengikuti %(count)s situs mati"
+msgstr[1] "Anda berhenti mengikuti %(count)s situs mati"
+
 msgid "You will be emailed within a minute or three."
 msgstr "Email akan dikirim kepada Anda dalam satu atau tiga menit."
 
@@ -8565,6 +9368,28 @@ msgstr "Anda siap memulai! Semoga Anda menikmati NewsBlur."
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Anda mendapat hadiah %(value_1)s %(value_2)s!"
+
+msgid "You've had this month's proposal."
+msgstr "Anda sudah menerima usulan bulan ini."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "Anda telah menggunakan usulan bulan ini. Usulan berikutnya tersedia pada %(date)s."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "Anda telah membuat %(count)s usulan dalam sehari terakhir."
+msgstr[1] "Anda telah membuat %(count)s usulan dalam sehari terakhir."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "Anda telah membuat %(count)s usulan dalam sehari terakhir. Usulan berikutnya tersedia pada %(date)s."
+msgstr[1] "Anda telah membuat %(count)s usulan dalam sehari terakhir. Usulan berikutnya tersedia pada %(date)s."
+
+msgid "You've reached today's limit on proposals."
+msgstr "Anda telah mencapai batas usulan hari ini."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8620,14 +9445,41 @@ msgstr "Suara yang Anda pilih tidak tersedia saat ini, jadi %(voice)s sedang mem
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie Anda telah kedaluwarsa — Silakan masuk lagi"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] ""
+"Folder Anda saat ini disimpan terlebih dahulu, sehingga perubahan ini dapat dibatalkan selama %(count)s "
+"hari."
+msgstr[1] ""
+"Folder Anda saat ini disimpan terlebih dahulu, sehingga perubahan ini dapat dibatalkan selama %(count)s "
+"hari."
+
+msgid "Your decisions"
+msgstr "Pilihan Anda"
+
 msgid "Your email"
 msgstr "Email Anda"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "Filter Anda mungkin menyembunyikan situs — buka Opsi untuk memperluasnya."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "Folder Anda kembali seperti sebelum ditata ulang."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "Folder Anda akan dikembalikan seperti semula sebelum penataan ulang ini."
+
 msgid "Your inbox stays clean"
 msgstr "Kotak masuk Anda tetap rapi"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr ""
+"Pilihan terakhir Anda tidak dapat disimpan, jadi yang ditampilkan adalah pilihan yang tersimpan. Silakan "
+"coba lagi."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "Folder Anda yang terkunci tidak dapat disimpan. Silakan coba lagi."
 
 msgid "Your name"
 msgstr "Nama Anda"
@@ -8650,8 +9502,17 @@ msgstr "Biaya langganan Anda akan dihitung secara prorata"
 msgid "Your subscription will no longer automatically renew."
 msgstr "Langganan Anda tidak akan diperpanjang otomatis lagi."
 
+msgid "a folder"
+msgstr "sebuah folder"
+
+msgid "a site you no longer follow"
+msgstr "situs yang tidak lagi Anda ikuti"
+
 msgid "and auto-follow them"
 msgstr "dan ikuti mereka secara otomatis"
+
+msgid "approved"
+msgstr "disetujui"
 
 msgid "artificial intelligence"
 msgstr "kecerdasan buatan"
@@ -8835,6 +9696,9 @@ msgstr "komputasi kuantum"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "ditolak"
+
 msgid "remote work"
 msgstr "kerja jarak jauh"
 
@@ -8880,6 +9744,9 @@ msgstr "rantai pasokan"
 msgid "this list"
 msgstr "daftar ini"
 
+msgid "to decide"
+msgstr "perlu diputuskan"
+
 msgid "trade policy"
 msgstr "kebijakan perdagangan"
 
@@ -8903,6 +9770,14 @@ msgstr "komputasi lawas"
 
 msgid "web standards"
 msgstr "standar web"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s” menjadi “%(new)s”"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

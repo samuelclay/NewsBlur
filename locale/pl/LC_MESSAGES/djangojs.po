@@ -159,6 +159,13 @@ msgstr[1] "%(badge)s na maksymalnie %(count)s dni"
 msgstr[2] "%(badge)s na maksymalnie %(count)s dni"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s witryna"
+msgstr[1] "%(before)s → %(count)s witryny"
+msgstr[2] "%(before)s → %(count)s witryn"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "Tematy: %(category)s"
 
@@ -176,6 +183,13 @@ msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s bajt"
 msgstr[1] "%(count)s bajty"
 msgstr[2] "%(count)s bajtów"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "Nie udało się wprowadzić %(count)s zmiany."
+msgstr[1] "Nie udało się wprowadzić %(count)s zmian."
+msgstr[2] "Nie udało się wprowadzić %(count)s zmian."
 
 #, python-format
 msgid "%(count)s channel"
@@ -234,11 +248,39 @@ msgstr[1] "%(count)s dni temu"
 msgstr[2] "%(count)s dni temu"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "Wyciszasz %(count)s nieaktywną witrynę"
+msgstr[1] "Wyciszasz %(count)s nieaktywne witryny"
+msgstr[2] "Wyciszasz %(count)s nieaktywnych witryn"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "Wyciszono %(count)s nieaktywną witrynę"
+msgstr[1] "Wyciszono %(count)s nieaktywne witryny"
+msgstr[2] "Wyciszono %(count)s nieaktywnych witryn"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s negatywna ocena"
 msgstr[1] "%(count)s negatywne oceny"
 msgstr[2] "%(count)s negatywnych ocen"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s pusty folder zostanie usunięty"
+msgstr[1] "%(count)s puste foldery zostaną usunięte"
+msgstr[2] "%(count)s pustych folderów zostanie usuniętych"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "Usunięto %(count)s pusty folder"
+msgstr[1] "Usunięto %(count)s puste foldery"
+msgstr[2] "Usunięto %(count)s pustych folderów"
 
 #, python-format
 msgid "%(count)s episode"
@@ -253,6 +295,62 @@ msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s kanał"
 msgstr[1] "%(count)s kanały"
 msgstr[2] "%(count)s kanałów"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s oznaczona"
+msgstr[1] "%(count)s oznaczone"
+msgstr[2] "%(count)s oznaczonych"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s folder dodany"
+msgstr[1] "%(count)s foldery dodane"
+msgstr[2] "%(count)s folderów dodanych"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "Zostanie dodany %(count)s folder"
+msgstr[1] "Zostaną dodane %(count)s foldery"
+msgstr[2] "Zostanie dodanych %(count)s folderów"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s folder zostanie połączony z innym"
+msgstr[1] "%(count)s foldery zostaną połączone z innymi"
+msgstr[2] "%(count)s folderów zostanie połączonych z innymi"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s folder zostanie przemianowany"
+msgstr[1] "%(count)s foldery zostaną przemianowane"
+msgstr[2] "%(count)s folderów zostanie przemianowanych"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "Połączono %(count)s folder z innym"
+msgstr[1] "Połączono %(count)s foldery z innymi"
+msgstr[2] "Połączono %(count)s folderów z innymi"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s folder zostanie przeniesiony do innego folderu"
+msgstr[1] "%(count)s foldery zostaną przeniesione do innych folderów"
+msgstr[2] "%(count)s folderów zostanie przeniesionych do innych folderów"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "Przemianowano lub przeniesiono %(count)s folder"
+msgstr[1] "Przemianowano lub przeniesiono %(count)s foldery"
+msgstr[2] "Przemianowano lub przeniesiono %(count)s folderów"
 
 #, python-format
 msgid "%(count)s follower"
@@ -379,6 +477,13 @@ msgstr[1] "%(count)s otwarcia"
 msgstr[2] "%(count)s otwarć"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s inna witryna nie jest objęta żadną zmianą."
+msgstr[1] "%(count)s inne witryny nie są objęte żadną zmianą."
+msgstr[2] "%(count)s innych witryn nie jest objętych żadną zmianą."
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s strona"
@@ -405,6 +510,13 @@ msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s odpowiedź"
 msgstr[1] "%(count)s odpowiedzi"
 msgstr[2] "%(count)s odpowiedzi"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "Pozostała %(count)s zmiana."
+msgstr[1] "Pozostały %(count)s zmiany."
+msgstr[2] "Pozostało %(count)s zmian."
 
 #, python-format
 msgid "%(count)s selected"
@@ -435,6 +547,13 @@ msgstr[1] "%(count)s witryny"
 msgstr[2] "%(count)s witryn"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "Dodano %(count)s witrynę do drugiego folderu"
+msgstr[1] "Dodano %(count)s witryny do drugiego folderu"
+msgstr[2] "Dodano %(count)s witryn do drugiego folderu"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "Dostępna %(count)s witryna"
@@ -442,11 +561,53 @@ msgstr[1] "Dostępne %(count)s witryny"
 msgstr[2] "Dostępnych %(count)s witryn"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s witryna pozostaje tutaj i nie jest częścią żadnej zmiany."
+msgstr[1] "%(count)s witryny pozostają tutaj i nie są częścią żadnej zmiany."
+msgstr[2] "%(count)s witryn pozostaje tutaj i nie jest częścią żadnej zmiany."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s witryna zostanie dodana do drugiego folderu"
+msgstr[1] "%(count)s witryny zostaną dodane do drugiego folderu"
+msgstr[2] "%(count)s witryn zostanie dodanych do drugiego folderu"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "Przeniesiono %(count)s witrynę do innego folderu"
+msgstr[1] "Przeniesiono %(count)s witryny do innego folderu"
+msgstr[2] "Przeniesiono %(count)s witryn do innego folderu"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s witryna zostanie przeniesiona do innego folderu"
+msgstr[1] "%(count)s witryny zostaną przeniesione do innego folderu"
+msgstr[2] "%(count)s witryn zostanie przeniesionych do innego folderu"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "%(count)s witryna ponad limit"
 msgstr[1] "%(count)s witryny ponad limit"
 msgstr[2] "%(count)s witryn ponad limit"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s witryna nadal nie ma przypisanej decyzji i pozostaje bez zmian."
+msgstr[1] "%(count)s witryny nadal nie mają przypisanej decyzji i pozostają bez zmian."
+msgstr[2] "%(count)s witryn nadal nie ma przypisanej decyzji i pozostają bez zmian."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "Pozostało %(count)s do rozstrzygnięcia. Wszystko, co pozostanie nierozstrzygnięte, nie ulegnie zmianie."
+msgstr[1] "Pozostało %(count)s do rozstrzygnięcia. Wszystko, co pozostanie nierozstrzygnięte, nie ulegnie zmianie."
+msgstr[2] "Pozostało %(count)s do rozstrzygnięcia. Wszystko, co pozostanie nierozstrzygnięte, nie ulegnie zmianie."
 
 #, python-format
 msgid "%(count)s story"
@@ -1056,6 +1217,10 @@ msgstr[0] "+ jeszcze %(value_1)s witryna"
 msgstr[1] "+ jeszcze %(value_1)s witryny"
 msgstr[2] "+ jeszcze %(value_1)s witryn"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/dzień"
 
@@ -1142,6 +1307,9 @@ msgstr "Czystszy, bardziej bezpośredni dźwięk"
 msgid "A folder"
 msgstr "Folder"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "Folder, który jest potrzebny, został przemianowany, przeniesiony lub usunięty po przygotowaniu propozycji."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Folder kanałów wyświetlanych jako jeden strumień"
 
@@ -1151,6 +1319,12 @@ msgstr "Co godzinę wybieramy świeżą garść artykułów udostępnionych prze
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Prezent od %(value_1)s został dodany do Twojego konta."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "Zastosowano późniejszą reorganizację, więc nie można już cofnąć tej zmiany."
+
+msgid "A proposal is already being made."
+msgstr "Propozycja jest już tworzona."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Drugi etap wykorzystuje Twoją wskazówkę, by znaleźć na stronie odpowiedni wzorzec."
@@ -1186,6 +1360,12 @@ msgstr "Filtry AI są zapisane, ale zaczną działać dopiero, gdy %(billing_lin
 msgid "AI finds the stories"
 msgstr "AI znajduje artykuły"
 
+msgid "AI is looking through your sites"
+msgstr "AI przegląda Twoje witryny"
+
+msgid "AI is revising the proposal"
+msgstr "AI poprawia propozycję"
+
 msgid "AI-curated summary of your top stories"
 msgstr "Podsumowanie najważniejszych artykułów wybrane przez AI"
 
@@ -1207,6 +1387,12 @@ msgstr "Oczywiście. Otwórz trenera i usuń dowolne kciuki w górę lub w dół
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "Akcent"
+
+msgid "Accept all"
+msgstr "Zaakceptuj wszystkie"
+
+msgid "Accept into this folder"
+msgstr "Dodaj do tego folderu"
 
 msgid "Account"
 msgstr "Konto"
@@ -1249,6 +1435,9 @@ msgstr "Bookmarklet do dodawania witryn &amp; udostępniania artykułów"
 msgid "Add a classifier"
 msgstr "Dodaj klasyfikator"
 
+msgid "Add a copy here"
+msgstr "Dodaj tu kopię"
+
 msgid "Add a forwarding address"
 msgstr "Dodaj adres przekazywania"
 
@@ -1290,6 +1479,10 @@ msgstr "Dodaj witrynę/folder"
 
 msgid "Add story list"
 msgstr "Dodaj listę artykułów"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "Dodaj folder %(folder)s"
 
 msgid "Add to Chrome"
 msgstr "Dodaj do Chrome"
@@ -1401,6 +1594,9 @@ msgstr "Gotowe!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "Wszystkie kanały są pobierane co 5–15 minut"
 
+msgid "All moves"
+msgstr "Wszystkie przeniesienia"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1429,12 +1625,22 @@ msgstr "Dozwolone domeny"
 msgid "Alphabetical"
 msgstr "Alfabetycznie"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "Możesz też dodawać, zmieniać nazwy, scalać, zagnieżdżać i usuwać foldery."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Usuń również %(value_1)s istniejące archiwum z tej domeny"
 msgstr[1] "Usuń także %(value_1)s istniejące archiwa z tej domeny"
 msgstr[2] "Usuń także %(value_1)s istniejących archiwów z tej domeny"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "Także w %(folder)s"
+
+msgid "Also look for"
+msgstr "Szukaj również"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1499,6 +1705,9 @@ msgstr "Powiadomienia na Androidzie wymagają Premium Archive"
 msgid "Animals"
 msgstr "Zwierzęta"
 
+msgid "Another folder there already has this name."
+msgstr "Inny folder w tym miejscu ma już tę nazwę."
+
 msgid "Any"
 msgstr "Dowolny"
 
@@ -1511,6 +1720,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Kiedykolwiek"
+
+msgid "Anything the AI should know"
+msgstr "Czy AI powinna coś wiedzieć?"
 
 msgid "Appearance"
 msgstr "Wygląd"
@@ -1535,11 +1747,29 @@ msgstr[0] "Zastosowano %(succeeded)s z %(count)s scalenia (%(stories)s)"
 msgstr[1] "Zastosowano %(succeeded)s z %(count)s scaleń (%(stories)s)"
 msgstr[2] "Zastosowano %(succeeded)s z %(count)s scaleń (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "Zastosowano %(date)s."
+
 msgid "Applies to"
 msgstr "Dotyczy"
 
 msgid "Apply"
 msgstr "Zastosuj"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "Zastosuj %(count)s zmianę"
+msgstr[1] "Zastosuj %(count)s zmiany"
+msgstr[2] "Zastosuj %(count)s zmian"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "Zastosować %(count)s zmianę?"
+msgstr[1] "Zastosować %(count)s zmiany?"
+msgstr[2] "Zastosować %(count)s zmian?"
 
 msgid "Apply All Merges"
 msgstr "Zastosuj wszystkie scalenia"
@@ -1547,11 +1777,29 @@ msgstr "Zastosuj wszystkie scalenia"
 msgid "Apply Split"
 msgstr "Zastosuj podział"
 
+msgid "Apply changes"
+msgstr "Zastosuj zmiany"
+
 msgid "Apply training across a folder"
 msgstr "Zastosuj trenowanie do całego folderu"
 
 msgid "Apply training globally"
 msgstr "Zastosuj trening globalnie"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "Zastosowanie zmian wymaga planu Premium Archive."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"Zastosowanie zmian wymaga planu Premium Archive. Twoje decyzje zostały zapisane i będą tu dostępne po "
+"przejściu na ten plan."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "Zastosowywanie zmian %(date)s zostało przerwane, więc niektóre foldery mogły ulec zmianie."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "Stosowanie zmian przerwano w połowie, więc niektóre foldery mogły ulec zmianie."
 
 msgid "Applying..."
 msgstr "Stosowanie..."
@@ -1576,6 +1824,13 @@ msgstr "Czy aplikacje są bezpłatne?"
 
 msgid "Are the apps open source?"
 msgstr "Czy aplikacje są open source?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "Przenoszone tutaj: %(count)s"
+msgstr[1] "Przenoszone tutaj: %(count)s"
+msgstr[2] "Przenoszone tutaj: %(count)s"
 
 msgid "Arrow keys"
 msgstr "Klawisze strzałek"
@@ -1608,6 +1863,9 @@ msgstr ""
 
 msgid "Ask AI questions about stories"
 msgstr "Zadawaj AI pytania o artykuły"
+
+msgid "Ask AI to revise"
+msgstr "Poproś AI o poprawienie"
 
 msgid "Ask AI with a choice of models"
 msgstr "Zapytaj AI, wybierając model"
@@ -1730,6 +1988,9 @@ msgstr "Wróć do trenera klasyfikatora"
 msgid "Back to feeds"
 msgstr "Wróć do kanałów"
 
+msgid "Back to review"
+msgstr "Wróć do przeglądu"
+
 msgid "Back to stories"
 msgstr "Wróć do artykułów"
 
@@ -1811,6 +2072,9 @@ msgstr "Blurblogi, udostępnione artykuły i komentarze"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
+
+msgid "Both"
+msgstr "Oba"
 
 msgid "Bottom"
 msgstr "Dół"
@@ -1894,6 +2158,12 @@ msgstr "Punktory"
 
 msgid "Buttons"
 msgstr "Przyciski"
+
+msgid "By folder"
+msgstr "Według folderu"
+
+msgid "By hand"
+msgstr "Ręcznie"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -2015,6 +2285,9 @@ msgstr "Zaznacz powyżej, co lubisz..."
 msgid "Check your email..."
 msgstr "Sprawdź pocztę..."
 
+msgid "Checking for dead sites"
+msgstr "Sprawdzanie nieaktywnych witryn"
+
 msgid "Checking recent pages..."
 msgstr "Sprawdzanie ostatnio odwiedzonych stron..."
 
@@ -2049,6 +2322,9 @@ msgstr "Wybierz kategorie"
 
 msgid "Choose how many days back"
 msgstr "Wybierz, ile dni wstecz"
+
+msgid "Choose how much to change, then try again."
+msgstr "Wybierz zakres zmian i spróbuj ponownie."
 
 msgid "Choose model"
 msgstr "Wybierz model"
@@ -2322,8 +2598,22 @@ msgstr "Kopiuj tekst"
 msgid "Copy URL"
 msgstr "Kopiuj URL"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "Skopiuj z %(folder)s"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "Zaproponowano kopię dla %(folder)s"
+
+msgid "Copy undecided"
+msgstr "Kopia nierozstrzygnięta"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Skopiuj teraz swój tajny klucz klienta. Będzie widoczny tylko raz."
+
+msgid "Copy?"
+msgstr "Kopia?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Nie udało się dodać tego klasyfikatora. Spróbuj ponownie."
@@ -2342,6 +2632,9 @@ msgstr "Nie udało się wczytać FAQ. Spróbuj ponownie."
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "Nie udało się wczytać Twoich aplikacji. Spróbuj odświeżyć stronę."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "Nie udało się wczytać opcji „Reorganizuj z AI”."
 
 msgid "Couldn't load audio for this story."
 msgstr "Nie udało się wczytać dźwięku tego artykułu."
@@ -2497,8 +2790,20 @@ msgstr "Dni"
 msgid "Days of unreads"
 msgstr "Dni nieprzeczytanych"
 
+msgid "Dead sites"
+msgstr "Nieaktywne witryny"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "Wyciszenie niedostępnych witryn zostanie wyłączone."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "Nieaktywne witryny, które przestały publikować lub nieustannie powodują błędy"
+
 msgid "December"
 msgstr "grudzień"
+
+msgid "Decline all copies"
+msgstr "Odrzuć wszystkie kopie"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Wnikliwe artykuły, którym społeczność poświęciła czas"
@@ -2662,6 +2967,9 @@ msgstr "Odrzuć"
 msgid "Do I get a unique email address?"
 msgstr "Czy otrzymam unikalny adres e-mail?"
 
+msgid "Do not put it here"
+msgstr "Nie umieszczaj tutaj"
+
 msgid "Do the apps work offline?"
 msgstr "Czy aplikacje działają offline?"
 
@@ -2692,6 +3000,9 @@ msgstr "Nie pokazuj podglądu, wyświetlaj tylko tytuł artykułu"
 
 msgid "Don't show a thumbnail"
 msgstr "Nie pokazuj miniatury"
+
+msgid "Done"
+msgstr "Gotowe"
 
 msgid "Done!"
 msgstr "Gotowe!"
@@ -2942,6 +3253,9 @@ msgstr "Każdy nowy artykuł jest archiwizowany na stałe"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "Każdy tag zapisanych artykułów ma własny kanał RSS, idealny do wykorzystania w IFTTT lub Zapier."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "Wszystkie witryny znajdują się w pominiętym folderze. Otwórz folder, aby AI mogło je przeanalizować."
+
 msgid "Every story archived and searchable forever"
 msgstr "Każdy artykuł zarchiwizowany i dostępny do wyszukiwania na zawsze"
 
@@ -2963,6 +3277,9 @@ msgstr "Wszyscy"
 msgid "Everyone"
 msgstr "Wszyscy"
 
+msgid "Everything"
+msgstr "Wszystko"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "Wszystko, co potrafi NewsBlur, i jak to wypróbować"
 
@@ -2980,6 +3297,12 @@ msgstr "Wszystko z planu bezpłatnego, a ponadto:"
 
 msgid "Everything in Premium, plus:"
 msgstr "Wszystko z planu Premium, a ponadto:"
+
+msgid "Everything is decided."
+msgstr "Wszystko rozstrzygnięte."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "Wszystko jest domyślnie zaakceptowane. Odrzuć przeniesienie w jednym z folderów."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -3109,6 +3432,13 @@ msgstr "Nie udało się wysłać zapytania"
 msgid "Failed to subscribe"
 msgstr "Nie udało się zasubskrybować"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "Nie można pobrać danych z witryny i nigdy nie było w niej żadnego artykułu."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "Nie udało się pobrać danych. Ostatni artykuł pochodził z %(month)s."
+
 msgid "Fashion"
 msgstr "Moda"
 
@@ -3209,11 +3539,17 @@ msgstr "Pobieranie Twoich kanałów"
 msgid "Fetching..."
 msgstr "Pobieranie..."
 
+msgid "File sites into the folders you already have."
+msgstr "Przyporządkuj witryny do istniejących folderów."
+
 msgid "Files"
 msgstr "Pliki"
 
 msgid "Filled Icons"
 msgstr "Wypełnione ikony"
+
+msgid "Filter"
+msgstr "Filtruj"
 
 msgid "Filter by date range"
 msgstr "Filtruj według zakresu dat"
@@ -3341,8 +3677,14 @@ msgstr "Liczba nieprzeczytanych artykułów w folderach"
 msgid "Folders"
 msgstr "Foldery"
 
+msgid "Folders after"
+msgstr "Foldery po zmianach"
+
 msgid "Folders only"
 msgstr "Tylko foldery"
+
+msgid "Folders updated"
+msgstr "Zaktualizowano foldery"
 
 msgid "Folders, feeds, and story titles"
 msgstr "Foldery, kanały i tytuły artykułów"
@@ -3521,6 +3863,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "Od"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "Z %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "Z rzadko aktualizowanych witryn"
 
@@ -3693,6 +4039,10 @@ msgstr "Przejdź na Premium — 36 $/rok"
 msgid "Go back to %(breadcrumb)s"
 msgstr "Wróć do %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "Znajdzie się w %(folder)s"
+
 msgid "Good Reads"
 msgstr "Warte przeczytania"
 
@@ -3797,6 +4147,9 @@ msgstr "Ukryj witryny, które już subskrybujesz"
 msgid "Hide story changes"
 msgstr "Ukryj zmiany w artykule"
 
+msgid "Hide them"
+msgstr "Ukryj je"
+
 msgid "Highlight"
 msgstr "Podświetl"
 
@@ -3841,6 +4194,9 @@ msgstr "Ile artykułów mogę zapisać?"
 
 msgid "How much emotion"
 msgstr "Ile emocji"
+
+msgid "How much to change"
+msgstr "Jak dużo zmienić"
 
 msgid "How often"
 msgstr "Jak często"
@@ -3914,6 +4270,10 @@ msgstr[1] "Za %(count)s dni okres próbny Premium dobiegnie końca i wrócisz do
 msgstr[2] "Za %(count)s dni okres próbny Premium dobiegnie końca i wrócisz do planu bezpłatnego"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "W %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr ""
 "W Gmailu przejdź do %(settings_menu)s i kliknij %(add_button)s. Dodaj swój niestandardowy adres e-mail "
@@ -3936,6 +4296,9 @@ msgstr "W nowym oknie"
 msgid "In a pill"
 msgstr "W kapsułce"
 
+msgid "In both folders"
+msgstr "W obu folderach"
+
 msgid "In rotation"
 msgstr "W rotacji"
 
@@ -3948,6 +4311,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "W tym oknie"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "W dwóch folderach %(count)s"
 
 msgid "Include read"
 msgstr "Uwzględnij przeczytane"
@@ -3979,6 +4346,10 @@ msgstr "Próg rzadko aktualizowanych witryn"
 msgid "Inline list"
 msgstr "Lista śródwierszowa"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "Wewnątrz %(folder)s"
+
 msgid "Insta-fetch stories"
 msgstr "Pobierz artykuły natychmiast"
 
@@ -4005,6 +4376,10 @@ msgid "Interactions"
 msgstr "Interakcje"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "Do %(folder)s, a następnie usunięto"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "Nieprawidłowe wyrażenie regularne: %(error)s"
 
@@ -4025,6 +4400,28 @@ msgstr "Czym to się różni od RSS?"
 
 msgid "Is training free?"
 msgstr "Czy trenowanie jest bezpłatne?"
+
+msgid "It has never had a story."
+msgstr "Nie było tu jeszcze żadnego artykułu."
+
+msgid "It involves a folder you locked."
+msgstr "Dotyczy folderu, który został przez Ciebie zablokowany."
+
+msgid "It needs a new folder you rejected."
+msgstr "Potrzebny jest nowy folder, który został przez Ciebie odrzucony."
+
+msgid "It would have put a folder inside itself."
+msgstr "Spowodowałoby to umieszczenie folderu w samym sobie."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "Minął ponad %(count)s dzień, więc nie można już cofnąć tej zmiany układu."
+msgstr[1] "Minęły ponad %(count)s dni, więc nie można już cofnąć tej zmiany układu."
+msgstr[2] "Minęło ponad %(count)s dni, więc nie można już cofnąć tej zmiany układu."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "Folder jest zablokowany, aby zachować w nim witryny."
 
 msgid "January"
 msgstr "styczeń"
@@ -4056,8 +4453,17 @@ msgstr "Tylko nagłówki, z minimalnym komentarzem"
 msgid "Just the headlines, no commentary"
 msgstr "Same nagłówki, bez komentarza"
 
+msgid "Keep"
+msgstr "Zachowaj"
+
+msgid "Keep all here"
+msgstr "Zostaw wszystkie tutaj"
+
 msgid "Keep fades, without movement."
 msgstr "Zachowaj przenikanie, bez ruchu."
+
+msgid "Keep it here"
+msgstr "Zostaw tutaj"
 
 msgid "Keep others unread"
 msgstr "Pozostaw pozostałe jako nieprzeczytane"
@@ -4068,8 +4474,17 @@ msgstr "Zachowaj status przeczytania"
 msgid "Keep right-side buttons visible while reading"
 msgstr "Pozostaw widoczne przyciski po prawej stronie podczas czytania"
 
+msgid "Keep sites"
+msgstr "Zachowaj witryny"
+
 msgid "Keep stories separate"
 msgstr "Rozdzielaj artykuły"
+
+msgid "Keep the new folders"
+msgstr "Zachowaj nowe foldery"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "Zachowaj blogi fotograficzne razem. Podziel wiadomości według krajów."
 
 msgid "Keep unread counts out of the window title"
 msgstr "Nie pokazuj liczby nieprzeczytanych artykułów w tytule okna"
@@ -4142,11 +4557,30 @@ msgstr "Ostatnio widziano:"
 msgid "Layout"
 msgstr "Układ"
 
+msgid "Leave out"
+msgstr "Pomiń"
+
 msgid "Leave unread"
 msgstr "Pozostaw jako nieprzeczytane"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "Opuszcza %(count)s"
+msgstr[1] "Opuszcza %(count)s"
+msgstr[2] "Opuszcza %(count)s"
+
 msgid "Left"
 msgstr "Lewa"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "Pominięto. W tym folderze nic się nie zmieni."
+
+msgid "Let all go"
+msgstr "Zezwól na wszystkie"
+
+msgid "Let it go"
+msgstr "Zezwól"
 
 msgid "Let's Get Started "
 msgstr "Zaczynamy "
@@ -4263,8 +4697,14 @@ msgstr "Lokalizacja"
 msgid "Lock"
 msgstr "Zablokuj"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "Zablokuj foldery, których AI ma nie zmieniać"
+
 msgid "Locked"
 msgstr "Zablokowano"
+
+msgid "Locked with parent"
+msgstr "Zablokowany razem z folderem nadrzędnym"
 
 msgid "Log In or Sign Up"
 msgstr "Zaloguj się lub zarejestruj"
@@ -4487,6 +4927,10 @@ msgstr[0] "Scal %(count)s kategorię w:"
 msgstr[1] "Scal %(count)s kategorie w:"
 msgstr[2] "Scal %(count)s kategorii w:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "Scal %(folder)s z %(into)s"
+
 msgid "Merge into:"
 msgstr "Scal w:"
 
@@ -4571,6 +5015,10 @@ msgstr[1] "Przenieś %(count)s witryny"
 msgstr[2] "Przenieś %(count)s witryn"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "Przenieś %(site)s do %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "Przenieś do %(folder)s"
 
@@ -4582,6 +5030,13 @@ msgstr "Przeniesiono"
 
 msgid "Moved!"
 msgstr "Przeniesiono!"
+
+msgid "Moves"
+msgstr "Przenosi się"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "Witryna przenosi się razem z %(folder)s podczas łączenia folderów."
 
 msgid "Moving..."
 msgstr "Przenoszenie..."
@@ -4595,6 +5050,10 @@ msgid_plural "Mute %(count)s sites"
 msgstr[0] "Wycisz %(count)s witrynę"
 msgstr[1] "Wycisz %(count)s witryny"
 msgstr[2] "Wycisz %(count)s witryn"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "Wycisz %(site)s"
 
 msgid "Mute Sites"
 msgstr "Wycisz witryny"
@@ -4680,6 +5139,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "Do scalenia potrzebne są co najmniej 2 kategorie"
+
+msgid "Nest"
+msgstr "Zagnieźdź"
 
 msgid "Nested"
 msgstr "Zagnieżdżone"
@@ -4847,6 +5309,9 @@ msgstr "Brak dostępnych kategorii. Pojawią się tutaj po skonfigurowaniu."
 msgid "No categories with 10+ stories available for splitting."
 msgstr "Brak kategorii z co najmniej 10 artykułami, które można podzielić."
 
+msgid "No changes"
+msgstr "Brak zmian"
+
 msgid "No channels found matching your filter."
 msgstr "Nie znaleziono kanałów pasujących do filtra."
 
@@ -4858,6 +5323,9 @@ msgstr "Brak połączonych kont"
 
 msgid "No content"
 msgstr "Brak treści"
+
+msgid "No copy"
+msgstr "Bez kopii"
 
 msgid "No feeds found"
 msgstr "Nie znaleziono kanałów"
@@ -4986,6 +5454,10 @@ msgstr[2] "Nie zaindeksowano jeszcze żadnych artykułów z %(count)s Twoich wit
 msgid "No stories published last month"
 msgstr "W zeszłym miesiącu nie opublikowano żadnych artykułów"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "Brak artykułów od %(month)s."
+
 msgid "No stories to delete"
 msgstr "Brak artykułów do usunięcia"
 
@@ -5055,8 +5527,31 @@ msgstr "Nie najczęściej czytane, ale najlepiej odbierane, z przewagą małych 
 msgid "Nothing"
 msgstr "Nic"
 
+msgid "Nothing changed."
+msgstr "Nic się nie zmieniło."
+
+msgid "Nothing changes."
+msgstr "Nic się nie zmienia."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "Ten folder jest pusty, więc nie zostanie utworzony."
+
 msgid "Nothing happens without your permission."
 msgstr "Nic nie dzieje się bez Twojej zgody."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "Po wprowadzeniu pozostałych zmian w tym folderze nic nie zostanie."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr ""
+"Nic nie zostanie przeniesione, a folder pozostanie bez zmian. Jego witryny nadal można zaoferować innym "
+"folderom jako kopie."
+
+msgid "Nothing leaves this folder."
+msgstr "Nic nie zostanie usunięte z tego folderu."
+
+msgid "Nothing matches this filter."
+msgstr "Nic nie pasuje do tego filtra."
 
 msgid "Nothing recorded."
 msgstr "Brak zapisanych danych."
@@ -5119,6 +5614,13 @@ msgstr "Wył."
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "Pokazuj je w plakietce „N nowych artykułów”"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "Kopia proponowana w innym miejscu: %(count)s"
+msgstr[1] "Kopie proponowane w innym miejscu: %(count)s"
+msgstr[2] "Kopie proponowane w innym miejscu: %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "Oficjalna aplikacja NewsBlur na Androida"
 
@@ -5174,8 +5676,14 @@ msgstr ""
 msgid "On reload"
 msgstr "Po ponownym wczytaniu"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "Gdy ponownie złożysz propozycję, nie będzie już można cofnąć ostatniej reorganizacji."
+
 msgid "One command with Docker"
 msgstr "Jedno polecenie z Dockerem"
+
+msgid "One of the proposed changes"
+msgstr "Jedna z proponowanych zmian"
 
 msgid "One sentence"
 msgstr "Jedno zdanie"
@@ -5745,8 +6253,23 @@ msgstr "Szczegóły profilu"
 msgid "Profile picture"
 msgstr "Zdjęcie profilowe"
 
+msgid "Progress"
+msgstr "Postęp"
+
 msgid "Prompt"
 msgstr "Monit"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "Zaproponuj nowy układ folderów. Zablokowane foldery pozostaną bez zmian."
+
+msgid "Propose changes"
+msgstr "Zaproponuj zmiany"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "Ponowne zgłoszenie propozycji zastąpi tę, którą obecnie przeglądasz."
+
+msgid "Proposing..."
+msgstr "Zgłaszanie propozycji..."
 
 msgid "Protected:"
 msgstr "Chronione:"
@@ -5765,6 +6288,13 @@ msgstr "Wygaśnięcie push"
 
 msgid "Push expires"
 msgstr "Push wygasa"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "Umieść %(folder)s w %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "Przygotowywanie propozycji"
 
 msgid "Questions"
 msgstr "Pytania"
@@ -5897,6 +6427,13 @@ msgstr "Czytaj swoje kanały: nieprzeczytane artykuły, foldery, wyszukiwanie i 
 msgid "Reading"
 msgstr "Czytanie"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "Czytanie %(count)s witryny"
+msgstr[1] "Czytanie %(count)s witryn"
+msgstr[2] "Czytanie %(count)s witryn"
+
 msgid "Reading article..."
 msgstr "Wczytywanie artykułu..."
 
@@ -6004,6 +6541,16 @@ msgstr "Wyrażenie regularne"
 msgid "Regex requires %(tier_link)s"
 msgstr "Wyrażenie regularne wymaga %(tier_link)s"
 
+msgid "Reject"
+msgstr "Odrzuć"
+
+msgid "Reject all"
+msgstr "Odrzuć wszystkie"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "Odrzucone: %(count)s"
+
 msgid "Related"
 msgstr "Powiązane"
 
@@ -6034,6 +6581,10 @@ msgstr "Usuń %(voice)s z rotacji"
 
 msgid "Remove from Up Next"
 msgstr "Usuń z kolejki „Następne”"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "Usuń folder %(folder)s"
 
 msgid "Remove this list"
 msgstr "Usuń tę listę"
@@ -6066,6 +6617,10 @@ msgstr "Zmień nazwę tego folderu"
 msgid "Rename this site"
 msgstr "Zmień nazwę tej witryny"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "Zmień nazwę „%(old)s” na „%(new)s”"
+
 msgid "Renamed"
 msgstr "Zmieniono nazwę"
 
@@ -6078,6 +6633,15 @@ msgstr[2] "Zmieniono kategorię %(count)s artykułów na „%(category)s”"
 
 msgid "Renaming..."
 msgstr "Zmienianie nazwy..."
+
+msgid "Reorganize"
+msgstr "Zreorganizuj"
+
+msgid "Reorganize again"
+msgstr "Zorganizuj ponownie"
+
+msgid "Reorganize with AI"
+msgstr "Uporządkuj za pomocą AI"
 
 msgid "Request timed out"
 msgstr "Przekroczono limit czasu żądania"
@@ -6141,6 +6705,19 @@ msgstr "Ponów"
 
 msgid "Retry fetching and parsing"
 msgstr "Ponów pobieranie i analizowanie"
+
+msgid "Review"
+msgstr "Sprawdź"
+
+msgid "Revise proposal"
+msgstr "Zmień propozycję"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "Zmieniono zgodnie z Twoją prośbą: „%(request)s”"
+
+msgid "Revising..."
+msgstr "Poprawianie..."
 
 msgid "Rewinding..."
 msgstr "Przewijanie wstecz..."
@@ -6296,6 +6873,9 @@ msgstr ""
 
 msgid "Saving..."
 msgstr "Zapisywanie..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "Powiedz AI, co ma zmienić, i spróbuj ponownie."
 
 msgid "Schedule when your briefing is generated"
 msgstr "Ustaw harmonogram generowania przeglądu"
@@ -6518,6 +7098,23 @@ msgstr "Wyślij ten artykuł"
 msgid "Sending…"
 msgstr "Wysyłanie…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"Do modelu AI zostaną wysłane nazwy, adresy i najnowsze nagłówki z %(count)s witryny. Nic się nie zmieni, "
+"dopóki tego nie zatwierdzisz."
+msgstr[1] ""
+"Do modelu AI zostaną wysłane nazwy, adresy i najnowsze nagłówki z %(count)s witryn. Nic się nie zmieni, "
+"dopóki tego nie zatwierdzisz."
+msgstr[2] ""
+"Do modelu AI zostaną wysłane nazwy, adresy i najnowsze nagłówki z %(count)s witryn. Nic się nie zmieni, "
+"dopóki tego nie zatwierdzisz."
+
 msgid "Separate"
 msgstr "Oddzielnie"
 
@@ -6530,6 +7127,9 @@ msgstr "Błąd serwera"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "Błąd serwera: %(status)s"
+
+msgid "Set up"
+msgstr "Skonfiguruj"
 
 msgid "Set up billing"
 msgstr "Skonfiguruj rozliczenia"
@@ -6706,6 +7306,13 @@ msgstr "Pokazuj panel po uruchomieniu NewsBlur"
 msgid "Show the entire story, even if really, really long"
 msgstr "Pokazuj cały artykuł, nawet jeśli jest naprawdę, naprawdę długi"
 
+msgid "Show them"
+msgstr "Pokaż je"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "Pokaż to przeniesienie w %(folder)s"
+
 msgid "Show tooltips"
 msgstr "Pokaż podpowiedzi"
 
@@ -6785,8 +7392,17 @@ msgstr "Witryny"
 msgid "Sites and folders"
 msgstr "Witryny i foldery"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "Witryny, z których anulowano subskrypcję, nie zostaną przywrócone."
+
 msgid "Sites updated up to 5x more often"
 msgstr "Witryny aktualizowane do 5 razy częściej"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "Witryny, które od tego czasu zostały przez Ciebie objęte subskrypcją, pozostaną."
+
+msgid "Sketching folders"
+msgstr "Tworzenie szkicu folderów"
 
 msgid "Skip Back"
 msgstr "Przewiń do tyłu"
@@ -6823,6 +7439,12 @@ msgstr "Kontakty społecznościowe"
 
 msgid "Social features"
 msgstr "Funkcje społecznościowe"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "Podczas tworzenia propozycji wystąpił błąd. Spróbuj ponownie."
+
+msgid "Something went wrong. Please try again."
+msgstr "Coś poszło nie tak. Spróbuj ponownie."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6871,6 +7493,9 @@ msgstr "W opcjach kanału ustaw sortowanie strumienia od najstarszych lub od naj
 msgid "Sort, filter, and display options"
 msgstr "Opcje sortowania, filtrowania i wyświetlania"
 
+msgid "Sorting sites into folders"
+msgstr "Porządkowanie witryn w folderach"
+
 msgid "Source feeds"
 msgstr "Źródłowe kanały"
 
@@ -6908,6 +7533,9 @@ msgstr[2] "Podziel „%(category)s” (%(count)s artykułów) na:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "Podziel „%(value_1)s” na:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Podziel folder Tech na mniejsze foldery. W każdym folderze maksymalnie 40 witryn."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6958,6 +7586,9 @@ msgstr "Gwiazdki"
 msgid "Start Training Site by Site"
 msgstr "Rozpocznij trenowanie witryna po witrynie"
 
+msgid "Start fresh"
+msgstr "Zacznij od nowa"
+
 msgid "Starting analysis..."
 msgstr "Rozpoczynanie analizy..."
 
@@ -6982,11 +7613,37 @@ msgstr "Statystyki"
 msgid "Status"
 msgstr "Status"
 
+msgid "Stay"
+msgstr "Zostań"
+
 msgid "Stay on the same feed/folder"
 msgstr "Pozostań w tym samym kanale/folderze"
 
 msgid "Stay put"
 msgstr "Pozostań w miejscu"
+
+msgid "Stays"
+msgstr "Pozostaje"
+
+msgid "Stays here"
+msgstr "Pozostaje tutaj"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "Pozostaje w %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "Pozostaje, ponieważ znajduje się w nim %(count)s witryna."
+msgstr[1] "Pozostaje, ponieważ znajdują się w nim %(count)s witryny."
+msgstr[2] "Pozostaje, ponieważ znajduje się w nim %(count)s witryn."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "Pozostaje, bo folder w nim pozostaje."
+
+msgid "Stays, no folder"
+msgstr "Pozostaje bez folderu"
 
 msgid "Steadier or more varied"
 msgstr "Bardziej jednostajny lub bardziej zróżnicowany"
@@ -7007,6 +7664,14 @@ msgstr "Zatrzymaj podgląd"
 
 msgid "Stop recording"
 msgstr "Zatrzymaj nagrywanie"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"Witryna przestała publikować lub nie można pobrać z niej danych. Witryny w zablokowanych folderach nie są "
+"oznaczane. Proponowane wyciszenia są domyślnie zaznaczone. Rezygnacja z subskrypcji zawsze wymaga Twojego "
+"kliknięcia."
 
 msgid "Stories"
 msgstr "Artykuły"
@@ -7263,6 +7928,12 @@ msgstr "Poziomy subskrypcji"
 msgid "Suggested questions"
 msgstr "Sugerowane pytania"
 
+msgid "Suggested: mute."
+msgstr "Sugestia: wycisz."
+
+msgid "Suggested: unsubscribe."
+msgstr "Sugestia: zrezygnuj z subskrypcji."
+
 msgid "Summarize"
 msgstr "Podsumuj"
 
@@ -7419,6 +8090,31 @@ msgstr "Dziękujemy! Masz konto %(bold_start)sPremium Pro%(bold_end)s."
 msgid "That change could not be saved"
 msgstr "Nie udało się zapisać tej zmiany"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "Nie zostanie przywrócona witryna %(count)s, z której Cię wypisano, bo była niedostępna."
+msgstr[1] "Nie zostaną przywrócone witryny %(count)s, z których Cię wypisano, bo były niedostępne."
+msgstr[2] "Nie zostaną przywrócone witryny %(count)s, z których Cię wypisano, bo były niedostępne."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI może przenosić witryny, zmieniać nazwy folderów, łączyć je lub umieszczać jeden folder w drugim."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI nie udało się przygotować propozycji dotyczącej Twoich witryn. Spróbuj ponownie."
+
+msgid "The AI found nothing to change."
+msgstr "AI nie znalazła niczego do zmiany."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI nie udało się przygotować odpowiedzi. Spróbuj ponownie."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "AI jest teraz niedostępna. Spróbuj ponownie później."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "Sztuczna inteligencja nie widzi tego folderu ani znajdujących się w nim witryn."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Usługa AI zbyt długo nie odpowiadała. Spróbuj ponownie."
 
@@ -7455,6 +8151,12 @@ msgstr "Blog NewsBlur"
 
 msgid "The audio stream was interrupted."
 msgstr "Strumień audio został przerwany."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "Nie udało się zastosować zmian. Spróbuj ponownie."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "Folder nadal zawierał witryny lub foldery, więc pozostał."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7508,8 +8210,20 @@ msgstr "Wydawca wyłączył oryginalną stronę."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Pobierany jest kod HTML strony i analizowany w celu wyodrębnienia struktury treści."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "Propozycja została opisana w sposób, który uniemożliwia jej zastosowanie."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "Tworzenie propozycji trwało zbyt długo i zostało przerwane. Spróbuj ponownie."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "Nie udało się cofnąć zmiany układu. Spróbuj ponownie."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "Sama witryna, tak jak widzisz ją w przeglądarce"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "Witryty nie było już w miejscu, w którym spodziewano się jej znaleźć."
 
 msgid "The story on its own page on the site"
 msgstr "Artykuł na osobnej stronie witryny"
@@ -7583,6 +8297,13 @@ msgstr "Wystąpił problem podczas przesyłania zdjęcia."
 msgid "There was an error trying to logout, ouch."
 msgstr "Wystąpił błąd podczas wylogowywania. Ojej."
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr ""
+"Nie było niczego do uporządkowania przez AI. Otwórz więcej folderów lub wybierz „Zreorganizuj”, aby "
+"umożliwić dodawanie folderów."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Nie ma limitu. Zapisuj dowolną liczbę artykułów — będą przechowywane na zawsze."
 
@@ -7598,6 +8319,13 @@ msgid ""
 msgstr ""
 "Te domeny są domyślnie zablokowane (wyszukiwarki, media społecznościowe itp.). Dodaj je powyżej do sekcji "
 "„Dozwolone domeny”, aby je odblokować."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"Te witryny mają pozostać w swoich obecnych folderach, ale proponowane jest też przeniesienie ich do nowych."
+" Wybierz folder dla każdej z nich."
 
 msgid "They redeem it."
 msgstr "Odbiorca go wykorzystuje."
@@ -7619,6 +8347,12 @@ msgstr "Ten tydzień"
 
 msgid "This Year"
 msgstr "Ten rok"
+
+msgid "This change couldn't be made."
+msgstr "Nie udało się wprowadzić tej zmiany."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "Ta zmiana nie pasuje do pozostałych wybranych opcji."
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7647,12 +8381,39 @@ msgstr ""
 "To dopasowuje cały tytuł i będzie pasować tylko do tego konkretnego artykułu. Zamiast tego wybierz fragment"
 " tytułu."
 
+msgid "This proposal can't be changed right now."
+msgstr "Tej propozycji nie można teraz zmienić."
+
+msgid "This proposal can't be revised again."
+msgstr "Tej propozycji nie można już poprawić."
+
+msgid "This proposal couldn't be found."
+msgstr "Nie znaleziono tej propozycji."
+
+msgid "This proposal has already been applied."
+msgstr "Ta propozycja została już zastosowana."
+
+msgid "This proposal isn't ready to apply."
+msgstr "Ta propozycja nie jest gotowa do zastosowania."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "Ta propozycja została zastąpiona nowszą."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Lista przeczytanych artykułów to %(link_start)sfunkcja Premium%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "Spowoduje to usunięcie tagu ze wszystkich zapisanych artykułów. Artykuły pozostaną zapisane bez tego tagu."
+
+msgid "This reorganization can no longer be undone."
+msgstr "Nie można już cofnąć tej reorganizacji."
+
+msgid "This reorganization didn't finish"
+msgstr "Reorganizacja nie została ukończona"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "Ta reorganizacja nie została zastosowana, więc nie ma czego cofać."
 
 msgid "This site"
 msgstr "Ta witryna"
@@ -7711,6 +8472,9 @@ msgstr "Dawaj plusy lubianym autorom, tagom i słowom kluczowym w tytułach"
 
 msgid "Thursday"
 msgstr "Czwartek"
+
+msgid "Tidy"
+msgstr "Uporządkuj"
 
 msgid "Tier"
 msgstr "Plan"
@@ -7776,6 +8540,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "Do"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "Do %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "Do rozstrzygnięcia: %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7827,6 +8599,9 @@ msgstr "Najpopularniejsze domeny"
 
 msgid "Top Level"
 msgstr "Najwyższy poziom"
+
+msgid "Top level"
+msgstr "Poziom główny"
 
 msgid "Top stories"
 msgstr "Najważniejsze artykuły"
@@ -7988,6 +8763,21 @@ msgstr "Niedostępne"
 msgid "Uncategorized"
 msgstr "Bez kategorii"
 
+msgid "Undo"
+msgstr "Cofnij"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "Cofnięcie przywróci foldery do stanu sprzed rozpoczęcia."
+
+msgid "Undo this reorganization"
+msgstr "Cofnij tę reorganizację"
+
+msgid "Undo this reorganization?"
+msgstr "Cofnąć tę reorganizację?"
+
+msgid "Undoing..."
+msgstr "Cofanie..."
+
 msgid "Unfavorited"
 msgstr "Usunięto z ulubionych"
 
@@ -8059,6 +8849,37 @@ msgstr "Usuń artykuł z zapisanych"
 
 msgid "Unshared"
 msgstr "Nieudostępnione"
+
+msgid "Unsubscribe"
+msgstr "Anuluj subskrypcję"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "Anuluj subskrypcję witryny %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "Zrezygnowano z subskrypcji %(count)s nieaktywnej witryny"
+msgstr[1] "Zrezygnowano z subskrypcji %(count)s nieaktywnych witryn"
+msgstr[2] "Zrezygnowano z subskrypcji %(count)s nieaktywnych witryn"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"Nie można cofnąć anulowania subskrypcji %(count)s niedziałającej witryny. Cofnięcie przywróci foldery, ale "
+"nie przywróci subskrypcji."
+msgstr[1] ""
+"Nie można cofnąć anulowania subskrypcji %(count)s niedziałających witryn. Cofnięcie przywróci foldery, ale "
+"nie przywróci subskrypcji."
+msgstr[2] ""
+"Nie można cofnąć anulowania subskrypcji %(count)s niedziałających witryn. Cofnięcie przywróci foldery, ale "
+"nie przywróci subskrypcji."
 
 msgid "Untitled"
 msgstr "Bez tytułu"
@@ -8633,6 +9454,9 @@ msgstr "Możesz zmienić swoje opinie."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "Podczas czytania możesz klikać przy artykułach przyciski %(like_icon)s%(dislike_icon)s."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "Możesz zamknąć to okno. Propozycja będzie tu czekać, gdy wrócisz."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Możesz zmienić to ustawienie osobno dla każdej witryny i każdego folderu."
 
@@ -8645,11 +9469,25 @@ msgstr ""
 "ramach Premium Archive."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "Możesz cofnąć tę operację do %(date)s."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "Obserwujesz %(count)s witrynę. Premium ulepsza je wszystkie."
 msgstr[1] "Obserwujesz %(count)s witryny. Premium ulepsza je wszystkie."
 msgstr[2] "Obserwujesz %(count)s witryn. Premium ulepsza je wszystkie."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "Przysługuje Ci %(count)s propozycja miesięcznie. Aby ją zastosować, potrzebujesz Premium Archive."
+msgstr[1] "Przysługują Ci %(count)s propozycje miesięcznie. Aby zastosować jedną z nich, potrzebujesz Premium Archive."
+msgstr[2] "Przysługuje Ci %(count)s propozycji miesięcznie. Aby zastosować jedną z nich, potrzebujesz Premium Archive."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "Możesz otrzymać jedną propozycję miesięcznie. Zastosowanie jej wymaga planu Premium Archive."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8694,6 +9532,13 @@ msgstr "Zaloguj się, aby odpowiedzieć na komentarz."
 msgid "You need to be logged in to share a story."
 msgstr "Zaloguj się, aby udostępnić artykuł."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "Wypisujesz się z %(count)s niedostępnej witryny"
+msgstr[1] "Zrezygnujesz z subskrypcji %(count)s nieaktywnych witryn"
+msgstr[2] "Zrezygnujesz z subskrypcji %(count)s nieaktywnych witryn"
+
 msgid "You will be emailed within a minute or three."
 msgstr "Wiadomość e-mail otrzymasz w ciągu minuty lub trzech."
 
@@ -8719,6 +9564,30 @@ msgstr "Wszystko gotowe! Mamy nadzieję, że NewsBlur Ci się spodoba."
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Otrzymujesz w prezencie %(value_1)s planu %(value_2)s!"
+
+msgid "You've had this month's proposal."
+msgstr "Propozycja na ten miesiąc jest już dostępna."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "Wykorzystano już propozycję na ten miesiąc. Następna będzie dostępna %(date)s."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "W ciągu ostatniego dnia zgłoszono %(count)s propozycję."
+msgstr[1] "W ciągu ostatniego dnia zgłoszono %(count)s propozycje."
+msgstr[2] "W ciągu ostatniego dnia zgłoszono %(count)s propozycji."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "W ciągu ostatniej doby zgłoszono %(count)s propozycję. Następna będzie dostępna %(date)s."
+msgstr[1] "W ciągu ostatniej doby zgłoszono %(count)s propozycje. Następna będzie dostępna %(date)s."
+msgstr[2] "W ciągu ostatniej doby zgłoszono %(count)s propozycji. Następna będzie dostępna %(date)s."
+
+msgid "You've reached today's limit on proposals."
+msgstr "Osiągnięto dzienny limit propozycji."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8772,14 +9641,36 @@ msgstr "Wybrany przez Ciebie głos jest teraz niedostępny, dlatego ten artykuł
 msgid "Your cookie has expired — Please login again"
 msgstr "Sesja cookie wygasła — zaloguj się ponownie"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "Najpierw zapisujemy Twoje obecne foldery, więc przez %(count)s dzień możesz cofnąć tę zmianę."
+msgstr[1] "Najpierw zapisujemy Twoje obecne foldery, więc przez %(count)s dni możesz cofnąć tę zmianę."
+msgstr[2] "Najpierw zapisujemy Twoje obecne foldery, więc przez %(count)s dni możesz cofnąć tę zmianę."
+
+msgid "Your decisions"
+msgstr "Twoje decyzje"
+
 msgid "Your email"
 msgstr "Twój adres e-mail"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "Twoje filtry mogą ukrywać witryny — otwórz Opcje, aby wyświetlić ich więcej."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "Twoje foldery zostały przywrócone do stanu sprzed reorganizacji."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "Foldery zostaną przywrócone do stanu sprzed reorganizacji."
+
 msgid "Your inbox stays clean"
 msgstr "Twoja skrzynka odbiorcza pozostaje uporządkowana"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "Nie udało się zapisać Twojego ostatniego wyboru, więc wyświetlane są zapisane wybory. Spróbuj ponownie."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "Nie udało się zapisać zablokowanych folderów. Spróbuj ponownie."
 
 msgid "Your name"
 msgstr "Twoje imię"
@@ -8802,8 +9693,17 @@ msgstr "Opłata za subskrypcję zostanie naliczona proporcjonalnie"
 msgid "Your subscription will no longer automatically renew."
 msgstr "Twoja subskrypcja nie będzie już odnawiana automatycznie."
 
+msgid "a folder"
+msgstr "folder"
+
+msgid "a site you no longer follow"
+msgstr "witryna, której już nie obserwujesz"
+
 msgid "and auto-follow them"
 msgstr "i automatycznie ich obserwuj"
+
+msgid "approved"
+msgstr "zaakceptowano"
 
 msgid "artificial intelligence"
 msgstr "sztuczna inteligencja"
@@ -8988,6 +9888,9 @@ msgstr "obliczenia kwantowe"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "odrzucone"
+
 msgid "remote work"
 msgstr "praca zdalna"
 
@@ -9033,6 +9936,9 @@ msgstr "łańcuch dostaw"
 msgid "this list"
 msgstr "ta lista"
 
+msgid "to decide"
+msgstr "do decyzji"
+
 msgid "trade policy"
 msgstr "polityka handlowa"
 
@@ -9056,6 +9962,14 @@ msgstr "komputery retro"
 
 msgid "web standards"
 msgstr "standardy sieciowe"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "„%(old)s” zmienia się w „%(new)s”"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

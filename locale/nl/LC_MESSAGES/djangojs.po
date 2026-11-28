@@ -155,6 +155,12 @@ msgstr[0] "%(badge)s maximaal %(count)s dag"
 msgstr[1] "%(badge)s maximaal %(count)s dagen"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s site"
+msgstr[1] "%(before)s → %(count)s sites"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "Onderwerpen in %(category)s"
 
@@ -171,6 +177,12 @@ msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
 msgstr[1] "%(count)s bytes"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "%(count)s wijziging kon niet worden doorgevoerd."
+msgstr[1] "%(count)s wijzigingen konden niet worden doorgevoerd."
 
 #, python-format
 msgid "%(count)s channel"
@@ -221,10 +233,34 @@ msgstr[0] "%(count)s dag geleden"
 msgstr[1] "%(count)s dagen geleden"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "%(count)s inactieve site wordt gedempt"
+msgstr[1] "%(count)s inactieve sites worden gedempt"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "%(count)s inactieve site gedempt"
+msgstr[1] "%(count)s inactieve sites gedempt"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s keer niet leuk"
 msgstr[1] "%(count)s keer niet leuk"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s lege map wordt verwijderd"
+msgstr[1] "%(count)s lege mappen worden verwijderd"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "%(count)s lege map verwijderd"
+msgstr[1] "%(count)s lege mappen verwijderd"
 
 #, python-format
 msgid "%(count)s episode"
@@ -237,6 +273,54 @@ msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s feed"
 msgstr[1] "%(count)s feeds"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s gemarkeerd"
+msgstr[1] "%(count)s gemarkeerd"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s map toegevoegd"
+msgstr[1] "%(count)s mappen toegevoegd"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "%(count)s map wordt toegevoegd"
+msgstr[1] "%(count)s mappen worden toegevoegd"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s map wordt samengevoegd met een andere"
+msgstr[1] "%(count)s mappen worden samengevoegd met andere mappen"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s map wordt hernoemd"
+msgstr[1] "%(count)s mappen worden hernoemd"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "%(count)s map samengevoegd met een andere"
+msgstr[1] "%(count)s mappen samengevoegd met andere mappen"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s map wordt in een andere map geplaatst"
+msgstr[1] "%(count)s mappen worden in andere mappen geplaatst"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "%(count)s map hernoemd of verplaatst"
+msgstr[1] "%(count)s mappen hernoemd of verplaatst"
 
 #, python-format
 msgid "%(count)s follower"
@@ -347,6 +431,12 @@ msgstr[0] "%(count)s keer geopend"
 msgstr[1] "%(count)s keer geopend"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s andere site hier maakt geen deel uit van een wijziging."
+msgstr[1] "%(count)s andere sites hier maken geen deel uit van een wijziging."
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s pagina"
@@ -369,6 +459,12 @@ msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s reactie"
 msgstr[1] "%(count)s reacties"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "Nog %(count)s revisie"
+msgstr[1] "Nog %(count)s revisies"
 
 #, python-format
 msgid "%(count)s selected"
@@ -395,16 +491,58 @@ msgstr[0] "%(count)s site"
 msgstr[1] "%(count)s sites"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "%(count)s site is aan een tweede map toegevoegd"
+msgstr[1] "%(count)s sites zijn aan een tweede map toegevoegd"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "%(count)s site beschikbaar"
 msgstr[1] "%(count)s sites beschikbaar"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s site hier, geen onderdeel van een wijziging."
+msgstr[1] "%(count)s sites hier, geen onderdeel van een wijziging."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s site wordt aan een tweede map toegevoegd"
+msgstr[1] "%(count)s sites worden aan een tweede map toegevoegd"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "%(count)s site naar een andere map verplaatst"
+msgstr[1] "%(count)s sites naar andere mappen verplaatst"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s site wordt naar een andere map verplaatst"
+msgstr[1] "%(count)s sites worden naar een andere map verplaatst"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "%(count)s site boven de limiet"
 msgstr[1] "%(count)s sites boven de limiet"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "Voor %(count)s site is nog geen keuze gemaakt; die blijft zoals hij is."
+msgstr[1] "Voor %(count)s sites is nog geen keuze gemaakt; die blijven zoals ze zijn."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "%(count)s moet nog worden beslist. Alles waarover nog geen beslissing is genomen, blijft zoals het is."
+msgstr[1] "%(count)s moet nog worden beslist. Alles waarover nog geen beslissing is genomen, blijft zoals het is."
 
 #, python-format
 msgid "%(count)s story"
@@ -988,6 +1126,10 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s extra site"
 msgstr[1] "+ %(value_1)s extra sites"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/dag"
 
@@ -1071,6 +1213,9 @@ msgstr "Een helderder, warmer geluid"
 msgid "A folder"
 msgstr "Een map"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "Een benodigde map is hernoemd, verplaatst of verwijderd nadat het voorstel was gemaakt."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Een map met feeds die als één stroom worden gelezen"
 
@@ -1080,6 +1225,12 @@ msgstr "Een verse selectie van de artikelen die NewsBlur-lezers hebben gedeeld, 
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Een cadeau van %(value_1)s is aan je account toegevoegd."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "Er is een latere reorganisatie toegepast, dus deze kan niet meer ongedaan worden gemaakt."
+
+msgid "A proposal is already being made."
+msgstr "Er wordt al een voorstel gemaakt."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Bij een tweede poging wordt je aanwijzing gebruikt om het juiste patroon op de pagina te vinden."
@@ -1115,6 +1266,12 @@ msgstr "AI-filters zijn opgeslagen, maar worden pas uitgevoerd wanneer je %(bill
 msgid "AI finds the stories"
 msgstr "AI vindt de artikelen"
 
+msgid "AI is looking through your sites"
+msgstr "AI doorzoekt je sites"
+
+msgid "AI is revising the proposal"
+msgstr "De AI past het voorstel aan"
+
 msgid "AI-curated summary of your top stories"
 msgstr "Door AI samengestelde samenvatting van je topartikelen"
 
@@ -1134,6 +1291,12 @@ msgstr "Zeker. Open de trainer en verwijder eventuele duimpjes omhoog of omlaag 
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "Accent"
+
+msgid "Accept all"
+msgstr "Alles accepteren"
+
+msgid "Accept into this folder"
+msgstr "Accepteren in deze map"
 
 msgid "Account"
 msgstr "Account"
@@ -1174,6 +1337,9 @@ msgstr "Bookmarklet voor site toevoegen &amp; artikel delen"
 
 msgid "Add a classifier"
 msgstr "Een classifier toevoegen"
+
+msgid "Add a copy here"
+msgstr "Hier een kopie toevoegen"
 
 msgid "Add a forwarding address"
 msgstr "Een doorstuuradres toevoegen"
@@ -1216,6 +1382,10 @@ msgstr "Site/map toevoegen"
 
 msgid "Add story list"
 msgstr "Artikellijst toevoegen"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "De map %(folder)s toevoegen"
 
 msgid "Add to Chrome"
 msgstr "Toevoegen aan Chrome"
@@ -1325,6 +1495,9 @@ msgstr "Helemaal klaar!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "Alle feeds worden elke 5-15 minuten opgehaald"
 
+msgid "All moves"
+msgstr "Alle verplaatsingen"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1353,11 +1526,21 @@ msgstr "Toegestane domeinen"
 msgid "Alphabetical"
 msgstr "Alfabetisch"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "Voeg ook mappen toe, hernoem, voeg samen, nest en verwijder ze."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Verwijder ook %(value_1)s bestaand archief van dit domein"
 msgstr[1] "Verwijder ook %(value_1)s bestaande archieven van dit domein"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "Ook in %(folder)s"
+
+msgid "Also look for"
+msgstr "Zoek ook naar"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1420,6 +1603,9 @@ msgstr "Voor Android-meldingen is Premium Archive vereist"
 msgid "Animals"
 msgstr "Dieren"
 
+msgid "Another folder there already has this name."
+msgstr "Een andere map daar heeft deze naam al."
+
 msgid "Any"
 msgstr "Alle"
 
@@ -1432,6 +1618,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Op elk moment"
+
+msgid "Anything the AI should know"
+msgstr "Wat moet de AI weten?"
 
 msgid "Appearance"
 msgstr "Weergave"
@@ -1454,11 +1643,27 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s van %(count)s samenvoeging toegepast (%(stories)s)"
 msgstr[1] "%(succeeded)s van de %(count)s samenvoegingen toegepast (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "Toegepast op %(date)s."
+
 msgid "Applies to"
 msgstr "Van toepassing op"
 
 msgid "Apply"
 msgstr "Toepassen"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "%(count)s wijziging toepassen"
+msgstr[1] "%(count)s wijzigingen toepassen"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "%(count)s wijziging toepassen?"
+msgstr[1] "%(count)s wijzigingen toepassen?"
 
 msgid "Apply All Merges"
 msgstr "Alle samenvoegingen toepassen"
@@ -1466,11 +1671,29 @@ msgstr "Alle samenvoegingen toepassen"
 msgid "Apply Split"
 msgstr "Splitsing toepassen"
 
+msgid "Apply changes"
+msgstr "Wijzigingen toepassen"
+
 msgid "Apply training across a folder"
 msgstr "Pas training toe op een map"
 
 msgid "Apply training globally"
 msgstr "Training overal toepassen"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "Wijzigingen toepassen vereist Premium Archive."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"Voor het toepassen van wijzigingen is Premium Archive vereist. Je keuzes zijn opgeslagen en staan hier "
+"klaar zodra je upgradet."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "Het toepassen op %(date)s is halverwege gestopt. Daardoor zijn sommige mappen mogelijk gewijzigd."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "Het toepassen ervan is halverwege gestopt, dus sommige mappen zijn mogelijk gewijzigd."
 
 msgid "Applying..."
 msgstr "Toepassen..."
@@ -1495,6 +1718,12 @@ msgstr "Zijn de apps gratis?"
 
 msgid "Are the apps open source?"
 msgstr "Zijn de apps open source?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "Binnenkomend %(count)s"
+msgstr[1] "Binnenkomend %(count)s"
 
 msgid "Arrow keys"
 msgstr "Pijltoetsen"
@@ -1525,6 +1754,9 @@ msgstr "Met Vraag AI kun je eerst een podcast of video laten transcriberen en er
 
 msgid "Ask AI questions about stories"
 msgstr "Stel AI vragen over artikelen"
+
+msgid "Ask AI to revise"
+msgstr "Vraag AI om een revisie"
 
 msgid "Ask AI with a choice of models"
 msgstr "Vraag AI met keuze uit verschillende modellen"
@@ -1648,6 +1880,9 @@ msgstr "Terug naar de classifiertraining"
 msgid "Back to feeds"
 msgstr "Terug naar feeds"
 
+msgid "Back to review"
+msgstr "Terug naar controleren"
+
 msgid "Back to stories"
 msgstr "Terug naar artikelen"
 
@@ -1729,6 +1964,9 @@ msgstr "Blurblogs, gedeelde artikelen en reacties"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
+
+msgid "Both"
+msgstr "Beide"
 
 msgid "Bottom"
 msgstr "Onder"
@@ -1812,6 +2050,12 @@ msgstr "Opsomming"
 
 msgid "Buttons"
 msgstr "Knoppen"
+
+msgid "By folder"
+msgstr "Op map"
+
+msgid "By hand"
+msgstr "Handmatig"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1932,6 +2176,9 @@ msgstr "Vink hierboven aan wat je leuk vindt..."
 msgid "Check your email..."
 msgstr "Controleer je e-mail..."
 
+msgid "Checking for dead sites"
+msgstr "Inactieve sites controleren"
+
 msgid "Checking recent pages..."
 msgstr "Recente pagina's controleren..."
 
@@ -1964,6 +2211,9 @@ msgstr "Categorieën kiezen"
 
 msgid "Choose how many days back"
 msgstr "Kies hoeveel dagen terug"
+
+msgid "Choose how much to change, then try again."
+msgstr "Kies hoeveel je wilt wijzigen en probeer het opnieuw."
 
 msgid "Choose model"
 msgstr "Model kiezen"
@@ -2236,8 +2486,22 @@ msgstr "Tekst kopiëren"
 msgid "Copy URL"
 msgstr "URL kopiëren"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "Kopiëren uit %(folder)s"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "Kopie aangeboden aan %(folder)s"
+
+msgid "Copy undecided"
+msgstr "Kopie nog open"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Kopieer nu je clientgeheim. Je kunt het maar één keer bekijken."
+
+msgid "Copy?"
+msgstr "Kopie?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Deze classifier kan niet worden toegevoegd. Probeer het opnieuw."
@@ -2256,6 +2520,9 @@ msgstr "Veelgestelde vragen konden niet worden geladen. Probeer het opnieuw."
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "Je applicaties konden niet worden geladen. Probeer de pagina te vernieuwen."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "Reorganiseren met AI kon niet worden geladen."
 
 msgid "Couldn't load audio for this story."
 msgstr "Audio voor dit artikel laden is niet gelukt."
@@ -2411,8 +2678,20 @@ msgstr "Dagen"
 msgid "Days of unreads"
 msgstr "Dagen met ongelezen artikelen"
 
+msgid "Dead sites"
+msgstr "Inactieve sites"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "Het dempen van de inactieve sites wordt opgeheven."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "Inactieve sites die zijn gestopt met publiceren of steeds mislukken"
+
 msgid "December"
 msgstr "december"
+
+msgid "Decline all copies"
+msgstr "Alle kopieën weigeren"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Lange artikelen waaraan de community echt tijd heeft besteed"
@@ -2575,6 +2854,9 @@ msgstr "Sluiten"
 msgid "Do I get a unique email address?"
 msgstr "Krijg ik een uniek e-mailadres?"
 
+msgid "Do not put it here"
+msgstr "Niet hier neerzetten"
+
 msgid "Do the apps work offline?"
 msgstr "Werken de apps offline?"
 
@@ -2605,6 +2887,9 @@ msgstr "Geen voorbeeld weergeven, alleen de titel van het artikel"
 
 msgid "Don't show a thumbnail"
 msgstr "Geen miniatuur tonen"
+
+msgid "Done"
+msgstr "Klaar"
 
 msgid "Done!"
 msgstr "Klaar!"
@@ -2846,6 +3131,9 @@ msgstr "Elk nieuw artikel wordt permanent gearchiveerd"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "Elke tag voor opgeslagen artikelen heeft een eigen RSS-feed, ideaal om te koppelen aan IFTTT of Zapier."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "Alle sites staan in een map die je hebt uitgesloten. Open een map zodat de AI sites heeft om te bekijken."
+
 msgid "Every story archived and searchable forever"
 msgstr "Elk artikel voor altijd gearchiveerd en doorzoekbaar"
 
@@ -2867,6 +3155,9 @@ msgstr "Iedereen"
 msgid "Everyone"
 msgstr "Iedereen"
 
+msgid "Everything"
+msgstr "Alles"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "Alles wat NewsBlur kan, en hoe je het kunt uitproberen"
 
@@ -2884,6 +3175,12 @@ msgstr "Alles van Free, plus:"
 
 msgid "Everything in Premium, plus:"
 msgstr "Alles van Premium, plus:"
+
+msgid "Everything is decided."
+msgstr "Alles is beslist."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "Alles is standaard goedgekeurd. Wijs een verplaatsing vanuit een van beide mappen af."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -3013,6 +3310,13 @@ msgstr "Query verzenden mislukt"
 msgid "Failed to subscribe"
 msgstr "Abonneren mislukt"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "Ophalen mislukt en er is nooit een artikel geweest."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "Ophalen mislukt. Het laatste artikel was in %(month)s."
+
 msgid "Fashion"
 msgstr "Mode"
 
@@ -3113,11 +3417,17 @@ msgstr "Je feeds ophalen"
 msgid "Fetching..."
 msgstr "Ophalen..."
 
+msgid "File sites into the folders you already have."
+msgstr "Verdeel sites over de mappen die je al hebt."
+
 msgid "Files"
 msgstr "Bestanden"
 
 msgid "Filled Icons"
 msgstr "Gevulde pictogrammen"
+
+msgid "Filter"
+msgstr "Filteren"
 
 msgid "Filter by date range"
 msgstr "Filteren op datumbereik"
@@ -3243,8 +3553,14 @@ msgstr "Ongelezen aantallen per map"
 msgid "Folders"
 msgstr "Mappen"
 
+msgid "Folders after"
+msgstr "Mappen hierna"
+
 msgid "Folders only"
 msgstr "Alleen mappen"
+
+msgid "Folders updated"
+msgstr "Mappen bijgewerkt"
 
 msgid "Folders, feeds, and story titles"
 msgstr "Mappen, feeds en artikeltitels"
@@ -3419,6 +3735,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "Van"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "Van %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "Van weinig actieve sites"
 
@@ -3590,6 +3910,10 @@ msgstr "Upgrade naar Premium — $36/jaar"
 msgid "Go back to %(breadcrumb)s"
 msgstr "Terug naar %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "Komt in %(folder)s"
+
 msgid "Good Reads"
 msgstr "Goede leestips"
 
@@ -3693,6 +4017,9 @@ msgstr "Sites verbergen waarop je al geabonneerd bent"
 msgid "Hide story changes"
 msgstr "Wijzigingen in artikelen verbergen"
 
+msgid "Hide them"
+msgstr "Verbergen"
+
 msgid "Highlight"
 msgstr "Markeren"
 
@@ -3737,6 +4064,9 @@ msgstr "Hoeveel artikelen kan ik bewaren?"
 
 msgid "How much emotion"
 msgstr "Hoeveel emotie"
+
+msgid "How much to change"
+msgstr "Hoeveel wijzigen"
 
 msgid "How often"
 msgstr "Hoe vaak"
@@ -3811,6 +4141,10 @@ msgstr[0] "Over %(count)s dag eindigt je premiumproefperiode en keer je terug na
 msgstr[1] "Over %(count)s dagen eindigt je Premium-proefperiode en keer je terug naar Free"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "In %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "Ga in Gmail naar %(settings_menu)s en klik op %(add_button)s. Voeg je aangepaste NewsBlur-e-mailadres toe."
 
@@ -3831,6 +4165,9 @@ msgstr "In een nieuw venster"
 msgid "In a pill"
 msgstr "In een pil"
 
+msgid "In both folders"
+msgstr "In beide mappen"
+
 msgid "In rotation"
 msgstr "In de rotatie"
 
@@ -3843,6 +4180,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "In dit venster"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "In twee mappen %(count)s"
 
 msgid "Include read"
 msgstr "Gelezen opnemen"
@@ -3874,6 +4215,10 @@ msgstr "Grens voor weinig actieve sites"
 msgid "Inline list"
 msgstr "Inline lijst"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "In %(folder)s"
+
 msgid "Insta-fetch stories"
 msgstr "Artikelen direct ophalen"
 
@@ -3900,6 +4245,10 @@ msgid "Interactions"
 msgstr "Interacties"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "Naar %(folder)s, daarna verwijderd"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "Ongeldige regex: %(error)s"
 
@@ -3920,6 +4269,27 @@ msgstr "Is dit anders dan RSS?"
 
 msgid "Is training free?"
 msgstr "Is trainen gratis?"
+
+msgid "It has never had a story."
+msgstr "Er heeft nog nooit een artikel in gestaan."
+
+msgid "It involves a folder you locked."
+msgstr "Er is een map bij betrokken die je hebt vergrendeld."
+
+msgid "It needs a new folder you rejected."
+msgstr "Er is een nieuwe map nodig die je hebt afgewezen."
+
+msgid "It would have put a folder inside itself."
+msgstr "Hierdoor zou een map in zichzelf terechtkomen."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "Er is meer dan %(count)s dag verstreken, dus je kunt deze herindeling niet meer ongedaan maken."
+msgstr[1] "Er zijn meer dan %(count)s dagen verstreken, dus je kunt deze herindeling niet meer ongedaan maken."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "De map is vergrendeld om de sites erin te behouden."
 
 msgid "January"
 msgstr "januari"
@@ -3951,8 +4321,17 @@ msgstr "Alleen de koppen, met minimaal commentaar"
 msgid "Just the headlines, no commentary"
 msgstr "Alleen de koppen, geen commentaar"
 
+msgid "Keep"
+msgstr "Behouden"
+
+msgid "Keep all here"
+msgstr "Alles hier houden"
+
 msgid "Keep fades, without movement."
 msgstr "Overgangen met vervagen behouden, zonder beweging."
+
+msgid "Keep it here"
+msgstr "Hier houden"
 
 msgid "Keep others unread"
 msgstr "Andere artikelen ongelezen laten"
@@ -3963,8 +4342,17 @@ msgstr "Leesstatus behouden"
 msgid "Keep right-side buttons visible while reading"
 msgstr "Knoppen aan de rechterkant zichtbaar houden tijdens het lezen"
 
+msgid "Keep sites"
+msgstr "Sites behouden"
+
 msgid "Keep stories separate"
 msgstr "Artikelen gescheiden houden"
+
+msgid "Keep the new folders"
+msgstr "De nieuwe mappen behouden"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "Houd de fotoblogs bij elkaar. Splits het nieuws op per land."
 
 msgid "Keep unread counts out of the window title"
 msgstr "Ongelezen aantallen niet in de venstertitel tonen"
@@ -4037,11 +4425,29 @@ msgstr "Laatst gezien:"
 msgid "Layout"
 msgstr "Indeling"
 
+msgid "Leave out"
+msgstr "Weglaten"
+
 msgid "Leave unread"
 msgstr "Ongelezen laten"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "%(count)s gaat weg"
+msgstr[1] "%(count)s gaan weg"
+
 msgid "Left"
 msgstr "Links"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "Overgeslagen. Er verandert niets in deze map."
+
+msgid "Let all go"
+msgstr "Alles laten gaan"
+
+msgid "Let it go"
+msgstr "Laten gaan"
 
 msgid "Let's Get Started "
 msgstr "Aan de slag "
@@ -4158,8 +4564,14 @@ msgstr "Locatie"
 msgid "Lock"
 msgstr "Vergrendelen"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "De mappen vergrendelen die de AI met rust moet laten"
+
 msgid "Locked"
 msgstr "Vergrendeld"
+
+msgid "Locked with parent"
+msgstr "Vergrendeld met bovenliggende map"
 
 msgid "Log In or Sign Up"
 msgstr "Inloggen of registreren"
@@ -4377,6 +4789,10 @@ msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "%(count)s categorie samenvoegen met:"
 msgstr[1] "%(count)s categorieën samenvoegen met:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "%(folder)s samenvoegen met %(into)s"
+
 msgid "Merge into:"
 msgstr "Samenvoegen met:"
 
@@ -4459,6 +4875,10 @@ msgstr[0] "%(count)s site verplaatsen"
 msgstr[1] "%(count)s sites verplaatsen"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "%(site)s verplaatsen naar %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "Verplaatsen naar %(folder)s"
 
@@ -4471,6 +4891,13 @@ msgstr "Verplaatst"
 msgid "Moved!"
 msgstr "Verplaatst!"
 
+msgid "Moves"
+msgstr "Wordt verplaatst"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "Wordt verplaatst met %(folder)s tijdens het samenvoegen."
+
 msgid "Moving..."
 msgstr "Wordt verplaatst..."
 
@@ -4482,6 +4909,10 @@ msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s site dempen"
 msgstr[1] "%(count)s sites dempen"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "%(site)s dempen"
 
 msgid "Mute Sites"
 msgstr "Sites dempen"
@@ -4567,6 +4998,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "Je hebt minstens 2 categorieën nodig om samen te voegen"
+
+msgid "Nest"
+msgstr "Nesten"
 
 msgid "Nested"
 msgstr "Genest"
@@ -4734,6 +5168,9 @@ msgstr "Er zijn geen categorieën beschikbaar. Categorieën verschijnen hier zod
 msgid "No categories with 10+ stories available for splitting."
 msgstr "Er zijn geen categorieën met 10 of meer artikelen beschikbaar om op te splitsen."
 
+msgid "No changes"
+msgstr "Geen wijzigingen"
+
 msgid "No channels found matching your filter."
 msgstr "Geen kanalen gevonden die aan je filter voldoen."
 
@@ -4745,6 +5182,9 @@ msgstr "Geen gekoppelde accounts"
 
 msgid "No content"
 msgstr "Geen inhoud"
+
+msgid "No copy"
+msgstr "Geen kopie"
 
 msgid "No feeds found"
 msgstr "Geen feeds gevonden"
@@ -4872,6 +5312,10 @@ msgstr[1] "Er zijn nog geen artikelen van je %(count)s sites geïndexeerd voor g
 msgid "No stories published last month"
 msgstr "Vorige maand zijn er geen artikelen gepubliceerd"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "Geen artikelen sinds %(month)s."
+
 msgid "No stories to delete"
 msgstr "Geen artikelen om te verwijderen"
 
@@ -4941,8 +5385,31 @@ msgstr "Niet het meest gelezen, maar wel het best ontvangen, met een voorkeur vo
 msgid "Nothing"
 msgstr "Niets"
 
+msgid "Nothing changed."
+msgstr "Er is niets veranderd."
+
+msgid "Nothing changes."
+msgstr "Er verandert niets."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "Er komt niets in deze map, dus deze wordt niet aangemaakt."
+
 msgid "Nothing happens without your permission."
 msgstr "Er gebeurt niets zonder jouw toestemming."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "Na de andere wijzigingen staat er niets meer in deze map."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr ""
+"Er wordt niets verplaatst en de map blijft onaangeroerd. De sites erin kunnen nog steeds als kopieën aan "
+"andere mappen worden aangeboden."
+
+msgid "Nothing leaves this folder."
+msgstr "Er wordt niets uit deze map verwijderd."
+
+msgid "Nothing matches this filter."
+msgstr "Niets komt overeen met dit filter."
 
 msgid "Nothing recorded."
 msgstr "Niets geregistreerd."
@@ -5005,6 +5472,12 @@ msgstr "Uit"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "Toon ze in een melding met ‘N nieuwe artikelen’"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "Elders aangeboden als kopie %(count)s"
+msgstr[1] "Elders aangeboden als kopieën %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "Officiële NewsBlur-app voor Android"
 
@@ -5061,8 +5534,14 @@ msgstr ""
 msgid "On reload"
 msgstr "Bij opnieuw laden"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "Zodra je opnieuw een voorstel doet, kan je laatste herindeling niet meer ongedaan worden gemaakt."
+
 msgid "One command with Docker"
 msgstr "Eén commando met Docker"
+
+msgid "One of the proposed changes"
+msgstr "Een van de voorgestelde wijzigingen"
 
 msgid "One sentence"
 msgstr "Eén zin"
@@ -5620,8 +6099,23 @@ msgstr "Profielgegevens"
 msgid "Profile picture"
 msgstr "Profielfoto"
 
+msgid "Progress"
+msgstr "Voortgang"
+
 msgid "Prompt"
 msgstr "Prompt"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "Stel een nieuwe set mappen voor. Vergrendelde mappen blijven staan."
+
+msgid "Propose changes"
+msgstr "Wijzigingen voorstellen"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "Als je opnieuw een voorstel indient, wordt het voorstel dat je bekijkt vervangen."
+
+msgid "Proposing..."
+msgstr "Voorstel indienen..."
 
 msgid "Protected:"
 msgstr "Beveiligd:"
@@ -5640,6 +6134,13 @@ msgstr "Push verloopt"
 
 msgid "Push expires"
 msgstr "Push verloopt"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "Plaats %(folder)s in %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "Het voorstel samenstellen"
 
 msgid "Questions"
 msgstr "Vragen"
@@ -5768,6 +6269,12 @@ msgstr "Lees je feeds: ongelezen artikelen, mappen, zoeken en opgeslagen artikel
 msgid "Reading"
 msgstr "Lezen"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "%(count)s site lezen"
+msgstr[1] "%(count)s sites lezen"
+
 msgid "Reading article..."
 msgstr "Artikel wordt gelezen..."
 
@@ -5875,6 +6382,16 @@ msgstr "Regex"
 msgid "Regex requires %(tier_link)s"
 msgstr "Regex vereist %(tier_link)s"
 
+msgid "Reject"
+msgstr "Afwijzen"
+
+msgid "Reject all"
+msgstr "Alles afwijzen"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "Afgewezen %(count)s"
+
 msgid "Related"
 msgstr "Verwant"
 
@@ -5905,6 +6422,10 @@ msgstr "%(voice)s uit de rotatie verwijderen"
 
 msgid "Remove from Up Next"
 msgstr "Verwijderen uit Hierna afspelen"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "Map %(folder)s verwijderen"
 
 msgid "Remove this list"
 msgstr "Deze lijst verwijderen"
@@ -5937,6 +6458,10 @@ msgstr "Deze map hernoemen"
 msgid "Rename this site"
 msgstr "Deze site hernoemen"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "‘%(old)s’ hernoemen naar ‘%(new)s’"
+
 msgid "Renamed"
 msgstr "Hernoemd"
 
@@ -5948,6 +6473,15 @@ msgstr[1] "%(count)s artikelen hernoemd naar \"%(category)s\""
 
 msgid "Renaming..."
 msgstr "Bezig met hernoemen..."
+
+msgid "Reorganize"
+msgstr "Reorganiseren"
+
+msgid "Reorganize again"
+msgstr "Opnieuw indelen"
+
+msgid "Reorganize with AI"
+msgstr "Reorganiseren met AI"
 
 msgid "Request timed out"
 msgstr "Aanvraag verlopen"
@@ -6011,6 +6545,19 @@ msgstr "Opnieuw proberen"
 
 msgid "Retry fetching and parsing"
 msgstr "Ophalen en parseren opnieuw proberen"
+
+msgid "Review"
+msgstr "Controleren"
+
+msgid "Revise proposal"
+msgstr "Voorstel aanpassen"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "Aangepast zoals je vroeg: “%(request)s”"
+
+msgid "Revising..."
+msgstr "Herzien..."
 
 msgid "Rewinding..."
 msgstr "Terugspoelen..."
@@ -6164,6 +6711,9 @@ msgstr ""
 
 msgid "Saving..."
 msgstr "Opslaan..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "Geef aan wat de AI moet wijzigen en probeer het opnieuw."
 
 msgid "Schedule when your briefing is generated"
 msgstr "Stel in wanneer je briefing wordt gegenereerd"
@@ -6386,6 +6936,20 @@ msgstr "Dit artikel verzenden"
 msgid "Sending…"
 msgstr "Verzenden…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"De namen, adressen en recente koppen van %(count)s site worden naar het AI-model gestuurd. Er verandert "
+"niets totdat je dit goedkeurt."
+msgstr[1] ""
+"De namen, adressen en recente koppen van %(count)s sites worden naar het AI-model gestuurd. Er verandert "
+"niets totdat je dit goedkeurt."
+
 msgid "Separate"
 msgstr "Gescheiden"
 
@@ -6398,6 +6962,9 @@ msgstr "Serverfout"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "Serverfout: %(status)s"
+
+msgid "Set up"
+msgstr "Instellen"
 
 msgid "Set up billing"
 msgstr "Facturering instellen"
@@ -6569,6 +7136,13 @@ msgstr "Toon het dashboard wanneer NewsBlur wordt geladen"
 msgid "Show the entire story, even if really, really long"
 msgstr "Toon het volledige artikel, ook als het heel, heel lang is"
 
+msgid "Show them"
+msgstr "Toon ze"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "Deze verplaatsing tonen in %(folder)s"
+
 msgid "Show tooltips"
 msgstr "Tooltips weergeven"
 
@@ -6648,8 +7222,17 @@ msgstr "Websites"
 msgid "Sites and folders"
 msgstr "Sites en mappen"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "Sites waarop je abonnement is opgezegd, worden niet teruggezet."
+
 msgid "Sites updated up to 5x more often"
 msgstr "Sites worden tot 5 keer vaker bijgewerkt"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "Sites waarop je je sindsdien hebt geabonneerd, blijven staan."
+
+msgid "Sketching folders"
+msgstr "Mappen schetsen"
 
 msgid "Skip Back"
 msgstr "Terugspoelen"
@@ -6686,6 +7269,12 @@ msgstr "Sociale connecties"
 
 msgid "Social features"
 msgstr "Sociale functies"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "Er is iets misgegaan bij het maken van het voorstel. Probeer het opnieuw."
+
+msgid "Something went wrong. Please try again."
+msgstr "Er is iets misgegaan. Probeer het opnieuw."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6734,6 +7323,9 @@ msgstr "Sorteer de nieuwsstroom van oud naar nieuw of van nieuw naar oud via het
 msgid "Sort, filter, and display options"
 msgstr "Sorteer-, filter- en weergaveopties"
 
+msgid "Sorting sites into folders"
+msgstr "Sites sorteren in mappen"
+
 msgid "Source feeds"
 msgstr "Bronfeeds"
 
@@ -6770,6 +7362,9 @@ msgstr[1] "Splits \"%(category)s\" (%(count)s artikelen) op in:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "Splits \"%(value_1)s\" op in:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Splits Tech op in kleinere mappen. Geen map met meer dan 40 sites."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6820,6 +7415,9 @@ msgstr "Sterren"
 msgid "Start Training Site by Site"
 msgstr "Training starten, site voor site"
 
+msgid "Start fresh"
+msgstr "Opnieuw beginnen"
+
 msgid "Starting analysis..."
 msgstr "Analyse wordt gestart..."
 
@@ -6844,11 +7442,36 @@ msgstr "Statistieken"
 msgid "Status"
 msgstr "Status"
 
+msgid "Stay"
+msgstr "Blijven"
+
 msgid "Stay on the same feed/folder"
 msgstr "Op dezelfde feed/map blijven"
 
 msgid "Stay put"
 msgstr "Op dezelfde plek blijven"
+
+msgid "Stays"
+msgstr "Blijft"
+
+msgid "Stays here"
+msgstr "Blijft hier"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "Blijft in %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "Blijft, omdat %(count)s site erin blijft."
+msgstr[1] "Blijft, omdat %(count)s sites erin blijven."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "Blijft, omdat een map erin blijft."
+
+msgid "Stays, no folder"
+msgstr "Blijft, geen map"
 
 msgid "Steadier or more varied"
 msgstr "Gelijkmatiger of gevarieerder"
@@ -6869,6 +7492,14 @@ msgstr "Voorbeeld stoppen"
 
 msgid "Stop recording"
 msgstr "Stop met opnemen"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"Gestopt met publiceren of ophalen mislukt. Sites in vergrendelde mappen worden niet gemarkeerd. "
+"Voorgestelde dempingen zijn standaard geselecteerd. Je moet altijd zelf klikken om je abonnement op te "
+"zeggen."
 
 msgid "Stories"
 msgstr "Artikelen"
@@ -7123,6 +7754,12 @@ msgstr "Abonnementsniveaus"
 msgid "Suggested questions"
 msgstr "Voorgestelde vragen"
 
+msgid "Suggested: mute."
+msgstr "Voorgesteld: dempen."
+
+msgid "Suggested: unsubscribe."
+msgstr "Voorgesteld: abonnement opzeggen."
+
 msgid "Summarize"
 msgstr "Samenvatten"
 
@@ -7279,6 +7916,30 @@ msgstr "Bedankt! Je hebt een %(bold_start)sPremium Pro-account%(bold_end)s."
 msgid "That change could not be saved"
 msgstr "Die wijziging kon niet worden opgeslagen"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "De %(count)s inactieve site waarop je niet meer geabonneerd bent, wordt niet teruggezet."
+msgstr[1] "De %(count)s inactieve sites waarop je niet meer geabonneerd bent, worden niet teruggezet."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "Vraag AI kan sites verplaatsen, mappen hernoemen, samenvoegen of nesten."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "De AI kon geen voorstel voor je sites afronden. Probeer het opnieuw."
+
+msgid "The AI found nothing to change."
+msgstr "De AI heeft niets gevonden om te wijzigen."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "De AI kon geen goed antwoord geven. Probeer het opnieuw."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "De AI is momenteel niet beschikbaar. Probeer het later opnieuw."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "De AI ziet deze map en de sites erin nooit."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "De AI-dienst deed er te lang over om te reageren. Probeer het opnieuw."
 
@@ -7315,6 +7976,12 @@ msgstr "De NewsBlur-blog"
 
 msgid "The audio stream was interrupted."
 msgstr "De audiostream is onderbroken."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "De wijzigingen konden niet worden toegepast. Probeer het opnieuw."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "Er stonden nog sites of mappen in de map, dus die is gebleven."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7366,8 +8033,20 @@ msgstr "De oorspronkelijke pagina is door de uitgever uitgeschakeld."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "De HTML van de pagina wordt opgehaald en geparseerd om de inhoudsstructuur te bepalen."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "Het voorstel beschreef de wijziging op een manier die niet kon worden toegepast."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "Het voorstel duurde te lang en is gestopt. Probeer het opnieuw."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "De herindeling kon niet ongedaan worden gemaakt. Probeer het opnieuw."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "De site zelf, zoals je die in een browser zou zien"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "De site stond niet meer op de plek die het voorstel verwachtte."
 
 msgid "The story on its own page on the site"
 msgstr "Het artikel op een eigen pagina op de site"
@@ -7439,6 +8118,13 @@ msgstr "Er is een probleem opgetreden bij het uploaden van je foto."
 msgid "There was an error trying to logout, ouch."
 msgstr "Er is een fout opgetreden bij het uitloggen, au."
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr ""
+"Er was niets om te ordenen met AI. Open meer van je mappen of kies ‘Reorganiseren’ zodat er mappen kunnen "
+"worden toegevoegd."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Er is geen limiet. Bewaar zoveel artikelen als je wilt; ze blijven voor altijd bewaard."
 
@@ -7454,6 +8140,13 @@ msgid ""
 msgstr ""
 "Deze domeinen zijn standaard geblokkeerd (zoekmachines, sociale media enz.). Voeg ze hierboven toe aan "
 "'Toegestane domeinen' om dit te omzeilen."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"Deze sites blijven in hun oude map, maar worden ook aan een nieuwe map toegewezen. Kies waar elke site moet"
+" komen."
 
 msgid "They redeem it."
 msgstr "Ze verzilveren het."
@@ -7475,6 +8168,12 @@ msgstr "Deze week"
 
 msgid "This Year"
 msgstr "Dit jaar"
+
+msgid "This change couldn't be made."
+msgstr "Deze wijziging kon niet worden doorgevoerd."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "Deze wijziging past niet bij je andere keuzes."
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7503,6 +8202,24 @@ msgstr ""
 "Dit komt overeen met de volledige titel en geldt alleen voor dit exacte artikel. Selecteer in plaats "
 "daarvan een deel van de titel."
 
+msgid "This proposal can't be changed right now."
+msgstr "Dit voorstel kan nu niet worden gewijzigd."
+
+msgid "This proposal can't be revised again."
+msgstr "Dit voorstel kan niet nogmaals worden aangepast."
+
+msgid "This proposal couldn't be found."
+msgstr "Dit voorstel is niet gevonden."
+
+msgid "This proposal has already been applied."
+msgstr "Dit voorstel is al toegepast."
+
+msgid "This proposal isn't ready to apply."
+msgstr "Dit voorstel kan nog niet worden toegepast."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "Dit voorstel is vervangen door een nieuwer voorstel."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Deze lijst met gelezen artikelen is een %(link_start)spremiumfunctie%(link_end)s."
@@ -7511,6 +8228,15 @@ msgid "This removes the tag from all saved stories. Stories will remain saved wi
 msgstr ""
 "Hierdoor wordt de tag verwijderd van alle opgeslagen artikelen. De artikelen blijven opgeslagen zonder deze"
 " tag."
+
+msgid "This reorganization can no longer be undone."
+msgstr "Deze herindeling kan niet meer ongedaan worden gemaakt."
+
+msgid "This reorganization didn't finish"
+msgstr "Deze reorganisatie is niet afgerond"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "Deze herindeling is niet toegepast, dus er valt niets ongedaan te maken."
 
 msgid "This site"
 msgstr "Deze site"
@@ -7567,6 +8293,9 @@ msgstr "Geef auteurs, tags of trefwoorden in titels die je leuk vindt een duimpj
 
 msgid "Thursday"
 msgstr "donderdag"
+
+msgid "Tidy"
+msgstr "Opruimen"
 
 msgid "Tier"
 msgstr "Niveau"
@@ -7632,6 +8361,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "Tot"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "Naar %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "Nog te beslissen %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7683,6 +8420,9 @@ msgid "Top Domains"
 msgstr "Belangrijkste domeinen"
 
 msgid "Top Level"
+msgstr "Hoofdniveau"
+
+msgid "Top level"
 msgstr "Hoofdniveau"
 
 msgid "Top stories"
@@ -7843,6 +8583,21 @@ msgstr "Niet beschikbaar"
 msgid "Uncategorized"
 msgstr "Zonder categorie"
 
+msgid "Undo"
+msgstr "Ongedaan maken"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "Met Ongedaan maken zet je je mappen terug zoals ze waren voordat dit begon."
+
+msgid "Undo this reorganization"
+msgstr "Deze reorganisatie ongedaan maken"
+
+msgid "Undo this reorganization?"
+msgstr "Deze herindeling ongedaan maken?"
+
+msgid "Undoing..."
+msgstr "Ongedaan maken..."
+
 msgid "Unfavorited"
 msgstr "Niet meer favoriet"
 
@@ -7914,6 +8669,33 @@ msgstr "Dit artikel niet meer opslaan"
 
 msgid "Unshared"
 msgstr "Niet meer gedeeld"
+
+msgid "Unsubscribe"
+msgstr "Abonnement opzeggen"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "Uitschrijven van %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "Abonnement op %(count)s inactieve site opgezegd"
+msgstr[1] "Abonnementen op %(count)s inactieve sites opgezegd"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"Het abonnement opzeggen voor %(count)s inactieve site kan niet ongedaan worden gemaakt. Met ‘Ongedaan "
+"maken’ herstel je je mappen, maar abonneer je je niet opnieuw."
+msgstr[1] ""
+"Het abonnement opzeggen voor %(count)s inactieve sites kan niet ongedaan worden gemaakt. Met ‘Ongedaan "
+"maken’ herstel je je mappen, maar abonneer je je niet opnieuw."
 
 msgid "Untitled"
 msgstr "Naamloos"
@@ -8476,6 +9258,9 @@ msgstr "Je kunt je mening aanpassen."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "Je kunt tijdens het lezen op de knoppen %(like_icon)s%(dislike_icon)s naast artikelen klikken."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "Je kunt dit venster sluiten. Het voorstel staat hier op je te wachten wanneer je terugkomt."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Je kunt dit per site en per map overschrijven."
 
@@ -8486,10 +9271,23 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "Je kunt gratis per feed trainen, of met Premium Archive per map en globaal."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "Je kunt dit ongedaan maken tot %(date)s."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "Je volgt %(count)s site. Premium maakt ze allemaal beter."
 msgstr[1] "Je volgt %(count)s sites. Premium maakt ze allemaal beter."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "Je krijgt %(count)s voorstel per maand. Een voorstel toepassen vereist Premium Archive."
+msgstr[1] "Je krijgt %(count)s voorstellen per maand. Een voorstel toepassen vereist Premium Archive."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "Je krijgt één voorstel per maand. Om een voorstel toe te passen heb je Premium Archive nodig."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8534,6 +9332,12 @@ msgstr "Je moet ingelogd zijn om op een reactie te antwoorden."
 msgid "You need to be logged in to share a story."
 msgstr "Je moet ingelogd zijn om een artikel te delen."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "Je zegt je abonnement op bij %(count)s inactieve site"
+msgstr[1] "Je zegt je abonnement op bij %(count)s inactieve sites"
+
 msgid "You will be emailed within a minute or three."
 msgstr "Je ontvangt binnen een minuut of drie een e-mail."
 
@@ -8559,6 +9363,28 @@ msgstr "Je bent klaar om te beginnen! Veel plezier met NewsBlur."
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Je hebt %(value_1)s van %(value_2)s cadeau gekregen!"
+
+msgid "You've had this month's proposal."
+msgstr "Je hebt het voorstel van deze maand al gehad."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "Je hebt je voorstel voor deze maand al gehad. Het volgende is beschikbaar op %(date)s."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "Je hebt de afgelopen dag %(count)s voorstel gedaan."
+msgstr[1] "Je hebt de afgelopen dag %(count)s voorstellen gedaan."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "Je hebt de afgelopen dag %(count)s voorstel gedaan. Het volgende is beschikbaar op %(date)s."
+msgstr[1] "Je hebt de afgelopen dag %(count)s voorstellen gedaan. Het volgende is beschikbaar op %(date)s."
+
+msgid "You've reached today's limit on proposals."
+msgstr "Je hebt de limiet voor voorstellen van vandaag bereikt."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8614,14 +9440,35 @@ msgstr "Je gekozen stem is momenteel niet beschikbaar, dus %(voice)s leest dit a
 msgid "Your cookie has expired — Please login again"
 msgstr "Je cookie is verlopen — log opnieuw in"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "Je huidige mappen worden eerst opgeslagen, zodat je dit %(count)s dag ongedaan kunt maken."
+msgstr[1] "Je huidige mappen worden eerst opgeslagen, zodat je dit %(count)s dagen ongedaan kunt maken."
+
+msgid "Your decisions"
+msgstr "Jouw keuzes"
+
 msgid "Your email"
 msgstr "Je e-mailadres"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "Je filters verbergen mogelijk sites — open Opties om ze te verruimen."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "Je mappen zijn teruggezet naar de situatie van vóór de herindeling."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "Je mappen worden teruggezet naar de situatie van vóór deze herindeling."
+
 msgid "Your inbox stays clean"
 msgstr "Je inbox blijft overzichtelijk"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "Je laatste keuze kon niet worden opgeslagen. Daarom zie je hier de opgeslagen keuzes. Probeer het opnieuw."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "Je vergrendelde mappen konden niet worden opgeslagen. Probeer het opnieuw."
 
 msgid "Your name"
 msgstr "Je naam"
@@ -8644,8 +9491,17 @@ msgstr "Je abonnement wordt naar rato berekend"
 msgid "Your subscription will no longer automatically renew."
 msgstr "Je abonnement wordt niet langer automatisch verlengd."
 
+msgid "a folder"
+msgstr "een map"
+
+msgid "a site you no longer follow"
+msgstr "een site die je niet meer volgt"
+
 msgid "and auto-follow them"
 msgstr "en ze automatisch volgen"
+
+msgid "approved"
+msgstr "goedgekeurd"
 
 msgid "artificial intelligence"
 msgstr "kunstmatige intelligentie"
@@ -8829,6 +9685,9 @@ msgstr "kwantumcomputing"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "afgewezen"
+
 msgid "remote work"
 msgstr "werken op afstand"
 
@@ -8874,6 +9733,9 @@ msgstr "toeleveringsketen"
 msgid "this list"
 msgstr "deze lijst"
 
+msgid "to decide"
+msgstr "nog te beslissen"
+
 msgid "trade policy"
 msgstr "handelsbeleid"
 
@@ -8897,6 +9759,14 @@ msgstr "vintagecomputers"
 
 msgid "web standards"
 msgstr "webstandaarden"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s” wordt “%(new)s”"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

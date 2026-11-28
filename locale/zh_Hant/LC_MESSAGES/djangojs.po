@@ -149,6 +149,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "%(badge)s 最多可使用 %(count)s 天"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s 個網站"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "%(category)s 主題"
 
@@ -164,6 +169,11 @@ msgstr "%(cost)s/篇文章"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s 位元組"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "無法完成 %(count)s 項變更。"
 
 #, python-format
 msgid "%(count)s channel"
@@ -206,9 +216,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s 天前"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "將靜音 %(count)s 個失效網站"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "已靜音 %(count)s 個失效網站"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s 個倒讚"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "已移除 %(count)s 個空資料夾"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "已移除 %(count)s 個空資料夾"
 
 #, python-format
 msgid "%(count)s episode"
@@ -219,6 +249,46 @@ msgstr[0] "%(count)s 集"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s 個訂閱來源"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "已標記 %(count)s 個"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "已新增 %(count)s 個資料夾"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "將新增 %(count)s 個資料夾"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "將有 %(count)s 個資料夾合併到其他資料夾"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "將有 %(count)s 個資料夾重新命名"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "已將 %(count)s 個資料夾合併到其他資料夾"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "將有 %(count)s 個資料夾移入其他資料夾"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "已重新命名或移動 %(count)s 個資料夾"
 
 #, python-format
 msgid "%(count)s follower"
@@ -313,6 +383,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "%(count)s 次開啟"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s 個其他網站不屬於任何變更。"
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s 個頁面"
@@ -331,6 +406,11 @@ msgstr[0] "%(count)s 則公開留言"
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s 則回覆"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "還有 %(count)s 次修訂"
 
 #, python-format
 msgid "%(count)s selected"
@@ -353,14 +433,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s 個網站"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "已將 %(count)s 個網站新增到第二個資料夾"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "%(count)s 個網站可用"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s 個網站在此，不屬於任何變更。"
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "將有 %(count)s 個網站新增到第二個資料夾"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "已將 %(count)s 個網站移至其他資料夾"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "將有 %(count)s 個網站移至其他資料夾"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "超出上限 %(count)s 個網站"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s 個網站尚未決定去留，將維持原狀。"
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "還有 %(count)s 個待決定項目。未決定的項目會維持原狀。"
 
 #, python-format
 msgid "%(count)s story"
@@ -918,6 +1033,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s 個網站"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/天"
 
@@ -998,6 +1117,9 @@ msgstr "更清晰、更貼近的音質"
 msgid "A folder"
 msgstr "一個資料夾"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "提案建立後，所需的資料夾已重新命名、移動或刪除。"
+
 msgid "A folder of feeds read as one stream"
 msgstr "將多個訂閱來源合併成單一串流閱讀的資料夾"
 
@@ -1007,6 +1129,12 @@ msgstr "每小時精選一小批 NewsBlur 讀者分享的最新文章。"
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "已將 %(value_1)s 贈送的禮物套用至你的帳戶。"
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "後續的重新整理已套用，因此無法再復原這次整理。"
+
+msgid "A proposal is already being made."
+msgstr "已有提案正在進行。"
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "第二次掃描會使用你的提示，在頁面上找到正確的模式。"
@@ -1042,6 +1170,12 @@ msgstr "AI 篩選條件已儲存，但在你 %(billing_link)s 之前不會執行
 msgid "AI finds the stories"
 msgstr "由 AI 找出文章"
 
+msgid "AI is looking through your sites"
+msgstr "AI 正在檢視你的網站"
+
+msgid "AI is revising the proposal"
+msgstr "AI 正在修改提案"
+
 msgid "AI-curated summary of your top stories"
 msgstr "由 AI 精選的熱門文章摘要"
 
@@ -1061,6 +1195,12 @@ msgstr "當然可以。開啟訓練器，移除任何讚或倒讚即可重設。
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "口音"
+
+msgid "Accept all"
+msgstr "全部接受"
+
+msgid "Accept into this folder"
+msgstr "接受並移入此資料夾"
 
 msgid "Account"
 msgstr "帳戶"
@@ -1100,6 +1240,9 @@ msgstr "新增網站 &amp; 分享文章書籤小工具"
 
 msgid "Add a classifier"
 msgstr "新增分類器"
+
+msgid "Add a copy here"
+msgstr "在此新增副本"
 
 msgid "Add a forwarding address"
 msgstr "新增轉寄地址"
@@ -1142,6 +1285,10 @@ msgstr "新增網站／資料夾"
 
 msgid "Add story list"
 msgstr "新增文章清單"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "新增資料夾 %(folder)s"
 
 msgid "Add to Chrome"
 msgstr "新增至 Chrome"
@@ -1245,6 +1392,9 @@ msgstr "全部完成！"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "每 5 至 15 分鐘擷取所有訂閱來源"
 
+msgid "All moves"
+msgstr "所有移動"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr "所有模式預設都不區分大小寫。使用 %(code)s 表示字詞邊界，避免部分比對。"
@@ -1269,10 +1419,20 @@ msgstr "允許的網域"
 msgid "Alphabetical"
 msgstr "依字母順序"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "也可以新增、重新命名、合併、巢狀排列及移除資料夾。"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "同時刪除此網域中現有的 %(value_1)s 個封存項目"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "也保留在 %(folder)s"
+
+msgid "Also look for"
+msgstr "也搜尋"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1331,6 +1491,9 @@ msgstr "Android 通知需要 Premium Archive"
 msgid "Animals"
 msgstr "動物"
 
+msgid "Another folder there already has this name."
+msgstr "另一個資料夾已使用這個名稱。"
+
 msgid "Any"
 msgstr "不限"
 
@@ -1341,6 +1504,9 @@ msgstr "任何公開網頁：Twitter 個人檔案、Reddit 討論串、GitHub �
 
 msgid "Any time"
 msgstr "任何時間"
+
+msgid "Anything the AI should know"
+msgstr "AI 有什麼需要知道的事"
 
 msgid "Appearance"
 msgstr "外觀"
@@ -1361,11 +1527,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "已套用 %(succeeded)s / %(count)s 個合併項目（%(stories)s）"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "已於 %(date)s 套用。"
+
 msgid "Applies to"
 msgstr "適用於"
 
 msgid "Apply"
 msgstr "套用"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "套用 %(count)s 項變更"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "要套用 %(count)s 項變更嗎？"
 
 msgid "Apply All Merges"
 msgstr "套用所有合併"
@@ -1373,11 +1553,27 @@ msgstr "套用所有合併"
 msgid "Apply Split"
 msgstr "套用分割"
 
+msgid "Apply changes"
+msgstr "套用變更"
+
 msgid "Apply training across a folder"
 msgstr "將訓練套用至整個資料夾"
 
 msgid "Apply training globally"
 msgstr "套用訓練至所有網站"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "套用變更需要 Premium Archive。"
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr "套用變更需要 Premium Archive。你的決定已儲存，升級後仍會保留。"
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "在 %(date)s 套用變更時中途停止，因此部分資料夾可能已變更。"
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "套用到一半時中止，因此部分資料夾可能已變更。"
 
 msgid "Applying..."
 msgstr "正在套用…"
@@ -1402,6 +1598,11 @@ msgstr "這些應用程式免費嗎？"
 
 msgid "Are the apps open source?"
 msgstr "這些應用程式是開放原始碼嗎？"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "移入 %(count)s"
 
 msgid "Arrow keys"
 msgstr "方向鍵"
@@ -1432,6 +1633,9 @@ msgstr "「詢問 AI」可先轉錄 Podcast 或影片，再回答相關問題。
 
 msgid "Ask AI questions about stories"
 msgstr "向 AI 詢問文章相關問題"
+
+msgid "Ask AI to revise"
+msgstr "請詢問 AI 進行修訂"
 
 msgid "Ask AI with a choice of models"
 msgstr "選擇模型並詢問 AI"
@@ -1552,6 +1756,9 @@ msgstr "返回分類器訓練器"
 msgid "Back to feeds"
 msgstr "返回訂閱來源"
 
+msgid "Back to review"
+msgstr "返回檢視"
+
 msgid "Back to stories"
 msgstr "返回文章"
 
@@ -1634,6 +1841,9 @@ msgstr "Blurblog、分享的文章和留言"
 msgid "Bookmarklet"
 msgstr "書籤小工具"
 
+msgid "Both"
+msgstr "兩者"
+
 msgid "Bottom"
 msgstr "底部"
 
@@ -1712,6 +1922,12 @@ msgstr "重點條列"
 
 msgid "Buttons"
 msgstr "按鈕"
+
+msgid "By folder"
+msgstr "依資料夾"
+
+msgid "By hand"
+msgstr "手動"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1831,6 +2047,9 @@ msgstr "請在上方勾選你喜歡的項目…"
 msgid "Check your email..."
 msgstr "請查看你的電子郵件…"
 
+msgid "Checking for dead sites"
+msgstr "正在檢查失效的網站"
+
 msgid "Checking recent pages..."
 msgstr "正在檢查最近瀏覽的頁面…"
 
@@ -1861,6 +2080,9 @@ msgstr "選擇分類"
 
 msgid "Choose how many days back"
 msgstr "選擇往回查看的天數"
+
+msgid "Choose how much to change, then try again."
+msgstr "選擇要變更的範圍，然後再試一次。"
 
 msgid "Choose model"
 msgstr "選擇模型"
@@ -2120,8 +2342,22 @@ msgstr "複製文字"
 msgid "Copy URL"
 msgstr "複製網址"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "從 %(folder)s 複製"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "已向 %(folder)s 提供複本"
+
+msgid "Copy undecided"
+msgstr "複製未決定"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "請立即複製用戶端密鑰。你只有一次機會查看。"
+
+msgid "Copy?"
+msgstr "要複製？"
 
 msgid "Could not add this classifier. Try again."
 msgstr "無法新增此分類器。請再試一次。"
@@ -2140,6 +2376,9 @@ msgstr "無法載入常見問題。請再試一次。"
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "無法載入你的應用程式。請嘗試重新整理。"
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "無法載入 AI 重新整理功能。"
 
 msgid "Couldn't load audio for this story."
 msgstr "無法載入這篇文章的音訊。"
@@ -2292,8 +2531,20 @@ msgstr "天"
 msgid "Days of unreads"
 msgstr "未讀天數"
 
+msgid "Dead sites"
+msgstr "失效網站"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "已取消靜音遭靜音的失效網站。"
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "已停止發布或持續載入失敗的失效網站"
+
 msgid "December"
 msgstr "十二月"
+
+msgid "Decline all copies"
+msgstr "拒絕所有副本"
 
 msgid "Deep reads the community gave real time to"
 msgstr "社群投入時間深入閱讀的文章"
@@ -2453,6 +2704,9 @@ msgstr "關閉"
 msgid "Do I get a unique email address?"
 msgstr "我會取得專屬的電子郵件地址嗎？"
 
+msgid "Do not put it here"
+msgstr "不要放在這裡"
+
 msgid "Do the apps work offline?"
 msgstr "應用程式可以離線使用嗎？"
 
@@ -2483,6 +2737,9 @@ msgstr "不要顯示預覽，只顯示文章標題"
 
 msgid "Don't show a thumbnail"
 msgstr "不要顯示縮圖"
+
+msgid "Done"
+msgstr "完成"
 
 msgid "Done!"
 msgstr "完成！"
@@ -2717,6 +2974,9 @@ msgstr "每篇新文章都會永久封存"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "每個已儲存文章的標籤都有自己的 RSS 訂閱來源，非常適合串接至 IFTTT 或 Zapier。"
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "所有網站都位於你未納入的資料夾中。請開啟一個資料夾，讓 AI 查看其中的網站。"
+
 msgid "Every story archived and searchable forever"
 msgstr "每篇文章都會永久封存並可供搜尋"
 
@@ -2738,6 +2998,9 @@ msgstr "所有人"
 msgid "Everyone"
 msgstr "所有人"
 
+msgid "Everything"
+msgstr "全部"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlur 能做的所有事，以及如何試用"
 
@@ -2755,6 +3018,12 @@ msgstr "包含免費方案的所有功能，此外還有："
 
 msgid "Everything in Premium, plus:"
 msgstr "Premium 的所有功能，另外還有："
+
+msgid "Everything is decided."
+msgstr "所有項目都已決定。"
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "所有項目一開始都已核准。若要拒絕移動，請在任一資料夾中拒絕。"
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2882,6 +3151,13 @@ msgstr "提交查詢失敗"
 msgid "Failed to subscribe"
 msgstr "訂閱失敗"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "載入失敗，而且從未有過文章。"
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "無法取得資料。最後一篇文章發布於 %(month)s。"
+
 msgid "Fashion"
 msgstr "時尚"
 
@@ -2982,11 +3258,17 @@ msgstr "正在擷取你的訂閱來源"
 msgid "Fetching..."
 msgstr "正在擷取…"
 
+msgid "File sites into the folders you already have."
+msgstr "將網站整理到現有資料夾。"
+
 msgid "Files"
 msgstr "檔案"
 
 msgid "Filled Icons"
 msgstr "實心圖示"
+
+msgid "Filter"
+msgstr "篩選"
 
 msgid "Filter by date range"
 msgstr "依日期範圍篩選"
@@ -3110,8 +3392,14 @@ msgstr "資料夾未讀數量"
 msgid "Folders"
 msgstr "資料夾"
 
+msgid "Folders after"
+msgstr "變更後的資料夾"
+
 msgid "Folders only"
 msgstr "僅資料夾"
+
+msgid "Folders updated"
+msgstr "資料夾已更新"
 
 msgid "Folders, feeds, and story titles"
 msgstr "資料夾、訂閱來源和文章標題"
@@ -3284,6 +3572,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "從"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "來自 %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "來自不常更新的網站"
 
@@ -3451,6 +3743,10 @@ msgstr "升級至 Premium — 每年 36 美元"
 msgid "Go back to %(breadcrumb)s"
 msgstr "返回 %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "移入 %(folder)s"
+
 msgid "Good Reads"
 msgstr "優質閱讀"
 
@@ -3553,6 +3849,9 @@ msgstr "隱藏你已訂閱的網站"
 msgid "Hide story changes"
 msgstr "隱藏文章變更"
 
+msgid "Hide them"
+msgstr "隱藏它們"
+
 msgid "Highlight"
 msgstr "醒目標示"
 
@@ -3597,6 +3896,9 @@ msgstr "我可以儲存多少篇文章？"
 
 msgid "How much emotion"
 msgstr "情感表現程度"
+
+msgid "How much to change"
+msgstr "變更幅度"
 
 msgid "How often"
 msgstr "頻率"
@@ -3668,6 +3970,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "再過 %(count)s 天，你的 Premium 試用期將結束，並恢復為免費方案"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "在 %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "在 Gmail 中前往 %(settings_menu)s，然後點選 %(add_button)s。新增你的自訂 NewsBlur 電子郵件地址。"
 
@@ -3686,6 +3992,9 @@ msgstr "在新視窗中"
 msgid "In a pill"
 msgstr "膠囊狀"
 
+msgid "In both folders"
+msgstr "保留在兩個資料夾"
+
 msgid "In rotation"
 msgstr "已加入輪替"
 
@@ -3696,6 +4005,10 @@ msgstr "在訂閱來源檢視中，直接點選文章標頭中的標籤和作者
 
 msgid "In this window"
 msgstr "在此視窗中"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "位於兩個資料夾 %(count)s"
 
 msgid "Include read"
 msgstr "包含已讀"
@@ -3727,6 +4040,10 @@ msgstr "不常更新網站的每月文章數"
 msgid "Inline list"
 msgstr "行內清單"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "位於 %(folder)s 裡"
+
 msgid "Insta-fetch stories"
 msgstr "立即擷取文章"
 
@@ -3751,6 +4068,10 @@ msgid "Interactions"
 msgstr "互動"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "移入 %(folder)s，然後移除"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "無效的正規表示式：%(error)s"
 
@@ -3771,6 +4092,26 @@ msgstr "這和 RSS 有什麼不同？"
 
 msgid "Is training free?"
 msgstr "訓練功能免費嗎？"
+
+msgid "It has never had a story."
+msgstr "這個網站從未有過文章。"
+
+msgid "It involves a folder you locked."
+msgstr "其中包含你鎖定的資料夾。"
+
+msgid "It needs a new folder you rejected."
+msgstr "這需要你已拒絕的新資料夾。"
+
+msgid "It would have put a folder inside itself."
+msgstr "這樣會把資料夾放進它自己裡面。"
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "已超過 %(count)s 天，因此無法再復原這次重新整理。"
+
+msgid "Its folder is locked to keep its sites."
+msgstr "資料夾已鎖定，以保留其中的網站。"
 
 msgid "January"
 msgstr "一月"
@@ -3802,8 +4143,17 @@ msgstr "只有標題，幾乎沒有評論"
 msgid "Just the headlines, no commentary"
 msgstr "只有標題，沒有評論"
 
+msgid "Keep"
+msgstr "保留"
+
+msgid "Keep all here"
+msgstr "全部留在這裡"
+
 msgid "Keep fades, without movement."
 msgstr "保留淡入淡出，取消移動效果。"
+
+msgid "Keep it here"
+msgstr "保留在此處"
 
 msgid "Keep others unread"
 msgstr "保留其他文章為未讀"
@@ -3814,8 +4164,17 @@ msgstr "保留已讀狀態"
 msgid "Keep right-side buttons visible while reading"
 msgstr "閱讀時保持右側按鈕顯示"
 
+msgid "Keep sites"
+msgstr "保留網站"
+
 msgid "Keep stories separate"
 msgstr "分開顯示文章"
+
+msgid "Keep the new folders"
+msgstr "保留新資料夾"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "將照片部落格放在一起，並依國家拆分新聞。"
 
 msgid "Keep unread counts out of the window title"
 msgstr "視窗標題不顯示未讀數量"
@@ -3888,11 +4247,28 @@ msgstr "上次上線："
 msgid "Layout"
 msgstr "版面配置"
 
+msgid "Leave out"
+msgstr "排除"
+
 msgid "Leave unread"
 msgstr "保留為未讀"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "移出 %(count)s"
+
 msgid "Left"
 msgstr "左側"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "略過。此資料夾中的內容不會變更。"
+
+msgid "Let all go"
+msgstr "全部移出"
+
+msgid "Let it go"
+msgstr "移出"
 
 msgid "Let's Get Started "
 msgstr "開始使用"
@@ -4007,8 +4383,14 @@ msgstr "位置"
 msgid "Lock"
 msgstr "鎖定"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "鎖定不希望 AI 更動的資料夾"
+
 msgid "Locked"
 msgstr "已鎖定"
+
+msgid "Locked with parent"
+msgstr "與上層一同鎖定"
 
 msgid "Log In or Sign Up"
 msgstr "登入或註冊"
@@ -4217,6 +4599,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "將 %(count)s 個分類合併至："
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "將 %(folder)s 合併至 %(into)s"
+
 msgid "Merge into:"
 msgstr "合併至："
 
@@ -4297,6 +4683,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "移動 %(count)s 個網站"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "將 %(site)s 移至 %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "移至 %(folder)s"
 
@@ -4309,6 +4699,13 @@ msgstr "已移動"
 msgid "Moved!"
 msgstr "已移動！"
 
+msgid "Moves"
+msgstr "移至其他資料夾"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "合併時會隨 %(folder)s 一起移動。"
+
 msgid "Moving..."
 msgstr "正在移動…"
 
@@ -4319,6 +4716,10 @@ msgstr "靜音"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "靜音 %(count)s 個網站"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "靜音 %(site)s"
 
 msgid "Mute Sites"
 msgstr "靜音網站"
@@ -4402,6 +4803,9 @@ msgstr "不用碰滑鼠，就能瀏覽所有內容。只需使用鍵盤即可開
 
 msgid "Need at least 2 categories to merge"
 msgstr "至少需要 2 個分類才能合併"
+
+msgid "Nest"
+msgstr "巢狀排列"
 
 msgid "Nested"
 msgstr "巢狀"
@@ -4567,6 +4971,9 @@ msgstr "目前沒有可用的分類。設定分類後，它們就會顯示在這
 msgid "No categories with 10+ stories available for splitting."
 msgstr "沒有可供拆分、含有 10 篇以上文章的分類。"
 
+msgid "No changes"
+msgstr "沒有變更"
+
 msgid "No channels found matching your filter."
 msgstr "找不到符合篩選條件的頻道。"
 
@@ -4578,6 +4985,9 @@ msgstr "沒有已連結的帳戶"
 
 msgid "No content"
 msgstr "沒有內容"
+
+msgid "No copy"
+msgstr "不複製"
 
 msgid "No feeds found"
 msgstr "找不到訂閱來源"
@@ -4704,6 +5114,10 @@ msgstr[0] "你的 %(count)s 個網站尚未有文章建立相關文章索引。"
 msgid "No stories published last month"
 msgstr "上個月沒有發布任何文章"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "自 %(month)s 起沒有文章。"
+
 msgid "No stories to delete"
 msgstr "沒有可刪除的文章"
 
@@ -4773,8 +5187,29 @@ msgstr "不一定是閱讀量最高的，但最受好評，且偏重小型網站
 msgid "Nothing"
 msgstr "無"
 
+msgid "Nothing changed."
+msgstr "沒有變更。"
+
+msgid "Nothing changes."
+msgstr "沒有任何變更。"
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "這個資料夾裡沒有任何內容，因此不會建立。"
+
 msgid "Nothing happens without your permission."
 msgstr "未經你的允許，任何事情都不會發生。"
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "套用其他變更後，這個資料夾已空無一物。"
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr "沒有任何內容會移動，資料夾也會保持原樣。資料夾中的網站仍可作為副本提供給其他資料夾。"
+
+msgid "Nothing leaves this folder."
+msgstr "沒有任何內容會離開這個資料夾。"
+
+msgid "Nothing matches this filter."
+msgstr "沒有符合此篩選條件的項目。"
 
 msgid "Nothing recorded."
 msgstr "沒有記錄。"
@@ -4837,6 +5272,11 @@ msgstr "關閉"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "以「N 篇新文章」提示標籤顯示"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "另提供複本至其他資料夾 %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "官方 NewsBlur Android 應用程式"
 
@@ -4888,8 +5328,14 @@ msgstr "Premium 可搜尋近期文章；Premium Archive 則可搜尋所有曾封
 msgid "On reload"
 msgstr "重新載入時"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "再次提出提案後，就無法復原上次的重新整理。"
+
 msgid "One command with Docker"
 msgstr "使用 Docker 執行一行指令"
+
+msgid "One of the proposed changes"
+msgstr "其中一項提議的變更"
 
 msgid "One sentence"
 msgstr "一句話"
@@ -5429,8 +5875,23 @@ msgstr "個人資料詳情"
 msgid "Profile picture"
 msgstr "個人資料圖片"
 
+msgid "Progress"
+msgstr "進度"
+
 msgid "Prompt"
 msgstr "提示詞"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "提出一組新的資料夾配置。已鎖定的資料夾仍會保留。"
+
+msgid "Propose changes"
+msgstr "提出變更"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "再次提出提案會取代你正在檢視的提案。"
+
+msgid "Proposing..."
+msgstr "正在提出…"
 
 msgid "Protected:"
 msgstr "受保護："
@@ -5449,6 +5910,13 @@ msgstr "推播到期"
 
 msgid "Push expires"
 msgstr "推播到期時間"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "將 %(folder)s 放入 %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "正在整理提案"
 
 msgid "Questions"
 msgstr "問題"
@@ -5565,6 +6033,11 @@ msgstr "閱讀你的訂閱來源：未讀文章、資料夾、搜尋，以及依
 msgid "Reading"
 msgstr "閱讀中"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "正在讀取 %(count)s 個網站"
+
 msgid "Reading article..."
 msgstr "正在讀取文章…"
 
@@ -5672,6 +6145,16 @@ msgstr "正規表示式"
 msgid "Regex requires %(tier_link)s"
 msgstr "正規表示式需要 %(tier_link)s"
 
+msgid "Reject"
+msgstr "拒絕"
+
+msgid "Reject all"
+msgstr "全部拒絕"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "已拒絕 %(count)s"
+
 msgid "Related"
 msgstr "相關"
 
@@ -5702,6 +6185,10 @@ msgstr "將 %(voice)s 移出輪替"
 
 msgid "Remove from Up Next"
 msgstr "從接下來播放中移除"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "移除資料夾 %(folder)s"
 
 msgid "Remove this list"
 msgstr "移除此清單"
@@ -5734,6 +6221,10 @@ msgstr "重新命名此資料夾"
 msgid "Rename this site"
 msgstr "重新命名此網站"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "將「%(old)s」重新命名為「%(new)s」"
+
 msgid "Renamed"
 msgstr "已重新命名"
 
@@ -5744,6 +6235,15 @@ msgstr[0] "已將 %(count)s 篇文章重新命名為「%(category)s」"
 
 msgid "Renaming..."
 msgstr "正在重新命名…"
+
+msgid "Reorganize"
+msgstr "重新整理"
+
+msgid "Reorganize again"
+msgstr "再次整理"
+
+msgid "Reorganize with AI"
+msgstr "使用 AI 重新整理"
 
 msgid "Request timed out"
 msgstr "要求逾時"
@@ -5807,6 +6307,19 @@ msgstr "重試"
 
 msgid "Retry fetching and parsing"
 msgstr "重新嘗試擷取並解析"
+
+msgid "Review"
+msgstr "檢視"
+
+msgid "Revise proposal"
+msgstr "修訂提案"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "已依照你的要求修訂：「%(request)s」"
+
+msgid "Revising..."
+msgstr "修改中…"
 
 msgid "Rewinding..."
 msgstr "正在倒帶……"
@@ -5952,6 +6465,9 @@ msgstr "所有方案皆可儲存文章。標籤與標籤 RSS 訂閱來源需使�
 
 msgid "Saving..."
 msgstr "儲存中…"
+
+msgid "Say what the AI should change, then try again."
+msgstr "說明你希望 AI 如何修改，然後再試一次。"
 
 msgid "Schedule when your briefing is generated"
 msgstr "安排簡報產生時間"
@@ -6170,6 +6686,15 @@ msgstr "傳送這篇文章"
 msgid "Sending…"
 msgstr "正在傳送…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] "會將 %(count)s 個網站的名稱、網址和近期標題傳送至 AI 模型。核准前不會進行任何變更。"
+
 msgid "Separate"
 msgstr "分開"
 
@@ -6182,6 +6707,9 @@ msgstr "伺服器錯誤"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "伺服器錯誤：%(status)s"
+
+msgid "Set up"
+msgstr "設定"
 
 msgid "Set up billing"
 msgstr "設定帳單"
@@ -6350,6 +6878,13 @@ msgstr "載入 NewsBlur 時顯示儀表板"
 msgid "Show the entire story, even if really, really long"
 msgstr "顯示完整文章，即使文章非常非常長"
 
+msgid "Show them"
+msgstr "顯示"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "在 %(folder)s 中顯示這次移動"
+
 msgid "Show tooltips"
 msgstr "顯示工具提示"
 
@@ -6429,8 +6964,17 @@ msgstr "網站"
 msgid "Sites and folders"
 msgstr "網站與資料夾"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "這次重新整理取消訂閱的網站不會恢復訂閱。"
+
 msgid "Sites updated up to 5x more often"
 msgstr "網站更新頻率最高可提升 5 倍"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "之後訂閱的網站會保留。"
+
+msgid "Sketching folders"
+msgstr "規劃資料夾"
 
 msgid "Skip Back"
 msgstr "倒退"
@@ -6467,6 +7011,12 @@ msgstr "社群連結"
 
 msgid "Social features"
 msgstr "社交功能"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "建立提案時發生問題，請再試一次。"
+
+msgid "Something went wrong. Please try again."
+msgstr "發生錯誤。請再試一次。"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6515,6 +7065,9 @@ msgstr "在訂閱來源選項彈出視窗中，將新聞流排序為由舊至新
 msgid "Sort, filter, and display options"
 msgstr "排序、篩選和顯示選項"
 
+msgid "Sorting sites into folders"
+msgstr "將網站分類到資料夾"
+
 msgid "Source feeds"
 msgstr "訂閱來源"
 
@@ -6550,6 +7103,9 @@ msgstr[0] "將「%(category)s」（%(count)s 篇文章）拆分為："
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "將「%(value_1)s」拆分為："
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "將科技拆分成較小的資料夾，每個資料夾最多放 40 個網站。"
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6596,6 +7152,9 @@ msgstr "星星"
 msgid "Start Training Site by Site"
 msgstr "逐一訓練網站"
 
+msgid "Start fresh"
+msgstr "重新開始"
+
 msgid "Starting analysis..."
 msgstr "正在開始分析…"
 
@@ -6620,11 +7179,35 @@ msgstr "統計資料"
 msgid "Status"
 msgstr "狀態"
 
+msgid "Stay"
+msgstr "留下"
+
 msgid "Stay on the same feed/folder"
 msgstr "停留在同一個訂閱來源／資料夾"
 
 msgid "Stay put"
 msgstr "保持原位"
+
+msgid "Stays"
+msgstr "保留原位"
+
+msgid "Stays here"
+msgstr "保留在此"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "保留在 %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "保留，因為有 %(count)s 個網站留在其中。"
+
+msgid "Stays, because a folder inside it stays."
+msgstr "保留，因為其中的資料夾會保留。"
+
+msgid "Stays, no folder"
+msgstr "保留原位，不放入資料夾"
 
 msgid "Steadier or more varied"
 msgstr "較穩定或更多變"
@@ -6645,6 +7228,11 @@ msgstr "停止預覽"
 
 msgid "Stop recording"
 msgstr "停止錄音"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr "已停止發布或無法載入。鎖定資料夾中的網站不會被標記。建議靜音的網站預設為選取狀態。取消訂閱一律需要你點選確認。"
 
 msgid "Stories"
 msgstr "文章"
@@ -6895,6 +7483,12 @@ msgstr "訂閱方案等級"
 msgid "Suggested questions"
 msgstr "建議問題"
 
+msgid "Suggested: mute."
+msgstr "建議：靜音。"
+
+msgid "Suggested: unsubscribe."
+msgstr "建議：取消訂閱。"
+
 msgid "Summarize"
 msgstr "摘要"
 
@@ -7051,6 +7645,29 @@ msgstr "謝謝！你擁有 %(bold_start)sPremium Pro 帳戶%(bold_end)s。"
 msgid "That change could not be saved"
 msgstr "無法儲存這項變更"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "不會恢復它取消訂閱的 %(count)s 個失效網站。"
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI 可以移入或移出網站，也可以重新命名、合併或巢狀排列資料夾。"
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI 無法完成你網站的提案。請再試一次。"
+
+msgid "The AI found nothing to change."
+msgstr "AI 找不到需要變更的內容。"
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI 回覆時遇到問題。請再試一次。"
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "AI 目前無法使用。請稍後再試。"
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI 不會看到這個資料夾或其中的網站。"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 服務回應時間過長。請再試一次。"
 
@@ -7079,6 +7696,12 @@ msgstr "NewsBlur 部落格"
 
 msgid "The audio stream was interrupted."
 msgstr "音訊串流已中斷。"
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "無法套用變更。請再試一次。"
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "資料夾中仍有網站或資料夾，因此予以保留。"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7128,8 +7751,20 @@ msgstr "發布者已停用原始頁面。"
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "擷取並解析頁面 HTML，以提取內容結構。"
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "提案的描述方式無法套用。"
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "提案耗時過久，已停止。請再試一次。"
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "無法復原這次重新整理。請再試一次。"
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "網站本身，也就是你在瀏覽器中看到的樣子"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "網站已不在提案預期的位置。"
 
 msgid "The story on its own page on the site"
 msgstr "文章在網站上獨立頁面中的樣子"
@@ -7195,6 +7830,11 @@ msgstr "上傳照片時發生問題。"
 msgid "There was an error trying to logout, ouch."
 msgstr "登出時發生錯誤，哎呀。"
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr "AI 沒有可整理的內容。請開啟更多資料夾，或選擇「重新整理」，讓 AI 新增資料夾。"
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "沒有數量限制。想儲存多少篇文章都可以，而且會永久保留。"
 
@@ -7208,6 +7848,11 @@ msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
 "above to override."
 msgstr "這些網域預設為封鎖（搜尋引擎、社群媒體等）。若要允許，請將它們加入上方的「允許的網域」。"
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr "這些網站設定為保留在原資料夾，但也被提議移至新資料夾。請選擇每個網站的存放位置。"
 
 msgid "They redeem it."
 msgstr "對方進行兌換。"
@@ -7230,6 +7875,12 @@ msgstr "本週"
 msgid "This Year"
 msgstr "今年"
 
+msgid "This change couldn't be made."
+msgstr "無法完成這項變更。"
+
+msgid "This change doesn't fit with your other choices."
+msgstr "這項變更與你的其他選擇不相容。"
+
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
 "reader returns."
@@ -7249,12 +7900,39 @@ msgstr "這會比對文章的完整文字，因此只會比對這篇特定文章
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "這會比對完整標題，因此只會比對這篇完全相同的文章。請改選標題的一部分。"
 
+msgid "This proposal can't be changed right now."
+msgstr "目前無法變更此提案。"
+
+msgid "This proposal can't be revised again."
+msgstr "無法再次修改此提案。"
+
+msgid "This proposal couldn't be found."
+msgstr "找不到此提案。"
+
+msgid "This proposal has already been applied."
+msgstr "此提案已套用。"
+
+msgid "This proposal isn't ready to apply."
+msgstr "這項提案尚未準備好套用。"
+
+msgid "This proposal was replaced by a newer one."
+msgstr "這項提案已由較新的提案取代。"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "此已讀文章清單是%(link_start)s進階版功能%(link_end)s。"
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "這會從所有已儲存的文章中移除該標籤。文章仍會保留，但不再有此標籤。"
+
+msgid "This reorganization can no longer be undone."
+msgstr "此重新整理已無法復原。"
+
+msgid "This reorganization didn't finish"
+msgstr "這次重新整理未完成"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "這項重整尚未套用，因此沒有可復原的內容。"
 
 msgid "This site"
 msgstr "此網站"
@@ -7306,6 +7984,9 @@ msgstr "對你喜歡的作者、標籤或標題關鍵字按讚"
 
 msgid "Thursday"
 msgstr "星期四"
+
+msgid "Tidy"
+msgstr "整理"
 
 msgid "Tier"
 msgstr "方案"
@@ -7369,6 +8050,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "至"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "移至 %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "待決定 %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7418,6 +8107,9 @@ msgstr "熱門網域"
 
 msgid "Top Level"
 msgstr "頂層"
+
+msgid "Top level"
+msgstr "最上層"
 
 msgid "Top stories"
 msgstr "熱門文章"
@@ -7572,6 +8264,21 @@ msgstr "無法使用"
 msgid "Uncategorized"
 msgstr "未分類"
 
+msgid "Undo"
+msgstr "復原"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "復原會將資料夾還原成開始前的狀態。"
+
+msgid "Undo this reorganization"
+msgstr "復原這次重新整理"
+
+msgid "Undo this reorganization?"
+msgstr "要復原這次重新整理嗎？"
+
+msgid "Undoing..."
+msgstr "正在復原…"
+
 msgid "Unfavorited"
 msgstr "已取消最愛"
 
@@ -7643,6 +8350,27 @@ msgstr "取消儲存這篇文章"
 
 msgid "Unshared"
 msgstr "已取消分享"
+
+msgid "Unsubscribe"
+msgstr "取消訂閱"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "取消訂閱 %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "已取消訂閱 %(count)s 個失效網站"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] "取消訂閱 %(count)s 個失效網站後無法復原。復原會還原你的資料夾，但不會重新訂閱這些網站。"
 
 msgid "Untitled"
 msgstr "未命名"
@@ -8177,6 +8905,9 @@ msgstr "你可以改變自己的看法。"
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "閱讀文章時，你可以點擊文章旁的 %(like_icon)s%(dislike_icon)s 按鈕。"
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "你可以關閉這個對話框。返回時，提案會留在這裡等你。"
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "你可以針對個別網站和資料夾覆寫此設定。"
 
@@ -8187,9 +8918,21 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "免費方案可針對個別訂閱來源進行訓練；Premium Archive 則可針對資料夾及全域進行訓練。"
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "你可以在 %(date)s 前復原此操作。"
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "你追蹤 %(count)s 個網站。升級 Premium，讓它們全部更出色。"
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "你每月可提出 %(count)s 個提案。套用提案需要 Premium Archive。"
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "你每月可以取得一項提案。套用提案需要 Premium Archive。"
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8234,6 +8977,11 @@ msgstr "你必須登入才能回覆留言。"
 msgid "You need to be logged in to share a story."
 msgstr "你必須登入才能分享文章。"
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "你將取消訂閱 %(count)s 個失效網站"
+
 msgid "You will be emailed within a minute or three."
 msgstr "你會在一至三分鐘內收到電子郵件。"
 
@@ -8257,6 +9005,26 @@ msgstr "一切就緒！希望你喜歡 NewsBlur。"
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "你獲贈了 %(value_1)s 的 %(value_2)s！"
+
+msgid "You've had this month's proposal."
+msgstr "你這個月的提案已用完。"
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "你已用完本月的提案額度。下一次可使用時間為 %(date)s。"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "你在過去一天內提出了 %(count)s 個提案。"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "你在過去一天內已提出 %(count)s 項提案。下一項提案可於 %(date)s 提出。"
+
+msgid "You've reached today's limit on proposals."
+msgstr "你已達到今天的提案上限。"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8310,14 +9078,34 @@ msgstr "你選擇的語音目前無法使用，因此由 %(voice)s 朗讀這篇�
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie 已過期 — 請重新登入"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "系統會先儲存你目前的資料夾，因此可在 %(count)s 天內復原。"
+
+msgid "Your decisions"
+msgstr "你的決定"
+
 msgid "Your email"
 msgstr "你的電子郵件"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "你的篩選器可能隱藏了網站 — 開啟「選項」以放寬篩選條件。"
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "你的資料夾已還原為重新整理前的狀態。"
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "你的資料夾會恢復成重新整理前的樣子。"
+
 msgid "Your inbox stays clean"
 msgstr "讓你的收件匣保持整潔"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "無法儲存你上次的選擇，因此這裡顯示的是已儲存的選擇。請再試一次。"
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "無法儲存你鎖定的資料夾。請再試一次。"
 
 msgid "Your name"
 msgstr "你的姓名"
@@ -8340,8 +9128,17 @@ msgstr "你的訂閱費用將按比例計算"
 msgid "Your subscription will no longer automatically renew."
 msgstr "你的訂閱將不再自動續訂。"
 
+msgid "a folder"
+msgstr "資料夾"
+
+msgid "a site you no longer follow"
+msgstr "你已不再追蹤的網站"
+
 msgid "and auto-follow them"
 msgstr "並自動追蹤他們"
+
+msgid "approved"
+msgstr "已核准"
 
 msgid "artificial intelligence"
 msgstr "人工智慧"
@@ -8524,6 +9321,9 @@ msgstr "量子運算"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "已拒絕"
+
 msgid "remote work"
 msgstr "遠端工作"
 
@@ -8569,6 +9369,9 @@ msgstr "供應鏈"
 msgid "this list"
 msgstr "這份清單"
 
+msgid "to decide"
+msgstr "待決定"
+
 msgid "trade policy"
 msgstr "貿易政策"
 
@@ -8592,6 +9395,14 @@ msgstr "復古電腦"
 
 msgid "web standards"
 msgstr "網頁標準"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "「%(old)s」會變成「%(new)s」"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

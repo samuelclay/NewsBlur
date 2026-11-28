@@ -2382,6 +2382,238 @@ body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-feed-organizer-sor
     font-size: 11px;
 }
 
+/* mobile.css: Reorganize with AI (reader_organizer_ai.js). Setup and review stack into one column
+   that scrolls with the sheet, so the folder, review and outline lists give up the heights they
+   scroll within on a desktop, including the one reader_organizer.js sets on them. Colors come from
+   the tab's --nb-reorg names in reader.css, so every theme needs nothing more here. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-setup,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-setup-folders,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-setup-options,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-main {
+    flex: none;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folders,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-list,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-outline {
+    max-height: none !important;
+    overflow: visible;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai .NB-organizer-sidebar-title {
+    margin-top: 20px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai :is(.NB-organizer-ai-setup-folders, .NB-organizer-ai-setup-options, .NB-organizer-ai-review-side) > .NB-organizer-sidebar-title:first-child {
+    margin-top: 0;
+}
+
+/* mobile.css: the run's options and Propose come first on a phone, ahead of a folder list that
+   can run to hundreds of rows. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-setup-options {
+    order: -1;
+    margin-bottom: 24px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* mobile.css: a folder's name and count fill the first line, so its lock control, or the "Locked
+   with parent" label, always sits on the line under it. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder-title {
+    flex: 1 1 calc(100% - 64px);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder .NB-organizer-ai-lock {
+    flex: 1 1 100%;
+    width: auto;
+    margin-inline-start: 24px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder .NB-organizer-ai-locked-with-parent {
+    flex: 0 1 auto;
+    margin-inline-start: 24px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder .NB-organizer-ai-lock-option {
+    flex: 1 1 0;
+}
+
+/* mobile.css: on review the sidebar's parts go where a phone needs them: the decision counts above
+   the changes, Folders after and Ask AI to revise below them, and Apply pinned to the bottom of
+   the sheet so it is never hundreds of rows away. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-side {
+    display: contents;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-side > .NB-organizer-sidebar-title:first-child,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-side > .NB-organizer-ai-tally-cells {
+    order: -1;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-review-side > .NB-organizer-ai-tally-cells {
+    margin-bottom: 20px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-apply {
+    position: sticky;
+    bottom: 0;
+    z-index: 6;
+    margin: 20px -16px 0;
+    padding: 10px 16px calc(10px + var(--nb-mobile-safe-bottom));
+    border-top: 1px solid var(--nb-reorg-divider);
+    background-color: var(--nb-reorg-surface);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-apply .NB-organizer-ai-note {
+    margin-top: 4px;
+}
+
+/* mobile.css: a card's heading scrolls away with it; pinned, it would sit under the sheet's close
+   button. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-card-head {
+    position: static;
+}
+
+/* mobile.css: a site row keeps its name beside its two buttons, with the outcome under the name. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row {
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    align-items: start;
+    row-gap: 4px;
+    padding: 8px 10px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row > .NB-organizer-ai-site-icon-wrap {
+    grid-row: 1 / span 2;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row > .NB-organizer-ai-row-main {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row > .NB-organizer-ai-pill {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    max-width: 100%;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row > .NB-organizer-ai-choices {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+}
+
+/* mobile.css: three labelled choices take a row of their own under the site. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-route-row,
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-dead-row {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row > .NB-organizer-ai-choices-wide {
+    display: flex;
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 4px;
+    margin-inline-start: 0;
+}
+
+/* mobile.css: each button takes the room its label needs, and a long label wraps inside it. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choices-wide .NB-organizer-ai-choice-wide {
+    flex: 1 1 auto;
+    white-space: normal;
+}
+
+/* mobile.css: everything a thumb presses is at least 40px tall. A destination chip stays small
+   and reaches past its edges instead. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choices {
+    gap: 6px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choice {
+    width: 44px;
+    height: 40px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choice-icon {
+    width: 13px;
+    height: 13px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choice-wide {
+    height: auto;
+    min-height: 40px;
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai :is(.NB-organizer-ai-step, .NB-organizer-ai-switch-option, .NB-organizer-ai-chip, .NB-organizer-ai-lock-button, .NB-organizer-ai-outline-folder, .NB-organizer-ai-lock-option, .NB-modal-submit-button) {
+    min-height: 40px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-chip {
+    padding: 0 12px;
+    border-radius: 20px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-lock-button {
+    padding: 0 10px;
+    font-size: 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-lock-menu-option {
+    padding: 10px 12px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-section-head {
+    padding-top: 2px;
+    padding-bottom: 0;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-jump {
+    position: relative;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-jump::after {
+    content: "";
+    position: absolute;
+    inset: -12px -6px;
+}
+
+/* mobile.css: the centered screens (progress, confirm, applied) use the sheet's width, and their
+   buttons stack full width with the main one last, nearest the thumb. */
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-center {
+    padding: 28px 12px 24px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-buttons {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-buttons .NB-modal-submit-button {
+    min-width: 0;
+}
+
 /* mobile.css: every Blurblog background swatch remains available inside the phone sheet. */
 body.NB-mobile #simplemodal-container .NB-modal-profile-editor .NB-profile-blurblog-colors {
     float: none;

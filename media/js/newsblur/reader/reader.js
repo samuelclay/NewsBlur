@@ -7678,6 +7678,19 @@
                 this.socket.removeAllListeners('webfeed:subscribe_update');
                 this.socket.on('webfeed:subscribe_update', _.bind(this.handle_webfeed_subscribe_update, this));
 
+                // Reorganize with AI progress, relayed by node/reorganize.coffee
+                this.socket.removeAllListeners('reorganize:start');
+                this.socket.on('reorganize:start', _.bind(this.handle_reorganize_event, this, 'start'));
+
+                this.socket.removeAllListeners('reorganize:progress');
+                this.socket.on('reorganize:progress', _.bind(this.handle_reorganize_event, this, 'progress'));
+
+                this.socket.removeAllListeners('reorganize:ready');
+                this.socket.on('reorganize:ready', _.bind(this.handle_reorganize_event, this, 'ready'));
+
+                this.socket.removeAllListeners('reorganize:error');
+                this.socket.on('reorganize:error', _.bind(this.handle_reorganize_event, this, 'error'));
+
                 // Archive Extension real-time event listeners
                 this.socket.removeAllListeners('archive:new');
                 this.socket.on('archive:new', _.bind(this.handle_archive_new, this));
@@ -8424,6 +8437,17 @@
             NEWSBLUR.log(['webfeed:subscribe_update', data]);
             if (this.add_site_view) {
                 this.add_site_view.handle_webfeed_subscribe_update(data);
+            }
+        },
+
+        // =============================
+        // = Reorganize with AI events =
+        // =============================
+
+        handle_reorganize_event: function (event_type, data) {
+            NEWSBLUR.log(['reorganize:' + event_type, data]);
+            if (NEWSBLUR.organizer && NEWSBLUR.organizer.ai) {
+                NEWSBLUR.organizer.ai.handle_event(event_type, data);
             }
         },
 

@@ -153,6 +153,12 @@ msgstr[0] "%(badge)s अधिकतम %(count)s दिन तक"
 msgstr[1] "%(badge)s अधिकतम %(count)s दिन तक"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s साइट"
+msgstr[1] "%(before)s → %(count)s साइटें"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "%(category)s विषय"
 
@@ -169,6 +175,12 @@ msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s बाइट"
 msgstr[1] "%(count)s बाइट"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "%(count)s बदलाव नहीं किया जा सका।"
+msgstr[1] "%(count)s बदलाव नहीं किए जा सके।"
 
 #, python-format
 msgid "%(count)s channel"
@@ -219,10 +231,34 @@ msgstr[0] "%(count)s दिन पहले"
 msgstr[1] "%(count)s दिन पहले"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "%(count)s बंद साइट म्यूट की जाएगी"
+msgstr[1] "%(count)s बंद साइटें म्यूट की जाएँगी"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "%(count)s बंद साइट म्यूट की गई"
+msgstr[1] "%(count)s बंद साइटें म्यूट की गईं"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s नापसंद"
 msgstr[1] "%(count)s नापसंद"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s खाली फ़ोल्डर हटाया जाएगा"
+msgstr[1] "%(count)s खाली फ़ोल्डर हटाए जाएँगे"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "%(count)s खाली फ़ोल्डर हटाया गया"
+msgstr[1] "%(count)s खाली फ़ोल्डर हटाए गए"
 
 #, python-format
 msgid "%(count)s episode"
@@ -235,6 +271,54 @@ msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s फ़ीड"
 msgstr[1] "%(count)s फ़ीड"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s चिह्नित"
+msgstr[1] "%(count)s चिह्नित"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s फ़ोल्डर जोड़ा गया"
+msgstr[1] "%(count)s फ़ोल्डर जोड़े गए"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "%(count)s फ़ोल्डर जोड़ा जाएगा"
+msgstr[1] "%(count)s फ़ोल्डर जोड़े जाएँगे"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s फ़ोल्डर दूसरे फ़ोल्डर में मर्ज किया जाएगा"
+msgstr[1] "%(count)s फ़ोल्डर दूसरे फ़ोल्डरों में मर्ज किए जाएँगे"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s फ़ोल्डर का नाम बदला जाएगा"
+msgstr[1] "%(count)s फ़ोल्डरों के नाम बदले जाएँगे"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "%(count)s फ़ोल्डर दूसरे फ़ोल्डर में मर्ज किया गया"
+msgstr[1] "%(count)s फ़ोल्डर दूसरे फ़ोल्डरों में मर्ज किए गए"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s फ़ोल्डर दूसरे फ़ोल्डर में चला जाएगा"
+msgstr[1] "%(count)s फ़ोल्डर दूसरे फ़ोल्डरों में चले जाएँगे"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "%(count)s फ़ोल्डर का नाम बदला गया या उसे स्थानांतरित किया गया"
+msgstr[1] "%(count)s फ़ोल्डरों के नाम बदले गए या उन्हें स्थानांतरित किया गया"
 
 #, python-format
 msgid "%(count)s follower"
@@ -345,6 +429,12 @@ msgstr[0] "%(count)s बार खोला गया"
 msgstr[1] "%(count)s बार खोला गया"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "यहाँ मौजूद %(count)s अन्य साइट किसी बदलाव का हिस्सा नहीं है।"
+msgstr[1] "यहाँ मौजूद %(count)s अन्य साइटें किसी बदलाव का हिस्सा नहीं हैं।"
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s पृष्ठ"
@@ -367,6 +457,12 @@ msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s जवाब"
 msgstr[1] "%(count)s जवाब"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "%(count)s संशोधन बाकी"
+msgstr[1] "%(count)s संशोधन बाकी"
 
 #, python-format
 msgid "%(count)s selected"
@@ -393,16 +489,58 @@ msgstr[0] "%(count)s साइट"
 msgstr[1] "%(count)s साइटें"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "%(count)s साइट दूसरे फ़ोल्डर में जोड़ दी गई"
+msgstr[1] "%(count)s साइटें दूसरे फ़ोल्डर में जोड़ दी गईं"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "%(count)s साइट उपलब्ध"
 msgstr[1] "%(count)s साइटें उपलब्ध"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s साइट यहाँ है, किसी भी बदलाव का हिस्सा नहीं।"
+msgstr[1] "%(count)s साइटें यहाँ हैं, किसी भी बदलाव का हिस्सा नहीं।"
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s साइट दूसरे फ़ोल्डर में जोड़ी जाएगी"
+msgstr[1] "%(count)s साइटें दूसरे फ़ोल्डर में जोड़ी जाएँगी"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "%(count)s साइट दूसरे फ़ोल्डर में ले जाई गई"
+msgstr[1] "%(count)s साइटें दूसरे फ़ोल्डर में ले जाई गईं"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s साइट दूसरे फ़ोल्डर में जाएगी"
+msgstr[1] "%(count)s साइटें दूसरे फ़ोल्डर में जाएँगी"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "सीमा से अधिक %(count)s साइट"
 msgstr[1] "सीमा से अधिक %(count)s साइटें"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s साइट के बारे में अब तक कोई निर्णय नहीं हुआ है और वह जैसी है वैसी ही बनी रहेगी।"
+msgstr[1] "%(count)s साइटों के बारे में अब तक कोई निर्णय नहीं हुआ है और वे जैसी हैं वैसी ही बनी रहेंगी।"
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "%(count)s पर अभी निर्णय लेना बाकी है। जिन पर निर्णय नहीं हुआ है, वे वैसे ही रहेंगे।"
+msgstr[1] "%(count)s पर अभी निर्णय लेना बाकी है। जिन पर निर्णय नहीं हुआ है, वे वैसे ही रहेंगे।"
 
 #, python-format
 msgid "%(count)s story"
@@ -986,6 +1124,10 @@ msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s और साइट"
 msgstr[1] "+ %(value_1)s और साइटें"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/दिन"
 
@@ -1069,6 +1211,9 @@ msgstr "और साफ़, और क़रीबी आवाज़"
 msgid "A folder"
 msgstr "एक फ़ोल्डर"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "इसकी ज़रूरत वाला एक फ़ोल्डर प्रस्ताव बनने के बाद नाम बदला गया, स्थानांतरित किया गया या मिटा दिया गया।"
+
 msgid "A folder of feeds read as one stream"
 msgstr "एक फ़ोल्डर की फ़ीडों को एक स्ट्रीम की तरह पढ़ें"
 
@@ -1078,6 +1223,12 @@ msgstr "NewsBlur पाठकों द्वारा साझा किए �
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "%(value_1)s की ओर से एक उपहार आपके खाते में लागू कर दिया गया है।"
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "बाद का पुनर्गठन लागू किया गया, इसलिए अब इसे पूर्ववत नहीं किया जा सकता।"
+
+msgid "A proposal is already being made."
+msgstr "एक प्रस्ताव पहले से बनाया जा रहा है।"
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "दूसरे चरण में, पृष्ठ पर सही पैटर्न खोजने के लिए आपके संकेत का उपयोग किया जाता है।"
@@ -1113,6 +1264,12 @@ msgstr "AI फ़िल्टर सहेज लिए गए हैं, ले
 msgid "AI finds the stories"
 msgstr "AI लेख ढूँढ़ता है"
 
+msgid "AI is looking through your sites"
+msgstr "AI आपकी साइटों की जाँच कर रहा है"
+
+msgid "AI is revising the proposal"
+msgstr "AI प्रस्ताव में संशोधन कर रहा है"
+
 msgid "AI-curated summary of your top stories"
 msgstr "आपके प्रमुख लेखों का AI-चयनित सारांश"
 
@@ -1132,6 +1289,12 @@ msgstr "बिल्कुल। ट्रेनर खोलें और उ�
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "लहजा"
+
+msgid "Accept all"
+msgstr "सभी स्वीकार करें"
+
+msgid "Accept into this folder"
+msgstr "इस फ़ोल्डर में स्वीकार करें"
 
 msgid "Account"
 msgstr "खाता"
@@ -1172,6 +1335,9 @@ msgstr "साइट जोड़ने &amp; लेख साझा करन�
 
 msgid "Add a classifier"
 msgstr "एक क्लासिफ़ायर जोड़ें"
+
+msgid "Add a copy here"
+msgstr "यहाँ एक कॉपी जोड़ें"
 
 msgid "Add a forwarding address"
 msgstr "एक फ़ॉरवर्डिंग पता जोड़ें"
@@ -1214,6 +1380,10 @@ msgstr "साइट/फ़ोल्डर जोड़ें"
 
 msgid "Add story list"
 msgstr "लेख सूची जोड़ें"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "फ़ोल्डर %(folder)s जोड़ें"
 
 msgid "Add to Chrome"
 msgstr "Chrome में जोड़ें"
@@ -1321,6 +1491,9 @@ msgstr "सब हो गया!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "सभी फ़ीड हर 5–15 मिनट में फ़ेच किए जाते हैं"
 
+msgid "All moves"
+msgstr "सभी स्थानांतरण"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1349,11 +1522,21 @@ msgstr "अनुमत डोमेन"
 msgid "Alphabetical"
 msgstr "वर्णमाला क्रम"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "फ़ोल्डर जोड़ें, नाम बदलें, मिलाएँ, नेस्ट करें और हटाएँ।"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "इस डोमेन के मौजूदा %(value_1)s संग्रह को भी हटाएँ"
 msgstr[1] "इस डोमेन से %(value_1)s मौजूदा आर्काइव भी हटाएँ"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "%(folder)s में भी"
+
+msgid "Also look for"
+msgstr "यह भी खोजें"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1416,6 +1599,9 @@ msgstr "Android सूचनाओं के लिए Premium Archive आवश
 msgid "Animals"
 msgstr "जानवर"
 
+msgid "Another folder there already has this name."
+msgstr "वहाँ पहले से ही किसी दूसरे फ़ोल्डर का यह नाम है।"
+
 msgid "Any"
 msgstr "कोई भी"
 
@@ -1428,6 +1614,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "कभी भी"
+
+msgid "Anything the AI should know"
+msgstr "AI को और क्या जानना चाहिए"
 
 msgid "Appearance"
 msgstr "प्रकटन"
@@ -1450,11 +1639,27 @@ msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s में से %(succeeded)s मर्ज लागू किया गया (%(stories)s)"
 msgstr[1] "%(count)s में से %(succeeded)s मर्ज लागू किए (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "%(date)s को लागू किया गया।"
+
 msgid "Applies to"
 msgstr "इन पर लागू होता है"
 
 msgid "Apply"
 msgstr "लागू करें"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "%(count)s बदलाव लागू करें"
+msgstr[1] "%(count)s बदलाव लागू करें"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "%(count)s बदलाव लागू करें?"
+msgstr[1] "%(count)s बदलाव लागू करें?"
 
 msgid "Apply All Merges"
 msgstr "सभी मर्ज लागू करें"
@@ -1462,11 +1667,29 @@ msgstr "सभी मर्ज लागू करें"
 msgid "Apply Split"
 msgstr "विभाजन लागू करें"
 
+msgid "Apply changes"
+msgstr "बदलाव लागू करें"
+
 msgid "Apply training across a folder"
 msgstr "किसी फ़ोल्डर में प्रशिक्षण लागू करें"
 
 msgid "Apply training globally"
 msgstr "प्रशिक्षण सभी पर लागू करें"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "बदलाव लागू करने के लिए Premium Archive आवश्यक है।"
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"बदलाव लागू करने के लिए Premium Archive आवश्यक है। आपके फ़ैसले सहेजे गए हैं और अपग्रेड करने के बाद यहाँ "
+"उपलब्ध होंगे।"
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "%(date)s को लागू करने की प्रक्रिया बीच में रुक गई, इसलिए आपके कुछ फ़ोल्डर बदल गए होंगे।"
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "इसे लागू करने की प्रक्रिया बीच में रुक गई, इसलिए आपके कुछ फ़ोल्डर बदल गए होंगे।"
 
 msgid "Applying..."
 msgstr "लागू हो रहा है..."
@@ -1491,6 +1714,12 @@ msgstr "क्या ऐप मुफ़्त हैं?"
 
 msgid "Are the apps open source?"
 msgstr "क्या ऐप ओपन सोर्स हैं?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "आने वाली %(count)s"
+msgstr[1] "आने वाली %(count)s"
 
 msgid "Arrow keys"
 msgstr "ऐरो कुंजियाँ"
@@ -1523,6 +1752,9 @@ msgstr ""
 
 msgid "Ask AI questions about stories"
 msgstr "लेखों के बारे में AI से सवाल पूछें"
+
+msgid "Ask AI to revise"
+msgstr "AI से संशोधन करने के लिए कहें"
 
 msgid "Ask AI with a choice of models"
 msgstr "अपनी पसंद के मॉडल से AI से पूछें"
@@ -1646,6 +1878,9 @@ msgstr "क्लासिफ़ायर ट्रेनर पर वापस
 msgid "Back to feeds"
 msgstr "फ़ीड पर वापस जाएँ"
 
+msgid "Back to review"
+msgstr "समीक्षा पर वापस जाएँ"
+
 msgid "Back to stories"
 msgstr "लेखों पर वापस जाएँ"
 
@@ -1727,6 +1962,9 @@ msgstr "Blurblog, साझा किए गए लेख और टिप्प
 
 msgid "Bookmarklet"
 msgstr "बुकमार्कलेट"
+
+msgid "Both"
+msgstr "दोनों"
 
 msgid "Bottom"
 msgstr "नीचे"
@@ -1810,6 +2048,12 @@ msgstr "बुलेट पॉइंट"
 
 msgid "Buttons"
 msgstr "बटन"
+
+msgid "By folder"
+msgstr "फ़ोल्डर के अनुसार"
+
+msgid "By hand"
+msgstr "हाथ से"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1930,6 +2174,9 @@ msgstr "ऊपर अपनी पसंद चुनें..."
 msgid "Check your email..."
 msgstr "अपना ईमेल देखें..."
 
+msgid "Checking for dead sites"
+msgstr "निष्क्रिय साइटों की जाँच की जा रही है"
+
 msgid "Checking recent pages..."
 msgstr "हाल के पेज जाँचे जा रहे हैं..."
 
@@ -1962,6 +2209,9 @@ msgstr "श्रेणियाँ चुनें"
 
 msgid "Choose how many days back"
 msgstr "कितने दिन पीछे तक चुनें"
+
+msgid "Choose how much to change, then try again."
+msgstr "बदलाव की मात्रा चुनें, फिर दोबारा कोशिश करें।"
 
 msgid "Choose model"
 msgstr "मॉडल चुनें"
@@ -2230,8 +2480,22 @@ msgstr "टेक्स्ट कॉपी करें"
 msgid "Copy URL"
 msgstr "URL कॉपी करें"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "%(folder)s से कॉपी करें"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "कॉपी %(folder)s में रखने का प्रस्ताव"
+
+msgid "Copy undecided"
+msgstr "कॉपी का फ़ैसला नहीं"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "अपना क्लाइंट सीक्रेट अभी कॉपी करें। यह आपको केवल एक बार दिखेगा।"
+
+msgid "Copy?"
+msgstr "कॉपी?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "यह क्लासिफ़ायर जोड़ा नहीं जा सका। फिर से कोशिश करें।"
@@ -2250,6 +2514,9 @@ msgstr "FAQ लोड नहीं हो सका। कृपया फिर
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "आपके एप्लिकेशन लोड नहीं हो सके। रीफ़्रेश करके देखें।"
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "AI से पुनर्गठन लोड नहीं हो सका।"
 
 msgid "Couldn't load audio for this story."
 msgstr "इस लेख के लिए ऑडियो लोड नहीं हो सका।"
@@ -2404,8 +2671,20 @@ msgstr "दिन"
 msgid "Days of unreads"
 msgstr "अपठित लेखों के दिन"
 
+msgid "Dead sites"
+msgstr "निष्क्रिय साइटें"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "उसने म्यूट की गई निष्क्रिय साइटें अनम्यूट कर दी जाएँगी।"
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "वे निष्क्रिय साइटें जिन्होंने प्रकाशित करना बंद कर दिया है या जिनमें लगातार समस्या आ रही है"
+
 msgid "December"
 msgstr "दिसंबर"
+
+msgid "Decline all copies"
+msgstr "सभी कॉपियाँ अस्वीकार करें"
 
 msgid "Deep reads the community gave real time to"
 msgstr "समुदाय ने जिन लेखों को पढ़ने में समय लगाया"
@@ -2568,6 +2847,9 @@ msgstr "ख़ारिज करें"
 msgid "Do I get a unique email address?"
 msgstr "क्या मुझे एक विशिष्ट ईमेल पता मिलेगा?"
 
+msgid "Do not put it here"
+msgstr "इसे यहाँ न रखें"
+
 msgid "Do the apps work offline?"
 msgstr "क्या ऐप्स ऑफ़लाइन काम करते हैं?"
 
@@ -2598,6 +2880,9 @@ msgstr "पूर्वावलोकन न दिखाएँ, सिर्�
 
 msgid "Don't show a thumbnail"
 msgstr "थंबनेल न दिखाएँ"
+
+msgid "Done"
+msgstr "हो गया"
 
 msgid "Done!"
 msgstr "हो गया!"
@@ -2841,6 +3126,11 @@ msgstr "हर नया लेख स्थायी रूप से संग
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "सहेजे गए लेखों के हर टैग की अपनी RSS फ़ीड होती है, जिसे IFTTT या Zapier से जोड़ना आसान है।"
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr ""
+"सभी साइटें ऐसे फ़ोल्डर में हैं जिन्हें आपने शामिल नहीं किया। AI को देखने के लिए साइटें देने के लिए कोई "
+"फ़ोल्डर खोलें।"
+
 msgid "Every story archived and searchable forever"
 msgstr "हर लेख हमेशा के लिए संग्रहित और खोजने योग्य"
 
@@ -2862,6 +3152,9 @@ msgstr "सभी"
 msgid "Everyone"
 msgstr "सभी"
 
+msgid "Everything"
+msgstr "सब कुछ"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlur क्या-क्या कर सकता है और इसे कैसे आज़माएँ"
 
@@ -2879,6 +3172,12 @@ msgstr "मुफ़्त प्लान की सभी सुविधा�
 
 msgid "Everything in Premium, plus:"
 msgstr "Premium की सभी सुविधाएँ, साथ ही:"
+
+msgid "Everything is decided."
+msgstr "सब कुछ तय हो गया है।"
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "शुरुआत में सभी बदलाव स्वीकृत होते हैं। किसी भी फ़ोल्डर से स्थानांतरण अस्वीकार करें।"
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -3008,6 +3307,13 @@ msgstr "क्वेरी भेजना विफल रहा"
 msgid "Failed to subscribe"
 msgstr "सदस्यता लेने में विफल"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "फ़ेच करने में विफल, और इसने कभी कोई लेख प्रकाशित नहीं किया।"
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "फ़ेच नहीं हो सका। आख़िरी लेख %(month)s में था।"
+
 msgid "Fashion"
 msgstr "फ़ैशन"
 
@@ -3108,11 +3414,17 @@ msgstr "आपकी फ़ीड लाई जा रही हैं"
 msgid "Fetching..."
 msgstr "लाया जा रहा है..."
 
+msgid "File sites into the folders you already have."
+msgstr "साइटों को आपके मौजूदा फ़ोल्डरों में व्यवस्थित करें।"
+
 msgid "Files"
 msgstr "फ़ाइलें"
 
 msgid "Filled Icons"
 msgstr "भरे हुए आइकन"
+
+msgid "Filter"
+msgstr "फ़िल्टर करें"
 
 msgid "Filter by date range"
 msgstr "तिथि-सीमा के अनुसार फ़िल्टर करें"
@@ -3238,8 +3550,14 @@ msgstr "फ़ोल्डरों में अपठित लेखों �
 msgid "Folders"
 msgstr "फ़ोल्डर"
 
+msgid "Folders after"
+msgstr "बाद के फ़ोल्डर"
+
 msgid "Folders only"
 msgstr "केवल फ़ोल्डर"
+
+msgid "Folders updated"
+msgstr "फ़ोल्डर अपडेट किए गए"
 
 msgid "Folders, feeds, and story titles"
 msgstr "फ़ोल्डर, फ़ीड और लेख शीर्षक"
@@ -3414,6 +3732,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "से"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "%(folder)s से"
+
 msgid "From infrequent sites"
 msgstr "कम प्रकाशित होने वाली साइटों से"
 
@@ -3585,6 +3907,10 @@ msgstr "Premium लें — $36/वर्ष"
 msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)s पर वापस जाएँ"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "%(folder)s के अंदर जाता है"
+
 msgid "Good Reads"
 msgstr "अच्छे लेख"
 
@@ -3688,6 +4014,9 @@ msgstr "वे साइटें छिपाएँ जिन्हें आ�
 msgid "Hide story changes"
 msgstr "लेख में हुए बदलाव छिपाएँ"
 
+msgid "Hide them"
+msgstr "उन्हें छिपाएँ"
+
 msgid "Highlight"
 msgstr "हाइलाइट करें"
 
@@ -3732,6 +4061,9 @@ msgstr "मैं कितने लेख सहेज सकता/सकत�
 
 msgid "How much emotion"
 msgstr "भावनात्मकता का स्तर"
+
+msgid "How much to change"
+msgstr "कितना बदलना है"
 
 msgid "How often"
 msgstr "कितनी बार"
@@ -3804,6 +4136,10 @@ msgstr[0] "%(count)s दिन में आपका Premium ट्रायल
 msgstr[1] "%(count)s दिन में आपका Premium ट्रायल समाप्त हो जाएगा और आप मुफ़्त प्लान पर लौट आएँगे"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "%(folder)s में"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "Gmail में, %(settings_menu)s पर जाएँ और %(add_button)s पर क्लिक करें। अपना कस्टम NewsBlur ईमेल पता जोड़ें।"
 
@@ -3824,6 +4160,9 @@ msgstr "नई विंडो में"
 msgid "In a pill"
 msgstr "पिल में"
 
+msgid "In both folders"
+msgstr "दोनों फ़ोल्डरों में"
+
 msgid "In rotation"
 msgstr "क्रम में शामिल"
 
@@ -3836,6 +4175,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "इस विंडो में"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "दो फ़ोल्डरों में %(count)s"
 
 msgid "Include read"
 msgstr "पढ़ी हुई सामग्री शामिल करें"
@@ -3867,6 +4210,10 @@ msgstr "प्रति माह कम आने वाले लेख"
 msgid "Inline list"
 msgstr "इनलाइन सूची"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "%(folder)s के अंदर"
+
 msgid "Insta-fetch stories"
 msgstr "लेख तुरंत फ़ेच करें"
 
@@ -3893,6 +4240,10 @@ msgid "Interactions"
 msgstr "इंटरैक्शन"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "%(folder)s में ले जाएँ, फिर हटाएँ"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "अमान्य रेगेक्स: %(error)s"
 
@@ -3913,6 +4264,27 @@ msgstr "क्या यह RSS से अलग है?"
 
 msgid "Is training free?"
 msgstr "क्या प्रशिक्षण मुफ़्त है?"
+
+msgid "It has never had a story."
+msgstr "इसमें कभी कोई लेख नहीं रहा।"
+
+msgid "It involves a folder you locked."
+msgstr "इसमें एक ऐसा फ़ोल्डर शामिल है जिसे आपने लॉक किया है।"
+
+msgid "It needs a new folder you rejected."
+msgstr "इसके लिए एक नए फ़ोल्डर की ज़रूरत है, जिसे आपने अस्वीकार कर दिया।"
+
+msgid "It would have put a folder inside itself."
+msgstr "इससे एक फ़ोल्डर अपने ही अंदर आ जाता।"
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "%(count)s दिन से ज़्यादा हो चुके हैं, इसलिए अब इस पुनर्गठन को पूर्ववत नहीं किया जा सकता।"
+msgstr[1] "%(count)s दिन से ज़्यादा हो चुके हैं, इसलिए अब इस पुनर्गठन को पूर्ववत नहीं किया जा सकता।"
+
+msgid "Its folder is locked to keep its sites."
+msgstr "इस फ़ोल्डर को लॉक किया गया है ताकि इसकी साइटें सुरक्षित रहें।"
 
 msgid "January"
 msgstr "जनवरी"
@@ -3944,8 +4316,17 @@ msgstr "बस सुर्खियाँ, बहुत कम टिप्प�
 msgid "Just the headlines, no commentary"
 msgstr "सिर्फ़ सुर्खियाँ, कोई टिप्पणी नहीं"
 
+msgid "Keep"
+msgstr "रखें"
+
+msgid "Keep all here"
+msgstr "सभी को यहीं रखें"
+
 msgid "Keep fades, without movement."
 msgstr "बिना गति के फ़ेड प्रभाव बनाए रखें।"
+
+msgid "Keep it here"
+msgstr "इसे यहीं रखें"
 
 msgid "Keep others unread"
 msgstr "बाकी को अपठित रखें"
@@ -3956,8 +4337,17 @@ msgstr "पढ़े जाने की स्थिति बनाए रख�
 msgid "Keep right-side buttons visible while reading"
 msgstr "पढ़ते समय दाईं ओर के बटन दृश्यमान रखें"
 
+msgid "Keep sites"
+msgstr "साइटें रखें"
+
 msgid "Keep stories separate"
 msgstr "लेखों को अलग-अलग रखें"
+
+msgid "Keep the new folders"
+msgstr "नए फ़ोल्डर बनाए रखें"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "फ़ोटो ब्लॉग को साथ रखें। समाचार को देश के अनुसार बाँटें।"
 
 msgid "Keep unread counts out of the window title"
 msgstr "अपठित लेखों की संख्या विंडो के शीर्षक में न दिखाएँ"
@@ -4030,11 +4420,29 @@ msgstr "आख़िरी बार देखा गया:"
 msgid "Layout"
 msgstr "लेआउट"
 
+msgid "Leave out"
+msgstr "बाहर रखें"
+
 msgid "Leave unread"
 msgstr "अपठित छोड़ें"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "%(count)s साइट जा रही है"
+msgstr[1] "%(count)s साइटें जा रही हैं"
+
 msgid "Left"
 msgstr "बाएँ"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "छोड़ दिया गया। इस फ़ोल्डर में कुछ नहीं बदलेगा।"
+
+msgid "Let all go"
+msgstr "सभी को जाने दें"
+
+msgid "Let it go"
+msgstr "जाने दें"
 
 msgid "Let's Get Started "
 msgstr "चलिए शुरू करें "
@@ -4151,8 +4559,14 @@ msgstr "स्थान"
 msgid "Lock"
 msgstr "लॉक करें"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "उन फ़ोल्डरों को लॉक करें जिन्हें AI से अछूता रखना है"
+
 msgid "Locked"
 msgstr "लॉक किया गया"
+
+msgid "Locked with parent"
+msgstr "पैरेंट के साथ लॉक किया गया"
 
 msgid "Log In or Sign Up"
 msgstr "लॉग इन करें या साइन अप करें"
@@ -4370,6 +4784,10 @@ msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "%(count)s श्रेणी को इसमें मर्ज करें:"
 msgstr[1] "%(count)s श्रेणियों को इसमें मिलाएँ:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "%(folder)s को %(into)s में मिलाएँ"
+
 msgid "Merge into:"
 msgstr "इसमें मिलाएँ:"
 
@@ -4452,6 +4870,10 @@ msgstr[0] "%(count)s साइट स्थानांतरित करें
 msgstr[1] "%(count)s साइटें स्थानांतरित करें"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "%(site)s को %(folder)s में ले जाएँ"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "%(folder)s में ले जाएँ"
 
@@ -4464,6 +4886,13 @@ msgstr "स्थानांतरित"
 msgid "Moved!"
 msgstr "स्थानांतरित हो गया!"
 
+msgid "Moves"
+msgstr "दूसरे फ़ोल्डर में जाएगा"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "मर्ज होते समय यह साइट %(folder)s के साथ चली जाती है।"
+
 msgid "Moving..."
 msgstr "स्थानांतरित हो रहा है..."
 
@@ -4475,6 +4904,10 @@ msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s साइट म्यूट करें"
 msgstr[1] "%(count)s साइटें म्यूट करें"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "%(site)s को म्यूट करें"
 
 msgid "Mute Sites"
 msgstr "साइटें म्यूट करें"
@@ -4560,6 +4993,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "मर्ज करने के लिए कम से कम 2 श्रेणियाँ चाहिए"
+
+msgid "Nest"
+msgstr "नेस्ट करें"
 
 msgid "Nested"
 msgstr "नेस्टेड"
@@ -4725,6 +5161,9 @@ msgstr "कोई श्रेणी उपलब्ध नहीं है। �
 msgid "No categories with 10+ stories available for splitting."
 msgstr "विभाजित करने के लिए 10 या अधिक लेखों वाली कोई श्रेणी उपलब्ध नहीं है।"
 
+msgid "No changes"
+msgstr "कोई बदलाव नहीं"
+
 msgid "No channels found matching your filter."
 msgstr "आपके फ़िल्टर से मेल खाने वाले कोई चैनल नहीं मिले।"
 
@@ -4736,6 +5175,9 @@ msgstr "कोई खाते जुड़े नहीं हैं"
 
 msgid "No content"
 msgstr "कोई सामग्री नहीं"
+
+msgid "No copy"
+msgstr "कॉपी नहीं"
 
 msgid "No feeds found"
 msgstr "कोई फ़ीड नहीं मिली"
@@ -4863,6 +5305,10 @@ msgstr[1] "संबंधित लेखों के लिए आपकी %
 msgid "No stories published last month"
 msgstr "पिछले महीने कोई लेख प्रकाशित नहीं हुआ"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "%(month)s के बाद से कोई लेख नहीं।"
+
 msgid "No stories to delete"
 msgstr "हटाने के लिए कोई लेख नहीं"
 
@@ -4934,8 +5380,31 @@ msgstr ""
 msgid "Nothing"
 msgstr "कुछ नहीं"
 
+msgid "Nothing changed."
+msgstr "कुछ नहीं बदला।"
+
+msgid "Nothing changes."
+msgstr "कुछ नहीं बदलता।"
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "इस फ़ोल्डर में कुछ नहीं आएगा, इसलिए इसे बनाया नहीं जाएगा।"
+
 msgid "Nothing happens without your permission."
 msgstr "आपकी अनुमति के बिना कुछ नहीं होता।"
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "दूसरे बदलावों के बाद इस फ़ोल्डर में कुछ नहीं बचा है।"
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr ""
+"कुछ भी हटाया नहीं जाएगा और फ़ोल्डर जस का तस रहेगा। इसकी साइटें प्रतियों के रूप में दूसरे फ़ोल्डरों को अब भी"
+" दी जा सकती हैं।"
+
+msgid "Nothing leaves this folder."
+msgstr "इस फ़ोल्डर से कुछ भी बाहर नहीं जाता।"
+
+msgid "Nothing matches this filter."
+msgstr "इस फ़िल्टर से मेल खाने वाला कुछ नहीं है।"
 
 msgid "Nothing recorded."
 msgstr "कुछ भी दर्ज नहीं है।"
@@ -4998,6 +5467,12 @@ msgstr "बंद"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "उन्हें “N नए लेख” पिल में दिखाएँ"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "अन्य जगह कॉपी के रूप में प्रस्तावित %(count)s"
+msgstr[1] "अन्य जगह कॉपी के रूप में प्रस्तावित %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "आधिकारिक NewsBlur Android ऐप"
 
@@ -5050,8 +5525,14 @@ msgstr "Premium में खोज आपके हाल के लेखो�
 msgid "On reload"
 msgstr "पुनः लोड करने पर"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "जब आप फिर से प्रस्ताव देंगे, तो आपके पिछले पुनर्गठन को पहले जैसा नहीं किया जा सकेगा।"
+
 msgid "One command with Docker"
 msgstr "Docker के साथ एक कमांड"
+
+msgid "One of the proposed changes"
+msgstr "प्रस्तावित बदलावों में से एक"
 
 msgid "One sentence"
 msgstr "एक वाक्य"
@@ -5607,8 +6088,23 @@ msgstr "प्रोफ़ाइल विवरण"
 msgid "Profile picture"
 msgstr "प्रोफ़ाइल चित्र"
 
+msgid "Progress"
+msgstr "प्रगति"
+
 msgid "Prompt"
 msgstr "प्रॉम्प्ट"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "फ़ोल्डरों का नया सेट प्रस्तावित करें। लॉक किए गए फ़ोल्डर वैसे ही रहेंगे।"
+
+msgid "Propose changes"
+msgstr "बदलाव प्रस्तावित करें"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "दोबारा प्रस्ताव देने पर आपके द्वारा समीक्षा किया जा रहा प्रस्ताव बदल जाएगा।"
+
+msgid "Proposing..."
+msgstr "प्रस्ताव दिया जा रहा है…"
 
 msgid "Protected:"
 msgstr "सुरक्षित:"
@@ -5627,6 +6123,13 @@ msgstr "पुश की समय-सीमा समाप्ति"
 
 msgid "Push expires"
 msgstr "पुश की समय-सीमा समाप्त"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "%(folder)s को %(parent)s के अंदर रखें"
+
+msgid "Putting the proposal together"
+msgstr "प्रस्ताव तैयार किया जा रहा है"
 
 msgid "Questions"
 msgstr "प्रश्न"
@@ -5751,6 +6254,12 @@ msgstr "अपने फ़ीड पढ़ें: अपठित लेख, �
 msgid "Reading"
 msgstr "पढ़ना"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "%(count)s साइट पढ़ी जा रही है"
+msgstr[1] "%(count)s साइटें पढ़ी जा रही हैं"
+
 msgid "Reading article..."
 msgstr "लेख पढ़ा जा रहा है..."
 
@@ -5858,6 +6367,16 @@ msgstr "रेगेक्स"
 msgid "Regex requires %(tier_link)s"
 msgstr "रेगेक्स के लिए %(tier_link)s आवश्यक है"
 
+msgid "Reject"
+msgstr "अस्वीकार करें"
+
+msgid "Reject all"
+msgstr "सभी अस्वीकार करें"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "अस्वीकृत %(count)s"
+
 msgid "Related"
 msgstr "संबंधित"
 
@@ -5888,6 +6407,10 @@ msgstr "%(voice)s को क्रम से हटाएँ"
 
 msgid "Remove from Up Next"
 msgstr "अगला सुनें सूची से हटाएँ"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "%(folder)s फ़ोल्डर हटाएँ"
 
 msgid "Remove this list"
 msgstr "यह सूची हटाएँ"
@@ -5920,6 +6443,10 @@ msgstr "इस फ़ोल्डर का नाम बदलें"
 msgid "Rename this site"
 msgstr "इस साइट का नाम बदलें"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "“%(old)s” का नाम बदलकर “%(new)s” करें"
+
 msgid "Renamed"
 msgstr "नाम बदला गया"
 
@@ -5931,6 +6458,15 @@ msgstr[1] "%(count)s लेखों की श्रेणी का नाम 
 
 msgid "Renaming..."
 msgstr "नाम बदला जा रहा है..."
+
+msgid "Reorganize"
+msgstr "पुनर्गठित करें"
+
+msgid "Reorganize again"
+msgstr "फिर से व्यवस्थित करें"
+
+msgid "Reorganize with AI"
+msgstr "AI से पुनर्गठन करें"
 
 msgid "Request timed out"
 msgstr "अनुरोध का समय समाप्त हो गया"
@@ -5994,6 +6530,19 @@ msgstr "पुनः प्रयास करें"
 
 msgid "Retry fetching and parsing"
 msgstr "फ़ेच और पार्स करने की फिर से कोशिश करें"
+
+msgid "Review"
+msgstr "समीक्षा करें"
+
+msgid "Revise proposal"
+msgstr "प्रस्ताव में संशोधन करें"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "आपके अनुरोध के अनुसार संशोधित: “%(request)s”"
+
+msgid "Revising..."
+msgstr "संशोधित किया जा रहा है…"
 
 msgid "Rewinding..."
 msgstr "पीछे जा रहे हैं..."
@@ -6145,6 +6694,9 @@ msgstr "लेख सहेजना सभी प्लान में उप�
 
 msgid "Saving..."
 msgstr "सहेज रहे हैं..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "बताएँ कि AI को क्या बदलना चाहिए, फिर दोबारा कोशिश करें।"
 
 msgid "Schedule when your briefing is generated"
 msgstr "अपनी ब्रीफ़िंग बनने का समय तय करें"
@@ -6367,6 +6919,16 @@ msgstr "यह लेख भेजें"
 msgid "Sending…"
 msgstr "भेजा जा रहा है…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] "AI मॉडल को %(count)s साइट के नाम, पते और हाल के शीर्षक भेजे जाते हैं। आपकी मंज़ूरी तक कुछ नहीं बदलेगा।"
+msgstr[1] "AI मॉडल को %(count)s साइटों के नाम, पते और हाल के शीर्षक भेजे जाते हैं। आपकी मंज़ूरी तक कुछ नहीं बदलेगा।"
+
 msgid "Separate"
 msgstr "अलग-अलग"
 
@@ -6379,6 +6941,9 @@ msgstr "सर्वर त्रुटि"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "सर्वर त्रुटि: %(status)s"
+
+msgid "Set up"
+msgstr "सेट अप करें"
 
 msgid "Set up billing"
 msgstr "बिलिंग सेट अप करें"
@@ -6552,6 +7117,13 @@ msgstr "NewsBlur लोड होने पर डैशबोर्ड दि�
 msgid "Show the entire story, even if really, really long"
 msgstr "पूरा लेख दिखाएँ, चाहे वह कितना भी लंबा हो"
 
+msgid "Show them"
+msgstr "उन्हें दिखाएँ"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "यह स्थानांतरण %(folder)s में दिखाएँ"
+
 msgid "Show tooltips"
 msgstr "टूलटिप दिखाएँ"
 
@@ -6631,8 +7203,17 @@ msgstr "साइटें"
 msgid "Sites and folders"
 msgstr "साइटें और फ़ोल्डर"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "जिन साइटों की सदस्यता समाप्त की गई है, वे वापस नहीं जोड़ी जाएँगी।"
+
 msgid "Sites updated up to 5x more often"
 msgstr "साइटें 5 गुना तक अधिक बार अपडेट होती हैं"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "उसके बाद आपने जिन साइटों की सदस्यता ली है, वे बनी रहेंगी।"
+
+msgid "Sketching folders"
+msgstr "फ़ोल्डर की रूपरेखा बनाई जा रही है"
 
 msgid "Skip Back"
 msgstr "पीछे जाएँ"
@@ -6669,6 +7250,12 @@ msgstr "सोशल कनेक्शन"
 
 msgid "Social features"
 msgstr "सोशल सुविधाएँ"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "प्रस्ताव बनाते समय कुछ गड़बड़ हुई। कृपया फिर से कोशिश करें।"
+
+msgid "Something went wrong. Please try again."
+msgstr "कुछ गड़बड़ हो गई। कृपया फिर से कोशिश करें।"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6717,6 +7304,9 @@ msgstr "फ़ीड विकल्पों के पॉपओवर से �
 msgid "Sort, filter, and display options"
 msgstr "क्रमबद्ध करने, फ़िल्टर करने और दिखाने के विकल्प"
 
+msgid "Sorting sites into folders"
+msgstr "साइटों को फ़ोल्डरों में क्रमबद्ध किया जा रहा है"
+
 msgid "Source feeds"
 msgstr "स्रोत फ़ीड"
 
@@ -6753,6 +7343,9 @@ msgstr[1] "\"%(category)s\" (%(count)s लेख) को इनमें बा�
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "\"%(value_1)s\" को इसमें विभाजित करें:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Tech को छोटे फ़ोल्डरों में बाँटें। किसी फ़ोल्डर में 40 से ज़्यादा साइटें न हों।"
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6801,6 +7394,9 @@ msgstr "स्टार"
 msgid "Start Training Site by Site"
 msgstr "हर साइट के लिए अलग-अलग प्रशिक्षण शुरू करें"
 
+msgid "Start fresh"
+msgstr "नई शुरुआत करें"
+
 msgid "Starting analysis..."
 msgstr "विश्लेषण शुरू हो रहा है..."
 
@@ -6825,11 +7421,36 @@ msgstr "आँकड़े"
 msgid "Status"
 msgstr "स्थिति"
 
+msgid "Stay"
+msgstr "रुकें"
+
 msgid "Stay on the same feed/folder"
 msgstr "उसी फ़ीड/फ़ोल्डर पर बने रहें"
 
 msgid "Stay put"
 msgstr "यहीं रहें"
+
+msgid "Stays"
+msgstr "यहीं रहेगा"
+
+msgid "Stays here"
+msgstr "इस फ़ोल्डर में रहेगा"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "%(folder)s में रहेगा"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "रहती हैं, क्योंकि %(count)s साइट इसमें बनी रहती है।"
+msgstr[1] "रहती हैं, क्योंकि %(count)s साइटें इसमें बनी रहती हैं।"
+
+msgid "Stays, because a folder inside it stays."
+msgstr "ज्यों का त्यों रहेगा, क्योंकि इसके अंदर का एक फ़ोल्डर ज्यों का त्यों रहेगा।"
+
+msgid "Stays, no folder"
+msgstr "यहीं रहेगा, बिना फ़ोल्डर के"
 
 msgid "Steadier or more varied"
 msgstr "ज़्यादा स्थिर या ज़्यादा विविध"
@@ -6850,6 +7471,13 @@ msgstr "पूर्वावलोकन रोकें"
 
 msgid "Stop recording"
 msgstr "रिकॉर्डिंग रोकें"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"प्रकाशित करना बंद कर दिया है या फ़ेच करने में विफल हैं। लॉक किए गए फ़ोल्डरों की साइटों को चिह्नित नहीं किया"
+" जाता। सुझाए गए म्यूट पहले से चुने हुए हैं। सदस्यता रद्द करने के लिए आपको हमेशा क्लिक करना होगा।"
 
 msgid "Stories"
 msgstr "लेख"
@@ -7104,6 +7732,12 @@ msgstr "सदस्यता स्तर"
 msgid "Suggested questions"
 msgstr "सुझाए गए प्रश्न"
 
+msgid "Suggested: mute."
+msgstr "सुझाव: म्यूट करें।"
+
+msgid "Suggested: unsubscribe."
+msgstr "सुझाव: सदस्यता रद्द करें।"
+
 msgid "Summarize"
 msgstr "सारांश दें"
 
@@ -7260,6 +7894,32 @@ msgstr "धन्यवाद! आपके पास %(bold_start)sPremium Pro 
 msgid "That change could not be saved"
 msgstr "वह बदलाव सहेजा नहीं जा सका"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "आपने जिन %(count)s निष्क्रिय साइटों से सदस्यता समाप्त की थी, वे वापस नहीं जोड़ी जाएँगी।"
+msgstr[1] "आपने जिन %(count)s निष्क्रिय साइटों से सदस्यता समाप्त की थी, वे वापस नहीं जोड़ी जाएँगी।"
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr ""
+"AI साइटों को फ़ोल्डर में डाल और निकाल सकता है, और फ़ोल्डर का नाम बदल सकता है, उसे मिला सकता है या उसके अंदर"
+" फ़ोल्डर बना सकता है।"
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI आपकी साइटों के लिए प्रस्ताव पूरा नहीं कर सका। कृपया फिर से कोशिश करें।"
+
+msgid "The AI found nothing to change."
+msgstr "AI को बदलने के लिए कुछ नहीं मिला।"
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI को जवाब देने में समस्या हुई। कृपया फिर से कोशिश करें।"
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "AI अभी उपलब्ध नहीं है। कृपया बाद में फिर से कोशिश करें।"
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI इस फ़ोल्डर या इसमें मौजूद साइटों को कभी नहीं देखता।"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI सेवा को जवाब देने में बहुत समय लगा। कृपया फिर से कोशिश करें।"
 
@@ -7296,6 +7956,12 @@ msgstr "NewsBlur ब्लॉग"
 
 msgid "The audio stream was interrupted."
 msgstr "ऑडियो स्ट्रीम बाधित हो गई।"
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "बदलाव लागू नहीं किए जा सके। कृपया फिर से कोशिश करें।"
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "फ़ोल्डर में अभी भी साइटें या फ़ोल्डर थे, इसलिए उसे वैसे ही रखा गया।"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7347,8 +8013,20 @@ msgstr "प्रकाशक ने मूल पेज को बंद कर
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "पृष्ठ का HTML प्राप्त करके सामग्री की संरचना निकालने के लिए उसका विश्लेषण किया जाता है।"
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "प्रस्ताव में इसका वर्णन ऐसे किया गया था कि उसे लागू नहीं किया जा सका।"
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "प्रस्ताव में बहुत समय लग गया और उसे रोक दिया गया। कृपया फिर से कोशिश करें।"
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "पुनर्गठन को पूर्ववत नहीं किया जा सका। कृपया दोबारा कोशिश करें।"
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "साइट स्वयं, जैसी वह ब्राउज़र में दिखाई देती है"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "साइट अब उस जगह पर नहीं थी जहाँ प्रस्ताव के अनुसार उसे होना चाहिए था।"
 
 msgid "The story on its own page on the site"
 msgstr "साइट पर लेख का अपना पेज"
@@ -7420,6 +8098,13 @@ msgstr "आपकी फ़ोटो अपलोड करने में स�
 msgid "There was an error trying to logout, ouch."
 msgstr "लॉग आउट करने में त्रुटि हुई, उफ़।"
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr ""
+"AI के लिए व्यवस्थित करने को कुछ नहीं था। अपने और फ़ोल्डर खोलें या फ़ोल्डर जोड़ने के लिए “पुनर्गठित करें” "
+"चुनें।"
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "कोई सीमा नहीं है। जितने चाहें उतने लेख सहेजें—वे हमेशा के लिए रखे जाएँगे।"
 
@@ -7435,6 +8120,13 @@ msgid ""
 msgstr ""
 "ये डोमेन डिफ़ॉल्ट रूप से अवरुद्ध हैं (खोज इंजन, सोशल मीडिया आदि)। इस रोक को हटाने के लिए इन्हें ऊपर \"अनुमत"
 " डोमेन\" में जोड़ें।"
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"इन साइटों को पुराने फ़ोल्डर में बनाए रखने के लिए सेट किया गया है, और इन्हें नए फ़ोल्डर में भी रखने का सुझाव"
+" दिया गया है। चुनें कि हर साइट कहाँ रहे।"
 
 msgid "They redeem it."
 msgstr "वे इसे भुना लेते हैं।"
@@ -7456,6 +8148,12 @@ msgstr "इस सप्ताह"
 
 msgid "This Year"
 msgstr "इस वर्ष"
+
+msgid "This change couldn't be made."
+msgstr "यह बदलाव नहीं किया जा सका।"
+
+msgid "This change doesn't fit with your other choices."
+msgstr "यह बदलाव आपके अन्य विकल्पों से मेल नहीं खाता।"
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7480,12 +8178,39 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "यह पूरे शीर्षक से मेल खाता है और केवल इसी सटीक लेख से मेल खाएगा। इसके बजाय शीर्षक का कोई हिस्सा चुनें।"
 
+msgid "This proposal can't be changed right now."
+msgstr "इस प्रस्ताव को अभी बदला नहीं जा सकता।"
+
+msgid "This proposal can't be revised again."
+msgstr "इस प्रस्ताव में फिर से संशोधन नहीं किया जा सकता।"
+
+msgid "This proposal couldn't be found."
+msgstr "यह प्रस्ताव नहीं मिला।"
+
+msgid "This proposal has already been applied."
+msgstr "यह प्रस्ताव पहले ही लागू किया जा चुका है।"
+
+msgid "This proposal isn't ready to apply."
+msgstr "यह प्रस्ताव लागू करने के लिए तैयार नहीं है।"
+
+msgid "This proposal was replaced by a newer one."
+msgstr "इस प्रस्ताव की जगह एक नया प्रस्ताव आ गया।"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "पढ़े गए लेखों की यह सूची एक %(link_start)sप्रीमियम सुविधा%(link_end)s है।"
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "इससे सभी सहेजे गए लेखों से टैग हट जाएगा। लेख बिना इस टैग के सहेजे रहेंगे।"
+
+msgid "This reorganization can no longer be undone."
+msgstr "अब इस पुनर्गठन को पहले जैसा नहीं किया जा सकता।"
+
+msgid "This reorganization didn't finish"
+msgstr "यह पुनर्गठन पूरा नहीं हुआ"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "इस पुनर्गठन को लागू नहीं किया गया है, इसलिए पूर्ववत करने के लिए कुछ नहीं है।"
 
 msgid "This site"
 msgstr "यह साइट"
@@ -7543,6 +8268,9 @@ msgstr "पसंदीदा लेखकों, टैग या शीर्�
 
 msgid "Thursday"
 msgstr "गुरुवार"
+
+msgid "Tidy"
+msgstr "सुव्यवस्थित करें"
 
 msgid "Tier"
 msgstr "स्तर"
@@ -7608,6 +8336,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "तक"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "को: %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "निर्णय बाकी %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7657,6 +8393,9 @@ msgid "Top Domains"
 msgstr "शीर्ष डोमेन"
 
 msgid "Top Level"
+msgstr "शीर्ष स्तर"
+
+msgid "Top level"
 msgstr "शीर्ष स्तर"
 
 msgid "Top stories"
@@ -7817,6 +8556,21 @@ msgstr "अनुपलब्ध"
 msgid "Uncategorized"
 msgstr "बिना श्रेणी"
 
+msgid "Undo"
+msgstr "पूर्ववत करें"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "पूर्ववत करने पर आपके फ़ोल्डर वैसे ही हो जाएँगे जैसे यह प्रक्रिया शुरू होने से पहले थे।"
+
+msgid "Undo this reorganization"
+msgstr "इस पुनर्गठन को पूर्ववत करें"
+
+msgid "Undo this reorganization?"
+msgstr "क्या इस पुनर्गठन को पहले जैसा करें?"
+
+msgid "Undoing..."
+msgstr "पूर्ववत किया जा रहा है…"
+
 msgid "Unfavorited"
 msgstr "पसंदीदा से हटाया"
 
@@ -7888,6 +8642,33 @@ msgstr "इस लेख को सहेजे गए से हटाएँ"
 
 msgid "Unshared"
 msgstr "साझा नहीं किया गया"
+
+msgid "Unsubscribe"
+msgstr "ईमेल पाना बंद करें"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "%(site)s से सदस्यता समाप्त करें"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "%(count)s बंद साइट की सदस्यता समाप्त की गई"
+msgstr[1] "%(count)s बंद साइटों की सदस्यता समाप्त की गई"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"%(count)s निष्क्रिय साइट की सदस्यता छोड़ने को पूर्ववत नहीं किया जा सकता। पूर्ववत करने से आपके फ़ोल्डर वापस "
+"आ जाएँगे, लेकिन उन साइटों की सदस्यता फिर से नहीं ली जाएगी।"
+msgstr[1] ""
+"%(count)s निष्क्रिय साइटों की सदस्यता छोड़ने को पूर्ववत नहीं किया जा सकता। पूर्ववत करने से आपके फ़ोल्डर "
+"वापस आ जाएँगे, लेकिन उन साइटों की सदस्यता फिर से नहीं ली जाएगी।"
 
 msgid "Untitled"
 msgstr "शीर्षकहीन"
@@ -8444,6 +9225,9 @@ msgstr "आप अपनी राय बदल सकते हैं।"
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "पढ़ते समय आप लेखों के पास दिए गए %(like_icon)s%(dislike_icon)s बटनों पर क्लिक कर सकते हैं।"
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "आप यह संवाद बंद कर सकते हैं। वापस आने पर प्रस्ताव यहीं आपका इंतज़ार कर रहा होगा।"
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "आप इसे हर साइट और फ़ोल्डर के लिए अलग-अलग ओवरराइड कर सकते हैं।"
 
@@ -8456,10 +9240,23 @@ msgstr ""
 "ट्रेन कर सकते हैं।"
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "आप %(date)s तक इसे पूर्ववत कर सकते हैं।"
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "आप %(count)s साइट फ़ॉलो करते हैं। Premium से वे सभी बेहतर हो जाती हैं।"
 msgstr[1] "आप %(count)s साइटें फ़ॉलो करते हैं। Premium से वे सभी बेहतर हो जाती हैं।"
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "आपको हर महीने %(count)s प्रस्ताव मिलता है। उसे लागू करने के लिए Premium Archive आवश्यक है।"
+msgstr[1] "आपको हर महीने %(count)s प्रस्ताव मिलते हैं। उनमें से किसी एक को लागू करने के लिए Premium Archive आवश्यक है।"
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "आपको हर महीने एक प्रस्ताव मिलता है। इसे लागू करने के लिए Premium Archive आवश्यक है।"
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8504,6 +9301,12 @@ msgstr "टिप्पणी का जवाब देने के लिए 
 msgid "You need to be logged in to share a story."
 msgstr "लेख साझा करने के लिए आपको लॉग इन करना होगा।"
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "आप %(count)s निष्क्रिय साइट से सदस्यता समाप्त करेंगे"
+msgstr[1] "आप %(count)s निष्क्रिय साइटों से सदस्यता समाप्त करेंगे"
+
 msgid "You will be emailed within a minute or three."
 msgstr "आपको एक-दो मिनट में ईमेल भेज दिया जाएगा।"
 
@@ -8529,6 +9332,28 @@ msgstr "आप तैयार हैं! उम्मीद है आपको
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "आपको %(value_1)s का %(value_2)s उपहार में मिला है!"
+
+msgid "You've had this month's proposal."
+msgstr "आपको इस महीने का प्रस्ताव मिल चुका है।"
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "आपको इस महीने का प्रस्ताव मिल चुका है। अगला प्रस्ताव %(date)s को उपलब्ध होगा।"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "आपने पिछले दिन में %(count)s प्रस्ताव दिया है।"
+msgstr[1] "आपने पिछले दिन में %(count)s प्रस्ताव दिए हैं।"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "आपने पिछले दिन %(count)s प्रस्ताव दिया है। अगला प्रस्ताव %(date)s को उपलब्ध होगा।"
+msgstr[1] "आपने पिछले दिन %(count)s प्रस्ताव दिए हैं। अगला प्रस्ताव %(date)s को उपलब्ध होगा।"
+
+msgid "You've reached today's limit on proposals."
+msgstr "आप आज के लिए प्रस्तावों की सीमा तक पहुँच गए हैं।"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8584,14 +9409,35 @@ msgstr "आपकी चुनी हुई आवाज़ अभी उपल�
 msgid "Your cookie has expired — Please login again"
 msgstr "आपकी कुकी की अवधि समाप्त हो गई है — कृपया फिर से लॉग इन करें"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "आपके मौजूदा फ़ोल्डर पहले सहेजे जाते हैं, इसलिए इसे %(count)s दिन तक पूर्ववत किया जा सकता है।"
+msgstr[1] "आपके मौजूदा फ़ोल्डर पहले सहेजे जाते हैं, इसलिए इसे %(count)s दिनों तक पूर्ववत किया जा सकता है।"
+
+msgid "Your decisions"
+msgstr "आपके निर्णय"
+
 msgid "Your email"
 msgstr "आपका ईमेल"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "आपके फ़िल्टर साइटें छिपा रहे हो सकते हैं — उन्हें व्यापक करने के लिए विकल्प खोलें।"
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "आपके फ़ोल्डर पुनर्गठन से पहले जैसी स्थिति में लौट आए हैं।"
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "आपके फ़ोल्डर इस पुनर्गठन से पहले जैसी स्थिति में लौट जाएँगे।"
+
 msgid "Your inbox stays clean"
 msgstr "आपका इनबॉक्स साफ़-सुथरा रहता है"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "आपका पिछला विकल्प सहेजा नहीं जा सका, इसलिए यहाँ सहेजे गए विकल्प दिख रहे हैं। कृपया फिर से कोशिश करें।"
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "आपके लॉक किए गए फ़ोल्डर सहेजे नहीं जा सके। कृपया फिर से कोशिश करें।"
 
 msgid "Your name"
 msgstr "आपका नाम"
@@ -8614,8 +9460,17 @@ msgstr "आपकी सदस्यता का शुल्क आनुप�
 msgid "Your subscription will no longer automatically renew."
 msgstr "आपकी सदस्यता अपने-आप नवीनीकृत नहीं होगी।"
 
+msgid "a folder"
+msgstr "एक फ़ोल्डर"
+
+msgid "a site you no longer follow"
+msgstr "ऐसी साइट जिसे आप अब फ़ॉलो नहीं करते"
+
 msgid "and auto-follow them"
 msgstr "और उन्हें अपने-आप फ़ॉलो करें"
+
+msgid "approved"
+msgstr "स्वीकृत"
 
 msgid "artificial intelligence"
 msgstr "कृत्रिम बुद्धिमत्ता"
@@ -8799,6 +9654,9 @@ msgstr "क्वांटम कंप्यूटिंग"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "अस्वीकृत"
+
 msgid "remote work"
 msgstr "दूरस्थ कार्य"
 
@@ -8844,6 +9702,9 @@ msgstr "आपूर्ति शृंखला"
 msgid "this list"
 msgstr "यह सूची"
 
+msgid "to decide"
+msgstr "तय करना बाकी"
+
 msgid "trade policy"
 msgstr "व्यापार नीति"
 
@@ -8867,6 +9728,14 @@ msgstr "विंटेज कंप्यूटिंग"
 
 msgid "web standards"
 msgstr "वेब मानक"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s” बदलकर “%(new)s” हो जाता है"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

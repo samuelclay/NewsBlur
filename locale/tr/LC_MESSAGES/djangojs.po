@@ -151,6 +151,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "%(badge)s, en fazla %(count)s gün boyunca"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s site"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "%(category)s konuları"
 
@@ -166,6 +171,11 @@ msgstr "%(cost)s/haber"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s bayt"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "%(count)s değişiklik yapılamadı."
 
 #, python-format
 msgid "%(count)s channel"
@@ -208,9 +218,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s gün önce"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "%(count)s çalışmayan site sessize alınacak"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "%(count)s çalışmayan site sessize alındı"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s beğenmeme"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s boş klasör kaldırılacak"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "%(count)s boş klasör kaldırıldı"
 
 #, python-format
 msgid "%(count)s episode"
@@ -221,6 +251,46 @@ msgstr[0] "%(count)s bölüm"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s akış"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s işaretlendi"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s klasör eklendi"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "%(count)s klasör eklenecek"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s klasör başka bir klasörle birleştirilecek"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s klasör yeniden adlandırılacak"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "%(count)s klasör başka bir klasörle birleştirildi"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s klasör başka bir klasörün içine taşınacak"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "%(count)s klasör yeniden adlandırıldı veya taşındı"
 
 #, python-format
 msgid "%(count)s follower"
@@ -315,6 +385,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "%(count)s açılış"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "Değişiklikten etkilenmeyen %(count)s başka site"
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s sayfa"
@@ -333,6 +408,11 @@ msgstr[0] "%(count)s herkese açık yorum"
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s yanıt"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "%(count)s düzeltme kaldı."
 
 #, python-format
 msgid "%(count)s selected"
@@ -355,14 +435,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s site"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "%(count)s site ikinci bir klasöre eklendi"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "%(count)s site mevcut"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s site burada, hiçbiri değişiklik kapsamında değil."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s site ikinci bir klasöre eklenecek"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "%(count)s site başka bir klasöre taşındı"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s site başka bir klasöre taşınacak"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "Sınırı %(count)s site aşıyor"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s site için hâlâ karar verilmedi; site olduğu yerde kalıyor."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "Karar verilecek %(count)s öğe kaldı. Karar verilmeyenler olduğu gibi kalır."
 
 #, python-format
 msgid "%(count)s story"
@@ -922,6 +1037,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s site daha"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/gün"
 
@@ -1002,6 +1121,9 @@ msgstr "Daha net ve yakın bir ses"
 msgid "A folder"
 msgstr "Bir klasör"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "Öneri oluşturulduktan sonra gerekli bir klasörün adı değiştirildi, klasör taşındı veya silindi."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Tek bir haber akışı olarak okunan bir klasör"
 
@@ -1011,6 +1133,12 @@ msgstr "NewsBlur okurlarının paylaştığı haberlerden her saat seçilen tapt
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "%(value_1)s tarafından gönderilen hediye hesabınıza tanımlandı."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "Daha sonraki bir yeniden düzenleme uygulandığı için bu işlem artık geri alınamaz."
+
+msgid "A proposal is already being made."
+msgstr "Bir öneri zaten hazırlanıyor."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "İkinci geçişte, sayfadaki doğru deseni bulmak için verdiğiniz ipucu kullanılır."
@@ -1046,6 +1174,12 @@ msgstr "Yapay zekâ filtreleri kaydedildi ancak çalışmaları için %(billing_
 msgid "AI finds the stories"
 msgstr "Haberleri yapay zekâ bulur"
 
+msgid "AI is looking through your sites"
+msgstr "Yapay zekâ sitelerinizi inceliyor"
+
+msgid "AI is revising the proposal"
+msgstr "Yapay zekâ öneriyi yeniden düzenliyor"
+
 msgid "AI-curated summary of your top stories"
 msgstr "En önemli haberlerinizin yapay zekâ tarafından derlenmiş özeti"
 
@@ -1065,6 +1199,12 @@ msgstr "Elbette. Eğiticiyi açın ve sıfırlamak için beğeni ya da beğenmem
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "Aksan"
+
+msgid "Accept all"
+msgstr "Tümünü kabul et"
+
+msgid "Accept into this folder"
+msgstr "Bu klasöre ekle"
 
 msgid "Account"
 msgstr "Hesap"
@@ -1104,6 +1244,9 @@ msgstr "Site Ekle &amp; Haber Paylaş Yer İmi Uygulaması"
 
 msgid "Add a classifier"
 msgstr "Sınıflandırıcı ekle"
+
+msgid "Add a copy here"
+msgstr "Buraya bir kopya ekle"
 
 msgid "Add a forwarding address"
 msgstr "Yönlendirme adresi ekle"
@@ -1146,6 +1289,10 @@ msgstr "Site/klasör ekle"
 
 msgid "Add story list"
 msgstr "Haber listesi ekle"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "%(folder)s klasörünü ekle"
 
 msgid "Add to Chrome"
 msgstr "Chrome'a ekle"
@@ -1253,6 +1400,9 @@ msgstr "Hepsi tamam!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "Tüm akışlar her 5-15 dakikada bir alınır"
 
+msgid "All moves"
+msgstr "Tüm taşımalar"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1281,10 +1431,20 @@ msgstr "İzin Verilen Alan Adları"
 msgid "Alphabetical"
 msgstr "Alfabetik"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "Ayrıca klasör ekleyin, adlarını değiştirin, birleştirin, iç içe yerleştirin ve kaldırın."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Bu alan adındaki mevcut %(value_1)s arşivi de sil"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "%(folder)s klasöründe de"
+
+msgid "Also look for"
+msgstr "Şunları da ara"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1345,6 +1505,9 @@ msgstr "Android bildirimleri için Premium Archive gerekir"
 msgid "Animals"
 msgstr "Hayvanlar"
 
+msgid "Another folder there already has this name."
+msgstr "Orada başka bir klasör zaten bu ada sahip."
+
 msgid "Any"
 msgstr "Herhangi bir tarih"
 
@@ -1357,6 +1520,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Tüm zamanlar"
+
+msgid "Anything the AI should know"
+msgstr "Yapay zekânın bilmesi gereken bir şey var mı?"
 
 msgid "Appearance"
 msgstr "Görünüm"
@@ -1377,11 +1543,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(succeeded)s / %(count)s birleştirme uygulandı (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "%(date)s tarihinde uygulandı."
+
 msgid "Applies to"
 msgstr "Şunlar için geçerli"
 
 msgid "Apply"
 msgstr "Uygula"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "%(count)s değişikliği uygula"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "%(count)s değişiklik uygulansın mı?"
 
 msgid "Apply All Merges"
 msgstr "Tüm birleştirmeleri uygula"
@@ -1389,11 +1569,29 @@ msgstr "Tüm birleştirmeleri uygula"
 msgid "Apply Split"
 msgstr "Bölmeyi uygula"
 
+msgid "Apply changes"
+msgstr "Değişiklikleri uygula"
+
 msgid "Apply training across a folder"
 msgstr "Eğitimi bir klasörde uygula"
 
 msgid "Apply training globally"
 msgstr "Eğitimi tüm sitelere uygula"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "Değişiklikleri uygulamak için Premium Archive gerekir."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"Değişiklikleri uygulamak için Premium Archive gerekir. Kararlarınız kaydedildi; yükselttikten sonra burada "
+"olacak."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "%(date)s tarihinde uygulama işlemi yarıda kaldı; bu nedenle bazı klasörleriniz değişmiş olabilir."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "Uygulama yarıda durdu; bu nedenle bazı klasörleriniz değişmiş olabilir."
 
 msgid "Applying..."
 msgstr "Uygulanıyor..."
@@ -1418,6 +1616,11 @@ msgstr "Uygulamalar ücretsiz mi?"
 
 msgid "Are the apps open source?"
 msgstr "Uygulamalar açık kaynaklı mı?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "Gelen %(count)s"
 
 msgid "Arrow keys"
 msgstr "Ok tuşları"
@@ -1450,6 +1653,9 @@ msgstr ""
 
 msgid "Ask AI questions about stories"
 msgstr "Haberler hakkında yapay zekâya soru sor"
+
+msgid "Ask AI to revise"
+msgstr "Düzeltme yapması için Yapay zekâya sor"
 
 msgid "Ask AI with a choice of models"
 msgstr "Model seçerek yapay zekâya sorun"
@@ -1570,6 +1776,9 @@ msgstr "Sınıflandırıcı eğitimine dön"
 msgid "Back to feeds"
 msgstr "Akışlara dön"
 
+msgid "Back to review"
+msgstr "İncelemeye dön"
+
 msgid "Back to stories"
 msgstr "Haberlere dön"
 
@@ -1651,6 +1860,9 @@ msgstr "Blurblog'lar, paylaşılan haberler ve yorumlar"
 
 msgid "Bookmarklet"
 msgstr "Yer imi uygulaması"
+
+msgid "Both"
+msgstr "İkisi de"
 
 msgid "Bottom"
 msgstr "Alt"
@@ -1734,6 +1946,12 @@ msgstr "Madde işaretleri"
 
 msgid "Buttons"
 msgstr "Düğmeler"
+
+msgid "By folder"
+msgstr "Klasöre göre"
+
+msgid "By hand"
+msgstr "Elle"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1853,6 +2071,9 @@ msgstr "Yukarıdan beğendiklerinizi seçin..."
 msgid "Check your email..."
 msgstr "E-postanızı kontrol edin..."
 
+msgid "Checking for dead sites"
+msgstr "Artık güncellenmeyen siteler kontrol ediliyor"
+
 msgid "Checking recent pages..."
 msgstr "Son sayfalar kontrol ediliyor..."
 
@@ -1883,6 +2104,9 @@ msgstr "Kategorileri seçin"
 
 msgid "Choose how many days back"
 msgstr "Kaç gün geriye gidileceğini seçin"
+
+msgid "Choose how much to change, then try again."
+msgstr "Ne kadar değişiklik istediğinizi seçin, ardından yeniden deneyin."
 
 msgid "Choose model"
 msgstr "Model seç"
@@ -2158,8 +2382,22 @@ msgstr "Metni kopyala"
 msgid "Copy URL"
 msgstr "URL'yi kopyala"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "%(folder)s konumundan kopyala"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "Kopyası %(folder)s klasörüne önerildi"
+
+msgid "Copy undecided"
+msgstr "Kopyalama kararı verilmedi"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "İstemci gizli anahtarınızı şimdi kopyalayın. Bu anahtarı yalnızca bir kez görebilirsiniz."
+
+msgid "Copy?"
+msgstr "Kopyalansın mı?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Bu sınıflandırıcı eklenemedi. Yeniden deneyin."
@@ -2178,6 +2416,9 @@ msgstr "SSS yüklenemedi. Lütfen tekrar deneyin."
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "Uygulamalarınız yüklenemedi. Sayfayı yenilemeyi deneyin."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "Yapay zekâyla Yeniden düzenle yüklenemedi."
 
 msgid "Couldn't load audio for this story."
 msgstr "Bu haberin sesi yüklenemedi."
@@ -2332,8 +2573,20 @@ msgstr "Gün"
 msgid "Days of unreads"
 msgstr "Okunmamışların gün sayısı"
 
+msgid "Dead sites"
+msgstr "Çalışmayan siteler"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "Sessize alınan çalışmayan sitelerin sesi açılır."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "Yayın yapmayı bırakan veya sürekli hata veren çalışmayan siteler"
+
 msgid "December"
 msgstr "Aralık"
+
+msgid "Decline all copies"
+msgstr "Tüm kopyaları reddet"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Topluluğun zaman ayırdığı kapsamlı okumalar"
@@ -2493,6 +2746,9 @@ msgstr "Kapat"
 msgid "Do I get a unique email address?"
 msgstr "Bana özel bir e-posta adresi veriliyor mu?"
 
+msgid "Do not put it here"
+msgstr "Buraya koymayın"
+
 msgid "Do the apps work offline?"
 msgstr "Uygulamalar çevrimdışı çalışıyor mu?"
 
@@ -2523,6 +2779,9 @@ msgstr "Önizlemeyi gösterme, yalnızca haber başlığını göster"
 
 msgid "Don't show a thumbnail"
 msgstr "Küçük resim gösterme"
+
+msgid "Done"
+msgstr "Bitti"
 
 msgid "Done!"
 msgstr "Tamamlandı!"
@@ -2769,6 +3028,11 @@ msgstr ""
 "Kaydedilen her haber etiketinin kendine ait bir RSS akışı vardır; IFTTT veya Zapier'e aktarmak için "
 "idealdir."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr ""
+"Tüm siteler, kapsam dışında bıraktığınız bir klasörde. Yapay zekânın inceleyebileceği siteler olması için "
+"bir klasör açın."
+
 msgid "Every story archived and searchable forever"
 msgstr "Her haber sonsuza dek arşivlenir ve aranabilir"
 
@@ -2790,6 +3054,9 @@ msgstr "Herkes"
 msgid "Everyone"
 msgstr "Herkes"
 
+msgid "Everything"
+msgstr "Tümü"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlur'ın yapabildikleri ve nasıl deneyebileceğiniz"
 
@@ -2807,6 +3074,12 @@ msgstr "Ücretsiz plandaki her şey, ayrıca:"
 
 msgid "Everything in Premium, plus:"
 msgstr "Premium'daki her şey ve ayrıca:"
+
+msgid "Everything is decided."
+msgstr "Her şeye karar verildi."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "Her şey başlangıçta onaylanmıştır. Bir taşımayı iki klasörden birinden reddedin."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2936,6 +3209,13 @@ msgstr "Sorgu gönderilemedi"
 msgid "Failed to subscribe"
 msgstr "Abone olunamadı"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "Siteye ulaşılamıyor ve site hiç haber yayınlamadı."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "Veri alınamıyor. Son haber %(month)s tarihindeydi."
+
 msgid "Fashion"
 msgstr "Moda"
 
@@ -3036,11 +3316,17 @@ msgstr "Akışlarınız alınıyor"
 msgid "Fetching..."
 msgstr "Getiriliyor..."
 
+msgid "File sites into the folders you already have."
+msgstr "Siteleri mevcut klasörlerinize yerleştirin."
+
 msgid "Files"
 msgstr "Dosyalar"
 
 msgid "Filled Icons"
 msgstr "Dolu Simgeler"
+
+msgid "Filter"
+msgstr "Filtrele"
 
 msgid "Filter by date range"
 msgstr "Tarih aralığına göre filtrele"
@@ -3168,8 +3454,14 @@ msgstr "Klasörlerin okunmamış haber sayıları"
 msgid "Folders"
 msgstr "Klasörler"
 
+msgid "Folders after"
+msgstr "Sonraki klasörler"
+
 msgid "Folders only"
 msgstr "Yalnızca klasörler"
+
+msgid "Folders updated"
+msgstr "Klasörler güncellendi"
 
 msgid "Folders, feeds, and story titles"
 msgstr "Klasörler, akışlar ve haber başlıkları"
@@ -3344,6 +3636,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "Başlangıç"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "%(folder)s kaynağından"
+
 msgid "From infrequent sites"
 msgstr "Seyrek güncellenen sitelerden"
 
@@ -3515,6 +3811,10 @@ msgstr "Premium'a geç — yılda 36 $"
 msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)s sayfasına geri dön"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "%(folder)s içine girer"
+
 msgid "Good Reads"
 msgstr "Okumaya Değer"
 
@@ -3617,6 +3917,9 @@ msgstr "Zaten abone olduğunuz siteleri gizle"
 msgid "Hide story changes"
 msgstr "Haber değişikliklerini gizle"
 
+msgid "Hide them"
+msgstr "Onları gizle"
+
 msgid "Highlight"
 msgstr "Vurgula"
 
@@ -3661,6 +3964,9 @@ msgstr "Kaç haber kaydedebilirim?"
 
 msgid "How much emotion"
 msgstr "Duygu yoğunluğu"
+
+msgid "How much to change"
+msgstr "Ne kadar değişiklik yapılsın"
 
 msgid "How often"
 msgstr "Ne sıklıkla"
@@ -3732,6 +4038,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "Premium denemeniz %(count)s gün içinde sona erecek ve Ücretsiz plana döneceksiniz"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "%(folder)s içinde"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr ""
 "Gmail'de %(settings_menu)s sayfasına gidin ve %(add_button)s seçeneğine tıklayın. Size özel NewsBlur "
@@ -3754,6 +4064,9 @@ msgstr "Yeni pencerede"
 msgid "In a pill"
 msgstr "Hap içinde"
 
+msgid "In both folders"
+msgstr "Her iki klasörde"
+
 msgid "In rotation"
 msgstr "Döngüde"
 
@@ -3766,6 +4079,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "Bu pencerede"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "İki klasörde %(count)s"
 
 msgid "Include read"
 msgstr "Okunanları dahil et"
@@ -3797,6 +4114,10 @@ msgstr "Seyrek haber eşiği (aylık)"
 msgid "Inline list"
 msgstr "Satır içi liste"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "%(folder)s içinde"
+
 msgid "Insta-fetch stories"
 msgstr "Haberleri anında getir"
 
@@ -3823,6 +4144,10 @@ msgid "Interactions"
 msgstr "Etkileşimler"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "Önce %(folder)s klasörüne taşındı, sonra kaldırıldı"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "Geçersiz regex: %(error)s"
 
@@ -3843,6 +4168,26 @@ msgstr "Bu RSS'den farklı mı?"
 
 msgid "Is training free?"
 msgstr "Eğitim ücretsiz mi?"
+
+msgid "It has never had a story."
+msgstr "Hiç haber yayınlamadı."
+
+msgid "It involves a folder you locked."
+msgstr "Kilitli bir klasörünüzü içeriyor."
+
+msgid "It needs a new folder you rejected."
+msgstr "Reddettiğiniz yeni bir klasör gerekiyor."
+
+msgid "It would have put a folder inside itself."
+msgstr "Bir klasörü kendi içine koymuş olurdu."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "%(count)s günden fazla zaman geçtiğinden bu yeniden düzenleme artık geri alınamaz."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "Sitelerini korumak için klasörü kilitli."
 
 msgid "January"
 msgstr "Ocak"
@@ -3874,8 +4219,17 @@ msgstr "Yalnızca başlıklar, en az yorumla"
 msgid "Just the headlines, no commentary"
 msgstr "Yalnızca başlıklar, yorum yok"
 
+msgid "Keep"
+msgstr "Tut"
+
+msgid "Keep all here"
+msgstr "Buradakilerin tümünü tut"
+
 msgid "Keep fades, without movement."
 msgstr "Solma geçişlerini koru, hareketi kaldır."
+
+msgid "Keep it here"
+msgstr "Burada tut"
 
 msgid "Keep others unread"
 msgstr "Diğerlerini okunmamış bırak"
@@ -3886,8 +4240,17 @@ msgstr "Okunma durumunu koru"
 msgid "Keep right-side buttons visible while reading"
 msgstr "Okurken sağ taraftaki düğmeleri görünür tut"
 
+msgid "Keep sites"
+msgstr "Siteleri tut"
+
 msgid "Keep stories separate"
 msgstr "Haberleri ayrı tut"
+
+msgid "Keep the new folders"
+msgstr "Yeni klasörleri koru"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "Fotoğraf bloglarını bir arada tutun. Haberleri ülkeye göre ayırın."
 
 msgid "Keep unread counts out of the window title"
 msgstr "Okunmamış sayılarını pencere başlığında gösterme"
@@ -3960,11 +4323,28 @@ msgstr "Son görülme:"
 msgid "Layout"
 msgstr "Düzen"
 
+msgid "Leave out"
+msgstr "Dışarıda bırak"
+
 msgid "Leave unread"
 msgstr "Okunmamış bırak"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "Ayrılan %(count)s"
+
 msgid "Left"
 msgstr "Sol"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "Dışarıda bırakıldı. Bu klasörde hiçbir şey değişmez."
+
+msgid "Let all go"
+msgstr "Tümünü bırak"
+
+msgid "Let it go"
+msgstr "Bırak"
 
 msgid "Let's Get Started "
 msgstr "Hadi başlayalım "
@@ -4081,8 +4461,14 @@ msgstr "Konum"
 msgid "Lock"
 msgstr "Kilitle"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "Yapay zekânın dokunmaması gereken klasörleri kilitle"
+
 msgid "Locked"
 msgstr "Kilitli"
+
+msgid "Locked with parent"
+msgstr "Üst klasörle birlikte kilitlendi"
 
 msgid "Log In or Sign Up"
 msgstr "Giriş Yap veya Kaydol"
@@ -4295,6 +4681,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "%(count)s kategoriyi şununla birleştir:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "%(folder)s klasörünü %(into)s klasörüyle birleştir"
+
 msgid "Merge into:"
 msgstr "Şununla birleştir:"
 
@@ -4375,6 +4765,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s siteyi taşı"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "%(site)s klasörünü %(folder)s klasörüne taşı"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "%(folder)s konumuna taşı"
 
@@ -4387,6 +4781,13 @@ msgstr "Taşındı"
 msgid "Moved!"
 msgstr "Taşındı!"
 
+msgid "Moves"
+msgstr "Taşınıyor"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "Birleştirilirken %(folder)s ile birlikte taşınır."
+
 msgid "Moving..."
 msgstr "Taşınıyor..."
 
@@ -4397,6 +4798,10 @@ msgstr "Sessize al"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s siteyi sessize al"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "%(site)s sessize al"
 
 msgid "Mute Sites"
 msgstr "Siteleri sessize al"
@@ -4482,6 +4887,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "Birleştirmek için en az 2 kategori gerekli"
+
+msgid "Nest"
+msgstr "İç içe yerleştir"
 
 msgid "Nested"
 msgstr "İç içe"
@@ -4647,6 +5055,9 @@ msgstr "Kullanılabilir kategori yok. Yapılandırıldıklarında kategoriler bu
 msgid "No categories with 10+ stories available for splitting."
 msgstr "Bölmek için 10 veya daha fazla haberi olan kategori yok."
 
+msgid "No changes"
+msgstr "Değişiklik yok"
+
 msgid "No channels found matching your filter."
 msgstr "Filtrenizle eşleşen kanal bulunamadı."
 
@@ -4658,6 +5069,9 @@ msgstr "Bağlı hesap yok"
 
 msgid "No content"
 msgstr "İçerik yok"
+
+msgid "No copy"
+msgstr "Kopyalanmıyor"
 
 msgid "No feeds found"
 msgstr "Akış bulunamadı"
@@ -4784,6 +5198,10 @@ msgstr[0] "İlgili haberler için %(count)s sitenizden henüz hiçbir haber dizi
 msgid "No stories published last month"
 msgstr "Geçen ay haber yayımlanmadı"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "%(month)s tarihinden beri haber yok."
+
 msgid "No stories to delete"
 msgstr "Silinecek haber yok"
 
@@ -4853,8 +5271,29 @@ msgstr "En çok okunanlar değil; en iyi karşılananlar ve büyük siteler yeri
 msgid "Nothing"
 msgstr "Hiçbir şey"
 
+msgid "Nothing changed."
+msgstr "Hiçbir şey değişmedi."
+
+msgid "Nothing changes."
+msgstr "Hiçbir şey değişmiyor."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "Bu klasöre hiçbir şey eklenmiyor, bu yüzden klasör oluşturulmayacak."
+
 msgid "Nothing happens without your permission."
 msgstr "İzniniz olmadan hiçbir şey olmaz."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "Diğer değişikliklerden sonra bu klasörde hiçbir şey kalmıyor."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr "Hiçbir şey taşınmaz ve klasör olduğu gibi kalır. İçindeki siteler kopya olarak diğer klasörlere sunulabilir."
+
+msgid "Nothing leaves this folder."
+msgstr "Bu klasörden hiçbir şey ayrılmıyor."
+
+msgid "Nothing matches this filter."
+msgstr "Bu filtreyle eşleşen bir şey yok."
 
 msgid "Nothing recorded."
 msgstr "Kaydedilen bir şey yok."
@@ -4917,6 +5356,11 @@ msgstr "Kapalı"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "Bunları “N yeni haber” rozetiyle göster"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "Başka klasörlere kopya olarak önerilen %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "Resmî NewsBlur Android uygulaması"
 
@@ -4970,8 +5414,14 @@ msgstr ""
 msgid "On reload"
 msgstr "Yeniden yüklemede"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "Yeniden öneride bulunduğunuzda son düzenlemeniz artık geri alınamaz."
+
 msgid "One command with Docker"
 msgstr "Docker ile tek komut"
+
+msgid "One of the proposed changes"
+msgstr "Önerilen değişikliklerden biri"
 
 msgid "One sentence"
 msgstr "Tek cümle"
@@ -5525,8 +5975,23 @@ msgstr "Profil Ayrıntıları"
 msgid "Profile picture"
 msgstr "Profil resmi"
 
+msgid "Progress"
+msgstr "İlerleme"
+
 msgid "Prompt"
 msgstr "İstem"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "Yeni bir klasör düzeni önerin. Kilitli klasörler yerinde kalır."
+
+msgid "Propose changes"
+msgstr "Değişiklik öner"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "Yeniden öneride bulunursanız incelemekte olduğunuz önerinin yerini alır."
+
+msgid "Proposing..."
+msgstr "Öneri hazırlanıyor..."
 
 msgid "Protected:"
 msgstr "Korunan:"
@@ -5545,6 +6010,13 @@ msgstr "Push Aboneliğinin Bitişi"
 
 msgid "Push expires"
 msgstr "Push aboneliğinin bitişi"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "%(folder)s öğesini %(parent)s içine koy"
+
+msgid "Putting the proposal together"
+msgstr "Öneri hazırlanıyor"
 
 msgid "Questions"
 msgstr "Sorular"
@@ -5665,6 +6137,11 @@ msgstr "Akışlarınızı okuyun: okunmamış haberler, klasörler, arama ve eti
 msgid "Reading"
 msgstr "Okuma"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "%(count)s site okunuyor"
+
 msgid "Reading article..."
 msgstr "Makale okunuyor..."
 
@@ -5772,6 +6249,16 @@ msgstr "Regex"
 msgid "Regex requires %(tier_link)s"
 msgstr "Regex için %(tier_link)s gerekir"
 
+msgid "Reject"
+msgstr "Reddet"
+
+msgid "Reject all"
+msgstr "Tümünü reddet"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "Reddedilen %(count)s"
+
 msgid "Related"
 msgstr "İlgili"
 
@@ -5802,6 +6289,10 @@ msgstr "%(voice)s sesini döngüden çıkar"
 
 msgid "Remove from Up Next"
 msgstr "Sıradan çıkar"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "%(folder)s klasörünü kaldır"
 
 msgid "Remove this list"
 msgstr "Bu listeyi kaldır"
@@ -5834,6 +6325,10 @@ msgstr "Bu klasörü yeniden adlandır"
 msgid "Rename this site"
 msgstr "Bu sitenin adını değiştir"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "“%(old)s” adını “%(new)s” olarak değiştir"
+
 msgid "Renamed"
 msgstr "Yeniden adlandırıldı"
 
@@ -5844,6 +6339,15 @@ msgstr[0] "Kategori \"%(category)s\" olarak yeniden adlandırıldı (%(count)s h
 
 msgid "Renaming..."
 msgstr "Yeniden adlandırılıyor..."
+
+msgid "Reorganize"
+msgstr "Yeniden düzenle"
+
+msgid "Reorganize again"
+msgstr "Yeniden düzenle"
+
+msgid "Reorganize with AI"
+msgstr "Yapay zekâyla yeniden düzenle"
 
 msgid "Request timed out"
 msgstr "İstek zaman aşımına uğradı"
@@ -5907,6 +6411,19 @@ msgstr "Yeniden dene"
 
 msgid "Retry fetching and parsing"
 msgstr "Getirmeyi ve ayrıştırmayı yeniden dene"
+
+msgid "Review"
+msgstr "Gözden geçir"
+
+msgid "Revise proposal"
+msgstr "Öneriyi düzenle"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "İstediğiniz gibi düzenlendi: “%(request)s”"
+
+msgid "Revising..."
+msgstr "Gözden geçiriliyor..."
 
 msgid "Rewinding..."
 msgstr "Geri sarılıyor..."
@@ -6058,6 +6575,9 @@ msgstr ""
 
 msgid "Saving..."
 msgstr "Kaydediliyor..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "Yapay zekânın neyi değiştirmesi gerektiğini yazıp yeniden deneyin."
 
 msgid "Schedule when your briefing is generated"
 msgstr "Özetinizin ne zaman oluşturulacağını planlayın"
@@ -6280,6 +6800,17 @@ msgstr "Bu haberi gönder"
 msgid "Sending…"
 msgstr "Gönderiliyor…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"%(count)s sitenin adları, adresleri ve son başlıkları yapay zekâ modeline gönderilir. Siz onaylayana kadar "
+"hiçbir şey değişmez."
+
 msgid "Separate"
 msgstr "Ayrı"
 
@@ -6292,6 +6823,9 @@ msgstr "Sunucu hatası"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "Sunucu hatası: %(status)s"
+
+msgid "Set up"
+msgstr "Kur"
 
 msgid "Set up billing"
 msgstr "Faturalandırmayı ayarla"
@@ -6464,6 +6998,13 @@ msgstr "NewsBlur açıldığında kontrol panelini göster"
 msgid "Show the entire story, even if really, really long"
 msgstr "Çok, çok uzun olsa bile haberin tamamını göster"
 
+msgid "Show them"
+msgstr "Onları göster"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "Bu taşımayı %(folder)s içinde göster"
+
 msgid "Show tooltips"
 msgstr "Araç ipuçlarını göster"
 
@@ -6543,8 +7084,17 @@ msgstr "Siteler"
 msgid "Sites and folders"
 msgstr "Siteler ve klasörler"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "Aboneliğinizi iptal ettiği siteler geri eklenmez."
+
 msgid "Sites updated up to 5x more often"
 msgstr "Siteler 5 kata kadar daha sık güncellenir"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "O zamandan beri abone olduğunuz siteler kalır."
+
+msgid "Sketching folders"
+msgstr "Klasörler tasarlanıyor"
 
 msgid "Skip Back"
 msgstr "Geri atla"
@@ -6581,6 +7131,12 @@ msgstr "Sosyal Bağlantılar"
 
 msgid "Social features"
 msgstr "Sosyal özellikler"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "Öneri oluşturulurken bir hata oluştu. Lütfen yeniden deneyin."
+
+msgid "Something went wrong. Please try again."
+msgstr "Bir sorun oluştu. Lütfen yeniden deneyin."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6629,6 +7185,9 @@ msgstr "Haber Akışını, akış seçenekleri menüsünden eskiden yeniye veya 
 msgid "Sort, filter, and display options"
 msgstr "Sıralama, filtre ve görüntüleme seçenekleri"
 
+msgid "Sorting sites into folders"
+msgstr "Siteler klasörlere ayrılıyor"
+
 msgid "Source feeds"
 msgstr "Kaynak akışlar"
 
@@ -6664,6 +7223,9 @@ msgstr[0] "\"%(category)s\" kategorisini (%(count)s haber) şunlara böl:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "\"%(value_1)s\" öğesini şunlara böl:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Teknoloji'yi daha küçük klasörlere ayırın. Hiçbir klasörde 40'tan fazla site olmasın."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6712,6 +7274,9 @@ msgstr "Yıldızlar"
 msgid "Start Training Site by Site"
 msgstr "Site Site Eğitmeye Başla"
 
+msgid "Start fresh"
+msgstr "Sıfırdan başla"
+
 msgid "Starting analysis..."
 msgstr "Analiz başlatılıyor..."
 
@@ -6736,11 +7301,35 @@ msgstr "İstatistikler"
 msgid "Status"
 msgstr "Durum"
 
+msgid "Stay"
+msgstr "Kal"
+
 msgid "Stay on the same feed/folder"
 msgstr "Aynı akışta/klasörde kal"
 
 msgid "Stay put"
 msgstr "Olduğu yerde kalsın"
+
+msgid "Stays"
+msgstr "Yerinde kalıyor"
+
+msgid "Stays here"
+msgstr "Burada kalıyor"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "%(folder)s klasöründe kalıyor"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "%(count)s site bu klasörde kaldığı için burada kalıyor."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "İçindeki bir klasör kalacağı için kalır."
+
+msgid "Stays, no folder"
+msgstr "Kalıyor, klasörsüz"
 
 msgid "Steadier or more varied"
 msgstr "Daha dengeli veya daha çeşitli"
@@ -6761,6 +7350,13 @@ msgstr "Önizlemeyi durdur"
 
 msgid "Stop recording"
 msgstr "Kaydı durdur"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"Yayın yapmayı bırakan veya alınamayan siteler. Kilitli klasörlerdeki siteler işaretlenmez. Sessize alma "
+"önerileri önceden seçilidir. Abonelikten çıkmak için her zaman tıklamanız gerekir."
 
 msgid "Stories"
 msgstr "Haberler"
@@ -7013,6 +7609,12 @@ msgstr "Abonelik paketleri"
 msgid "Suggested questions"
 msgstr "Önerilen sorular"
 
+msgid "Suggested: mute."
+msgstr "Öneri: Sessize al."
+
+msgid "Suggested: unsubscribe."
+msgstr "Öneri: abonelikten çık."
+
 msgid "Summarize"
 msgstr "Özetle"
 
@@ -7169,6 +7771,31 @@ msgstr "Teşekkürler! %(bold_start)sPremium Pro hesabınız%(bold_end)s var."
 msgid "That change could not be saved"
 msgstr "Bu değişiklik kaydedilemedi"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "Aboneliği iptal edilen %(count)s çalışmayan site geri getirilmez."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr ""
+"Yapay zekâ siteleri taşıyabilir, klasörün adını değiştirebilir, klasörleri birleştirebilir veya iç içe "
+"yerleştirebilir."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "Yapay zekâ siteleriniz için bir öneri hazırlayamadı. Lütfen yeniden deneyin."
+
+msgid "The AI found nothing to change."
+msgstr "Yapay zekâ değiştirilecek bir şey bulamadı."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "Yapay zekâ yanıt verirken sorun yaşadı. Lütfen yeniden deneyin."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "Yapay zekâ şu anda kullanılamıyor. Lütfen daha sonra yeniden deneyin."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "Yapay zekâ bu klasörü veya içindeki siteleri hiçbir zaman görmez."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Yapay zekâ hizmetinin yanıt vermesi çok uzun sürdü. Lütfen tekrar deneyin."
 
@@ -7206,6 +7833,12 @@ msgstr "NewsBlur Blogu"
 
 msgid "The audio stream was interrupted."
 msgstr "Ses akışı kesintiye uğradı."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "Değişiklikler uygulanamadı. Lütfen yeniden deneyin."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "Klasörde hâlâ siteler veya klasörler vardı, bu yüzden yerinde kaldı."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7259,8 +7892,20 @@ msgstr "Orijinal sayfa yayıncı tarafından devre dışı bırakıldı."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "Sayfanın HTML'i içerik yapısını çıkarmak için alınıp ayrıştırılır."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "Öneride, uygulanamayacak bir şekilde açıklanmış."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "Öneri çok uzun sürdüğü için durduruldu. Lütfen yeniden deneyin."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "Yeniden düzenleme geri alınamadı. Lütfen yeniden deneyin."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "Tarayıcıda göreceğiniz hâliyle sitenin kendisi"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "Site artık önerinin beklediği yerde değil."
 
 msgid "The story on its own page on the site"
 msgstr "Haberin sitedeki kendi sayfası"
@@ -7330,6 +7975,13 @@ msgstr "Fotoğrafınız yüklenirken bir sorun oluştu."
 msgid "There was an error trying to logout, ouch."
 msgstr "Çıkış yapmaya çalışırken bir hata oluştu, tüh."
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr ""
+"Yapay zekânın düzenleyebileceği hiçbir şey yoktu. Daha fazla klasörünüzü açın veya klasör ekleyebilmesi "
+"için Yeniden düzenle’yi seçin."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Sınır yok. İstediğiniz kadar haber kaydedin; sonsuza kadar saklanırlar."
 
@@ -7345,6 +7997,13 @@ msgid ""
 msgstr ""
 "Bu alan adları varsayılan olarak engellenir (arama motorları, sosyal medya vb.). Engeli kaldırmak için "
 "bunları yukarıdaki \"İzin Verilen Alan Adları\" bölümüne ekleyin."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"Bu siteler eski klasörlerinde kalacak şekilde ayarlandı ve yeni bir klasöre de önerildi. Her birinin hangi "
+"klasörde yer alacağını seçin."
 
 msgid "They redeem it."
 msgstr "Alıcı bağlantıyı kullanır."
@@ -7366,6 +8025,12 @@ msgstr "Bu hafta"
 
 msgid "This Year"
 msgstr "Bu Yıl"
+
+msgid "This change couldn't be made."
+msgstr "Bu değişiklik yapılamadı."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "Bu değişiklik diğer seçimlerinizle uyuşmuyor."
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7390,12 +8055,39 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "Bu, başlığın tamamıyla eşleşir ve yalnızca bu haberle eşleşir. Bunun yerine başlığın bir bölümünü seçin."
 
+msgid "This proposal can't be changed right now."
+msgstr "Bu öneri şu anda değiştirilemiyor."
+
+msgid "This proposal can't be revised again."
+msgstr "Bu öneri artık yeniden düzenlenemez."
+
+msgid "This proposal couldn't be found."
+msgstr "Bu öneri bulunamadı."
+
+msgid "This proposal has already been applied."
+msgstr "Bu öneri zaten uygulandı."
+
+msgid "This proposal isn't ready to apply."
+msgstr "Bu öneri uygulanmaya hazır değil."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "Bu önerinin yerini daha yeni bir öneri aldı."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Okunmuş haberler listesi bir %(link_start)sPremium özelliktir%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "Bu işlem etiketi kaydedilmiş tüm haberlerden kaldırır. Haberler etiketsiz olarak kaydedilmeye devam eder."
+
+msgid "This reorganization can no longer be undone."
+msgstr "Bu yeniden düzenleme artık geri alınamaz."
+
+msgid "This reorganization didn't finish"
+msgstr "Bu yeniden düzenleme tamamlanmadı"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "Bu yeniden düzenleme uygulanmadı; bu nedenle geri alınacak bir şey yok."
 
 msgid "This site"
 msgstr "Bu site"
@@ -7451,6 +8143,9 @@ msgstr "Beğendiğiniz yazarları, etiketleri veya başlık anahtar kelimelerini
 
 msgid "Thursday"
 msgstr "Perşembe"
+
+msgid "Tidy"
+msgstr "Düzenle"
 
 msgid "Tier"
 msgstr "Paket"
@@ -7516,6 +8211,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "Bitiş"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "%(folder)s hedefine"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "Karar bekleyen %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7566,6 +8269,9 @@ msgid "Top Domains"
 msgstr "En Popüler Alan Adları"
 
 msgid "Top Level"
+msgstr "En üst düzey"
+
+msgid "Top level"
 msgstr "En üst düzey"
 
 msgid "Top stories"
@@ -7725,6 +8431,21 @@ msgstr "Kullanılamıyor"
 msgid "Uncategorized"
 msgstr "Kategorize edilmemiş"
 
+msgid "Undo"
+msgstr "Geri al"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "Geri al, klasörlerinizi işlem başlamadan önceki hâline getirir."
+
+msgid "Undo this reorganization"
+msgstr "Bu yeniden düzenlemeyi geri al"
+
+msgid "Undo this reorganization?"
+msgstr "Bu düzenleme geri alınsın mı?"
+
+msgid "Undoing..."
+msgstr "Geri alınıyor..."
+
 msgid "Unfavorited"
 msgstr "Favorilerden çıkarıldı"
 
@@ -7796,6 +8517,29 @@ msgstr "Bu haberi kaydedilenlerden kaldır"
 
 msgid "Unshared"
 msgstr "Paylaşım kaldırıldı"
+
+msgid "Unsubscribe"
+msgstr "Abonelikten çık"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "%(site)s aboneliğinden çık"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "%(count)s çalışmayan sitenin aboneliğinden çıkıldı"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"%(count)s çalışmayan site için abonelikten çıkma işlemi geri alınamaz. Geri alma klasörlerinizi eski hâline"
+" getirir ancak sizi yeniden abone yapmaz."
 
 msgid "Untitled"
 msgstr "Başlıksız"
@@ -8348,6 +9092,9 @@ msgstr "Fikirlerinizi değiştirebilirsiniz."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "Okurken haberlerin yanındaki %(like_icon)s%(dislike_icon)s düğmelerine tıklayabilirsiniz."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "Bu iletişim kutusunu kapatabilirsiniz. Geri döndüğünüzde öneri burada sizi bekliyor olacak."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Bunu site ve klasör bazında ayrı ayrı değiştirebilirsiniz."
 
@@ -8360,9 +9107,21 @@ msgstr ""
 "genel olarak uygulayabilirsiniz."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "%(date)s tarihine kadar bu işlemi geri alabilirsiniz."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "%(count)s siteyi takip ediyorsunuz. Premium hepsini daha iyi hale getirir."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "Ayda %(count)s öneri hakkınız var. Bir öneriyi uygulamak için Premium Archive gerekir."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "Ayda bir öneri alabilirsiniz. Bir öneriyi uygulamak için Premium Archive gerekir."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8407,6 +9166,11 @@ msgstr "Bir yoruma yanıt vermek için giriş yapmalısınız."
 msgid "You need to be logged in to share a story."
 msgstr "Bir haberi paylaşmak için giriş yapmalısınız."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "%(count)s çalışmayan sitenin aboneliğinden çıkacaksınız"
+
 msgid "You will be emailed within a minute or three."
 msgstr "Bir iki dakika içinde e-postayla bilgilendirileceksiniz."
 
@@ -8432,6 +9196,26 @@ msgstr "Başlamaya hazırsınız! NewsBlur'ı beğeneceğinizi umuyoruz."
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Size %(value_1)s süreyle %(value_2)s hediye edildi!"
+
+msgid "You've had this month's proposal."
+msgstr "Bu ayın önerisini zaten aldınız."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "Bu ayki öneri hakkınızı kullandınız. Bir sonraki öneri %(date)s tarihinde kullanılabilir."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "Son bir günde %(count)s öneri oluşturdunuz."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "Son 24 saat içinde %(count)s öneri oluşturdunuz. Bir sonraki öneri %(date)s tarihinde kullanılabilir."
+
+msgid "You've reached today's limit on proposals."
+msgstr "Bugünkü öneri sınırına ulaştınız."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8487,14 +9271,34 @@ msgstr "Seçtiğiniz ses şu anda kullanılamıyor; bu nedenle bu haberi %(voice
 msgid "Your cookie has expired — Please login again"
 msgstr "Çerezinizin süresi doldu — Lütfen yeniden giriş yapın"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "Önce mevcut klasörleriniz kaydedilir; böylece bu işlem %(count)s gün boyunca geri alınabilir."
+
+msgid "Your decisions"
+msgstr "Kararlarınız"
+
 msgid "Your email"
 msgstr "E-posta adresiniz"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "Filtreleriniz bazı siteleri gizliyor olabilir — kapsamı genişletmek için Seçenekler'i açın."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "Klasörleriniz, yeniden düzenleme öncesindeki hâline döndü."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "Klasörleriniz bu düzenlemeden önceki hâline dönecek."
+
 msgid "Your inbox stays clean"
 msgstr "Gelen kutunuz düzenli kalsın"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "Son seçiminiz kaydedilemedi; burada kayıtlı seçimleriniz gösteriliyor. Lütfen yeniden deneyin."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "Kilitli klasörleriniz kaydedilemedi. Lütfen yeniden deneyin."
 
 msgid "Your name"
 msgstr "Adınız"
@@ -8517,8 +9321,17 @@ msgstr "Aboneliğinizin ücreti orantılı olarak hesaplanacaktır"
 msgid "Your subscription will no longer automatically renew."
 msgstr "Aboneliğiniz artık otomatik olarak yenilenmeyecek."
 
+msgid "a folder"
+msgstr "bir klasör"
+
+msgid "a site you no longer follow"
+msgstr "Artık takip etmediğiniz bir site"
+
 msgid "and auto-follow them"
 msgstr "ve otomatik olarak takip edin"
+
+msgid "approved"
+msgstr "onaylandı"
 
 msgid "artificial intelligence"
 msgstr "yapay zekâ"
@@ -8701,6 +9514,9 @@ msgstr "kuantum bilişim"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "reddedildi"
+
 msgid "remote work"
 msgstr "uzaktan çalışma"
 
@@ -8746,6 +9562,9 @@ msgstr "tedarik zinciri"
 msgid "this list"
 msgstr "bu liste"
 
+msgid "to decide"
+msgstr "karar bekliyor"
+
 msgid "trade policy"
 msgstr "ticaret politikası"
 
@@ -8769,6 +9588,14 @@ msgstr "eski bilgisayar teknolojileri"
 
 msgid "web standards"
 msgstr "web standartları"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s”, “%(new)s” olur"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"
