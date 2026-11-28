@@ -1,14 +1,9 @@
 from django.db import migrations
 
-from apps.oauth.reader_grants import WINBLUR_OWNER, grant_reader_accounts
-
-
-def grant_winblur_owner(apps, schema_editor):
-    grant_reader_accounts(
-        apps, schema_editor.connection.alias, apply=True, report=print, owners=[WINBLUR_OWNER]
-    )
+# In production this granted lifetime Premium Pro to the owner of the Winblur OAuth application. That grant
+# ended when oauth.0004_applicationexemption exempted the application instead, so it does nothing now.
 
 
 class Migration(migrations.Migration):
     dependencies = [("oauth", "0002_grant_reader_owners")]
-    operations = [migrations.RunPython(grant_winblur_owner, migrations.RunPython.noop)]
+    operations = []

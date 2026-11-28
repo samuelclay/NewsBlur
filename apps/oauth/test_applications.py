@@ -266,36 +266,25 @@ class Test_ApplicationRegistration(TestCase):
 
 
 class Test_ApplicationExemptions(TestCase):
-    def test_backfill_exempts_pre_launch_and_reader_partner_applications_once(self):
+    def test_backfill_exempts_pre_launch_applications_once(self):
         from django.apps import apps
 
         from apps.oauth.access import exempt_existing_applications
 
         owner = User.objects.create_user("legacy-publisher")
-        partner = User.objects.create_user("partner-publisher")
-        namesake = User.objects.create_user("namesake-publisher")
         old = Application.objects.create(name="Old reader", user=owner)
         new = Application.objects.create(name="New reader", user=owner)
-        partner_app = Application.objects.create(name="Partner reader", user=partner)
-        namesake_app = Application.objects.create(name="Namesake reader", user=namesake)
         first_party, _ = Application.objects.get_or_create(client_id="newsblur-cli")
         Application.objects.filter(pk__in=[old.pk, first_party.pk]).update(
             created=SELF_SERVICE_LAUNCH - timedelta(microseconds=1)
         )
-        Application.objects.filter(pk__in=[new.pk, partner_app.pk, namesake_app.pk]).update(
-            created=SELF_SERVICE_LAUNCH
-        )
-        # A listed account only counts when its username matches too, as in apps/oauth/reader_grants.py.
-        owners = [
-            (partner.pk, partner.username, partner_app.pk),
-            (namesake.pk, "someone-else", namesake_app.pk),
-        ]
+        Application.objects.filter(pk=new.pk).update(created=SELF_SERVICE_LAUNCH)
         for _ in range(2):
-            exempt_existing_applications(apps, "default", owners=owners)
-        exempted = ApplicationExemption.objects.filter(
-            application__in=[old, new, partner_app, namesake_app, first_party]
-        ).values_list("application_id", flat=True)
-        self.assertEqual(sorted(exempted), sorted([old.pk, partner_app.pk]))
+            exempt_existing_applications(apps, "default")
+        exempted = ApplicationExemption.objects.filter(application__in=[old, new, first_party]).values_list(
+            "application_id", flat=True
+        )
+        self.assertEqual(list(exempted), [old.pk])
 
     def test_deleting_an_exempt_application_outside_the_orm_removes_its_exemption(self):
         from django.db import connection
@@ -325,45 +314,3 @@ class Test_ApplicationExemptions(TestCase):
         self.assertEqual(len(staff.get(url).context["cl"].result_list), 2)
         for query in [owner.username, app.name]:
             self.assertEqual(list(staff.get(url, {"q": query}).context["cl"].result_list), [exemption])
-
-
-class Test_ReaderGrants(TestCase):
-    def test_only_reviewed_owner_receives_a_nonexpiring_grant_and_billing_is_reported(self):
-        from io import StringIO
-        from unittest.mock import patch
-
-        from django.core.management import call_command
-
-        owner = User.objects.create_user("reader-publisher")
-        unrelated = User.objects.create_user("different-publisher")
-        app = Application.objects.create(name="Unread", user=owner)
-        Application.objects.create(name="Unread", user=unrelated)
-        Profile.objects.filter(user=owner).update(
-            premium_expire=timezone.now(), premium_renewal=True, active_provider="stripe"
-        )
-        with patch("apps.oauth.reader_grants.READER_OWNERS", [(owner.pk, owner.username, app.pk)]):
-            preview = StringIO()
-            call_command("grant_oauth_reader_pro", stdout=preview)
-            self.assertIn("review recurring billing: stripe", preview.getvalue())
-            owner.profile.refresh_from_db()
-            self.assertFalse(owner.profile.is_pro)
-            for _ in range(2):
-                call_command("grant_oauth_reader_pro", apply=True, stdout=StringIO())
-        owner.profile.refresh_from_db()
-        owner.profile.extend_premium_by_days(30)
-        owner.profile.deactivate_premium()
-        owner.profile.refresh_from_db()
-        self.assertTrue(owner.profile.is_pro and owner.profile.is_archive and owner.profile.is_premium)
-        self.assertTrue(owner.profile.premium_renewal)
-        self.assertIsNone(owner.profile.premium_expire)
-        self.assertEqual(
-            owner.payments.filter(payment_amount=0, payment_provider="oauth-reader-grant").count(), 1
-        )
-        self.assertFalse(unrelated.profile.is_pro)
-
-        owner.payments.create(
-            payment_provider="android-subscription", payment_amount=36, payment_date=timezone.now()
-        )
-        owner.profile.setup_premium_history(force_expiration=True)
-        owner.profile.refresh_from_db()
-        self.assertIsNone(owner.profile.premium_expire)

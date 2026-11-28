@@ -2,9 +2,6 @@ from datetime import datetime, timezone
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
-
-from apps.oauth.reader_grants import READER_OWNERS
 
 # Production applied oauth.0002_grant_reader_owners when self-service registration launched. Applications
 # registered before then worked without Premium Pro, and oauth.0004_applicationexemption gave each of them an
@@ -39,14 +36,11 @@ def application_is_active(application):
     return owner_has_active_pro(application)
 
 
-def exempt_existing_applications(apps, database, owners=READER_OWNERS):
-    """Exempt every owned application registered before self-service launched, and every application owned by
-    an approved reader partner in apps/oauth/reader_grants.py. Run by oauth.0004_applicationexemption."""
+def exempt_existing_applications(apps, database):
+    """Exempt every owned application registered before self-service launched. Run by
+    oauth.0004_applicationexemption."""
     applications = apps.get_model("oauth2_provider", "Application").objects.using(database)
     exemptions = apps.get_model("oauth", "ApplicationExemption").objects.using(database)
-    exempt = Q(created__lt=SELF_SERVICE_LAUNCH)
-    for user_id, username, _ in owners:
-        # Match the username too, as grant_reader_accounts does: other databases reuse these user IDs.
-        exempt |= Q(user_id=user_id, user__username=username)
-    for application_id in applications.filter(exempt, user__isnull=False).values_list("pk", flat=True):
+    pre_launch = applications.filter(created__lt=SELF_SERVICE_LAUNCH, user__isnull=False)
+    for application_id in pre_launch.values_list("pk", flat=True):
         exemptions.get_or_create(application_id=application_id)
