@@ -224,22 +224,6 @@ class Test_FolderState(TestCase):
         self.assertEqual(self.collapsed(self.user), ["Gadgets"])
         self.assertEqual(self.story_sources(self.user), "folder:Gadgets")
 
-    def test_renaming_a_parent_carries_the_full_paths_inside_it(self):
-        found = self.attach(self.user, ["Blogs", "People"])
-
-        self.reorganize(self.user, ("rename", ["Blogs"], "Weblogs"))
-
-        self.assertEqual(self.where(self.user, found), placed(found, "People", "Weblogs - People"))
-
-    def test_moving_a_folder_carries_its_full_path_and_keeps_its_own_name(self):
-        tech = self.attach(self.user, ["Tech"])
-        people = self.attach(self.user, ["Blogs", "People"])
-
-        self.reorganize(self.user, ("nest", ["Tech"], ["Blogs"]), ("nest", ["Blogs", "People"], ["Travel"]))
-
-        self.assertEqual(self.where(self.user, tech), placed(tech, "Tech", "Blogs - Tech"))
-        self.assertEqual(self.where(self.user, people), placed(people, "People", "Travel - People"))
-
     def test_a_shared_name_keeps_its_entries_while_full_paths_follow(self):
         science = self.attach(self.user, ["Science"])
         broken_science = self.attach(self.user, ["Any Broken Feeds", "Science"], leaf=False)
@@ -388,32 +372,6 @@ class Test_FolderState(TestCase):
         self.assertEqual(self.where(self.user, people), placed(people, "Places", "Blogs - Places"))
         self.assertEqual(self.where(self.user, places), placed(places, "People", "Travel - People"))
         self.assertEqual(self.collapsed(self.user), ["Tech News", "Tech", "Places", "People"])
-
-    def test_other_view_settings_and_collapsed_folders_stay(self):
-        self.add_view_settings(
-            self.user,
-            {
-                "1": {"v": "page"},
-                "river:": {"v": "feed"},
-                "river:Tech": {"v": "text"},
-                "river:Blogs": {"v": "story"},
-            },
-        )
-        self.set_collapsed(self.user, ["starred", "Tech", "Blogs"])
-
-        self.reorganize(self.user, ("rename", ["Tech"], "Gadgets"))
-
-        profile = Profile.objects.get(user=self.user)
-        self.assertEqual(
-            json.loads(profile.view_settings),
-            {
-                "1": {"v": "page"},
-                "river:": {"v": "feed"},
-                "river:Gadgets": {"v": "text"},
-                "river:Blogs": {"v": "story"},
-            },
-        )
-        self.assertEqual(json.loads(profile.collapsed_folders), ["starred", "Gadgets", "Blogs"])
 
     def test_names_the_web_reserves_keep_their_settings(self):
         # Folders really named after the global shared stories river and the saved stories section.

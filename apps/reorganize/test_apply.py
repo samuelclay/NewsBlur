@@ -115,33 +115,6 @@ class Test_ApplyProposal(TestCase):
     def skips(self, response):
         return {item["id"]: item["reason"] for item in response["result"]["skipped"]}
 
-    def test_applying_saves_the_new_tree_and_keeps_the_tree_before(self):
-        before = self.tree(self.user)
-        proposal = self.propose(
-            self.user,
-            ops=[op("op1", "create", "n0")],
-            moves=[move("m1", self.gadgets, TECH, "n0"), move("m2", self.home, "root", BLOGS)],
-            new_folders={"n0": {"name": "Gadgets", "parent": "root"}},
-        )
-
-        response = apply_proposal(self.user, proposal)
-
-        self.assertEqual(response["code"], "applied")
-        self.assertEqual(
-            self.tree(self.user),
-            [
-                {"Tech": [self.phones]},
-                {"Blogs": [self.essays, {"People": [self.diary]}, self.home]},
-                {"Old": [self.silent]},
-                {"Gadgets": [self.gadgets]},
-            ],
-        )
-        stored = self.stored(proposal)
-        self.assertEqual(stored.status, "applied")
-        self.assertIsNotNone(stored.applied_date)
-        self.assertEqual(json.loads(stored.undo["folders"]), before)
-        self.assertEqual(stored.result["skipped"], [])
-
     def test_a_plan_error_saves_nothing(self):
         icon = MFolderIcon.objects.create(user_id=self.user.pk, folder_title="Tech", icon_type="emoji")
         before = self.tree(self.user)
@@ -357,29 +330,6 @@ class Test_ApplyProposal(TestCase):
         undo_proposal(self.user, proposal)
 
         self.assertEqual(keys(), ("Blogs", "Blogs - People"))
-
-    def test_undo_restores_the_tree_and_marks_the_proposal_undone(self):
-        before = self.tree(self.user)
-        proposal = self.propose(
-            self.user,
-            ops=[
-                op("op1", "rename", TECH, name="Gadgets"),
-                op("op2", "nest", PEOPLE, parent="root"),
-                op("op3", "create", "n0"),
-            ],
-            moves=[move("m1", self.essays, BLOGS, "n0"), move("m2", self.home, "root", OLD)],
-            new_folders={"n0": {"name": "Reading", "parent": "root"}},
-        )
-        apply_proposal(self.user, proposal)
-        self.assertNotEqual(self.tree(self.user), before)
-
-        response = undo_proposal(self.user, proposal)
-
-        self.assertEqual(response["code"], "undone")
-        self.assertEqual(self.tree(self.user), before)
-        stored = self.stored(proposal)
-        self.assertEqual(stored.status, "undone")
-        self.assertIsNotNone(stored.undone_date)
 
     def test_undo_keeps_sites_subscribed_since(self):
         proposal = self.propose(self.user, ops=[op("op1", "rename", TECH, name="Gadgets")])

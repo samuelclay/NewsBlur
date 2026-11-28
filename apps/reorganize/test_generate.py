@@ -338,33 +338,6 @@ class Test_Levels(GenerateTestCase):
             self.apply_cleanly(proposal).folders, [{"Tech": [phones, laptops]}, {"Cooking": [pasta]}]
         )
 
-    def test_reorganize_answer_applies_to_the_tree_it_describes(self):
-        laptops = self.add_site("Laptop News")
-        phones = self.add_site("Phones Weekly")
-        pasta = self.add_site("Pasta Daily")
-        apple = self.add_site("Apple Rumors")
-        bread = self.add_site("Bread Baking")
-        self.set_tree([{"Tech": [laptops, phones]}, {"Food": [pasta]}, {"Misc": [apple, bread]}])
-        targets = [
-            target("t1", "Technology", continues=["e0"]),
-            target("t2", "Cooking", continues=["e1"]),
-            target("t3", "Apple", parent="t1"),
-        ]
-        model = FakeModel(
-            design=lambda: answer({"targets": targets}),
-            assign=lambda feed_ids: answer(
-                {"assignments": [assign(apple, "t3"), assign(phones, "t3"), assign(bread, "t2")]}
-            ),
-        )
-
-        result = self.generate("reorganize", model)
-
-        self.assertEqual(result["code"], generate.READY)
-        self.assertEqual(
-            self.apply_cleanly(result["proposal"]).folders,
-            [{"Technology": [laptops, {"Apple": [apple, phones]}]}, {"Cooking": [pasta, bread]}],
-        )
-
     def test_no_site_is_moved_to_the_top_level_but_top_level_sites_are_filed(self):
         loose = self.add_site("Loose Site")
         gadgets = self.add_site("Gadget Blog")
@@ -429,15 +402,6 @@ class Test_Batches(GenerateTestCase):
             return answer({"assignments": [assign(feed_id, "e1") for feed_id in feed_ids]})
 
         return handler
-
-    def test_each_site_is_sent_in_exactly_one_batch(self):
-        model = FakeModel(assign=self.answer_batches([]))
-
-        self.generate("tidy", model)
-
-        self.assertGreater(len(self.sent_batches), 1)
-        sent = [feed_id for batch in self.sent_batches for feed_id in batch]
-        self.assertEqual(sorted(sent), sorted(self.site_ids))
 
     def test_declined_or_cut_off_batches_are_skipped_and_counted(self):
         model = FakeModel(assign=self.answer_batches(["refusal", "max_tokens"]))

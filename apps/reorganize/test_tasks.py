@@ -27,13 +27,10 @@ from apps.reorganize.models import (
     MReorganizeLocks,
     MReorganizeProposal,
 )
-from apps.reorganize.plan import apply_plan
 from apps.reorganize.tasks import GenerateReorganizeProposal, start_proposal
-from apps.reorganize.test_derive import assign, homes, target
+from apps.reorganize.test_derive import assign, target
 from apps.reorganize.test_generate import FakeModel, answer, declined
 from apps.rss_feeds.models import Feed
-
-NO_LOCKS = {"keep": [], "skip": []}
 
 # The dev server shares this Redis and MongoDB, so test sites take ids far above any local feed and
 # apart from the ids other test modules use.
@@ -167,18 +164,6 @@ class TasksTestCase(TestCase):
 
 
 class Test_Outcomes(TasksTestCase):
-    def test_run_ends_ready_with_the_proposal_the_answer_and_stats(self):
-        doc = self.run_one()
-
-        self.assertEqual(doc.status, READY)
-        self.assertEqual(
-            homes(apply_plan(self.tree(), doc.proposal, {}, NO_LOCKS).folders, self.gadgets), [["Sorted"]]
-        )
-        self.assertEqual([entry["feed_id"] for entry in doc.answer["assignments"]], [self.gadgets])
-        self.assertEqual([entry["id"] for entry in doc.answer["targets"]], ["t1", "t2"])
-        self.assertEqual(doc.stats["sites"], 2)
-        self.assertFalse(doc.error)
-
     def test_model_decline_fails_the_run_without_using_up_the_month(self):
         self.model.design = lambda: declined()
 

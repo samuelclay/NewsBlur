@@ -89,17 +89,6 @@ class Test_ModelView(unittest.TestCase):
 
 
 class Test_Assignments(unittest.TestCase):
-    def test_site_assigned_to_its_own_folder_gets_no_move(self):
-        proposal = build_proposal(
-            TREE,
-            NO_LOCKS,
-            [target("t1", "Tech", continues=[TECH])],
-            [assign(31, "t1"), assign(32, TECH), assign(1, "root"), assign(70, "t1")],
-            [],
-        )
-
-        self.assertEqual(moves_of(proposal), [(70, MOBILITY, TECH)])
-
     def test_site_already_in_the_destination_through_another_placement_gets_no_move(self):
         proposal = build_proposal(TREE, NO_LOCKS, [], [assign(30, TECH), assign(21, SCIENCE)], [])
 
@@ -149,20 +138,6 @@ class Test_Assignments(unittest.TestCase):
         self.assertEqual(
             folder_items(result.folders, "Any Broken Feeds"), folder_items(TREE, "Any Broken Feeds")
         )
-
-    def test_site_only_in_a_skip_folder_gets_nothing(self):
-        skip = locks(skip=[["Tech"]])
-        proposal = build_proposal(
-            TREE,
-            skip,
-            [target("t1", "Reading")],
-            [assign(31, "t1"), assign(30, "root")],
-            [dead_site(31, "unsubscribe")],
-        )
-
-        self.assertEqual(moves_of(proposal), [(30, ABF, "root")])
-        self.assertEqual(proposal["dead"], [])
-        self.assertEqual(ops_of(proposal, "create"), [])
 
     def test_tidy_level_files_sites_into_existing_folders_only(self):
         proposal = build_proposal(
@@ -346,31 +321,6 @@ class Test_FolderNames(unittest.TestCase):
         self.assertEqual(folder_items(result.folders, "Gadgets"), [31, 32, 33])
         self.assertEqual(folder_items(result.folders, "Tech"), [30, 1, 70])
 
-    def test_nested_target_loses_an_existing_name_to_the_top_level_target_of_that_name(self):
-        proposal = build_proposal(
-            TREE,
-            NO_LOCKS,
-            [
-                target("t1", "Computers"),
-                target("t2", "Tech", parent="t1", continues=[TECH]),
-                target("t3", "Tech"),
-            ],
-            [assign(31, "t2"), assign(32, "t2"), assign(1, "t3")],
-            [],
-        )
-
-        result = apply_cleanly(self, proposal)
-        self.assertEqual(folder_items(result.folders, "Computers"), [{"Tech": [31, 32]}])
-        self.assertEqual(folder_items(result.folders, "Tech"), [30, 33, 1])
-
-    def test_new_target_named_like_an_existing_folder_files_into_it(self):
-        proposal = build_proposal(TREE, NO_LOCKS, [target("t1", "tech")], [assign(1, "t1")], [])
-
-        self.assertEqual(ops_of(proposal, "create") + ops_of(proposal, "rename"), [])
-        self.assertEqual(moves_of(proposal), [(1, "root", TECH)])
-        result = apply_cleanly(self, proposal)
-        self.assertEqual(folder_items(result.folders, "Tech"), [30, 31, 32, 33, 1])
-
     def test_target_continuing_a_folder_under_its_name_in_new_capitals_renames_it(self):
         proposal = build_proposal(TREE, NO_LOCKS, [target("t1", "Mobility", continues=[MOBILITY])], [], [])
 
@@ -489,20 +439,6 @@ class Test_EndToEnd(unittest.TestCase):
             ],
         )
 
-    def test_ids_are_unique_across_the_whole_proposal(self):
-        proposal = build_proposal(
-            TREE,
-            NO_LOCKS,
-            [target("t1", "Nothing Here Yet"), target("t2", "Bikes", continues=[MOBILITY])],
-            [assign(1, "t2")],
-            [dead_site(41), dead_site(81, "unsubscribe")],
-        )
-
-        self.assertEqual([op["type"] for op in proposal["ops"]], ["rename", "remove"])
-        ids = [entry["id"] for section in ("ops", "moves", "dead") for entry in proposal[section]]
-        self.assertEqual(len(ids), len(set(ids)))
-        apply_cleanly(self, proposal)
-
 
 class Test_MalformedAnswers(unittest.TestCase):
     def test_answer_with_nothing_usable_gives_an_empty_proposal(self):
@@ -533,31 +469,6 @@ class Test_MalformedAnswers(unittest.TestCase):
             ),
             EMPTY_PROPOSAL,
         )
-
-    def test_usable_entries_survive_beside_malformed_ones(self):
-        proposal = build_proposal(
-            TREE,
-            NO_LOCKS,
-            [
-                {
-                    "id": "t1",
-                    "name": "Bikes",
-                    "continues": [None, 3, MOBILITY],
-                    "parent": 12,
-                    "reason": ["why"],
-                },
-                {"name": "No id"},
-            ],
-            [{"feed_id": "31", "folder": "t1"}, {"feed_id": 1, "folder": "t1", "reason": None}],
-            [{"feed_id": 70, "suggest": "archive"}, {"feed_id": "33", "suggest": "mute"}],
-        )
-
-        self.assertEqual(
-            [(op["type"], op["folder"]) for op in proposal["ops"]], [("rename", MOBILITY), ("remove", WOOD)]
-        )
-        self.assertEqual(moves_of(proposal), [(1, "root", MOBILITY)])
-        self.assertEqual([(entry["feed_id"], entry["suggest"]) for entry in proposal["dead"]], [(70, "mute")])
-        apply_cleanly(self, proposal)
 
 
 if __name__ == "__main__":

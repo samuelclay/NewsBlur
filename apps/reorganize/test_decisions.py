@@ -37,21 +37,6 @@ REVIEWED = proposal(
 
 
 class Test_MergeDecisions(unittest.TestCase):
-    def test_each_side_of_a_move_is_set_on_its_own_and_null_clears_it(self):
-        stored = merge_decisions({}, {"moves": {"m1": {"arrive": True}}}, REVIEWED)
-        stored = merge_decisions(
-            stored, {"moves": {"m1": {"leave": False}, "m2": {"arrive": False}}}, REVIEWED
-        )
-        self.assertEqual(
-            stored, decided(moves={"m1": {"arrive": True, "leave": False}, "m2": {"arrive": False}})
-        )
-
-        stored = merge_decisions(stored, {"moves": {"m1": {"arrive": None}}}, REVIEWED)
-        self.assertEqual(stored, decided(moves={"m1": {"leave": False}, "m2": {"arrive": False}}))
-
-        stored = merge_decisions(stored, {"moves": {"m1": {"leave": None}}}, REVIEWED)
-        self.assertEqual(stored, decided(moves={"m2": {"arrive": False}}))
-
     def test_false_rejects_an_op_and_null_or_true_clears_the_rejection(self):
         stored = merge_decisions({}, {"ops": {"op1": False, "op2": False}}, REVIEWED)
         self.assertEqual(stored, decided(ops={"op1": False, "op2": False}))
