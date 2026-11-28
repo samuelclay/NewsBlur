@@ -1992,16 +1992,24 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
 
+    // An apply or undo rewrites every folder at once and can take a while on a large account. It is
+    // never sent twice: a second apply would be refused, so a lost answer is found out from status.
     reorganize_apply: function (proposal_id, callback, error_callback) {
         this.make_request('/reorganize/apply', {
             'proposal_id': proposal_id
-        }, callback, error_callback);
+        }, callback, error_callback, {
+            timeout: 60000,
+            retry: false
+        });
     },
 
     reorganize_undo: function (proposal_id, callback, error_callback) {
         this.make_request('/reorganize/undo', {
             'proposal_id': proposal_id
-        }, callback, error_callback);
+        }, callback, error_callback, {
+            timeout: 60000,
+            retry: false
+        });
     },
 
     preference: function (preference, value, callback) {

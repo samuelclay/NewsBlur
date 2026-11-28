@@ -200,6 +200,15 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         $(".NB-folders", this.$modal).replaceWith(NEWSBLUR.utils.make_folders());
     },
 
+    // reader_organizer_ai.js calls this once an apply or undo has loaded the folders again, so this
+    // tab lists them as they are now, as move_feeds does after a move.
+    refresh_feeds: function () {
+        this.reset_feeds();
+        $(".NB-feedlist", this.$modal).replaceWith(this.make_feeds());
+        this.change_selection();
+        this.replace_folders();
+    },
+
     // =============
     // = Selecting =
     // =============

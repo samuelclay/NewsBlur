@@ -6,7 +6,7 @@
 // while a run works in case the socket is down.
 //
 // The tab shows one screen at a time, picked from the current proposal's status by current_screen():
-// setup, progress, review or applied. Each screen is built by its own make_*_screen method.
+// setup, progress, review, confirm or applied. Each screen is built by its own make_*_screen method.
 
 NEWSBLUR.ReaderOrganizerAI = function (organizer) {
     this.organizer = organizer;
@@ -39,10 +39,21 @@ NEWSBLUR.ReaderOrganizerAI = function (organizer) {
     this.revise_error = null;
     this.revising = false;
 
+    // Applying and undoing: the confirm screen, the requests in flight, and the applied screen's state.
+    this.confirming = false;
+    this.confirm_plan = null;
+    this.applying = false;
+    this.undoing = false;
+    this.asking_undo = false;
+    this.showing_skipped = false;
+    this.review_scroll = 0;
+
     this.$steps = this.make_steps();
+    this.$notice = $.make('div', { className: 'NB-organizer-ai-notice NB-hidden' });
     this.$screen = $.make('div', { className: 'NB-organizer-ai-screen' });
     this.$tab = $.make('div', { className: 'NB-tab NB-tab-ai NB-organizer-ai' }, [
         this.$steps,
+        this.$notice,
         this.$screen
     ]);
 
@@ -57,6 +68,9 @@ _.extend(NEWSBLUR.ReaderOrganizerAI, {
     POLL_INTERVAL: 4000,
 
     INSTRUCTIONS_LIMIT: 4000,
+
+    // UNDO_DAYS in apps/reorganize/apply.py: how long an applied proposal can be undone.
+    UNDO_DAYS: 30,
 
     OUTCOME_CLASSES: 'NB-organizer-ai-row-move NB-organizer-ai-row-both NB-organizer-ai-row-ask NB-organizer-ai-row-stay'
 
@@ -878,6 +892,9 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         }
         if (changed) {
             this.revisiting_setup = false;
+            this.confirming = false;
+            this.asking_undo = false;
+            this.showing_skipped = false;
             if (proposal && proposal.status == 'failed') this.prefill_form(proposal);
             // A revision that fails leaves the proposal it revised as the current one, so its error
             // belongs beside the revise box.
@@ -902,8 +919,8 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
     current_screen: function () {
         var status = this.proposal && this.proposal.status;
         if (status == 'working') return 'progress';
-        if (status == 'ready' && !this.revisiting_setup) return 'review';
-        if (status == 'applying' || status == 'applied') return 'applied';
+        if (status == 'ready' && !this.revisiting_setup) return this.confirming ? 'confirm' : 'review';
+        if ((status == 'applying' || status == 'applied') && !this.revisiting_setup) return 'applied';
         return 'setup';
     },
 
@@ -924,6 +941,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             'setup': this.make_setup_screen,
             'progress': this.make_progress_screen,
             'review': this.make_review_screen,
+            'confirm': this.make_confirm_screen,
             'applied': this.make_applied_screen
         };
         this.screen = screen;
@@ -1025,7 +1043,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
     },
 
     update_steps: function () {
-        var current = { 'setup': 'setup', 'progress': 'setup', 'review': 'review', 'applied': 'apply' }[this.screen];
+        var current = { 'setup': 'setup', 'progress': 'setup', 'review': 'review', 'confirm': 'apply', 'applied': 'apply' }[this.screen];
         $('.NB-organizer-ai-step', this.$steps).each(_.bind(function (i, button) {
             var step = $(button).data('step');
             var is_current = step == current;
@@ -1035,18 +1053,31 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         }, this));
     },
 
-    // A ready proposal can be set aside to start again, and returned to from setup.
+    // A ready proposal can be set aside to start again, and returned to from setup. So can an applied
+    // one, from its applied screen. Nothing moves while an apply or undo is answering.
     can_visit_step: function (step) {
-        var is_ready = this.proposal && this.proposal.status == 'ready';
-        if (step == 'setup') return is_ready && this.screen == 'review';
-        if (step == 'review') return is_ready && this.screen == 'setup';
+        var status = this.proposal && this.proposal.status;
+        var is_ready = status == 'ready';
+        var is_applied = status == 'applied';
+        if (this.applying || this.undoing) return false;
+        if (step == 'setup') {
+            return (is_ready && (this.screen == 'review' || this.screen == 'confirm')) ||
+                (is_applied && this.screen == 'applied');
+        }
+        if (step == 'review') return is_ready && (this.screen == 'setup' || this.screen == 'confirm');
+        if (step == 'apply') return is_applied && this.screen == 'setup';
         return false;
     },
 
     visit_step: function (step) {
         if (!this.can_visit_step(step)) return;
+        var from_confirm = this.screen == 'confirm';
         this.revisiting_setup = step == 'setup';
+        this.confirming = false;
+        this.asking_undo = false;
+        this.clear_notice();
         this.render();
+        if (from_confirm && step == 'review') this.restore_review_scroll();
     },
 
     // ================
@@ -1143,6 +1174,11 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         if (this.proposal && this.proposal.status == 'ready') {
             notes.push($.make('p', { className: 'NB-organizer-ai-note' }, gettext('Proposing again replaces the proposal you are reviewing.')));
         }
+        // The dialog shows only the latest proposal (MReorganizeProposal.current in
+        // apps/reorganize/models.py), so a new one takes the applied screen and its undo with it.
+        if (this.proposal && this.proposal.status == 'applied' && this.proposal.can_undo) {
+            notes.push($.make('p', { className: 'NB-organizer-ai-note' }, gettext('Once you propose again, your last reorganization can no longer be undone.')));
+        }
 
         this.$setup_notes.empty().append(notes);
         this.$propose.toggleClass('NB-disabled', !!refusal || this.proposing)
@@ -1196,6 +1232,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         if (this.proposing || this.propose_refusal(this.count_sites())) return;
         this.proposing = true;
         this.error_code = null;
+        this.clear_notice();
         this.update_setup_notes();
 
         this.model.reorganize_propose(this.form.level, this.form.find_dead, this.form.instructions, _.bind(function (data) {
@@ -2748,8 +2785,16 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         }
     },
 
-    // What the Apply button does, once every decision has been saved, given the plan on screen.
-    apply_changes: function (plan) {},
+    // What the Apply button does, once every decision has been saved, given the plan on screen: ask
+    // first, on the confirm screen.
+    apply_changes: function (plan) {
+        if (this.screen != 'review' || this.applying) return;
+        this.review_scroll = this.$review_list ? this.$review_list.scrollTop() : 0;
+        this.confirm_plan = plan;
+        this.confirming = true;
+        this.clear_notice();
+        this.render();
+    },
 
     // Pressing a side's pressed button clears that side's decision, so it goes back to the default.
     decide_side: function (move_id, side, value, anchor) {
@@ -3082,19 +3127,538 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
     },
 
     // ==================
+    // = Confirm screen =
+    // ==================
+
+    // Step 3 before anything changes: what applying the reviewed proposal does, counted as the
+    // review's tally counts it.
+    make_confirm_screen: function () {
+        var tally = this.confirm_tally(this.confirm_plan || this.review.plan);
+        var can_apply = !this.limits || this.limits.can_apply;
+        var undo_days = NEWSBLUR.ReaderOrganizerAI.UNDO_DAYS;
+        var lines = [
+            ['move', tally.moved, ngettext('%(count)s site moves to another folder', '%(count)s sites move to another folder', tally.moved)],
+            ['copy', tally.copied, ngettext('%(count)s site is added to a second folder', '%(count)s sites are added to a second folder', tally.copied)],
+            ['folder', tally.created, ngettext('%(count)s folder is added', '%(count)s folders are added', tally.created)],
+            ['folder', tally.renamed, ngettext('%(count)s folder is renamed', '%(count)s folders are renamed', tally.renamed)],
+            ['folder', tally.nested, ngettext('%(count)s folder moves inside another', '%(count)s folders move inside others', tally.nested)],
+            ['folder', tally.merged, ngettext('%(count)s folder is merged into another', '%(count)s folders are merged into others', tally.merged)],
+            ['folder', tally.removed, ngettext('%(count)s empty folder is removed', '%(count)s empty folders are removed', tally.removed)],
+            ['mute', tally.muted, ngettext('%(count)s dead site is muted', '%(count)s dead sites are muted', tally.muted)],
+            ['unsubscribe', tally.unsubscribed, ngettext('You unsubscribe from %(count)s dead site', 'You unsubscribe from %(count)s dead sites', tally.unsubscribed)]
+        ];
+
+        this.$confirm_back = $.make('button', {
+            type: 'button',
+            className: 'NB-modal-submit-button NB-modal-submit-grey',
+            'data-ai-action': 'back-to-review'
+        }, gettext('Back to review'));
+        this.$confirm_apply = can_apply ? $.make('button', {
+            type: 'button',
+            className: 'NB-modal-submit-button NB-modal-submit-green',
+            'data-ai-action': 'apply'
+        }) : null;
+
+        var $screen = $.make('div', { className: 'NB-organizer-ai-center NB-organizer-ai-confirm' }, [
+            $.make('h3', { className: 'NB-organizer-ai-center-title' }).text(interpolate(
+                ngettext('Apply %(count)s change?', 'Apply %(count)s changes?', tally.approved),
+                { count: Inflector.commas(tally.approved) }, true)),
+            tally.open && $.make('p', { className: 'NB-organizer-ai-center-text NB-organizer-ai-center-text-first' }).text(interpolate(ngettext(
+                '%(count)s site still has no decision and stays as it is.',
+                '%(count)s sites still have no decision and stay as they are.',
+                tally.open), { count: Inflector.commas(tally.open) }, true)),
+            $.make('p', { className: 'NB-organizer-ai-center-text' }).text(interpolate(ngettext(
+                'Your current folders are saved first, so this can be undone for %(count)s day.',
+                'Your current folders are saved first, so this can be undone for %(count)s days.',
+                undo_days), { count: Inflector.commas(undo_days) }, true)),
+            this.make_summary(lines, gettext('Nothing changes.')),
+            tally.unsubscribed && $.make('p', { className: 'NB-organizer-ai-warning' }).text(interpolate(ngettext(
+                "Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe you again.",
+                "Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe you again.",
+                tally.unsubscribed), { count: Inflector.commas(tally.unsubscribed) }, true)),
+            $.make('div', { className: 'NB-organizer-ai-buttons' }, [this.$confirm_back, this.$confirm_apply]),
+            !can_apply && NEWSBLUR.utils.make_archive_callout(gettext('Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade.'), {
+                on_upgrade: _.bind(this.open_upgrade, this)
+            })
+        ]);
+        this.fill_confirm_buttons();
+        return $screen;
+    },
+
+    // The review's tally, with the folder changes that happen counted by kind.
+    confirm_tally: function (plan) {
+        var tally = this.review_tally();
+        var kinds = { create: 0, rename: 0, nest: 0, merge: 0, remove: 0 };
+        _.each(this.review.ops, function (op) {
+            var state = plan.ops[op.id];
+            if (state && state.offered && state.approved && state.happens && _.has(kinds, op.entry.type)) {
+                kinds[op.entry.type] += 1;
+            }
+        });
+        return _.extend(tally, {
+            created: kinds.create,
+            renamed: kinds.rename,
+            nested: kinds.nest,
+            merged: kinds.merge,
+            removed: kinds.remove
+        });
+    },
+
+    fill_confirm_buttons: function () {
+        if (this.$confirm_apply) {
+            this.$confirm_apply.prop('disabled', this.applying).toggleClass('NB-disabled', this.applying)
+                .text(this.applying ? gettext('Applying...') : gettext('Apply changes'));
+        }
+        if (this.$confirm_back) {
+            this.$confirm_back.prop('disabled', this.applying).toggleClass('NB-disabled', this.applying);
+        }
+        this.update_steps();
+    },
+
+    // What an apply does or did, one sentence for each kind of change, leaving out the kinds with
+    // nothing in them. Each line is [kind, count, its message from ngettext].
+    make_summary: function (lines, nothing_text) {
+        var shown = _.filter(lines, function (line) { return line[1] > 0; });
+        if (!shown.length) return $.make('p', { className: 'NB-organizer-ai-center-text' }, nothing_text);
+        return $.make('ul', { className: 'NB-organizer-ai-summary' }, _.map(shown, function (line) {
+            var $count = $.make('b', { className: 'NB-organizer-ai-summary-count' }).text(Inflector.commas(line[1]));
+            return $.make('li', { className: 'NB-organizer-ai-summary-line NB-organizer-ai-summary-' + line[0] }, [
+                $.make('span', { className: 'NB-organizer-ai-summary-mark' }),
+                $.make('span', { className: 'NB-organizer-ai-summary-text' }, NEWSBLUR.utils.interpolate_nodes(line[2], { count: $count }))
+            ]);
+        }));
+    },
+
+    // ============
+    // = Applying =
+    // ============
+
+    apply_proposal: function () {
+        var proposal = this.proposal;
+        if (this.applying || !proposal || proposal.status != 'ready') return;
+        this.applying = true;
+        this.clear_notice();
+        this.fill_confirm_buttons();
+        this.set_loading(true);
+        this.start_folder_change();
+        this.model.reorganize_apply(proposal.id, _.bind(function (data) {
+            this.finish_folder_change(true, _.bind(function () {
+                this.applying = false;
+                this.set_loading(false);
+                this.update(data);
+            }, this));
+        }, this), _.bind(function (data) {
+            this.apply_failed(proposal.id, data);
+        }, this));
+    },
+
+    // A refusal changed nothing, except already_applied, where another client may have applied it.
+    // A request that failed may have applied some or all of it.
+    apply_failed: function (proposal_id, data) {
+        var reason = this.refusal_reason(data);
+        this.finish_folder_change(!reason || reason == 'already_applied', _.bind(function () {
+            this.applying = false;
+            this.set_loading(false);
+            if (this.closed) return;
+            if (data && data.limits) this.limits = data.limits;
+            if (reason == 'archive_required') {
+                this.render();
+                return;
+            }
+            this.show_server_state(proposal_id, reason == 'not_ready' ? 'apply_not_ready' : (reason || 'apply_failed'));
+        }, this));
+    },
+
+    // The reason in a refusal from apps/reorganize/views.py, or null for a request that failed.
+    refusal_reason: function (data) {
+        return data && data.code == -1 && data.reason ? data.reason : null;
+    },
+
+    // After a refusal or a failed request, shows the proposal as the server has it now, with `code`
+    // explained above it. A failed request that went through after all needs no explaining: the
+    // applied screen, or the restored line, says what happened.
+    show_server_state: function (proposal_id, code) {
+        this.set_loading(true);
+        this.model.reorganize_status(_.bind(function (data) {
+            this.set_loading(false);
+            if (this.closed) return;
+            var proposal = data.proposal;
+            var same = proposal && proposal.id == proposal_id;
+            if (same && code == 'apply_failed' && proposal.status != 'ready') code = null;
+            if (same && code == 'undo_failed' && proposal.status == 'undone') {
+                this.show_notice(gettext('Your folders are back to how they were before the reorganization.'), 'done');
+                code = null;
+            }
+            if (code) this.show_notice(this.error_message(code), 'error');
+            this.update(data);
+        }, this), _.bind(function () {
+            this.set_loading(false);
+            if (this.closed) return;
+            this.show_notice(this.error_message(code), 'error');
+            this.render();
+        }, this));
+    },
+
+    // ===============
+    // = Catching up =
+    // ===============
+
+    // After an apply or an undo, the rest of the app catches up the way a reload:feeds message from
+    // apps/reorganize/apply.py makes every open client catch up (handle_realtime_update in reader.js):
+    // the folders and subscriptions load again, which redraws the feed list and refreshes unread
+    // counts. That message reaches this client too, while the request is answering or the folders
+    // are loading, so NEWSBLUR.reader.flags.reloading_feeds, which makes reader.js skip it, is held
+    // from the request until they have loaded, and they load once.
+    start_folder_change: function () {
+        NEWSBLUR.reader.flags['reloading_feeds'] = true;
+    },
+
+    finish_folder_change: function (changed, callback) {
+        var finish = _.bind(function () {
+            NEWSBLUR.reader.flags['reloading_feeds'] = false;
+            if (changed && !this.closed) this.organizer.refresh_feeds();
+            callback();
+        }, this);
+        if (!changed) {
+            finish();
+            return;
+        }
+        this.model.load_feeds(finish, finish);
+    },
+
+    // ==================
     // = Applied screen =
     // ==================
 
+    // What the apply did, from the proposal's `result` (apply_proposal in apps/reorganize/apply.py),
+    // and the way back. A proposal left "applying" stopped partway and has no result.
     make_applied_screen: function () {
         var proposal = this.proposal;
-        var is_applied = proposal.status == 'applied';
-        return $.make('div', { className: 'NB-organizer-ai-center NB-organizer-ai-applied' }, [
-            $.make('h3', { className: 'NB-organizer-ai-center-title' }, is_applied
+        var finished = proposal.status == 'applied';
+        var date = proposal.applied_date && this.format_date(proposal.applied_date, true);
+        var $text;
+        if (finished) {
+            $text = date && $.make('p', { className: 'NB-organizer-ai-center-text' }).text(
+                interpolate(gettext('Applied on %(date)s.'), { date: date }, true));
+        } else {
+            $text = $.make('p', {
+                className: 'NB-organizer-ai-center-text' + (proposal.can_undo ? ' NB-organizer-ai-center-text-first' : '')
+            }).text(date
+                ? interpolate(gettext('Applying it on %(date)s stopped partway, so some of your folders may have changed.'), { date: date }, true)
+                : gettext('Applying it stopped partway, so some of your folders may have changed.'));
+        }
+        this.$skipped_list = null;
+        this.$applied_actions = $.make('div', { className: 'NB-organizer-ai-applied-actions' });
+        var $screen = $.make('div', { className: 'NB-organizer-ai-center NB-organizer-ai-applied' }, [
+            $.make('h3', { className: 'NB-organizer-ai-center-title' }, finished
                 ? gettext('Folders updated')
-                : gettext('Applying the changes...')),
-            is_applied && proposal.applied_date && $.make('p', { className: 'NB-organizer-ai-center-text' }).text(
-                interpolate(gettext('Applied on %(date)s.'), { date: this.format_date(proposal.applied_date, true) }, true))
+                : gettext("This reorganization didn't finish")),
+            $text,
+            !finished && proposal.can_undo && $.make('p', { className: 'NB-organizer-ai-center-text' },
+                gettext('Undo puts your folders back as they were before it started.')),
+            finished && this.make_summary(this.result_lines(proposal.result || {}), gettext('Nothing changed.')),
+            finished && this.make_skipped((proposal.result || {}).skipped),
+            this.$applied_actions
         ]);
+        this.fill_applied_actions();
+        return $screen;
+    },
+
+    result_lines: function (result) {
+        var count = function (name) { return _.isNumber(result[name]) ? result[name] : 0; };
+        return [
+            ['move', count('moved'), ngettext('%(count)s site moved to another folder', '%(count)s sites moved to another folder', count('moved'))],
+            ['copy', count('copied'), ngettext('%(count)s site added to a second folder', '%(count)s sites added to a second folder', count('copied'))],
+            ['folder', count('folders_created'), ngettext('%(count)s folder added', '%(count)s folders added', count('folders_created'))],
+            ['folder', count('folders_changed'), ngettext('%(count)s folder renamed or moved', '%(count)s folders renamed or moved', count('folders_changed'))],
+            ['folder', count('folders_merged'), ngettext('%(count)s folder merged into another', '%(count)s folders merged into others', count('folders_merged'))],
+            ['folder', count('folders_removed'), ngettext('%(count)s empty folder removed', '%(count)s empty folders removed', count('folders_removed'))],
+            ['mute', count('muted'), ngettext('%(count)s dead site muted', '%(count)s dead sites muted', count('muted'))],
+            ['unsubscribe', count('unsubscribed'), ngettext('Unsubscribed from %(count)s dead site', 'Unsubscribed from %(count)s dead sites', count('unsubscribed'))]
+        ];
+    },
+
+    // What the apply left out (`skipped` in apps/reorganize/plan.py), counted, with the list behind
+    // a toggle.
+    make_skipped: function (skipped) {
+        skipped = _.isArray(skipped) ? skipped : [];
+        if (!skipped.length) return null;
+        this.$skipped_toggle = $.make('button', {
+            type: 'button',
+            className: 'NB-organizer-ai-link',
+            'data-ai-action': 'toggle-skipped',
+            'aria-controls': 'NB-organizer-ai-skipped-list'
+        });
+        this.$skipped_list = $.make('ul', { className: 'NB-organizer-ai-skipped-list', id: 'NB-organizer-ai-skipped-list' },
+            _.map(skipped, _.bind(function (item) {
+                item = item || {};
+                return $.make('li', { className: 'NB-organizer-ai-skipped-item' }, [
+                    $.make('span', { className: 'NB-organizer-ai-skipped-what' }).text(this.skipped_title(item.id)),
+                    $.make('span', { className: 'NB-organizer-ai-skipped-why' }).text(this.skip_reason(item.reason))
+                ]);
+            }, this)));
+        var $skipped = $.make('div', { className: 'NB-organizer-ai-skipped' }, [
+            $.make('p', { className: 'NB-organizer-ai-skipped-head' }, [
+                $.make('span').text(interpolate(ngettext("%(count)s change couldn't be made.", "%(count)s changes couldn't be made.", skipped.length),
+                    { count: Inflector.commas(skipped.length) }, true)),
+                this.$skipped_toggle
+            ]),
+            this.$skipped_list
+        ]);
+        this.fill_skipped();
+        return $skipped;
+    },
+
+    fill_skipped: function () {
+        if (!this.$skipped_list) return;
+        this.$skipped_toggle.attr('aria-expanded', this.showing_skipped ? 'true' : 'false')
+            .text(this.showing_skipped ? gettext('Hide them') : gettext('Show them'));
+        this.$skipped_list.toggleClass('NB-hidden', !this.showing_skipped);
+    },
+
+    toggle_skipped: function () {
+        this.showing_skipped = !this.showing_skipped;
+        this.fill_skipped();
+        this.organizer.resize();
+    },
+
+    // A skipped item in words, found in the proposal by its id.
+    skipped_title: function (id) {
+        var proposal = this.proposal;
+        var data = proposal.proposal || {};
+        var find = function (section) {
+            return _.find(_.isArray(data[section]) ? data[section] : [], function (entry) {
+                return _.isObject(entry) && _.isString(id) && entry.id === id;
+            });
+        };
+        var folder = _.bind(function (key) { return this.proposal_folder_name(data, key); }, this);
+
+        var move = find('moves');
+        if (move) {
+            return interpolate(gettext('Move %(site)s to %(folder)s'),
+                { site: this.skipped_site_title(move.feed_id), folder: folder(move.to) }, true);
+        }
+        var op = find('ops');
+        if (op && op.type == 'create') return interpolate(gettext('Add the folder %(folder)s'), { folder: folder(op.folder) }, true);
+        if (op && op.type == 'rename') {
+            return interpolate(gettext('Rename “%(old)s” to “%(new)s”'),
+                { old: folder(op.folder), 'new': _.isString(op.name) ? op.name : '' }, true);
+        }
+        if (op && op.type == 'nest') {
+            return interpolate(gettext('Put %(folder)s inside %(parent)s'), { folder: folder(op.folder), parent: folder(op.parent) }, true);
+        }
+        if (op && op.type == 'merge') {
+            return interpolate(gettext('Merge %(folder)s into %(into)s'), { folder: folder(op.folder), into: folder(op.into) }, true);
+        }
+        if (op && op.type == 'remove') return interpolate(gettext('Remove the folder %(folder)s'), { folder: folder(op.folder) }, true);
+        var dead = find('dead');
+        if (dead) {
+            var action = ((proposal.decisions || {}).dead || {})[dead.id] || dead.suggest;
+            var site = this.skipped_site_title(dead.feed_id);
+            if (action == 'unsubscribe') return interpolate(gettext('Unsubscribe from %(site)s'), { site: site }, true);
+            if (action == 'mute') return interpolate(gettext('Mute %(site)s'), { site: site }, true);
+        }
+        return gettext('One of the proposed changes');
+    },
+
+    // A proposal's folder key in words: the top level, an existing folder by the name it had when
+    // the proposal was made, or a new folder by its proposed name.
+    proposal_folder_name: function (data, key) {
+        if (key == NEWSBLUR.ReaderOrganizerAI.Rules.ROOT_KEY) return gettext('Top level');
+        var folders = data.folders && _.isObject(data.folders) ? data.folders : {};
+        var entry = _.isString(key) && _.has(folders, key) ? folders[key] : null;
+        if (entry && _.isArray(entry.path) && entry.path.length) return String(_.last(entry.path));
+        if (entry && _.isString(entry.name)) return entry.name;
+        return gettext('a folder');
+    },
+
+    skipped_site_title: function (feed_id) {
+        var feed = this.model.get_feed(feed_id);
+        return feed ? this.site_title(feed) : gettext('a site you no longer follow');
+    },
+
+    // Why plan.py skipped an item, from its reason code.
+    skip_reason: function (reason) {
+        var reasons = {
+            'invalid': gettext("The proposal described it in a way that couldn't be applied."),
+            'folder_changed': gettext('A folder it needs was renamed, moved or deleted after the proposal was made.'),
+            'feed_not_in_folder': gettext('The site was no longer where the proposal expected it.'),
+            'locked': gettext('It involves a folder you locked.'),
+            'name_taken': gettext('Another folder there already has this name.'),
+            'would_cycle': gettext('It would have put a folder inside itself.'),
+            'not_empty': gettext('The folder still had sites or folders in it, so it stayed.'),
+            'folder_rejected': gettext('It needs a new folder you rejected.')
+        };
+        return reasons[reason] || gettext("This change couldn't be made.");
+    },
+
+    // The applied screen's buttons, or the question that comes before an undo.
+    fill_applied_actions: function () {
+        if (!this.$applied_actions || this.screen != 'applied') return;
+        var proposal = this.proposal;
+        this.update_steps();
+        this.$applied_actions.empty();
+        if (this.asking_undo && proposal.can_undo) {
+            this.$applied_actions.append(this.make_undo_question());
+            this.organizer.resize();
+            return;
+        }
+        var undo_until = proposal.can_undo && proposal.undo_until && this.format_date(proposal.undo_until, true);
+        var note = proposal.can_undo
+            ? undo_until && interpolate(gettext('You can undo this until %(date)s.'), { date: undo_until }, true)
+            : gettext('This reorganization can no longer be undone.');
+        this.$applied_actions.append(
+            $.make('div', { className: 'NB-organizer-ai-buttons' }, [
+                proposal.can_undo && $.make('button', {
+                    type: 'button',
+                    className: 'NB-modal-submit-button NB-modal-submit-grey NB-organizer-ai-undo-start',
+                    'data-ai-action': 'ask-undo'
+                }, gettext('Undo this reorganization')),
+                proposal.status == 'applied' && $.make('button', {
+                    type: 'button',
+                    className: 'NB-modal-submit-button NB-modal-submit-grey',
+                    'data-ai-action': 'reorganize-again'
+                }, gettext('Reorganize again')),
+                $.make('button', {
+                    type: 'button',
+                    className: 'NB-modal-submit-button NB-modal-submit-green',
+                    'data-ai-action': 'done'
+                }, gettext('Done'))
+            ]),
+            note && $.make('p', { className: 'NB-organizer-ai-note NB-organizer-ai-undo-note' }).text(note)
+        );
+        this.organizer.resize();
+    },
+
+    // ===========
+    // = Undoing =
+    // ===========
+
+    // What an undo does, as undo_proposal in apps/reorganize/apply.py does it. Without a result, as
+    // after an apply that stopped partway, every line that could apply is said.
+    make_undo_question: function () {
+        var result = this.proposal.result;
+        var lines = [
+            gettext('Your folders go back to how they were before this reorganization.'),
+            gettext("Sites you've subscribed to since then stay.")
+        ];
+        if (!result || result.muted) lines.push(gettext('Dead sites it muted are unmuted.'));
+        if (!result) {
+            lines.push(gettext('Sites it unsubscribed you from are not brought back.'));
+        } else if (result.unsubscribed) {
+            lines.push(interpolate(ngettext(
+                'The %(count)s dead site it unsubscribed you from is not brought back.',
+                'The %(count)s dead sites it unsubscribed you from are not brought back.',
+                result.unsubscribed), { count: Inflector.commas(result.unsubscribed) }, true));
+        }
+        var disabled = this.undoing ? 'disabled' : null;
+        return $.make('div', { className: 'NB-organizer-ai-question', role: 'group', 'aria-labelledby': 'NB-organizer-ai-undo-title' }, [
+            $.make('div', { className: 'NB-organizer-ai-question-title', id: 'NB-organizer-ai-undo-title' }, gettext('Undo this reorganization?')),
+            $.make('ul', { className: 'NB-organizer-ai-question-text' }, _.map(lines, function (line) {
+                return $.make('li').text(line);
+            })),
+            $.make('div', { className: 'NB-organizer-ai-buttons' }, [
+                $.make('button', {
+                    type: 'button',
+                    className: 'NB-modal-submit-button NB-modal-submit-grey NB-organizer-ai-undo-cancel' + (disabled ? ' NB-disabled' : ''),
+                    'data-ai-action': 'cancel-undo',
+                    disabled: disabled
+                }, gettext('Keep the new folders')),
+                $.make('button', {
+                    type: 'button',
+                    className: 'NB-modal-submit-button NB-modal-submit-red' + (disabled ? ' NB-disabled' : ''),
+                    'data-ai-action': 'undo',
+                    disabled: disabled
+                }, this.undoing ? gettext('Undoing...') : gettext('Undo'))
+            ])
+        ]);
+    },
+
+    ask_undo: function () {
+        if (!this.proposal.can_undo || this.undoing) return;
+        this.asking_undo = true;
+        this.clear_notice();
+        this.fill_applied_actions();
+        $('.NB-organizer-ai-undo-cancel', this.$applied_actions).focus();
+    },
+
+    cancel_undo: function () {
+        if (this.undoing) return;
+        this.asking_undo = false;
+        this.fill_applied_actions();
+        $('.NB-organizer-ai-undo-start', this.$applied_actions).focus();
+    },
+
+    undo_proposal: function () {
+        var proposal = this.proposal;
+        if (this.undoing || !proposal || !proposal.can_undo) return;
+        this.undoing = true;
+        this.clear_notice();
+        this.fill_applied_actions();
+        this.set_loading(true);
+        this.start_folder_change();
+        this.model.reorganize_undo(proposal.id, _.bind(function (data) {
+            this.finish_folder_change(true, _.bind(function () {
+                this.undoing = false;
+                this.set_loading(false);
+                if (this.closed) return;
+                this.show_notice(gettext('Your folders are back to how they were before the reorganization.'), 'done');
+                this.update(data);
+            }, this));
+        }, this), _.bind(function (data) {
+            // A refusal changed nothing, except not_applied, where another client may have undone it.
+            // A request that failed may have undone it.
+            var reason = this.refusal_reason(data);
+            this.finish_folder_change(!reason || reason == 'not_applied', _.bind(function () {
+                this.undoing = false;
+                this.asking_undo = false;
+                this.set_loading(false);
+                if (this.closed) return;
+                this.show_server_state(proposal.id, reason || 'undo_failed');
+            }, this));
+        }, this));
+    },
+
+    // ==========
+    // = Notice =
+    // ==========
+
+    // A line above the screen: why an apply or undo was refused or failed, or that the folders were
+    // restored. It stays through the screen change that follows and goes at the reader's next step.
+    show_notice: function (text, kind) {
+        this.$notice.text(text || '').toggleClass('NB-hidden', !text)
+            .toggleClass('NB-organizer-ai-error', kind == 'error')
+            .toggleClass('NB-organizer-ai-notice-done', kind == 'done')
+            .attr('role', kind == 'error' ? 'alert' : 'status');
+        this.organizer.resize();
+    },
+
+    clear_notice: function () {
+        this.show_notice(null);
+    },
+
+    restore_review_scroll: function () {
+        if (this.screen == 'review' && this.$review_list) this.$review_list.scrollTop(this.review_scroll);
+    },
+
+    handle_action: function (action) {
+        if (action == 'back-to-review') {
+            this.visit_step('review');
+        } else if (action == 'apply') {
+            this.apply_proposal();
+        } else if (action == 'toggle-skipped') {
+            this.toggle_skipped();
+        } else if (action == 'ask-undo') {
+            this.ask_undo();
+        } else if (action == 'cancel-undo') {
+            this.cancel_undo();
+        } else if (action == 'undo') {
+            this.undo_proposal();
+        } else if (action == 'reorganize-again') {
+            this.visit_step('setup');
+        } else if (action == 'done') {
+            this.organizer.close();
+        }
     },
 
     // ===========
@@ -3103,7 +3667,18 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
 
     // A sentence for a refusal or run error code from apps/reorganize/views.py, never the code itself.
     error_message: function (code) {
+        var undo_days = NEWSBLUR.ReaderOrganizerAI.UNDO_DAYS;
         var messages = {
+            'archive_required': gettext('Applying changes needs Premium Archive.'),
+            'apply_not_ready': gettext("This proposal isn't ready to apply."),
+            'apply_failed': gettext("The changes couldn't be applied. Please try again."),
+            'not_applied': gettext("This reorganization isn't applied, so there's nothing to undo."),
+            'expired': interpolate(ngettext(
+                "It's been more than %(count)s day, so this reorganization can no longer be undone.",
+                "It's been more than %(count)s days, so this reorganization can no longer be undone.",
+                undo_days), { count: Inflector.commas(undo_days) }, true),
+            'superseded': gettext('A later reorganization was applied, so this one can no longer be undone.'),
+            'undo_failed': gettext("The reorganization couldn't be undone. Please try again."),
             'no_api_key': gettext("The AI isn't available right now. Please try again later."),
             'nothing_to_organize': gettext('There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add folders.'),
             'model_declined': gettext("The AI couldn't finish a proposal for your sites. Please try again."),
@@ -3148,6 +3723,11 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         $.targetIs(e, { tagSelector: '[data-review]' }, _.bind(function ($t) {
             e.preventDefault();
             if (this.screen == 'review' && this.review) this.handle_review_action($t);
+        }, this));
+
+        $.targetIs(e, { tagSelector: '[data-ai-action]' }, _.bind(function ($t) {
+            e.preventDefault();
+            if (!$t.prop('disabled')) this.handle_action($t.attr('data-ai-action'));
         }, this));
 
         $.targetIs(e, { tagSelector: '.NB-organizer-ai-lock-option' }, _.bind(function ($t) {

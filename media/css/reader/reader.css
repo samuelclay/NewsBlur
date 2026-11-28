@@ -33953,6 +33953,201 @@ h5.NB-classifier-section-header {
     margin: 0;
 }
 
+/* Confirm and applied: what an apply does or did, the way back, and the line above the screen */
+
+.NB-modal-organizer .NB-organizer-ai-notice {
+    margin: 0 0 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-notice-done {
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: #E6F1DD;
+    color: #3F7426;
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-text-first {
+    margin-bottom: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 2px;
+    border-bottom: 1px solid;
+    border-bottom-color: #ECEEE7;
+    font-size: 13px;
+    line-height: 18px;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-line:first-child {
+    border-top: 1px solid;
+    border-top-color: #ECEEE7;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-mark {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #A0A0A0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-move .NB-organizer-ai-summary-mark {
+    background-color: #4F8A34;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-copy .NB-organizer-ai-summary-mark {
+    background-color: #7A55B8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-folder .NB-organizer-ai-summary-mark {
+    background-color: #C8820F;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-mute .NB-organizer-ai-summary-mark {
+    background-color: #909090;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-unsubscribe .NB-organizer-ai-summary-mark {
+    background-color: #B23A30;
+}
+
+.NB-modal-organizer .NB-organizer-ai-summary-count {
+    font-variant-numeric: tabular-nums;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-warning {
+    box-sizing: border-box;
+    max-width: 420px;
+    margin: -6px auto 18px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: start;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: #F7E3DF;
+    color: #7F080A;
+}
+
+.NB-modal-organizer .NB-organizer-ai-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-buttons .NB-modal-submit-button {
+    min-width: 140px;
+    margin: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-confirm .NB-archive-callout {
+    max-width: 420px;
+    margin: 12px auto 0;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped {
+    max-width: 420px;
+    margin: -8px auto 18px;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #8A5A06;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-list {
+    max-height: 220px;
+    margin: 6px 0 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid;
+    border-color: #ECEEE7;
+    background-color: #F7F8F5;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-item {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 8px;
+    border-bottom: 1px solid;
+    border-bottom-color: #ECEEE7;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-item:last-child {
+    border-bottom: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-what {
+    font-weight: bold;
+    overflow-wrap: anywhere;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-skipped-why {
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-undo-note {
+    margin-top: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-question {
+    box-sizing: border-box;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 12px 14px 14px;
+    border: 1px solid;
+    border-radius: 6px;
+    text-align: start;
+    border-color: #E8C7C1;
+    background-color: #FBF3F1;
+}
+
+.NB-modal-organizer .NB-organizer-ai-question-title {
+    margin: 0 0 6px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-question-text {
+    margin: 0 0 12px;
+    padding-inline-start: 18px;
+    font-size: 12px;
+    line-height: 17px;
+    color: #505050;
+}
+
+.NB-modal-organizer .NB-organizer-ai-question .NB-organizer-ai-buttons {
+    justify-content: flex-end;
+}
+
 /* ================= */
 /* = Feed Selector = */
 /* ================= */
