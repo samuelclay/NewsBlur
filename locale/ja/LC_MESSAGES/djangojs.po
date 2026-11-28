@@ -476,7 +476,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "今月は残り%(duration)s"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -530,15 +530,15 @@ msgstr "%(price)s · iPhone、iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/年"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "%(seconds)s秒のプレビュー"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "%(seconds)s秒のプレビュー"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -931,7 +931,7 @@ msgid "/year"
 msgstr "/年"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1時間"
 
 msgid "1 month"
 msgstr "1か月"
@@ -940,7 +940,7 @@ msgid "1 year"
 msgstr "1年"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10時間"
 
 msgid "12-hour"
 msgstr "12時間"
@@ -2145,7 +2145,7 @@ msgid "Couldn't load audio for this story."
 msgstr "この記事の音声を読み込めませんでした。"
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "読み上げを読み込めませんでした。"
 
 msgid "Counting is difficult"
 msgstr "数えるのは難しい"
@@ -2193,7 +2193,7 @@ msgid "Credit"
 msgstr "クレジット"
 
 msgid "Current plan"
-msgstr ""
+msgstr "現在のプラン"
 
 msgid "Current voice"
 msgstr "現在の音声"
@@ -3509,7 +3509,7 @@ msgstr "健康"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
+msgstr[0] "最初の%(count)s秒を読み上げます。プレミアムアーカイブでは記事全体を読み上げます。"
 
 msgid "Hearts"
 msgstr "ハート"
@@ -3880,7 +3880,7 @@ msgstr "最終アクティビティ"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "最後に手動でリセットした日時：%(date)s。"
 
 msgid "Last seen:"
 msgstr "最終確認："
@@ -3954,10 +3954,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "読み上げがタイムアウトしました。少し待ってからもう一度お試しください。"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "記事の読み上げを月1時間利用"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "記事の読み上げを月10時間聴く"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "読み上げ記事を週10時間聴取"
@@ -4244,7 +4244,7 @@ msgid "Monday"
 msgstr "月曜日"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "月間読み上げ時間"
 
 msgid "Monthly spending limit"
 msgstr "月間支出上限"
@@ -4419,7 +4419,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "有効期限はありません。おめでとうございます！"
 
 msgid "Never reset."
-msgstr ""
+msgstr "リセットされません。"
 
 msgid "New Arrivals"
 msgstr "新着"
@@ -5196,15 +5196,15 @@ msgstr "場所"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "プラン：%(tier)s。本日プレビューした記事は%(count)s件です。"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "プラン：%(tier)s。今月の新しい音声は%(limit)s分中%(used)s分です。リセット日時：%(resets)s。"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "プラン：%(tier)s。今週の新しい音声は%(limit)s分中%(used)s分です。リセット日時：%(resets)s。"
 
 msgid "Platform"
 msgstr "プラットフォーム"
@@ -5307,7 +5307,7 @@ msgid "Premium Archive"
 msgstr "プレミアムアーカイブ"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "プレミアムアーカイブ追加"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "プレミアムアーカイブでは、記事全体を読み上げます。"
@@ -5771,7 +5771,7 @@ msgid "Reset"
 msgstr "リセット"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Listenの使用量をリセット"
 
 msgid "Reset to original favicon"
 msgstr "元のファビコンに戻す"
@@ -7864,7 +7864,7 @@ msgstr "音声"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "今日の音声プレビュー：%(limit)s中%(used)s。"
 
 msgid "Voice recording failed. Please try again."
 msgstr "音声の録音に失敗しました。もう一度お試しください。"

@@ -478,7 +478,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "Bu ay %(duration)s kaldı"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -534,15 +534,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/yıl"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "%(seconds)s saniyelik önizleme"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "%(seconds)s saniyelik önizleme"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -935,7 +935,7 @@ msgid "/year"
 msgstr "/yıl"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 saat"
 
 msgid "1 month"
 msgstr "1 ay"
@@ -944,7 +944,7 @@ msgid "1 year"
 msgstr "1 yıl"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 saat"
 
 msgid "12-hour"
 msgstr "12 saat"
@@ -2183,7 +2183,7 @@ msgid "Couldn't load audio for this story."
 msgstr "Bu haberin sesi yüklenemedi."
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "Dinleme yüklenemedi."
 
 msgid "Counting is difficult"
 msgstr "Saymak zor"
@@ -2231,7 +2231,7 @@ msgid "Credit"
 msgstr "Kredi"
 
 msgid "Current plan"
-msgstr ""
+msgstr "Mevcut plan"
 
 msgid "Current voice"
 msgstr "Geçerli ses"
@@ -3573,7 +3573,7 @@ msgstr "Sağlık"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
+msgstr[0] "İlk %(count)s saniyeyi sesli dinleyin. Premium Archive haberlerin tamamını sesli okur."
 
 msgid "Hearts"
 msgstr "Kalpler"
@@ -3952,7 +3952,7 @@ msgstr "Son etkinlik"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "Son manuel sıfırlama: %(date)s."
 
 msgid "Last seen:"
 msgstr "Son görülme:"
@@ -4028,10 +4028,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "Dinleme zaman aşımına uğradı. Birazdan yeniden deneyin."
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Ayda 1 saat boyunca haberleri sesli dinleyin"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "Ayda 10 saat haberleri sesli dinleyin"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Haftada 10 saat haberleri sesli dinleyin"
@@ -4322,7 +4322,7 @@ msgid "Monday"
 msgstr "Pazartesi"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "Aylık dinleme"
 
 msgid "Monthly spending limit"
 msgstr "Aylık harcama limiti"
@@ -4499,7 +4499,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Süresi hiç dolmayacak. Tebrikler!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "Asla sıfırlanmaz."
 
 msgid "New Arrivals"
 msgstr "Yeni Gelenler"
@@ -5290,15 +5290,19 @@ msgstr "Yerler"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "Plan: %(tier)s. Bugün %(count)s haberin ön izlemesi yapıldı."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
 msgstr ""
+"Plan: %(tier)s. Bu ay yeni ses içeriği için %(limit)s dakikanın %(used)s kadarı kullanıldı; kullanım "
+"%(resets)s tarihinde sıfırlanır."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
 msgstr ""
+"Plan: %(tier)s. Bu hafta yeni ses içeriği için %(limit)s dakikanın %(used)s kadarı kullanıldı; kullanım "
+"%(resets)s tarihinde sıfırlanır."
 
 msgid "Platform"
 msgstr "Platform"
@@ -5403,7 +5407,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive, haberlerin tamamını sesli okur."
@@ -5871,7 +5875,7 @@ msgid "Reset"
 msgstr "Sıfırla"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Listen kullanımını sıfırla"
 
 msgid "Reset to original favicon"
 msgstr "Orijinal site simgesine dön"
@@ -8017,7 +8021,7 @@ msgstr "Ses"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "Bugünkü sesli önizlemeler: %(used)s / %(limit)s."
 
 msgid "Voice recording failed. Please try again."
 msgstr "Ses kaydı başarısız oldu. Lütfen tekrar deneyin."

@@ -476,7 +476,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "本月剩余 %(duration)s"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -530,15 +530,15 @@ msgstr "%(price)s · iPhone、iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/年"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "%(seconds)s 秒预览"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "%(seconds)s 秒预览"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -931,7 +931,7 @@ msgid "/year"
 msgstr "/年"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 小时"
 
 msgid "1 month"
 msgstr "1 个月"
@@ -940,7 +940,7 @@ msgid "1 year"
 msgstr "1 年"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 小时"
 
 msgid "12-hour"
 msgstr "12 小时"
@@ -2145,7 +2145,7 @@ msgid "Couldn't load audio for this story."
 msgstr "无法加载这篇文章的音频。"
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "无法加载聆听内容。"
 
 msgid "Counting is difficult"
 msgstr "计数很难"
@@ -2193,7 +2193,7 @@ msgid "Credit"
 msgstr "奖励"
 
 msgid "Current plan"
-msgstr ""
+msgstr "当前套餐"
 
 msgid "Current voice"
 msgstr "当前语音"
@@ -3509,7 +3509,7 @@ msgstr "健康"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
+msgstr[0] "收听前 %(count)s 秒的朗读内容。高级归档版可朗读整篇文章。"
 
 msgid "Hearts"
 msgstr "爱心"
@@ -3880,7 +3880,7 @@ msgstr "最近活动"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "上次手动重置：%(date)s。"
 
 msgid "Last seen:"
 msgstr "上次出现："
@@ -3954,10 +3954,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "收听超时，请稍后重试。"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "每月可收听 1 小时的文章朗读"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "每月可收听 10 小时的文章朗读"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "每周可收听 10 小时文章朗读"
@@ -4244,7 +4244,7 @@ msgid "Monday"
 msgstr "星期一"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "每月聆听时长"
 
 msgid "Monthly spending limit"
 msgstr "每月支出上限"
@@ -4419,7 +4419,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "永不过期。恭喜！"
 
 msgid "Never reset."
-msgstr ""
+msgstr "永不重置。"
 
 msgid "New Arrivals"
 msgstr "新加入"
@@ -5196,15 +5196,15 @@ msgstr "地点"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "套餐：%(tier)s。今天已预览 %(count)s 篇文章。"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "套餐：%(tier)s。本月已使用 %(used)s 分钟（共 %(limit)s 分钟）新音频，重置时间：%(resets)s。"
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "套餐：%(tier)s。本周已使用 %(used)s 分钟（共 %(limit)s 分钟）新音频，重置时间：%(resets)s。"
 
 msgid "Platform"
 msgstr "平台"
@@ -5307,7 +5307,7 @@ msgid "Premium Archive"
 msgstr "高级归档版"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "高级归档版额外订阅"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "高级归档版可朗读完整文章。"
@@ -5771,7 +5771,7 @@ msgid "Reset"
 msgstr "重置"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "重置朗读用量"
 
 msgid "Reset to original favicon"
 msgstr "恢复原始网站图标"
@@ -7862,7 +7862,7 @@ msgstr "语音"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "今日语音预览：%(used)s / %(limit)s。"
 
 msgid "Voice recording failed. Please try again."
 msgstr "语音录制失败，请重试。"

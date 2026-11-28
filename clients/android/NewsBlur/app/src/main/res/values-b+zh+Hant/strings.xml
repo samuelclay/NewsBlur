@@ -403,6 +403,7 @@
     <string name="main_menu_upgrade_premium">升級至 Premium</string>
     <string name="main_menu_upgrade_archive">升級至 Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">支援論壇</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -423,13 +424,16 @@
     <string name="premium_policies">詳情請參閱 NewsBlur 的&lt;a href=\"https://newsblur.com/privacy\"&gt;隱私權政策&lt;/a&gt;和&lt;a href=\"https://newsblur.com/tos\"&gt;使用條款&lt;/a&gt;。</string>
     <string name="premium_subscription_header">Premium 訂閱</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium 訂閱</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">每年 $35.99（每月 $3.00）</string>
     <string name="premium_subscription_active">你的 Premium 訂閱已啟用</string>
     <string name="archive_subscription_active">你的 Premium Archive 訂閱已啟用</string>
+    <string name="archive_extra_subscription_active">你的 Premium Archive Extra 訂閱目前有效</string>
     <string name="pro_subscription_active">你的 Premium Pro 訂閱已啟用</string>
     <string name="subscription_manage">管理訂閱</string>
     <string name="subscription_details_error">擷取訂閱詳細資料時發生錯誤</string>
@@ -441,7 +445,10 @@
     <string name="subscription_price_yearly">%1$s/年（%2$s/月）</string>
     <string name="subscription_price_monthly">%1$s/月</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s／年</string>
+    <string name="subscription_current_plan">目前方案</string>
     <string name="premium_archive_includes_above">你的 Premium Archive 訂閱包含以上所有功能</string>
+    <string name="premium_archive_extra_includes_above">你的 Premium Archive Extra 訂閱包含以上所有內容</string>
     <string name="premium_pro_includes_above">你的 Premium Pro 訂閱包含以上所有功能</string>
     <string name="premium_enable_sites">最多追蹤 1,024 個網站</string>
     <string name="premium_sync">網站更新頻率最高提升 5 倍</string>
@@ -1346,6 +1353,9 @@
     <string name="listen_resume">繼續播放</string>
     <string name="listen_pause">暫停</string>
     <string name="listen_play">播放</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">%1$d 秒預覽</item>
+    </plurals>
     <string name="listen_open_player">開啟播放器</string>
     <string name="listen_close">關閉播放器</string>
     <string name="listen_loading">正在準備文章…</string>
@@ -1399,6 +1409,9 @@
     <string name="listen_speed_exact">精確播放速度</string>
     <string name="listen_speed_slider">播放速度滑桿</string>
     <string name="listen_speed_button">播放速度 %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">正在預覽 %1$d 秒。Premium Archive 可解鎖完整文章。</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">還剩 %1$d 秒</item>
     </plurals>
@@ -1460,6 +1473,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">本週剩餘 %1$s</string>
+    <string name="listen_time_left_this_month">本月剩餘 %1$s</string>
     <string name="listen_resets_on">重設日期：%1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今天還有 %1$d 次免費文章預覽</item>
@@ -1481,6 +1495,8 @@
     <string name="settings_listen_voices_summary">為每種語言選擇語音及朗讀方式</string>
     <string name="settings_listen_delivery">語音表現</string>
     <string name="settings_listen_speed">播放速度</string>
+    <string name="archive_listen">每月聆聽 1 小時的文章朗讀</string>
+    <string name="archive_extra_listen">每月聆聽 10 小時的文章朗讀</string>
     <string name="pro_listen">每週聆聽朗讀文章最多 10 小時</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d 篇新文章</item>

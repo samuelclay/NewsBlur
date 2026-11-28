@@ -3195,6 +3195,8 @@ msgid ""
 "Listen is included with Premium Archive ($99/year) and Premium Pro. On other plans you can hear the first "
 "60 seconds of any story."
 msgstr ""
+"แพ็กเกจ Premium Archive ($99/ปี) และ Premium Pro รวมการฟังไว้แล้ว ส่วนแพ็กเกจอื่นฟัง 60 "
+"วินาทีแรกของบทความใดก็ได้"
 
 msgid "Listen on the web, iPad, iPhone, and Android"
 msgstr "ฟังบนเว็บ, iPad, iPhone และ Android"
@@ -3203,7 +3205,7 @@ msgid "Listen playing on a MacBook, an iPad, an iPhone, and an Android phone"
 msgstr "ฟังกำลังเล่นบน MacBook, iPad, iPhone และโทรศัพท์ Android"
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อเดือน"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์"
@@ -3428,7 +3430,7 @@ msgid "Missing story_hash."
 msgstr "ไม่มี story_hash"
 
 msgid "Missing token."
-msgstr ""
+msgstr "ไม่พบโทเค็น"
 
 msgid "Missing username."
 msgstr "ไม่มีชื่อผู้ใช้"
@@ -4262,7 +4264,7 @@ msgid "Only premium users can share multiple stories per day from the same site.
 msgstr "เฉพาะผู้ใช้ Premium เท่านั้นที่แชร์บทความจากเว็บไซต์เดียวกันได้หลายบทความต่อวัน"
 
 msgid "Only staff can see or reset another account's listening."
-msgstr ""
+msgstr "เฉพาะเจ้าหน้าที่เท่านั้นที่ดูหรือรีเซ็ตเวลาฟังของบัญชีอื่นได้"
 
 msgid "Open NewsBlur to register your application."
 msgstr "เปิด NewsBlur เพื่อลงทะเบียนแอปพลิเคชัน"
@@ -4480,7 +4482,7 @@ msgid "Premium Archive - NewsBlur Pricing"
 msgstr "Premium Archive - ราคา NewsBlur"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive keeps every story from every site you follow, forever. You get everything in Premium, plus:"
 msgstr "Premium Archive เก็บบทความทั้งหมดจากทุกเว็บไซต์ที่คุณติดตามไว้ตลอดไป รับทุกอย่างจาก Premium พร้อมกับ:"
@@ -5766,7 +5768,7 @@ msgid "Thanks!"
 msgstr "ขอบคุณ!"
 
 msgid "That account doesn't exist."
-msgstr ""
+msgstr "ไม่มีบัญชีนี้"
 
 msgid "That folder has changed. Refresh your feeds and choose it again."
 msgstr "โฟลเดอร์นี้มีการเปลี่ยนแปลง โปรดรีเฟรชฟีดแล้วเลือกโฟลเดอร์อีกครั้ง"
@@ -7219,12 +7221,16 @@ msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or switch to Premium "
 "Archive Extra for %(extra_limit)s a month."
 msgstr ""
+"เดือนนี้คุณฟังบทความไปแล้ว %(limit)s การฟังจะรีเซ็ตในวันที่ %(day)s หรือเปลี่ยนเป็น Premium Archive Extra "
+"ในราคา %(extra_limit)s ต่อเดือน"
 
 #, python-format
 msgid ""
 "You've listened to %(limit)s of stories this month. Listening resets on %(day)s, or upgrade to Premium Pro "
 "for %(pro_limit)s a week."
 msgstr ""
+"เดือนนี้คุณฟังบทความไปแล้ว %(limit)s การฟังจะรีเซ็ตในวันที่ %(day)s หรืออัปเกรดเป็น Premium Pro เพื่อรับ "
+"%(pro_limit)s ต่อสัปดาห์"
 
 #, python-format
 msgid "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
@@ -7234,6 +7240,8 @@ msgid ""
 "You've played all of today's story previews. They come back at midnight, or upgrade to Premium Archive to "
 "listen to full stories."
 msgstr ""
+"ฟังตัวอย่างบทความของวันนี้ครบแล้ว ตัวอย่างจะกลับมาอีกครั้งตอนเที่ยงคืน หรืออัปเกรดเป็น Premium Archive "
+"เพื่อฟังบทความฉบับเต็ม"
 
 msgid "You've played all your voice previews for today. They reset at midnight."
 msgstr "คุณลองฟังเสียงทั้งหมดที่มีให้ลองวันนี้แล้ว ระบบจะรีเซ็ตตอนเที่ยงคืน"

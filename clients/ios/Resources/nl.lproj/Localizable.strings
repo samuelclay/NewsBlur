@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ afbeeldingsfilters";
 "%@ is now following you." = "%@ volgt je nu.";
 "%@ left in this preview" = "%@ over in deze preview";
+"%@ left this month" = "Deze maand nog %@";
 "%@ left this week" = "Nog %@ over deze week";
 "%@ match" = "%@ overeenkomst";
 "%@ new stories" = "%@ nieuwe artikelen";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ ongelezen artikelen";
 "%@ voice previews left" = "%@ stemvoorbeelden over";
 "%@/story" = "%@/artikel";
+"%@/year" = "%@/jaar";
+"%@s preview" = "Voorbeeld van %@s";
 "%@×" = "%@×";
 "%ldd ago" = "%ld d geleden";
 "%ldh ago" = "%ld uur geleden";
@@ -74,7 +77,9 @@
 "/mo" = "/mnd";
 "/month" = "/maand";
 "1 Widget Site" = "1 widgetsite";
+"1 hour" = "1 uur";
 "1,000 stories" = "1.000 artikelen";
+"10 hours" = "10 uur";
 "10 stories" = "10 artikelen";
 "10,000 stories" = "10.000 artikelen";
 "100 stories" = "100 artikelen";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "In plaats daarvan een nieuw account aanmaken";
 "Create account" = "Account aanmaken";
 "Create an account" = "Account aanmaken";
+"Current plan" = "Huidig abonnement";
 "Custom" = "Aangepast";
 "Custom Domain" = "Aangepast domein";
 "Custom RSS feeds for saved stories" = "Aangepaste RSS-feeds voor opgeslagen artikelen";
@@ -536,6 +542,8 @@
 "List style" = "Lijststijl";
 "Listen" = "Luisteren";
 "Listen Settings" = "Luisterinstellingen";
+"Listen to 1 hour of stories read aloud a month" = "Luister één uur per maand naar artikelen die worden voorgelezen";
+"Listen to 10 hours of stories read aloud a month" = "Luister elke maand naar 10 uur aan artikelen die worden voorgelezen";
 "Listen to 10 hours of stories read aloud a week" = "Luister elke week 10 uur naar artikelen die worden voorgelezen";
 "Listen to story" = "Artikel beluisteren";
 "Listening isn't available right now." = "Luisteren is nu niet beschikbaar.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Grijs";
 "Model" = "Model";
 "Monday" = "maandag";
+"Monthly listening" = "Maandelijks luisteren";
 "Monthly spending limit" = "Maandelijkse bestedingslimiet";
 "Monthly spending limit reached. " = "Maandelijkse bestedingslimiet bereikt. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Meer artikelen nemen meer schijfruimte in beslag, maar hebben verder geen merkbare invloed op de prestaties.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Voorkeurstijd";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium-abonnement";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium-abonnees kunnen een aangepast NewsBlur-pictogram kiezen. Elke variant bevat een lichte en donkere versie.";
@@ -887,6 +897,7 @@
 "Replying" = "Reageren";
 "Reset" = "Herstellen";
 "Resets %@" = "Wordt opnieuw ingesteld over %@";
+"Resets on %@" = "Wordt gereset op %@";
 "Resize sidebar" = "Zijbalkformaat wijzigen";
 "Restore" = "Herstellen";
 "Resume" = "Hervatten";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Tekst van gisteren";
 "Text view" = "Tekstweergave";
 "Text view conveniently extracts the story" = "De tekstweergave haalt het artikel handig op";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Dit was een voorproefje van %@ seconden. Met Premium Archive krijg je toegang tot volledige artikelen.";
 "The audio couldn't be loaded. Try again in a moment." = "De audio kon niet worden geladen. Probeer het zo meteen opnieuw.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "De volledige tekstweergave is een <a href=\"http://ios.newsblur.com/premium\">premiumfunctie</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "De iOS-simulator kon het beginschermpictogram niet wijzigen. Probeer dit op een apparaat.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Je NewsBlur-account is verwijderd. Verwijder NewsBlur bij 'Log in met Apple' in de instellingen van je Apple-account om de koppeling volledig te verbreken.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Je gekozen stem is momenteel niet beschikbaar, dus %@ leest dit artikel voor.";
 "Your identity is verified" = "Je identiteit is geverifieerd";
+"Your premium archive extra subscription includes everything above" = "Je Premium Archive Extra-abonnement omvat alles hierboven";
+"Your premium archive extra subscription is active" = "Je Premium Archive Extra-abonnement is actief";
 "Your premium archive subscription includes everything above" = "Je Premium Archive-abonnement omvat alles hierboven";
 "Your premium archive subscription is active" = "Je Premium Archive-abonnement is actief";
 "Your premium pro subscription includes everything above" = "Je Premium Pro-abonnement bevat alles hierboven";

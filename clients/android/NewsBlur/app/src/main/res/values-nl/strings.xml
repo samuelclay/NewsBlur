@@ -406,6 +406,7 @@ om over de wereld te praten.</string>
     <string name="main_menu_upgrade_premium">Upgraden naar Premium</string>
     <string name="main_menu_upgrade_archive">Upgraden naar Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Supportforum</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -426,13 +427,16 @@ om over de wereld te praten.</string>
     <string name="premium_policies">Raadpleeg het &lt;a href=\"https://newsblur.com/privacy\"&gt;privacybeleid&lt;/a&gt; en de &lt;a href=\"https://newsblur.com/tos\"&gt;gebruiksvoorwaarden&lt;/a&gt; van NewsBlur voor meer informatie.</string>
     <string name="premium_subscription_header">Premiumabonnement</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">NewsBlur Premium-abonnement</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35,99 per jaar ($3,00/maand)</string>
     <string name="premium_subscription_active">Je premiumabonnement is actief</string>
     <string name="archive_subscription_active">Je Premium Archive-abonnement is actief</string>
+    <string name="archive_extra_subscription_active">Je Premium Archive Extra-abonnement is actief</string>
     <string name="pro_subscription_active">Je Premium Pro-abonnement is actief</string>
     <string name="subscription_manage">Abonnement beheren</string>
     <string name="subscription_details_error">Fout bij het ophalen van abonnementsgegevens</string>
@@ -444,7 +448,10 @@ om over de wereld te praten.</string>
     <string name="subscription_price_yearly">%1$s/jaar (%2$s/maand)</string>
     <string name="subscription_price_monthly">%1$s/maand</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/jaar</string>
+    <string name="subscription_current_plan">Huidig abonnement</string>
     <string name="premium_archive_includes_above">Je Premium Archive-abonnement bevat alles hierboven</string>
+    <string name="premium_archive_extra_includes_above">Je Premium Archive Extra-abonnement bevat alles hierboven</string>
     <string name="premium_pro_includes_above">Je Premium Pro-abonnement bevat alles hierboven</string>
     <string name="premium_enable_sites">Volg tot 1.024 sites</string>
     <string name="premium_sync">Sites worden tot 5× vaker bijgewerkt</string>
@@ -1372,6 +1379,10 @@ om over de wereld te praten.</string>
     <string name="listen_resume">Hervatten</string>
     <string name="listen_pause">Pauzeren</string>
     <string name="listen_play">Afspelen</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="one">Voorproefje van %1$d seconden</item>
+        <item quantity="other">Voorbeeld van %1$ds</item>
+    </plurals>
     <string name="listen_open_player">Speler openen</string>
     <string name="listen_close">Speler sluiten</string>
     <string name="listen_loading">Artikel wordt klaargemaakt…</string>
@@ -1427,6 +1438,10 @@ om over de wereld te praten.</string>
     <string name="listen_speed_exact">Exacte afspeelsnelheid</string>
     <string name="listen_speed_slider">Schuifregelaar voor afspeelsnelheid</string>
     <string name="listen_speed_button">Afspeelsnelheid %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="one">Voorbeeld van %1$d seconde. Met Premium Archive kun je volledige artikelen beluisteren.</item>
+        <item quantity="other">Voorbeeld van %1$d seconden. Met Premium Archive kun je volledige artikelen beluisteren.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="one">Nog %1$d seconde</item>
         <item quantity="other">Nog %1$d seconden</item>
@@ -1492,6 +1507,7 @@ om over de wereld te praten.</string>
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">Nog %1$s over deze week</string>
+    <string name="listen_time_left_this_month">Deze maand nog %1$s</string>
     <string name="listen_resets_on">Wordt opnieuw ingesteld op %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="one">Je hebt vandaag nog %1$d gratis artikelvoorbeeld over</item>
@@ -1515,6 +1531,8 @@ om over de wereld te praten.</string>
     <string name="settings_listen_voices_summary">Kies per taal een stem en hoe die voorleest</string>
     <string name="settings_listen_delivery">Bezorging</string>
     <string name="settings_listen_speed">Afspeelsnelheid</string>
+    <string name="archive_listen">Luister elke maand naar 1 uur aan artikelen die worden voorgelezen</string>
+    <string name="archive_extra_listen">Luister elke maand naar 10 uur aan artikelen die worden voorgelezen</string>
     <string name="pro_listen">Luister elke week 10 uur naar artikelen die worden voorgelezen</string>
     <plurals name="new_stories_pill">
         <item quantity="one">%d nieuw artikel</item>

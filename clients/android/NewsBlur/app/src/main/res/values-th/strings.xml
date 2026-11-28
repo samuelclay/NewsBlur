@@ -403,6 +403,7 @@
     <string name="main_menu_upgrade_premium">อัปเกรดเป็น Premium</string>
     <string name="main_menu_upgrade_archive">อัปเกรดเป็น Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">ฟอรัมช่วยเหลือ</string>
     <string name="newsblur_opml">OPML ของ NewsBlur</string>
@@ -423,13 +424,16 @@
     <string name="premium_policies">ดู&lt;a href=\"https://newsblur.com/privacy\"&gt;นโยบายความเป็นส่วนตัว&lt;/a&gt;และ&lt;a href=\"https://newsblur.com/tos\"&gt;ข้อกำหนดการใช้งาน&lt;/a&gt;ของ NewsBlur เพื่อดูรายละเอียด</string>
     <string name="premium_subscription_header">การสมัครสมาชิก Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">การสมัครสมาชิก NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">$35.99 ต่อปี ($3.00/เดือน)</string>
     <string name="premium_subscription_active">การสมัครสมาชิกพรีเมียมของคุณใช้งานอยู่</string>
     <string name="archive_subscription_active">การสมัครสมาชิก Premium Archive ของคุณใช้งานอยู่</string>
+    <string name="archive_extra_subscription_active">การสมัคร Premium Archive Extra ของคุณใช้งานอยู่</string>
     <string name="pro_subscription_active">การสมัครสมาชิก Premium Pro ของคุณใช้งานอยู่</string>
     <string name="subscription_manage">จัดการการสมัครสมาชิก</string>
     <string name="subscription_details_error">เกิดข้อผิดพลาดในการเรียกดูรายละเอียดการสมัครสมาชิก</string>
@@ -441,7 +445,10 @@
     <string name="subscription_price_yearly">%1$s/ปี (%2$s/เดือน)</string>
     <string name="subscription_price_monthly">%1$s/เดือน</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/ปี</string>
+    <string name="subscription_current_plan">แพ็กเกจปัจจุบัน</string>
     <string name="premium_archive_includes_above">การสมัครสมาชิก Premium Archive ของคุณมีทุกอย่างตามรายการด้านบน</string>
+    <string name="premium_archive_extra_includes_above">การสมัคร Premium Archive Extra ของคุณมีทุกอย่างตามรายการข้างต้น</string>
     <string name="premium_pro_includes_above">การสมัครสมาชิก Premium Pro ของคุณมีทุกอย่างข้างต้น</string>
     <string name="premium_enable_sites">ติดตามเว็บไซต์ได้สูงสุด 1,024 แห่ง</string>
     <string name="premium_sync">อัปเดตเว็บไซต์บ่อยขึ้นสูงสุด 5 เท่า</string>
@@ -1346,6 +1353,9 @@
     <string name="listen_resume">เล่นต่อ</string>
     <string name="listen_pause">หยุดชั่วคราว</string>
     <string name="listen_play">เล่น</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">ตัวอย่าง %1$ds</item>
+    </plurals>
     <string name="listen_open_player">เปิดเครื่องเล่น</string>
     <string name="listen_close">ปิดเครื่องเล่น</string>
     <string name="listen_loading">กำลังเตรียมบทความ…</string>
@@ -1399,6 +1409,9 @@
     <string name="listen_speed_exact">ความเร็วในการเล่นแบบละเอียด</string>
     <string name="listen_speed_slider">แถบเลื่อนความเร็วในการเล่น</string>
     <string name="listen_speed_button">ความเร็วในการเล่น %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">กำลังฟังตัวอย่าง %1$d วินาที Premium Archive ปลดล็อกบทความฉบับเต็ม</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">เหลือ %1$d วินาที</item>
     </plurals>
@@ -1460,6 +1473,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">เหลือ %1$s ในสัปดาห์นี้</string>
+    <string name="listen_time_left_this_month">เหลือ %1$s ในเดือนนี้</string>
     <string name="listen_resets_on">รีเซ็ต %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">วันนี้เหลือตัวอย่างบทความฟรี %1$d รายการ</item>
@@ -1481,6 +1495,8 @@
     <string name="settings_listen_voices_summary">เลือกเสียงสำหรับแต่ละภาษาและรูปแบบการอ่าน</string>
     <string name="settings_listen_delivery">การนำเสนอ</string>
     <string name="settings_listen_speed">ความเร็วในการเล่น</string>
+    <string name="archive_listen">ฟังบทความที่อ่านออกเสียงได้ 1 ชั่วโมงต่อเดือน</string>
+    <string name="archive_extra_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อเดือน</string>
     <string name="pro_listen">ฟังบทความที่อ่านออกเสียงได้ 10 ชั่วโมงต่อสัปดาห์</string>
     <plurals name="new_stories_pill">
         <item quantity="other">บทความใหม่ %d รายการ</item>

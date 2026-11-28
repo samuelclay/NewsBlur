@@ -409,6 +409,7 @@ les gens pour parler du monde.</string>
     <string name="main_menu_upgrade_premium">Passer à Premium</string>
     <string name="main_menu_upgrade_archive">Passer à l’offre Archive</string>
     <string name="main_menu_premium_archive">Premium Archive</string>
+    <string name="main_menu_premium_archive_extra">Premium Archive Extra</string>
     <string name="main_menu_premium_pro">Premium Pro</string>
     <string name="main_menu_support_forum">Forum d’assistance</string>
     <string name="newsblur_opml">OPML NewsBlur</string>
@@ -429,13 +430,16 @@ les gens pour parler du monde.</string>
     <string name="premium_policies">Consultez la &lt;a href=\"https://newsblur.com/privacy\"&gt;politique de confidentialité&lt;/a&gt; et les &lt;a href=\"https://newsblur.com/tos\"&gt;conditions d’utilisation&lt;/a&gt; de NewsBlur pour en savoir plus.</string>
     <string name="premium_subscription_header">Abonnement Premium</string>
     <string name="archive_subscription_header">Premium Archive</string>
+    <string name="archive_extra_subscription_header">Premium Archive Extra</string>
     <string name="pro_subscription_header">Premium Pro</string>
     <string name="premium_subscription_title">Abonnement NewsBlur Premium</string>
     <string name="archive_subscription_title">NewsBlur Premium Archive</string>
+    <string name="archive_extra_subscription_title">NewsBlur Premium Archive Extra</string>
     <string name="pro_subscription_title">NewsBlur Premium Pro</string>
     <string name="premium_subscription_price">35,99 $ par an (3,00 $/mois)</string>
     <string name="premium_subscription_active">Votre abonnement Premium est actif</string>
     <string name="archive_subscription_active">Votre abonnement Premium Archive est actif</string>
+    <string name="archive_extra_subscription_active">Votre abonnement Premium Archive Extra est actif</string>
     <string name="pro_subscription_active">Votre abonnement Premium Pro est actif</string>
     <string name="subscription_manage">Gérer l’abonnement</string>
     <string name="subscription_details_error">Erreur lors de la récupération des détails de l’abonnement</string>
@@ -447,7 +451,10 @@ les gens pour parler du monde.</string>
     <string name="subscription_price_yearly">%1$s/an (%2$s/mois)</string>
     <string name="subscription_price_monthly">%1$s/mois</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/an</string>
+    <string name="subscription_current_plan">Offre actuelle</string>
     <string name="premium_archive_includes_above">Votre abonnement Premium Archive comprend tout ce qui précède</string>
+    <string name="premium_archive_extra_includes_above">Votre abonnement Premium Archive Extra inclut tout ce qui précède</string>
     <string name="premium_pro_includes_above">Votre abonnement Premium Pro comprend tout ce qui précède</string>
     <string name="premium_enable_sites">Suivez jusqu’à 1 024 sites</string>
     <string name="premium_sync">Sites mis à jour jusqu’à 5 fois plus souvent</string>
@@ -1398,6 +1405,11 @@ les gens pour parler du monde.</string>
     <string name="listen_resume">Reprendre</string>
     <string name="listen_pause">Mettre en pause</string>
     <string name="listen_play">Lire</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="many">Aperçu de %1$ds</item>
+        <item quantity="one">Aperçu de %1$d s</item>
+        <item quantity="other">Aperçu de %1$ds</item>
+    </plurals>
     <string name="listen_open_player">Ouvrir le lecteur</string>
     <string name="listen_close">Fermer le lecteur</string>
     <string name="listen_loading">Préparation de l’article…</string>
@@ -1455,6 +1467,11 @@ les gens pour parler du monde.</string>
     <string name="listen_speed_exact">Vitesse de lecture exacte</string>
     <string name="listen_speed_slider">Curseur de vitesse de lecture</string>
     <string name="listen_speed_button">Vitesse de lecture %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="many">Aperçu de %1$d secondes. Premium Archive donne accès aux articles complets.</item>
+        <item quantity="one">Aperçu de %1$d seconde. Premium Archive donne accès aux articles complets.</item>
+        <item quantity="other">Aperçu de %1$d secondes. Premium Archive donne accès aux articles complets.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="many">%1$d secondes restantes</item>
         <item quantity="one">Il vous reste %1$d seconde</item>
@@ -1524,6 +1541,7 @@ les gens pour parler du monde.</string>
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">%1$s restant cette semaine</string>
+    <string name="listen_time_left_this_month">%1$s restant ce mois-ci</string>
     <string name="listen_resets_on">Réinitialisation le %1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="many">%1$d aperçus gratuits d’articles restants aujourd’hui</item>
@@ -1549,6 +1567,8 @@ les gens pour parler du monde.</string>
     <string name="settings_listen_voices_summary">Choisissez une voix pour chaque langue et sa façon de lire</string>
     <string name="settings_listen_delivery">Lecture</string>
     <string name="settings_listen_speed">Vitesse de lecture</string>
+    <string name="archive_listen">Écouter 1 heure d’articles lus à voix haute par mois</string>
+    <string name="archive_extra_listen">Écoutez 10 heures d’articles lus à voix haute par mois</string>
     <string name="pro_listen">Écoutez 10 heures d’articles lus à voix haute par semaine</string>
     <plurals name="new_stories_pill">
         <item quantity="many">%d nouveaux articles</item>

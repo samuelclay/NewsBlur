@@ -403,6 +403,7 @@
     <string name="main_menu_upgrade_premium">升级到高级版</string>
     <string name="main_menu_upgrade_archive">升级到归档版</string>
     <string name="main_menu_premium_archive">高级归档版</string>
+    <string name="main_menu_premium_archive_extra">高级归档版额外服务</string>
     <string name="main_menu_premium_pro">高级专业版</string>
     <string name="main_menu_support_forum">支持论坛</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -423,13 +424,16 @@
     <string name="premium_policies">详情请查看 NewsBlur 的&lt;a href=\"https://newsblur.com/privacy\"&gt;隐私政策&lt;/a&gt;和&lt;a href=\"https://newsblur.com/tos\"&gt;使用条款&lt;/a&gt;。</string>
     <string name="premium_subscription_header">高级订阅</string>
     <string name="archive_subscription_header">高级归档版</string>
+    <string name="archive_extra_subscription_header">高级归档版额外服务</string>
     <string name="pro_subscription_header">高级专业版</string>
     <string name="premium_subscription_title">NewsBlur 高级订阅</string>
     <string name="archive_subscription_title">NewsBlur 高级归档版</string>
+    <string name="archive_extra_subscription_title">NewsBlur 高级归档版额外订阅</string>
     <string name="pro_subscription_title">NewsBlur 高级专业版</string>
     <string name="premium_subscription_price">每年 $35.99（每月 $3.00）</string>
     <string name="premium_subscription_active">你的高级订阅已生效</string>
     <string name="archive_subscription_active">你的高级归档版订阅已生效</string>
+    <string name="archive_extra_subscription_active">你的高级归档版额外订阅已生效</string>
     <string name="pro_subscription_active">你的高级专业版订阅已生效</string>
     <string name="subscription_manage">管理订阅</string>
     <string name="subscription_details_error">获取订阅详情时出错</string>
@@ -441,7 +445,10 @@
     <string name="subscription_price_yearly">%1$s/年（%2$s/月）</string>
     <string name="subscription_price_monthly">%1$s/月</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/年</string>
+    <string name="subscription_current_plan">当前套餐</string>
     <string name="premium_archive_includes_above">你的高级归档版订阅包含以上所有功能</string>
+    <string name="premium_archive_extra_includes_above">你的高级归档版额外订阅包含以上所有权益</string>
     <string name="premium_pro_includes_above">你的高级专业版订阅包含以上所有功能</string>
     <string name="premium_enable_sites">最多关注 1,024 个网站</string>
     <string name="premium_sync">网站更新频率最高提升 5 倍</string>
@@ -1346,6 +1353,9 @@
     <string name="listen_resume">继续</string>
     <string name="listen_pause">暂停</string>
     <string name="listen_play">播放</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">%1$d 秒预览</item>
+    </plurals>
     <string name="listen_open_player">打开播放器</string>
     <string name="listen_close">关闭播放器</string>
     <string name="listen_loading">正在准备文章…</string>
@@ -1399,6 +1409,9 @@
     <string name="listen_speed_exact">精确播放速度</string>
     <string name="listen_speed_slider">播放速度滑块</string>
     <string name="listen_speed_button">播放速度 %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">正在试听 %1$d 秒。升级到高级归档版即可收听完整文章。</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">还剩 %1$d 秒</item>
     </plurals>
@@ -1460,6 +1473,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">本周还剩 %1$s</string>
+    <string name="listen_time_left_this_month">本月剩余 %1$s</string>
     <string name="listen_resets_on">重置日期：%1$s</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今天还剩 %1$d 次免费文章预览</item>
@@ -1481,6 +1495,8 @@
     <string name="settings_listen_voices_summary">为每种语言选择语音及朗读方式</string>
     <string name="settings_listen_delivery">表达方式</string>
     <string name="settings_listen_speed">播放速度</string>
+    <string name="archive_listen">每月可收听 1 小时的文章朗读</string>
+    <string name="archive_extra_listen">每月可收听 10 小时的文章朗读</string>
     <string name="pro_listen">每周可收听 10 小时文章朗读</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d 篇新文章</item>

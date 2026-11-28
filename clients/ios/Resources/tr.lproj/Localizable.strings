@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ görsel filtresi";
 "%@ is now following you." = "%@ artık sizi takip ediyor.";
 "%@ left in this preview" = "Bu önizlemede %@ kaldı";
+"%@ left this month" = "Bu ay %@ kaldı";
 "%@ left this week" = "Bu hafta %@ kaldı";
 "%@ match" = "%@ eşleşme";
 "%@ new stories" = "%@ yeni haber";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ okunmamış haber";
 "%@ voice previews left" = "%@ ses önizlemesi kaldı";
 "%@/story" = "%@/haber";
+"%@/year" = "%@/yıl";
+"%@s preview" = "%@ önizlemesi";
 "%@×" = "%@×";
 "%ldd ago" = "%ld gün önce";
 "%ldh ago" = "%ld saat önce";
@@ -74,7 +77,9 @@
 "/mo" = "/ay";
 "/month" = "/ay";
 "1 Widget Site" = "1 Widget sitesi";
+"1 hour" = "1 saat";
 "1,000 stories" = "1.000 haber";
+"10 hours" = "10 saat";
 "10 stories" = "10 haber";
 "10,000 stories" = "10.000 haber";
 "100 stories" = "100 haber";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Bunun yerine yeni bir hesap oluştur";
 "Create account" = "Hesap oluştur";
 "Create an account" = "Hesap oluştur";
+"Current plan" = "Mevcut plan";
 "Custom" = "Özel";
 "Custom Domain" = "Özel Alan Adı";
 "Custom RSS feeds for saved stories" = "Kaydedilen haberler için özel RSS akışları";
@@ -536,6 +542,8 @@
 "List style" = "Liste stili";
 "Listen" = "Dinle";
 "Listen Settings" = "Dinleme Ayarları";
+"Listen to 1 hour of stories read aloud a month" = "Ayda 1 saat haberleri sesli dinleyin";
+"Listen to 10 hours of stories read aloud a month" = "Ayda 10 saat haberleri sesli dinleyin";
 "Listen to 10 hours of stories read aloud a week" = "Haftada 10 saat haberleri sesli dinleyin";
 "Listen to story" = "Haberi dinle";
 "Listening isn't available right now." = "Dinleme şu anda kullanılamıyor.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Gri";
 "Model" = "Model";
 "Monday" = "Pazartesi";
+"Monthly listening" = "Aylık dinleme süresi";
 "Monthly spending limit" = "Aylık harcama sınırı";
 "Monthly spending limit reached. " = "Aylık harcama sınırına ulaşıldı. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Daha fazla haber daha çok disk alanı kaplar; bunun dışında performansı fark edilir biçimde etkilemez.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Tercih edilen saat";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium Abonelik";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium aboneleri özel bir NewsBlur simgesi seçebilir. Her tasarımın açık ve koyu sürümleri vardır.";
@@ -887,6 +897,7 @@
 "Replying" = "Yanıtlanıyor";
 "Reset" = "Sıfırla";
 "Resets %@" = "%@ sıfırlanıyor";
+"Resets on %@" = "%@ tarihinde sıfırlanır";
 "Resize sidebar" = "Kenar çubuğunu yeniden boyutlandır";
 "Restore" = "Geri yükle";
 "Resume" = "Devam et";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Dünden kalan metin";
 "Text view" = "Metin görünümü";
 "Text view conveniently extracts the story" = "Metin görünümü, haberin içeriğini kolayca ayıklar";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Bu, %@ saniyelik bir ön izlemeydi. Premium Archive, haberlerin tamamının kilidini açar.";
 "The audio couldn't be loaded. Try again in a moment." = "Ses yüklenemedi. Birazdan tekrar deneyin.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Tam Metin görünümü bir <a href=\"http://ios.newsblur.com/premium\">premium özelliktir</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS simülatörü Ana Ekran simgesini değiştiremedi. Bunu bir aygıtta deneyin.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "NewsBlur hesabınız silindi. Bağlantıyı tamamen kaldırmak için Apple Hesabı ayarlarınızda Apple ile Giriş Yap bölümünden NewsBlur'u kaldırın.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Seçtiğiniz ses şu anda kullanılamıyor; bu nedenle bu haberi %@ okuyor.";
 "Your identity is verified" = "Kimliğiniz doğrulandı";
+"Your premium archive extra subscription includes everything above" = "Premium Archive Extra aboneliğiniz yukarıdakilerin tümünü içerir";
+"Your premium archive extra subscription is active" = "Premium Archive Extra aboneliğiniz etkin";
 "Your premium archive subscription includes everything above" = "Premium Archive aboneliğiniz yukarıdakilerin tümünü içerir";
 "Your premium archive subscription is active" = "Premium Archive aboneliğiniz etkin";
 "Your premium pro subscription includes everything above" = "Premium Pro aboneliğiniz yukarıdakilerin tümünü içerir";

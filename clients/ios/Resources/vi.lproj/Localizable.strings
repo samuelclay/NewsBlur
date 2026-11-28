@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ bộ lọc hình ảnh";
 "%@ is now following you." = "%@ hiện đang theo dõi bạn.";
 "%@ left in this preview" = "Còn %@ trong bản xem trước này";
+"%@ left this month" = "Còn %@ trong tháng này";
 "%@ left this week" = "Còn %@ trong tuần này";
 "%@ match" = "%@ kết quả phù hợp";
 "%@ new stories" = "%@ bài viết mới";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ bài viết chưa đọc";
 "%@ voice previews left" = "Còn %@ lượt nghe thử giọng";
 "%@/story" = "%@/bài viết";
+"%@/year" = "%@/năm";
+"%@s preview" = "Bản nghe thử %@ giây";
 "%@×" = "%@×";
 "%ldd ago" = "%ld ngày trước";
 "%ldh ago" = "%ld giờ trước";
@@ -74,7 +77,9 @@
 "/mo" = "/tháng";
 "/month" = "/tháng";
 "1 Widget Site" = "1 trang web cho tiện ích";
+"1 hour" = "1 giờ";
 "1,000 stories" = "1.000 bài viết";
+"10 hours" = "10 giờ";
 "10 stories" = "10 bài viết";
 "10,000 stories" = "10.000 bài viết";
 "100 stories" = "100 bài viết";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "Thay vào đó, tạo tài khoản mới";
 "Create account" = "Tạo tài khoản";
 "Create an account" = "Tạo tài khoản";
+"Current plan" = "Gói hiện tại";
 "Custom" = "Tùy chỉnh";
 "Custom Domain" = "Tên miền tùy chỉnh";
 "Custom RSS feeds for saved stories" = "Nguồn cấp RSS tùy chỉnh cho bài viết đã lưu";
@@ -536,6 +542,8 @@
 "List style" = "Kiểu danh sách";
 "Listen" = "Nghe";
 "Listen Settings" = "Cài đặt nghe";
+"Listen to 1 hour of stories read aloud a month" = "Nghe bài viết được đọc thành tiếng trong 1 giờ mỗi tháng";
+"Listen to 10 hours of stories read aloud a month" = "Nghe bài viết được đọc thành tiếng trong 10 giờ mỗi tháng";
 "Listen to 10 hours of stories read aloud a week" = "Nghe bài viết được đọc thành tiếng 10 giờ mỗi tuần";
 "Listen to story" = "Nghe bài viết";
 "Listening isn't available right now." = "Hiện không thể nghe.";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "Xám";
 "Model" = "Mô hình";
 "Monday" = "Thứ Hai";
+"Monthly listening" = "Thời lượng nghe hàng tháng";
 "Monthly spending limit" = "Giới hạn chi tiêu hàng tháng";
 "Monthly spending limit reached. " = "Đã đạt giới hạn chi tiêu hàng tháng. ";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "Nhiều bài viết hơn sẽ chiếm thêm dung lượng đĩa, nhưng ngoài ra không ảnh hưởng đáng kể đến hiệu năng.";
@@ -807,6 +816,7 @@
 "Preferred time" = "Thời gian ưu tiên";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Gói đăng ký Premium";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Người đăng ký Premium có thể chọn biểu tượng NewsBlur tùy chỉnh. Mỗi kiểu có phiên bản sáng và tối.";
@@ -887,6 +897,7 @@
 "Replying" = "Đang trả lời";
 "Reset" = "Đặt lại";
 "Resets %@" = "Đặt lại sau %@";
+"Resets on %@" = "Đặt lại vào %@";
 "Resize sidebar" = "Đổi kích thước thanh bên";
 "Restore" = "Khôi phục";
 "Resume" = "Tiếp tục";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "Văn bản từ hôm qua";
 "Text view" = "Chế độ xem văn bản";
 "Text view conveniently extracts the story" = "Chế độ xem Văn bản trích xuất nội dung bài viết một cách tiện lợi";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "Đó là bản nghe thử %@ giây. Premium Archive mở khóa toàn bộ bài viết.";
 "The audio couldn't be loaded. Try again in a moment." = "Không thể tải âm thanh. Hãy thử lại sau giây lát.";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "Chế độ xem toàn văn là một <a href=\"http://ios.newsblur.com/premium\">tính năng cao cấp</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "Trình mô phỏng iOS không thể thay đổi biểu tượng Màn hình chính. Hãy thử trên thiết bị thật.";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "Tài khoản NewsBlur của bạn đã bị xóa. Hãy xóa NewsBlur khỏi mục Đăng nhập bằng Apple trong phần cài đặt Tài khoản Apple để hoàn tất ngắt kết nối.";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "Giọng đọc bạn chọn hiện không khả dụng, vì vậy %@ đang đọc bài viết này.";
 "Your identity is verified" = "Danh tính của bạn đã được xác minh";
+"Your premium archive extra subscription includes everything above" = "Gói đăng ký Premium Archive Extra của bạn bao gồm tất cả những gì nêu trên";
+"Your premium archive extra subscription is active" = "Gói đăng ký Premium Archive Extra của bạn đang hoạt động";
 "Your premium archive subscription includes everything above" = "Gói đăng ký Premium Archive của bạn bao gồm tất cả các quyền lợi trên";
 "Your premium archive subscription is active" = "Gói đăng ký Premium Archive của bạn đang hoạt động";
 "Your premium pro subscription includes everything above" = "Gói đăng ký Premium Pro của bạn bao gồm tất cả những tính năng trên";

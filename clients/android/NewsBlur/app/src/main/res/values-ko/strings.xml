@@ -403,6 +403,7 @@
     <string name="main_menu_upgrade_premium">프리미엄으로 업그레이드</string>
     <string name="main_menu_upgrade_archive">아카이브로 업그레이드</string>
     <string name="main_menu_premium_archive">프리미엄 아카이브</string>
+    <string name="main_menu_premium_archive_extra">프리미엄 아카이브 추가</string>
     <string name="main_menu_premium_pro">프리미엄 프로</string>
     <string name="main_menu_support_forum">지원 포럼</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -423,13 +424,16 @@
     <string name="premium_policies">자세한 내용은 NewsBlur의 &lt;a href=\"https://newsblur.com/privacy\"&gt;개인정보 처리방침&lt;/a&gt; 및 &lt;a href=\"https://newsblur.com/tos\"&gt;이용 약관&lt;/a&gt;을 참조하세요.</string>
     <string name="premium_subscription_header">프리미엄 구독</string>
     <string name="archive_subscription_header">프리미엄 아카이브</string>
+    <string name="archive_extra_subscription_header">프리미엄 아카이브 추가</string>
     <string name="pro_subscription_header">프리미엄 프로</string>
     <string name="premium_subscription_title">NewsBlur 프리미엄 구독</string>
     <string name="archive_subscription_title">NewsBlur 프리미엄 아카이브</string>
+    <string name="archive_extra_subscription_title">NewsBlur 프리미엄 아카이브 추가</string>
     <string name="pro_subscription_title">NewsBlur 프리미엄 프로</string>
     <string name="premium_subscription_price">연 $35.99 (월 $3.00)</string>
     <string name="premium_subscription_active">프리미엄 구독이 활성화되어 있습니다</string>
     <string name="archive_subscription_active">프리미엄 아카이브 구독이 활성화되어 있습니다</string>
+    <string name="archive_extra_subscription_active">프리미엄 아카이브 추가 구독이 활성화되어 있습니다.</string>
     <string name="pro_subscription_active">프리미엄 프로 구독이 활성화되어 있습니다</string>
     <string name="subscription_manage">구독 관리</string>
     <string name="subscription_details_error">구독 세부정보를 가져오는 중 오류 발생</string>
@@ -441,7 +445,10 @@
     <string name="subscription_price_yearly">%1$s/년 (%2$s/월)</string>
     <string name="subscription_price_monthly">%1$s/월</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/년</string>
+    <string name="subscription_current_plan">현재 요금제</string>
     <string name="premium_archive_includes_above">프리미엄 아카이브 구독에는 위의 모든 항목이 포함됩니다</string>
+    <string name="premium_archive_extra_includes_above">프리미엄 아카이브 추가 구독에는 위의 모든 혜택이 포함됩니다</string>
     <string name="premium_pro_includes_above">프리미엄 프로 구독에는 위의 모든 항목이 포함됩니다</string>
     <string name="premium_enable_sites">최대 1,024개 사이트 팔로우</string>
     <string name="premium_sync">사이트 업데이트 빈도 최대 5배 증가</string>
@@ -1346,6 +1353,9 @@
     <string name="listen_resume">재개</string>
     <string name="listen_pause">일시 정지</string>
     <string name="listen_play">재생</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">%1$d초 미리 듣기</item>
+    </plurals>
     <string name="listen_open_player">플레이어 열기</string>
     <string name="listen_close">플레이어 닫기</string>
     <string name="listen_loading">스토리 준비 중…</string>
@@ -1399,6 +1409,9 @@
     <string name="listen_speed_exact">정확한 재생 속도</string>
     <string name="listen_speed_slider">재생 속도 슬라이더</string>
     <string name="listen_speed_button">재생 속도 %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">%1$d초 미리 듣는 중입니다. 프리미엄 아카이브에서 스토리 전체를 들을 수 있습니다.</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">%1$d초 남음</item>
     </plurals>
@@ -1460,6 +1473,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">이번 주에 %1$s 남음</string>
+    <string name="listen_time_left_this_month">이번 달 %1$s 남음</string>
     <string name="listen_resets_on">%1$s에 초기화</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">오늘 무료 스토리 미리보기가 %1$d회 남았습니다</item>
@@ -1481,6 +1495,8 @@
     <string name="settings_listen_voices_summary">언어별 음성과 읽기 방식을 선택하세요</string>
     <string name="settings_listen_delivery">전달 방식</string>
     <string name="settings_listen_speed">재생 속도</string>
+    <string name="archive_listen">한 달에 스토리 1시간 분량을 음성으로 듣기</string>
+    <string name="archive_extra_listen">한 달에 스토리 10시간 분량을 음성으로 듣기</string>
     <string name="pro_listen">일주일에 스토리를 소리 내어 읽어주는 기능을 10시간 이용</string>
     <plurals name="new_stories_pill">
         <item quantity="other">%d개의 새 스토리</item>

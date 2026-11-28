@@ -538,7 +538,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "%(duration)s tersisa bulan ini"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -598,15 +598,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/tahun"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "Pratinjau %(seconds)s detik"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "Pratinjau %(seconds)ss"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1003,7 +1003,7 @@ msgid "/year"
 msgstr "/tahun"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 jam"
 
 msgid "1 month"
 msgstr "1 bulan"
@@ -1012,7 +1012,7 @@ msgid "1 year"
 msgstr "1 tahun"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 jam"
 
 msgid "12-hour"
 msgstr "12 jam"
@@ -2261,7 +2261,7 @@ msgid "Couldn't load audio for this story."
 msgstr "Audio untuk artikel ini tidak dapat dimuat."
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "Tidak dapat memuat audio."
 
 msgid "Counting is difficult"
 msgstr "Menghitung itu sulit"
@@ -2309,7 +2309,7 @@ msgid "Credit"
 msgstr "Kredit"
 
 msgid "Current plan"
-msgstr ""
+msgstr "Paket saat ini"
 
 msgid "Current voice"
 msgstr "Suara saat ini"
@@ -3658,8 +3658,8 @@ msgstr "Kesehatan"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Dengarkan %(count)s detik pertama yang dibacakan. Premium Archive membacakan seluruh artikel."
+msgstr[1] "Dengarkan %(count)s detik pertama yang dibacakan. Premium Archive membacakan seluruh artikel."
 
 msgid "Hearts"
 msgstr "Hati"
@@ -4039,7 +4039,7 @@ msgstr "Aktivitas terakhir"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "Pengaturan ulang manual terakhir: %(date)s."
 
 msgid "Last seen:"
 msgstr "Terakhir terlihat:"
@@ -4115,10 +4115,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "Waktu untuk mendengarkan habis. Coba lagi sebentar lagi."
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Dengarkan artikel yang dibacakan selama 1 jam setiap bulan"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "Dengarkan artikel yang dibacakan selama 10 jam per bulan"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Dengarkan artikel yang dibacakan hingga 10 jam per minggu"
@@ -4415,7 +4415,7 @@ msgid "Monday"
 msgstr "Senin"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "Waktu mendengarkan bulanan"
 
 msgid "Monthly spending limit"
 msgstr "Batas pengeluaran bulanan"
@@ -4594,7 +4594,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Tidak akan pernah kedaluwarsa. Selamat!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "Tidak pernah diatur ulang."
 
 msgid "New Arrivals"
 msgstr "Pendatang Baru"
@@ -5391,15 +5391,15 @@ msgstr "Tempat"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "Paket: %(tier)s. %(count)s artikel dipratinjau hari ini."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "Paket: %(tier)s. %(used)s dari %(limit)s menit audio baru bulan ini, diatur ulang %(resets)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "Paket: %(tier)s. %(used)s dari %(limit)s menit audio baru minggu ini, diatur ulang %(resets)s."
 
 msgid "Platform"
 msgstr "Platform"
@@ -5504,7 +5504,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive membacakan artikel secara utuh."
@@ -5979,7 +5979,7 @@ msgid "Reset"
 msgstr "Atur ulang"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Atur Ulang Penggunaan Listen"
 
 msgid "Reset to original favicon"
 msgstr "Kembalikan favicon asli"
@@ -8149,7 +8149,7 @@ msgstr "Suara"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "Pratinjau suara hari ini: %(used)s dari %(limit)s."
 
 msgid "Voice recording failed. Please try again."
 msgstr "Rekaman suara gagal. Silakan coba lagi."

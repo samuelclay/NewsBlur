@@ -601,7 +601,7 @@ msgstr "%(date_from)s → %(date_to)s"
 
 #, python-format
 msgid "%(duration)s left this month"
-msgstr ""
+msgstr "В этом месяце осталось %(duration)s"
 
 #, python-format
 msgid "%(duration)s left this week"
@@ -665,15 +665,15 @@ msgstr "%(price)s · iPhone, iPad &amp; Mac"
 
 #, python-format
 msgid "%(price)s/year"
-msgstr ""
+msgstr "%(price)s/год"
 
 #, python-format
 msgid "%(seconds)s second preview"
-msgstr ""
+msgstr "Предпросмотр на %(seconds)s секунду"
 
 #, python-format
 msgid "%(seconds)ss preview"
-msgstr ""
+msgstr "Предпросмотр на %(seconds)sс"
 
 #, python-format
 msgid "%(shortcut)s to send"
@@ -1074,7 +1074,7 @@ msgid "/year"
 msgstr "/год"
 
 msgid "1 hour"
-msgstr ""
+msgstr "1 час"
 
 msgid "1 month"
 msgstr "1 месяц"
@@ -1083,7 +1083,7 @@ msgid "1 year"
 msgstr "1 год"
 
 msgid "10 hours"
-msgstr ""
+msgstr "10 часов"
 
 msgid "12-hour"
 msgstr "12 часов"
@@ -2356,7 +2356,7 @@ msgid "Couldn't load audio for this story."
 msgstr "Не удалось загрузить аудио для этой статьи."
 
 msgid "Couldn't load listening."
-msgstr ""
+msgstr "Не удалось загрузить данные о прослушивании."
 
 msgid "Counting is difficult"
 msgstr "Считать сложно"
@@ -2404,7 +2404,7 @@ msgid "Credit"
 msgstr "Бонус"
 
 msgid "Current plan"
-msgstr ""
+msgstr "Текущий план"
 
 msgid "Current voice"
 msgstr "Текущий голос"
@@ -3751,9 +3751,9 @@ msgstr "Здоровье"
 #, python-format
 msgid "Hear the first %(count)s second read aloud. Premium Archive reads whole stories."
 msgid_plural "Hear the first %(count)s seconds read aloud. Premium Archive reads whole stories."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Прослушайте озвучку первой %(count)s секунды. Premium Archive озвучивает статьи целиком."
+msgstr[1] "Прослушайте озвучку первых %(count)s секунд. Premium Archive озвучивает статьи целиком."
+msgstr[2] "Прослушайте озвучку первых %(count)s секунд. Premium Archive озвучивает статьи целиком."
 
 msgid "Hearts"
 msgstr "Сердечки"
@@ -4136,7 +4136,7 @@ msgstr "Последняя активность"
 
 #, python-format
 msgid "Last manual reset: %(date)s."
-msgstr ""
+msgstr "Последний ручной сброс: %(date)s."
 
 msgid "Last seen:"
 msgstr "Последний раз в сети:"
@@ -4212,10 +4212,10 @@ msgid "Listen timed out. Try again in a moment."
 msgstr "Истекло время ожидания. Попробуйте ещё раз через минуту."
 
 msgid "Listen to 1 hour of stories read aloud a month"
-msgstr ""
+msgstr "Слушать озвученные статьи 1 час в месяц"
 
 msgid "Listen to 10 hours of stories read aloud a month"
-msgstr ""
+msgstr "Слушать озвученные статьи 10 часов в месяц"
 
 msgid "Listen to 10 hours of stories read aloud a week"
 msgstr "Слушайте озвученные статьи до 10 часов в неделю"
@@ -4518,7 +4518,7 @@ msgid "Monday"
 msgstr "Понедельник"
 
 msgid "Monthly listening"
-msgstr ""
+msgstr "Прослушивание за месяц"
 
 msgid "Monthly spending limit"
 msgstr "Месячный лимит расходов"
@@ -4699,7 +4699,7 @@ msgid "Never gonna expire. Congrats!"
 msgstr "Срок действия никогда не истечёт. Поздравляем!"
 
 msgid "Never reset."
-msgstr ""
+msgstr "Никогда не сбрасывается."
 
 msgid "New Arrivals"
 msgstr "Новинки"
@@ -5506,15 +5506,15 @@ msgstr "Места"
 
 #, python-format
 msgid "Plan: %(tier)s. %(count)s stories previewed today."
-msgstr ""
+msgstr "План: %(tier)s. Сегодня предварительно просмотрено статей: %(count)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this month, resets %(resets)s."
-msgstr ""
+msgstr "План: %(tier)s. В этом месяце использовано %(used)s из %(limit)s минут нового аудио, сброс %(resets)s."
 
 #, python-format
 msgid "Plan: %(tier)s. %(used)s of %(limit)s minutes of new audio this week, resets %(resets)s."
-msgstr ""
+msgstr "План: %(tier)s. На этой неделе использовано %(used)s из %(limit)s минут нового аудио, сброс %(resets)s."
 
 msgid "Platform"
 msgstr "Платформа"
@@ -5619,7 +5619,7 @@ msgid "Premium Archive"
 msgstr "Premium Archive"
 
 msgid "Premium Archive Extra"
-msgstr ""
+msgstr "Premium Archive Extra"
 
 msgid "Premium Archive reads whole stories aloud."
 msgstr "Premium Archive озвучивает статьи целиком."
@@ -6103,7 +6103,7 @@ msgid "Reset"
 msgstr "Сбросить"
 
 msgid "Reset Listen usage"
-msgstr ""
+msgstr "Сбросить время прослушивания"
 
 msgid "Reset to original favicon"
 msgstr "Восстановить исходный значок сайта"
@@ -8288,7 +8288,7 @@ msgstr "Голос"
 
 #, python-format
 msgid "Voice previews today: %(used)s of %(limit)s."
-msgstr ""
+msgstr "Голосовых предпросмотров сегодня: %(used)s из %(limit)s."
 
 msgid "Voice recording failed. Please try again."
 msgstr "Не удалось записать голос. Попробуйте ещё раз."

@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ 个图片筛选器";
 "%@ is now following you." = "%@ 开始关注你了。";
 "%@ left in this preview" = "此预览还剩 %@";
+"%@ left this month" = "本月剩余 %@";
 "%@ left this week" = "本周还剩 %@";
 "%@ match" = "%@ 个匹配项";
 "%@ new stories" = "%@ 篇新文章";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ 篇未读文章";
 "%@ voice previews left" = "剩余 %@ 次语音试听";
 "%@/story" = "%@/篇文章";
+"%@/year" = "%@/年";
+"%@s preview" = "%@ 秒预览";
 "%@×" = "%@×";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小时前";
@@ -74,7 +77,9 @@
 "/mo" = "/月";
 "/month" = "/月";
 "1 Widget Site" = "1 个小组件网站";
+"1 hour" = "1 小时";
 "1,000 stories" = "1,000 篇文章";
+"10 hours" = "10 小时";
 "10 stories" = "10 篇文章";
 "10,000 stories" = "10,000 篇文章";
 "100 stories" = "100 篇文章";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "改为创建新账户";
 "Create account" = "创建账户";
 "Create an account" = "创建账户";
+"Current plan" = "当前套餐";
 "Custom" = "自定义";
 "Custom Domain" = "自定义域名";
 "Custom RSS feeds for saved stories" = "已保存文章的自定义 RSS 源";
@@ -536,6 +542,8 @@
 "List style" = "列表样式";
 "Listen" = "聆听";
 "Listen Settings" = "收听设置";
+"Listen to 1 hour of stories read aloud a month" = "每月可收听 1 小时的文章朗读";
+"Listen to 10 hours of stories read aloud a month" = "每月可收听 10 小时的文章朗读";
 "Listen to 10 hours of stories read aloud a week" = "每周可收听 10 小时文章朗读";
 "Listen to story" = "收听文章";
 "Listening isn't available right now." = "目前无法收听。";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
+"Monthly listening" = "每月朗读时长";
 "Monthly spending limit" = "每月支出上限";
 "Monthly spending limit reached. " = "已达到每月支出上限。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "保存更多文章会占用更多磁盘空间，但除此之外不会对性能产生明显影响。";
@@ -807,6 +816,7 @@
 "Preferred time" = "首选时间";
 "Premium" = "高级版";
 "Premium Archive" = "高级归档版";
+"Premium Archive Extra" = "高级归档版额外订阅";
 "Premium Pro" = "高级专业版";
 "Premium Subscription" = "高级订阅";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "高级版订阅者可以选择自定义的 NewsBlur 图标。每种样式都包含浅色和深色版本。";
@@ -887,6 +897,7 @@
 "Replying" = "回复中";
 "Reset" = "重置";
 "Resets %@" = "重置于 %@";
+"Resets on %@" = "将于 %@ 重置";
 "Resize sidebar" = "调整侧边栏大小";
 "Restore" = "恢复";
 "Resume" = "继续";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "昨天的文本";
 "Text view" = "文本视图";
 "Text view conveniently extracts the story" = "文本视图可便捷地提取文章内容";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "这是一个 %@ 秒的预览。高级归档版可解锁完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "无法加载音频。请稍后重试。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整的文本视图是<a href=\"http://ios.newsblur.com/premium\">高级功能</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 模拟器无法更改主屏幕图标。请在设备上尝试。";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "你的 NewsBlur 账户已删除。请在 Apple 账户设置中的“通过 Apple 登录”里移除 NewsBlur，以完成断开连接。";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "你选择的语音目前不可用，因此由 %@ 为你朗读这篇文章。";
 "Your identity is verified" = "你的身份已验证";
+"Your premium archive extra subscription includes everything above" = "你的高级归档版额外订阅包含以上所有内容";
+"Your premium archive extra subscription is active" = "你的高级归档版额外订阅已生效";
 "Your premium archive subscription includes everything above" = "你的高级归档版订阅包含以上所有功能";
 "Your premium archive subscription is active" = "你的高级归档版订阅已生效";
 "Your premium pro subscription includes everything above" = "你的高级专业版订阅包含以上所有功能";

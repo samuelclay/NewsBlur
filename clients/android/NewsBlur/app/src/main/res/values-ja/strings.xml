@@ -403,6 +403,7 @@
     <string name="main_menu_upgrade_premium">プレミアムにアップグレード</string>
     <string name="main_menu_upgrade_archive">アーカイブにアップグレード</string>
     <string name="main_menu_premium_archive">プレミアムアーカイブ</string>
+    <string name="main_menu_premium_archive_extra">プレミアムアーカイブ追加プラン</string>
     <string name="main_menu_premium_pro">プレミアム Pro</string>
     <string name="main_menu_support_forum">サポートフォーラム</string>
     <string name="newsblur_opml">NewsBlur OPML</string>
@@ -423,13 +424,16 @@
     <string name="premium_policies">詳細はNewsBlurの &lt;a href=\"https://newsblur.com/privacy\"&gt;プライバシーポリシー&lt;/a&gt; と &lt;a href=\"https://newsblur.com/tos\"&gt;利用規約&lt;/a&gt;をご覧ください。</string>
     <string name="premium_subscription_header">プレミアムサブスクリプション</string>
     <string name="archive_subscription_header">プレミアムアーカイブ</string>
+    <string name="archive_extra_subscription_header">プレミアムアーカイブ追加プラン</string>
     <string name="pro_subscription_header">プレミアム Pro</string>
     <string name="premium_subscription_title">NewsBlur プレミアムサブスクリプション</string>
     <string name="archive_subscription_title">NewsBlurプレミアムアーカイブ</string>
+    <string name="archive_extra_subscription_title">NewsBlur プレミアムアーカイブ追加</string>
     <string name="pro_subscription_title">NewsBlur プレミアム Pro</string>
     <string name="premium_subscription_price">年額35.99ドル（月額3.00ドル）</string>
     <string name="premium_subscription_active">プレミアムプランは有効です</string>
     <string name="archive_subscription_active">プレミアムアーカイブの購読は有効です</string>
+    <string name="archive_extra_subscription_active">プレミアムアーカイブ追加プランは有効です</string>
     <string name="pro_subscription_active">プレミアム Proのサブスクリプションは有効です</string>
     <string name="subscription_manage">サブスクリプションを管理</string>
     <string name="subscription_details_error">サブスクリプション情報の取得エラー</string>
@@ -441,7 +445,10 @@
     <string name="subscription_price_yearly">%1$s/年（%2$s/月）</string>
     <string name="subscription_price_monthly">%1$s/月</string>
     <string name="subscription_price_generic">%1$s/%2$s</string>
+    <string name="subscription_price_per_year">%1$s/年</string>
+    <string name="subscription_current_plan">現在のプラン</string>
     <string name="premium_archive_includes_above">プレミアムアーカイブの購読には、上記のすべてが含まれます</string>
+    <string name="premium_archive_extra_includes_above">プレミアムアーカイブ追加サブスクリプションには、上記のすべてが含まれます</string>
     <string name="premium_pro_includes_above">プレミアムProサブスクリプションには、上記のすべてが含まれます</string>
     <string name="premium_enable_sites">最大1,024サイトをフォロー</string>
     <string name="premium_sync">サイトの更新頻度が最大5倍に</string>
@@ -1346,6 +1353,9 @@
     <string name="listen_resume">再開</string>
     <string name="listen_pause">一時停止</string>
     <string name="listen_play">再生</string>
+    <plurals name="listen_preview_pill_seconds">
+        <item quantity="other">%1$d秒のプレビュー</item>
+    </plurals>
     <string name="listen_open_player">プレーヤーを開く</string>
     <string name="listen_close">プレーヤーを閉じる</string>
     <string name="listen_loading">記事を準備しています…</string>
@@ -1399,6 +1409,9 @@
     <string name="listen_speed_exact">正確な再生速度</string>
     <string name="listen_speed_slider">再生速度スライダー</string>
     <string name="listen_speed_button">再生速度 %1$s×</string>
+    <plurals name="listen_preview_banner_seconds">
+        <item quantity="other">%1$d秒をプレビュー中です。プレミアムアーカイブでは記事全体を聴けます。</item>
+    </plurals>
     <plurals name="listen_preview_seconds_left">
         <item quantity="other">残り%1$d秒</item>
     </plurals>
@@ -1460,6 +1473,7 @@
     </plurals>
     <string name="listen_hours_and_minutes">%1$s %2$s</string>
     <string name="listen_time_left_this_week">今週の残り%1$s</string>
+    <string name="listen_time_left_this_month">今月の残り：%1$s</string>
     <string name="listen_resets_on">%1$sにリセット</string>
     <plurals name="listen_story_previews_left">
         <item quantity="other">今日利用できる無料記事プレビューは残り%1$d件です</item>
@@ -1481,6 +1495,8 @@
     <string name="settings_listen_voices_summary">言語ごとに音声と読み上げ方を選択</string>
     <string name="settings_listen_delivery">話し方</string>
     <string name="settings_listen_speed">再生速度</string>
+    <string name="archive_listen">記事の読み上げを月1時間聴く</string>
+    <string name="archive_extra_listen">記事の読み上げを月10時間聴く</string>
     <string name="pro_listen">読み上げ記事を週10時間聴取</string>
     <plurals name="new_stories_pill">
         <item quantity="other">新着記事：%d件</item>

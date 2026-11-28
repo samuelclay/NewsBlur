@@ -45,6 +45,7 @@
 "%@ image filters" = "%@ 個圖片篩選器";
 "%@ is now following you." = "%@ 現在開始追蹤你。";
 "%@ left in this preview" = "此預覽還剩 %@";
+"%@ left this month" = "本月剩餘 %@";
 "%@ left this week" = "本週剩餘 %@";
 "%@ match" = "符合 %@ 項";
 "%@ new stories" = "%@ 篇新文章";
@@ -62,6 +63,8 @@
 "%@ unread stories" = "%@ 篇未讀文章";
 "%@ voice previews left" = "剩餘 %@ 次語音預覽";
 "%@/story" = "%@/篇文章";
+"%@/year" = "%@/年";
+"%@s preview" = "%@ 秒預覽";
 "%@×" = "%@ 倍";
 "%ldd ago" = "%ld 天前";
 "%ldh ago" = "%ld 小時前";
@@ -74,7 +77,9 @@
 "/mo" = "/月";
 "/month" = "/月";
 "1 Widget Site" = "1 個小工具網站";
+"1 hour" = "1 小時";
 "1,000 stories" = "1,000 篇文章";
+"10 hours" = "10 小時";
 "10 stories" = "10 篇文章";
 "10,000 stories" = "10,000 篇文章";
 "100 stories" = "100 篇文章";
@@ -276,6 +281,7 @@
 "Create a new account instead" = "改為建立新帳戶";
 "Create account" = "建立帳戶";
 "Create an account" = "建立帳戶";
+"Current plan" = "目前方案";
 "Custom" = "自訂";
 "Custom Domain" = "自訂網域";
 "Custom RSS feeds for saved stories" = "已儲存文章的自訂 RSS 訂閱來源";
@@ -536,6 +542,8 @@
 "List style" = "清單樣式";
 "Listen" = "聆聽";
 "Listen Settings" = "聆聽設定";
+"Listen to 1 hour of stories read aloud a month" = "每月聆聽 1 小時的文章朗讀";
+"Listen to 10 hours of stories read aloud a month" = "每月聆聽 10 小時的文章朗讀";
 "Listen to 10 hours of stories read aloud a week" = "每週聆聽朗讀文章最多 10 小時";
 "Listen to story" = "聆聽文章";
 "Listening isn't available right now." = "目前無法使用聆聽功能。";
@@ -624,6 +632,7 @@
 "Medium [theme]" = "灰色";
 "Model" = "模型";
 "Monday" = "星期一";
+"Monthly listening" = "每月聆聽時間";
 "Monthly spending limit" = "每月支出上限";
 "Monthly spending limit reached. " = "已達每月支出上限。";
 "More stories take more disk space, but otherwise have no noticeable effect on performance." = "更多文章會占用更多磁碟空間，但除此之外，不會對效能造成明顯影響。";
@@ -807,6 +816,7 @@
 "Preferred time" = "偏好時間";
 "Premium" = "Premium";
 "Premium Archive" = "Premium Archive";
+"Premium Archive Extra" = "Premium Archive Extra";
 "Premium Pro" = "Premium Pro";
 "Premium Subscription" = "Premium 訂閱";
 "Premium subscribers can choose a custom NewsBlur icon. Each flavor includes light and dark variants." = "Premium 訂閱者可以選擇自訂的 NewsBlur 圖示。每種樣式都包含淺色和深色版本。";
@@ -887,6 +897,7 @@
 "Replying" = "回覆中";
 "Reset" = "重設";
 "Resets %@" = "於 %@ 重設";
+"Resets on %@" = "於 %@ 重設";
 "Resize sidebar" = "調整側邊欄大小";
 "Restore" = "還原";
 "Resume" = "繼續";
@@ -1128,6 +1139,7 @@
 "Text from yesterday" = "昨天的文字";
 "Text view" = "文字檢視";
 "Text view conveniently extracts the story" = "文字檢視會方便地擷取文章內容";
+"That was a %@ second preview. Premium Archive unlocks full stories." = "這是 %@ 秒的預覽。Premium Archive 可解鎖完整文章。";
 "The audio couldn't be loaded. Try again in a moment." = "無法載入音訊。請稍後再試。";
 "The full Text view is a <a href=\"http://ios.newsblur.com/premium\">premium feature</a>" = "完整文字檢視是 <a href=\"http://ios.newsblur.com/premium\">進階功能</a>";
 "The iOS simulator could not change the Home Screen icon. Try this on a device." = "iOS 模擬器無法更改主畫面圖示。請改在裝置上試試。";
@@ -1299,6 +1311,8 @@
 "Your NewsBlur account has been deleted. Remove NewsBlur from Sign in with Apple in your Apple Account settings to finish disconnecting it." = "你的 NewsBlur 帳戶已刪除。請在 Apple 帳戶設定中的「使用 Apple 登入」移除 NewsBlur，以完成解除連結。";
 "Your chosen voice isn't available right now, so %@ is reading this story." = "你選擇的語音目前無法使用，因此由 %@ 為你朗讀這篇文章。";
 "Your identity is verified" = "你的身分已驗證";
+"Your premium archive extra subscription includes everything above" = "你的 Premium Archive Extra 訂閱包含以上所有內容";
+"Your premium archive extra subscription is active" = "你的 Premium Archive Extra 訂閱已啟用";
 "Your premium archive subscription includes everything above" = "你的 Premium Archive 訂閱包含以上所有功能";
 "Your premium archive subscription is active" = "你的 Premium Archive 訂閱已啟用";
 "Your premium pro subscription includes everything above" = "你的 Premium Pro 訂閱包含上述所有功能";
