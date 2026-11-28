@@ -419,21 +419,25 @@ def _order_id(subscription, item):
 
 
 def _record_payment(user, provider, amount, plan, order_id, paid_at, period_end, test_purchase):
-    """One payment row per Google Play order. A test purchase is flagged as sandbox, so no revenue report counts it."""
-    if PaymentHistory.objects.filter(
-        user=user, payment_provider__startswith="android-", payment_identifier=order_id
-    ).exists():
-        return
-    PaymentHistory.objects.create(
-        user=user,
-        payment_date=paid_at,
-        payment_amount=amount,
-        payment_provider=provider,
-        payment_identifier=order_id,
-        plan=plan,
-        period_end=period_end,
-        sandbox=test_purchase or None,
-    )
+    """One payment row per Google Play order. The app's purchase and Google's notification of one order can arrive at
+    once, so the check and the insert hold the account's Profile row. A test purchase is flagged as sandbox, so no
+    revenue report counts it."""
+    with transaction.atomic():
+        Profile.objects.select_for_update().get(user=user)
+        if PaymentHistory.objects.filter(
+            user=user, payment_provider__startswith="android-", payment_identifier=order_id
+        ).exists():
+            return
+        PaymentHistory.objects.create(
+            user=user,
+            payment_date=paid_at,
+            payment_amount=amount,
+            payment_provider=provider,
+            payment_identifier=order_id,
+            plan=plan,
+            period_end=period_end,
+            sandbox=test_purchase or None,
+        )
 
 
 def _remember_token(user, purchase_token, product_id, order_id):

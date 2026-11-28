@@ -2578,7 +2578,16 @@ class Profile(models.Model):
         if prorate:
             transaction_date = dateutil.parser.parse(transaction["time"])
             days_since = (datetime.datetime.now() - transaction_date.replace(tzinfo=None)).days
-            period_days = self.paypal_paid_period_days(paypal_api, paypal_sub_id, transaction_date)
+            period_days = self.paypal_paid_period_days(
+                paypal_api, paypal_sub_id, transaction_date, int(refund_amount)
+            )
+            if not period_days:
+                logging.user(
+                    self.user, f"~FRCouldn't tell what the paypal payment paid for: ~SB{transaction}"
+                )
+                return "Couldn't tell how long PayPal payment %s paid for, so none of it was refunded" % (
+                    transaction["id"]
+                )
             if days_since < period_days:
                 days_left = period_days - days_since
                 pct_left = days_left / period_days
@@ -2622,16 +2631,30 @@ class Profile(models.Model):
 
         return refunded
 
-    def paypal_paid_period_days(self, paypal_api, paypal_sub_id, paid_at):
-        """The days a payment made at paid_at pays for, from the billing cycle of the subscription's plan at
-        PayPal: the month after it for a monthly plan, and a year otherwise or when PayPal can't say, as for a
-        subscription made before PayPal had plans."""
+    def paypal_paid_period_days(self, paypal_api, paypal_sub_id, paid_at, amount):
+        """The days a payment of amount whole dollars made at paid_at pays for: the period its payment row records,
+        the month after it at a monthly price and a year at an annual price, as premium_expire_from_payments reads
+        them, and otherwise the billing cycle of the subscription's plan at PayPal, the month after it for a monthly
+        plan, and a year for any other or when PayPal shows no plan, as for a subscription made before PayPal had
+        plans. None when PayPal can't be read, so the period isn't known."""
+        payment = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_provider="paypal",
+            payment_date__date=paid_at.date(),
+            payment_amount=amount,
+        ).first()
+        if payment and payment.period_end:
+            return (payment.period_end - payment.payment_date).days
+        if amount in self.MONTHLY_PRICES:
+            return (paid_at + dateutil.relativedelta.relativedelta(months=1) - paid_at).days
+        if amount in self.ANNUAL_PRICES:
+            return self.ANNUAL_PERIOD_DAYS
         try:
             plan_id = paypal_api.get(f"/v1/billing/subscriptions/{paypal_sub_id}").get("plan_id")
             plan = paypal_api.get(f"/v1/billing/plans/{plan_id}") if plan_id else {}
         except paypalrestsdk.exceptions.ConnectionError as e:
             logging.user(self.user, f"~FRCouldn't read the paypal plan of {paypal_sub_id}: {e}")
-            return self.ANNUAL_PERIOD_DAYS
+            return None
         for cycle in plan.get("billing_cycles") or []:
             frequency = cycle.get("frequency") or {}
             if cycle.get("tenure_type") == "REGULAR" and frequency.get("interval_unit") == "MONTH":

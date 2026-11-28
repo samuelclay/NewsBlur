@@ -66,7 +66,7 @@ from apps.rss_feeds.tasks import ScheduleImmediateFetches, SchedulePremiumSetup
 from apps.social.models import MSocialProfile
 from apps.statistics.models import MStatistics
 from apps.statistics.rllm_costs import RLLMCosts
-from apps.team import stripe_billing
+from apps.team import play_billing, stripe_billing
 from apps.team.billing import record_team_payment, start_comp_team
 from apps.team.grants import activate_team, deactivate_team, release_team_pro
 from apps.team.models import (
@@ -2772,6 +2772,30 @@ class Test_TeamBillingAtOnce(TeamClientMixin, TransactionTestCase):
         self.assertEqual(len(mail.outbox), 1)
         EmailStaffPremiumUpgrade.delay.assert_called_once()
 
+    def test_the_app_and_google_reporting_one_play_order_at_once_record_one_payment(self):
+        buyer = User.objects.create_user(username="buyer", email="buyer@example.com")
+        paid_through = datetime.datetime.now().replace(microsecond=0) + relativedelta(months=1)
+        FakeGooglePlay(self).subscribe(buyer, "token-1", "nb.premium.team.79", paid_through, "GPA.1")
+
+        # Google's notification of the order has written its payment row but not committed it, so the app's report of
+        # the same purchase can't see the row and waits on it.
+        self.while_held(
+            lambda: play_billing._record_payment(
+                buyer,
+                "android-team",
+                79,
+                Team.PLAN_TEAM,
+                "GPA.1",
+                datetime.datetime.now(),
+                paid_through,
+                False,
+            ),
+            lambda: play_billing.save_play_purchase(buyer, "nb.premium.team.79", "token-1"),
+        )
+
+        self.assertEqual(PaymentHistory.objects.filter(user=buyer, payment_identifier="GPA.1").count(), 1)
+        self.assertEqual(Team.objects.get(owner=buyer).paid_through, paid_through)
+
 
 class Test_TeamTransfer(TeamProMixin, TestCase):
     """A team's owner hands it to a teammate, who takes it over by paying for its plan or, for a comp, by accepting.
@@ -4204,6 +4228,8 @@ class FakePayPalBilling:
         self.created = []
         self.refunds = []
         self.clock = datetime.datetime.now()
+        # tests.py: False while PayPal answers a read of a plan with a server error.
+        self.plans_readable = True
         test.patch(profile_models.paypalrestsdk, "Api", return_value=self)
         test.patch(
             paypalrestsdk.api.Api, "http_call", side_effect=AssertionError("a test reached PayPal's API")
@@ -4293,6 +4319,15 @@ class FakePayPalBilling:
     def next_billing(self, subscription):
         return local_time(subscription["billing_info"]["next_billing_time"])
 
+    def plan_record(self, plan_id):
+        unit = "MONTH" if Profile.paypal_plan(plan_id) in self.MONTHLY_PLANS else "YEAR"
+        return {
+            "id": plan_id,
+            "billing_cycles": [
+                {"tenure_type": "REGULAR", "frequency": {"interval_unit": unit, "interval_count": 1}}
+            ],
+        }
+
     def latest_payment(self, subscription):
         return self.transactions[subscription["id"]][0]
 
@@ -4315,16 +4350,12 @@ class FakePayPalBilling:
             subscription = copy.deepcopy(self.subscriptions[parts[3]])
             if "fields=plan" in url:
                 # tests.py: asked for, PayPal includes the subscription's plan with its billing cycles.
-                subscription["plan"] = self.get("/v1/billing/plans/%s" % subscription["plan_id"])
+                subscription["plan"] = self.plan_record(subscription["plan_id"])
             return subscription
         if path.startswith("/v1/billing/plans/"):
-            unit = "MONTH" if Profile.paypal_plan(parts[3]) in self.MONTHLY_PLANS else "YEAR"
-            return {
-                "id": parts[3],
-                "billing_cycles": [
-                    {"tenure_type": "REGULAR", "frequency": {"interval_unit": unit, "interval_count": 1}}
-                ],
-            }
+            if not self.plans_readable:
+                raise paypalrestsdk.exceptions.ServerError(MagicMock())
+            return self.plan_record(parts[3])
         if path.startswith("/v1/payments/sale/"):
             subscription_id, transaction = self._transaction(parts[3])
             return {"id": transaction["id"], "billing_agreement_id": subscription_id}
@@ -4567,6 +4598,47 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         self.lapse(subscriber)
         self.assertEqual(self.plan_of(subscriber), "pro")
         self.assertFalse(TeamProGrant.objects.filter(user=subscriber).exists())
+
+    def test_a_replaced_plan_is_refunded_over_the_period_known_for_its_payment_when_paypal_cant_say(self):
+        """PayPal answers no read of a plan. A payment at a monthly or an annual price, recorded before payment rows
+        kept their period, and one at an unlisted price whose row kept its year, are prorated over those periods. One
+        at an unlisted price with no period recorded isn't refunded on a guess, and staff are told."""
+        subscribers = [
+            self.own_subscriber("monthly", "pro", paid_days_ago=20),
+            self.own_subscriber("annual", "premium", paid_days_ago=100),
+            self.own_subscriber("recorded", "archive", paid_days_ago=100),
+            self.own_subscriber("unknown", "archive", paid_days_ago=100),
+        ]
+        for _, _, payment in subscribers[2:]:
+            payment["amount_with_breakdown"]["gross_amount"]["value"] = "60.00"
+        for user, _, _ in subscribers:
+            Profile.objects.get(user=user).setup_premium_history()
+        PaymentHistory.objects.filter(user__username__in=["monthly", "annual", "unknown"]).update(
+            plan=None, period_end=None
+        )
+        self.paypal.plans_readable = False
+
+        for user, _, _ in subscribers:
+            self.profile_post(user, "switch_paypal_subscription", plan=Team.PLAN_TEAM)
+            _, team_subscription = self.paypal.created[-1]
+            self.paypal.approve(team_subscription)
+            self.paypal.charge(team_subscription)
+            self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", team_subscription)
+
+        monthly, annual, recorded, _ = [payment["id"] for _, _, payment in subscribers]
+        paid_at = self.now - self.days(100)
+        year = (paid_at + relativedelta(years=1) - paid_at).days
+        # A year's proration of the $29 month would refund $27.41.
+        self.assertEqual(
+            self.paypal.refunds,
+            [
+                (monthly, self.month_left(29, 20)),
+                (annual, "26.14"),
+                (recorded, "%.2f" % (60 * (year - 100) / year)),
+            ],
+        )
+        self.assertEqual([subscription["status"] for _, subscription, _ in subscribers], ["SUSPENDED"] * 4)
+        self.assertEqual(self.staff_events(), ["team_paypal_refund_failed"])
 
     def test_switching_up_between_team_plans_refunds_what_is_left_of_the_month(self):
         owner, team_subscription = self.team_owner("teamowner", paid_at=self.now - self.days(20))
@@ -4894,6 +4966,24 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         team.refresh_from_db()
         self.assertEqual((team.owner, team.billing_reference), (heir, subscription["id"]))
         self.assertEqual(self.plan_of(owner), "pro")
+        self.assertEqual(self.staff_events(), [])
+
+    def test_the_old_owner_is_refunded_the_rest_of_their_month_when_paypal_cant_say_how_long_it_bills(self):
+        self.settle_hand_overs()
+        owner, old_subscription = self.team_owner("teamowner", paid_at=self.now - self.days(20))
+        old_payment = self.paypal.latest_payment(old_subscription)
+        team = self.owned_team(owner)
+        heir = self.reader("heir")
+        self.join(heir, self.join_link_token(team, owner))
+        self.post(owner, "transfer_ownership", team_id=team.pk, user_id=heir.pk)
+        self.paypal.plans_readable = False
+
+        subscription = self.paypal.subscribe(heir, Team.PLAN_TEAM)
+        self.paypal.charge(subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", subscription)
+
+        # A year's proration would refund $74.67 of the $79.
+        self.assertEqual(self.paypal.refunds, [(old_payment["id"], self.month_left(79, 20))])
         self.assertEqual(self.staff_events(), [])
 
 

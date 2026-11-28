@@ -100,6 +100,9 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
     the token was made for (app_account_token); an Apple account identifier is not
     sufficient. account is the account the app posted a verified transaction from
     (apply_apple_purchase), which owns it unless the history gives it to another.
+    A transaction for a plan other than the one the account pays for is ignored,
+    unless the app posted it: its payment is then recorded, and apply_apple_purchase
+    starts its plan.
 
     A team plan's transaction, and one that switched a team's subscription down to
     a plan of the owner's own, go on to apps/team/app_store_billing.py.
@@ -165,12 +168,14 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
             None if team_plan else switched_down_team(user_id, original_identifier, purchase, tier)
         )
         current_rank = None
+        cross_tier = False
         if not team_plan and not switched_from:
             current_rank = _paid_rank(profile)
             paid = current_rank > 0
             if paid and profile.premium_expire is None:
                 return {"status": "ignored", "reason": "lifetime", "user_id": user_id}
-            if paid and current_rank != rank:
+            cross_tier = paid and current_rank != rank
+            if cross_tier and not account:
                 # apps/profile/models.py has one shared tier/expiry, so a lower-tier
                 # or upgrade transaction needs separate entitlement reconciliation.
                 return {"status": "ignored", "reason": "cross-tier", "user_id": user_id}
@@ -212,7 +217,7 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
         payment.sandbox = sandbox or None
         payment.save()
 
-        if not team_plan:
+        if not team_plan and not cross_tier:
             previous_expiration = profile.premium_expire
             target_expiration = max(
                 expiration,
@@ -222,6 +227,8 @@ def apply_verified_apple_transaction(transaction_data, now=None, account=None):
             profile.save(update_fields=["premium_expire"])
 
     status = "duplicate" if duplicate else "processed"
+    if cross_tier:
+        return {"status": status, "reason": "cross-tier", "user_id": user_id}
     if team_plan:
         team_payment = record_app_store_payment(
             profile.user,
@@ -297,8 +304,9 @@ def apply_apple_purchase(user, transaction_data):
     (apps/profile/apple_notifications.py process_apple_purchase). It is applied as a notification of it would be, to
     this account, unless it carries another account's app account token or the payment history gives it to another
     account. A plan above or below the one the account pays for, which a notification leaves alone, starts the way the
-    app's purchases always have (Profile.activate_ios_premium and the rest). Returns None when the account's plan
-    follows the transaction, or why it doesn't: a reason apps/profile/views.py save_ios_receipt explains."""
+    app's purchases always have (Profile.activate_ios_premium and the rest), with its payment recorded from Apple's
+    purchase and expiry dates. Returns None when the account's plan follows the transaction, or why it doesn't: a
+    reason apps/profile/views.py save_ios_receipt explains."""
     product = APPLE_PRODUCTS.get(transaction_data.get("productId"))
     if product is None:
         return "unknown_product"
@@ -309,7 +317,16 @@ def apply_apple_purchase(user, transaction_data):
     status, reason = result["status"], result.get("reason")
     if status not in ("processed", "duplicate", "ignored"):
         return "other_account"
-    if status == "ignored" and reason in ("cross-tier", "lifetime"):
+    if reason == "cross-tier":
+        # apple_subscriptions.py: what Profile.activate_ios_premium and the rest do once they've recorded a payment,
+        # here one recorded with Apple's dates, so what it pays for ends when Apple says. activate_ios_premium starts
+        # Premium only on an account without it, which an account paying for another plan isn't.
+        profile = Profile.objects.get(user=user)
+        profile.setup_premium_history()
+        if product[0] != "premium":
+            getattr(profile, "activate_%s" % product[0])()
+        return None
+    if status == "ignored" and reason == "lifetime":
         profile = Profile.objects.get(user=user)
         getattr(profile, "activate_ios_%s" % product[0])(transaction_data["transactionId"])
         if transaction_data.get("environment") == "Sandbox":
