@@ -16641,7 +16641,7 @@
    },
    "gridPos": {
     "h": 8,
-    "w": 24,
+    "w": 12,
     "x": 0,
     "y": 687
    },
@@ -16679,9 +16679,121 @@
      "expr": "rate(newsblur_rate_limit_abuse_requests_total[5m]) * 60",
      "legendFormat": "Abuse requests/min",
      "refId": "B"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "sum by (kind) (rate(newsblur_rate_limit_refused_total[5m])) * 60",
+     "legendFormat": "Refused {{kind}} requests/min",
+     "refId": "C"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "sum by (kind) (rate(newsblur_rate_limit_would_refuse_total[5m])) * 60",
+     "legendFormat": "Would refuse {{kind}} requests/min",
+     "refId": "D"
     }
    ],
-   "title": "Rate Limited Requests (Would Block)",
+   "title": "Rate Limited Requests",
+   "type": "timeseries"
+  },
+  {
+   "datasource": {
+    "type": "prometheus",
+    "uid": "U1-fPO3Mk"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "color": {
+      "mode": "palette-classic"
+     },
+     "custom": {
+      "axisCenteredZero": false,
+      "axisColorMode": "text",
+      "axisLabel": "",
+      "axisPlacement": "auto",
+      "barAlignment": 0,
+      "drawStyle": "line",
+      "fillOpacity": 10,
+      "gradientMode": "none",
+      "hideFrom": {
+       "legend": false,
+       "tooltip": false,
+       "viz": false
+      },
+      "lineInterpolation": "linear",
+      "lineWidth": 1,
+      "pointSize": 5,
+      "scaleDistribution": {
+       "type": "linear"
+      },
+      "showPoints": "never",
+      "spanNulls": false,
+      "stacking": {
+       "group": "A",
+       "mode": "none"
+      },
+      "thresholdsStyle": {
+       "mode": "off"
+      }
+     },
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 80
+       }
+      ]
+     },
+     "unit": "short"
+    },
+    "overrides": []
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 687
+   },
+   "id": 405,
+   "options": {
+    "legend": {
+     "calcs": [
+      "mean",
+      "lastNotNull",
+      "max"
+     ],
+     "displayMode": "table",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "sum by (kind) (rate(newsblur_tracked_requests_total[5m])) * 60",
+     "legendFormat": "{{kind}} requests/min",
+     "refId": "A"
+    }
+   ],
+   "title": "Requests Counted by Kind",
    "type": "timeseries"
   },
   {

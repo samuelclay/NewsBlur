@@ -5812,6 +5812,15 @@ msgstr "انتقل في أقل من دقيقة"
 msgid "Switch to this Credit Card"
 msgstr "التبديل إلى هذه البطاقة الائتمانية"
 
+msgid "Switched to Premium"
+msgstr "تم التبديل إلى Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "تم التبديل إلى Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "تم التبديل إلى Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "وسم"
@@ -5883,6 +5892,9 @@ msgstr "شكرًا لاشتراكك في NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "شكرًا لاشتراكك في NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "شكرًا لاشتراكك في NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "شكرًا لاشتراكك في NewsBlur Premium Pro"
@@ -6202,6 +6214,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "هذه خلاصة RSS بالفعل. جارٍ الاشتراك مباشرةً."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "يستغرق هذا وقتًا أطول من المعتاد. ستتم ترقية حسابك فور تأكيد الدفع."
 
 msgid "This payment has been refunded."
 msgstr "تم رد قيمة هذه الدفعة."
@@ -7526,6 +7541,9 @@ msgid ""
 msgstr ""
 "أصبح حسابك الآن ضمن الخطة المجانية مع بعض القيود. لكن يمكنك استعادة جميع الميزات مقابل <b>36 دولارًا "
 "سنويًا</b> فقط."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "حسابك جاهز. جارٍ نقلك إلى NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

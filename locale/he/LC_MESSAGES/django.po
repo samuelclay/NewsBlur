@@ -5612,6 +5612,15 @@ msgstr "מעבר בפחות מדקה"
 msgid "Switch to this Credit Card"
 msgstr "החלף לכרטיס אשראי זה"
 
+msgid "Switched to Premium"
+msgstr "המעבר ל־Premium הושלם"
+
+msgid "Switched to Premium Archive"
+msgstr "המעבר ל־Premium Archive הושלם"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "המעבר ל־Premium Archive Extra הושלם"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "תגית"
@@ -5683,6 +5692,9 @@ msgstr "תודה שנרשמת ל-NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "תודה שנרשמת ל-NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "תודה שנרשמת ל־NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "תודה שנרשמת ל-NewsBlur Premium Pro"
@@ -5985,6 +5997,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "זה כבר פיד RSS. מתבצעת הרשמה ישירה."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "הפעולה נמשכת זמן רב מהרגיל. החשבון שלך ישודרג ברגע שהתשלום יאושר."
 
 msgid "This payment has been refunded."
 msgstr "התשלום הזה הוחזר."
@@ -7255,6 +7270,9 @@ msgid ""
 msgstr ""
 "החשבון שלך עבר כעת לתוכנית החינמית, עם כמה מגבלות. אבל אפשר לפתוח שוב את כל האפשרויות תמורת <b>$36 לשנה</b>"
 " בלבד."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "החשבון שלך מוכן. מעבירים אותך אל NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

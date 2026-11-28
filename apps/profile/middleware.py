@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import connection
 from django.http import HttpResponse
 from django.template import Context, Template
+from sentry_sdk import capture_exception
 
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
@@ -846,6 +847,12 @@ class IPRateTrackingMiddleware:
     IPs exceeding IP_RATE_LIMIT_THRESHOLD (default 500) requests per 5-min
     window are blocked with 429. Controlled by IP_RATE_LIMITING_ENABLED in settings.
     See utils/ip_rate_tracker.py for implementation details.
+
+    process_view also counts every request by address in one-minute windows, by kind
+    (RequestRateTracker in utils/ip_rate_tracker.py). Signed-out blurblog and shared-story
+    page loads over IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE are blocked with 429. Other signed-out
+    requests over it are logged as WOULD BLOCK, and blocked only when
+    IP_RATE_LIMITING_ANONYMOUS_ENABLED is also on. Signed-in requests are counted, never limited.
     """
 
     # Map URL prefixes to endpoint shortcodes
@@ -858,9 +865,14 @@ class IPRateTrackingMiddleware:
         "/reader/read_stories": "read",
     }
 
+    # Health checks and monitoring, which process_view never counts or limits
+    UNTRACKED_PATHS = ("/_haproxychk", "/_dbcheck", "/monitor/", "/health-check")
+
     def __init__(self, get_response=None):
         self.get_response = get_response
         self._tracker = None
+        self._request_tracker = None
+        self._counting_error_reported_at = 0
 
     @property
     def tracker(self):
@@ -870,6 +882,15 @@ class IPRateTrackingMiddleware:
 
             self._tracker = IPRateTracker()
         return self._tracker
+
+    @property
+    def request_tracker(self):
+        """Lazy initialization of RequestRateTracker."""
+        if self._request_tracker is None:
+            from utils.ip_rate_tracker import RequestRateTracker
+
+            self._request_tracker = RequestRateTracker()
+        return self._request_tracker
 
     def get_endpoint(self, path):
         """
@@ -923,3 +944,94 @@ class IPRateTrackingMiddleware:
                 logging.debug(" ***> IP rate tracking error: %s" % e)
 
         return self.get_response(request)
+
+    def get_request_kind(self, request, view_func):
+        """
+        Classify a request as a signed-in request, a signed-out blurblog or shared-story page
+        load, or any other signed-out request. Views are compared by identity, since their
+        decorators rename them.
+        """
+        # Imported here to avoid import cycles while middleware loads.
+        from apps.reader import views as reader_views
+        from apps.social import views as social_views
+        from utils.ip_rate_tracker import RequestRateTracker
+
+        if hasattr(request, "user") and request.user.is_authenticated:
+            return RequestRateTracker.KIND_USER
+        if view_func is social_views.load_social_page:
+            return RequestRateTracker.KIND_PAGE
+        # Same condition that sends a request to load_social_page at the top of
+        # apps/reader/views.py index.
+        subdomain = getattr(request, "subdomain", None)
+        if (
+            view_func is reader_views.index
+            and request.method == "GET"
+            and subdomain
+            and subdomain not in reader_views.ALLOWED_SUBDOMAINS
+        ):
+            return RequestRateTracker.KIND_PAGE
+        return RequestRateTracker.KIND_ANONYMOUS
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        """
+        Count every request by address and kind, and refuse signed-out requests over
+        IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE where that limit is enforced. Returns None to let the
+        view run.
+        """
+        from utils.ip_rate_tracker import (
+            RATE_LIMIT_REFUSED_TOTAL,
+            RATE_LIMIT_WOULD_REFUSE_TOTAL,
+            RequestRateTracker,
+        )
+
+        if request.path.startswith(self.UNTRACKED_PATHS):
+            return None
+        # Skip test mode, as AttackBanMiddleware does: other tests swap the Redis client for a mock
+        if getattr(settings, "TEST_DEBUG", False):
+            return None
+
+        try:
+            kind = self.get_request_kind(request, view_func)
+            count = self.request_tracker.track(request, kind)
+        except redis.RedisError as e:
+            # Don't let tracking errors break the request
+            logging.debug(" ***> Request rate tracking error: %s" % e)
+            return None
+        except Exception as e:
+            # Anything else is a bug in the counting. The request is still served, and Sentry hears
+            # about it at most once a minute from each worker.
+            if time.time() - self._counting_error_reported_at > 60:
+                self._counting_error_reported_at = time.time()
+                capture_exception(e)
+            return None
+
+        if kind == RequestRateTracker.KIND_USER or count <= settings.IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE:
+            return None
+
+        ip = self.request_tracker.get_ip(request)
+        # The host and the URL pattern say which page it was. The path and query string can carry
+        # tokens, so they stay out of the log.
+        route = "%s %s" % (request.get_host(), request.resolver_match.route)
+        enforced = settings.IP_RATE_LIMITING_ENABLED and (
+            kind == RequestRateTracker.KIND_PAGE or settings.IP_RATE_LIMITING_ANONYMOUS_ENABLED
+        )
+        if not enforced:
+            RATE_LIMIT_WOULD_REFUSE_TOTAL.labels(kind=kind).inc()
+            logging.user(
+                request,
+                "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, route, count, kind),
+            )
+            return None
+
+        RATE_LIMIT_REFUSED_TOTAL.labels(kind=kind).inc()
+        logging.user(
+            request,
+            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, route, count, kind),
+        )
+        response = HttpResponse(
+            '{"error": "Rate limit exceeded", "code": -1}',
+            status=429,
+            content_type="application/json",
+        )
+        response["Retry-After"] = str(self.request_tracker.get_seconds_left_in_window())
+        return response

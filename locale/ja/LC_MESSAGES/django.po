@@ -5258,6 +5258,15 @@ msgstr "1分以内で切り替え"
 msgid "Switch to this Credit Card"
 msgstr "このクレジットカードに切り替える"
 
+msgid "Switched to Premium"
+msgstr "プレミアムに切り替えました"
+
+msgid "Switched to Premium Archive"
+msgstr "プレミアムアーカイブに切り替えました"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "プレミアムアーカイブ追加プランに切り替えました"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "タグ"
@@ -5329,6 +5338,9 @@ msgstr "NewsBlurにご登録いただきありがとうございます"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "NewsBlurプレミアムアーカイブにご登録いただきありがとうございます"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "NewsBlur プレミアムアーカイブ追加プランをご購読いただきありがとうございます"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "NewsBlur プレミアム Proにご登録いただきありがとうございます"
@@ -5605,6 +5617,9 @@ msgstr "これはあなたのために作られた、自由にカスタマイズ
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "これはすでにRSSフィードです。直接購読します。"
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "通常より時間がかかっています。お支払いが確認され次第、アカウントはアップグレードされます。"
 
 msgid "This payment has been refunded."
 msgstr "このお支払いは返金されました。"
@@ -6801,6 +6816,9 @@ msgid ""
 "Your account is now on the free plan with some limitations. But you can unlock everything again for just "
 "<b>$36/year</b>."
 msgstr "現在、お客様のアカウントは一部機能に制限のある無料プランになっています。<b>年額36ドル</b>で、すべての機能を再びご利用いただけます。"
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "アカウントの準備ができました。NewsBlurに移動します…"
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

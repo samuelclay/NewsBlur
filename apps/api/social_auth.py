@@ -21,7 +21,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from apps.profile.models import SocialIdentity
 from apps.reader.forms import SignupForm
-from utils.ip_rate_tracker import _get_client_ip
+from utils.ip_rate_tracker import client_address
 
 APPLE_KEYS = jwt.PyJWKClient("https://appleid.apple.com/auth/keys", timeout=10)
 GOOGLE_KEYS = jwt.PyJWKClient("https://www.googleapis.com/oauth2/v3/certs", timeout=10)
@@ -67,8 +67,8 @@ def consume(kind, token):
 
 
 def rate_limited(request):
-    # social_auth.py shares ip_rate_tracker.py's trusted HAProxy/Nginx address extraction.
-    address = _get_client_ip(request)
+    # social_auth.py counts by the same client address as the trackers in ip_rate_tracker.py.
+    address = client_address(request)
     key = "social:rate:" + hashlib.sha256(address.encode()).hexdigest()
     if cache.add(key, 1, 60):
         return False

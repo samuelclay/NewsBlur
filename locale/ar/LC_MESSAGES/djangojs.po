@@ -930,6 +930,16 @@ msgid "%(topic)s Subreddits"
 msgstr "مجتمعات فرعية على Reddit: %(topic)s"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "تم تفعيل %(turned_on)s من أصل %(total)s موقعًا"
+msgstr[1] "تم تفعيل %(turned_on)s من أصل %(total)s موقع"
+msgstr[2] "تم تفعيل %(turned_on)s من أصل %(total)s موقعين"
+msgstr[3] "تم تفعيل %(turned_on)s من أصل %(total)s مواقع"
+msgstr[4] "تم تفعيل %(turned_on)s من أصل %(total)s موقعًا"
+msgstr[5] "تم تفعيل %(turned_on)s من أصل %(total)s موقع"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s رجوع"
 

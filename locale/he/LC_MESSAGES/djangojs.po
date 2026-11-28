@@ -665,6 +665,12 @@ msgid "%(topic)s Subreddits"
 msgstr "תת־פורומים של Reddit בנושא %(topic)s"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "%(turned_on)s מתוך %(total)s אתר הופעל"
+msgstr[1] "%(turned_on)s מתוך %(total)s אתרים הופעלו"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s חזרה"
 

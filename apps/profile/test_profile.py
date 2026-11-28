@@ -1,4 +1,5 @@
 import datetime
+import re
 from unittest.mock import MagicMock, call, patch
 
 import stripe
@@ -3081,3 +3082,350 @@ class Test_AccountLogout(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/")
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+# The tier flags each paid plan sets on a Profile (apps/profile/models.py), for the lower plan tests below.
+PLAN_FLAGS = {
+    "premium": {"is_premium": True, "is_archive": False, "is_archive_extra": False, "is_pro": False},
+    "archive": {"is_premium": True, "is_archive": True, "is_archive_extra": False, "is_pro": False},
+    "archive_extra": {"is_premium": True, "is_archive": True, "is_archive_extra": True, "is_pro": False},
+    "pro": {"is_premium": True, "is_archive": True, "is_archive_extra": False, "is_pro": True},
+}
+
+
+def set_plan(profile, plan):
+    for field, value in PLAN_FLAGS[plan].items():
+        setattr(profile, field, value)
+    profile.is_premium_trial = False
+    profile.save()
+
+
+def saved_plan_flags(profile):
+    saved = Profile.objects.get(pk=profile.pk)
+    return {field: bool(getattr(saved, field)) for field in PLAN_FLAGS["premium"]}
+
+
+class Test_StripeSwitchToLowerPlan(TestCase):
+    """Switching a Stripe subscription to a lower plan lowers the account as soon as Stripe takes the new
+    price (Profile.switch_stripe_subscription in apps/profile/models.py), and a plan below the account's own
+    is never sold as a new checkout (apps/profile/views.py)."""
+
+    STRIPE_ID = "cus_lowerplan"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="lowerplan", password="password", email="lowerplan@test.com"
+        )
+        self.profile = self.user.profile
+        self.profile.stripe_id = self.STRIPE_ID
+        self.profile.active_provider = "stripe"
+        self.profile.premium_renewal = True
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=200)
+        self.profile.save()
+        StripeIds.objects.create(user=self.user, stripe_id=self.STRIPE_ID)
+
+        patch("apps.profile.tasks.EmailNewPremium.delay").start()
+        patch("apps.profile.tasks.EmailNewPremiumPro.delay").start()
+        patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
+        self.schedule_setup = patch("apps.profile.models.SchedulePremiumSetup").start()
+        patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
+        patch("apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user").start()
+        patch.object(Profile, "retrieve_stripe_ids").start()
+        patch("stripe.Customer.retrieve", return_value=MagicMock(id=self.STRIPE_ID)).start()
+        patch("stripe.Charge.list", return_value=MagicMock(data=[])).start()
+        # Stripe lists the subscription on its live price, and a modify moves it to the new one, so the
+        # history sync that follows the switch sees what Stripe would report.
+        self.live_price = None
+        patch("stripe.Subscription.list", side_effect=self._list_subscriptions).start()
+        patch("stripe.Subscription.modify", side_effect=self._modify_subscription).start()
+        self.checkout = patch(
+            "stripe.checkout.Session.create",
+            return_value=MagicMock(url="https://checkout.stripe.com/c/pay/cs_lowerplan"),
+        ).start()
+        self.addCleanup(patch.stopall)
+
+    def _list_subscriptions(self, **kwargs):
+        if not self.live_price:
+            return MagicMock(data=[])
+        plan = {"id": self.live_price, "object": "plan", "active": True}
+        subscription = stripe.Subscription.construct_from(
+            {
+                "id": "sub_lowerplan",
+                "object": "subscription",
+                "customer": self.STRIPE_ID,
+                "status": "active",
+                "cancel_at": None,
+                "plan": plan,
+                "items": {
+                    "object": "list",
+                    "data": [{"id": "si_lowerplan", "object": "subscription_item", "plan": plan}],
+                },
+            },
+            "sk_test",
+        )
+        return MagicMock(data=[subscription])
+
+    def _modify_subscription(self, subscription_id, **kwargs):
+        self.live_price = kwargs["items"][0]["price"]
+
+    def _switch(self, from_plan, to_plan):
+        set_plan(self.profile, from_plan)
+        self.live_price = Profile.plan_to_stripe_price(from_plan)
+        self.assertTrue(self.profile.switch_stripe_subscription(to_plan))
+
+    def _login(self):
+        client = Client()
+        client.login(username="lowerplan", password="password")
+        return client
+
+    # --- A subscription that carries the account's plan ---------------------
+
+    def test_pro_subscriber_switching_to_archive_ends_on_archive(self):
+        set_plan(self.profile, "pro")
+        self.live_price = Profile.plan_to_stripe_price("pro")
+
+        response = self._login().post(reverse("switch-stripe-subscription"), {"plan": "archive"})
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["archive"])
+        # The return page tells the subscriber the account moved down to Archive.
+        self.assertRedirects(
+            response, reverse("stripe-return") + "?plan=archive&switched=1", fetch_redirect_response=False
+        )
+        # Per-feed premium, archive and pro subscriber counts are recounted for the lower plan.
+        self.schedule_setup.apply_async.assert_called()
+
+    def test_archive_subscriber_switching_to_premium_ends_on_premium(self):
+        self._switch("archive", "premium")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["premium"])
+
+    def test_pro_subscriber_switching_to_archive_extra_ends_on_archive_extra(self):
+        self._switch("pro", "archive_extra")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["archive_extra"])
+
+    # --- A plan the subscription doesn't carry -------------------------------
+
+    def test_switching_a_subscription_below_the_account_plan_keeps_the_plan(self):
+        """The account's Pro comes from somewhere else, so moving its Archive subscription to Premium keeps
+        Pro."""
+        set_plan(self.profile, "pro")
+        self.live_price = Profile.plan_to_stripe_price("archive")
+
+        self.assertTrue(self.profile.switch_stripe_subscription("premium"))
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_pricing_migration_from_a_legacy_price_keeps_archive(self):
+        """run_premium_pricing_migration moves legacy Premium prices to $36, which is not a switch of plan."""
+        set_plan(self.profile, "archive")
+        self.live_price = "newsblur-premium-24"
+
+        self.assertTrue(self.profile.switch_stripe_subscription("premium", proration_behavior="none"))
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["archive"])
+
+    def test_an_upgrade_that_lands_during_the_switch_is_kept(self):
+        """Another request raised the account to Pro after this one read it as Archive."""
+        set_plan(self.profile, "archive")
+        self.live_price = Profile.plan_to_stripe_price("archive")
+        Profile.objects.filter(pk=self.profile.pk).update(is_pro=True)
+
+        self.profile.switch_stripe_subscription("premium")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    # --- Checkout -------------------------------------------------------------
+
+    def test_switch_view_refuses_a_lower_plan_with_no_subscription_to_switch(self):
+        """A Pro account from the App Store has no Stripe subscription, so Switch to Archive would be a new
+        sale."""
+        set_plan(self.profile, "pro")
+        self.profile.stripe_id = None
+        self.profile.active_provider = None
+        self.profile.save()
+
+        response = self._login().post(reverse("switch-stripe-subscription"), {"plan": "archive"})
+
+        self.checkout.assert_not_called()
+        self.assertRedirects(response, reverse("index") + "?next=premium", fetch_redirect_response=False)
+
+    def test_stripe_checkout_refuses_a_plan_below_the_account_plan(self):
+        set_plan(self.profile, "archive")
+
+        response = self._login().post(reverse("stripe-checkout"), {"plan": "premium"})
+
+        self.checkout.assert_not_called()
+        self.assertRedirects(response, reverse("index") + "?next=premium", fetch_redirect_response=False)
+
+    def test_switch_view_still_sends_an_upgrade_to_checkout(self):
+        set_plan(self.profile, "premium")
+
+        response = self._login().post(reverse("switch-stripe-subscription"), {"plan": "archive"})
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response["Location"], "https://checkout.stripe.com/c/pay/cs_lowerplan")
+
+
+class Test_PaypalSwitchToLowerPlan(TestCase):
+    """A new PayPal subscription on a lower plan that replaces the PayPal subscription carrying the account's
+    plan lowers the account once PayPal activates it (paypal_webhooks in apps/profile/views.py)."""
+
+    OLD_SUB = "I-LOWERPLANOLD"
+    NEW_SUB = "I-LOWERPLANNEW"
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="paypallowerplan", password="password", email="paypallowerplan@test.com"
+        )
+        self.profile = self.user.profile
+        set_plan(self.profile, "pro")
+        self.profile.active_provider = "paypal"
+        self.profile.premium_renewal = True
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=20)
+        self.profile.paypal_sub_id = self.OLD_SUB
+        self.profile.save()
+        self.user.paypal_ids.create(paypal_sub_id=self.OLD_SUB)
+
+        patch("apps.profile.tasks.EmailNewPremium.delay").start()
+        patch("apps.profile.tasks.EmailNewPremiumPro.delay").start()
+        patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay").start()
+        patch("apps.profile.models.SchedulePremiumSetup").start()
+        patch("apps.reader.models.UserSubscription.queue_new_feeds").start()
+        patch("apps.reader.models.UserSubscription.schedule_fetch_archive_feeds_for_user").start()
+        # PayPal's view of each subscription. Suspending one, as the older subscription is on activation of
+        # its replacement, changes its status.
+        self.subscriptions = {
+            self.OLD_SUB: {"status": "ACTIVE", "plan_id": Profile.plan_to_paypal_plan_id("pro")},
+        }
+        self.suspend_takes = True
+        self.paypal = MagicMock()
+        self.paypal.get.side_effect = self._paypal_get
+        self.paypal.post.side_effect = self._paypal_post
+        patch.object(Profile, "paypal_api", return_value=self.paypal).start()
+        self.addCleanup(patch.stopall)
+
+    def _paypal_get(self, path):
+        subscription_id = path.split("/")[4].split("?")[0]
+        if "/transactions" in path:
+            return {"transactions": []}
+        return dict(self.subscriptions[subscription_id])
+
+    def _paypal_post(self, path, body):
+        if path.endswith("/suspend") and self.suspend_takes:
+            self.subscriptions[path.split("/")[4]]["status"] = "SUSPENDED"
+        return {}
+
+    def _activate(self, plan, owner_on_record=None):
+        plan_id = Profile.plan_to_paypal_plan_id(plan)
+        self.subscriptions[self.NEW_SUB] = {
+            "status": "ACTIVE",
+            "plan_id": plan_id,
+            "custom_id": str(owner_on_record or self.user.pk),
+        }
+        event = {
+            "event_type": "BILLING.SUBSCRIPTION.ACTIVATED",
+            "resource": {
+                "id": self.NEW_SUB,
+                "status": "ACTIVE",
+                "plan_id": plan_id,
+                "custom_id": str(self.user.pk),
+            },
+        }
+        response = Client().post(
+            reverse("paypal-webhooks"), data=json.encode(event), content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def _login(self):
+        client = Client()
+        client.login(username="paypallowerplan", password="password")
+        return client
+
+    def test_activating_archive_in_place_of_the_pro_subscription_ends_on_archive(self):
+        self._activate("archive")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["archive"])
+
+    def test_activating_a_lower_plan_keeps_a_plan_paypal_did_not_carry(self):
+        """The account's Pro comes from somewhere else; its PayPal subscription was on Premium."""
+        self.subscriptions[self.OLD_SUB]["plan_id"] = Profile.plan_to_paypal_plan_id("premium")
+
+        self._activate("archive")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_a_subscription_paypal_has_under_another_account_keeps_the_plan(self):
+        """The notification names this account, and PayPal's record of the subscription names another."""
+        other = User.objects.create_user(username="paypalother", password="password", email="other@test.com")
+
+        self._activate("archive", owner_on_record=other.pk)
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_the_plan_stays_while_the_replaced_subscription_is_still_billing(self):
+        self.suspend_takes = False
+
+        self._activate("archive")
+
+        self.assertEqual(saved_plan_flags(self.profile), PLAN_FLAGS["pro"])
+
+    def test_paypal_returns_to_the_page_that_waits_for_the_plan_bought(self):
+        return_pages = {
+            "premium": "/profile/paypal_return",
+            "archive": "/profile/paypal_archive_return?plan=archive",
+            "archive_extra": "/profile/paypal_archive_return?plan=archive_extra",
+            "pro": "/profile/paypal_pro_return",
+        }
+        for plan, return_page in return_pages.items():
+            self.profile.switch_paypal_subscription_approval_url(plan)
+            return_url = self.paypal.post.call_args[0][1]["application_context"]["return_url"]
+            self.assertTrue(return_url.endswith(return_page), return_url)
+
+    def test_switch_view_refuses_a_lower_plan_with_no_paypal_subscription_to_switch(self):
+        """An App Store Pro account has no PayPal subscription to replace, so a PayPal Archive one would be a
+        new sale."""
+        self.profile.active_provider = None
+        self.profile.save()
+
+        response = self._login().post(reverse("switch-paypal-subscription"), {"plan": "archive"})
+
+        self.paypal.post.assert_not_called()
+        self.assertRedirects(response, reverse("index") + "?next=premium", fetch_redirect_response=False)
+
+    def test_switch_view_without_an_approval_link_returns_to_the_upgrade_dialog(self):
+        # PayPal answered without an approve link, so nothing was paid.
+        response = self._login().post(reverse("switch-paypal-subscription"), {"plan": "archive"})
+
+        self.assertRedirects(response, reverse("index") + "?next=premium", fetch_redirect_response=False)
+
+
+class Test_LowerPlanSwitchButton(TestCase):
+    """NEWSBLUR.Globals.can_switch_to_lower_plan (templates/base.html) decides whether the upgrade dialog
+    offers Switch to a lower plan (media/js/newsblur/reader/reader_premium_upgrade.js)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="switchbutton", password="password", email="switchbutton@test.com"
+        )
+        self.profile = self.user.profile
+        set_plan(self.profile, "pro")
+        self.profile.active_provider = "stripe"
+        self.profile.premium_expire = datetime.datetime.now() + datetime.timedelta(days=200)
+        self.profile.save()
+        self.client.login(username="switchbutton", password="password")
+
+    def _can_switch_to_lower_plan(self):
+        content = self.client.get(reverse("index")).content.decode("utf-8")
+        match = re.search(r"'can_switch_to_lower_plan'\s*:\s*(true|false)", content)
+        self.assertIsNotNone(match, "the reader bootstraps can_switch_to_lower_plan")
+        return match.group(1) == "true"
+
+    def test_stripe_subscriber_can_switch(self):
+        self.assertTrue(self._can_switch_to_lower_plan())
+
+    def test_app_store_subscriber_cannot_switch(self):
+        self.profile.active_provider = None
+        self.profile.save()
+
+        self.assertFalse(self._can_switch_to_lower_plan())

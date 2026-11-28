@@ -5660,6 +5660,15 @@ msgstr "เปลี่ยนมาใช้ได้ในไม่ถึงห
 msgid "Switch to this Credit Card"
 msgstr "เปลี่ยนไปใช้บัตรเครดิตใบนี้"
 
+msgid "Switched to Premium"
+msgstr "เปลี่ยนเป็น Premium แล้ว"
+
+msgid "Switched to Premium Archive"
+msgstr "เปลี่ยนเป็น Premium Archive แล้ว"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "เปลี่ยนเป็น Premium Archive Extra แล้ว"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "แท็ก"
@@ -5731,6 +5740,9 @@ msgstr "ขอบคุณที่สมัคร NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "ขอบคุณที่สมัครใช้ NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "ขอบคุณที่สมัครรับ NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "ขอบคุณที่สมัคร NewsBlur Premium Pro"
@@ -6031,6 +6043,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "นี่เป็นฟีด RSS อยู่แล้ว กำลังสมัครรับโดยตรง"
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "ใช้เวลานานกว่าปกติ การอัปเกรดบัญชีจะเสร็จสิ้นทันทีที่ยืนยันการชำระเงินแล้ว"
 
 msgid "This payment has been refunded."
 msgstr "คืนเงินสำหรับการชำระเงินนี้แล้ว"
@@ -7319,6 +7334,9 @@ msgid ""
 "Your account is now on the free plan with some limitations. But you can unlock everything again for just "
 "<b>$36/year</b>."
 msgstr "ตอนนี้บัญชีของคุณใช้แพ็กเกจฟรีซึ่งมีข้อจำกัด แต่ปลดล็อกทุกอย่างได้อีกครั้งในราคาเพียง <b>$36/ปี</b>"
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "บัญชีของคุณพร้อมแล้ว กำลังนำไปยัง NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

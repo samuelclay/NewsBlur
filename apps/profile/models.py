@@ -285,6 +285,57 @@ class Profile(models.Model):
                 price = "P-1AE0908250058421JM565SVY"
         return price
 
+    # Paid plans from lowest to highest.
+    PAID_PLANS = ("premium", "archive", "archive_extra", "pro")
+
+    @classmethod
+    def stripe_price_to_plan(cls, price):
+        """The paid plan a current Stripe price sells, or None for any other price, such as a legacy
+        newsblur-premium-24 that run_premium_pricing_migration moves to the $36 price."""
+        if not price:
+            return None
+        for plan in cls.PAID_PLANS:
+            if cls.plan_to_stripe_price(plan) == price:
+                return plan
+        return None
+
+    @classmethod
+    def paypal_plan_id_to_plan(cls, plan_id):
+        """The paid plan a current PayPal plan id sells, or None for any other plan id."""
+        if not plan_id:
+            return None
+        for plan in cls.PAID_PLANS:
+            if cls.plan_to_paypal_plan_id(plan) == plan_id:
+                return plan
+        return None
+
+    @classmethod
+    def is_lower_plan(cls, plan, than_plan):
+        """True when both are paid plans and plan sits below than_plan."""
+        if plan not in cls.PAID_PLANS or than_plan not in cls.PAID_PLANS:
+            return False
+        return cls.PAID_PLANS.index(plan) < cls.PAID_PLANS.index(than_plan)
+
+    @property
+    def paid_plan(self):
+        """The paid plan the account is on now, or None for a free or trial account."""
+        if not self.is_premium or self.is_premium_trial:
+            return None
+        if self.is_pro:
+            return "pro"
+        if self.is_archive_extra:
+            return "archive_extra"
+        if self.is_archive:
+            return "archive"
+        return "premium"
+
+    @property
+    def can_switch_to_lower_plan(self):
+        """True when the account's plan comes from a Stripe or PayPal subscription that can move to a lower
+        plan's price. The upgrade dialog offers "Switch to" a lower plan only then
+        (media/js/newsblur/reader/reader_premium_upgrade.js)."""
+        return self.active_provider in ("stripe", "paypal")
+
     @property
     def can_register_oauth_application(self):
         return bool(
@@ -1166,6 +1217,51 @@ class Profile(models.Model):
 
         return True
 
+    def downgrade_to(self, plan, from_plan):
+        """Lower the account from one paid plan to a lower one once Stripe or PayPal has moved its subscription
+        there.
+
+        The activate_* methods only ever raise the tier, since gifts, referrals, replayed notifications and
+        late webhooks call them too. Callers first confirm with the provider that the subscription carrying
+        from_plan now sells this lower plan (switch_stripe_subscription, and paypal_webhooks in
+        apps/profile/views.py). An account that has left from_plan since then, such as one upgraded by another
+        request, is left alone.
+        """
+        if not Profile.is_lower_plan(plan, from_plan):
+            return False
+
+        flags = {
+            "is_premium": True,
+            "is_archive": plan in ("archive", "archive_extra"),
+            "is_archive_extra": plan == "archive_extra",
+            "is_pro": False,
+        }
+        # Only the tier flags, under the row lock: a whole-row save from this copy of the profile could write
+        # back fields another webhook just changed, and a repeated notification must lower the account once.
+        with transaction.atomic():
+            fresh = Profile.objects.select_for_update().get(pk=self.pk)
+            if fresh.paid_plan != from_plan:
+                logging.user(self.user, "~FMdowngrade_to %s: no longer on %s, skipping" % (plan, from_plan))
+                return False
+            Profile.objects.filter(pk=self.pk).update(**flags)
+
+        logging.user(self.user, "~FMTier change: downgrade_to %s (was: %s)" % (plan, from_plan))
+        for field, value in flags.items():
+            setattr(self, field, value)
+
+        # Recount the premium, archive and pro subscribers on each of the user's feeds for the lower plan.
+        scheduled_feeds = list(
+            UserSubscription.objects.filter(user=self.user).values_list("feed_id", flat=True)
+        )
+        logging.user(
+            self.user,
+            "~SN~FMTasking the scheduling immediate premium setup of ~SB%s~SN feeds..."
+            % len(scheduled_feeds),
+        )
+        SchedulePremiumSetup.apply_async(kwargs=dict(feed_ids=scheduled_feeds))
+
+        return True
+
     def deactivate_premium(self):
         # A canceled store subscription is independent of the grant in apps/oauth/reader_grants.py.
         if self.is_pro and self.has_oauth_reader_grant():
@@ -1263,6 +1359,14 @@ class Profile(models.Model):
             logging.user(self.user, f"~FRStripe switch subscription failed: ~SB{e}")
             return
 
+        # A switch to a lower plan lowers the account now, but only when this subscription carried the
+        # account's plan. A legacy price maps to no plan, so the pricing migration never lowers anyone, and a
+        # plan held by something else (a gift, a store subscription) stays. The history sync below sees the
+        # new price, which the activate_* methods treat as already reached.
+        previous_plan = Profile.stripe_price_to_plan(existing_plan.id)
+        if previous_plan == self.paid_plan and Profile.is_lower_plan(plan, previous_plan):
+            self.downgrade_to(plan, from_plan=previous_plan)
+
         self.setup_premium_history()
 
         return True
@@ -1284,9 +1388,13 @@ class Profile(models.Model):
         paypal_api = self.paypal_api()
         if not paypal_api:
             return
+        # Each return address waits for its own plan, and the Archive one tells Archive from Archive Extra
+        # by the plan in its query string (paypal_archive_return in apps/profile/views.py).
         paypal_return = reverse("paypal-return")
         if plan in ("archive", "archive_extra"):
-            paypal_return = reverse("paypal-archive-return")
+            paypal_return = "%s?plan=%s" % (reverse("paypal-archive-return"), plan)
+        elif plan == "pro":
+            paypal_return = reverse("paypal-pro-return")
 
         try:
             application_context = {
@@ -1322,6 +1430,70 @@ class Profile(models.Model):
                 return link["href"]
 
         logging.user(self.user, f"~FRFailed to switch paypal subscription: ~FC{paypal_subscription}")
+
+    # The states in which PayPal still bills a subscription or is about to.
+    PAYPAL_LIVE_STATUSES = ("ACTIVE", "APPROVED", "APPROVAL_PENDING")
+
+    def paypal_subscription(self, paypal_sub_id):
+        """PayPal's own record of a subscription, or None when PayPal can't be asked or has no answer."""
+        paypal_api = self.paypal_api()
+        if not paypal_api or not paypal_sub_id:
+            return None
+        try:
+            return paypal_api.get(f"/v1/billing/subscriptions/{paypal_sub_id}?fields=plan")
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            logging.user(self.user, f"~FRCouldn't read paypal sub {paypal_sub_id}: {e}")
+            return None
+
+    def lower_plan_from_paypal_activation(self, resource):
+        """The switch to a lower plan that a freshly activated PayPal subscription makes, or None.
+
+        A switch to a lower plan through PayPal is a new subscription (from
+        switch_paypal_subscription_approval_url) that replaces the primary one. It counts only when PayPal's
+        own records say the new subscription is live, belongs to this account and sells a plan below the
+        account's, and that the primary subscription is live and carried the account's plan. The
+        notification only says which subscription to look up. Call this before store_paypal_sub_id makes the
+        new subscription the primary, and pass the result to finish_paypal_switch_to_lower_plan after
+        cancel_and_prorate_existing_paypal_subscriptions.
+        """
+        from_plan = self.paid_plan
+        replaced_sub_id = self.paypal_sub_id
+        new_sub_id = resource.get("id")
+        if self.active_provider != "paypal" or not replaced_sub_id or replaced_sub_id == new_sub_id:
+            return None
+        # Most activations are upgrades and new subscriptions, which need no lookups.
+        if not Profile.is_lower_plan(Profile.paypal_plan_id_to_plan(resource.get("plan_id")), from_plan):
+            return None
+
+        new_subscription = self.paypal_subscription(new_sub_id)
+        if not new_subscription or new_subscription.get("status") not in self.PAYPAL_LIVE_STATUSES:
+            return None
+        if str(new_subscription.get("custom_id")) != str(self.user.pk):
+            return None
+        plan = Profile.paypal_plan_id_to_plan(new_subscription.get("plan_id"))
+        if not Profile.is_lower_plan(plan, from_plan):
+            return None
+
+        replaced_subscription = self.paypal_subscription(replaced_sub_id)
+        if not replaced_subscription or replaced_subscription.get("status") not in self.PAYPAL_LIVE_STATUSES:
+            return None
+        if Profile.paypal_plan_id_to_plan(replaced_subscription.get("plan_id")) != from_plan:
+            return None
+
+        return {"plan": plan, "from_plan": from_plan, "replaced_sub_id": replaced_sub_id}
+
+    def finish_paypal_switch_to_lower_plan(self, switch):
+        """Lower the account once PayPal says the subscription it replaced has stopped. While that
+        subscription is live the account keeps the plan it is still paying for."""
+        replaced_subscription = self.paypal_subscription(switch["replaced_sub_id"])
+        if not replaced_subscription or replaced_subscription.get("status") in self.PAYPAL_LIVE_STATUSES:
+            logging.user(
+                self.user,
+                "~FRPaypal sub %s hasn't stopped, keeping %s"
+                % (switch["replaced_sub_id"], switch["from_plan"]),
+            )
+            return False
+        return self.downgrade_to(switch["plan"], from_plan=switch["from_plan"])
 
     def paypal_price_change_approval_url(self, plan):
         """Return a one-click PayPal approval URL to move the user's EXISTING subscription to

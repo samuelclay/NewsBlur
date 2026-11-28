@@ -5887,6 +5887,15 @@ msgstr "Przełączysz się w mniej niż minutę"
 msgid "Switch to this Credit Card"
 msgstr "Przełącz na tę kartę kredytową"
 
+msgid "Switched to Premium"
+msgstr "Zmieniono plan na Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "Zmieniono plan na Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Zmieniono plan na Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Tag"
@@ -5958,6 +5967,9 @@ msgstr "Dziękujemy za subskrypcję NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "Dziękujemy za subskrypcję NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "Dziękujemy za subskrypcję NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "Dziękujemy za subskrypcję NewsBlur Premium Pro"
@@ -6277,6 +6289,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "To już jest kanał RSS. Subskrybowanie bezpośrednio."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "To trwa dłużej niż zwykle. Twój plan zostanie zmieniony, gdy tylko płatność zostanie potwierdzona."
 
 msgid "This payment has been refunded."
 msgstr "Ta płatność została zwrócona."
@@ -7640,6 +7655,9 @@ msgid ""
 msgstr ""
 "Twoje konto korzysta teraz z bezpłatnego planu z pewnymi ograniczeniami. Możesz jednak ponownie odblokować "
 "wszystkie funkcje za jedyne <b>36 USD rocznie</b>."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Twoje konto jest gotowe. Nastąpi przekierowanie do NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

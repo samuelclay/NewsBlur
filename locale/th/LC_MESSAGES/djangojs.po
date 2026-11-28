@@ -599,6 +599,11 @@ msgid "%(topic)s Subreddits"
 msgstr "ซับเรดดิต %(topic)s"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "เปิดใช้งาน %(turned_on)s จาก %(total)s เว็บไซต์"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s กลับ"
 

@@ -603,6 +603,11 @@ msgid "%(topic)s Subreddits"
 msgstr "%(topic)s subreddit'leri"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "%(total)s sitenin %(turned_on)s tanesi açık"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s Geri"
 

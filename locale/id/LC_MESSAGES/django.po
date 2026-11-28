@@ -5800,6 +5800,15 @@ msgstr "Beralih dalam waktu kurang dari semenit"
 msgid "Switch to this Credit Card"
 msgstr "Beralih ke kartu kredit ini"
 
+msgid "Switched to Premium"
+msgstr "Beralih ke Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "Beralih ke Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Beralih ke Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Tag"
@@ -5871,6 +5880,9 @@ msgstr "Terima kasih telah berlangganan NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "Terima kasih telah berlangganan NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "Terima kasih telah berlangganan NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "Terima kasih telah berlangganan NewsBlur Premium Pro"
@@ -6188,6 +6200,11 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Ini sudah merupakan feed RSS. Berlangganan langsung."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr ""
+"Proses ini memakan waktu lebih lama dari biasanya. Akun Anda akan ditingkatkan segera setelah pembayaran "
+"dikonfirmasi."
 
 msgid "This payment has been refunded."
 msgstr "Pembayaran ini telah dikembalikan."
@@ -7529,6 +7546,9 @@ msgid ""
 msgstr ""
 "Akun Anda kini menggunakan paket gratis dengan beberapa batasan. Namun, Anda dapat membuka kembali semua "
 "fitur hanya dengan <b>$36/tahun</b>."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Akun Anda siap. Mengarahkan Anda ke NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

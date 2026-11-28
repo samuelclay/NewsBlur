@@ -5742,6 +5742,15 @@ msgstr "Chuyển đổi trong chưa đầy một phút"
 msgid "Switch to this Credit Card"
 msgstr "Chuyển sang thẻ tín dụng này"
 
+msgid "Switched to Premium"
+msgstr "Đã chuyển sang Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "Đã chuyển sang Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Đã chuyển sang Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Thẻ"
@@ -5813,6 +5822,9 @@ msgstr "Cảm ơn bạn đã đăng ký NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "Cảm ơn bạn đã đăng ký NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "Cảm ơn bạn đã đăng ký NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "Cảm ơn bạn đã đăng ký NewsBlur Premium Pro"
@@ -6124,6 +6136,11 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Đây đã là nguồn cấp dữ liệu RSS. Đang đăng ký trực tiếp."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr ""
+"Quá trình này đang lâu hơn bình thường. Tài khoản của bạn sẽ được nâng cấp ngay khi thanh toán được xác "
+"nhận."
 
 msgid "This payment has been refunded."
 msgstr "Khoản thanh toán này đã được hoàn tiền."
@@ -7461,6 +7478,9 @@ msgid ""
 msgstr ""
 "Tài khoản của bạn hiện đã chuyển sang gói miễn phí với một số giới hạn. Nhưng bạn có thể mở khóa lại mọi "
 "tính năng chỉ với <b>36 USD/năm</b>."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Tài khoản của bạn đã sẵn sàng. Đang chuyển bạn đến NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

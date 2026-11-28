@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% load typogrify_tags utils_tags %}
+
+{% block bodyclass %}NB-static NB-static-payment-return{% endblock %}
+
+{% block extra_head_js %}
+  {% include_javascripts "payments" %}
+{% endblock %}
+
+{% block content %}
+
+{# payment_return.xhtml: rendered by render_payment_return (apps/profile/views.py), styled in media/css/pages/payments.css and driven by media/js/newsblur/payments/payment_return.js. #}
+<div class="NB-payment-return NB-payment-return-plan-{% if plan and plan != "trial" %}{{ plan }}{% else %}premium{% endif %}{% if switched %} NB-payment-return-switched{% endif %}" data-plan="{{ plan|default:"" }}">
+
+  <h1 class="NB-payment-return-title">
+    {% if plan == "trial" %}
+      {% trans "Welcome to your premium trial!" %}
+    {% elif switched and plan == "premium" %}
+      {% trans "Switched to Premium" %}
+    {% elif switched and plan == "archive" %}
+      {% trans "Switched to Premium Archive" %}
+    {% elif switched and plan == "archive_extra" %}
+      {% trans "Switched to Premium Archive Extra" %}
+    {% elif plan == "pro" %}
+      {% trans "Thank you for subscribing to NewsBlur Premium Pro" %}
+    {% elif plan == "archive_extra" %}
+      {% trans "Thank you for subscribing to NewsBlur Premium Archive Extra" %}
+    {% elif plan == "archive" %}
+      {% trans "Thank you for subscribing to NewsBlur Premium Archive" %}
+    {% else %}
+      {% trans "Thank you for subscribing to NewsBlur" %}
+    {% endif %}
+  </h1>
+
+  <div class="NB-payment-return-status" role="status" aria-live="polite">
+    <p class="NB-payment-return-working">{% trans "Hold tight while your account is being upgraded..." %}</p>
+    <p class="NB-payment-return-ready">
+      <svg class="NB-payment-return-check" viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4.5 10.5l3.6 3.6 7.4-8.2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+      {% trans "Your account is ready. Taking you to NewsBlur..." %}
+    </p>
+    <div class="NB-payment-return-slow">
+      <p>{% trans "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed." %}</p>
+      <a class="NB-payment-return-continue" href="{% url "index" %}">{% trans "Continue to NewsBlur" %}</a>
+    </div>
+  </div>
+
+  {% if sites %}
+    <div class="NB-payment-return-sites" aria-hidden="true">
+      {% for site in sites %}<span class="NB-payment-return-site" data-feed-id="{{ site.feed_id }}" title="{{ site.title|force_escape }}"><img src="/rss_feeds/icon/{{ site.feed_id }}" width="16" height="16" alt="" /></span>{% endfor %}
+    </div>
+    <p class="NB-payment-return-count"></p>
+  {% endif %}
+
+</div>
+
+{% endblock %}

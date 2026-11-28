@@ -5762,6 +5762,15 @@ msgstr "एक मिनट से भी कम समय में स्व�
 msgid "Switch to this Credit Card"
 msgstr "इस क्रेडिट कार्ड पर स्विच करें"
 
+msgid "Switched to Premium"
+msgstr "Premium पर स्विच किया गया"
+
+msgid "Switched to Premium Archive"
+msgstr "Premium Archive पर स्विच किया गया"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Premium Archive Extra पर स्विच किया गया"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "टैग"
@@ -5833,6 +5842,9 @@ msgstr "NewsBlur की सदस्यता लेने के लिए ध�
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "NewsBlur Premium Archive की सदस्यता लेने के लिए धन्यवाद"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "NewsBlur Premium Archive Extra की सदस्यता लेने के लिए धन्यवाद"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "NewsBlur Premium Pro की सदस्यता लेने के लिए धन्यवाद"
@@ -6151,6 +6163,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "यह पहले से ही RSS फ़ीड है। सीधे सदस्यता ली जा रही है।"
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "इसमें सामान्य से ज़्यादा समय लग रहा है। भुगतान की पुष्टि होते ही आपका खाता अपग्रेड कर दिया जाएगा।"
 
 msgid "This payment has been refunded."
 msgstr "यह भुगतान वापस कर दिया गया है।"
@@ -7476,6 +7491,9 @@ msgid ""
 msgstr ""
 "अब आपका खाता कुछ सीमाओं वाले मुफ़्त प्लान पर है। लेकिन आप सिर्फ़ <b>$36/वर्ष</b> में फिर से सभी सुविधाएँ "
 "अनलॉक कर सकते हैं।"
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "आपका खाता तैयार है। आपको NewsBlur पर ले जा रहे हैं..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

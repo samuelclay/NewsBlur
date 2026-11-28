@@ -5420,6 +5420,15 @@ msgstr "1분도 안 돼 전환"
 msgid "Switch to this Credit Card"
 msgstr "이 신용카드로 전환"
 
+msgid "Switched to Premium"
+msgstr "프리미엄으로 전환했습니다"
+
+msgid "Switched to Premium Archive"
+msgstr "프리미엄 아카이브로 전환했습니다"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "프리미엄 아카이브 추가로 전환했습니다"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "태그"
@@ -5491,6 +5500,9 @@ msgstr "NewsBlur를 구독해 주셔서 감사합니다"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "NewsBlur 프리미엄 아카이브를 구독해 주셔서 감사합니다"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "NewsBlur 프리미엄 아카이브 추가를 구독해 주셔서 감사합니다"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "NewsBlur 프리미엄 프로를 구독해 주셔서 감사합니다"
@@ -5774,6 +5786,9 @@ msgstr "이곳은 회원님을 위해 만들어진, 직접 꾸밀 수 있는 개
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "이미 RSS 피드입니다. 바로 구독합니다."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "평소보다 시간이 오래 걸리고 있습니다. 결제가 확인되는 즉시 계정이 업그레이드됩니다."
 
 msgid "This payment has been refunded."
 msgstr "결제가 환불되었습니다."
@@ -6984,6 +6999,9 @@ msgid ""
 "Your account is now on the free plan with some limitations. But you can unlock everything again for just "
 "<b>$36/year</b>."
 msgstr "일부 제한이 있는 무료 요금제로 계정이 전환되었습니다. <b>연 $36</b>만 내면 모든 기능을 다시 이용할 수 있습니다."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "계정이 준비되었습니다. NewsBlur로 이동합니다..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

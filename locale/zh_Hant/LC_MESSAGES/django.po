@@ -5307,6 +5307,15 @@ msgstr "不到一分鐘即可切換"
 msgid "Switch to this Credit Card"
 msgstr "切換至這張信用卡"
 
+msgid "Switched to Premium"
+msgstr "已切換至 Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "已切換至 Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "已切換至 Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "標籤"
@@ -5378,6 +5387,9 @@ msgstr "感謝你訂閱 NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "感謝你訂閱 NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "感謝你訂閱 NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "感謝你訂閱 NewsBlur Premium Pro"
@@ -5650,6 +5662,9 @@ msgstr "這是一個為你打造、可自行自訂的個人網站。你也可以
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "這已是 RSS 訂閱來源，正在直接訂閱。"
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "處理時間比平常久。確認付款後，就會立即升級你的帳戶。"
 
 msgid "This payment has been refunded."
 msgstr "此筆付款已退款。"
@@ -6849,6 +6864,9 @@ msgid ""
 "Your account is now on the free plan with some limitations. But you can unlock everything again for just "
 "<b>$36/year</b>."
 msgstr "你的帳戶現在已改用免費方案，部分功能會受到限制。只要每年 <b>$36</b>，就能再次解鎖所有功能。"
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "你的帳戶已準備就緒。正在帶你前往 NewsBlur…"
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

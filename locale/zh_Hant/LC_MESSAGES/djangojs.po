@@ -599,6 +599,11 @@ msgid "%(topic)s Subreddits"
 msgstr "%(topic)s Subreddit"
 
 #, python-format
+msgid "%(turned_on)s of %(total)s site turned on"
+msgid_plural "%(turned_on)s of %(total)s sites turned on"
+msgstr[0] "已開啟 %(turned_on)s 個網站，共 %(total)s 個"
+
+#, python-format
 msgid "%(value_1)s Back"
 msgstr "%(value_1)s 返回"
 

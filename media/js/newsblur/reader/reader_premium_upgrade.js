@@ -474,7 +474,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
             ]);
         }
 
-        // Higher tier user viewing lower tier - show "includes everything" and switch option
+        // Higher tier user viewing lower tier - show "includes everything" and, when the plan comes from a
+        // Stripe or PayPal subscription that can move to a lower price, a switch option
         if (!is_trial && user_tier > plan_tier && user_tier > 0) {
             var current_plan_name = this.plan_name(this.get_plan_name_from_tier(user_tier));
             return $.make('div', { className: 'NB-premium-tier-status' }, [
@@ -482,7 +483,7 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     $.make('div', { className: 'NB-premium-tier-status-icon' }),
                     $.make('div', { className: 'NB-premium-tier-status-text' }, interpolate(gettext("Your %(value_1)s subscription includes everything above"), {value_1: current_plan_name}, true))
                 ]),
-                $.make('div', {
+                NEWSBLUR.Globals.can_switch_to_lower_plan && $.make('div', {
                     className: 'NB-provider-button-' + plan + ' NB-modal-submit-button NB-modal-submit-grey'
                 }, interpolate(gettext("Switch to %(value_1)s"), {value_1: this.plan_name(plan)}, true))
             ]);
@@ -635,7 +636,8 @@ _.extend(NEWSBLUR.ReaderPremiumUpgrade.prototype, {
                     onApprove: function (data, actions) {
                         console.log('Paypal approve result', data.subscriptionID, JSON.stringify(data, null, 2));
                         if (plan == "archive" || plan == "archive_extra") {
-                            actions.redirect(NEWSBLUR.URLs.paypal_archive_return);
+                            // The Archive return page waits for Archive Extra when its address names it.
+                            actions.redirect(NEWSBLUR.URLs.paypal_archive_return + '?plan=' + plan);
                         } else if (plan == "pro") {
                             actions.redirect(NEWSBLUR.URLs.paypal_pro_return);
                         } else {

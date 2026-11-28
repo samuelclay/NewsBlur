@@ -5848,6 +5848,15 @@ msgstr "Перехід менш ніж за хвилину"
 msgid "Switch to this Credit Card"
 msgstr "Використовувати цю кредитну картку"
 
+msgid "Switched to Premium"
+msgstr "Перейшли на Premium"
+
+msgid "Switched to Premium Archive"
+msgstr "Перейшли на Premium Archive"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Перейшли на Premium Archive Extra"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Тег"
@@ -5919,6 +5928,9 @@ msgstr "Дякуємо, що підписалися на NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "Дякуємо, що підписалися на NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "Дякуємо, що оформили підписку NewsBlur Premium Archive Extra"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "Дякуємо за підписку на NewsBlur Premium Pro"
@@ -6244,6 +6256,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Це вже RSS-стрічка. Підписуємося безпосередньо."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Це триває довше, ніж зазвичай. Ваш план буде оновлено, щойно платіж підтвердять."
 
 msgid "This payment has been refunded."
 msgstr "Кошти за цей платіж повернуто."
@@ -7590,6 +7605,9 @@ msgid ""
 msgstr ""
 "Тепер у вашому обліковому записі безкоштовний план із певними обмеженнями. Ви можете знову отримати доступ "
 "до всіх можливостей лише за <b>$36 на рік</b>."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Ваш обліковий запис готовий. Перехід до NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

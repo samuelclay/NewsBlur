@@ -5869,6 +5869,15 @@ msgstr "Переключитесь менее чем за минуту"
 msgid "Switch to this Credit Card"
 msgstr "Переключиться на эту кредитную карту"
 
+msgid "Switched to Premium"
+msgstr "Переход на Premium выполнен"
+
+msgid "Switched to Premium Archive"
+msgstr "Переход на Premium Archive выполнен"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Вы перешли на дополнительный план Premium Archive"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Тег"
@@ -5940,6 +5949,9 @@ msgstr "Спасибо за подписку на NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "Спасибо за подписку на NewsBlur Premium Archive"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "Спасибо за подписку на дополнительный план Premium Archive NewsBlur"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "Спасибо за подписку на NewsBlur Premium Pro"
@@ -6256,6 +6268,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Это уже RSS-лента. Выполняется подписка напрямую."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Это занимает больше времени, чем обычно. Ваш аккаунт будет обновлён, как только платёж будет подтверждён."
 
 msgid "This payment has been refunded."
 msgstr "Этот платёж был возвращён."
@@ -7610,6 +7625,9 @@ msgid ""
 msgstr ""
 "Теперь у вас бесплатный тариф с некоторыми ограничениями. Но вы можете снова получить доступ ко всем "
 "функциям всего за <b>$36 в год</b>."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Ваша учётная запись готова. Переходим к NewsBlur..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

@@ -5768,6 +5768,15 @@ msgstr "Bir dakikadan kısa sürede geçiş yapın"
 msgid "Switch to this Credit Card"
 msgstr "Bu kredi kartına geç"
 
+msgid "Switched to Premium"
+msgstr "Premium'a geçildi"
+
+msgid "Switched to Premium Archive"
+msgstr "Premium Archive'a geçildi"
+
+msgid "Switched to Premium Archive Extra"
+msgstr "Premium Archive Extra'ya geçildi"
+
 msgctxt "notification email classifier match"
 msgid "Tag"
 msgstr "Etiket"
@@ -5839,6 +5848,9 @@ msgstr "NewsBlur'a abone olduğunuz için teşekkür ederiz"
 
 msgid "Thank you for subscribing to NewsBlur Premium Archive"
 msgstr "NewsBlur Premium Archive'a abone olduğunuz için teşekkür ederiz"
+
+msgid "Thank you for subscribing to NewsBlur Premium Archive Extra"
+msgstr "NewsBlur Premium Archive Extra aboneliğiniz için teşekkür ederiz"
 
 msgid "Thank you for subscribing to NewsBlur Premium Pro"
 msgstr "NewsBlur Premium Pro'ya abone olduğunuz için teşekkür ederiz"
@@ -6151,6 +6163,9 @@ msgstr ""
 
 msgid "This is already an RSS feed. Subscribing directly."
 msgstr "Bu zaten bir RSS akışı. Doğrudan abone olunuyor."
+
+msgid "This is taking longer than usual. Your account will be upgraded as soon as your payment is confirmed."
+msgstr "Bu işlem normalden uzun sürüyor. Ödemeniz onaylanır onaylanmaz hesabınız yükseltilecek."
 
 msgid "This payment has been refunded."
 msgstr "Bu ödeme iade edildi."
@@ -7491,6 +7506,9 @@ msgid ""
 msgstr ""
 "Hesabınız artık bazı kısıtlamaları olan ücretsiz planda. Ancak yalnızca <b>yılda 36 $</b> karşılığında tüm "
 "özelliklerin kilidini yeniden açabilirsiniz."
+
+msgid "Your account is ready. Taking you to NewsBlur..."
+msgstr "Hesabınız hazır. NewsBlur sayfasına yönlendiriliyorsunuz..."
 
 msgid ""
 "Your account reverts to the free tier. You keep all your feeds (up to 64), training, and saved stories. No "

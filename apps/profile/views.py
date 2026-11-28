@@ -13,6 +13,7 @@ import re
 from urllib.parse import urlencode
 
 import dateutil
+import paypalrestsdk
 import requests
 import stripe
 from django.conf import settings
@@ -22,6 +23,7 @@ from django.contrib.auth import logout as logout_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.cache import cache
 from django.core.mail import mail_admins
 from django.db.models.aggregates import Sum
 from django.http import (
@@ -270,7 +272,7 @@ def redeem_code(request):
         if form.is_valid():
             gift_code = request.POST["gift_code"]
             MRedeemedCode.redeem(user=request.user, gift_code=gift_code)
-            return render(request, "reader/paypal_return.xhtml")
+            return render_payment_return(request)
 
     return render(
         request,
@@ -552,6 +554,11 @@ def paypal_webhooks(request):
             # which would otherwise overwrite paypal_sub_id with the now-dead old sub.
             resource_status = data["resource"].get("status")
             is_active_status = resource_status in ["ACTIVE", "APPROVED", "APPROVAL_PENDING"]
+            # A switch to a lower plan replaces the primary subscription, so this reads it before
+            # store_paypal_sub_id makes the new one primary (apps/profile/models.py).
+            lower_plan_switch = None
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status:
+                lower_plan_switch = user.profile.lower_plan_from_paypal_activation(data["resource"])
             user.profile.store_paypal_sub_id(data["resource"]["id"], skip_save_primary=not is_active_status)
             # plan_id = data['resource']['plan_id']
             # if plan_id == Profile.plan_to_paypal_plan_id('premium'):
@@ -574,6 +581,10 @@ def paypal_webhooks(request):
             user.profile.setup_premium_history()
             if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
+            if lower_plan_switch:
+                # Last, once the older subscription is suspended: the history sync above can still read it
+                # as live and raise the account straight back to its plan.
+                user.profile.finish_paypal_switch_to_lower_plan(lower_plan_switch)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
         user = find_paypal_user(data, custom_field="custom")
         if user:
@@ -790,37 +801,62 @@ def paypal_form(request):
     return HttpResponse(form.render(), content_type="text/html")
 
 
-@login_required
-def paypal_return(request):
+# The plans a payment return page can wait for. "trial" is the premium trial.
+PAYMENT_RETURN_PLANS = ("trial", "premium", "archive", "archive_extra", "pro")
+# How many of the account's sites the return page shows.
+PAYMENT_RETURN_SITES = 100
+# The poll on which the return page reads the account's subscriptions from the payment provider, and
+# the poll on which it stops waiting.
+PAYMENT_RETURN_SYNC_RETRY = 8
+PAYMENT_RETURN_LAST_RETRY = 30
+
+
+def payment_return_sites(user):
+    """The account's most opened sites. The return page lights each one up once it is turned on."""
+    subs = UserSubscription.objects.filter(user=user).order_by("-feed_opens", "feed_id")
+    rows = subs.values("feed_id", "active", "user_title", "feed__feed_title")[:PAYMENT_RETURN_SITES]
+    return [
+        {
+            "feed_id": row["feed_id"],
+            "active": row["active"],
+            "title": row["user_title"] or row["feed__feed_title"] or "",
+        }
+        for row in rows
+    ]
+
+
+def render_payment_return(request, plan=None):
+    """The page shown after a checkout, a plan switch, a redeemed code or a new trial
+    (templates/reader/payment_return.xhtml). It polls profile_is_premium until the plan is on."""
+    if plan not in PAYMENT_RETURN_PLANS:
+        plan = None
     return render(
         request,
-        "reader/paypal_return.xhtml",
+        "reader/payment_return.xhtml",
         {
             "user_profile": request.user.profile,
+            "plan": plan,
+            "switched": is_true(request.GET.get("switched")),
+            "sites": payment_return_sites(request.user),
         },
     )
+
+
+@login_required
+def paypal_return(request):
+    # Stripe checkouts and plan switches land here too and name their plan in the query string.
+    return render_payment_return(request, plan=request.GET.get("plan"))
 
 
 @login_required
 def paypal_archive_return(request):
-    return render(
-        request,
-        "reader/paypal_archive_return.xhtml",
-        {
-            "user_profile": request.user.profile,
-        },
-    )
+    plan = request.GET.get("plan")
+    return render_payment_return(request, plan=plan if plan == "archive_extra" else "archive")
 
 
 @login_required
 def paypal_pro_return(request):
-    return render(
-        request,
-        "reader/paypal_pro_return.xhtml",
-        {
-            "user_profile": request.user.profile,
-        },
-    )
+    return render_payment_return(request, plan="pro")
 
 
 @login_required
@@ -837,63 +873,72 @@ def activate_premium_trial(request):
     if not success:
         return HttpResponseRedirect(reverse("index"))
 
-    return render(
-        request,
-        "reader/premium_trial_return.xhtml",
-        {
-            "user_profile": profile,
-        },
-    )
+    return render_payment_return(request, plan="trial")
+
+
+def payment_return_plan_active(profile, plan):
+    """Whether the account holds at least the plan its return page is waiting for."""
+    if plan == "pro":
+        return bool(profile.is_pro)
+    if plan == "archive_extra":
+        return bool(profile.is_archive_extra or profile.is_pro)
+    if plan == "archive":
+        return bool(profile.is_archive)
+    if plan == "trial":
+        return bool(profile.is_premium)
+    # Premium, or a return page that names no plan: paid Premium or anything above it. An account still
+    # on its trial has is_premium set as well, so the trial flag has to be gone.
+    return bool(profile.is_premium and not profile.is_premium_trial)
 
 
 @ajax_login_required
 @json.json_view
 def profile_is_premium(request):
-    # Check tries
-    code = 0
-    retries = int(request.GET["retries"])
+    """What the return page polls (media/js/newsblur/payments/payment_return.js). `ready` tells it to
+    leave: the plan is on, and the account's sites are either all on or their count stopped changing
+    since the last poll. Muted sites and sites past the plan's limit stay off, so the count of sites
+    turned on may never reach the total."""
+    plan = request.GET.get("plan")
+    if plan not in PAYMENT_RETURN_PLANS:
+        plan = None
+    try:
+        retries = int(request.GET.get("retries", 0))
+    except ValueError:
+        retries = 0
+
+    profile = Profile.objects.get(user=request.user)
+    plan_active = payment_return_plan_active(profile, plan)
+    last_poll = retries >= PAYMENT_RETURN_LAST_RETRY
+    # The early read and the last one each get their own minute-long hold, so open tabs and repeated polls
+    # share a read while the last poll still gets a fresh one.
+    sync_key = "payment_return_sync:%s:%s" % (request.user.pk, "last" if last_poll else "early")
+    sync_due = retries == PAYMENT_RETURN_SYNC_RETRY or last_poll
+    if not plan_active and sync_due and cache.add(sync_key, True, 60):
+        # The provider's notification is late, so read the account's subscriptions from Stripe and
+        # PayPal now (apps/profile/models.py setup_premium_history).
+        try:
+            profile.setup_premium_history()
+        except (stripe.error.StripeError, paypalrestsdk.exceptions.ConnectionError) as e:
+            logging.user(request, "~FRPayment return couldn't read the account's subscriptions: %s" % e)
+        profile = Profile.objects.get(user=request.user)
+        plan_active = payment_return_plan_active(profile, plan)
 
     subs = UserSubscription.objects.filter(user=request.user)
     total_subs = subs.count()
     activated_subs = subs.filter(active=True).count()
 
-    if retries >= 30:
-        code = -1
-        if not request.user.profile.is_premium:
-            subject = "Premium activation failed: %s (%s/%s)" % (request.user, activated_subs, total_subs)
-            message = """User: %s (%s) -- Email: %s""" % (
-                request.user.username,
-                request.user.pk,
-                request.user.email,
-            )
-            mail_admins(subject, message)
-            request.user.profile.activate_premium()
-
-    profile = Profile.objects.get(user=request.user)
-    return {
-        "is_premium": profile.is_premium,
-        "is_premium_archive": profile.is_archive,
-        "code": code,
-        "activated_subs": activated_subs,
-        "total_subs": total_subs,
-    }
-
-
-@ajax_login_required
-@json.json_view
-def profile_is_premium_archive(request):
-    # Check tries
     code = 0
-    retries = int(request.GET["retries"])
-
-    subs = UserSubscription.objects.filter(user=request.user)
-    total_subs = subs.count()
-    activated_subs = subs.filter(feed__archive_subscribers__gte=1).count()
-
-    if retries >= 30:
+    if last_poll:
         code = -1
-        if not request.user.profile.is_premium_archive:
-            subject = "Premium archive activation failed: %s (%s/%s)" % (
+        if not plan_active:
+            plan_names = {
+                "trial": "Premium trial",
+                "archive": "Premium archive",
+                "archive_extra": "Premium archive extra",
+                "pro": "Premium pro",
+            }
+            subject = "%s activation failed: %s (%s/%s)" % (
+                plan_names.get(plan, "Premium"),
                 request.user,
                 activated_subs,
                 total_subs,
@@ -904,16 +949,23 @@ def profile_is_premium_archive(request):
                 request.user.email,
             )
             mail_admins(subject, message)
-            request.user.profile.activate_archive()
+            if not profile.is_premium:
+                profile.activate_premium()
+                profile = Profile.objects.get(user=request.user)
+                plan_active = payment_return_plan_active(profile, plan)
+                activated_subs = subs.filter(active=True).count()
 
-    profile = Profile.objects.get(user=request.user)
-
+    sites_settled = activated_subs >= total_subs or request.GET.get("activated") == str(activated_subs)
     return {
+        "code": code,
+        "ready": plan_active and sites_settled,
+        "plan_active": plan_active,
+        # Return pages loaded before payment_return.js read these two.
         "is_premium": profile.is_premium,
         "is_premium_archive": profile.is_archive,
-        "code": code,
         "activated_subs": activated_subs,
         "total_subs": total_subs,
+        "active_feed_ids": [site["feed_id"] for site in payment_return_sites(request.user) if site["active"]],
     }
 
 
@@ -1080,7 +1132,7 @@ def stripe_form(request):
         zebra_form = StripePlusPaymentForm(email=user.email, plan=plan)
 
     if success_updating:
-        return render(request, "reader/paypal_return.xhtml")
+        return render_payment_return(request)
 
     new_user_queue_count = RNewUserQueue.user_count()
     new_user_queue_position = RNewUserQueue.user_position(request.user.pk)
@@ -1123,7 +1175,10 @@ def switch_stripe_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
 
-    switch_successful = request.user.profile.switch_stripe_subscription(plan)
+    # The plan before the switch, so the return page can say when the account moved down to a lower plan.
+    profile = request.user.profile
+    previous_plan = profile.paid_plan
+    switch_successful = profile.switch_stripe_subscription(plan)
 
     logging.user(
         request,
@@ -1132,9 +1187,31 @@ def switch_stripe_subscription(request):
     )
 
     if switch_successful:
-        return HttpResponseRedirect(reverse("stripe-return"))
+        return_params = {"plan": plan}
+        # The account stays where it is when something other than this subscription holds its plan.
+        if Profile.is_lower_plan(profile.paid_plan, previous_plan):
+            return_params["switched"] = 1
+        return HttpResponseRedirect("%s?%s" % (reverse("stripe-return"), urlencode(return_params)))
 
+    # No subscription to switch, so this is a new checkout, which stripe_checkout refuses for a plan below
+    # the account's own.
     return stripe_checkout(request)
+
+
+def _refuse_lower_plan_sale(request, plan):
+    """A redirect to the upgrade dialog when plan sits below the account's paid plan, else None.
+
+    A lower plan only comes from switching the subscription that carries the account's plan
+    (Profile.switch_stripe_subscription, and lower_plan_from_paypal_activation for PayPal, in
+    apps/profile/models.py), never from a new subscription. A trial counts as no plan.
+    """
+    profile = request.user.profile
+    if not Profile.is_lower_plan(plan, profile.paid_plan):
+        return None
+    logging.user(
+        request, "~FRNot selling ~SB%s~SN below the account's ~SB%s~SN plan" % (plan, profile.paid_plan)
+    )
+    return HttpResponseRedirect(reverse("index") + "?next=premium")
 
 
 def switch_paypal_subscription(request):
@@ -1147,7 +1224,15 @@ def switch_paypal_subscription(request):
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
 
-    approve_url = request.user.profile.switch_paypal_subscription_approval_url(plan)
+    profile = request.user.profile
+    # Only a PayPal subscription that carries the account's plan can be replaced by a lower one
+    # (paypal_webhooks lowers the account once PayPal activates the new subscription).
+    if not (profile.can_switch_to_lower_plan and profile.active_provider == "paypal"):
+        refusal = _refuse_lower_plan_sale(request, plan)
+        if refusal:
+            return refusal
+
+    approve_url = profile.switch_paypal_subscription_approval_url(plan)
 
     logging.user(
         request,
@@ -1158,10 +1243,8 @@ def switch_paypal_subscription(request):
     if approve_url:
         return HttpResponseRedirect(approve_url)
 
-    paypal_return = reverse("paypal-return")
-    if plan in ("archive", "archive_extra"):
-        paypal_return = reverse("paypal-archive-return")
-    return HttpResponseRedirect(paypal_return)
+    # PayPal gave no approval link, so nothing was paid: back to the upgrade dialog.
+    return HttpResponseRedirect(reverse("index") + "?next=premium")
 
 
 @login_required
@@ -1179,6 +1262,10 @@ def stripe_checkout(request):
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
+    refusal = _refuse_lower_plan_sale(request, plan)
+    if refusal:
+        return refusal
+
     price = Profile.plan_to_stripe_price(plan)
 
     session_dict = {
@@ -1190,7 +1277,7 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "success_url": "https://%s%s?%s" % (domain, reverse("stripe-return"), urlencode({"plan": plan})),
         "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:

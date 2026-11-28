@@ -98,7 +98,7 @@ javascripts:
     - js/newsblur/reader/reader_utils.js
     - js/newsblur/models/feeds.js
   payments:
-    - js/newsblur/payments/paypal_return.js
+    - js/newsblur/payments/payment_return.js
     - js/newsblur/payments/stripe_form.js
   bookmarklet:
     - js/vendor/jquery-3.6.0.min.js

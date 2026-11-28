@@ -1,14 +1,16 @@
 """
 IP-based rate tracking for identifying automated/abusive request patterns.
 
-Three tracking systems:
+Four tracking systems:
 1. Reader rate tracking - counts requests to /reader/* endpoints
-2. Fail2ban-style tracking - counts 404s and suspicious paths per IP
-3. Attack payload detection - detects and auto-bans IPs sending malicious payloads
+2. Request rate tracking - counts every request per address per minute, by kind
+3. Fail2ban-style tracking - counts 404s and suspicious paths per IP
+4. Attack payload detection - detects and auto-bans IPs sending malicious payloads
 
 See apps/profile/middleware.py for middleware integration.
 """
 import datetime
+import ipaddress
 import json
 import re
 import time
@@ -34,6 +36,51 @@ WOULD_BE_DENIED_TOTAL = Counter(
     "newsblur_rate_limit_would_deny_total",
     "Total requests that would be denied if rate limiting was enabled",
 )
+
+TRACKED_REQUESTS_TOTAL = Counter(
+    "newsblur_tracked_requests_total",
+    "Total requests counted by client address, by kind",
+    ["kind"],
+)
+RATE_LIMIT_REFUSED_TOTAL = Counter(
+    "newsblur_rate_limit_refused_total",
+    "Total requests refused with 429 for going over the per-minute limit, by kind",
+    ["kind"],
+)
+RATE_LIMIT_WOULD_REFUSE_TOTAL = Counter(
+    "newsblur_rate_limit_would_refuse_total",
+    "Total requests over the per-minute limit where it is only logged, by kind",
+    ["kind"],
+)
+
+# The ipaddress module counts this shared address space as neither private nor global, but the
+# internal proxies use it (AttackBanMiddleware in apps/profile/middleware.py skips it too).
+SHARED_ADDRESS_SPACE = ipaddress.ip_network("100.64.0.0/10")
+
+
+def client_address(request):
+    """
+    Return the client address the load balancer recorded for this request.
+
+    HAProxy's ``option forwardfor`` appends the address it saw to X-Forwarded-For, so entries to
+    its left can be supplied by the client, and internal proxies after it append to its right.
+    Walking from the right, the first entry outside the private, loopback and shared ranges is
+    the address the load balancer saw. When every entry is internal, as in development, the
+    rightmost entry is used.
+    """
+    forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
+    entries = [entry.strip() for entry in forwarded.split(",") if entry.strip()]
+    if not entries:
+        return request.META.get("REMOTE_ADDR", "unknown")
+
+    for entry in reversed(entries):
+        try:
+            address = ipaddress.ip_address(entry)
+        except ValueError:
+            continue
+        if not (address.is_private or address.is_loopback or address in SHARED_ADDRESS_SPACE):
+            return entry
+    return entries[-1]
 
 
 class IPRateTracker:
@@ -84,13 +131,9 @@ class IPRateTracker:
     def get_ip(self, request):
         """
         Extract client IP from request, handling proxy headers.
-        X-Forwarded-For may contain multiple IPs; use the first (client).
+        See client_address for which X-Forwarded-For entry is used.
         """
-        forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
-        if forwarded:
-            # X-Forwarded-For: client, proxy1, proxy2
-            return forwarded.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR", "unknown")
+        return client_address(request)
 
     def get_user_agent_type(self, request):
         """
@@ -371,6 +414,93 @@ class IPRateTracker:
         return results
 
 
+class RequestRateTracker:
+    """
+    Count every request by client address in one-minute windows, by kind.
+
+    Stores one sorted set per kind and minute in Redis using REDIS_STATISTICS_POOL (db 3):
+    - reqm:{kind}:{window} -> address scored by its request count (TTL: 1 hour)
+
+    An address's score is its count for that minute, and the highest scores are the busiest
+    addresses, so no other keys are kept. IPRateTrackingMiddleware.process_view in
+    apps/profile/middleware.py counts every request and limits signed-out ones.
+    """
+
+    KIND_PAGE = "page"  # Signed-out blurblog or shared-story page load
+    KIND_ANONYMOUS = "anonymous"  # Any other signed-out request
+    KIND_USER = "user"  # Signed-in request
+    KINDS = (KIND_PAGE, KIND_ANONYMOUS, KIND_USER)
+
+    TTL_SECONDS = 3600  # 1 hour
+
+    def __init__(self):
+        self._redis = None
+
+    @property
+    def redis(self):
+        """Lazy Redis connection using statistics pool."""
+        if self._redis is None:
+            self._redis = redis.Redis(connection_pool=settings.REDIS_STATISTICS_POOL)
+        return self._redis
+
+    def get_current_window(self):
+        """Return the current UTC minute as a string (e.g., '202512161437')."""
+        return datetime.datetime.utcnow().strftime("%Y%m%d%H%M")
+
+    def get_seconds_left_in_window(self):
+        """Return the whole seconds until the next clock minute starts a new count, 1 to 60."""
+        return 60 - datetime.datetime.utcnow().second
+
+    def get_ip(self, request):
+        return client_address(request)
+
+    def get_key(self, kind, window):
+        return f"reqm:{kind}:{window}"
+
+    def track(self, request, kind):
+        """
+        Count a request and return its address's count for that kind in the current window,
+        including this request. One Redis round trip.
+        """
+        key = self.get_key(kind, self.get_current_window())
+        TRACKED_REQUESTS_TOTAL.labels(kind=kind).inc()
+
+        pipe = self.redis.pipeline()
+        pipe.zincrby(key, 1, self.get_ip(request))
+        pipe.expire(key, self.TTL_SECONDS)
+        count, _ = pipe.execute()
+
+        return int(count)
+
+    def get_counts(self, address, window=None):
+        """
+        Get an address's count of each kind for the current or specified window,
+        leaving out kinds it has no requests for.
+        """
+        if window is None:
+            window = self.get_current_window()
+
+        pipe = self.redis.pipeline()
+        for kind in self.KINDS:
+            pipe.zscore(self.get_key(kind, window), address)
+        scores = pipe.execute()
+
+        return {kind: int(score) for kind, score in zip(self.KINDS, scores) if score}
+
+    def get_top_addresses(self, kind, window=None, limit=50):
+        """
+        Get the busiest addresses for a kind in the current or specified window.
+
+        Returns a list of (address, count) tuples, highest count first.
+        """
+        if window is None:
+            window = self.get_current_window()
+
+        top = self.redis.zrevrange(self.get_key(kind, window), 0, limit - 1, withscores=True)
+
+        return [(address, int(count)) for address, count in top]
+
+
 # Prometheus metrics for fail2ban-style tracking
 SCANNER_404_TOTAL = Counter(
     "newsblur_scanner_404_total",
@@ -438,10 +568,7 @@ class ScannerTracker:
         return window_time.strftime("%Y%m%d%H%M")
 
     def get_ip(self, request):
-        forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-        return request.META.get("REMOTE_ADDR", "unknown")
+        return client_address(request)
 
     def is_suspicious_path(self, path):
         """Check if path matches vulnerability scanning patterns."""
@@ -556,30 +683,6 @@ ATTACK_BANNED_CHECK_TOTAL = Counter(
 )
 
 
-def _get_client_ip(request):
-    """
-    Extract the real client IP from a proxied request.
-
-    Relies on the known proxy chain: Client → HAProxy → Nginx → Django.
-    HAProxy's ``option forwardfor`` appends the real TCP source IP.
-    Nginx's ``$proxy_add_x_forwarded_for`` appends ``$remote_addr``.
-    Because nginx has ``set_real_ip_from 0.0.0.0/0``, its appended value
-    is the *leftmost* XFF entry (spoofable).  The real client IP is
-    therefore always second-to-last (index -2): the entry HAProxy added
-    from the TCP connection, which cannot be forged at the HTTP layer.
-
-    If XFF has fewer than 2 entries (e.g. dev without HAProxy), fall back
-    to the single entry or REMOTE_ADDR.
-    """
-    forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
-    if forwarded:
-        parts = [p.strip() for p in forwarded.split(",")]
-        if len(parts) >= 2:
-            return parts[-2]
-        return parts[0]
-    return request.META.get("REMOTE_ADDR", "unknown")
-
-
 class AttackDetector:
     """
     Detect malicious payloads in request query strings, POST bodies, and paths.
@@ -649,7 +752,7 @@ class AttackDetector:
         return self._redis
 
     def get_ip(self, request):
-        return _get_client_ip(request)
+        return client_address(request)
 
     def is_banned(self, ip):
         """Check if an IP is currently banned. Fast Redis GET."""

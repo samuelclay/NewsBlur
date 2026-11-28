@@ -426,12 +426,12 @@ class Test_SocialAuthentication(SimpleTestCase):
         for index in range(31):
             request = self.factory.post(
                 "/api/social/start",
-                HTTP_X_FORWARDED_FOR=f"spoofed-{index}, 203.0.113.7, spoofed-{index}",
+                HTTP_X_FORWARDED_FOR=f"spoofed-{index}, 203.0.113.7",
                 REMOTE_ADDR="10.0.0.1",
             )
             self.assertEqual(social_auth.rate_limited(request), index == 30)
         other = self.factory.post(
-            "/api/social/start", HTTP_X_FORWARDED_FOR="203.0.113.8, 203.0.113.8", REMOTE_ADDR="10.0.0.1"
+            "/api/social/start", HTTP_X_FORWARDED_FOR="203.0.113.7, 203.0.113.8", REMOTE_ADDR="10.0.0.1"
         )
         self.assertFalse(social_auth.rate_limited(other))
 

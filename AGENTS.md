@@ -340,6 +340,8 @@ Other useful endpoints: `vitals.crashrate`, `vitals.anrrate`, `vitals.errors.cou
 - `?test=faq` - Open the FAQ dialog on load (also works as `?next=faq`)
 - `?test=feedchooser` - Open the feed chooser modal on load (also works as `?next=feedchooser`)
 - `?test=premium` - Open the premium upgrade modal on load (also works as `?next=premium`)
+- `/profile/stripe_return?plan=archive&test=return` - Play the payment return page without an upgrade and stay on it (`plan` is `trial`, `premium`, `archive`, `archive_extra` or `pro`; add `&switched=1` for a switch to a lower plan)
+- `/profile/stripe_return?test=slow` - Show the payment return page for an account that never finishes upgrading
 
 ### Theme Switching
 - `NEWSBLUR.reader.switch_theme('dark')` - Switch to dark mode

@@ -1192,6 +1192,10 @@ IP_RATE_LIMITING_ENABLED = True
 IP_RATE_LIMIT_THRESHOLD = 500  # Max requests per 5-min window before blocking with 429
 IP_RATE_WINDOW_MINUTES = 5  # Time window for counting requests
 IP_RATE_TTL_SECONDS = 3600  # How long to keep rate data (1 hour)
+# Signed-out requests per address per minute; blurblog and shared-story page loads past it get a 429
+IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE = 120
+# Also refuse other signed-out requests past that limit; while off they are only logged as WOULD BLOCK
+IP_RATE_LIMITING_ANONYMOUS_ENABLED = False
 
 # ==========
 # = Celery =
