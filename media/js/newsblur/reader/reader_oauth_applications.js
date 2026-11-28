@@ -4,10 +4,10 @@ NEWSBLUR.AccountOAuthApplications = function (account) {
     var can_register = NEWSBLUR.Globals.can_register_oauth_app;
     this.$form = $.make('form', { className: 'NB-oauth-form' }, [
         $.make('p', { className: 'NB-oauth-help' }, [
-            gettext('Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account.'),
+            gettext('Building a public RSS reader that anyone can use? Your application may qualify to run without NewsBlur Premium Pro.'),
             ' ',
             $.make('a', {
-                href: 'mailto:samuel@newsblur.com?subject=Premium%20Pro%20for%20a%20public%20RSS%20reader'
+                href: 'mailto:samuel@newsblur.com?subject=OAuth%20application%20for%20a%20public%20RSS%20reader'
             }, gettext('Contact Samuel'))
         ]),
         this.field(gettext('Application name'), {

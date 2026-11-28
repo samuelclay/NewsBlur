@@ -1790,8 +1790,10 @@ msgstr "תוספי דפדפן"
 msgid "Browser menu"
 msgstr "תפריט הדפדפן"
 
-msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
-msgstr "בונים קורא RSS ציבורי שפתוח לכולם? ייתכן שתוכלו לקבל חשבון NewsBlur Premium Pro בחינם."
+msgid ""
+"Building a public RSS reader that anyone can use? Your application may qualify to run without NewsBlur "
+"Premium Pro."
+msgstr "מפתחים קורא RSS ציבורי שכולם יכולים להשתמש בו? ייתכן שהיישום שלך זכאי לפעול ללא Premium Pro של NewsBlur."
 
 msgid "Built-in story lists in the sidebar"
 msgstr "רשימות כתבות מובנות בסרגל הצד"

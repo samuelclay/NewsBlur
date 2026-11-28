@@ -8673,6 +8673,7 @@
   "f224d3cb130c2cdd512275cd": "Whitney",
   "f23360a38973bd85c28836b2": "Eliminar también %(value_1)s archivo%(value_2)s existente de este dominio",
   "f23b22e707b2e824295e996e": "Acento",
+  "f23cc793ebb581eff37f421e": "¿Estás creando un lector RSS público que cualquiera pueda usar? Es posible que tu aplicación cumpla los requisitos para funcionar sin Premium Pro de NewsBlur.",
   "f243640bb2e5c3102338d564": "La CLI es una herramienta de terminal independiente que ejecutas directamente. La",
   "f24bde6949d5b7de3b16ed83": "Agrupación de artículos que agrupa artículos relacionados",
   "f253db630a859202bc9f60b2": "Lo sentimos, nadie coincide con «%(value_1)s».",
