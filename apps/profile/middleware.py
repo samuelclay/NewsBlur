@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import connection
 from django.http import HttpResponse
 from django.template import Context, Template
+from sentry_sdk import capture_exception
 
 from apps.statistics.rstats import round_time
 from utils import json_functions as json
@@ -871,6 +872,7 @@ class IPRateTrackingMiddleware:
         self.get_response = get_response
         self._tracker = None
         self._request_tracker = None
+        self._counting_error_reported_at = 0
 
     @property
     def tracker(self):
@@ -991,9 +993,16 @@ class IPRateTrackingMiddleware:
         try:
             kind = self.get_request_kind(request, view_func)
             count = self.request_tracker.track(request, kind)
-        except Exception as e:
+        except redis.RedisError as e:
             # Don't let tracking errors break the request
             logging.debug(" ***> Request rate tracking error: %s" % e)
+            return None
+        except Exception as e:
+            # Anything else is a bug in the counting. The request is still served, and Sentry hears
+            # about it at most once a minute from each worker.
+            if time.time() - self._counting_error_reported_at > 60:
+                self._counting_error_reported_at = time.time()
+                capture_exception(e)
             return None
 
         if kind == RequestRateTracker.KIND_USER or count <= settings.IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE:
@@ -1003,16 +1012,15 @@ class IPRateTrackingMiddleware:
         # The host and the URL pattern say which page it was. The path and query string can carry
         # tokens, so they stay out of the log.
         route = "%s %s" % (request.get_host(), request.resolver_match.route)
-        if kind == RequestRateTracker.KIND_PAGE:
-            enforced = settings.IP_RATE_LIMITING_ENABLED
-        else:
+        enforced = settings.IP_RATE_LIMITING_ENABLED and (
+            kind == RequestRateTracker.KIND_PAGE or settings.IP_RATE_LIMITING_ANONYMOUS_ENABLED
+        )
+        if not enforced:
             RATE_LIMIT_WOULD_REFUSE_TOTAL.labels(kind=kind).inc()
             logging.user(
                 request,
                 "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, route, count, kind),
             )
-            enforced = settings.IP_RATE_LIMITING_ENABLED and settings.IP_RATE_LIMITING_ANONYMOUS_ENABLED
-        if not enforced:
             return None
 
         RATE_LIMIT_REFUSED_TOTAL.labels(kind=kind).inc()

@@ -2,7 +2,7 @@
 (IPRateTrackingMiddleware in apps/profile/middleware.py, RequestRateTracker in utils/ip_rate_tracker.py)."""
 
 import uuid
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import redis
 from django.conf import settings
@@ -117,9 +117,13 @@ class Test_RequestRateLimit(TestCase):
         with patch.object(RequestRateTracker, "track", side_effect=redis.ConnectionError("down")):
             self.assertEqual(self._blurblog().status_code, 200)
 
-        # A test elsewhere that swaps the Redis client for a mock gets a mock back as the count.
-        with patch.object(RequestRateTracker, "redis", MagicMock()):
-            self.assertEqual(self._blurblog().status_code, 200)
+    def test_a_fault_in_the_counting_is_reported_and_the_page_still_served(self):
+        with patch.object(RequestRateTracker, "track", side_effect=TypeError("a bug")):
+            with patch("apps.profile.middleware.capture_exception") as report:
+                statuses = self._statuses(self._blurblog, 3)
+
+        self.assertEqual(statuses, [200, 200, 200])
+        report.assert_called_once()
 
     # --- every other signed-out request -------------------------------------
 
