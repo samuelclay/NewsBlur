@@ -149,6 +149,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "%(badge)s นานสูงสุด %(count)s วัน"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → เว็บไซต์ %(count)s"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "หัวข้อ %(category)s"
 
@@ -164,6 +169,11 @@ msgstr "%(cost)s/บทความ"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s ไบต์"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "ทำการเปลี่ยนแปลง %(count)s รายการไม่ได้"
 
 #, python-format
 msgid "%(count)s channel"
@@ -206,9 +216,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s วันที่แล้ว"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "เว็บไซต์ที่ไม่ทำงาน %(count)s แห่งจะถูกปิดเสียง"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "ปิดเสียงเว็บไซต์ที่ไม่ทำงาน %(count)s แห่งแล้ว"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "ไม่ชอบ %(count)s ครั้ง"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "นำโฟลเดอร์ว่าง %(count)s ออก"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "นำโฟลเดอร์ว่าง %(count)s ออกแล้ว"
 
 #, python-format
 msgid "%(count)s episode"
@@ -219,6 +249,46 @@ msgstr[0] "%(count)s ตอน"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s ฟีด"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "ถูกระบุ %(count)s แห่ง"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "เพิ่มโฟลเดอร์แล้ว %(count)s"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "เพิ่มโฟลเดอร์ %(count)s รายการ"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "โฟลเดอร์ %(count)s จะถูกรวมเข้ากับโฟลเดอร์อื่น"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "เปลี่ยนชื่อโฟลเดอร์ %(count)s"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "รวมโฟลเดอร์ %(count)s เข้ากับโฟลเดอร์อื่นแล้ว"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "โฟลเดอร์ %(count)s รายการจะย้ายเข้าไปอยู่ในโฟลเดอร์อื่น"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "เปลี่ยนชื่อหรือย้ายโฟลเดอร์ %(count)s แล้ว"
 
 #, python-format
 msgid "%(count)s follower"
@@ -313,6 +383,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "เปิดอ่าน %(count)s ครั้ง"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "เว็บไซต์อื่นอีก %(count)s แห่งที่นี่ไม่ได้เป็นส่วนหนึ่งของการเปลี่ยนแปลงใดๆ"
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s หน้า"
@@ -331,6 +406,11 @@ msgstr[0] "ความคิดเห็นสาธารณะ %(count)s ร�
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "การตอบกลับ %(count)s รายการ"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "เหลือการแก้ไข %(count)s ครั้ง"
 
 #, python-format
 msgid "%(count)s selected"
@@ -353,14 +433,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s เว็บไซต์"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "เพิ่มเว็บไซต์ %(count)s แห่งลงในโฟลเดอร์ที่สองแล้ว"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "มีเว็บไซต์ %(count)s แห่ง"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s เว็บไซต์อยู่ที่นี่ ไม่มีส่วนใดเปลี่ยนแปลง"
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "เว็บไซต์ %(count)s จะถูกเพิ่มในโฟลเดอร์ที่สอง"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "ย้ายเว็บไซต์ %(count)s แห่งไปยังโฟลเดอร์อื่นแล้ว"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "เว็บไซต์ %(count)s แห่งจะย้ายไปยังโฟลเดอร์อื่น"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "เว็บไซต์เกินขีดจำกัด %(count)s แห่ง"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "ยังไม่มีการตัดสินใจสำหรับเว็บไซต์ %(count)s แห่ง และยังคงอยู่ที่เดิม"
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "ยังมี %(count)s รายการที่ต้องตัดสินใจ รายการที่ยังไม่ได้ตัดสินใจจะคงเดิม"
 
 #, python-format
 msgid "%(count)s story"
@@ -918,6 +1033,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ อีก %(value_1)s เว็บไซต์"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/วัน"
 
@@ -1000,6 +1119,9 @@ msgstr "เสียงชัดและใกล้ยิ่งขึ้น"
 msgid "A folder"
 msgstr "โฟลเดอร์หนึ่ง"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "โฟลเดอร์ที่จำเป็นถูกเปลี่ยนชื่อ ย้าย หรือลบหลังจากสร้างข้อเสนอ"
+
 msgid "A folder of feeds read as one stream"
 msgstr "โฟลเดอร์ฟีดที่อ่านรวมเป็นสตรีมเดียว"
 
@@ -1009,6 +1131,12 @@ msgstr "บทความใหม่ ๆ ที่คัดสรรมาจ�
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "ใช้ของขวัญจาก %(value_1)s กับบัญชีของคุณแล้ว"
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "มีการนำการจัดระเบียบครั้งหลังไปใช้แล้ว จึงเลิกทำรายการนี้ไม่ได้อีกต่อไป"
+
+msgid "A proposal is already being made."
+msgstr "มีการเสนออยู่แล้ว"
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "การตรวจสอบรอบที่สองจะใช้คำใบ้ของคุณเพื่อหารูปแบบที่ถูกต้องบนหน้าเว็บ"
@@ -1044,6 +1172,12 @@ msgstr "บันทึกตัวกรอง AI แล้ว แต่จะ�
 msgid "AI finds the stories"
 msgstr "AI ค้นหาบทความให้"
 
+msgid "AI is looking through your sites"
+msgstr "AI กำลังตรวจดูเว็บไซต์ของคุณ"
+
+msgid "AI is revising the proposal"
+msgstr "AI กำลังปรับข้อเสนอ"
+
 msgid "AI-curated summary of your top stories"
 msgstr "สรุปข่าวเด่นของคุณที่คัดสรรโดย AI"
 
@@ -1063,6 +1197,12 @@ msgstr "ได้แน่นอน เปิดเครื่องมือ�
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "สำเนียง"
+
+msgid "Accept all"
+msgstr "ยอมรับทั้งหมด"
+
+msgid "Accept into this folder"
+msgstr "ยอมรับลงในโฟลเดอร์นี้"
 
 msgid "Account"
 msgstr "บัญชี"
@@ -1102,6 +1242,9 @@ msgstr "บุ๊กมาร์กเล็ตเพิ่มเว็บไซ
 
 msgid "Add a classifier"
 msgstr "เพิ่มตัวจำแนก"
+
+msgid "Add a copy here"
+msgstr "เพิ่มสำเนาที่นี่"
 
 msgid "Add a forwarding address"
 msgstr "เพิ่มที่อยู่สำหรับส่งต่อ"
@@ -1144,6 +1287,10 @@ msgstr "เพิ่มเว็บไซต์/โฟลเดอร์"
 
 msgid "Add story list"
 msgstr "เพิ่มรายการบทความ"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "เพิ่มโฟลเดอร์ %(folder)s"
 
 msgid "Add to Chrome"
 msgstr "เพิ่มใน Chrome"
@@ -1249,6 +1396,9 @@ msgstr "เสร็จเรียบร้อย!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "ดึงข้อมูลฟีดทั้งหมดทุก 5-15 นาที"
 
+msgid "All moves"
+msgstr "การย้ายทั้งหมด"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1277,10 +1427,20 @@ msgstr "โดเมนที่อนุญาต"
 msgid "Alphabetical"
 msgstr "ตามตัวอักษร"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "เพิ่ม เปลี่ยนชื่อ รวม ซ้อน และนำโฟลเดอร์ออกได้ด้วย"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "ลบคลังเก็บเดิม %(value_1)s รายการจากโดเมนนี้ด้วย"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "อยู่ใน %(folder)s ด้วย"
+
+msgid "Also look for"
+msgstr "ค้นหาเพิ่มเติม"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1341,6 +1501,9 @@ msgstr "การแจ้งเตือนบน Android ต้องใช้
 msgid "Animals"
 msgstr "สัตว์"
 
+msgid "Another folder there already has this name."
+msgstr "มีโฟลเดอร์อื่นใช้ชื่อนี้อยู่แล้ว"
+
 msgid "Any"
 msgstr "ทั้งหมด"
 
@@ -1353,6 +1516,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "ไม่จำกัดเวลา"
+
+msgid "Anything the AI should know"
+msgstr "มีอะไรที่ AI ควรรู้ไหม"
 
 msgid "Appearance"
 msgstr "รูปลักษณ์"
@@ -1373,11 +1539,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "นำการรวมไปใช้แล้ว %(succeeded)s จาก %(count)s รายการ (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "นำไปใช้เมื่อ %(date)s"
+
 msgid "Applies to"
 msgstr "ใช้กับ"
 
 msgid "Apply"
 msgstr "นำไปใช้"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "ใช้การเปลี่ยนแปลง %(count)s รายการ"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "นำการเปลี่ยนแปลง %(count)s รายการไปใช้หรือไม่"
 
 msgid "Apply All Merges"
 msgstr "ใช้การรวมทั้งหมด"
@@ -1385,11 +1565,29 @@ msgstr "ใช้การรวมทั้งหมด"
 msgid "Apply Split"
 msgstr "ใช้การแบ่ง"
 
+msgid "Apply changes"
+msgstr "ใช้การเปลี่ยนแปลง"
+
 msgid "Apply training across a folder"
 msgstr "ใช้การฝึกกับทั้งโฟลเดอร์"
 
 msgid "Apply training globally"
 msgstr "ใช้การฝึกกับทุกแหล่ง"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "การนำการเปลี่ยนแปลงไปใช้ต้องใช้ Premium Archive"
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"การใช้การเปลี่ยนแปลงต้องใช้ Premium Archive การตัดสินใจของคุณได้รับการบันทึกไว้ "
+"และจะยังอยู่ที่นี่หลังจากอัปเกรด"
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "การนำไปใช้เมื่อ %(date)s หยุดกลางคัน โฟลเดอร์บางส่วนของคุณอาจเปลี่ยนแปลงแล้ว"
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "การนำไปใช้หยุดกลางคัน โฟลเดอร์บางส่วนของคุณจึงอาจเปลี่ยนแปลง"
 
 msgid "Applying..."
 msgstr "กำลังนำไปใช้..."
@@ -1414,6 +1612,11 @@ msgstr "แอปใช้งานฟรีหรือไม่"
 
 msgid "Are the apps open source?"
 msgstr "แอปเหล่านี้เป็นโอเพนซอร์สหรือไม่"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "กำลังย้ายเข้า %(count)s"
 
 msgid "Arrow keys"
 msgstr "ปุ่มลูกศร"
@@ -1444,6 +1647,9 @@ msgstr "ถาม AI สามารถถอดเสียงพอดแค�
 
 msgid "Ask AI questions about stories"
 msgstr "ถาม AI เกี่ยวกับบทความ"
+
+msgid "Ask AI to revise"
+msgstr "ขอให้ AI แก้ไข"
 
 msgid "Ask AI with a choice of models"
 msgstr "ถาม AI โดยเลือกโมเดลได้"
@@ -1564,6 +1770,9 @@ msgstr "กลับไปยังเครื่องมือฝึกตั
 msgid "Back to feeds"
 msgstr "กลับไปยังฟีด"
 
+msgid "Back to review"
+msgstr "กลับไปตรวจสอบ"
+
 msgid "Back to stories"
 msgstr "กลับไปที่บทความ"
 
@@ -1646,6 +1855,9 @@ msgstr "Blurblog บทความที่แชร์ และความ�
 msgid "Bookmarklet"
 msgstr "บุ๊กมาร์กเล็ต"
 
+msgid "Both"
+msgstr "ทั้งสอง"
+
 msgid "Bottom"
 msgstr "ด้านล่าง"
 
@@ -1726,6 +1938,12 @@ msgstr "หัวข้อย่อย"
 
 msgid "Buttons"
 msgstr "ปุ่ม"
+
+msgid "By folder"
+msgstr "ตามโฟลเดอร์"
+
+msgid "By hand"
+msgstr "ดำเนินการด้วยตนเอง"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1845,6 +2063,9 @@ msgstr "เลือกสิ่งที่คุณชอบด้านบน
 msgid "Check your email..."
 msgstr "ตรวจสอบอีเมลของคุณ..."
 
+msgid "Checking for dead sites"
+msgstr "กำลังตรวจหาเว็บไซต์ที่ใช้งานไม่ได้"
+
 msgid "Checking recent pages..."
 msgstr "กำลังตรวจสอบหน้าล่าสุด..."
 
@@ -1875,6 +2096,9 @@ msgstr "เลือกหมวดหมู่"
 
 msgid "Choose how many days back"
 msgstr "เลือกจำนวนวันย้อนหลัง"
+
+msgid "Choose how much to change, then try again."
+msgstr "เลือกปริมาณการเปลี่ยนแปลง แล้วลองอีกครั้ง"
 
 msgid "Choose model"
 msgstr "เลือกโมเดล"
@@ -2142,8 +2366,22 @@ msgstr "คัดลอกข้อความ"
 msgid "Copy URL"
 msgstr "คัดลอก URL"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "คัดลอกจาก %(folder)s"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "เสนอให้คัดลอกไปยัง %(folder)s"
+
+msgid "Copy undecided"
+msgstr "ยังไม่ได้ตัดสินใจคัดลอก"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "คัดลอกรหัสลับไคลเอนต์ตอนนี้ คุณจะดูได้เพียงครั้งเดียว"
+
+msgid "Copy?"
+msgstr "คัดลอกไหม"
 
 msgid "Could not add this classifier. Try again."
 msgstr "เพิ่มตัวจำแนกนี้ไม่ได้ โปรดลองอีกครั้ง"
@@ -2162,6 +2400,9 @@ msgstr "โหลดคำถามที่พบบ่อยไม่ได้
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "โหลดแอปพลิเคชันของคุณไม่ได้ ลองรีเฟรช"
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "โหลดการจัดระเบียบใหม่ด้วย AI ไม่ได้"
 
 msgid "Couldn't load audio for this story."
 msgstr "โหลดเสียงสำหรับบทความนี้ไม่สำเร็จ"
@@ -2316,8 +2557,20 @@ msgstr "วัน"
 msgid "Days of unreads"
 msgstr "จำนวนวันของรายการที่ยังไม่อ่าน"
 
+msgid "Dead sites"
+msgstr "เว็บไซต์ที่ไม่ทำงาน"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "เปิดเสียงเว็บไซต์ที่ไม่ทำงานซึ่งถูกปิดเสียงแล้ว"
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "เว็บไซต์ที่หยุดเผยแพร่หรือดึงข้อมูลไม่สำเร็จอย่างต่อเนื่อง"
+
 msgid "December"
 msgstr "ธันวาคม"
+
+msgid "Decline all copies"
+msgstr "ปฏิเสธสำเนาทั้งหมด"
 
 msgid "Deep reads the community gave real time to"
 msgstr "บทความเจาะลึกที่ชุมชนใช้เวลาอ่านจริง"
@@ -2477,6 +2730,9 @@ msgstr "ปิด"
 msgid "Do I get a unique email address?"
 msgstr "ฉันจะได้รับที่อยู่อีเมลเฉพาะหรือไม่"
 
+msgid "Do not put it here"
+msgstr "อย่าวางไว้ที่นี่"
+
 msgid "Do the apps work offline?"
 msgstr "แอปใช้งานแบบออฟไลน์ได้ไหม"
 
@@ -2507,6 +2763,9 @@ msgstr "ไม่ต้องแสดงตัวอย่าง แสดง�
 
 msgid "Don't show a thumbnail"
 msgstr "ไม่ต้องแสดงภาพขนาดย่อ"
+
+msgid "Done"
+msgstr "เสร็จสิ้น"
 
 msgid "Done!"
 msgstr "เสร็จแล้ว!"
@@ -2743,6 +3002,9 @@ msgstr "บทความใหม่ทุกรายการจะถูก
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "แท็กแต่ละแท็กของบทความที่บันทึกไว้มีฟีด RSS ของตัวเอง เหมาะสำหรับส่งต่อไปยัง IFTTT หรือ Zapier"
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "ทุกเว็บไซต์อยู่ในโฟลเดอร์ที่คุณไม่ได้เลือก เปิดโฟลเดอร์เพื่อให้ AI มีเว็บไซต์ไว้พิจารณา"
+
 msgid "Every story archived and searchable forever"
 msgstr "เก็บทุกบทความไว้ในคลังและค้นหาได้ตลอดไป"
 
@@ -2764,6 +3026,9 @@ msgstr "ทุกคน"
 msgid "Everyone"
 msgstr "ทุกคน"
 
+msgid "Everything"
+msgstr "ทั้งหมด"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "ทุกสิ่งที่ NewsBlur ทำได้ และวิธีทดลองใช้"
 
@@ -2781,6 +3046,12 @@ msgstr "ทุกอย่างในแพ็กเกจฟรี พร้�
 
 msgid "Everything in Premium, plus:"
 msgstr "ทุกอย่างใน Premium พร้อมด้วย:"
+
+msgid "Everything is decided."
+msgstr "ตัดสินใจครบแล้ว"
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "เริ่มต้นโดยอนุมัติทั้งหมด ปฏิเสธการย้ายจากโฟลเดอร์ใดโฟลเดอร์หนึ่ง"
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2910,6 +3181,13 @@ msgstr "ส่งคำค้นหาไม่สำเร็จ"
 msgid "Failed to subscribe"
 msgstr "สมัครรับข้อมูลไม่สำเร็จ"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "ดึงข้อมูลไม่สำเร็จ และไม่เคยมีบทความ"
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "ดึงข้อมูลไม่สำเร็จ บทความล่าสุดอยู่ใน %(month)s."
+
 msgid "Fashion"
 msgstr "แฟชั่น"
 
@@ -3010,11 +3288,17 @@ msgstr "กำลังดึงฟีดของคุณ"
 msgid "Fetching..."
 msgstr "กำลังดึงข้อมูล..."
 
+msgid "File sites into the folders you already have."
+msgstr "จัดเว็บไซต์ลงในโฟลเดอร์ที่มีอยู่แล้ว"
+
 msgid "Files"
 msgstr "ไฟล์"
 
 msgid "Filled Icons"
 msgstr "ไอคอนแบบทึบ"
+
+msgid "Filter"
+msgstr "กรอง"
 
 msgid "Filter by date range"
 msgstr "กรองตามช่วงวันที่"
@@ -3140,8 +3424,14 @@ msgstr "จำนวนบทความที่ยังไม่อ่าน
 msgid "Folders"
 msgstr "โฟลเดอร์"
 
+msgid "Folders after"
+msgstr "โฟลเดอร์หลังจัดระเบียบ"
+
 msgid "Folders only"
 msgstr "โฟลเดอร์เท่านั้น"
+
+msgid "Folders updated"
+msgstr "อัปเดตโฟลเดอร์แล้ว"
 
 msgid "Folders, feeds, and story titles"
 msgstr "โฟลเดอร์ ฟีด และชื่อเรื่อง"
@@ -3314,6 +3604,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "จาก"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "จาก %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "จากเว็บไซต์ที่อัปเดตไม่บ่อย"
 
@@ -3485,6 +3779,10 @@ msgstr "สมัคร Premium — $36/ปี"
 msgid "Go back to %(breadcrumb)s"
 msgstr "กลับไปที่ %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "ย้ายเข้าไปใน %(folder)s"
+
 msgid "Good Reads"
 msgstr "บทความน่าอ่าน"
 
@@ -3587,6 +3885,9 @@ msgstr "ซ่อนเว็บไซต์ที่คุณสมัครร
 msgid "Hide story changes"
 msgstr "ซ่อนการเปลี่ยนแปลงของบทความ"
 
+msgid "Hide them"
+msgstr "ซ่อนรายการเหล่านี้"
+
 msgid "Highlight"
 msgstr "ไฮไลต์"
 
@@ -3631,6 +3932,9 @@ msgstr "ฉันบันทึกบทความได้กี่ราย
 
 msgid "How much emotion"
 msgstr "ระดับอารมณ์"
+
+msgid "How much to change"
+msgstr "ต้องการเปลี่ยนแปลงมากน้อยเพียงใด"
 
 msgid "How often"
 msgstr "ความถี่"
@@ -3702,6 +4006,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "อีก %(count)s วัน ช่วงทดลองใช้ Premium จะสิ้นสุด แล้วคุณจะกลับไปใช้ Free"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "ใน %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "ใน Gmail ไปที่ %(settings_menu)s แล้วคลิก %(add_button)s เพิ่มที่อยู่อีเมล NewsBlur ของคุณ"
 
@@ -3722,6 +4030,9 @@ msgstr "ในหน้าต่างใหม่"
 msgid "In a pill"
 msgstr "แบบแคปซูล"
 
+msgid "In both folders"
+msgstr "อยู่ในทั้งสองโฟลเดอร์"
+
 msgid "In rotation"
 msgstr "อยู่ในการสลับเสียง"
 
@@ -3734,6 +4045,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "ในหน้าต่างนี้"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "อยู่ใน 2 โฟลเดอร์ %(count)s"
 
 msgid "Include read"
 msgstr "รวมที่อ่านแล้ว"
@@ -3765,6 +4080,10 @@ msgstr "บทความต่อเดือนของเว็บไซต
 msgid "Inline list"
 msgstr "รายการแบบแสดงในหน้า"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "อยู่ภายใน %(folder)s"
+
 msgid "Insta-fetch stories"
 msgstr "ดึงบทความทันที"
 
@@ -3789,6 +4108,10 @@ msgid "Interactions"
 msgstr "การโต้ตอบ"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "ย้ายไปยัง %(folder)s แล้วนำออก"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "regex ไม่ถูกต้อง: %(error)s"
 
@@ -3809,6 +4132,26 @@ msgstr "สิ่งนี้ต่างจาก RSS หรือไม่"
 
 msgid "Is training free?"
 msgstr "การฝึกใช้งานฟรีไหม"
+
+msgid "It has never had a story."
+msgstr "ไม่เคยมีบทความเลย"
+
+msgid "It involves a folder you locked."
+msgstr "เกี่ยวข้องกับโฟลเดอร์ที่คุณล็อกไว้"
+
+msgid "It needs a new folder you rejected."
+msgstr "ต้องสร้างโฟลเดอร์ใหม่ที่คุณปฏิเสธไป"
+
+msgid "It would have put a folder inside itself."
+msgstr "การดำเนินการนี้จะทำให้โฟลเดอร์อยู่ภายในตัวเอง"
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "ผ่านมามากกว่า %(count)s วันแล้ว จึงไม่สามารถเลิกทำการจัดระเบียบใหม่นี้ได้อีก"
+
+msgid "Its folder is locked to keep its sites."
+msgstr "โฟลเดอร์นี้ถูกล็อกไว้เพื่อเก็บเว็บไซต์ของโฟลเดอร์"
 
 msgid "January"
 msgstr "มกราคม"
@@ -3840,8 +4183,17 @@ msgstr "มีแต่พาดหัว พร้อมคำบรรยา�
 msgid "Just the headlines, no commentary"
 msgstr "มีแค่พาดหัว ไม่มีความเห็นประกอบ"
 
+msgid "Keep"
+msgstr "เก็บไว้"
+
+msgid "Keep all here"
+msgstr "เก็บทั้งหมดไว้ที่นี่"
+
 msgid "Keep fades, without movement."
 msgstr "คงเอฟเฟกต์จางไว้ โดยไม่มีการเคลื่อนไหว"
+
+msgid "Keep it here"
+msgstr "เก็บไว้ที่นี่"
 
 msgid "Keep others unread"
 msgstr "คงสถานะยังไม่อ่านให้บทความอื่น"
@@ -3852,8 +4204,17 @@ msgstr "เก็บสถานะการอ่านไว้"
 msgid "Keep right-side buttons visible while reading"
 msgstr "แสดงปุ่มด้านขวาค้างไว้ขณะอ่าน"
 
+msgid "Keep sites"
+msgstr "เก็บเว็บไซต์ไว้"
+
 msgid "Keep stories separate"
 msgstr "แยกบทความออกจากกัน"
+
+msgid "Keep the new folders"
+msgstr "เก็บโฟลเดอร์ใหม่ไว้"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "รวมบล็อกภาพถ่ายไว้ด้วยกัน แยกข่าวตามประเทศ"
 
 msgid "Keep unread counts out of the window title"
 msgstr "ไม่นำจำนวนบทความที่ยังไม่อ่านไปแสดงในชื่อหน้าต่าง"
@@ -3926,11 +4287,28 @@ msgstr "พบเห็นล่าสุด:"
 msgid "Layout"
 msgstr "เลย์เอาต์"
 
+msgid "Leave out"
+msgstr "ไม่รวม"
+
 msgid "Leave unread"
 msgstr "คงสถานะยังไม่อ่าน"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "ย้ายออก %(count)s แห่ง"
+
 msgid "Left"
 msgstr "ซ้าย"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "ไม่นำมาพิจารณา ไม่มีอะไรเปลี่ยนแปลงในโฟลเดอร์นี้"
+
+msgid "Let all go"
+msgstr "ยอมให้ทั้งหมดออกไป"
+
+msgid "Let it go"
+msgstr "ยอมให้ออกไป"
 
 msgid "Let's Get Started "
 msgstr "เริ่มกันเลย "
@@ -4047,8 +4425,14 @@ msgstr "ตำแหน่งที่ตั้ง"
 msgid "Lock"
 msgstr "ล็อก"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "ล็อกโฟลเดอร์ที่ AI ไม่ควรเปลี่ยนแปลง"
+
 msgid "Locked"
 msgstr "ล็อกแล้ว"
+
+msgid "Locked with parent"
+msgstr "ล็อกพร้อมโฟลเดอร์หลัก"
 
 msgid "Log In or Sign Up"
 msgstr "เข้าสู่ระบบหรือสมัครสมาชิก"
@@ -4259,6 +4643,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "รวมหมวดหมู่ %(count)s รายการเข้าไว้ใน:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "รวม %(folder)s เข้ากับ %(into)s"
+
 msgid "Merge into:"
 msgstr "รวมเข้าใน:"
 
@@ -4339,6 +4727,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "ย้าย %(count)s เว็บไซต์"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "ย้าย %(site)s ไปยัง %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "ย้ายไปที่ %(folder)s"
 
@@ -4351,6 +4743,13 @@ msgstr "ย้ายแล้ว"
 msgid "Moved!"
 msgstr "ย้ายแล้ว!"
 
+msgid "Moves"
+msgstr "การย้าย"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "ย้ายไปด้วยเมื่อรวม %(folder)s"
+
 msgid "Moving..."
 msgstr "กำลังย้าย..."
 
@@ -4361,6 +4760,10 @@ msgstr "ปิดเสียง"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "ปิดเสียง %(count)s เว็บไซต์"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "ปิดเสียง %(site)s"
 
 msgid "Mute Sites"
 msgstr "ปิดเสียงเว็บไซต์"
@@ -4446,6 +4849,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "ต้องมีอย่างน้อย 2 หมวดหมู่เพื่อรวมเข้าด้วยกัน"
+
+msgid "Nest"
+msgstr "ซ้อนในโฟลเดอร์"
 
 msgid "Nested"
 msgstr "ซ้อนกัน"
@@ -4611,6 +5017,9 @@ msgstr "ไม่มีหมวดหมู่ หมวดหมู่จะ�
 msgid "No categories with 10+ stories available for splitting."
 msgstr "ไม่มีหมวดหมู่ที่มีบทความตั้งแต่ 10 รายการขึ้นไปให้แยก"
 
+msgid "No changes"
+msgstr "ไม่มีการเปลี่ยนแปลง"
+
 msgid "No channels found matching your filter."
 msgstr "ไม่พบช่องที่ตรงกับตัวกรองของคุณ"
 
@@ -4622,6 +5031,9 @@ msgstr "ไม่มีบัญชีที่เชื่อมต่อ"
 
 msgid "No content"
 msgstr "ไม่มีเนื้อหา"
+
+msgid "No copy"
+msgstr "ไม่เอาสำเนา"
 
 msgid "No feeds found"
 msgstr "ไม่พบฟีด"
@@ -4748,6 +5160,10 @@ msgstr[0] "ยังไม่มีการจัดทำดัชนีบท
 msgid "No stories published last month"
 msgstr "ไม่มีบทความที่เผยแพร่เมื่อเดือนที่แล้ว"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "ไม่มีบทความตั้งแต่ %(month)s."
+
 msgid "No stories to delete"
 msgstr "ไม่มีบทความให้ลบ"
 
@@ -4817,8 +5233,29 @@ msgstr "ไม่ใช่บทความที่มีผู้อ่าน
 msgid "Nothing"
 msgstr "ไม่มีอะไร"
 
+msgid "Nothing changed."
+msgstr "ไม่มีการเปลี่ยนแปลง"
+
+msgid "Nothing changes."
+msgstr "ไม่มีการเปลี่ยนแปลง"
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "ไม่มีอะไรอยู่ในโฟลเดอร์นี้ จึงจะไม่สร้างโฟลเดอร์"
+
 msgid "Nothing happens without your permission."
 msgstr "จะไม่มีอะไรเกิดขึ้นหากคุณไม่อนุญาต"
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "ไม่มีรายการเหลืออยู่ในโฟลเดอร์นี้หลังจากการเปลี่ยนแปลงอื่นๆ"
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr "ไม่มีอะไรถูกย้าย และโฟลเดอร์ยังคงเดิม เว็บไซต์ในโฟลเดอร์นี้ยังสามารถเสนอให้โฟลเดอร์อื่นเพิ่มเป็นสำเนาได้"
+
+msgid "Nothing leaves this folder."
+msgstr "ไม่มีอะไรถูกนำออกจากโฟลเดอร์นี้"
+
+msgid "Nothing matches this filter."
+msgstr "ไม่มีรายการที่ตรงกับตัวกรองนี้"
 
 msgid "Nothing recorded."
 msgstr "ไม่มีการบันทึก"
@@ -4881,6 +5318,11 @@ msgstr "ปิด"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "แสดงเป็นป้าย “บทความใหม่ N รายการ”"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "เสนอให้คัดลอกไปที่อื่น %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "แอป Android อย่างเป็นทางการของ NewsBlur"
 
@@ -4932,8 +5374,14 @@ msgstr "Premium ค้นหาบทความล่าสุดของค�
 msgid "On reload"
 msgstr "เมื่อโหลดใหม่"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "เมื่อเสนออีกครั้ง จะไม่สามารถเลิกทำการจัดระเบียบครั้งล่าสุดได้"
+
 msgid "One command with Docker"
 msgstr "คำสั่งเดียวด้วย Docker"
+
+msgid "One of the proposed changes"
+msgstr "หนึ่งในการเปลี่ยนแปลงที่เสนอ"
 
 msgid "One sentence"
 msgstr "หนึ่งประโยค"
@@ -5475,8 +5923,23 @@ msgstr "รายละเอียดโปรไฟล์"
 msgid "Profile picture"
 msgstr "รูปโปรไฟล์"
 
+msgid "Progress"
+msgstr "ความคืบหน้า"
+
 msgid "Prompt"
 msgstr "พรอมต์"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "เสนอชุดโฟลเดอร์ใหม่ โฟลเดอร์ที่ล็อกไว้จะยังคงอยู่"
+
+msgid "Propose changes"
+msgstr "เสนอการเปลี่ยนแปลง"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "การเสนอใหม่จะแทนที่ข้อเสนอที่คุณกำลังตรวจสอบ"
+
+msgid "Proposing..."
+msgstr "กำลังเสนอ…"
 
 msgid "Protected:"
 msgstr "ได้รับการป้องกัน:"
@@ -5495,6 +5958,13 @@ msgstr "พุชหมดอายุ"
 
 msgid "Push expires"
 msgstr "การพุชจะหมดอายุ"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "วาง %(folder)s ไว้ใน %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "กำลังจัดทำข้อเสนอ"
 
 msgid "Questions"
 msgstr "คำถาม"
@@ -5615,6 +6085,11 @@ msgstr "อ่านฟีดของคุณ: บทความที่ย�
 msgid "Reading"
 msgstr "การอ่าน"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "กำลังอ่านเว็บไซต์ %(count)s แห่ง"
+
 msgid "Reading article..."
 msgstr "กำลังอ่านบทความ..."
 
@@ -5722,6 +6197,16 @@ msgstr "Regex"
 msgid "Regex requires %(tier_link)s"
 msgstr "นิพจน์ทั่วไปต้องมี %(tier_link)s"
 
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+msgid "Reject all"
+msgstr "ปฏิเสธทั้งหมด"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "ปฏิเสธแล้ว %(count)s"
+
 msgid "Related"
 msgstr "เกี่ยวข้อง"
 
@@ -5752,6 +6237,10 @@ msgstr "นำ %(voice)s ออกจากการสลับเสียง"
 
 msgid "Remove from Up Next"
 msgstr "นำออกจากคิวถัดไป"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "นำโฟลเดอร์ %(folder)s ออก"
 
 msgid "Remove this list"
 msgstr "นำรายการนี้ออก"
@@ -5784,6 +6273,10 @@ msgstr "เปลี่ยนชื่อโฟลเดอร์นี้"
 msgid "Rename this site"
 msgstr "เปลี่ยนชื่อเว็บไซต์นี้"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "เปลี่ยนชื่อ “%(old)s” เป็น “%(new)s”"
+
 msgid "Renamed"
 msgstr "เปลี่ยนชื่อแล้ว"
 
@@ -5794,6 +6287,15 @@ msgstr[0] "เปลี่ยนหมวดหมู่ของบทควา
 
 msgid "Renaming..."
 msgstr "กำลังเปลี่ยนชื่อ..."
+
+msgid "Reorganize"
+msgstr "จัดระเบียบใหม่"
+
+msgid "Reorganize again"
+msgstr "จัดระเบียบอีกครั้ง"
+
+msgid "Reorganize with AI"
+msgstr "จัดระเบียบใหม่ด้วย AI"
 
 msgid "Request timed out"
 msgstr "คำขอหมดเวลา"
@@ -5857,6 +6359,19 @@ msgstr "ลองอีกครั้ง"
 
 msgid "Retry fetching and parsing"
 msgstr "ลองดึงและแยกวิเคราะห์อีกครั้ง"
+
+msgid "Review"
+msgstr "ตรวจสอบ"
+
+msgid "Revise proposal"
+msgstr "แก้ไขข้อเสนอ"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "แก้ไขตามที่ขอแล้ว: “%(request)s”"
+
+msgid "Revising..."
+msgstr "กำลังปรับแก้..."
 
 msgid "Rewinding..."
 msgstr "กำลังย้อนกลับ..."
@@ -6004,6 +6519,9 @@ msgstr "บันทึกบทความได้ในทุกแพ็ก
 
 msgid "Saving..."
 msgstr "กำลังบันทึก..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "ระบุสิ่งที่ต้องการให้ AI เปลี่ยน แล้วลองอีกครั้ง"
 
 msgid "Schedule when your briefing is generated"
 msgstr "กำหนดเวลาสร้างสรุปข่าวของคุณ"
@@ -6226,6 +6744,17 @@ msgstr "ส่งบทความนี้"
 msgid "Sending…"
 msgstr "กำลังส่ง…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"ส่งชื่อ ที่อยู่ และพาดหัวข่าวล่าสุดของเว็บไซต์ %(count)s ให้โมเดล AI "
+"จะไม่มีอะไรเปลี่ยนแปลงจนกว่าคุณจะอนุมัติ"
+
 msgid "Separate"
 msgstr "แยก"
 
@@ -6238,6 +6767,9 @@ msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "ข้อผิดพลาดของเซิร์ฟเวอร์: %(status)s"
+
+msgid "Set up"
+msgstr "ตั้งค่า"
 
 msgid "Set up billing"
 msgstr "ตั้งค่าการเรียกเก็บเงิน"
@@ -6406,6 +6938,13 @@ msgstr "แสดงแดชบอร์ดเมื่อเปิด NewsBlur
 msgid "Show the entire story, even if really, really long"
 msgstr "แสดงบทความทั้งเรื่อง แม้จะยาวมากก็ตาม"
 
+msgid "Show them"
+msgstr "แสดง"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "แสดงการย้ายนี้ใน %(folder)s"
+
 msgid "Show tooltips"
 msgstr "แสดงคำแนะนำเครื่องมือ"
 
@@ -6485,8 +7024,17 @@ msgstr "เว็บไซต์"
 msgid "Sites and folders"
 msgstr "เว็บไซต์และโฟลเดอร์"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "เว็บไซต์ที่ยกเลิกการติดตามจะไม่ถูกนำกลับมา"
+
 msgid "Sites updated up to 5x more often"
 msgstr "เว็บไซต์อัปเดตบ่อยขึ้นสูงสุด 5 เท่า"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "เว็บไซต์ที่คุณสมัครรับข้อมูลหลังจากนั้นจะยังคงอยู่"
+
+msgid "Sketching folders"
+msgstr "กำลังร่างโครงสร้างโฟลเดอร์"
 
 msgid "Skip Back"
 msgstr "ย้อนกลับ"
@@ -6523,6 +7071,12 @@ msgstr "การเชื่อมต่อทางสังคม"
 
 msgid "Social features"
 msgstr "ฟีเจอร์โซเชียล"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "เกิดข้อผิดพลาดขณะสร้างข้อเสนอ โปรดลองอีกครั้ง"
+
+msgid "Something went wrong. Please try again."
+msgstr "เกิดข้อผิดพลาด โปรดลองอีกครั้ง"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6571,6 +7125,9 @@ msgstr "จัดเรียงฟีดข่าวรวมจากเก่
 msgid "Sort, filter, and display options"
 msgstr "ตัวเลือกการจัดเรียง การกรอง และการแสดงผล"
 
+msgid "Sorting sites into folders"
+msgstr "จัดเว็บไซต์ลงในโฟลเดอร์"
+
 msgid "Source feeds"
 msgstr "ฟีดต้นทาง"
 
@@ -6606,6 +7163,9 @@ msgstr[0] "แยก \"%(category)s\" (%(count)s เรื่อง) เป็�
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "แยก \"%(value_1)s\" เป็น:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "แยกเทคโนโลยีเป็นโฟลเดอร์ย่อย โดยแต่ละโฟลเดอร์มีเว็บไซต์ไม่เกิน 40 แห่ง"
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6652,6 +7212,9 @@ msgstr "ดาว"
 msgid "Start Training Site by Site"
 msgstr "เริ่มฝึกทีละเว็บไซต์"
 
+msgid "Start fresh"
+msgstr "เริ่มใหม่ทั้งหมด"
+
 msgid "Starting analysis..."
 msgstr "กำลังเริ่มวิเคราะห์..."
 
@@ -6676,11 +7239,35 @@ msgstr "สถิติ"
 msgid "Status"
 msgstr "สถานะ"
 
+msgid "Stay"
+msgstr "อยู่ต่อ"
+
 msgid "Stay on the same feed/folder"
 msgstr "อยู่ที่ฟีด/โฟลเดอร์เดิม"
 
 msgid "Stay put"
 msgstr "อยู่กับที่"
+
+msgid "Stays"
+msgstr "คงไว้"
+
+msgid "Stays here"
+msgstr "ยังอยู่ที่นี่"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "ยังอยู่ใน %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "คงอยู่ เพราะมีเว็บไซต์ %(count)s แห่งที่ยังอยู่ในโฟลเดอร์นี้"
+
+msgid "Stays, because a folder inside it stays."
+msgstr "คงไว้ เนื่องจากมีโฟลเดอร์ย่อยที่คงไว้"
+
+msgid "Stays, no folder"
+msgstr "ยังอยู่ โดยไม่มีโฟลเดอร์"
 
 msgid "Steadier or more varied"
 msgstr "สม่ำเสมอมากขึ้นหรือหลากหลายมากขึ้น"
@@ -6701,6 +7288,13 @@ msgstr "หยุดตัวอย่าง"
 
 msgid "Stop recording"
 msgstr "หยุดบันทึก"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"หยุดเผยแพร่หรือดึงข้อมูลไม่สำเร็จ เว็บไซต์ในโฟลเดอร์ที่ล็อกไว้จะไม่ถูกทำเครื่องหมาย "
+"รายการที่แนะนำให้ปิดเสียงจะถูกเลือกไว้ตั้งแต่ต้น การยกเลิกการติดตามต้องคลิกยืนยันเสมอ"
 
 msgid "Stories"
 msgstr "บทความ"
@@ -6951,6 +7545,12 @@ msgstr "ระดับการสมัครสมาชิก"
 msgid "Suggested questions"
 msgstr "คำถามที่แนะนำ"
 
+msgid "Suggested: mute."
+msgstr "แนะนำ: ปิดเสียง"
+
+msgid "Suggested: unsubscribe."
+msgstr "แนะนำ: ยกเลิกการติดตาม"
+
 msgid "Summarize"
 msgstr "สรุป"
 
@@ -7107,6 +7707,29 @@ msgstr "ขอบคุณ! คุณมีบัญชี %(bold_start)sPremium
 msgid "That change could not be saved"
 msgstr "บันทึกการเปลี่ยนแปลงนั้นไม่ได้"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "เว็บไซต์ที่ไม่ทำงาน %(count)s ซึ่งยกเลิกการติดตามให้คุณจะไม่ถูกนำกลับมา"
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI สามารถย้ายเว็บไซต์เข้าและออก รวมถึงเปลี่ยนชื่อ รวม หรือซ้อนโฟลเดอร์ได้"
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI สร้างข้อเสนอสำหรับเว็บไซต์ของคุณไม่สำเร็จ โปรดลองอีกครั้ง"
+
+msgid "The AI found nothing to change."
+msgstr "AI ไม่พบสิ่งที่ต้องเปลี่ยนแปลง"
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI ตอบไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "ขณะนี้ AI ไม่พร้อมใช้งาน โปรดลองอีกครั้งภายหลัง"
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI จะไม่เห็นโฟลเดอร์นี้หรือเว็บไซต์ในโฟลเดอร์"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "บริการ AI ใช้เวลาตอบกลับนานเกินไป โปรดลองอีกครั้ง"
 
@@ -7141,6 +7764,12 @@ msgstr "บล็อก NewsBlur"
 
 msgid "The audio stream was interrupted."
 msgstr "สตรีมเสียงถูกขัดจังหวะ"
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "นำการเปลี่ยนแปลงไปใช้ไม่ได้ โปรดลองอีกครั้ง"
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "โฟลเดอร์ยังมีเว็บไซต์หรือโฟลเดอร์อยู่ จึงคงไว้"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7192,8 +7821,20 @@ msgstr "ผู้เผยแพร่ปิดใช้งานหน้าเ
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "ระบบจะดึงและแยกวิเคราะห์ HTML ของหน้าเว็บเพื่อแยกโครงสร้างเนื้อหา"
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "คำอธิบายในข้อเสนอไม่สามารถนำไปใช้ได้"
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "การเสนอใช้เวลานานเกินไปและถูกยุติ โปรดลองอีกครั้ง"
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "เลิกทำการจัดระเบียบใหม่ไม่ได้ โปรดลองอีกครั้ง"
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "ตัวเว็บไซต์เอง ตามที่คุณเห็นในเบราว์เซอร์"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "เว็บไซต์ไม่อยู่ในตำแหน่งที่ข้อเสนอคาดไว้อีกต่อไป"
 
 msgid "The story on its own page on the site"
 msgstr "บทความบนหน้าเว็บของเว็บไซต์เอง"
@@ -7263,6 +7904,11 @@ msgstr "เกิดปัญหาในการอัปโหลดรูป
 msgid "There was an error trying to logout, ouch."
 msgstr "เกิดข้อผิดพลาดขณะพยายามออกจากระบบ โอ๊ย"
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr "AI ไม่มีอะไรให้จัดระเบียบ เปิดโฟลเดอร์เพิ่มเติม หรือเลือก «จัดระเบียบใหม่» เพื่อให้ AI เพิ่มโฟลเดอร์ได้"
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "ไม่มีขีดจำกัด บันทึกบทความได้มากเท่าที่ต้องการ และเก็บไว้ได้ตลอดไป"
 
@@ -7278,6 +7924,13 @@ msgid ""
 msgstr ""
 "โดเมนเหล่านี้ถูกบล็อกไว้โดยค่าเริ่มต้น (เช่น เครื่องมือค้นหาและโซเชียลมีเดีย) เพิ่มโดเมนเหล่านี้ใน "
 "“โดเมนที่อนุญาต” ด้านบนเพื่อปลดบล็อก"
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"ตั้งค่าให้เว็บไซต์เหล่านี้อยู่ในโฟลเดอร์เดิม และยังเสนอให้ย้ายไปยังโฟลเดอร์ใหม่ "
+"เลือกตำแหน่งสำหรับแต่ละเว็บไซต์"
 
 msgid "They redeem it."
 msgstr "ผู้รับแลกใช้ลิงก์"
@@ -7299,6 +7952,12 @@ msgstr "สัปดาห์นี้"
 
 msgid "This Year"
 msgstr "ปีนี้"
+
+msgid "This change couldn't be made."
+msgstr "ทำการเปลี่ยนแปลงนี้ไม่ได้"
+
+msgid "This change doesn't fit with your other choices."
+msgstr "การเปลี่ยนแปลงนี้ไม่สอดคล้องกับตัวเลือกอื่นๆ"
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7323,12 +7982,39 @@ msgstr ""
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "ข้อความนี้ตรงกับชื่อเรื่องทั้งหมด และจะตรงกับบทความนี้เท่านั้น โปรดเลือกข้อความบางส่วนของชื่อเรื่องแทน"
 
+msgid "This proposal can't be changed right now."
+msgstr "ขณะนี้เปลี่ยนข้อเสนอนี้ไม่ได้"
+
+msgid "This proposal can't be revised again."
+msgstr "ไม่สามารถปรับข้อเสนอนี้ได้อีก"
+
+msgid "This proposal couldn't be found."
+msgstr "ไม่พบข้อเสนอนี้"
+
+msgid "This proposal has already been applied."
+msgstr "ใช้ข้อเสนอนี้แล้ว"
+
+msgid "This proposal isn't ready to apply."
+msgstr "ข้อเสนอนี้ยังไม่พร้อมนำไปใช้"
+
+msgid "This proposal was replaced by a newer one."
+msgstr "ข้อเสนอนี้ถูกแทนที่ด้วยข้อเสนอใหม่กว่า"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "รายการบทความที่อ่านแล้วนี้เป็น%(link_start)sฟีเจอร์ Premium%(link_end)s"
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "การดำเนินการนี้จะนำแท็กออกจากบทความที่บันทึกไว้ทั้งหมด บทความจะยังคงบันทึกอยู่โดยไม่มีแท็กนี้"
+
+msgid "This reorganization can no longer be undone."
+msgstr "เลิกทำการจัดระเบียบใหม่นี้ไม่ได้อีกต่อไป"
+
+msgid "This reorganization didn't finish"
+msgstr "การจัดระเบียบนี้ไม่เสร็จสมบูรณ์"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "ยังไม่ได้นำการจัดระเบียบใหม่นี้ไปใช้ จึงไม่มีอะไรให้เลิกทำ"
 
 msgid "This site"
 msgstr "เว็บไซต์นี้"
@@ -7384,6 +8070,9 @@ msgstr "กดถูกใจผู้เขียน แท็ก หรือ�
 
 msgid "Thursday"
 msgstr "วันพฤหัสบดี"
+
+msgid "Tidy"
+msgstr "จัดระเบียบ"
 
 msgid "Tier"
 msgstr "ระดับ"
@@ -7449,6 +8138,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "ถึง"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "ไปยัง %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "รอตัดสินใจ %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7497,6 +8194,9 @@ msgid "Top Domains"
 msgstr "โดเมนยอดนิยม"
 
 msgid "Top Level"
+msgstr "ระดับบนสุด"
+
+msgid "Top level"
 msgstr "ระดับบนสุด"
 
 msgid "Top stories"
@@ -7654,6 +8354,21 @@ msgstr "ไม่พร้อมใช้งาน"
 msgid "Uncategorized"
 msgstr "ไม่มีหมวดหมู่"
 
+msgid "Undo"
+msgstr "เลิกทำ"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "ยกเลิกการทำจะทำให้โฟลเดอร์กลับไปเป็นเหมือนก่อนเริ่มดำเนินการ"
+
+msgid "Undo this reorganization"
+msgstr "เลิกทำการจัดระเบียบนี้"
+
+msgid "Undo this reorganization?"
+msgstr "เลิกทำการจัดระเบียบนี้หรือไม่"
+
+msgid "Undoing..."
+msgstr "กำลังเลิกทำ…"
+
 msgid "Unfavorited"
 msgstr "เลิกถูกใจแล้ว"
 
@@ -7725,6 +8440,29 @@ msgstr "ยกเลิกบันทึกบทความนี้"
 
 msgid "Unshared"
 msgstr "เลิกแชร์แล้ว"
+
+msgid "Unsubscribe"
+msgstr "ยกเลิกการสมัครรับข้อมูล"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "ยกเลิกการติดตาม %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "ยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ที่ไม่ทำงาน %(count)s แห่งแล้ว"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"เลิกทำการยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ที่ไม่ทำงาน %(count)s แห่งไม่ได้ การเลิกทำจะคืนโฟลเดอร์ของคุณ "
+"แต่จะไม่สมัครรับข้อมูลอีกครั้ง"
 
 msgid "Untitled"
 msgstr "ไม่มีชื่อ"
@@ -8265,6 +9003,9 @@ msgstr "คุณเปลี่ยนใจได้เสมอ"
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "คุณสามารถคลิกปุ่ม %(like_icon)s%(dislike_icon)s ข้างบทความขณะอ่านได้"
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "ปิดกล่องโต้ตอบนี้ได้ ข้อเสนอจะยังอยู่ที่นี่เมื่อกลับมา"
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "คุณสามารถกำหนดค่านี้แยกต่างหากสำหรับแต่ละเว็บไซต์และแต่ละโฟลเดอร์ได้"
 
@@ -8275,9 +9016,21 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "ฝึกตัวกรองแยกตามฟีดได้ฟรี หรือฝึกแยกตามโฟลเดอร์และทั้งระบบได้เมื่อใช้ Premium Archive"
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "เลิกทำได้จนถึง %(date)s"
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "คุณติดตามเว็บไซต์ %(count)s แห่ง Premium ช่วยให้ทุกเว็บไซต์ดียิ่งขึ้น"
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "คุณได้รับข้อเสนอ %(count)s รายการต่อเดือน การนำข้อเสนอไปใช้ต้องใช้ Premium Archive"
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "คุณได้รับข้อเสนอเดือนละหนึ่งรายการ การนำข้อเสนอไปใช้ต้องมี Premium Archive"
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8322,6 +9075,11 @@ msgstr "คุณต้องเข้าสู่ระบบก่อนจึ
 msgid "You need to be logged in to share a story."
 msgstr "คุณต้องเข้าสู่ระบบก่อนจึงจะแชร์บทความได้"
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "คุณจะยกเลิกการสมัครรับข้อมูลจากเว็บไซต์ที่ไม่ทำงาน %(count)s แห่ง"
+
 msgid "You will be emailed within a minute or three."
 msgstr "คุณจะได้รับอีเมลภายในหนึ่งถึงสามนาที"
 
@@ -8347,6 +9105,26 @@ msgstr "พร้อมใช้งานแล้ว! หวังว่าค�
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "คุณได้รับ %(value_2)s เป็นเวลา %(value_1)s เป็นของขวัญ!"
+
+msgid "You've had this month's proposal."
+msgstr "คุณได้รับข้อเสนอประจำเดือนนี้แล้ว"
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "คุณใช้ข้อเสนอของเดือนนี้แล้ว ข้อเสนอถัดไปจะพร้อมใช้งานในวันที่ %(date)s"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "คุณส่งข้อเสนอ %(count)s รายการใน 24 ชั่วโมงที่ผ่านมา"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "คุณส่งข้อเสนอ %(count)s รายการในช่วง 1 วันที่ผ่านมา ข้อเสนอถัดไปส่งได้ในวันที่ %(date)s"
+
+msgid "You've reached today's limit on proposals."
+msgstr "คุณใช้ข้อเสนอครบจำนวนที่กำหนดสำหรับวันนี้แล้ว"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8400,14 +9178,34 @@ msgstr "เสียงที่เลือกใช้ไม่ได้ใน
 msgid "Your cookie has expired — Please login again"
 msgstr "คุกกี้ของคุณหมดอายุแล้ว — โปรดเข้าสู่ระบบอีกครั้ง"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "ระบบจะบันทึกโฟลเดอร์ปัจจุบันไว้ก่อน เพื่อให้เลิกทำได้ภายใน %(count)s วัน"
+
+msgid "Your decisions"
+msgstr "การตัดสินใจของคุณ"
+
 msgid "Your email"
 msgstr "อีเมลของคุณ"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "ตัวกรองของคุณอาจซ่อนเว็บไซต์อยู่ — เปิดตัวเลือกเพื่อขยายตัวกรอง"
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "โฟลเดอร์ของคุณกลับไปเป็นแบบก่อนจัดระเบียบใหม่แล้ว"
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "โฟลเดอร์จะกลับไปเป็นเหมือนก่อนจัดระเบียบ"
+
 msgid "Your inbox stays clean"
 msgstr "กล่องจดหมายของคุณสะอาดอยู่เสมอ"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "บันทึกตัวเลือกที่คุณเลือกครั้งล่าสุดไม่ได้ จึงแสดงตัวเลือกที่บันทึกไว้ โปรดลองอีกครั้ง"
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "บันทึกโฟลเดอร์ที่ล็อกไว้ไม่ได้ โปรดลองอีกครั้ง"
 
 msgid "Your name"
 msgstr "ชื่อของคุณ"
@@ -8430,8 +9228,17 @@ msgstr "ระบบจะคิดค่าสมัครสมาชิกต
 msgid "Your subscription will no longer automatically renew."
 msgstr "การสมัครของคุณจะไม่ต่ออายุโดยอัตโนมัติอีกต่อไป"
 
+msgid "a folder"
+msgstr "โฟลเดอร์"
+
+msgid "a site you no longer follow"
+msgstr "เว็บไซต์ที่คุณเลิกติดตามแล้ว"
+
 msgid "and auto-follow them"
 msgstr "และติดตามพวกเขาโดยอัตโนมัติ"
+
+msgid "approved"
+msgstr "อนุมัติแล้ว"
 
 msgid "artificial intelligence"
 msgstr "ปัญญาประดิษฐ์"
@@ -8614,6 +9421,9 @@ msgstr "คอมพิวเตอร์ควอนตัม"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "ปฏิเสธแล้ว"
+
 msgid "remote work"
 msgstr "การทำงานทางไกล"
 
@@ -8659,6 +9469,9 @@ msgstr "ห่วงโซ่อุปทาน"
 msgid "this list"
 msgstr "รายการนี้"
 
+msgid "to decide"
+msgstr "รอตัดสินใจ"
+
 msgid "trade policy"
 msgstr "นโยบายการค้า"
 
@@ -8682,6 +9495,14 @@ msgstr "คอมพิวเตอร์วินเทจ"
 
 msgid "web standards"
 msgstr "มาตรฐานเว็บ"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s” จะกลายเป็น “%(new)s”"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

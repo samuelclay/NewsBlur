@@ -149,6 +149,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "%(badge)s tối đa %(count)s ngày"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s trang web"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "Chủ đề %(category)s"
 
@@ -164,6 +169,11 @@ msgstr "%(cost)s/bài viết"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s byte"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "Không thể thực hiện %(count)s thay đổi."
 
 #, python-format
 msgid "%(count)s channel"
@@ -206,9 +216,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s ngày trước"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "%(count)s trang web ngừng hoạt động sẽ bị tắt tiếng"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "Đã tắt tiếng %(count)s trang web ngừng hoạt động"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s lượt không thích"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s thư mục trống sẽ bị xóa"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "Đã xóa %(count)s thư mục trống"
 
 #, python-format
 msgid "%(count)s episode"
@@ -219,6 +249,46 @@ msgstr[0] "%(count)s tập"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s nguồn cấp dữ liệu"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s được đánh dấu"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "Đã thêm %(count)s thư mục"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "%(count)s thư mục sẽ được thêm"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s thư mục sẽ được gộp vào một thư mục khác"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s thư mục sẽ được đổi tên"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "Đã gộp %(count)s thư mục vào thư mục khác"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s thư mục sẽ được chuyển vào bên trong thư mục khác"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "Đã đổi tên hoặc di chuyển %(count)s thư mục"
 
 #, python-format
 msgid "%(count)s follower"
@@ -313,6 +383,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "%(count)s lượt mở"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s trang web khác ở đây không nằm trong bất kỳ thay đổi nào."
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s trang"
@@ -331,6 +406,11 @@ msgstr[0] "%(count)s bình luận công khai"
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s câu trả lời"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "Còn %(count)s bản sửa đổi."
 
 #, python-format
 msgid "%(count)s selected"
@@ -353,14 +433,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s trang web"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "Đã thêm %(count)s trang web vào thư mục thứ hai"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "Còn %(count)s trang web"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s trang web ở đây, không thuộc bất kỳ thay đổi nào."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s trang web sẽ được thêm vào thư mục thứ hai"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "Đã chuyển %(count)s trang web sang thư mục khác"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s trang web sẽ được chuyển sang thư mục khác"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "%(count)s trang web vượt quá giới hạn"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s trang web vẫn chưa có quyết định và sẽ được giữ nguyên."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "Còn %(count)s mục cần quyết định. Mọi mục chưa được quyết định sẽ giữ nguyên."
 
 #, python-format
 msgid "%(count)s story"
@@ -920,6 +1035,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s trang web khác"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/ngày"
 
@@ -1002,6 +1121,9 @@ msgstr "Âm thanh rõ và gần hơn"
 msgid "A folder"
 msgstr "Một thư mục"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "Một thư mục cần thiết đã bị đổi tên, di chuyển hoặc xóa sau khi đề xuất được tạo."
+
 msgid "A folder of feeds read as one stream"
 msgstr "Một thư mục gồm các nguồn cấp dữ liệu được đọc như một luồng"
 
@@ -1011,6 +1133,12 @@ msgstr "Một tuyển tập mới gồm các bài viết được độc giả N
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "Quà tặng từ %(value_1)s đã được áp dụng cho tài khoản của bạn."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "Đã áp dụng một lần sắp xếp lại sau đó, nên không thể hoàn tác lần này nữa."
+
+msgid "A proposal is already being made."
+msgstr "Đã có một đề xuất đang được tạo."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "Lượt thứ hai sẽ dùng gợi ý của bạn để tìm mẫu phù hợp trên trang."
@@ -1046,6 +1174,12 @@ msgstr "Các bộ lọc AI đã được lưu nhưng sẽ không chạy cho đ�
 msgid "AI finds the stories"
 msgstr "AI tìm các bài viết"
 
+msgid "AI is looking through your sites"
+msgstr "AI đang xem xét các trang web của bạn"
+
+msgid "AI is revising the proposal"
+msgstr "AI đang chỉnh sửa đề xuất"
+
 msgid "AI-curated summary of your top stories"
 msgstr "Bản tóm tắt do AI chọn lọc từ các bài viết hàng đầu"
 
@@ -1065,6 +1199,12 @@ msgstr "Chắc chắn rồi. Mở công cụ huấn luyện và gỡ mọi đán
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "Giọng vùng miền"
+
+msgid "Accept all"
+msgstr "Chấp nhận tất cả"
+
+msgid "Accept into this folder"
+msgstr "Chấp nhận vào thư mục này"
 
 msgid "Account"
 msgstr "Tài khoản"
@@ -1104,6 +1244,9 @@ msgstr "Bookmarklet Thêm trang web &amp; Chia sẻ bài viết"
 
 msgid "Add a classifier"
 msgstr "Thêm bộ phân loại"
+
+msgid "Add a copy here"
+msgstr "Thêm bản sao vào đây"
 
 msgid "Add a forwarding address"
 msgstr "Thêm địa chỉ chuyển tiếp"
@@ -1146,6 +1289,10 @@ msgstr "Thêm trang web/thư mục"
 
 msgid "Add story list"
 msgstr "Thêm danh sách bài viết"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "Thêm thư mục %(folder)s"
 
 msgid "Add to Chrome"
 msgstr "Thêm vào Chrome"
@@ -1251,6 +1398,9 @@ msgstr "Hoàn tất!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "Tất cả nguồn cấp được tải lại sau mỗi 5–15 phút"
 
+msgid "All moves"
+msgstr "Mọi lần di chuyển"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr ""
@@ -1279,10 +1429,20 @@ msgstr "Tên miền được phép"
 msgid "Alphabetical"
 msgstr "Theo thứ tự bảng chữ cái"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "Đồng thời thêm, đổi tên, gộp, lồng và xóa thư mục."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "Đồng thời xóa %(value_1)s bản lưu trữ hiện có từ miền này"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "Cũng trong %(folder)s"
+
+msgid "Also look for"
+msgstr "Đồng thời tìm"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1343,6 +1503,9 @@ msgstr "Thông báo Android yêu cầu Premium Archive"
 msgid "Animals"
 msgstr "Động vật"
 
+msgid "Another folder there already has this name."
+msgstr "Một thư mục khác ở đó đã có tên này."
+
 msgid "Any"
 msgstr "Bất kỳ"
 
@@ -1355,6 +1518,9 @@ msgstr ""
 
 msgid "Any time"
 msgstr "Mọi lúc"
+
+msgid "Anything the AI should know"
+msgstr "AI cần biết điều gì?"
 
 msgid "Appearance"
 msgstr "Giao diện"
@@ -1375,11 +1541,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "Đã áp dụng %(succeeded)s trong số %(count)s lần gộp (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "Đã áp dụng vào %(date)s."
+
 msgid "Applies to"
 msgstr "Áp dụng cho"
 
 msgid "Apply"
 msgstr "Áp dụng"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "Áp dụng thay đổi %(count)s"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "Áp dụng %(count)s thay đổi?"
 
 msgid "Apply All Merges"
 msgstr "Áp dụng tất cả các lần gộp"
@@ -1387,11 +1567,29 @@ msgstr "Áp dụng tất cả các lần gộp"
 msgid "Apply Split"
 msgstr "Áp dụng phần tách"
 
+msgid "Apply changes"
+msgstr "Áp dụng thay đổi"
+
 msgid "Apply training across a folder"
 msgstr "Áp dụng huấn luyện cho cả thư mục"
 
 msgid "Apply training globally"
 msgstr "Áp dụng chế độ huấn luyện trên toàn hệ thống"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "Cần Premium Archive để áp dụng thay đổi."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr ""
+"Để áp dụng thay đổi, bạn cần có Premium Archive. Các lựa chọn của bạn đã được lưu và sẽ vẫn còn ở đây sau "
+"khi bạn nâng cấp."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "Việc áp dụng vào %(date)s đã dừng giữa chừng, nên một số thư mục của bạn có thể đã thay đổi."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "Quá trình áp dụng bị dừng giữa chừng, nên một số thư mục của bạn có thể đã thay đổi."
 
 msgid "Applying..."
 msgstr "Đang áp dụng..."
@@ -1416,6 +1614,11 @@ msgstr "Các ứng dụng có miễn phí không?"
 
 msgid "Are the apps open source?"
 msgstr "Các ứng dụng có mã nguồn mở không?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "Đang chuyển đến %(count)s"
 
 msgid "Arrow keys"
 msgstr "Phím mũi tên"
@@ -1446,6 +1649,9 @@ msgstr "Hỏi AI có thể phiên âm podcast hoặc video trước, rồi trả
 
 msgid "Ask AI questions about stories"
 msgstr "Đặt câu hỏi cho AI về các bài viết"
+
+msgid "Ask AI to revise"
+msgstr "Yêu cầu AI sửa đổi"
 
 msgid "Ask AI with a choice of models"
 msgstr "Hỏi AI với nhiều mô hình để lựa chọn"
@@ -1566,6 +1772,9 @@ msgstr "Quay lại trình huấn luyện bộ phân loại"
 msgid "Back to feeds"
 msgstr "Quay lại danh sách nguồn cấp"
 
+msgid "Back to review"
+msgstr "Quay lại xem xét"
+
 msgid "Back to stories"
 msgstr "Quay lại bài viết"
 
@@ -1647,6 +1856,9 @@ msgstr "Blurblog, bài viết đã chia sẻ và bình luận"
 
 msgid "Bookmarklet"
 msgstr "Bookmarklet"
+
+msgid "Both"
+msgstr "Cả hai"
 
 msgid "Bottom"
 msgstr "Dưới cùng"
@@ -1730,6 +1942,12 @@ msgstr "Gạch đầu dòng"
 
 msgid "Buttons"
 msgstr "Nút"
+
+msgid "By folder"
+msgstr "Theo thư mục"
+
+msgid "By hand"
+msgstr "Thủ công"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1849,6 +2067,9 @@ msgstr "Đánh dấu những mục bạn thích ở trên..."
 msgid "Check your email..."
 msgstr "Kiểm tra email của bạn..."
 
+msgid "Checking for dead sites"
+msgstr "Đang kiểm tra các trang web không còn hoạt động"
+
 msgid "Checking recent pages..."
 msgstr "Đang kiểm tra các trang gần đây..."
 
@@ -1879,6 +2100,9 @@ msgstr "Chọn danh mục"
 
 msgid "Choose how many days back"
 msgstr "Chọn số ngày muốn lùi về"
+
+msgid "Choose how much to change, then try again."
+msgstr "Chọn mức độ thay đổi, rồi thử lại."
 
 msgid "Choose model"
 msgstr "Chọn mô hình"
@@ -2150,8 +2374,22 @@ msgstr "Sao chép văn bản"
 msgid "Copy URL"
 msgstr "Sao chép URL"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "Sao chép từ %(folder)s"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "Đề xuất sao chép vào %(folder)s"
+
+msgid "Copy undecided"
+msgstr "Đang chờ quyết định về bản sao"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "Hãy sao chép khóa bí mật của ứng dụng ngay bây giờ. Bạn chỉ xem được khóa này một lần."
+
+msgid "Copy?"
+msgstr "Sao chép?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "Không thể thêm bộ phân loại này. Hãy thử lại."
@@ -2170,6 +2408,9 @@ msgstr "Không tải được câu hỏi thường gặp. Vui lòng thử lại.
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "Không thể tải ứng dụng của bạn. Thử làm mới."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "Không tải được tính năng Sắp xếp lại bằng AI."
 
 msgid "Couldn't load audio for this story."
 msgstr "Không tải được âm thanh cho bài viết này."
@@ -2325,8 +2566,20 @@ msgstr "Ngày"
 msgid "Days of unreads"
 msgstr "Số ngày chưa đọc"
 
+msgid "Dead sites"
+msgstr "Trang web đã ngừng hoạt động"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "Đã bật tiếng cho các trang web ngừng hoạt động bị tắt tiếng."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "Trang web đã ngừng hoạt động do ngừng đăng bài hoặc liên tục gặp lỗi"
+
 msgid "December"
 msgstr "Tháng Mười Hai"
+
+msgid "Decline all copies"
+msgstr "Từ chối tất cả bản sao"
 
 msgid "Deep reads the community gave real time to"
 msgstr "Những bài đọc chuyên sâu mà cộng đồng thực sự dành thời gian đọc"
@@ -2488,6 +2741,9 @@ msgstr "Bỏ qua"
 msgid "Do I get a unique email address?"
 msgstr "Tôi có được một địa chỉ email riêng không?"
 
+msgid "Do not put it here"
+msgstr "Đừng đặt ở đây"
+
 msgid "Do the apps work offline?"
 msgstr "Các ứng dụng có hoạt động ngoại tuyến không?"
 
@@ -2518,6 +2774,9 @@ msgstr "Không hiển thị bản xem trước, chỉ hiển thị tiêu đề b
 
 msgid "Don't show a thumbnail"
 msgstr "Không hiển thị ảnh thu nhỏ"
+
+msgid "Done"
+msgstr "Xong"
 
 msgid "Done!"
 msgstr "Xong!"
@@ -2760,6 +3019,9 @@ msgstr "Mọi bài viết mới đều được lưu trữ vĩnh viễn"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "Mỗi thẻ bài viết đã lưu đều có nguồn cấp RSS riêng, rất phù hợp để chuyển nội dung vào IFTTT hoặc Zapier."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "Tất cả trang web đều nằm trong thư mục bạn đã bỏ qua. Hãy mở một thư mục để AI có trang web xem xét."
+
 msgid "Every story archived and searchable forever"
 msgstr "Mọi bài viết đều được lưu trữ và có thể tìm kiếm mãi mãi"
 
@@ -2781,6 +3043,9 @@ msgstr "Mọi người"
 msgid "Everyone"
 msgstr "Mọi người"
 
+msgid "Everything"
+msgstr "Tất cả"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "Mọi thứ NewsBlur có thể làm và cách dùng thử"
 
@@ -2798,6 +3063,12 @@ msgstr "Mọi tính năng của gói Miễn phí, cùng với:"
 
 msgid "Everything in Premium, plus:"
 msgstr "Mọi thứ trong Premium, cùng với:"
+
+msgid "Everything is decided."
+msgstr "Mọi thứ đã được quyết định."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "Ban đầu, mọi thứ đều được chấp thuận. Từ chối việc di chuyển từ một trong hai thư mục."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2927,6 +3198,13 @@ msgstr "Không thể gửi truy vấn"
 msgid "Failed to subscribe"
 msgstr "Đăng ký thất bại"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "Không thể tải dữ liệu và chưa từng có bài viết nào."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "Không thể tải dữ liệu. Bài viết gần nhất là vào %(month)s."
+
 msgid "Fashion"
 msgstr "Thời trang"
 
@@ -3027,11 +3305,17 @@ msgstr "Đang tải nguồn cấp của bạn"
 msgid "Fetching..."
 msgstr "Đang tải..."
 
+msgid "File sites into the folders you already have."
+msgstr "Sắp xếp các trang web vào những thư mục hiện có."
+
 msgid "Files"
 msgstr "Tệp"
 
 msgid "Filled Icons"
 msgstr "Biểu tượng tô kín"
+
+msgid "Filter"
+msgstr "Lọc"
 
 msgid "Filter by date range"
 msgstr "Lọc theo khoảng thời gian"
@@ -3159,8 +3443,14 @@ msgstr "Số bài chưa đọc trong thư mục"
 msgid "Folders"
 msgstr "Thư mục"
 
+msgid "Folders after"
+msgstr "Thư mục sau khi thay đổi"
+
 msgid "Folders only"
 msgstr "Chỉ thư mục"
+
+msgid "Folders updated"
+msgstr "Đã cập nhật thư mục"
 
 msgid "Folders, feeds, and story titles"
 msgstr "Thư mục, nguồn cấp dữ liệu và tiêu đề bài viết"
@@ -3333,6 +3623,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "Từ"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "Từ %(folder)s"
+
 msgid "From infrequent sites"
 msgstr "Từ các trang ít cập nhật"
 
@@ -3504,6 +3798,10 @@ msgstr "Nâng cấp Premium — 36 USD/năm"
 msgid "Go back to %(breadcrumb)s"
 msgstr "Quay lại %(breadcrumb)s"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "Đi vào bên trong %(folder)s"
+
 msgid "Good Reads"
 msgstr "Bài đọc hay"
 
@@ -3606,6 +3904,9 @@ msgstr "Ẩn các trang web bạn đã đăng ký"
 msgid "Hide story changes"
 msgstr "Ẩn các thay đổi của bài viết"
 
+msgid "Hide them"
+msgstr "Ẩn chúng"
+
 msgid "Highlight"
 msgstr "Tô sáng"
 
@@ -3650,6 +3951,9 @@ msgstr "Tôi có thể lưu bao nhiêu bài viết?"
 
 msgid "How much emotion"
 msgstr "Mức độ cảm xúc"
+
+msgid "How much to change"
+msgstr "Thay đổi bao nhiêu"
 
 msgid "How often"
 msgstr "Tần suất"
@@ -3721,6 +4025,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "Trong %(count)s ngày nữa, thời gian dùng thử gói Premium sẽ kết thúc và bạn sẽ quay lại gói Miễn phí"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "Trong %(folder)s"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr ""
 "Trong Gmail, truy cập %(settings_menu)s rồi nhấp vào %(add_button)s. Thêm địa chỉ email tùy chỉnh NewsBlur "
@@ -3743,6 +4051,9 @@ msgstr "Trong cửa sổ mới"
 msgid "In a pill"
 msgstr "Dạng viên thuốc"
 
+msgid "In both folders"
+msgstr "Trong cả hai thư mục"
+
 msgid "In rotation"
 msgstr "Đang trong vòng luân phiên"
 
@@ -3755,6 +4066,10 @@ msgstr ""
 
 msgid "In this window"
 msgstr "Trong cửa sổ này"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "Trong hai thư mục %(count)s"
 
 msgid "Include read"
 msgstr "Gồm cả bài đã đọc"
@@ -3786,6 +4101,10 @@ msgstr "Số bài mỗi tháng của trang ít cập nhật"
 msgid "Inline list"
 msgstr "Danh sách nội tuyến"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "Bên trong %(folder)s"
+
 msgid "Insta-fetch stories"
 msgstr "Tải bài viết ngay"
 
@@ -3812,6 +4131,10 @@ msgid "Interactions"
 msgstr "Tương tác"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "Chuyển vào %(folder)s, rồi xóa"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "Biểu thức chính quy không hợp lệ: %(error)s"
 
@@ -3832,6 +4155,26 @@ msgstr "Điều này có khác RSS không?"
 
 msgid "Is training free?"
 msgstr "Huấn luyện có miễn phí không?"
+
+msgid "It has never had a story."
+msgstr "Trang web này chưa từng có bài viết nào."
+
+msgid "It involves a folder you locked."
+msgstr "Thao tác này liên quan đến một thư mục bạn đã khóa."
+
+msgid "It needs a new folder you rejected."
+msgstr "Cần một thư mục mới mà bạn đã từ chối."
+
+msgid "It would have put a folder inside itself."
+msgstr "Việc này sẽ đặt một thư mục bên trong chính nó."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "Đã hơn %(count)s ngày nên không thể hoàn tác việc sắp xếp lại này nữa."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "Thư mục này bị khóa để giữ các trang web bên trong."
 
 msgid "January"
 msgstr "Tháng Một"
@@ -3863,8 +4206,17 @@ msgstr "Chỉ có tiêu đề với ít lời bình"
 msgid "Just the headlines, no commentary"
 msgstr "Chỉ tiêu đề, không có bình luận"
 
+msgid "Keep"
+msgstr "Giữ lại"
+
+msgid "Keep all here"
+msgstr "Giữ tất cả ở đây"
+
 msgid "Keep fades, without movement."
 msgstr "Giữ hiệu ứng mờ dần, không chuyển động."
+
+msgid "Keep it here"
+msgstr "Giữ lại ở đây"
 
 msgid "Keep others unread"
 msgstr "Giữ các bài khác ở trạng thái chưa đọc"
@@ -3875,8 +4227,17 @@ msgstr "Giữ nguyên trạng thái đã đọc"
 msgid "Keep right-side buttons visible while reading"
 msgstr "Giữ các nút bên phải luôn hiển thị khi đọc"
 
+msgid "Keep sites"
+msgstr "Giữ các trang web"
+
 msgid "Keep stories separate"
 msgstr "Giữ các bài viết riêng biệt"
+
+msgid "Keep the new folders"
+msgstr "Giữ các thư mục mới"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "Gộp các blog ảnh lại với nhau. Tách tin tức theo quốc gia."
 
 msgid "Keep unread counts out of the window title"
 msgstr "Không hiển thị số bài chưa đọc trên tiêu đề cửa sổ"
@@ -3949,11 +4310,28 @@ msgstr "Lần cuối hoạt động:"
 msgid "Layout"
 msgstr "Bố cục"
 
+msgid "Leave out"
+msgstr "Loại trừ"
+
 msgid "Leave unread"
 msgstr "Để lại trạng thái chưa đọc"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "Đang chuyển khỏi %(count)s"
+
 msgid "Left"
 msgstr "Trái"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "Bị bỏ qua. Không có gì trong thư mục này thay đổi."
+
+msgid "Let all go"
+msgstr "Để tất cả chuyển đi"
+
+msgid "Let it go"
+msgstr "Để chuyển đi"
 
 msgid "Let's Get Started "
 msgstr "Bắt đầu thôi "
@@ -4070,8 +4448,14 @@ msgstr "Vị trí"
 msgid "Lock"
 msgstr "Khóa"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "Khóa các thư mục mà AI không nên động đến"
+
 msgid "Locked"
 msgstr "Đã khóa"
+
+msgid "Locked with parent"
+msgstr "Khóa cùng thư mục cha"
 
 msgid "Log In or Sign Up"
 msgstr "Đăng nhập hoặc đăng ký"
@@ -4284,6 +4668,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "Gộp %(count)s danh mục vào:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "Gộp %(folder)s vào %(into)s"
+
 msgid "Merge into:"
 msgstr "Gộp vào:"
 
@@ -4364,6 +4752,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "Di chuyển %(count)s trang web"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "Chuyển %(site)s vào %(folder)s"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "Chuyển đến %(folder)s"
 
@@ -4376,6 +4768,13 @@ msgstr "Đã chuyển"
 msgid "Moved!"
 msgstr "Đã chuyển!"
 
+msgid "Moves"
+msgstr "Di chuyển"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "Di chuyển cùng với %(folder)s khi thư mục này được gộp."
+
 msgid "Moving..."
 msgstr "Đang di chuyển..."
 
@@ -4386,6 +4785,10 @@ msgstr "Tắt tiếng"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "Tắt tiếng %(count)s trang web"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "Tắt tiếng %(site)s"
 
 msgid "Mute Sites"
 msgstr "Tắt tiếng trang web"
@@ -4471,6 +4874,9 @@ msgstr ""
 
 msgid "Need at least 2 categories to merge"
 msgstr "Cần ít nhất 2 danh mục để hợp nhất"
+
+msgid "Nest"
+msgstr "Lồng vào"
 
 msgid "Nested"
 msgstr "Lồng nhau"
@@ -4638,6 +5044,9 @@ msgstr "Không có danh mục nào. Danh mục sẽ xuất hiện ở đây sau 
 msgid "No categories with 10+ stories available for splitting."
 msgstr "Không có danh mục nào có từ 10 bài viết trở lên để tách."
 
+msgid "No changes"
+msgstr "Không có thay đổi"
+
 msgid "No channels found matching your filter."
 msgstr "Không tìm thấy kênh nào khớp với bộ lọc của bạn."
 
@@ -4649,6 +5058,9 @@ msgstr "Không có tài khoản nào được kết nối"
 
 msgid "No content"
 msgstr "Không có nội dung"
+
+msgid "No copy"
+msgstr "Không sao chép"
 
 msgid "No feeds found"
 msgstr "Không tìm thấy nguồn cấp dữ liệu"
@@ -4775,6 +5187,10 @@ msgstr[0] "Chưa có bài viết nào từ %(count)s trang web của bạn đư�
 msgid "No stories published last month"
 msgstr "Tháng trước không có bài viết nào được đăng"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "Không có bài viết nào kể từ %(month)s."
+
 msgid "No stories to delete"
 msgstr "Không có bài viết nào để xóa"
 
@@ -4844,8 +5260,31 @@ msgstr "Không phải được đọc nhiều nhất, mà được đón nhận 
 msgid "Nothing"
 msgstr "Không có gì"
 
+msgid "Nothing changed."
+msgstr "Không có gì thay đổi."
+
+msgid "Nothing changes."
+msgstr "Không có gì thay đổi."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "Không có gì được chuyển vào thư mục này nên thư mục sẽ không được tạo."
+
 msgid "Nothing happens without your permission."
 msgstr "Không có gì xảy ra nếu không có sự cho phép của bạn."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "Sau những thay đổi khác, thư mục này không còn gì."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr ""
+"Không có gì bị chuyển đi và thư mục vẫn được giữ nguyên. Các trang web trong đó vẫn có thể được đề xuất cho"
+" thư mục khác dưới dạng bản sao."
+
+msgid "Nothing leaves this folder."
+msgstr "Không có gì được chuyển khỏi thư mục này."
+
+msgid "Nothing matches this filter."
+msgstr "Không có kết quả phù hợp với bộ lọc này."
 
 msgid "Nothing recorded."
 msgstr "Không có gì được ghi lại."
@@ -4908,6 +5347,11 @@ msgstr "Tắt"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "Hiển thị chúng trong nhãn “N bài viết mới”"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "Được đề xuất sao chép sang nơi khác: %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "Ứng dụng Android chính thức của NewsBlur"
 
@@ -4961,8 +5405,14 @@ msgstr ""
 msgid "On reload"
 msgstr "Khi tải lại"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "Khi bạn đề xuất lại, bạn sẽ không thể hoàn tác lần sắp xếp lại gần nhất."
+
 msgid "One command with Docker"
 msgstr "Một lệnh với Docker"
+
+msgid "One of the proposed changes"
+msgstr "Một trong những thay đổi được đề xuất"
 
 msgid "One sentence"
 msgstr "Một câu"
@@ -5510,8 +5960,23 @@ msgstr "Chi tiết hồ sơ"
 msgid "Profile picture"
 msgstr "Ảnh hồ sơ"
 
+msgid "Progress"
+msgstr "Tiến độ"
+
 msgid "Prompt"
 msgstr "Lời nhắc"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "Đề xuất một bộ thư mục mới. Các thư mục đã khóa vẫn được giữ nguyên."
+
+msgid "Propose changes"
+msgstr "Đề xuất thay đổi"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "Đề xuất lại sẽ thay thế đề xuất bạn đang xem xét."
+
+msgid "Proposing..."
+msgstr "Đang tạo đề xuất..."
 
 msgid "Protected:"
 msgstr "Được bảo vệ:"
@@ -5530,6 +5995,13 @@ msgstr "Đăng ký đẩy hết hạn"
 
 msgid "Push expires"
 msgstr "Đăng ký đẩy hết hạn"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "Đặt %(folder)s vào trong %(parent)s"
+
+msgid "Putting the proposal together"
+msgstr "Đang tạo đề xuất"
 
 msgid "Questions"
 msgstr "Câu hỏi"
@@ -5650,6 +6122,11 @@ msgstr "Đọc nguồn cấp dữ liệu: bài viết chưa đọc, thư mục, 
 msgid "Reading"
 msgstr "Đọc"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "Đang đọc %(count)s trang web"
+
 msgid "Reading article..."
 msgstr "Đang đọc bài viết..."
 
@@ -5757,6 +6234,16 @@ msgstr "Regex"
 msgid "Regex requires %(tier_link)s"
 msgstr "Biểu thức chính quy cần %(tier_link)s"
 
+msgid "Reject"
+msgstr "Từ chối"
+
+msgid "Reject all"
+msgstr "Từ chối tất cả"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "Đã từ chối: %(count)s"
+
 msgid "Related"
 msgstr "Liên quan"
 
@@ -5787,6 +6274,10 @@ msgstr "Xóa %(voice)s khỏi vòng luân phiên"
 
 msgid "Remove from Up Next"
 msgstr "Xóa khỏi danh sách phát tiếp theo"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "Xóa thư mục %(folder)s"
 
 msgid "Remove this list"
 msgstr "Xóa danh sách này"
@@ -5819,6 +6310,10 @@ msgstr "Đổi tên thư mục này"
 msgid "Rename this site"
 msgstr "Đổi tên trang web này"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "Đổi tên “%(old)s” thành “%(new)s”"
+
 msgid "Renamed"
 msgstr "Đã đổi tên"
 
@@ -5829,6 +6324,15 @@ msgstr[0] "Đã đổi danh mục của %(count)s bài viết thành \"%(categor
 
 msgid "Renaming..."
 msgstr "Đang đổi tên..."
+
+msgid "Reorganize"
+msgstr "Sắp xếp lại"
+
+msgid "Reorganize again"
+msgstr "Sắp xếp lại lần nữa"
+
+msgid "Reorganize with AI"
+msgstr "Sắp xếp lại bằng AI"
 
 msgid "Request timed out"
 msgstr "Yêu cầu đã hết thời gian chờ"
@@ -5892,6 +6396,19 @@ msgstr "Thử lại"
 
 msgid "Retry fetching and parsing"
 msgstr "Thử tải và phân tích lại"
+
+msgid "Review"
+msgstr "Xem lại"
+
+msgid "Revise proposal"
+msgstr "Chỉnh sửa đề xuất"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "Đã chỉnh sửa theo yêu cầu của bạn: “%(request)s”"
+
+msgid "Revising..."
+msgstr "Đang chỉnh sửa..."
 
 msgid "Rewinding..."
 msgstr "Đang tua lại..."
@@ -6041,6 +6558,9 @@ msgstr "Tính năng lưu bài viết có trong mọi gói. Thẻ và nguồn c�
 
 msgid "Saving..."
 msgstr "Đang lưu..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "Hãy cho biết AI cần thay đổi gì rồi thử lại."
 
 msgid "Schedule when your briefing is generated"
 msgstr "Lên lịch tạo bản tóm lược"
@@ -6263,6 +6783,17 @@ msgstr "Gửi bài viết này"
 msgid "Sending…"
 msgstr "Đang gửi…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] ""
+"Gửi tên, địa chỉ và tiêu đề bài viết gần đây của %(count)s trang web đến mô hình AI. Không có gì thay đổi "
+"cho đến khi bạn chấp thuận."
+
 msgid "Separate"
 msgstr "Tách riêng"
 
@@ -6275,6 +6806,9 @@ msgstr "Lỗi máy chủ"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "Lỗi máy chủ: %(status)s"
+
+msgid "Set up"
+msgstr "Thiết lập"
 
 msgid "Set up billing"
 msgstr "Thiết lập thanh toán"
@@ -6447,6 +6981,13 @@ msgstr "Hiển thị bảng điều khiển khi tải NewsBlur"
 msgid "Show the entire story, even if really, really long"
 msgstr "Hiển thị toàn bộ bài viết, dù dài thật, thật dài"
 
+msgid "Show them"
+msgstr "Hiển thị chúng"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "Hiển thị lần di chuyển này trong %(folder)s"
+
 msgid "Show tooltips"
 msgstr "Hiển thị chú giải công cụ"
 
@@ -6526,8 +7067,17 @@ msgstr "Trang web"
 msgid "Sites and folders"
 msgstr "Trang web và thư mục"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "Các trang web đã hủy đăng ký sẽ không được khôi phục."
+
 msgid "Sites updated up to 5x more often"
 msgstr "Các trang web được cập nhật thường xuyên hơn tới 5 lần"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "Các trang web bạn đã đăng ký theo dõi kể từ đó sẽ được giữ lại."
+
+msgid "Sketching folders"
+msgstr "Phác thảo thư mục"
 
 msgid "Skip Back"
 msgstr "Tua lùi"
@@ -6564,6 +7114,12 @@ msgstr "Kết nối mạng xã hội"
 
 msgid "Social features"
 msgstr "Tính năng mạng xã hội"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "Đã xảy ra lỗi khi tạo đề xuất. Vui lòng thử lại."
+
+msgid "Something went wrong. Please try again."
+msgstr "Đã xảy ra lỗi. Vui lòng thử lại."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6612,6 +7168,9 @@ msgstr "Sắp xếp dòng tin từ cũ đến mới hoặc từ mới đến cũ
 msgid "Sort, filter, and display options"
 msgstr "Tùy chọn sắp xếp, lọc và hiển thị"
 
+msgid "Sorting sites into folders"
+msgstr "Sắp xếp trang web vào thư mục"
+
 msgid "Source feeds"
 msgstr "Nguồn cấp dữ liệu"
 
@@ -6647,6 +7206,9 @@ msgstr[0] "Tách \"%(category)s\" (%(count)s bài viết) thành:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "Chia \"%(value_1)s\" thành:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "Tách Tech thành các thư mục nhỏ hơn. Không thư mục nào có quá 40 trang web."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6695,6 +7257,9 @@ msgstr "Sao"
 msgid "Start Training Site by Site"
 msgstr "Bắt đầu huấn luyện từng trang một"
 
+msgid "Start fresh"
+msgstr "Làm mới hoàn toàn"
+
 msgid "Starting analysis..."
 msgstr "Đang bắt đầu phân tích..."
 
@@ -6719,11 +7284,35 @@ msgstr "Thống kê"
 msgid "Status"
 msgstr "Trạng thái"
 
+msgid "Stay"
+msgstr "Ở lại"
+
 msgid "Stay on the same feed/folder"
 msgstr "Ở lại nguồn cấp dữ liệu/thư mục hiện tại"
 
 msgid "Stay put"
 msgstr "Giữ nguyên vị trí"
+
+msgid "Stays"
+msgstr "Giữ nguyên"
+
+msgid "Stays here"
+msgstr "Vẫn ở đây"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "Vẫn ở trong %(folder)s"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "Giữ lại vì vẫn còn %(count)s trang web trong đó."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "Giữ nguyên vì một thư mục bên trong nó được giữ nguyên."
+
+msgid "Stays, no folder"
+msgstr "Giữ nguyên, không có thư mục"
 
 msgid "Steadier or more varied"
 msgstr "Đều đặn hơn hoặc đa dạng hơn"
@@ -6744,6 +7333,13 @@ msgstr "Dừng nghe thử"
 
 msgid "Stop recording"
 msgstr "Dừng ghi"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr ""
+"Ngừng đăng bài hoặc không thể tải dữ liệu. Trang web trong thư mục bị khóa sẽ không bị đánh dấu. Các đề "
+"xuất tắt tiếng được chọn sẵn. Bạn luôn phải nhấp để hủy đăng ký."
 
 msgid "Stories"
 msgstr "Bài viết"
@@ -6996,6 +7592,12 @@ msgstr "Các gói đăng ký"
 msgid "Suggested questions"
 msgstr "Câu hỏi gợi ý"
 
+msgid "Suggested: mute."
+msgstr "Đề xuất: tắt tiếng."
+
+msgid "Suggested: unsubscribe."
+msgstr "Đề xuất: hủy đăng ký."
+
 msgid "Summarize"
 msgstr "Tóm tắt"
 
@@ -7152,6 +7754,29 @@ msgstr "Cảm ơn bạn! Bạn có %(bold_start)stài khoản Premium Pro%(bold_
 msgid "That change could not be saved"
 msgstr "Không thể lưu thay đổi đó"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "Không khôi phục %(count)s trang web ngừng hoạt động đã hủy đăng ký cho bạn."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI có thể chuyển các trang web vào hoặc ra, đổi tên, gộp hoặc lồng thư mục."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI không thể hoàn tất đề xuất cho các trang web của bạn. Vui lòng thử lại."
+
+msgid "The AI found nothing to change."
+msgstr "AI không tìm thấy gì cần thay đổi."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI gặp sự cố khi trả lời. Vui lòng thử lại."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "AI hiện không khả dụng. Vui lòng thử lại sau."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI không xem thư mục này hoặc các trang web trong đó."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "Dịch vụ AI phản hồi quá lâu. Vui lòng thử lại."
 
@@ -7188,6 +7813,12 @@ msgstr "Blog NewsBlur"
 
 msgid "The audio stream was interrupted."
 msgstr "Luồng âm thanh bị gián đoạn."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "Không thể áp dụng các thay đổi. Vui lòng thử lại."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "Thư mục vẫn còn trang web hoặc thư mục bên trong nên được giữ nguyên."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7239,8 +7870,20 @@ msgstr "Nhà xuất bản đã vô hiệu hóa trang gốc."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "HTML của trang được tải và phân tích để trích xuất cấu trúc nội dung."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "Đề xuất mô tả nội dung theo cách không thể áp dụng."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "Đề xuất mất quá nhiều thời gian nên đã bị dừng. Vui lòng thử lại."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "Không thể hoàn tác việc sắp xếp lại. Vui lòng thử lại."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "Bản thân trang web, như bạn sẽ thấy trên trình duyệt"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "Trang web không còn ở vị trí mà đề xuất dự kiến."
 
 msgid "The story on its own page on the site"
 msgstr "Bài viết trên trang riêng của nó trên trang web"
@@ -7310,6 +7953,11 @@ msgstr "Đã xảy ra sự cố khi tải ảnh của bạn lên."
 msgid "There was an error trying to logout, ouch."
 msgstr "Đã xảy ra lỗi khi đăng xuất, ôi không."
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr "AI không có gì để sắp xếp. Hãy mở thêm thư mục hoặc chọn Sắp xếp lại để AI có thể thêm thư mục."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "Không giới hạn. Lưu bao nhiêu bài viết tùy thích, chúng sẽ được giữ mãi mãi."
 
@@ -7325,6 +7973,13 @@ msgid ""
 msgstr ""
 "Các tên miền này bị chặn theo mặc định (công cụ tìm kiếm, mạng xã hội, v.v.). Thêm chúng vào mục \"Tên miền"
 " được phép\" ở trên để bỏ chặn."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr ""
+"Các trang web này được giữ trong thư mục cũ và đồng thời được đề xuất chuyển sang thư mục mới. Hãy chọn vị "
+"trí cho từng trang web."
 
 msgid "They redeem it."
 msgstr "Họ đổi mã đó."
@@ -7346,6 +8001,12 @@ msgstr "Tuần này"
 
 msgid "This Year"
 msgstr "Năm nay"
+
+msgid "This change couldn't be made."
+msgstr "Không thể thực hiện thay đổi này."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "Thay đổi này không phù hợp với các lựa chọn khác của bạn."
 
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
@@ -7372,12 +8033,39 @@ msgstr ""
 "Thao tác này khớp toàn bộ tiêu đề và chỉ khớp chính xác bài viết này. Thay vào đó, hãy chọn một phần tiêu "
 "đề."
 
+msgid "This proposal can't be changed right now."
+msgstr "Hiện không thể thay đổi đề xuất này."
+
+msgid "This proposal can't be revised again."
+msgstr "Không thể chỉnh sửa lại đề xuất này."
+
+msgid "This proposal couldn't be found."
+msgstr "Không tìm thấy đề xuất này."
+
+msgid "This proposal has already been applied."
+msgstr "Đề xuất này đã được áp dụng."
+
+msgid "This proposal isn't ready to apply."
+msgstr "Đề xuất này chưa sẵn sàng để áp dụng."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "Đề xuất này đã được thay thế bằng một đề xuất mới hơn."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "Danh sách bài đã đọc là %(link_start)stính năng cao cấp%(link_end)s."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "Thao tác này sẽ xóa thẻ khỏi tất cả bài viết đã lưu. Các bài viết vẫn được lưu mà không có thẻ này."
+
+msgid "This reorganization can no longer be undone."
+msgstr "Không thể hoàn tác việc sắp xếp lại này nữa."
+
+msgid "This reorganization didn't finish"
+msgstr "Việc sắp xếp lại này chưa hoàn tất"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "Chưa áp dụng việc sắp xếp lại này nên không có gì để hoàn tác."
 
 msgid "This site"
 msgstr "Trang web này"
@@ -7433,6 +8121,9 @@ msgstr "Thích các tác giả, thẻ hoặc từ khóa trong tiêu đề để 
 
 msgid "Thursday"
 msgstr "Thứ Năm"
+
+msgid "Tidy"
+msgstr "Sắp xếp gọn"
 
 msgid "Tier"
 msgstr "Cấp"
@@ -7498,6 +8189,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "Đến"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "Đến %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "Cần quyết định: %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7546,6 +8245,9 @@ msgid "Top Domains"
 msgstr "Tên miền hàng đầu"
 
 msgid "Top Level"
+msgstr "Cấp cao nhất"
+
+msgid "Top level"
 msgstr "Cấp cao nhất"
 
 msgid "Top stories"
@@ -7705,6 +8407,21 @@ msgstr "Không khả dụng"
 msgid "Uncategorized"
 msgstr "Chưa phân loại"
 
+msgid "Undo"
+msgstr "Hoàn tác"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "Hoàn tác sẽ đưa các thư mục của bạn về trạng thái trước khi bắt đầu."
+
+msgid "Undo this reorganization"
+msgstr "Hoàn tác việc sắp xếp lại này"
+
+msgid "Undo this reorganization?"
+msgstr "Hoàn tác lần sắp xếp lại này?"
+
+msgid "Undoing..."
+msgstr "Đang hoàn tác..."
+
 msgid "Unfavorited"
 msgstr "Đã bỏ yêu thích"
 
@@ -7776,6 +8493,29 @@ msgstr "Bỏ lưu bài viết này"
 
 msgid "Unshared"
 msgstr "Đã bỏ chia sẻ"
+
+msgid "Unsubscribe"
+msgstr "Hủy đăng ký"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "Hủy đăng ký khỏi %(site)s"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "Đã hủy đăng ký %(count)s trang web ngừng hoạt động"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] ""
+"Không thể hoàn tác việc hủy đăng ký khỏi %(count)s trang web không hoạt động. Hoàn tác sẽ khôi phục các thư"
+" mục của bạn nhưng không đăng ký lại các trang web."
 
 msgid "Untitled"
 msgstr "Chưa có tiêu đề"
@@ -8330,6 +9070,9 @@ msgstr "Bạn có thể thay đổi ý kiến."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "Bạn có thể nhấp vào các nút %(like_icon)s%(dislike_icon)s bên cạnh bài viết khi đọc."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "Bạn có thể đóng hộp thoại này. Đề xuất sẽ vẫn ở đây khi bạn quay lại."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "Bạn có thể ghi đè thiết lập này cho từng trang web và thư mục."
 
@@ -8342,9 +9085,21 @@ msgstr ""
 "với Premium Archive."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "Bạn có thể hoàn tác thao tác này cho đến %(date)s."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "Bạn đang theo dõi %(count)s trang. Premium giúp tất cả trở nên tốt hơn."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "Mỗi tháng bạn nhận được %(count)s đề xuất. Cần Premium Archive để áp dụng đề xuất."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "Bạn có một đề xuất mỗi tháng. Cần có Premium Archive để áp dụng."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8389,6 +9144,11 @@ msgstr "Bạn cần đăng nhập để trả lời bình luận."
 msgid "You need to be logged in to share a story."
 msgstr "Bạn cần đăng nhập để chia sẻ bài viết."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "Bạn sẽ hủy đăng ký %(count)s trang web ngừng hoạt động"
+
 msgid "You will be emailed within a minute or three."
 msgstr "Bạn sẽ nhận được email trong khoảng một đến ba phút nữa."
 
@@ -8414,6 +9174,26 @@ msgstr "Bạn đã sẵn sàng! Chúc bạn có trải nghiệm tuyệt vời v�
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "Bạn được tặng %(value_1)s gói %(value_2)s!"
+
+msgid "You've had this month's proposal."
+msgstr "Bạn đã nhận đề xuất của tháng này."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "Bạn đã dùng đề xuất của tháng này. Đề xuất tiếp theo có vào ngày %(date)s."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "Bạn đã tạo %(count)s đề xuất trong ngày qua."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "Bạn đã tạo %(count)s đề xuất trong ngày qua. Đề xuất tiếp theo sẽ khả dụng vào %(date)s."
+
+msgid "You've reached today's limit on proposals."
+msgstr "Bạn đã đạt giới hạn đề xuất hôm nay."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8471,14 +9251,34 @@ msgstr "Giọng đọc bạn chọn hiện không khả dụng, nên %(voice)s �
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookie của bạn đã hết hạn — Vui lòng đăng nhập lại"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "Các thư mục hiện tại của bạn được lưu trước, nên bạn có thể hoàn tác trong %(count)s ngày."
+
+msgid "Your decisions"
+msgstr "Các lựa chọn của bạn"
+
 msgid "Your email"
 msgstr "Email của bạn"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "Bộ lọc có thể đang ẩn các trang web — mở Tùy chọn để nới rộng phạm vi."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "Các thư mục của bạn đã được khôi phục về trạng thái trước khi sắp xếp lại."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "Các thư mục của bạn sẽ trở lại như trước khi sắp xếp lại."
+
 msgid "Your inbox stays clean"
 msgstr "Hộp thư đến luôn gọn gàng"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "Không thể lưu lựa chọn gần nhất của bạn, nên đây là các lựa chọn đã lưu. Vui lòng thử lại."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "Không thể lưu các thư mục đã khóa của bạn. Vui lòng thử lại."
 
 msgid "Your name"
 msgstr "Tên của bạn"
@@ -8501,8 +9301,17 @@ msgstr "Phí đăng ký của bạn sẽ được tính theo tỷ lệ"
 msgid "Your subscription will no longer automatically renew."
 msgstr "Gói đăng ký của bạn sẽ không còn tự động gia hạn."
 
+msgid "a folder"
+msgstr "một thư mục"
+
+msgid "a site you no longer follow"
+msgstr "một trang web bạn không còn theo dõi"
+
 msgid "and auto-follow them"
 msgstr "và tự động theo dõi họ"
+
+msgid "approved"
+msgstr "đã chấp thuận"
 
 msgid "artificial intelligence"
 msgstr "trí tuệ nhân tạo"
@@ -8685,6 +9494,9 @@ msgstr "điện toán lượng tử"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "đã từ chối"
+
 msgid "remote work"
 msgstr "làm việc từ xa"
 
@@ -8730,6 +9542,9 @@ msgstr "chuỗi cung ứng"
 msgid "this list"
 msgstr "danh sách này"
 
+msgid "to decide"
+msgstr "cần quyết định"
+
 msgid "trade policy"
 msgstr "chính sách thương mại"
 
@@ -8753,6 +9568,14 @@ msgstr "máy tính cổ điển"
 
 msgid "web standards"
 msgstr "tiêu chuẩn web"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s” trở thành “%(new)s”"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

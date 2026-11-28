@@ -149,6 +149,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "최대 %(count)s일 동안 %(badge)s"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s개 사이트"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "%(category)s 주제"
 
@@ -164,6 +169,11 @@ msgstr "스토리당 %(cost)s"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s바이트"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "변경 사항 %(count)s개를 적용하지 못했습니다."
 
 #, python-format
 msgid "%(count)s channel"
@@ -206,9 +216,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s일 전"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "휴면 사이트 %(count)s개를 음소거합니다"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "휴면 사이트 %(count)s개 음소거됨"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "싫어요 %(count)s개"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s개의 빈 폴더가 삭제됩니다"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "빈 폴더 %(count)s개 삭제됨"
 
 #, python-format
 msgid "%(count)s episode"
@@ -219,6 +249,46 @@ msgstr[0] "%(count)s개 에피소드"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "피드 %(count)s개"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "표시됨 %(count)s개"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s개의 폴더가 추가되었습니다"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "폴더 %(count)s개를 추가합니다"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "폴더 %(count)s개를 다른 폴더에 병합합니다"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "폴더 %(count)s개 이름을 변경합니다"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "폴더 %(count)s개를 다른 폴더에 병합함"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "폴더 %(count)s개를 다른 폴더 안으로 이동합니다"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "폴더 %(count)s개 이름 변경 또는 이동됨"
 
 #, python-format
 msgid "%(count)s follower"
@@ -313,6 +383,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "%(count)s회 열기"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s개의 다른 사이트는 변경 사항에 포함되지 않습니다."
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)s페이지"
@@ -331,6 +406,11 @@ msgstr[0] "공개 댓글 %(count)s개"
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "답글 %(count)s개"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "수정 사항 %(count)s개 남음"
 
 #, python-format
 msgid "%(count)s selected"
@@ -353,14 +433,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s개 사이트"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "사이트 %(count)s개를 두 번째 폴더에 추가함"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "사용 가능한 사이트 %(count)s개"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s개 사이트가 여기에 있으며 변경 사항에 포함되지 않습니다."
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "사이트 %(count)s개를 두 번째 폴더에 추가합니다"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "사이트 %(count)s개를 다른 폴더로 이동함"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "사이트 %(count)s개를 다른 폴더로 이동합니다"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "한도를 초과한 사이트 %(count)s개"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "사이트 %(count)s개는 아직 결정되지 않아 현재 위치에 그대로 남습니다."
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "아직 결정할 항목이 %(count)s개 있습니다. 결정되지 않은 항목은 현재 상태로 유지됩니다."
 
 #, python-format
 msgid "%(count)s story"
@@ -918,6 +1033,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ %(value_1)s개 사이트 더 보기"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/일"
 
@@ -998,6 +1117,9 @@ msgstr "더 선명하고 가까운 소리"
 msgid "A folder"
 msgstr "폴더 하나"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "제안이 작성된 후 필요한 폴더의 이름이 변경되거나 이동 또는 삭제되었습니다."
+
 msgid "A folder of feeds read as one stream"
 msgstr "여러 피드를 하나의 스트림으로 모아 읽기"
 
@@ -1007,6 +1129,12 @@ msgstr "NewsBlur 독자들이 공유한 스토리 중 일부를 매시간 새롭
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "%(value_1)s님이 보내신 선물이 계정에 적용되었습니다."
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "나중에 적용된 재구성이 있어 이 재구성은 더 이상 실행 취소할 수 없습니다."
+
+msgid "A proposal is already being made."
+msgstr "이미 제안이 진행 중입니다."
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "두 번째 단계에서는 힌트를 사용해 페이지에서 올바른 패턴을 찾습니다."
@@ -1042,6 +1170,12 @@ msgstr "AI 필터가 저장되었지만 %(billing_link)s 전까지 실행되지 
 msgid "AI finds the stories"
 msgstr "AI가 스토리를 찾아줍니다"
 
+msgid "AI is looking through your sites"
+msgstr "AI가 사이트를 살펴보고 있습니다"
+
+msgid "AI is revising the proposal"
+msgstr "AI가 제안을 수정하고 있습니다"
+
 msgid "AI-curated summary of your top stories"
 msgstr "AI가 선별한 주요 스토리 요약"
 
@@ -1061,6 +1195,12 @@ msgstr "물론입니다. 트레이너를 열고 좋아요나 싫어요 표시를
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "억양"
+
+msgid "Accept all"
+msgstr "모두 수락"
+
+msgid "Accept into this folder"
+msgstr "이 폴더에 추가"
 
 msgid "Account"
 msgstr "계정"
@@ -1100,6 +1240,9 @@ msgstr "사이트 추가 &amp; 스토리 공유 북마클릿"
 
 msgid "Add a classifier"
 msgstr "분류기 추가"
+
+msgid "Add a copy here"
+msgstr "여기에 복사 추가"
 
 msgid "Add a forwarding address"
 msgstr "전달 주소 추가"
@@ -1142,6 +1285,10 @@ msgstr "사이트/폴더 추가"
 
 msgid "Add story list"
 msgstr "스토리 목록 추가"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "폴더 %(folder)s 추가"
 
 msgid "Add to Chrome"
 msgstr "Chrome에 추가"
@@ -1245,6 +1392,9 @@ msgstr "완료!"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "모든 피드를 5~15분마다 가져옵니다"
 
+msgid "All moves"
+msgstr "모든 이동"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr "기본적으로 모든 패턴은 대소문자를 구분하지 않습니다. 부분 일치를 피하려면 단어 경계에 %(code)s을(를) 사용하세요."
@@ -1269,10 +1419,20 @@ msgstr "허용된 도메인"
 msgid "Alphabetical"
 msgstr "가나다순"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "폴더를 추가, 이름 변경, 병합, 중첩 및 삭제할 수도 있습니다."
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "이 도메인의 기존 아카이브 %(value_1)s개도 삭제"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "%(folder)s에도 있음"
+
+msgid "Also look for"
+msgstr "다음 항목도 찾기"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1331,6 +1491,9 @@ msgstr "Android 알림을 사용하려면 프리미엄 아카이브가 필요합
 msgid "Animals"
 msgstr "동물"
 
+msgid "Another folder there already has this name."
+msgstr "이미 같은 이름의 폴더가 있습니다."
+
 msgid "Any"
 msgstr "모두"
 
@@ -1341,6 +1504,9 @@ msgstr "공개된 웹페이지라면 무엇이든 가능합니다. Twitter 프�
 
 msgid "Any time"
 msgstr "전체 기간"
+
+msgid "Anything the AI should know"
+msgstr "AI가 알아야 할 사항"
 
 msgid "Appearance"
 msgstr "모양"
@@ -1361,11 +1527,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "병합 %(count)s개 중 %(succeeded)s개 적용됨 (%(stories)s)"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "%(date)s에 적용되었습니다."
+
 msgid "Applies to"
 msgstr "적용 대상"
 
 msgid "Apply"
 msgstr "적용"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "변경 사항 %(count)s개 적용"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "변경 사항 %(count)s개를 적용할까요?"
 
 msgid "Apply All Merges"
 msgstr "모든 병합 적용"
@@ -1373,11 +1553,27 @@ msgstr "모든 병합 적용"
 msgid "Apply Split"
 msgstr "분할 적용"
 
+msgid "Apply changes"
+msgstr "변경 사항 적용"
+
 msgid "Apply training across a folder"
 msgstr "폴더 전체에 학습 적용"
 
 msgid "Apply training globally"
 msgstr "학습 내용 전체 적용"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "변경 사항을 적용하려면 프리미엄 아카이브가 필요합니다."
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr "변경 사항을 적용하려면 프리미엄 아카이브가 필요합니다. 결정 사항은 저장되며 업그레이드 후에도 그대로 유지됩니다."
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "%(date)s에 적용하던 작업이 중간에 중단되어 일부 폴더가 변경되었을 수 있습니다."
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "적용이 중간에 중단되어 일부 폴더가 변경되었을 수 있습니다."
 
 msgid "Applying..."
 msgstr "적용 중..."
@@ -1402,6 +1598,11 @@ msgstr "앱은 무료인가요?"
 
 msgid "Are the apps open source?"
 msgstr "앱은 오픈 소스인가요?"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "들어오는 사이트 %(count)s개"
 
 msgid "Arrow keys"
 msgstr "화살표 키"
@@ -1432,6 +1633,9 @@ msgstr "AI에게 팟캐스트나 동영상의 내용을 먼저 받아쓰게 한 
 
 msgid "Ask AI questions about stories"
 msgstr "스토리에 대해 AI에게 질문하기"
+
+msgid "Ask AI to revise"
+msgstr "AI에게 수정 요청"
 
 msgid "Ask AI with a choice of models"
 msgstr "모델을 선택해 AI에게 질문"
@@ -1552,6 +1756,9 @@ msgstr "분류기 트레이너로 돌아가기"
 msgid "Back to feeds"
 msgstr "피드로 돌아가기"
 
+msgid "Back to review"
+msgstr "검토로 돌아가기"
+
 msgid "Back to stories"
 msgstr "스토리 목록으로 돌아가기"
 
@@ -1634,6 +1841,9 @@ msgstr "Blurblog, 공유한 스토리 및 댓글"
 msgid "Bookmarklet"
 msgstr "북마클릿"
 
+msgid "Both"
+msgstr "둘 다"
+
 msgid "Bottom"
 msgstr "하단"
 
@@ -1712,6 +1922,12 @@ msgstr "글머리 기호"
 
 msgid "Buttons"
 msgstr "버튼"
+
+msgid "By folder"
+msgstr "폴더별"
+
+msgid "By hand"
+msgstr "직접"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1831,6 +2047,9 @@ msgstr "위에서 원하는 항목을 선택하세요..."
 msgid "Check your email..."
 msgstr "이메일을 확인하세요..."
 
+msgid "Checking for dead sites"
+msgstr "작동하지 않는 사이트를 확인하고 있습니다"
+
 msgid "Checking recent pages..."
 msgstr "최근 페이지 확인 중..."
 
@@ -1861,6 +2080,9 @@ msgstr "카테고리 선택"
 
 msgid "Choose how many days back"
 msgstr "며칠 전까지 표시할지 선택"
+
+msgid "Choose how much to change, then try again."
+msgstr "변경 범위를 선택한 다음 다시 시도하세요."
 
 msgid "Choose model"
 msgstr "모델 선택"
@@ -2124,8 +2346,22 @@ msgstr "텍스트 복사"
 msgid "Copy URL"
 msgstr "URL 복사"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "%(folder)s에서 복사"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "%(folder)s에 복사 제안됨"
+
+msgid "Copy undecided"
+msgstr "복사 여부 미정"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "클라이언트 시크릿을 지금 복사하세요. 이 값은 한 번만 볼 수 있습니다."
+
+msgid "Copy?"
+msgstr "복사할까요?"
 
 msgid "Could not add this classifier. Try again."
 msgstr "이 분류기를 추가할 수 없습니다. 다시 시도하세요."
@@ -2144,6 +2380,9 @@ msgstr "FAQ를 불러오지 못했습니다. 다시 시도해 주세요."
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "애플리케이션을 불러오지 못했습니다. 새로고침해 보세요."
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "AI로 재구성을 불러오지 못했습니다."
 
 msgid "Couldn't load audio for this story."
 msgstr "이 스토리의 오디오를 불러오지 못했습니다."
@@ -2296,8 +2535,20 @@ msgstr "일"
 msgid "Days of unreads"
 msgstr "읽지 않은 항목 보관 기간(일)"
 
+msgid "Dead sites"
+msgstr "비활성 사이트"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "음소거된 휴면 사이트의 음소거가 해제됩니다."
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "게시를 중단했거나 계속 가져오기에 실패하는 비활성 사이트"
+
 msgid "December"
 msgstr "12월"
+
+msgid "Decline all copies"
+msgstr "모든 복사 거부"
 
 msgid "Deep reads the community gave real time to"
 msgstr "커뮤니티가 시간을 들여 읽은 심층 기사"
@@ -2457,6 +2708,9 @@ msgstr "닫기"
 msgid "Do I get a unique email address?"
 msgstr "전용 이메일 주소를 받나요?"
 
+msgid "Do not put it here"
+msgstr "여기에 두지 않기"
+
 msgid "Do the apps work offline?"
 msgstr "앱을 오프라인에서도 사용할 수 있나요?"
 
@@ -2487,6 +2741,9 @@ msgstr "미리보기 없이 스토리 제목만 표시"
 
 msgid "Don't show a thumbnail"
 msgstr "미리보기 이미지를 표시하지 않음"
+
+msgid "Done"
+msgstr "완료"
 
 msgid "Done!"
 msgstr "완료!"
@@ -2721,6 +2978,9 @@ msgstr "새 스토리는 모두 영구 보관됩니다"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "저장한 스토리의 각 태그마다 RSS 피드가 제공되어 IFTTT나 Zapier로 연결하기 좋습니다."
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "모든 사이트가 제외한 폴더에 있습니다. AI가 살펴볼 사이트가 있도록 폴더를 여세요."
+
 msgid "Every story archived and searchable forever"
 msgstr "모든 스토리를 영구 보관하고 검색"
 
@@ -2742,6 +3002,9 @@ msgstr "모두"
 msgid "Everyone"
 msgstr "모든 사용자"
 
+msgid "Everything"
+msgstr "전체"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlur의 모든 기능과 사용 방법"
 
@@ -2759,6 +3022,12 @@ msgstr "무료 플랜의 모든 기능에 더해:"
 
 msgid "Everything in Premium, plus:"
 msgstr "프리미엄의 모든 기능에 더해 다음을 제공합니다:"
+
+msgid "Everything is decided."
+msgstr "모든 결정이 완료되었습니다."
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "모두 승인된 상태로 시작합니다. 어느 쪽 폴더에서든 이동을 거부하세요."
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2888,6 +3157,13 @@ msgstr "쿼리를 제출하지 못했습니다"
 msgid "Failed to subscribe"
 msgstr "구독 실패"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "가져오기에 실패했으며 스토리가 게시된 적이 없습니다."
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "가져오기에 실패했습니다. 마지막 스토리는 %(month)s에 있습니다."
+
 msgid "Fashion"
 msgstr "패션"
 
@@ -2988,11 +3264,17 @@ msgstr "피드를 가져오는 중"
 msgid "Fetching..."
 msgstr "가져오는 중..."
 
+msgid "File sites into the folders you already have."
+msgstr "기존 폴더에 사이트를 정리하세요."
+
 msgid "Files"
 msgstr "파일"
 
 msgid "Filled Icons"
 msgstr "채워진 아이콘"
+
+msgid "Filter"
+msgstr "필터"
 
 msgid "Filter by date range"
 msgstr "날짜 범위로 필터링"
@@ -3116,8 +3398,14 @@ msgstr "폴더별 읽지 않은 항목 수"
 msgid "Folders"
 msgstr "폴더"
 
+msgid "Folders after"
+msgstr "변경 후 폴더"
+
 msgid "Folders only"
 msgstr "폴더만"
+
+msgid "Folders updated"
+msgstr "폴더가 업데이트되었습니다"
 
 msgid "Folders, feeds, and story titles"
 msgstr "폴더, 피드 및 스토리 제목"
@@ -3290,6 +3578,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "시작일"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "%(folder)s에서"
+
 msgid "From infrequent sites"
 msgstr "업데이트가 드문 사이트에서"
 
@@ -3457,6 +3749,10 @@ msgstr "프리미엄 가입 — 연 $36"
 msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)s(으)로 돌아가기"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "%(folder)s 안으로 이동"
+
 msgid "Good Reads"
 msgstr "좋은 글"
 
@@ -3559,6 +3855,9 @@ msgstr "이미 구독 중인 사이트 숨기기"
 msgid "Hide story changes"
 msgstr "스토리 변경 사항 숨기기"
 
+msgid "Hide them"
+msgstr "숨기기"
+
 msgid "Highlight"
 msgstr "강조 표시"
 
@@ -3603,6 +3902,9 @@ msgstr "스토리를 몇 개까지 저장할 수 있나요?"
 
 msgid "How much emotion"
 msgstr "감정 표현 정도"
+
+msgid "How much to change"
+msgstr "변경할 항목 수"
 
 msgid "How often"
 msgstr "빈도"
@@ -3674,6 +3976,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "%(count)s일 후 프리미엄 체험이 종료되고 무료 요금제로 돌아갑니다"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "%(folder)s 내"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "Gmail에서 %(settings_menu)s로 이동해 %(add_button)s을(를) 클릭하세요. 사용자 지정 NewsBlur 이메일 주소를 추가하세요."
 
@@ -3694,6 +4000,9 @@ msgstr "새 창에서"
 msgid "In a pill"
 msgstr "알약 모양으로"
 
+msgid "In both folders"
+msgstr "두 폴더에 모두 있음"
+
 msgid "In rotation"
 msgstr "순환 목록에 있음"
 
@@ -3704,6 +4013,10 @@ msgstr "피드 보기에서 스토리 헤더의 태그와 작성자를 클릭해
 
 msgid "In this window"
 msgstr "이 창에서"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "두 폴더에 있음 %(count)s"
 
 msgid "Include read"
 msgstr "읽은 항목 포함"
@@ -3735,6 +4048,10 @@ msgstr "업데이트가 드문 사이트 기준(월 스토리 수)"
 msgid "Inline list"
 msgstr "인라인 목록"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "%(folder)s 안에"
+
 msgid "Insta-fetch stories"
 msgstr "스토리 즉시 가져오기"
 
@@ -3759,6 +4076,10 @@ msgid "Interactions"
 msgstr "상호작용"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "%(folder)s로 이동한 뒤 삭제"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "잘못된 정규식: %(error)s"
 
@@ -3779,6 +4100,26 @@ msgstr "RSS와 다른 점이 있나요?"
 
 msgid "Is training free?"
 msgstr "학습은 무료인가요?"
+
+msgid "It has never had a story."
+msgstr "스토리가 게시된 적이 없습니다."
+
+msgid "It involves a folder you locked."
+msgstr "잠금 설정한 폴더가 포함되어 있습니다."
+
+msgid "It needs a new folder you rejected."
+msgstr "거부한 새 폴더가 필요합니다."
+
+msgid "It would have put a folder inside itself."
+msgstr "폴더 안에 폴더가 들어가는 결과가 됩니다."
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "%(count)s일이 지나 이 재구성을 더 이상 실행 취소할 수 없습니다."
+
+msgid "Its folder is locked to keep its sites."
+msgstr "사이트를 유지하기 위해 해당 폴더가 잠겨 있습니다."
 
 msgid "January"
 msgstr "1월"
@@ -3810,8 +4151,17 @@ msgstr "최소한의 논평과 함께 헤드라인만"
 msgid "Just the headlines, no commentary"
 msgstr "의견 없이 헤드라인만"
 
+msgid "Keep"
+msgstr "유지"
+
+msgid "Keep all here"
+msgstr "모두 이 폴더에 유지"
+
 msgid "Keep fades, without movement."
 msgstr "움직임 없이 페이드 효과를 유지합니다."
+
+msgid "Keep it here"
+msgstr "여기에 유지"
 
 msgid "Keep others unread"
 msgstr "나머지는 읽지 않은 상태로 유지"
@@ -3822,8 +4172,17 @@ msgstr "읽음 상태 유지"
 msgid "Keep right-side buttons visible while reading"
 msgstr "읽는 동안 오른쪽 버튼 계속 표시"
 
+msgid "Keep sites"
+msgstr "사이트 유지"
+
 msgid "Keep stories separate"
 msgstr "스토리를 개별적으로 표시"
+
+msgid "Keep the new folders"
+msgstr "새 폴더 유지"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "사진 블로그는 함께 모으고, 뉴스는 국가별로 나눕니다."
 
 msgid "Keep unread counts out of the window title"
 msgstr "읽지 않은 스토리 수를 창 제목에 표시하지 않기"
@@ -3896,11 +4255,28 @@ msgstr "마지막 확인:"
 msgid "Layout"
 msgstr "레이아웃"
 
+msgid "Leave out"
+msgstr "제외"
+
 msgid "Leave unread"
 msgstr "읽지 않은 상태로 두기"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "나가는 사이트 %(count)s개"
+
 msgid "Left"
 msgstr "왼쪽"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "제외되었습니다. 이 폴더에는 아무런 변경도 적용되지 않습니다."
+
+msgid "Let all go"
+msgstr "모두 내보내기"
+
+msgid "Let it go"
+msgstr "내보내기"
 
 msgid "Let's Get Started "
 msgstr "시작해 볼까요 "
@@ -4015,8 +4391,14 @@ msgstr "위치"
 msgid "Lock"
 msgstr "잠금"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "AI가 건드리지 않도록 폴더 잠금"
+
 msgid "Locked"
 msgstr "잠김"
+
+msgid "Locked with parent"
+msgstr "상위 폴더와 함께 잠금"
 
 msgid "Log In or Sign Up"
 msgstr "로그인 또는 가입"
@@ -4225,6 +4607,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "%(count)s개 카테고리를 다음으로 병합:"
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "%(folder)s을(를) %(into)s에 병합"
+
 msgid "Merge into:"
 msgstr "다음으로 병합:"
 
@@ -4305,6 +4691,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "사이트 %(count)s개 이동"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "%(site)s을(를) %(folder)s로 이동"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "%(folder)s로 이동"
 
@@ -4317,6 +4707,13 @@ msgstr "이동됨"
 msgid "Moved!"
 msgstr "이동했습니다!"
 
+msgid "Moves"
+msgstr "이동"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "병합되는 동안 %(folder)s와 함께 이동합니다."
+
 msgid "Moving..."
 msgstr "이동 중..."
 
@@ -4327,6 +4724,10 @@ msgstr "음소거"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s개 사이트 음소거"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "%(site)s 음소거"
 
 msgid "Mute Sites"
 msgstr "사이트 음소거"
@@ -4410,6 +4811,9 @@ msgstr "마우스를 건드리지 않고 모든 기능을 이용하세요. 키�
 
 msgid "Need at least 2 categories to merge"
 msgstr "병합하려면 카테고리가 2개 이상 필요합니다"
+
+msgid "Nest"
+msgstr "하위 폴더로 이동"
 
 msgid "Nested"
 msgstr "중첩"
@@ -4575,6 +4979,9 @@ msgstr "사용 가능한 카테고리가 없습니다. 카테고리를 설정하
 msgid "No categories with 10+ stories available for splitting."
 msgstr "분할할 수 있는 스토리가 10개 이상인 카테고리가 없습니다."
 
+msgid "No changes"
+msgstr "변경 사항 없음"
+
 msgid "No channels found matching your filter."
 msgstr "필터와 일치하는 채널을 찾을 수 없습니다."
 
@@ -4586,6 +4993,9 @@ msgstr "연결된 계정 없음"
 
 msgid "No content"
 msgstr "콘텐츠 없음"
+
+msgid "No copy"
+msgstr "복사 안 함"
 
 msgid "No feeds found"
 msgstr "피드를 찾을 수 없음"
@@ -4712,6 +5122,10 @@ msgstr[0] "관련 스토리로 색인된 %(count)s개 사이트의 스토리가 
 msgid "No stories published last month"
 msgstr "지난달에 게시된 스토리가 없습니다"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "%(month)s 이후 새 스토리가 없습니다."
+
 msgid "No stories to delete"
 msgstr "삭제할 스토리가 없습니다"
 
@@ -4781,8 +5195,29 @@ msgstr "가장 많이 읽힌 스토리가 아니라 가장 반응이 좋은 스�
 msgid "Nothing"
 msgstr "없음"
 
+msgid "Nothing changed."
+msgstr "변경된 내용이 없습니다."
+
+msgid "Nothing changes."
+msgstr "변경 사항이 없습니다."
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "이 폴더에 들어갈 항목이 없으므로 폴더를 만들지 않습니다."
+
 msgid "Nothing happens without your permission."
 msgstr "사용자의 허가 없이는 아무 일도 일어나지 않습니다."
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "다른 변경 사항을 적용한 뒤 이 폴더에 남은 항목이 없습니다."
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr "아무것도 이동하지 않으며 폴더는 그대로 유지됩니다. 폴더에 있는 사이트는 다른 폴더에 복사본으로 제안될 수 있습니다."
+
+msgid "Nothing leaves this folder."
+msgstr "이 폴더에서 나가는 항목이 없습니다."
+
+msgid "Nothing matches this filter."
+msgstr "이 필터와 일치하는 항목이 없습니다."
 
 msgid "Nothing recorded."
 msgstr "기록된 내용이 없습니다."
@@ -4845,6 +5280,11 @@ msgstr "끔"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "새 스토리 수를 “N개의 새 스토리” 알림으로 표시"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "다른 폴더에 복사 제안 %(count)s개"
+
 msgid "Official NewsBlur Android App"
 msgstr "공식 NewsBlur Android 앱"
 
@@ -4896,8 +5336,14 @@ msgstr "프리미엄에서는 최근 스토리를 검색할 수 있습니다. �
 msgid "On reload"
 msgstr "새로고침 시"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "다시 제안하면 마지막으로 정리한 내용을 더 이상 실행 취소할 수 없습니다."
+
 msgid "One command with Docker"
 msgstr "Docker로 명령 한 번에 설치"
+
+msgid "One of the proposed changes"
+msgstr "제안된 변경 사항 중 하나"
 
 msgid "One sentence"
 msgstr "한 문장"
@@ -5437,8 +5883,23 @@ msgstr "프로필 세부 정보"
 msgid "Profile picture"
 msgstr "프로필 사진"
 
+msgid "Progress"
+msgstr "진행 상황"
+
 msgid "Prompt"
 msgstr "프롬프트"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "새 폴더 구성을 제안하세요. 잠긴 폴더는 그대로 유지됩니다."
+
+msgid "Propose changes"
+msgstr "변경 사항 제안"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "다시 제안하면 검토 중인 제안이 대체됩니다."
+
+msgid "Proposing..."
+msgstr "제안 작성 중..."
 
 msgid "Protected:"
 msgstr "보호됨:"
@@ -5457,6 +5918,13 @@ msgstr "푸시 만료"
 
 msgid "Push expires"
 msgstr "푸시 만료"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "%(folder)s을(를) %(parent)s 안에 넣기"
+
+msgid "Putting the proposal together"
+msgstr "제안을 준비하는 중"
 
 msgid "Questions"
 msgstr "질문"
@@ -5573,6 +6041,11 @@ msgstr "피드 읽기: 읽지 않은 스토리, 폴더, 검색, 태그별 저장
 msgid "Reading"
 msgstr "읽기"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "사이트 %(count)s개 읽는 중"
+
 msgid "Reading article..."
 msgstr "기사 읽는 중..."
 
@@ -5680,6 +6153,16 @@ msgstr "정규식"
 msgid "Regex requires %(tier_link)s"
 msgstr "정규식에는 %(tier_link)s이(가) 필요합니다"
 
+msgid "Reject"
+msgstr "거부"
+
+msgid "Reject all"
+msgstr "모두 거부"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "거부됨 %(count)s개"
+
 msgid "Related"
 msgstr "관련 항목"
 
@@ -5710,6 +6193,10 @@ msgstr "순환 목록에서 %(voice)s 삭제"
 
 msgid "Remove from Up Next"
 msgstr "다음 재생 목록에서 삭제"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "폴더 %(folder)s 삭제"
 
 msgid "Remove this list"
 msgstr "이 목록 삭제"
@@ -5742,6 +6229,10 @@ msgstr "이 폴더 이름 변경"
 msgid "Rename this site"
 msgstr "이 사이트 이름 바꾸기"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "“%(old)s”을(를) “%(new)s”(으)로 이름 변경"
+
 msgid "Renamed"
 msgstr "이름 변경됨"
 
@@ -5752,6 +6243,15 @@ msgstr[0] "스토리 %(count)s개의 카테고리를 \"%(category)s\"(으)로 �
 
 msgid "Renaming..."
 msgstr "이름 변경 중..."
+
+msgid "Reorganize"
+msgstr "재구성"
+
+msgid "Reorganize again"
+msgstr "다시 정리"
+
+msgid "Reorganize with AI"
+msgstr "AI로 재구성"
 
 msgid "Request timed out"
 msgstr "요청 시간이 초과되었습니다"
@@ -5815,6 +6315,19 @@ msgstr "다시 시도"
 
 msgid "Retry fetching and parsing"
 msgstr "가져오기 및 파싱 다시 시도"
+
+msgid "Review"
+msgstr "검토"
+
+msgid "Revise proposal"
+msgstr "제안 수정"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "요청에 따라 수정했습니다: “%(request)s”"
+
+msgid "Revising..."
+msgstr "수정 중..."
 
 msgid "Rewinding..."
 msgstr "되감는 중..."
@@ -5960,6 +6473,9 @@ msgstr "스토리 저장은 모든 요금제에서 이용할 수 있습니다. �
 
 msgid "Saving..."
 msgstr "저장 중..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "AI에 변경할 내용을 설명한 다음 다시 시도하세요."
 
 msgid "Schedule when your briefing is generated"
 msgstr "브리핑 생성 일정 설정"
@@ -6178,6 +6694,15 @@ msgstr "이 스토리 보내기"
 msgid "Sending…"
 msgstr "보내는 중…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] "사이트 %(count)s개의 이름, 주소, 최근 헤드라인을 AI 모델에 전송합니다. 승인하기 전에는 아무것도 변경되지 않습니다."
+
 msgid "Separate"
 msgstr "분리"
 
@@ -6190,6 +6715,9 @@ msgstr "서버 오류"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "서버 오류: %(status)s"
+
+msgid "Set up"
+msgstr "설정"
 
 msgid "Set up billing"
 msgstr "결제 설정"
@@ -6358,6 +6886,13 @@ msgstr "NewsBlur를 열 때 대시보드 표시"
 msgid "Show the entire story, even if really, really long"
 msgstr "아주 길더라도 스토리 전체 표시"
 
+msgid "Show them"
+msgstr "표시"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "%(folder)s에서 이 이동 표시"
+
 msgid "Show tooltips"
 msgstr "툴팁 표시"
 
@@ -6437,8 +6972,17 @@ msgstr "사이트"
 msgid "Sites and folders"
 msgstr "사이트 및 폴더"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "구독이 취소된 사이트는 복원되지 않습니다."
+
 msgid "Sites updated up to 5x more often"
 msgstr "사이트 업데이트가 최대 5배 더 자주 이뤄집니다"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "그 이후에 구독한 사이트는 그대로 유지됩니다."
+
+msgid "Sketching folders"
+msgstr "폴더 구성안 작성 중"
 
 msgid "Skip Back"
 msgstr "뒤로 건너뛰기"
@@ -6475,6 +7019,12 @@ msgstr "소셜 연결"
 
 msgid "Social features"
 msgstr "소셜 기능"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "제안을 만드는 중 문제가 발생했습니다. 다시 시도하세요."
+
+msgid "Something went wrong. Please try again."
+msgstr "문제가 발생했습니다. 다시 시도하세요."
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6523,6 +7073,9 @@ msgstr "피드 옵션 팝오버에서 뉴스 스트림을 오래된 순 또는 �
 msgid "Sort, filter, and display options"
 msgstr "정렬, 필터 및 표시 옵션"
 
+msgid "Sorting sites into folders"
+msgstr "사이트를 폴더별로 정리"
+
 msgid "Source feeds"
 msgstr "소스 피드"
 
@@ -6558,6 +7111,9 @@ msgstr[0] "\"%(category)s\" (%(count)s개 스토리)을 다음으로 분할:"
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "\"%(value_1)s\"을(를) 다음과 같이 분할:"
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "기술을 더 작은 폴더로 나눕니다. 폴더당 사이트는 최대 40개입니다."
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6604,6 +7160,9 @@ msgstr "별표"
 msgid "Start Training Site by Site"
 msgstr "사이트별로 학습 시작"
 
+msgid "Start fresh"
+msgstr "새로 시작"
+
 msgid "Starting analysis..."
 msgstr "분석을 시작하는 중..."
 
@@ -6628,11 +7187,35 @@ msgstr "통계"
 msgid "Status"
 msgstr "상태"
 
+msgid "Stay"
+msgstr "유지"
+
 msgid "Stay on the same feed/folder"
 msgstr "같은 피드/폴더에 머무르기"
 
 msgid "Stay put"
 msgstr "현재 위치 유지"
+
+msgid "Stays"
+msgstr "유지"
+
+msgid "Stays here"
+msgstr "여기에 유지"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "%(folder)s에 남습니다"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "사이트 %(count)s개가 이 폴더에 남으므로 유지됩니다."
+
+msgid "Stays, because a folder inside it stays."
+msgstr "안에 있는 폴더가 유지되므로 유지됩니다."
+
+msgid "Stays, no folder"
+msgstr "폴더 없이 유지"
 
 msgid "Steadier or more varied"
 msgstr "더 안정적 또는 더 다양한"
@@ -6653,6 +7236,11 @@ msgstr "미리 듣기 중지"
 
 msgid "Stop recording"
 msgstr "녹음 중지"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr "게시를 중단했거나 가져오기에 실패한 사이트입니다. 잠금 설정된 폴더의 사이트는 표시되지 않습니다. 추천 음소거 항목은 기본으로 선택되어 있습니다. 구독 취소는 항상 직접 클릭해야 합니다."
 
 msgid "Stories"
 msgstr "스토리"
@@ -6903,6 +7491,12 @@ msgstr "구독 등급"
 msgid "Suggested questions"
 msgstr "추천 질문"
 
+msgid "Suggested: mute."
+msgstr "추천: 음소거"
+
+msgid "Suggested: unsubscribe."
+msgstr "추천: 구독 취소"
+
 msgid "Summarize"
 msgstr "요약"
 
@@ -7059,6 +7653,29 @@ msgstr "감사합니다! %(bold_start)s프리미엄 프로 계정%(bold_end)s을
 msgid "That change could not be saved"
 msgstr "변경 사항을 저장할 수 없습니다"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "구독이 취소된 휴면 사이트 %(count)s개는 복원되지 않습니다."
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AI가 사이트를 폴더에서 이동하고, 폴더 이름을 변경하거나 병합 또는 중첩할 수 있습니다."
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AI가 사이트에 대한 제안을 완료하지 못했습니다. 다시 시도하세요."
+
+msgid "The AI found nothing to change."
+msgstr "AI가 변경할 사항을 찾지 못했습니다."
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AI가 답변하는 데 문제가 발생했습니다. 다시 시도하세요."
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "현재 AI를 사용할 수 없습니다. 나중에 다시 시도해 주세요."
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AI는 이 폴더나 폴더 안의 사이트를 볼 수 없습니다."
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AI 서비스 응답이 너무 오래 걸립니다. 다시 시도해 주세요."
 
@@ -7089,6 +7706,12 @@ msgstr "NewsBlur 블로그"
 
 msgid "The audio stream was interrupted."
 msgstr "오디오 스트림이 중단되었습니다."
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "변경 사항을 적용하지 못했습니다. 다시 시도해 주세요."
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "폴더 안에 사이트나 폴더가 남아 있어 그대로 유지되었습니다."
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7138,8 +7761,20 @@ msgstr "게시자가 원문 페이지를 비활성화했습니다."
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "페이지 HTML을 가져와 콘텐츠 구조를 추출합니다."
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "제안 내용이 적용할 수 없는 방식으로 설명되어 있습니다."
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "제안 처리 시간이 너무 오래 걸려 중단되었습니다. 다시 시도하세요."
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "재구성을 실행 취소할 수 없습니다. 다시 시도하세요."
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "브라우저에서 보는 것과 같은 사이트 자체"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "제안에서 예상한 위치에 더 이상 사이트가 없습니다."
 
 msgid "The story on its own page on the site"
 msgstr "사이트의 개별 페이지에 있는 스토리"
@@ -7205,6 +7840,11 @@ msgstr "사진을 업로드하는 중 문제가 발생했습니다."
 msgid "There was an error trying to logout, ouch."
 msgstr "로그아웃 중 오류가 발생했습니다. 이런!"
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr "AI가 정리할 항목이 없습니다. 폴더를 더 열거나 “재구성”을 선택하면 AI가 폴더를 추가할 수 있습니다."
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "제한은 없습니다. 원하는 만큼 스토리를 저장할 수 있으며 영구 보관됩니다."
 
@@ -7218,6 +7858,11 @@ msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
 "above to override."
 msgstr "이 도메인들은 기본적으로 차단됩니다(검색 엔진, 소셜 미디어 등). 예외로 허용하려면 위의 \"허용된 도메인\"에 추가하세요."
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr "이 사이트들은 기존 폴더에 남도록 설정되어 있지만 새 폴더에도 제안되었습니다. 각 사이트가 들어갈 폴더를 선택하세요."
 
 msgid "They redeem it."
 msgstr "받는 사람이 사용합니다."
@@ -7240,6 +7885,12 @@ msgstr "이번 주"
 msgid "This Year"
 msgstr "올해"
 
+msgid "This change couldn't be made."
+msgstr "이 변경을 적용할 수 없습니다."
+
+msgid "This change doesn't fit with your other choices."
+msgstr "이 변경 사항은 다른 선택 사항과 맞지 않습니다."
+
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
 "reader returns."
@@ -7259,12 +7910,39 @@ msgstr "스토리 전체 텍스트와 일치하며 이 스토리와 정확히 �
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "제목 전체와 일치하므로 이 스토리만 정확히 일치합니다. 대신 제목의 일부를 선택하세요."
 
+msgid "This proposal can't be changed right now."
+msgstr "지금은 이 제안을 변경할 수 없습니다."
+
+msgid "This proposal can't be revised again."
+msgstr "이 제안은 더 이상 수정할 수 없습니다."
+
+msgid "This proposal couldn't be found."
+msgstr "이 제안을 찾을 수 없습니다."
+
+msgid "This proposal has already been applied."
+msgstr "이 제안은 이미 적용되었습니다."
+
+msgid "This proposal isn't ready to apply."
+msgstr "이 제안은 적용할 준비가 되지 않았습니다."
+
+msgid "This proposal was replaced by a newer one."
+msgstr "이 제안은 더 새로운 제안으로 대체되었습니다."
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "이 읽은 스토리 목록은 %(link_start)s프리미엄 기능%(link_end)s입니다."
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "이 작업은 저장된 모든 스토리에서 태그를 삭제합니다. 스토리는 해당 태그 없이 계속 저장됩니다."
+
+msgid "This reorganization can no longer be undone."
+msgstr "이 재구성은 더 이상 실행 취소할 수 없습니다."
+
+msgid "This reorganization didn't finish"
+msgstr "이 재구성을 완료하지 못했습니다"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "이 재구성은 적용되지 않았으므로 실행 취소할 내용이 없습니다."
 
 msgid "This site"
 msgstr "이 사이트"
@@ -7316,6 +7994,9 @@ msgstr "좋아하는 작성자, 태그 또는 제목 키워드에 좋아요를 �
 
 msgid "Thursday"
 msgstr "목요일"
+
+msgid "Tidy"
+msgstr "정돈"
 
 msgid "Tier"
 msgstr "등급"
@@ -7379,6 +8060,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "종료일"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "대상: %(folder)s"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "결정 대기 %(count)s개"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7427,6 +8116,9 @@ msgid "Top Domains"
 msgstr "주요 도메인"
 
 msgid "Top Level"
+msgstr "최상위"
+
+msgid "Top level"
 msgstr "최상위"
 
 msgid "Top stories"
@@ -7584,6 +8276,21 @@ msgstr "사용할 수 없음"
 msgid "Uncategorized"
 msgstr "분류되지 않음"
 
+msgid "Undo"
+msgstr "실행 취소"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "실행 취소하면 폴더가 작업을 시작하기 전 상태로 돌아갑니다."
+
+msgid "Undo this reorganization"
+msgstr "이 재구성 실행 취소"
+
+msgid "Undo this reorganization?"
+msgstr "이 정리를 실행 취소하시겠습니까?"
+
+msgid "Undoing..."
+msgstr "실행 취소 중..."
+
 msgid "Unfavorited"
 msgstr "즐겨찾기 해제됨"
 
@@ -7655,6 +8362,27 @@ msgstr "이 스토리 저장 취소"
 
 msgid "Unshared"
 msgstr "공유 취소됨"
+
+msgid "Unsubscribe"
+msgstr "구독 취소"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "%(site)s 구독 취소"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "휴면 사이트 %(count)s개의 구독 취소 완료"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] "응답이 없는 사이트 %(count)s개의 구독 취소는 실행 취소할 수 없습니다. 실행 취소하면 폴더는 복원되지만 다시 구독되지는 않습니다."
 
 msgid "Untitled"
 msgstr "제목 없음"
@@ -8189,6 +8917,9 @@ msgstr "의견은 언제든 바꿀 수 있습니다."
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "스토리를 읽으면서 각 스토리 옆의 %(like_icon)s%(dislike_icon)s 버튼을 클릭할 수 있습니다."
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "이 대화상자를 닫아도 됩니다. 돌아오면 제안이 여기에 남아 있습니다."
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "사이트별 및 폴더별로 이 설정을 재정의할 수 있습니다."
 
@@ -8199,9 +8930,21 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "피드별 학습은 무료로 이용할 수 있으며, 폴더별 및 전체 학습은 프리미엄 아카이브에서 이용할 수 있습니다."
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "%(date)s까지 실행 취소할 수 있습니다."
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "%(count)s개 사이트를 구독 중입니다. 프리미엄으로 모든 사이트를 더 알차게 이용하세요."
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "한 달에 제안을 %(count)s개 받을 수 있습니다. 제안을 적용하려면 프리미엄 아카이브가 필요합니다."
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "한 달에 한 번 제안할 수 있습니다. 제안을 적용하려면 프리미엄 아카이브가 필요합니다."
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8246,6 +8989,11 @@ msgstr "댓글에 답글을 달려면 로그인해야 합니다."
 msgid "You need to be logged in to share a story."
 msgstr "스토리를 공유하려면 로그인해야 합니다."
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "휴면 사이트 %(count)s개의 구독을 취소합니다"
+
 msgid "You will be emailed within a minute or three."
 msgstr "1~3분 이내에 이메일을 보내드립니다."
 
@@ -8269,6 +9017,26 @@ msgstr "이제 시작할 준비가 끝났습니다! NewsBlur를 즐겁게 이용
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "%(value_2)s %(value_1)s을(를) 선물로 받았습니다!"
+
+msgid "You've had this month's proposal."
+msgstr "이번 달 제안은 이미 받으셨습니다."
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "이번 달 제안은 이미 받으셨습니다. 다음 제안은 %(date)s에 받을 수 있습니다."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "지난 하루 동안 제안을 %(count)s개 만들었습니다."
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "지난 하루 동안 제안을 %(count)s개 작성했습니다. 다음 제안은 %(date)s에 작성할 수 있습니다."
+
+msgid "You've reached today's limit on proposals."
+msgstr "오늘 제안 한도에 도달했습니다."
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8322,14 +9090,34 @@ msgstr "선택한 음성을 현재 사용할 수 없어 %(voice)s이(가) 이 �
 msgid "Your cookie has expired — Please login again"
 msgstr "쿠키가 만료되었습니다. 다시 로그인해 주세요"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "현재 폴더를 먼저 저장하므로 %(count)s일 동안 실행 취소할 수 있습니다."
+
+msgid "Your decisions"
+msgstr "내 결정"
+
 msgid "Your email"
 msgstr "이메일 주소"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "필터 때문에 사이트가 숨겨져 있을 수 있습니다. 옵션을 열어 필터 범위를 넓혀 보세요."
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "폴더가 재정리 전 상태로 복원되었습니다."
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "폴더가 재구성 전 상태로 돌아갑니다."
+
 msgid "Your inbox stays clean"
 msgstr "받은편지함을 깔끔하게 유지하세요"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "마지막 선택을 저장하지 못해 저장된 선택을 표시하고 있습니다. 다시 시도해 주세요."
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "잠긴 폴더를 저장하지 못했습니다. 다시 시도하세요."
 
 msgid "Your name"
 msgstr "이름"
@@ -8352,8 +9140,17 @@ msgstr "구독료는 남은 기간에 따라 비례 계산됩니다"
 msgid "Your subscription will no longer automatically renew."
 msgstr "구독이 더 이상 자동 갱신되지 않습니다."
 
+msgid "a folder"
+msgstr "폴더 하나"
+
+msgid "a site you no longer follow"
+msgstr "더 이상 팔로우하지 않는 사이트"
+
 msgid "and auto-follow them"
 msgstr "그리고 자동으로 팔로우"
+
+msgid "approved"
+msgstr "승인됨"
 
 msgid "artificial intelligence"
 msgstr "인공지능"
@@ -8536,6 +9333,9 @@ msgstr "양자 컴퓨팅"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "거부됨"
+
 msgid "remote work"
 msgstr "원격 근무"
 
@@ -8581,6 +9381,9 @@ msgstr "공급망"
 msgid "this list"
 msgstr "이 목록"
 
+msgid "to decide"
+msgstr "결정 대기"
+
 msgid "trade policy"
 msgstr "무역 정책"
 
@@ -8604,6 +9407,14 @@ msgstr "빈티지 컴퓨팅"
 
 msgid "web standards"
 msgstr "웹 표준"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "“%(old)s”이(가) “%(new)s”(으)로 바뀝니다"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"

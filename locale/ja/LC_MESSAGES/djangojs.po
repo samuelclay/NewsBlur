@@ -149,6 +149,11 @@ msgid_plural "%(badge)s for up to %(count)s days"
 msgstr[0] "%(badge)s（最大%(count)s日間）"
 
 #, python-format
+msgid "%(before)s → %(count)s site"
+msgid_plural "%(before)s → %(count)s sites"
+msgstr[0] "%(before)s → %(count)s件のサイト"
+
+#, python-format
 msgid "%(category)s topics"
 msgstr "%(category)sのトピック"
 
@@ -164,6 +169,11 @@ msgstr "%(cost)s / 記事"
 msgid "%(count)s byte"
 msgid_plural "%(count)s bytes"
 msgstr[0] "%(count)s バイト"
+
+#, python-format
+msgid "%(count)s change couldn't be made."
+msgid_plural "%(count)s changes couldn't be made."
+msgstr[0] "%(count)s件の変更を適用できませんでした。"
 
 #, python-format
 msgid "%(count)s channel"
@@ -206,9 +216,29 @@ msgid_plural "%(count)s days ago"
 msgstr[0] "%(count)s日前"
 
 #, python-format
+msgid "%(count)s dead site is muted"
+msgid_plural "%(count)s dead sites are muted"
+msgstr[0] "停止中サイト%(count)s件をミュート"
+
+#, python-format
+msgid "%(count)s dead site muted"
+msgid_plural "%(count)s dead sites muted"
+msgstr[0] "停止中サイト%(count)s件をミュート"
+
+#, python-format
 msgid "%(count)s dislike"
 msgid_plural "%(count)s dislikes"
 msgstr[0] "%(count)s件の低評価"
+
+#, python-format
+msgid "%(count)s empty folder is removed"
+msgid_plural "%(count)s empty folders are removed"
+msgstr[0] "%(count)s個の空のフォルダーを削除"
+
+#, python-format
+msgid "%(count)s empty folder removed"
+msgid_plural "%(count)s empty folders removed"
+msgstr[0] "空のフォルダーを%(count)s個削除"
 
 #, python-format
 msgid "%(count)s episode"
@@ -219,6 +249,46 @@ msgstr[0] "%(count)sエピソード"
 msgid "%(count)s feed"
 msgid_plural "%(count)s feeds"
 msgstr[0] "%(count)s件のフィード"
+
+#, python-format
+msgid "%(count)s flagged"
+msgid_plural "%(count)s flagged"
+msgstr[0] "%(count)s件を検出"
+
+#, python-format
+msgid "%(count)s folder added"
+msgid_plural "%(count)s folders added"
+msgstr[0] "%(count)s個のフォルダーを追加"
+
+#, python-format
+msgid "%(count)s folder is added"
+msgid_plural "%(count)s folders are added"
+msgstr[0] "フォルダーを%(count)s個追加"
+
+#, python-format
+msgid "%(count)s folder is merged into another"
+msgid_plural "%(count)s folders are merged into others"
+msgstr[0] "%(count)s個のフォルダーを別のフォルダーに統合"
+
+#, python-format
+msgid "%(count)s folder is renamed"
+msgid_plural "%(count)s folders are renamed"
+msgstr[0] "%(count)s個のフォルダー名を変更"
+
+#, python-format
+msgid "%(count)s folder merged into another"
+msgid_plural "%(count)s folders merged into others"
+msgstr[0] "%(count)s個のフォルダーを別のフォルダーに統合"
+
+#, python-format
+msgid "%(count)s folder moves inside another"
+msgid_plural "%(count)s folders move inside others"
+msgstr[0] "%(count)s個のフォルダーを別のフォルダー内に移動"
+
+#, python-format
+msgid "%(count)s folder renamed or moved"
+msgid_plural "%(count)s folders renamed or moved"
+msgstr[0] "%(count)s個のフォルダー名を変更または移動"
 
 #, python-format
 msgid "%(count)s follower"
@@ -313,6 +383,11 @@ msgid_plural "%(count)s opens"
 msgstr[0] "%(count)s回開かれました"
 
 #, python-format
+msgid "%(count)s other site here is not part of any change."
+msgid_plural "%(count)s other sites here are not part of any change."
+msgstr[0] "%(count)s件のその他のサイトは、どの変更にも含まれていません。"
+
+#, python-format
 msgid "%(count)s page"
 msgid_plural "%(count)s pages"
 msgstr[0] "%(count)sページ"
@@ -331,6 +406,11 @@ msgstr[0] "公開コメント%(count)s件"
 msgid "%(count)s reply"
 msgid_plural "%(count)s replies"
 msgstr[0] "%(count)s件の返信"
+
+#, python-format
+msgid "%(count)s revision left."
+msgid_plural "%(count)s revisions left."
+msgstr[0] "残り%(count)s回の修正"
 
 #, python-format
 msgid "%(count)s selected"
@@ -353,14 +433,49 @@ msgid_plural "%(count)s sites"
 msgstr[0] "%(count)s 件のサイト"
 
 #, python-format
+msgid "%(count)s site added to a second folder"
+msgid_plural "%(count)s sites added to a second folder"
+msgstr[0] "サイト%(count)s件を別のフォルダーにも追加"
+
+#, python-format
 msgid "%(count)s site available"
 msgid_plural "%(count)s sites available"
 msgstr[0] "利用可能なサイト：%(count)s件"
 
 #, python-format
+msgid "%(count)s site here, none part of any change."
+msgid_plural "%(count)s sites here, none part of any change."
+msgstr[0] "%(count)s件のサイトがここにあり、変更の対象にはなりません。"
+
+#, python-format
+msgid "%(count)s site is added to a second folder"
+msgid_plural "%(count)s sites are added to a second folder"
+msgstr[0] "%(count)s件のサイトを別のフォルダーにも追加"
+
+#, python-format
+msgid "%(count)s site moved to another folder"
+msgid_plural "%(count)s sites moved to another folder"
+msgstr[0] "サイト%(count)s件を別のフォルダーに移動"
+
+#, python-format
+msgid "%(count)s site moves to another folder"
+msgid_plural "%(count)s sites move to another folder"
+msgstr[0] "%(count)s件のサイトを別のフォルダーに移動"
+
+#, python-format
 msgid "%(count)s site over limit"
 msgid_plural "%(count)s sites over limit"
 msgstr[0] "上限を超過したサイト%(count)s件"
+
+#, python-format
+msgid "%(count)s site still has no decision and stays as it is."
+msgid_plural "%(count)s sites still have no decision and stay as they are."
+msgstr[0] "%(count)s件のサイトはまだ決定されておらず、現在の状態のままです。"
+
+#, python-format
+msgid "%(count)s still to decide. Anything left undecided stays as it is."
+msgid_plural "%(count)s still to decide. Anything left undecided stays as it is."
+msgstr[0] "未決定の項目はあと%(count)s件です。未決定の項目はそのまま残ります。"
 
 #, python-format
 msgid "%(count)s story"
@@ -918,6 +1033,10 @@ msgid "+ %(value_1)s more site"
 msgid_plural "+ %(value_1)s more sites"
 msgstr[0] "+ ほか%(value_1)sサイト"
 
+#, python-format
+msgid "+%(count)s"
+msgstr "+%(count)s"
+
 msgid "/day"
 msgstr "/日"
 
@@ -998,6 +1117,9 @@ msgstr "より明瞭で近くに感じる音声"
 msgid "A folder"
 msgstr "フォルダー"
 
+msgid "A folder it needs was renamed, moved or deleted after the proposal was made."
+msgstr "提案後に、必要なフォルダーの名前が変更されたか、移動または削除されました。"
+
 msgid "A folder of feeds read as one stream"
 msgstr "複数のフィードを1つのストリームとして読むフォルダー"
 
@@ -1007,6 +1129,12 @@ msgstr "NewsBlur の読者が共有した記事から、毎時間選ばれる新
 #, python-format
 msgid "A gift from %(value_1)s has been applied to your account."
 msgstr "%(value_1)sからのギフトがアカウントに適用されました。"
+
+msgid "A later reorganization was applied, so this one can no longer be undone."
+msgstr "後の再編成が適用されたため、この再編成はもう元に戻せません。"
+
+msgid "A proposal is already being made."
+msgstr "提案はすでに作成中です。"
 
 msgid "A second pass uses your hint to find the right pattern on the page."
 msgstr "2回目の処理では、ヒントを使ってページ上の適切なパターンを見つけます。"
@@ -1042,6 +1170,12 @@ msgstr "AIフィルターは保存されていますが、%(billing_link)sまで
 msgid "AI finds the stories"
 msgstr "AIが記事を見つけます"
 
+msgid "AI is looking through your sites"
+msgstr "AIがサイトを確認しています"
+
+msgid "AI is revising the proposal"
+msgstr "AIが提案を修正しています"
+
 msgid "AI-curated summary of your top stories"
 msgstr "注目記事をAIが選んで要約"
 
@@ -1061,6 +1195,12 @@ msgstr "もちろんです。トレーナーを開いて、付けた高評価や
 msgctxt "voice filter"
 msgid "Accent"
 msgstr "アクセント"
+
+msgid "Accept all"
+msgstr "すべて承認"
+
+msgid "Accept into this folder"
+msgstr "このフォルダーに追加"
 
 msgid "Account"
 msgstr "アカウント"
@@ -1100,6 +1240,9 @@ msgstr "サイト追加 &amp; 記事共有ブックマークレット"
 
 msgid "Add a classifier"
 msgstr "分類器を追加"
+
+msgid "Add a copy here"
+msgstr "ここにコピーを追加"
 
 msgid "Add a forwarding address"
 msgstr "転送先アドレスを追加"
@@ -1142,6 +1285,10 @@ msgstr "サイト／フォルダーを追加"
 
 msgid "Add story list"
 msgstr "記事一覧を追加"
+
+#, python-format
+msgid "Add the folder %(folder)s"
+msgstr "フォルダー%(folder)sを追加"
 
 msgid "Add to Chrome"
 msgstr "Chromeに追加"
@@ -1245,6 +1392,9 @@ msgstr "完了しました！"
 msgid "All feeds fetched every 5-15 minutes"
 msgstr "すべてのフィードを5～15分ごとに取得"
 
+msgid "All moves"
+msgstr "すべての移動"
+
 #, python-format
 msgid "All patterns are case-insensitive by default. Use %(code)s for word boundaries to avoid partial matches."
 msgstr "すべてのパターンはデフォルトで大文字と小文字を区別しません。部分一致を避けるには、単語境界に %(code)s を使用してください。"
@@ -1269,10 +1419,20 @@ msgstr "許可するドメイン"
 msgid "Alphabetical"
 msgstr "アルファベット順"
 
+msgid "Also add, rename, merge, nest and remove folders."
+msgstr "フォルダーの追加、名前変更、統合、入れ子化、削除も行う"
+
 #, python-format
 msgid "Also delete %(value_1)s existing archive from this domain"
 msgid_plural "Also delete %(value_1)s existing archives from this domain"
 msgstr[0] "このドメインの既存アーカイブ%(value_1)s件も削除する"
+
+#, python-format
+msgid "Also in %(folder)s"
+msgstr "%(folder)sにも"
+
+msgid "Also look for"
+msgstr "次も検索"
 
 #, python-format
 msgid "Also published by %(value_1)s site"
@@ -1331,6 +1491,9 @@ msgstr "Android通知にはプレミアムアーカイブが必要です"
 msgid "Animals"
 msgstr "動物"
 
+msgid "Another folder there already has this name."
+msgstr "そこにはすでに同じ名前のフォルダーがあります。"
+
 msgid "Any"
 msgstr "すべて"
 
@@ -1341,6 +1504,9 @@ msgstr "公開されているあらゆるウェブページに対応：Twitter�
 
 msgid "Any time"
 msgstr "すべての期間"
+
+msgid "Anything the AI should know"
+msgstr "AIに伝えておきたいこと"
 
 msgid "Appearance"
 msgstr "外観"
@@ -1361,11 +1527,25 @@ msgid "Applied %(succeeded)s of %(count)s merge (%(stories)s)"
 msgid_plural "Applied %(succeeded)s of %(count)s merges (%(stories)s)"
 msgstr[0] "%(count)s件中%(succeeded)s件の統合を適用しました（%(stories)s）"
 
+#, python-format
+msgid "Applied on %(date)s."
+msgstr "%(date)sに適用しました。"
+
 msgid "Applies to"
 msgstr "適用対象"
 
 msgid "Apply"
 msgstr "適用"
+
+#, python-format
+msgid "Apply %(count)s change"
+msgid_plural "Apply %(count)s changes"
+msgstr[0] "変更を%(count)s件適用"
+
+#, python-format
+msgid "Apply %(count)s change?"
+msgid_plural "Apply %(count)s changes?"
+msgstr[0] "%(count)s件の変更を適用しますか？"
 
 msgid "Apply All Merges"
 msgstr "すべての統合を適用"
@@ -1373,11 +1553,27 @@ msgstr "すべての統合を適用"
 msgid "Apply Split"
 msgstr "分割を適用"
 
+msgid "Apply changes"
+msgstr "変更を適用"
+
 msgid "Apply training across a folder"
 msgstr "フォルダー全体に学習を適用"
 
 msgid "Apply training globally"
 msgstr "学習内容を全体に適用"
+
+msgid "Applying changes needs Premium Archive."
+msgstr "変更を適用するにはプレミアムアーカイブが必要です。"
+
+msgid "Applying changes needs Premium Archive. Your decisions are saved and will be here after you upgrade."
+msgstr "変更を適用するにはプレミアムアーカイブが必要です。アップグレード後も、選択内容は保存され、ここに表示されます。"
+
+#, python-format
+msgid "Applying it on %(date)s stopped partway, so some of your folders may have changed."
+msgstr "%(date)sの適用が途中で停止したため、一部のフォルダーが変更されている可能性があります。"
+
+msgid "Applying it stopped partway, so some of your folders may have changed."
+msgstr "適用が途中で止まったため、一部のフォルダーが変更されている可能性があります。"
 
 msgid "Applying..."
 msgstr "適用中…"
@@ -1402,6 +1598,11 @@ msgstr "アプリは無料ですか？"
 
 msgid "Are the apps open source?"
 msgstr "アプリはオープンソースですか？"
+
+#, python-format
+msgid "Arriving %(count)s"
+msgid_plural "Arriving %(count)s"
+msgstr[0] "入ってくるサイト %(count)s件"
 
 msgid "Arrow keys"
 msgstr "矢印キー"
@@ -1432,6 +1633,9 @@ msgstr "「AIに質問」では、ポッドキャストや動画を文字起こ�
 
 msgid "Ask AI questions about stories"
 msgstr "記事についてAIに質問する"
+
+msgid "Ask AI to revise"
+msgstr "AIに修正を依頼"
 
 msgid "Ask AI with a choice of models"
 msgstr "モデルを選んでAIに質問"
@@ -1552,6 +1756,9 @@ msgstr "分類トレーナーに戻る"
 msgid "Back to feeds"
 msgstr "フィードに戻る"
 
+msgid "Back to review"
+msgstr "確認に戻る"
+
 msgid "Back to stories"
 msgstr "記事一覧に戻る"
 
@@ -1634,6 +1841,9 @@ msgstr "Blurblog、共有記事、コメント"
 msgid "Bookmarklet"
 msgstr "ブックマークレット"
 
+msgid "Both"
+msgstr "両方"
+
 msgid "Bottom"
 msgstr "下部"
 
@@ -1712,6 +1922,12 @@ msgstr "箇条書き"
 
 msgid "Buttons"
 msgstr "ボタン"
+
+msgid "By folder"
+msgstr "フォルダー別"
+
+msgid "By hand"
+msgstr "手動"
 
 #, python-format
 msgid "CATEGORIES WITH 10+ STORIES (%(value_1)s)"
@@ -1831,6 +2047,9 @@ msgstr "上で好みの項目を選んでください..."
 msgid "Check your email..."
 msgstr "メールを確認してください..."
 
+msgid "Checking for dead sites"
+msgstr "アクセスできないサイトを確認しています"
+
 msgid "Checking recent pages..."
 msgstr "最近のページを確認中…"
 
@@ -1861,6 +2080,9 @@ msgstr "カテゴリーを選択"
 
 msgid "Choose how many days back"
 msgstr "何日前までさかのぼるか選択"
+
+msgid "Choose how much to change, then try again."
+msgstr "変更の程度を選んで、もう一度お試しください。"
 
 msgid "Choose model"
 msgstr "モデルを選択"
@@ -2120,8 +2342,22 @@ msgstr "テキストをコピー"
 msgid "Copy URL"
 msgstr "URLをコピー"
 
+#, python-format
+msgid "Copy from %(folder)s"
+msgstr "%(folder)sからコピー"
+
+#, python-format
+msgid "Copy offered to %(folder)s"
+msgstr "%(folder)sへのコピーを提案"
+
+msgid "Copy undecided"
+msgstr "コピーを保留中"
+
 msgid "Copy your client secret now. You will only see it once."
 msgstr "クライアントシークレットを今すぐコピーしてください。この情報は一度しか表示されません。"
+
+msgid "Copy?"
+msgstr "コピーしますか？"
 
 msgid "Could not add this classifier. Try again."
 msgstr "この分類器を追加できませんでした。もう一度お試しください。"
@@ -2140,6 +2376,9 @@ msgstr "FAQを読み込めませんでした。もう一度お試しください
 
 msgid "Could not load your applications. Try refreshing."
 msgstr "アプリケーションを読み込めませんでした。再読み込みしてください。"
+
+msgid "Couldn't load Reorganize with AI."
+msgstr "「AIで再編成」を読み込めませんでした。"
 
 msgid "Couldn't load audio for this story."
 msgstr "この記事の音声を読み込めませんでした。"
@@ -2292,8 +2531,20 @@ msgstr "日"
 msgid "Days of unreads"
 msgstr "未読の日数"
 
+msgid "Dead sites"
+msgstr "停止中のサイト"
+
+msgid "Dead sites it muted are unmuted."
+msgstr "ミュートした停止中サイトのミュートを解除します。"
+
+msgid "Dead sites that stopped publishing or keep failing"
+msgstr "配信を停止した、または取得に失敗し続けている停止中のサイト"
+
 msgid "December"
 msgstr "12月"
+
+msgid "Decline all copies"
+msgstr "すべてのコピーを拒否"
 
 msgid "Deep reads the community gave real time to"
 msgstr "コミュニティが時間をかけて読んだ記事"
@@ -2453,6 +2704,9 @@ msgstr "閉じる"
 msgid "Do I get a unique email address?"
 msgstr "専用のメールアドレスを利用できますか？"
 
+msgid "Do not put it here"
+msgstr "ここには置かない"
+
 msgid "Do the apps work offline?"
 msgstr "アプリはオフラインでも使えますか？"
 
@@ -2483,6 +2737,9 @@ msgstr "プレビューを表示せず、記事のタイトルだけを表示"
 
 msgid "Don't show a thumbnail"
 msgstr "サムネイルを表示しない"
+
+msgid "Done"
+msgstr "完了"
 
 msgid "Done!"
 msgstr "完了！"
@@ -2717,6 +2974,9 @@ msgstr "新着記事はすべて永久にアーカイブされます"
 msgid "Every saved-story tag has its own RSS feed, perfect for piping into IFTTT or Zapier."
 msgstr "保存した記事のタグごとに専用のRSSフィードがあり、IFTTTやZapierとの連携に最適です。"
 
+msgid "Every site is in a folder you left out. Open a folder so the AI has sites to look at."
+msgstr "すべてのサイトが、対象外にしたフォルダーに入っています。フォルダーを開くと、AIがサイトを確認できます。"
+
 msgid "Every story archived and searchable forever"
 msgstr "すべての記事を永久に保存・検索"
 
@@ -2738,6 +2998,9 @@ msgstr "全員"
 msgid "Everyone"
 msgstr "すべてのユーザー"
 
+msgid "Everything"
+msgstr "すべて"
+
 msgid "Everything NewsBlur can do, and how to try it"
 msgstr "NewsBlurでできることと、その試し方"
 
@@ -2755,6 +3018,12 @@ msgstr "無料プランのすべてに加えて："
 
 msgid "Everything in Premium, plus:"
 msgstr "プレミアムの全機能に加えて："
+
+msgid "Everything is decided."
+msgstr "すべて決定しました。"
+
+msgid "Everything starts approved. Reject a move from either folder."
+msgstr "すべて承認済みの状態です。移動を却下するには、どちらかのフォルダーから操作してください。"
 
 msgid ""
 "Everything the MCP server can do, from your terminal. Read feeds, search stories, manage subscriptions, and"
@@ -2882,6 +3151,13 @@ msgstr "クエリの送信に失敗しました"
 msgid "Failed to subscribe"
 msgstr "購読に失敗しました"
 
+msgid "Failing to fetch, and it has never had a story."
+msgstr "取得に失敗しており、これまで記事がありません。"
+
+#, python-format
+msgid "Failing to fetch. The last story was in %(month)s."
+msgstr "取得に失敗しました。最後の記事は%(month)sに公開されました。"
+
 msgid "Fashion"
 msgstr "ファッション"
 
@@ -2982,11 +3258,17 @@ msgstr "フィードを取得中"
 msgid "Fetching..."
 msgstr "取得中..."
 
+msgid "File sites into the folders you already have."
+msgstr "既存のフォルダーにサイトを振り分ける。"
+
 msgid "Files"
 msgstr "ファイル"
 
 msgid "Filled Icons"
 msgstr "塗りつぶしアイコン"
+
+msgid "Filter"
+msgstr "フィルター"
 
 msgid "Filter by date range"
 msgstr "期間で絞り込む"
@@ -3110,8 +3392,14 @@ msgstr "フォルダーの未読数"
 msgid "Folders"
 msgstr "フォルダー"
 
+msgid "Folders after"
+msgstr "変更後のフォルダー"
+
 msgid "Folders only"
 msgstr "フォルダーのみ"
+
+msgid "Folders updated"
+msgstr "フォルダーを更新しました"
 
 msgid "Folders, feeds, and story titles"
 msgstr "フォルダー、フィード、記事タイトル"
@@ -3284,6 +3572,10 @@ msgctxt "date range"
 msgid "From"
 msgstr "開始日"
 
+#, python-format
+msgid "From %(folder)s"
+msgstr "%(folder)sから"
+
 msgid "From infrequent sites"
 msgstr "更新頻度の低いサイトから"
 
@@ -3451,6 +3743,10 @@ msgstr "プレミアムに登録 — 年額36ドル"
 msgid "Go back to %(breadcrumb)s"
 msgstr "%(breadcrumb)sに戻る"
 
+#, python-format
+msgid "Goes inside %(folder)s"
+msgstr "%(folder)sの中に入れる"
+
 msgid "Good Reads"
 msgstr "おすすめ記事"
 
@@ -3553,6 +3849,9 @@ msgstr "登録済みのサイトを非表示にする"
 msgid "Hide story changes"
 msgstr "記事の変更を非表示"
 
+msgid "Hide them"
+msgstr "非表示にする"
+
 msgid "Highlight"
 msgstr "ハイライト"
 
@@ -3597,6 +3896,9 @@ msgstr "記事はいくつ保存できますか？"
 
 msgid "How much emotion"
 msgstr "感情の強さ"
+
+msgid "How much to change"
+msgstr "変更する範囲"
 
 msgid "How often"
 msgstr "頻度"
@@ -3668,6 +3970,10 @@ msgid_plural "In %(count)s days, your premium trial ends and you'll return to Fr
 msgstr[0] "%(count)s 日後にプレミアムの無料トライアルが終了し、無料プランに戻ります"
 
 #, python-format
+msgid "In %(folder)s"
+msgstr "%(folder)s内"
+
+#, python-format
 msgid "In Gmail, go to %(settings_menu)s and click on %(add_button)s. Add your custom NewsBlur email address."
 msgstr "Gmailで%(settings_menu)sに移動し、%(add_button)sをクリックします。カスタムのNewsBlurメールアドレスを追加してください。"
 
@@ -3686,6 +3992,9 @@ msgstr "新しいウィンドウで開く"
 msgid "In a pill"
 msgstr "ピル型"
 
+msgid "In both folders"
+msgstr "両方のフォルダーに追加"
+
 msgid "In rotation"
 msgstr "ローテーションに追加済み"
 
@@ -3696,6 +4005,10 @@ msgstr "フィード表示では、記事ヘッダー内のタグや著者をク
 
 msgid "In this window"
 msgstr "このウィンドウ内"
+
+#, python-format
+msgid "In two folders %(count)s"
+msgstr "2つのフォルダーにある %(count)s"
 
 msgid "Include read"
 msgstr "既読を含める"
@@ -3727,6 +4040,10 @@ msgstr "月あたりの記事が少ないフィード"
 msgid "Inline list"
 msgstr "インラインリスト"
 
+#, python-format
+msgid "Inside %(folder)s"
+msgstr "%(folder)sの中"
+
 msgid "Insta-fetch stories"
 msgstr "記事をすぐに取得"
 
@@ -3751,6 +4068,10 @@ msgid "Interactions"
 msgstr "やり取り"
 
 #, python-format
+msgid "Into %(folder)s, then removed"
+msgstr "%(folder)sに移動後、削除"
+
+#, python-format
 msgid "Invalid regex: %(error)s"
 msgstr "無効な正規表現: %(error)s"
 
@@ -3771,6 +4092,26 @@ msgstr "RSSとは違うのですか？"
 
 msgid "Is training free?"
 msgstr "学習機能は無料ですか？"
+
+msgid "It has never had a story."
+msgstr "記事が一度もありません。"
+
+msgid "It involves a folder you locked."
+msgstr "ロックしたフォルダーが関係しています。"
+
+msgid "It needs a new folder you rejected."
+msgstr "却下した新しいフォルダーが必要です。"
+
+msgid "It would have put a folder inside itself."
+msgstr "フォルダーを自分自身の中に入れることになっていました。"
+
+#, python-format
+msgid "It's been more than %(count)s day, so this reorganization can no longer be undone."
+msgid_plural "It's been more than %(count)s days, so this reorganization can no longer be undone."
+msgstr[0] "%(count)s日以上経過したため、この再編成は元に戻せません。"
+
+msgid "Its folder is locked to keep its sites."
+msgstr "サイトを保持するため、このフォルダーはロックされています。"
 
 msgid "January"
 msgstr "1月"
@@ -3802,8 +4143,17 @@ msgstr "コメントを最小限にした見出しのみ"
 msgid "Just the headlines, no commentary"
 msgstr "解説なしの見出しのみ"
 
+msgid "Keep"
+msgstr "保持"
+
+msgid "Keep all here"
+msgstr "すべてここに残す"
+
 msgid "Keep fades, without movement."
 msgstr "動きをなくし、フェードは維持します。"
+
+msgid "Keep it here"
+msgstr "ここに残す"
 
 msgid "Keep others unread"
 msgstr "他の記事を未読のままにする"
@@ -3814,8 +4164,17 @@ msgstr "既読状態を維持"
 msgid "Keep right-side buttons visible while reading"
 msgstr "閲覧中も右側のボタンを表示する"
 
+msgid "Keep sites"
+msgstr "サイトを保持"
+
 msgid "Keep stories separate"
 msgstr "記事を分けて表示"
+
+msgid "Keep the new folders"
+msgstr "新しいフォルダーを維持"
+
+msgid "Keep the photo blogs together. Split News by country."
+msgstr "写真ブログをまとめ、ニュースは国ごとに分ける。"
 
 msgid "Keep unread counts out of the window title"
 msgstr "未読数をウィンドウタイトルに表示しない"
@@ -3888,11 +4247,28 @@ msgstr "最終確認："
 msgid "Layout"
 msgstr "レイアウト"
 
+msgid "Leave out"
+msgstr "除外する"
+
 msgid "Leave unread"
 msgstr "未読のままにする"
 
+#, python-format
+msgid "Leaving %(count)s"
+msgid_plural "Leaving %(count)s"
+msgstr[0] "出ていくサイト %(count)s件"
+
 msgid "Left"
 msgstr "左"
+
+msgid "Left out. Nothing in this folder changes."
+msgstr "対象外です。このフォルダーには変更はありません。"
+
+msgid "Let all go"
+msgstr "すべて移動を許可"
+
+msgid "Let it go"
+msgstr "移動を許可"
 
 msgid "Let's Get Started "
 msgstr "さっそく始めましょう"
@@ -4007,8 +4383,14 @@ msgstr "場所"
 msgid "Lock"
 msgstr "ロック"
 
+msgid "Lock the folders the AI should leave alone"
+msgstr "AIが変更しないフォルダーをロック"
+
 msgid "Locked"
 msgstr "ロック中"
+
+msgid "Locked with parent"
+msgstr "親と一緒にロック"
 
 msgid "Log In or Sign Up"
 msgstr "ログインまたは新規登録"
@@ -4217,6 +4599,10 @@ msgid "Merge %(count)s category into:"
 msgid_plural "Merge %(count)s categories into:"
 msgstr[0] "%(count)s個のカテゴリの統合先："
 
+#, python-format
+msgid "Merge %(folder)s into %(into)s"
+msgstr "%(folder)sを%(into)sに統合"
+
 msgid "Merge into:"
 msgstr "統合先："
 
@@ -4297,6 +4683,10 @@ msgid_plural "Move %(count)s sites"
 msgstr[0] "%(count)s 件のサイトを移動"
 
 #, python-format
+msgid "Move %(site)s to %(folder)s"
+msgstr "%(site)sを%(folder)sに移動"
+
+#, python-format
 msgid "Move to %(folder)s"
 msgstr "%(folder)sに移動"
 
@@ -4309,6 +4699,13 @@ msgstr "移動しました"
 msgid "Moved!"
 msgstr "移動しました！"
 
+msgid "Moves"
+msgstr "移動"
+
+#, python-format
+msgid "Moves with %(folder)s as it merges."
+msgstr "統合に伴い、%(folder)sと一緒に移動"
+
 msgid "Moving..."
 msgstr "移動中..."
 
@@ -4319,6 +4716,10 @@ msgstr "ミュート"
 msgid "Mute %(count)s site"
 msgid_plural "Mute %(count)s sites"
 msgstr[0] "%(count)s件のサイトをミュート"
+
+#, python-format
+msgid "Mute %(site)s"
+msgstr "%(site)sをミュート"
 
 msgid "Mute Sites"
 msgstr "サイトをミュート"
@@ -4402,6 +4803,9 @@ msgstr "マウスに触れずにすべてを操作できます。フィードを
 
 msgid "Need at least 2 categories to merge"
 msgstr "統合するにはカテゴリーが2つ以上必要です"
+
+msgid "Nest"
+msgstr "入れ子にする"
 
 msgid "Nested"
 msgstr "入れ子"
@@ -4567,6 +4971,9 @@ msgstr "利用可能なカテゴリはありません。設定すると、ここ
 msgid "No categories with 10+ stories available for splitting."
 msgstr "分割できる、記事が10件以上あるカテゴリはありません。"
 
+msgid "No changes"
+msgstr "変更なし"
+
 msgid "No channels found matching your filter."
 msgstr "条件に一致するチャンネルが見つかりません。"
 
@@ -4578,6 +4985,9 @@ msgstr "接続済みのアカウントはありません"
 
 msgid "No content"
 msgstr "コンテンツなし"
+
+msgid "No copy"
+msgstr "コピーしない"
 
 msgid "No feeds found"
 msgstr "フィードが見つかりません"
@@ -4704,6 +5114,10 @@ msgstr[0] "%(count)s件のサイトの記事は、関連記事用にまだイン
 msgid "No stories published last month"
 msgstr "先月公開された記事はありません"
 
+#, python-format
+msgid "No stories since %(month)s."
+msgstr "%(month)s以降、記事がありません。"
+
 msgid "No stories to delete"
 msgstr "削除する記事がありません"
 
@@ -4773,8 +5187,29 @@ msgstr "最も読まれているサイトではなく、評価が高く、大手
 msgid "Nothing"
 msgstr "なし"
 
+msgid "Nothing changed."
+msgstr "変更はありません。"
+
+msgid "Nothing changes."
+msgstr "変更はありません。"
+
+msgid "Nothing goes into this folder, so it won't be made."
+msgstr "このフォルダーには何も入らないため、作成されません。"
+
 msgid "Nothing happens without your permission."
 msgstr "許可なく何かが起こることはありません。"
+
+msgid "Nothing is left in this folder after the other changes."
+msgstr "ほかの変更を反映すると、このフォルダーは空になります。"
+
+msgid "Nothing leaves and the folder is left alone. Its sites can still be offered to other folders as copies."
+msgstr "何も移動せず、フォルダーもそのまま残ります。中のサイトは、コピーとしてほかのフォルダーに追加することもできます。"
+
+msgid "Nothing leaves this folder."
+msgstr "このフォルダーから移動するものはありません。"
+
+msgid "Nothing matches this filter."
+msgstr "このフィルターに一致するものはありません。"
 
 msgid "Nothing recorded."
 msgstr "記録はありません。"
@@ -4837,6 +5272,11 @@ msgstr "オフ"
 msgid "Offer them in an \"N new stories\" pill"
 msgstr "「新着記事：N件」のピルを表示"
 
+#, python-format
+msgid "Offered elsewhere as a copy %(count)s"
+msgid_plural "Offered elsewhere as copies %(count)s"
+msgstr[0] "コピーとして他のフォルダーにも提案 %(count)s"
+
 msgid "Official NewsBlur Android App"
 msgstr "公式NewsBlur Androidアプリ"
 
@@ -4888,8 +5328,14 @@ msgstr "プレミアムでは最近の記事を検索できます。プレミア
 msgid "On reload"
 msgstr "再読み込み時"
 
+msgid "Once you propose again, your last reorganization can no longer be undone."
+msgstr "もう一度提案すると、前回の再編成は取り消せなくなります。"
+
 msgid "One command with Docker"
 msgstr "Dockerならコマンド1つ"
+
+msgid "One of the proposed changes"
+msgstr "提案された変更の1つ"
 
 msgid "One sentence"
 msgstr "一文"
@@ -5429,8 +5875,23 @@ msgstr "プロフィール詳細"
 msgid "Profile picture"
 msgstr "プロフィール画像"
 
+msgid "Progress"
+msgstr "進行状況"
+
 msgid "Prompt"
 msgstr "プロンプト"
+
+msgid "Propose a new set of folders. Locked folders still stay."
+msgstr "新しいフォルダー構成を提案します。ロックされたフォルダーはそのまま残ります。"
+
+msgid "Propose changes"
+msgstr "変更を提案"
+
+msgid "Proposing again replaces the proposal you are reviewing."
+msgstr "再度提案すると、現在確認中の提案が置き換えられます。"
+
+msgid "Proposing..."
+msgstr "提案を作成しています…"
 
 msgid "Protected:"
 msgstr "保護済み："
@@ -5449,6 +5910,13 @@ msgstr "プッシュの有効期限"
 
 msgid "Push expires"
 msgstr "プッシュの有効期限"
+
+#, python-format
+msgid "Put %(folder)s inside %(parent)s"
+msgstr "%(folder)sを%(parent)sの中に移動"
+
+msgid "Putting the proposal together"
+msgstr "提案をまとめています"
 
 msgid "Questions"
 msgstr "質問"
@@ -5565,6 +6033,11 @@ msgstr "フィードを読む：未読記事、フォルダー、検索、タグ
 msgid "Reading"
 msgstr "読書"
 
+#, python-format
+msgid "Reading %(count)s site"
+msgid_plural "Reading %(count)s sites"
+msgstr[0] "サイト%(count)s件を読み込み中"
+
 msgid "Reading article..."
 msgstr "記事を読み込み中…"
 
@@ -5672,6 +6145,16 @@ msgstr "正規表現"
 msgid "Regex requires %(tier_link)s"
 msgstr "正規表現には%(tier_link)sが必要です"
 
+msgid "Reject"
+msgstr "却下"
+
+msgid "Reject all"
+msgstr "すべて拒否"
+
+#, python-format
+msgid "Rejected %(count)s"
+msgstr "却下済み %(count)s"
+
 msgid "Related"
 msgstr "関連"
 
@@ -5702,6 +6185,10 @@ msgstr "ローテーションから%(voice)sを削除"
 
 msgid "Remove from Up Next"
 msgstr "次に再生から削除"
+
+#, python-format
+msgid "Remove the folder %(folder)s"
+msgstr "フォルダー %(folder)s を削除"
 
 msgid "Remove this list"
 msgstr "このリストを削除"
@@ -5734,6 +6221,10 @@ msgstr "このフォルダーの名前を変更"
 msgid "Rename this site"
 msgstr "このサイトの名前を変更"
 
+#, python-format
+msgid "Rename “%(old)s” to “%(new)s”"
+msgstr "「%(old)s」を「%(new)s」に名前変更"
+
 msgid "Renamed"
 msgstr "名前を変更しました"
 
@@ -5744,6 +6235,15 @@ msgstr[0] "%(count)s件の記事を「%(category)s」に名前変更しました
 
 msgid "Renaming..."
 msgstr "名前を変更中..."
+
+msgid "Reorganize"
+msgstr "再編成"
+
+msgid "Reorganize again"
+msgstr "もう一度再編成"
+
+msgid "Reorganize with AI"
+msgstr "AIで再編成"
 
 msgid "Request timed out"
 msgstr "リクエストがタイムアウトしました"
@@ -5807,6 +6307,19 @@ msgstr "再試行"
 
 msgid "Retry fetching and parsing"
 msgstr "取得と解析を再試行"
+
+msgid "Review"
+msgstr "確認"
+
+msgid "Revise proposal"
+msgstr "提案を修正"
+
+#, python-format
+msgid "Revised as you asked: “%(request)s”"
+msgstr "ご要望に沿って修正しました：「%(request)s」"
+
+msgid "Revising..."
+msgstr "修正中…"
 
 msgid "Rewinding..."
 msgstr "巻き戻しています…"
@@ -5952,6 +6465,9 @@ msgstr "記事の保存はすべてのプランで利用できます。タグと
 
 msgid "Saving..."
 msgstr "保存中..."
+
+msgid "Say what the AI should change, then try again."
+msgstr "AIに変更内容を伝えて、もう一度お試しください。"
 
 msgid "Schedule when your briefing is generated"
 msgstr "ブリーフィングの生成スケジュールを設定"
@@ -6170,6 +6686,15 @@ msgstr "この記事を送信"
 msgid "Sending…"
 msgstr "送信中…"
 
+#, python-format
+msgid ""
+"Sends the names, addresses and recent headlines of %(count)s site to the AI model. Nothing changes until "
+"you approve it."
+msgid_plural ""
+"Sends the names, addresses and recent headlines of %(count)s sites to the AI model. Nothing changes until "
+"you approve it."
+msgstr[0] "%(count)s件のサイトの名前、アドレス、最近の記事見出しをAIモデルに送信します。承認するまで変更は適用されません。"
+
 msgid "Separate"
 msgstr "分ける"
 
@@ -6182,6 +6707,9 @@ msgstr "サーバーエラー"
 #, python-format
 msgid "Server error: %(status)s"
 msgstr "サーバーエラー：%(status)s"
+
+msgid "Set up"
+msgstr "設定する"
 
 msgid "Set up billing"
 msgstr "お支払いを設定"
@@ -6350,6 +6878,13 @@ msgstr "NewsBlurの起動時にダッシュボードを表示"
 msgid "Show the entire story, even if really, really long"
 msgstr "非常に長い場合でも、記事全体を表示"
 
+msgid "Show them"
+msgstr "表示する"
+
+#, python-format
+msgid "Show this move in %(folder)s"
+msgstr "この移動を%(folder)sに表示"
+
 msgid "Show tooltips"
 msgstr "ツールチップを表示"
 
@@ -6429,8 +6964,17 @@ msgstr "サイト"
 msgid "Sites and folders"
 msgstr "サイトとフォルダー"
 
+msgid "Sites it unsubscribed you from are not brought back."
+msgstr "再編成で購読解除されたサイトは元に戻りません。"
+
 msgid "Sites updated up to 5x more often"
 msgstr "サイトの更新頻度が最大5倍に"
+
+msgid "Sites you've subscribed to since then stay."
+msgstr "その後に購読したサイトはそのまま残ります。"
+
+msgid "Sketching folders"
+msgstr "フォルダーを作成中"
 
 msgid "Skip Back"
 msgstr "前へスキップ"
@@ -6467,6 +7011,12 @@ msgstr "ソーシャル接続"
 
 msgid "Social features"
 msgstr "ソーシャル機能"
+
+msgid "Something went wrong while making the proposal. Please try again."
+msgstr "提案の作成中に問題が発生しました。もう一度お試しください。"
+
+msgid "Something went wrong. Please try again."
+msgstr "問題が発生しました。もう一度お試しください。"
 
 #, python-format
 msgid "Sorry, nobody matches \"%(value_1)s\"."
@@ -6515,6 +7065,9 @@ msgstr "フィードのオプションメニューから、ストリームを古
 msgid "Sort, filter, and display options"
 msgstr "並べ替え、フィルター、表示オプション"
 
+msgid "Sorting sites into folders"
+msgstr "サイトをフォルダーに振り分け中"
+
 msgid "Source feeds"
 msgstr "ソースフィード"
 
@@ -6550,6 +7103,9 @@ msgstr[0] "「%(category)s」（%(count)s件の記事）を次の項目に分割
 #, python-format
 msgid "Split \"%(value_1)s\" into:"
 msgstr "「%(value_1)s」を次のように分割："
+
+msgid "Split Tech into smaller folders. No folder over 40 sites."
+msgstr "テクノロジーを小さなフォルダーに分ける。各フォルダーのサイト数は40件以下。"
 
 #, python-format
 msgid "Split complete: %(count)s story recategorized"
@@ -6596,6 +7152,9 @@ msgstr "スター"
 msgid "Start Training Site by Site"
 msgstr "サイトごとに学習を開始"
 
+msgid "Start fresh"
+msgstr "一から始める"
+
 msgid "Starting analysis..."
 msgstr "分析を開始しています..."
 
@@ -6620,11 +7179,35 @@ msgstr "統計"
 msgid "Status"
 msgstr "ステータス"
 
+msgid "Stay"
+msgstr "そのままにする"
+
 msgid "Stay on the same feed/folder"
 msgstr "同じフィード／フォルダーにとどまる"
 
 msgid "Stay put"
 msgstr "そのままにする"
+
+msgid "Stays"
+msgstr "そのまま残る"
+
+msgid "Stays here"
+msgstr "ここに残す"
+
+#, python-format
+msgid "Stays in %(folder)s"
+msgstr "%(folder)sに残る"
+
+#, python-format
+msgid "Stays, because %(count)s site stays in it."
+msgid_plural "Stays, because %(count)s sites stay in it."
+msgstr[0] "%(count)s件のサイトがこのフォルダーに残るため、維持されます。"
+
+msgid "Stays, because a folder inside it stays."
+msgstr "内側のフォルダーが残るため、そのまま残ります。"
+
+msgid "Stays, no folder"
+msgstr "残す、フォルダーなし"
 
 msgid "Steadier or more varied"
 msgstr "より安定／より変化に富む"
@@ -6645,6 +7228,11 @@ msgstr "プレビューを停止"
 
 msgid "Stop recording"
 msgstr "録音を停止"
+
+msgid ""
+"Stopped publishing or failing to fetch. Sites in locked folders are not flagged. Suggested mutes start "
+"selected. Unsubscribing always needs your click."
+msgstr "配信を停止したか、取得に失敗しています。ロックされたフォルダー内のサイトにはフラグが付きません。おすすめのミュートは選択済みです。購読解除には必ずクリックが必要です。"
 
 msgid "Stories"
 msgstr "記事"
@@ -6895,6 +7483,12 @@ msgstr "購読プラン"
 msgid "Suggested questions"
 msgstr "質問の候補"
 
+msgid "Suggested: mute."
+msgstr "おすすめ：ミュート。"
+
+msgid "Suggested: unsubscribe."
+msgstr "おすすめ：購読解除。"
+
 msgid "Summarize"
 msgstr "要約"
 
@@ -7051,6 +7645,29 @@ msgstr "ありがとうございます！%(bold_start)sプレミアム Proアカ
 msgid "That change could not be saved"
 msgstr "変更を保存できませんでした"
 
+#, python-format
+msgid "The %(count)s dead site it unsubscribed you from is not brought back."
+msgid_plural "The %(count)s dead sites it unsubscribed you from are not brought back."
+msgstr[0] "購読解除された%(count)s件の停止中サイトは復元されません。"
+
+msgid "The AI can move sites in and out, and rename, merge or nest the folder."
+msgstr "AIはサイトを移動したり、フォルダーの名前変更、統合、入れ子化を行ったりできます。"
+
+msgid "The AI couldn't finish a proposal for your sites. Please try again."
+msgstr "AIがサイトの提案を作成できませんでした。もう一度お試しください。"
+
+msgid "The AI found nothing to change."
+msgstr "AIは変更点を見つけられませんでした。"
+
+msgid "The AI had trouble answering. Please try again."
+msgstr "AIが回答できませんでした。もう一度お試しください。"
+
+msgid "The AI isn't available right now. Please try again later."
+msgstr "現在AIを利用できません。しばらくしてからもう一度お試しください。"
+
+msgid "The AI never sees this folder or the sites in it."
+msgstr "AIにはこのフォルダーやその中のサイトは表示されません。"
+
 msgid "The AI service took too long to respond. Please try again."
 msgstr "AIサービスからの応答に時間がかかりすぎています。もう一度お試しください。"
 
@@ -7081,6 +7698,12 @@ msgstr "NewsBlurブログ"
 
 msgid "The audio stream was interrupted."
 msgstr "音声ストリームが中断されました。"
+
+msgid "The changes couldn't be applied. Please try again."
+msgstr "変更を適用できませんでした。もう一度お試しください。"
+
+msgid "The folder still had sites or folders in it, so it stayed."
+msgstr "フォルダー内にサイトまたはフォルダーが残っていたため、そのまま残りました。"
 
 #, python-format
 msgid "The full %(icon)s Text view is a %(link_start)spremium feature%(link_end)s."
@@ -7130,8 +7753,20 @@ msgstr "配信元により元のページが無効化されています。"
 msgid "The page HTML is fetched and parsed to extract content structure."
 msgstr "ページのHTMLを取得・解析し、コンテンツの構造を抽出します。"
 
+msgid "The proposal described it in a way that couldn't be applied."
+msgstr "提案の内容が適用できない形式でした。"
+
+msgid "The proposal took too long and was stopped. Please try again."
+msgstr "提案の処理に時間がかかりすぎたため停止しました。もう一度お試しください。"
+
+msgid "The reorganization couldn't be undone. Please try again."
+msgstr "再編成を元に戻せませんでした。もう一度お試しください。"
+
 msgid "The site itself, as you would see it in a browser"
 msgstr "ブラウザーで見るサイトそのもの"
+
+msgid "The site was no longer where the proposal expected it."
+msgstr "提案で想定されていた場所にサイトがありません。"
 
 msgid "The story on its own page on the site"
 msgstr "サイト上の記事専用ページ"
@@ -7197,6 +7832,11 @@ msgstr "写真のアップロード中に問題が発生しました。"
 msgid "There was an error trying to logout, ouch."
 msgstr "ログアウト中にエラーが発生しました。困りました。"
 
+msgid ""
+"There was nothing for the AI to organize. Open more of your folders, or choose Reorganize so it can add "
+"folders."
+msgstr "AIが整理できるものはありませんでした。ほかのフォルダーを開くか、AIがフォルダーを追加できるよう「再編成」を選んでください。"
+
 msgid "There's no limit. Save as many stories as you want and they're kept forever."
 msgstr "上限はありません。好きなだけ記事を保存でき、永久に保管されます。"
 
@@ -7210,6 +7850,11 @@ msgid ""
 "These domains are blocked by default (search engines, social media, etc.). Add them to \"Allowed Domains\" "
 "above to override."
 msgstr "これらのドメインはデフォルトでブロックされています（検索エンジン、ソーシャルメディアなど）。許可するには、上の「許可するドメイン」に追加してください。"
+
+msgid ""
+"These sites are set to stay in their old folder and are also offered to a new one. Pick where each should "
+"live."
+msgstr "これらのサイトは元のフォルダーに残す設定ですが、新しいフォルダーにも候補として表示されています。それぞれの配置先を選択してください。"
 
 msgid "They redeem it."
 msgstr "相手が引き換えます。"
@@ -7232,6 +7877,12 @@ msgstr "今週"
 msgid "This Year"
 msgstr "今年"
 
+msgid "This change couldn't be made."
+msgstr "この変更を行えませんでした。"
+
+msgid "This change doesn't fit with your other choices."
+msgstr "この変更は、ほかの選択内容と合いません。"
+
 msgid ""
 "This example requests read access. Generate a fresh state value for each sign-in and verify it when the "
 "reader returns."
@@ -7251,12 +7902,39 @@ msgstr "これは記事全文に一致するため、この完全一致する記
 msgid "This matches the entire title and will only match this exact story. Select a portion of the title instead."
 msgstr "これはタイトル全体に一致するため、この記事だけに一致します。タイトルの一部を選択してください。"
 
+msgid "This proposal can't be changed right now."
+msgstr "現在、この提案は変更できません。"
+
+msgid "This proposal can't be revised again."
+msgstr "この提案はこれ以上修正できません。"
+
+msgid "This proposal couldn't be found."
+msgstr "この提案が見つかりませんでした。"
+
+msgid "This proposal has already been applied."
+msgstr "この提案はすでに適用されています。"
+
+msgid "This proposal isn't ready to apply."
+msgstr "この提案はまだ適用できる状態ではありません。"
+
+msgid "This proposal was replaced by a newer one."
+msgstr "この提案は新しい提案に置き換えられました。"
+
 #, python-format
 msgid "This read stories list is a %(link_start)spremium feature%(link_end)s."
 msgstr "この既読記事リストは%(link_start)sプレミアム機能%(link_end)sです。"
 
 msgid "This removes the tag from all saved stories. Stories will remain saved without this tag."
 msgstr "この操作を行うと、保存したすべての記事からタグが削除されます。記事はタグなしで保存されたままです。"
+
+msgid "This reorganization can no longer be undone."
+msgstr "この再編成はもう取り消せません。"
+
+msgid "This reorganization didn't finish"
+msgstr "この再編成は完了しませんでした"
+
+msgid "This reorganization isn't applied, so there's nothing to undo."
+msgstr "この再編成は適用されていないため、元に戻すものはありません。"
 
 msgid "This site"
 msgstr "このサイト"
@@ -7308,6 +7986,9 @@ msgstr "気に入った著者、タグ、タイトルのキーワードに高評
 
 msgid "Thursday"
 msgstr "木曜日"
+
+msgid "Tidy"
+msgstr "整理する"
 
 msgid "Tier"
 msgstr "プラン"
@@ -7371,6 +8052,14 @@ msgctxt "date range"
 msgid "To"
 msgstr "終了日"
 
+#, python-format
+msgid "To %(folder)s"
+msgstr "%(folder)sへ"
+
+#, python-format
+msgid "To decide %(count)s"
+msgstr "判断待ち %(count)s"
+
 msgid ""
 "To read your email newsletters in NewsBlur, forward your newsletters to your custom email address shown "
 "above."
@@ -7419,6 +8108,9 @@ msgid "Top Domains"
 msgstr "上位ドメイン"
 
 msgid "Top Level"
+msgstr "最上位"
+
+msgid "Top level"
 msgstr "最上位"
 
 msgid "Top stories"
@@ -7574,6 +8266,21 @@ msgstr "利用不可"
 msgid "Uncategorized"
 msgstr "未分類"
 
+msgid "Undo"
+msgstr "元に戻す"
+
+msgid "Undo puts your folders back as they were before it started."
+msgstr "元に戻すと、フォルダーは変更開始前の状態に戻ります。"
+
+msgid "Undo this reorganization"
+msgstr "この再編成を元に戻す"
+
+msgid "Undo this reorganization?"
+msgstr "この再編成を取り消しますか？"
+
+msgid "Undoing..."
+msgstr "元に戻しています…"
+
 msgid "Unfavorited"
 msgstr "お気に入り解除"
 
@@ -7645,6 +8352,27 @@ msgstr "この記事の保存を解除"
 
 msgid "Unshared"
 msgstr "共有解除済み"
+
+msgid "Unsubscribe"
+msgstr "購読を解除"
+
+#, python-format
+msgid "Unsubscribe from %(site)s"
+msgstr "%(site)sの購読を解除"
+
+#, python-format
+msgid "Unsubscribed from %(count)s dead site"
+msgid_plural "Unsubscribed from %(count)s dead sites"
+msgstr[0] "停止中サイト%(count)s件の購読を解除"
+
+#, python-format
+msgid ""
+"Unsubscribing from %(count)s dead site can't be undone. Undo puts your folders back, but doesn't subscribe "
+"you again."
+msgid_plural ""
+"Unsubscribing from %(count)s dead sites can't be undone. Undo puts your folders back, but doesn't subscribe"
+" you again."
+msgstr[0] "停止中のサイト%(count)s件の購読解除は元に戻せません。元に戻すとフォルダーは元の状態に戻りますが、購読は再開されません。"
 
 msgid "Untitled"
 msgstr "無題"
@@ -8179,6 +8907,9 @@ msgstr "評価はいつでも変更できます。"
 msgid "You can click the %(like_icon)s%(dislike_icon)s buttons next to stories as you read them."
 msgstr "記事を読みながら、記事の横にある%(like_icon)s%(dislike_icon)sボタンをクリックできます。"
 
+msgid "You can close this dialog. The proposal will be waiting here when you come back."
+msgstr "このダイアログを閉じてもかまいません。戻ってきたときに、提案はここに残っています。"
+
 msgid "You can override this on a per-site and per-folder basis."
 msgstr "サイトごと、フォルダーごとにこの設定を上書きできます。"
 
@@ -8189,9 +8920,21 @@ msgid "You can train per-feed for free, or per-folder and globally on Premium Ar
 msgstr "フィードごとの学習は無料で利用できます。フォルダー単位および全体の学習には、プレミアムアーカイブが必要です。"
 
 #, python-format
+msgid "You can undo this until %(date)s."
+msgstr "%(date)sまで取り消せます。"
+
+#, python-format
 msgid "You follow %(count)s site. Premium makes all of them better."
 msgid_plural "You follow %(count)s sites. Premium makes all of them better."
 msgstr[0] "%(count)s件のサイトをフォローしています。プレミアムなら、すべてのサイトがもっと便利になります。"
+
+#, python-format
+msgid "You get %(count)s proposal a month. Applying one needs Premium Archive."
+msgid_plural "You get %(count)s proposals a month. Applying one needs Premium Archive."
+msgstr[0] "月に%(count)s件の提案を利用できます。適用するにはプレミアムアーカイブが必要です。"
+
+msgid "You get one proposal a month. Applying one needs Premium Archive."
+msgstr "提案は月に1件までです。適用するにはプレミアムアーカイブが必要です。"
 
 #, python-format
 msgid "You have a %(bold_start)sfree account%(bold_end)s."
@@ -8236,6 +8979,11 @@ msgstr "コメントに返信するにはログインが必要です。"
 msgid "You need to be logged in to share a story."
 msgstr "記事を共有するにはログインが必要です。"
 
+#, python-format
+msgid "You unsubscribe from %(count)s dead site"
+msgid_plural "You unsubscribe from %(count)s dead sites"
+msgstr[0] "停止中サイト%(count)s件の購読を解除"
+
 msgid "You will be emailed within a minute or three."
 msgstr "1〜3分以内にメールが届きます。"
 
@@ -8259,6 +9007,26 @@ msgstr "準備完了です！NewsBlurをお楽しみください。"
 #, python-format
 msgid "You've been gifted %(value_1)s of %(value_2)s!"
 msgstr "%(value_2)sを%(value_1)s分プレゼントされました！"
+
+msgid "You've had this month's proposal."
+msgstr "今月分の提案はすでに受け取っています。"
+
+#, python-format
+msgid "You've had this month's proposal. The next one is available on %(date)s."
+msgstr "今月の提案はすでに利用済みです。次回は %(date)s に利用できます。"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day."
+msgid_plural "You've made %(count)s proposals in the last day."
+msgstr[0] "過去1日間に%(count)s件の提案を作成しました。"
+
+#, python-format
+msgid "You've made %(count)s proposal in the last day. The next one is available on %(date)s."
+msgid_plural "You've made %(count)s proposals in the last day. The next one is available on %(date)s."
+msgstr[0] "過去1日間に%(count)s件の提案を作成しました。次の提案は%(date)sに利用できます。"
+
+msgid "You've reached today's limit on proposals."
+msgstr "本日の提案上限に達しました。"
 
 #, python-format
 msgid "You've reached your limit of %(value_1)s sites. Mute some sites or upgrade your account to add more."
@@ -8312,14 +9080,34 @@ msgstr "選択した音声は現在利用できないため、%(voice)sがこの
 msgid "Your cookie has expired — Please login again"
 msgstr "Cookieの有効期限が切れました — もう一度ログインしてください"
 
+#, python-format
+msgid "Your current folders are saved first, so this can be undone for %(count)s day."
+msgid_plural "Your current folders are saved first, so this can be undone for %(count)s days."
+msgstr[0] "現在のフォルダーを先に保存するため、%(count)s日間は取り消せます。"
+
+msgid "Your decisions"
+msgstr "選択内容"
+
 msgid "Your email"
 msgstr "メールアドレス"
 
 msgid "Your filters may be hiding sites — open Options to widen them."
 msgstr "フィルターによってサイトが非表示になっている可能性があります。オプションを開いて範囲を広げてください。"
 
+msgid "Your folders are back to how they were before the reorganization."
+msgstr "フォルダーを再編成前の状態に戻しました。"
+
+msgid "Your folders go back to how they were before this reorganization."
+msgstr "フォルダーはこの再編成の前の状態に戻ります。"
+
 msgid "Your inbox stays clean"
 msgstr "受信トレイをすっきり保てます"
+
+msgid "Your last choice couldn't be saved, so this shows the choices that are saved. Please try again."
+msgstr "最後の選択を保存できなかったため、保存済みの選択肢を表示しています。もう一度お試しください。"
+
+msgid "Your locked folders couldn't be saved. Please try again."
+msgstr "ロックされたフォルダーを保存できませんでした。もう一度お試しください。"
 
 msgid "Your name"
 msgstr "名前"
@@ -8342,8 +9130,17 @@ msgstr "購読料は日割り計算されます"
 msgid "Your subscription will no longer automatically renew."
 msgstr "購読は自動更新されなくなります。"
 
+msgid "a folder"
+msgstr "フォルダー"
+
+msgid "a site you no longer follow"
+msgstr "フォローをやめたサイト"
+
 msgid "and auto-follow them"
 msgstr "見つけた友達を自動フォローする"
+
+msgid "approved"
+msgstr "承認済み"
 
 msgid "artificial intelligence"
 msgstr "人工知能"
@@ -8526,6 +9323,9 @@ msgstr "量子コンピューティング"
 msgid "recipient@example.com"
 msgstr "recipient@example.com"
 
+msgid "rejected"
+msgstr "却下"
+
 msgid "remote work"
 msgstr "リモートワーク"
 
@@ -8571,6 +9371,9 @@ msgstr "サプライチェーン"
 msgid "this list"
 msgstr "このリスト"
 
+msgid "to decide"
+msgstr "判断待ち"
+
 msgid "trade policy"
 msgstr "貿易政策"
 
@@ -8594,6 +9397,14 @@ msgstr "ヴィンテージコンピューティング"
 
 msgid "web standards"
 msgstr "ウェブ標準"
+
+#, python-format
+msgid "“%(old)s” becomes “%(new)s”"
+msgstr "「%(old)s」が「%(new)s」になります"
+
+#, python-format
+msgid "−%(count)s"
+msgstr "−%(count)s"
 
 #, python-format
 msgid "✓ %(count)s of %(total)s image matches this filter"
