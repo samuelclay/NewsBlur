@@ -1,6 +1,11 @@
 import datetime
+import hashlib
+import hmac
+import time
 from unittest.mock import MagicMock, call, patch
+from urllib.parse import urlencode
 
+import pytz
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -559,6 +564,52 @@ class Test_ConcurrentArchiveActivation(TestCase):
         self.assertEqual(self.archive_fetch.call_count, 1, "the archive backfill must be scheduled once")
 
 
+class Test_StaleProfileSaves(TestCase):
+    """A request that loaded a profile before another request changed it doesn't write the old values back."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username="stalesave", password="password", email="stale@test.com"
+        )
+        self.now = datetime.datetime.now()
+
+    def test_a_partly_loaded_profile_saves_in_one_query_and_keeps_the_plan(self):
+        profile = Profile.objects.only("is_pro", "last_seen_on", "secret_token").get(user=self.user)
+        Profile.objects.filter(user=self.user).update(is_pro=True, is_archive=True, is_premium_trial=False)
+        profile.last_seen_on = self.now.replace(microsecond=0)
+
+        with self.assertNumQueries(1):
+            profile.save()
+
+        saved = Profile.objects.get(user=self.user)
+        self.assertEqual((saved.last_seen_on, saved.is_pro), (self.now.replace(microsecond=0), True))
+
+    def test_a_payment_synced_while_a_reader_tab_polls_keeps_its_new_date(self):
+        yesterday = self.now - datetime.timedelta(days=1)
+        Profile.objects.filter(user=self.user).update(
+            is_premium_trial=False,
+            premium_expire=self.now + datetime.timedelta(days=5),
+            last_seen_on=yesterday,
+        )
+        PaymentHistory.objects.create(
+            user=self.user, payment_date=self.now, payment_amount=36, payment_provider="paypal"
+        )
+        client = Client(HTTP_USER_AGENT="Mozilla/5.0")
+        client.force_login(self.user)
+
+        # The payment webhook syncs the history while LastSeenMiddleware (apps/profile/middleware.py), holding the
+        # profile it loaded, queues CleanupUser for a visitor back after an hour.
+        with patch(
+            "apps.profile.tasks.CleanupUser.delay",
+            side_effect=lambda **kwargs: Profile.objects.get(user=self.user).setup_premium_history(),
+        ):
+            client.get("/reader/refresh_feeds")
+
+        saved = Profile.objects.get(user=self.user)
+        self.assertGreater(saved.premium_expire, self.now + datetime.timedelta(days=300))
+        self.assertGreater(saved.last_seen_on, yesterday)
+
+
 class Test_SetupPremiumHistoryStripe(TestCase):
     """Tests for Stripe subscription handling in setup_premium_history (apps/profile/models.py)."""
 
@@ -995,6 +1046,30 @@ class Test_ProratedProviderSwitchRefund(TestCase):
             payment_date=datetime.datetime.now() - datetime.timedelta(days=400),
             payment_amount=36,
             payment_provider="ios-subscription",
+        )
+        mock_customer.return_value = MagicMock(id="cus_storeswitch")
+        mock_charges.return_value = MagicMock(
+            data=[MagicMock(id="ch_archive", amount=9900, amount_refunded=0)]
+        )
+
+        refunded = self.profile.refund_prorated_store_payment_for_provider_switch()
+
+        self.assertIsNone(refunded)
+        mock_refund.assert_not_called()
+
+    @patch("stripe.Refund.create")
+    @patch("stripe.Charge.list")
+    @patch.object(Profile, "stripe_customer")
+    def test_no_refund_for_a_purchase_made_in_the_app_store_sandbox(
+        self, mock_customer, mock_charges, mock_refund
+    ):
+        # TestFlight and App Review buy in Apple's sandbox, where nobody is charged
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - datetime.timedelta(days=2),
+            payment_amount=29,
+            payment_provider="ios-pro-subscription",
+            sandbox=True,
         )
         mock_customer.return_value = MagicMock(id="cus_storeswitch")
         mock_charges.return_value = MagicMock(
@@ -2042,17 +2117,17 @@ class Test_PremiumExpireBillingPeriod(TestCase):
 
     def test_monthly_subscriber_expires_about_a_month_out(self):
         """Twelve monthly charges must buy about a month past the last one, not twelve years."""
-        for month in range(12):
-            self._pay(days_ago=30 * month)
+        for month in reversed(range(12)):
+            latest = self._pay(days_ago=30 * month)
 
         expiration, _, count = Profile.premium_expire_from_payments(
             PaymentHistory.objects.filter(user=self.user)
         )
 
         self.assertEqual(count, 12)
-        days_out = (expiration - datetime.datetime.now()).days
-        self.assertGreater(days_out, 0, "a paid-up monthly subscriber must not be expired")
-        self.assertLess(days_out, 60, "expiration ran away: %s" % expiration)
+        self.assertEqual(
+            expiration, latest.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS)
+        )
 
     def test_annual_subscriber_still_gets_a_year(self):
         """The common case must be untouched by the fix."""
@@ -2145,6 +2220,71 @@ class Test_PremiumExpireBillingPeriod(TestCase):
         expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
 
         self.assertLess((expiration - datetime.datetime.now()).days, 60)
+
+    def test_a_team_charge_buys_a_month_alone_or_after_an_annual_plan(self):
+        """Premium Team's $79 and Premium Team Enterprise's $129 are only billed monthly, so one charge buys
+        a month, even as an owner's first charge or after a yearly plan."""
+        self._pay(days_ago=2, amount=79)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+        self.assertGreater((expiration - datetime.datetime.now()).days, 0)
+        self.assertLess((expiration - datetime.datetime.now()).days, 60)
+
+        PaymentHistory.objects.filter(user=self.user).delete()
+        self._pay(days_ago=300, amount=36)
+        # The store price, $129.99, held as whole dollars like a Stripe charge's.
+        self._pay(days_ago=1, amount=129.99)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(count, 2)
+        self.assertLess((expiration - datetime.datetime.now()).days, 100, "a team charge bought a year")
+
+    def test_a_premium_pro_charge_buys_a_month_alone_and_leaves_an_annual_plans_year_as_it_is(self):
+        """Premium Pro's $29 is only billed monthly, so one charge buys a month from its own date. After a
+        yearly plan it neither shortens the year that plan bought nor adds another."""
+        pro = self._pay(days_ago=2)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(
+            (expiration, count), (pro.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS), 1)
+        )
+
+        # The gap between the two charges reads as yearly for the first, and as monthly for the second.
+        for annual_price, days_ago in ((36, 300), (99, 100)):
+            PaymentHistory.objects.filter(user=self.user).delete()
+            annual = self._pay(days_ago=days_ago, amount=annual_price)
+            self._pay(days_ago=1)
+
+            expiration, _, count = Profile.premium_expire_from_payments(
+                PaymentHistory.objects.filter(user=self.user)
+            )
+            self.assertEqual(
+                (expiration, count),
+                (annual.payment_date + datetime.timedelta(days=Profile.ANNUAL_PERIOD_DAYS), 2),
+            )
+
+    def test_an_odd_prorated_charge_reads_by_the_cadence_premium_pro_charges_set(self):
+        """A switch to Premium Pro first bills an odd prorated amount. Alone it buys a year, as one charge at
+        an amount no price list holds does. Followed a month later by a $29 charge, it reads as monthly."""
+        prorated = self._pay(days_ago=40, amount=8.39)
+
+        expiration, _, _ = Profile.premium_expire_from_payments(PaymentHistory.objects.filter(user=self.user))
+        self.assertEqual(
+            expiration, prorated.payment_date + datetime.timedelta(days=Profile.ANNUAL_PERIOD_DAYS)
+        )
+
+        pro = self._pay(days_ago=9)
+
+        expiration, _, count = Profile.premium_expire_from_payments(
+            PaymentHistory.objects.filter(user=self.user)
+        )
+        self.assertEqual(
+            (expiration, count), (pro.payment_date + datetime.timedelta(days=Profile.MONTHLY_PERIOD_DAYS), 2)
+        )
 
 
 class Test_StoreReceiptRenewals(TestCase):
@@ -2632,6 +2772,38 @@ class Test_UsageBillingSubscriptionIsolation(TestCase):
         self.assertEqual(kwargs["items"][0]["id"], archive_sub["items"].data[0].id)
         self.assertEqual(kwargs["items"][0]["price"], Profile.plan_to_stripe_price("pro"))
 
+    @patch("apps.profile.tasks.EmailNewPremiumPro.delay")
+    @patch("apps.profile.tasks.EmailStaffPremiumUpgrade.delay")
+    @patch("apps.profile.models.SchedulePremiumSetup")
+    @patch("apps.reader.models.UserSubscription.queue_new_feeds")
+    @patch.object(Profile, "retrieve_stripe_ids")
+    @patch.object(Profile, "retrieve_paypal_ids")
+    @patch("stripe.Charge.list", return_value=MagicMock(data=[]))
+    @patch("stripe.Subscription.list")
+    @patch("stripe.Customer.retrieve")
+    def test_history_sync_reads_the_tier_sub_behind_a_newer_usage_billing_sub(
+        self, mock_retrieve, mock_list, *mocks
+    ):
+        """An Archive subscriber switched to Pro, and Stripe lists the newer usage billing sub first."""
+        Profile.objects.filter(pk=self.profile.pk).update(is_premium=True, is_archive=True)
+        mock_retrieve.return_value = MagicMock(id=self.STRIPE_ID)
+        pro_sub = self._tier_sub("pro")
+        pro_sub["cancel_at"] = None
+        usage_sub = self._usage_sub()
+        usage_sub["cancel_at"] = None
+        mock_list.return_value = MagicMock(data=[usage_sub, pro_sub])
+
+        Profile.objects.get(pk=self.profile.pk).setup_premium_history()
+
+        profile = Profile.objects.get(pk=self.profile.pk)
+        self.assertTrue(profile.is_pro)
+        self.assertEqual((profile.active_provider, profile.premium_renewal), ("stripe", True))
+
+        # Turning off the Pro renewal turns off the account's, though usage billing still renews.
+        pro_sub["cancel_at"] = 1900000000
+        profile.setup_premium_history()
+        self.assertFalse(Profile.objects.get(pk=self.profile.pk).premium_renewal)
+
     # --- Canceling Stripe ----------------------------------------------------
 
     @patch("stripe.Subscription.modify")
@@ -3081,3 +3253,259 @@ class Test_AccountLogout(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response["Location"], "/")
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class Test_StripeWebhookSignature(TestCase):
+    """vendor/zebra/views.py acts on a Stripe event only once its Stripe-Signature header matches the endpoint's
+    secret, settings.STRIPE_WEBHOOK_SECRET."""
+
+    SECRET = "whsec_newsblur_test"
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="webhooksigned", email="webhooksigned@test.com")
+        threshold = patch("stripe.Subscription.modify")
+        threshold.start()
+        self.addCleanup(threshold.stop)
+        self.body = json.encode(
+            {
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "customer": "cus_webhooksigned",
+                        "subscription": "sub_usage",
+                        "metadata": {"newsblur_user_id": str(self.user.pk), "purpose": "usage_billing"},
+                    }
+                },
+            }
+        )
+
+    def signature(self, secret, body=None):
+        timestamp = int(time.time())
+        signed = ("%d.%s" % (timestamp, body or self.body)).encode()
+        return "t=%d,v1=%s" % (timestamp, hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest())
+
+    def deliver(self, signature=None):
+        headers = {"HTTP_USER_AGENT": "Stripe/1.0 (+https://stripe.com/docs/webhooks)"}
+        if signature:
+            headers["HTTP_STRIPE_SIGNATURE"] = signature
+        response = Client().post(
+            reverse("zebra:webhooks_v2"), self.body, content_type="application/json", **headers
+        )
+        return response.status_code, Profile.objects.get(user=self.user).is_usage_billing
+
+    @override_settings(STRIPE_WEBHOOK_SECRET=SECRET)
+    def test_only_an_event_stripe_signed_is_acted_on(self):
+        self.assertEqual(self.deliver(), (400, False))
+        self.assertEqual(self.deliver(self.signature("whsec_someone_else")), (400, False))
+        self.assertEqual(
+            self.deliver(self.signature(self.SECRET, body=self.body.replace("usage", "other"))), (400, False)
+        )
+
+        self.assertEqual(self.deliver(self.signature(self.SECRET)), (200, True))
+
+    def test_without_a_secret_events_are_acted_on_and_each_is_reported_outside_development(self):
+        with patch("utils.log.error") as report:
+            # Development and tests say nothing.
+            self.assertEqual(self.deliver(), (200, True))
+            self.assertFalse(report.called)
+
+            with self.settings(DEBUG=False, TEST_DEBUG=False):
+                for _ in range(2):
+                    self.assertEqual(self.deliver()[0], 200)
+
+        self.assertEqual(report.call_count, 2)
+        self.assertNotIn("cus_webhooksigned", str(report.call_args_list))
+
+
+class Test_PaypalWebhookSignature(TestCase):
+    """apps/profile/views.py paypal_webhooks acts on a notification only once PayPal verifies it sent it to the
+    webhook settings.PAYPAL_WEBHOOK_ID names, and acts on it as sent while that setting is empty."""
+
+    WEBHOOK_ID = "WH-NEWSBLUR-TEST"
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="paypalsigned", email="paypalsigned@test.com")
+        self.event = {
+            "id": "WH-EVENT-1",
+            "event_type": "BILLING.SUBSCRIPTION.CREATED",
+            "resource": {"id": "I-SIGNED", "status": "APPROVAL_PENDING", "custom_id": str(self.user.pk)},
+        }
+        api = MagicMock()
+        api.post.side_effect = self.verify
+        api_patcher = patch("paypalrestsdk.Api", return_value=api)
+        api_patcher.start()
+        self.addCleanup(api_patcher.stop)
+
+    def signature(self, webhook_id, event):
+        return hashlib.sha256(("%s|%s" % (webhook_id, json.encode(event))).encode()).hexdigest()
+
+    def verify(self, url, data):
+        """PayPal's verify-webhook-signature: SUCCESS only for the signature PayPal made for this event and this
+        webhook."""
+        if url != "/v1/notifications/verify-webhook-signature":
+            raise AssertionError("PayPal has no POST %s" % url)
+        signed = data["transmission_sig"] == self.signature(data["webhook_id"], data["webhook_event"])
+        return {"verification_status": "SUCCESS" if signed else "FAILURE"}
+
+    def deliver(self, signature=None, event=None):
+        headers = {}
+        if signature:
+            headers = {
+                "HTTP_PAYPAL_TRANSMISSION_ID": "8f9a2e10-transmission",
+                "HTTP_PAYPAL_TRANSMISSION_TIME": "2026-11-27T08:00:00Z",
+                "HTTP_PAYPAL_TRANSMISSION_SIG": signature,
+                "HTTP_PAYPAL_CERT_URL": "https://api.paypal.com/v1/notifications/certs/CERT-1",
+                "HTTP_PAYPAL_AUTH_ALGO": "SHA256withRSA",
+            }
+        response = Client().post(
+            reverse("paypal-webhooks"),
+            json.encode(event or self.event),
+            content_type="application/json",
+            **headers
+        )
+        return response.status_code, self.user.paypal_ids.exists()
+
+    @override_settings(PAYPAL_WEBHOOK_ID=WEBHOOK_ID)
+    def test_only_a_notification_paypal_verifies_is_acted_on(self):
+        self.assertEqual(self.deliver(), (400, False))
+        self.assertEqual(self.deliver(self.signature("WH-SOMEONE-ELSE", self.event)), (400, False))
+        changed = dict(self.event, resource=dict(self.event["resource"], id="I-CHANGED"))
+        self.assertEqual(
+            self.deliver(self.signature(self.WEBHOOK_ID, self.event), event=changed), (400, False)
+        )
+
+        self.assertEqual(self.deliver(self.signature(self.WEBHOOK_ID, self.event)), (200, True))
+
+    def test_without_a_webhook_id_notifications_are_acted_on_and_each_is_reported_outside_development(self):
+        with patch("utils.log.error") as report:
+            # Development and tests say nothing.
+            self.assertEqual(self.deliver(), (200, True))
+            self.assertFalse(report.called)
+
+            with self.settings(DEBUG=False, TEST_DEBUG=False):
+                for subscription_id in ("I-SECOND", "I-THIRD"):
+                    event = dict(self.event, resource=dict(self.event["resource"], id=subscription_id))
+                    self.assertEqual(self.deliver(event=event)[0], 200)
+
+        self.assertEqual(self.user.paypal_ids.count(), 3)
+        self.assertEqual(report.call_count, 2)
+        self.assertNotIn("I-THIRD", str(report.call_args_list))
+
+
+class Test_PaypalIpnVerification(TestCase):
+    """apps/profile/models.py acts on a PayPal IPN only once PayPal's postback verifies it, even when
+    django-paypal flags it for another reason. A notice PayPal doesn't verify attaches no subscription to an
+    account and starts no plan, then or at a later sync."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(username="ipnreader", email="ipnreader@test.com")
+        Profile.objects.filter(user=self.user).update(
+            is_premium=False, is_premium_trial=False, premium_expire=None
+        )
+        # test_profile.py: when today's payment was made. PayPal's API gives a payment's time in UTC and its IPN gives
+        # it in Pacific time, and both name this one moment, whatever the time of day the test runs.
+        self.paid_at = datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0)
+        api = MagicMock()
+        api.get.side_effect = self.paypal_get
+        for patcher in (
+            patch.object(Profile, "paypal_api", return_value=api),
+            patch("apps.profile.tasks.EmailNewPremium.delay"),
+            patch("apps.profile.models.SchedulePremiumSetup"),
+            patch("apps.reader.models.UserSubscription.queue_new_feeds"),
+        ):
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def paypal_get(self, path):
+        """PayPal's record of I-PAID, a Premium subscription someone paid for today."""
+        if path == "/v1/billing/subscriptions/I-PAID?fields=plan":
+            return {"status": "ACTIVE", "plan_id": Profile.plan_to_paypal_plan_id("premium")}
+        if path.startswith("/v1/billing/subscriptions/I-PAID/transactions"):
+            return {
+                "transactions": [
+                    {
+                        "time": self.paid_at.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                        "status": "COMPLETED",
+                        "amount_with_breakdown": {"gross_amount": {"value": "36.00"}},
+                    }
+                ]
+            }
+        raise AssertionError("Unexpected PayPal API path: %s" % path)
+
+    def deliver(self, postback, txn_id, days_ago=0, amount="36.00", payment_status="Completed"):
+        """A subscription payment IPN for I-PAID naming this account, paid days_ago, whose postback PayPal answers
+        with postback."""
+        from paypal.standard.ipn.models import PayPalIPN
+
+        paid_at = (self.paid_at - datetime.timedelta(days=days_ago)).astimezone(pytz.timezone("US/Pacific"))
+        with patch.object(PayPalIPN, "_postback", return_value=postback):
+            Client().post(
+                reverse("paypal-ipn"),
+                urlencode(
+                    {
+                        "txn_type": "subscr_payment",
+                        "txn_id": txn_id,
+                        "subscr_id": "I-PAID",
+                        "custom": self.user.username,
+                        "payer_email": self.user.email,
+                        "payment_status": payment_status,
+                        "payment_date": paid_at.strftime("%H:%M:%S %b %d, %Y ") + paid_at.tzname(),
+                        "mc_gross": amount,
+                        "payment_gross": amount,
+                        "mc_currency": "USD",
+                        "charset": "utf-8",
+                    }
+                ),
+                content_type="application/x-www-form-urlencoded",
+            )
+
+    def attached(self):
+        profile = Profile.objects.get(user=self.user)
+        return profile.paypal_sub_id, self.user.paypal_ids.exists(), profile.is_premium
+
+    def payments(self):
+        return sorted(PaymentHistory.objects.filter(user=self.user).values_list("payment_amount", flat=True))
+
+    def test_only_a_notice_paypal_verifies_attaches_a_subscription_or_starts_a_plan(self):
+        self.deliver(b"INVALID", "TX-1")
+        self.assertEqual(self.attached(), (None, False, False))
+
+        # A sync for any other reason doesn't pick it up from the stored notice either.
+        Profile.objects.get(user=self.user).setup_premium_history()
+        self.assertEqual(self.attached(), (None, False, False))
+        self.assertEqual(self.payments(), [])
+
+        self.deliver(b"VERIFIED", "TX-2")
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        self.assertEqual(self.payments(), [36])
+
+        # On an account PayPal bills, a payment notice PayPal doesn't verify adds no payment.
+        self.deliver(b"INVALID", "TX-3", days_ago=30, amount="299.00")
+        Profile.objects.get(user=self.user).setup_premium_history()
+        self.assertEqual(self.payments(), [36])
+
+    def test_a_resent_notice_paypal_verifies_records_its_payment_though_its_txn_id_is_stored(self):
+        from paypal.standard.ipn.models import PayPalIPN
+
+        # The first delivery is stored, then fails before its payment is recorded, so PayPal sends it again.
+        unreachable = ConnectionError("PayPal unreachable")
+        with patch.object(Profile, "setup_premium_history", side_effect=unreachable):
+            with self.assertRaises(ConnectionError):
+                self.deliver(b"VERIFIED", "TX-1")
+        self.assertEqual(self.payments(), [])
+
+        self.deliver(b"VERIFIED", "TX-1")
+
+        self.assertIn("Duplicate txn_id", PayPalIPN.objects.get(txn_id="TX-1", flag=True).flag_info)
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        self.assertEqual(self.payments(), [36])
+
+    def test_a_notice_paypal_verifies_with_a_payment_status_django_paypal_lacks_records_its_payment(self):
+        from paypal.standard.ipn.models import PayPalIPN
+
+        self.deliver(b"VERIFIED", "TX-1", days_ago=30, payment_status="In-Progress")
+
+        self.assertIn("Invalid payment_status", PayPalIPN.objects.get(txn_id="TX-1").flag_info)
+        self.assertEqual(self.attached(), ("I-PAID", True, True))
+        # Today's payment from PayPal's API, and the one the notice names.
+        self.assertEqual(self.payments(), [36, 36])

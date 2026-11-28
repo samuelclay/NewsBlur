@@ -1036,19 +1036,31 @@ class UserSubscription(models.Model):
             else:
                 message = "This address does not point to an RSS feed or a website with an RSS feed."
         else:
+            from apps.team.sites import TeamSites
+
             allow_skip_resync = False
             if user.profile.is_archive and feed.active_premium_subscribers != 0:
                 # Skip resync if there are already active archive subscribers
                 allow_skip_resync = True
 
-            us, subscription_created = cls.objects.get_or_create(
-                feed=feed,
-                user=user,
-                defaults={
-                    "needs_unread_recalc": True,
-                    "active": auto_active,
-                },
-            )
+            activate = auto_active or user.profile.is_premium
+            with transaction.atomic():
+                # models.py: a teammate's new site counts against their team's shared site limit, checked and
+                # made active with the team row locked (apps/team/sites.py).
+                team_sites = activate and TeamSites.lock_for(user)
+                if team_sites and not team_sites.fitting([feed.pk]):
+                    return -1, team_sites.refusal_message(), None
+                us, subscription_created = cls.objects.get_or_create(
+                    feed=feed,
+                    user=user,
+                    defaults={
+                        "needs_unread_recalc": True,
+                        "active": auto_active,
+                    },
+                )
+                if activate:
+                    us.active = True
+                    us.save()
             code = 1
             message = ""
 
@@ -1063,10 +1075,6 @@ class UserSubscription(models.Model):
             user_sub_folders = add_object_to_folder(feed.pk, folder, user_sub_folders)
             user_sub_folders_object.folders = json.encode(user_sub_folders)
             user_sub_folders_object.save()
-
-            if auto_active or user.profile.is_premium:
-                us.active = True
-                us.save()
 
             if not skip_fetch and feed.last_update < datetime.datetime.utcnow() - datetime.timedelta(days=1):
                 feed = feed.update(verbose=True)
@@ -3486,16 +3494,27 @@ class UserSubscriptionFolders(models.Model):
         if not all_feeds:
             return
 
+        from apps.team.sites import TeamSites
+
         feeds_to_activate = all_feeds[:max_feed_limit]
-        for feed in feeds_to_activate:
-            try:
-                sub = UserSubscription.objects.get(user=self.user, feed=feed)
-            except UserSubscription.DoesNotExist:
-                continue
-            sub.active = True
-            sub.save()
-            if sub.feed.active_subscribers <= 0:
-                sub.feed.count_subscribers()
+        with transaction.atomic():
+            # models.py: a teammate's sites come back only as far as their team's shared site limit allows
+            # (apps/team/sites.py).
+            team_sites = TeamSites.lock_for(self.user)
+            if team_sites:
+                subscribed = set(
+                    UserSubscription.objects.filter(user=self.user).values_list("feed_id", flat=True)
+                )
+                feeds_to_activate = team_sites.fitting([feed for feed in all_feeds if feed in subscribed])
+            for feed in feeds_to_activate:
+                try:
+                    sub = UserSubscription.objects.get(user=self.user, feed=feed)
+                except UserSubscription.DoesNotExist:
+                    continue
+                sub.active = True
+                sub.save()
+                if sub.feed.active_subscribers <= 0:
+                    sub.feed.count_subscribers()
 
 
 class Feature(models.Model):

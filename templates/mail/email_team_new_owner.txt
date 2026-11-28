@@ -1,0 +1,8 @@
+{% load i18n utils_tags %}{% autoescape off %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% if comped %}{% blocktrans with team=team_name %}You own {{ team }} now. Its plan stays free.{% endblocktrans %}{% else %}{% blocktrans with team=team_name plan=plan_name %}You own {{ team }} now, and its {{ plan }} plan is billed to you from here on.{% endblocktrans %}{% endif %}{% if former_owner %} {% blocktrans with username=former_owner.username %}Everyone on the team keeps Premium Pro, and {{ username }} stays on it as a manager.{% endblocktrans %}{% endif %}
+
+{% trans "Manage your team:" %} https://{{ domain }}/?next=team
+
+Sam
+{% endautoescape %}

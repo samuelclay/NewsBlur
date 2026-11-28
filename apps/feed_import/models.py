@@ -118,6 +118,7 @@ class OPMLImporter(Importer):
     def __init__(self, opml_xml, user):
         self.user = user
         self.opml_xml = opml_xml
+        self.held_for_team = None
 
     @staticmethod
     def get_outline_attr(item, *attrs):
@@ -130,7 +131,12 @@ class OPMLImporter(Importer):
 
     def process(self):
         # self.clear_feeds()
+        from apps.team.models import team_scope
+        from apps.team.sites import TeamSites
 
+        # apps/feed_import/models.py: a teammate's imported sites stay muted while the outline is read, and are
+        # made active at the end only as far as their team's shared site limit allows (apps/team/sites.py).
+        self.held_for_team = [] if team_scope(self.user) else None
         outline = opml.from_string(self.opml_xml)
         try:
             # apps/feed_import/models.py collects only imported placements while resolving feeds without row locks.
@@ -139,6 +145,11 @@ class OPMLImporter(Importer):
             folders = None
         else:
             with transaction.atomic():
+                team_sites = self.held_for_team and TeamSites.lock_for(self.user)
+                if team_sites:
+                    UserSubscription.objects.filter(
+                        user=self.user, feed_id__in=team_sites.fitting(self.held_for_team)
+                    ).update(active=True)
                 # Match subscription_batch.py's lock order, then merge into the latest committed folder tree.
                 User.objects.select_for_update().get(pk=self.user.pk)
                 self.usf, _ = UserSubscriptionFolders.objects.get_or_create(user=self.user)
@@ -305,18 +316,23 @@ class OPMLImporter(Importer):
         except UserSubscription.DoesNotExist:
             us = None
 
+        activate = self.user.profile.is_premium
+        if activate and self.held_for_team is not None and not (us and us.active):
+            self.held_for_team.append(feed_db.pk)
+            activate = False
+
         if not us:
             us = UserSubscription(
                 feed=feed_db,
                 user=self.user,
                 needs_unread_recalc=True,
                 mark_read_date=datetime.datetime.utcnow() - datetime.timedelta(days=1),
-                active=self.user.profile.is_premium,
+                active=activate,
                 user_title=user_feed_title,
             )
             us.save()
 
-        if self.user.profile.is_premium and not us.active:
+        if activate and not us.active:
             us.active = True
             us.save()
         if not us.needs_unread_recalc:

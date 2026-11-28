@@ -212,7 +212,9 @@ class Test_RedListenBudget(SimpleTestCase):
         self.assertFalse(self.budget.reserve(ONE_OFF, 1))
 
     def test_development_only_spends_on_one_offs(self):
-        with self.settings(DEBUG=True):
+        # test_redlisten.py: ORIGINAL_DEBUG is pinned because a request an earlier test happened to profile
+        # (DBProfilerMiddleware in apps/profile/middleware.py) leaves it on the settings object.
+        with self.settings(DEBUG=True, ORIGINAL_DEBUG=True):
             self.assertFalse(self.budget.reserve(POLLER, 1))
             self.assertFalse(self.budget.reserve(SCHEDULED, 1))
             self.assertTrue(self.budget.reserve(ONE_OFF, 1))

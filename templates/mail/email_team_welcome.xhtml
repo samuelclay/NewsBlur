@@ -1,0 +1,13 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    {% current_domain as domain %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with plan=plan_name count seats=seats %}Your {{ plan }} plan has started and your team is ready. It has {{ seats }} seat, and everyone you invite gets Premium Pro on their own NewsBlur account.{% plural %}Your {{ plan }} plan has started and your team is ready. It has {{ seats }} seats, one of them yours, and everyone you invite gets Premium Pro on their own NewsBlur account.{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% trans "Give your team a name and invite your teammates:" %} <a href="https://{{ domain }}/?next=team">{% trans "Set up your team" %}</a></p>
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

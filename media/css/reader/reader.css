@@ -19980,6 +19980,12 @@ h5.NB-classifier-section-header {
     filter: hue-rotate(320deg) saturate(17.5);
 }
 
+.NB-menu-manage .NB-menu-manage-team .NB-menu-manage-image {
+    background: transparent url('/media/embed/icons/nouns/team.svg') no-repeat 0 0;
+    background-size: 18px;
+    filter: hue-rotate(150deg) saturate(9);
+}
+
 .NB-menu-manage .NB-menu-manage-theme .NB-menu-manage-image {
     background: transparent url("/media/embed/icons/nouns/menu-theme.svg") no-repeat center center;
     background-size: 18px;
@@ -22977,9 +22983,35 @@ h5.NB-classifier-section-header {
 
 .NB-modal-admin .NB-account-payments,
 .NB-modal-admin .NB-admin-listen,
+.NB-modal-admin .NB-admin-team,
 .NB-modal-admin .NB-admin-actions {
     overflow: hidden;
     padding: 12px 24px;
+}
+
+.NB-modal-admin .NB-admin-team-control {
+    overflow: hidden;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.NB-modal-admin .NB-admin-team-control span,
+.NB-modal-admin .NB-admin-team-control input,
+.NB-modal-admin .NB-admin-team-control select {
+    float: left;
+    margin: 9px 8px 0 0;
+}
+
+.NB-modal-admin .NB-admin-team-control input {
+    width: 64px;
+    margin-top: 6px;
+}
+
+.NB-modal-admin .NB-admin-team-error {
+    clear: both;
+    padding-top: 8px;
+    font-size: 12px;
+    color: #D9473C;
 }
 
 .NB-modal-admin .NB-admin-listen-line {
@@ -28772,6 +28804,641 @@ h5.NB-classifier-section-header {
 .NB-mobile .NB-modal-preferences .NB-theme-auto .NB-theme-auto-option {
     gap: 5px;
     padding: 0 4px;
+}
+
+/* =============== */
+/* = Team dialog = */
+/* =============== */
+
+/* reader.css: the team dialog (reader_team.js) carries .NB-modal-preferences too, so its tabs, rows, cards
+ * and pill are the Preferences ones above, in every theme. These rules are for what is its own. */
+.NB-modal-team .NB-modal-title .NB-icon {
+    background: transparent url('/media/embed/icons/nouns/team.svg') no-repeat 0 0;
+    background-size: 28px;
+    filter: hue-rotate(150deg) saturate(9);
+}
+
+/* reader.css: with no team to show, the dialog is as tall as what it says. */
+.NB-modal.NB-modal-team.NB-team-single .NB-tab {
+    height: auto;
+    max-height: 600px;
+}
+
+.NB-modal-team .NB-team-loading .NB-modal-loading {
+    width: 16px;
+    height: 16px;
+    margin: 140px auto 0;
+}
+
+.NB-modal-team .NB-modal-tab:focus-visible {
+    outline: 2px solid rgba(92, 137, 201, 0.6);
+    outline-offset: -2px;
+}
+
+/* reader.css: a callout above the groups, for what has to be read first. */
+.NB-team-notice {
+    margin: 20px 0 0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 19px;
+    background-color: rgba(0, 0, 0, 0.035);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.NB-team-notice-warning {
+    background-color: rgba(224, 163, 60, 0.13);
+    box-shadow: inset 0 0 0 1px rgba(196, 136, 36, 0.32);
+}
+
+.NB-team-notice-error {
+    background-color: rgba(179, 56, 44, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(179, 56, 44, 0.24);
+}
+
+.NB-team-notice-info {
+    background-color: rgba(52, 145, 46, 0.09);
+    box-shadow: inset 0 0 0 1px rgba(52, 145, 46, 0.24);
+}
+
+.NB-team-notice-accent {
+    background-color: rgba(92, 137, 201, 0.1);
+    box-shadow: inset 0 0 0 1.5px rgba(92, 137, 201, 0.55);
+}
+
+.NB-team-notice-title {
+    margin-bottom: 4px;
+    font-size: 15px;
+    line-height: 21px;
+    text-wrap: balance;
+}
+
+.NB-team-notice-text {
+    text-wrap: pretty;
+}
+
+.NB-team-notice-buttons,
+.NB-team-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.NB-dark .NB-team-notice {
+    background-color: rgba(255, 255, 255, 0.045);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.NB-dark .NB-team-notice-warning {
+    background-color: rgba(217, 169, 78, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(217, 169, 78, 0.35);
+}
+
+.NB-dark .NB-team-notice-error {
+    background-color: rgba(208, 116, 122, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(208, 116, 122, 0.35);
+}
+
+.NB-dark .NB-team-notice-info {
+    background-color: rgba(109, 179, 122, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(109, 179, 122, 0.32);
+}
+
+.NB-dark .NB-team-notice-accent {
+    background-color: rgba(143, 189, 232, 0.1);
+    box-shadow: inset 0 0 0 1.5px rgba(143, 189, 232, 0.5);
+}
+
+/* reader.css: the owner is asked to name a new team before anything else. */
+.NB-team-name-prompt .NB-preference-group-rows {
+    background-color: rgba(92, 137, 201, 0.07);
+    box-shadow: inset 0 0 0 1.5px rgba(92, 137, 201, 0.55);
+}
+
+.NB-dark .NB-team-name-prompt .NB-preference-group-rows {
+    background-color: rgba(143, 189, 232, 0.07);
+    box-shadow: inset 0 0 0 1.5px rgba(143, 189, 232, 0.5);
+}
+
+/* reader.css: buttons, fields and text in the right-hand column. Preferences floats its buttons, which a
+ * phone's stacked rows would not hold. */
+.NB-modal-team .NB-modal-submit-button {
+    float: none;
+    min-height: 34px;
+    margin: 0;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 18px;
+    white-space: nowrap;
+    transition: background-color 0.14s ease-out, transform 0.14s ease-out;
+}
+
+.NB-modal-team .NB-modal-submit-button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.NB-modal-team .NB-modal-submit-button:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-input {
+    float: none;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 480px;
+    height: 36px;
+    margin: 0;
+    padding: 0 10px;
+    border: 1px solid rgba(0, 0, 0, 0.22);
+    border-radius: 6px;
+    background-color: #FFFFFF;
+    color: inherit;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options textarea.NB-team-input {
+    max-width: 480px;
+    height: auto;
+    padding: 7px 10px;
+    line-height: 20px;
+    resize: vertical;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-input::placeholder {
+    color: rgba(0, 0, 0, 0.35);
+}
+
+.NB-dark .NB-modal-team .NB-preference .NB-preference-options .NB-team-input::placeholder {
+    color: var(--nb-dark-muted);
+    opacity: 0.6;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-input:focus {
+    outline: none;
+    border-color: #5C89C9;
+    box-shadow: 0 0 0 3px rgba(92, 137, 201, 0.25);
+}
+
+.NB-dark .NB-modal-team .NB-preference .NB-preference-options .NB-team-input {
+    border-color: var(--nb-dark-border);
+    background-color: var(--nb-dark-canvas);
+    color: var(--nb-dark-text);
+}
+
+.NB-dark .NB-modal-team .NB-preference .NB-preference-options .NB-team-input:focus {
+    border-color: #8FBDE8;
+    box-shadow: 0 0 0 3px rgba(143, 189, 232, 0.25);
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-join-url {
+    background-color: rgba(0, 0, 0, 0.03);
+    font-size: 13px;
+    text-overflow: ellipsis;
+}
+
+.NB-team-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 480px;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-inline .NB-team-input {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.NB-modal-team .NB-preference-group .NB-preference .NB-preference-options .NB-team-inline select {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.NB-team-text {
+    padding-top: 4px;
+    font-size: 13px;
+    line-height: 19px;
+    text-wrap: pretty;
+}
+
+.NB-team-muted {
+    opacity: 0.65;
+}
+
+.NB-team-value {
+    padding-top: 3px;
+}
+
+.NB-team-value-main {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+}
+
+.NB-team-value-detail {
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 17px;
+    opacity: 0.65;
+    text-wrap: pretty;
+}
+
+.NB-team-error {
+    margin-top: 8px;
+    color: #B3382C;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 17px;
+}
+
+.NB-modal-preferences .NB-preference .NB-team-error {
+    margin-top: 8px;
+    color: #B3382C;
+    font-size: 12px;
+}
+
+.NB-dark .NB-team-error,
+.NB-dark .NB-modal-preferences .NB-preference .NB-team-error {
+    color: #F0A39B;
+}
+
+.NB-team-link-button {
+    margin: 0;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    color: #3F6AA6;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.NB-team-link-button:hover {
+    text-decoration: underline;
+}
+
+.NB-team-link-button:disabled {
+    cursor: default;
+    opacity: 0.6;
+    text-decoration: none;
+}
+
+.NB-dark .NB-team-link-button {
+    color: var(--nb-dark-link);
+}
+
+/* reader.css: seats used out of the limit, one mark a seat. */
+.NB-team-seats-count {
+    padding-top: 3px;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    font-variant-numeric: tabular-nums;
+}
+
+.NB-team-seats-meter {
+    display: flex;
+    gap: 4px;
+    max-width: 480px;
+    margin-top: 8px;
+}
+
+.NB-team-seat {
+    flex: 1 1 0;
+    height: 8px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.NB-team-seat.NB-taken,
+.NB-team-seats-bar-fill {
+    background-color: #5C89C9;
+}
+
+.NB-team-seats-bar {
+    max-width: 480px;
+    height: 8px;
+    margin-top: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.NB-team-seats-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.NB-dark .NB-team-seat,
+.NB-dark .NB-team-seats-bar {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.NB-dark .NB-team-seat.NB-taken,
+.NB-dark .NB-team-seats-bar-fill {
+    background-color: #8FBDE8;
+}
+
+/* reader.css: one row a teammate: their photo or initial and name on the left, their role on the right. */
+.NB-modal-team .NB-preference-group .NB-preference.NB-team-member {
+    align-items: center;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.NB-modal-team .NB-preference-group .NB-preference.NB-team-member-editable {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.NB-modal-team .NB-preference-group .NB-preference .NB-team-member-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.NB-team-avatar {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.NB-team-avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hsl(var(--nb-avatar-hue, 210), 34%, 54%);
+    color: #FFFFFF;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.NB-dark .NB-team-avatar-initial {
+    background-color: hsl(var(--nb-avatar-hue, 210), 26%, 38%);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.NB-team-member-names {
+    min-width: 0;
+}
+
+.NB-modal-team .NB-preference-title.NB-team-member-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    padding-top: 0;
+}
+
+.NB-team-username {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-team-you {
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background-color: rgba(92, 137, 201, 0.15);
+    color: #3F6AA6;
+    font-size: 10px;
+    font-weight: bold;
+    line-height: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.NB-dark .NB-team-you {
+    background-color: rgba(143, 189, 232, 0.18);
+    color: #B5D4F0;
+}
+
+.NB-team-member-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.NB-team-role-text {
+    padding: 0 4px;
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+.NB-team-role-owner {
+    font-weight: bold;
+    opacity: 0.85;
+}
+
+/* reader.css: role cards are a pair, a little smaller than the Preferences cards. */
+.NB-modal-team .NB-pref-cards.NB-team-role-cards {
+    grid-template-columns: repeat(2, 104px);
+    gap: 12px;
+}
+
+.NB-modal-team .NB-pref-cards.NB-team-role-cards .NB-pref-caption {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.NB-team-role-cards.NB-busy {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* reader.css: a question asked in place of a browser confirm. */
+.NB-team-confirm {
+    padding: 12px 14px;
+    border-radius: 8px;
+    background-color: rgba(179, 56, 44, 0.06);
+    box-shadow: inset 0 0 0 1px rgba(179, 56, 44, 0.2);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.NB-team-confirm .NB-team-buttons {
+    margin-top: 10px;
+}
+
+.NB-dark .NB-team-confirm {
+    background-color: rgba(208, 116, 122, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(208, 116, 122, 0.3);
+}
+
+/* reader.css: invites, the people waiting to join, and the join link. */
+.NB-team-invite-as {
+    margin-top: 14px;
+}
+
+.NB-team-field-label {
+    display: block;
+    margin: 0 0 6px 2px;
+    font-size: 12px;
+    line-height: 16px;
+    opacity: 0.65;
+}
+
+.NB-team-invites {
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.NB-dark .NB-team-invites {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.NB-team-invite-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.NB-team-invite-item:last-child {
+    border-bottom: none;
+}
+
+.NB-dark .NB-team-invite-item {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+.NB-team-invite-text {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.NB-team-invite-email {
+    display: block;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-team-invite-meta {
+    font-size: 12px;
+    line-height: 16px;
+    opacity: 0.6;
+}
+
+.NB-team-invite-item .NB-team-error {
+    flex: 1 0 100%;
+    margin-top: 0;
+}
+
+.NB-team-link-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin-top: 6px;
+}
+
+/* reader.css: the short form for asking about more than ten seats. */
+.NB-team-form {
+    display: grid;
+    gap: 12px;
+    max-width: 480px;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options label.NB-team-field {
+    display: block;
+    float: none;
+    margin: 0;
+    padding: 0;
+    cursor: default;
+}
+
+.NB-modal-team .NB-preference .NB-preference-options .NB-team-field-short .NB-team-input {
+    max-width: 140px;
+}
+
+.NB-team-form .NB-team-buttons {
+    margin-top: 0;
+}
+
+.NB-team-sent {
+    font-weight: bold;
+}
+
+/* reader.css: the activity log, a sentence and a time to each line. */
+.NB-team-activity-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 13px;
+    line-height: 19px;
+}
+
+.NB-team-activity-entry:last-child {
+    border-bottom: none;
+}
+
+.NB-dark .NB-team-activity-entry {
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+}
+
+.NB-team-activity-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+}
+
+.NB-team-activity-date {
+    flex: none;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    opacity: 0.6;
+}
+
+.NB-team-activity-more,
+.NB-team-activity-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 18px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.NB-team-activity-empty .NB-modal-loading {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-mobile .NB-team-activity-entry {
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+}
+
+.NB-mobile .NB-modal-team .NB-preference .NB-preference-options .NB-team-input {
+    font-size: 16px;
+}
+
+.NB-mobile .NB-modal-team .NB-preference-group .NB-preference.NB-team-member .NB-preference-options {
+    margin-top: 12px;
 }
 
 .NB-modal-preferences .NB-preference-feedorder label img {

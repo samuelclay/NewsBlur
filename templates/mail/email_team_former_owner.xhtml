@@ -1,0 +1,18 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% blocktrans trimmed with username=new_owner.username team=team_name %}{{ username }} owns {{ team }} now. You stay on the team as a manager and keep Premium Pro.{% endblocktrans %}</p>
+    {% if provider == "app_store" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed %}You paid for the team through the App Store, and only you can cancel that. So you aren't charged for it again, cancel it in your App Store subscriptions:{% endblocktrans %} <a href="{{ manage_url }}">{{ manage_url }}</a></p>
+    {% elif provider == "play" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed %}You paid for the team through Google Play, and only you can cancel that. So you aren't charged for it again, cancel it in your Google Play subscriptions:{% endblocktrans %} <a href="{{ manage_url }}">{{ manage_url }}</a></p>
+    {% elif provider == "stripe" or provider == "paypal" %}
+    <p style="line-height: 20px;">{% trans "The subscription you paid for the team with won't renew." %}{% if refund %} {% blocktrans trimmed with amount=refund|floatformat:"-2" %}You've been refunded ${{ amount }}, the unused part of the month you paid for.{% endblocktrans %}{% endif %}</p>
+    {% endif %}
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

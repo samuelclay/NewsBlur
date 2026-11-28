@@ -486,6 +486,7 @@ INSTALLED_APPS = (
     "apps.archive_extension",
     "apps.mcp",
     "apps.archive_assistant",
+    "apps.team",
     "apps.monitor",
     "utils",  # missing models so no migrations
     "vendor",
@@ -503,6 +504,9 @@ INSTALLED_APPS = (
 
 STRIPE_SECRET = "YOUR-SECRET-API-KEY"
 STRIPE_PUBLISHABLE = "YOUR-PUBLISHABLE-API-KEY"
+# The signing secret of the Stripe webhook endpoint, which vendor/zebra/views.py checks each event against. Outside
+# development, each event that arrives while it is empty reports an error.
+STRIPE_WEBHOOK_SECRET = ""
 ZEBRA_ENABLE_APP = True
 
 # Stripe Metered Billing for AI Classifiers
@@ -511,6 +515,9 @@ STRIPE_PRICE_IMAGE_CLASSIFICATION = ""
 
 PAYPAL_API_CLIENTID = "YOUR-PAYPAL-API-CLIENTID"
 PAYPAL_API_SECRET = "YOUR-PAYPAL-API-SECRET"
+# The id of the PayPal webhook, which apps/profile/views.py paypal_webhooks asks PayPal to verify each notification
+# against. Outside development, each notification that arrives while it is empty reports an error.
+PAYPAL_WEBHOOK_ID = ""
 
 GOOGLE_PLAY_PACKAGE_NAME = "com.newsblur"
 GOOGLE_PLAY_SERVICE_ACCOUNT_INFO = None
@@ -623,6 +630,7 @@ CELERY_IMPORTS = (
     "apps.archive_assistant.tasks",
     "apps.briefing.tasks",
     "apps.clustering.tasks",
+    "apps.team.tasks",
 )
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True  # Retry if task fails
@@ -724,6 +732,12 @@ CELERY_BEAT_SCHEDULE = {
     "premium-expire": {
         "task": "premium-expire",
         "schedule": datetime.timedelta(hours=24),
+        "options": {"queue": "cron_queue"},
+    },
+    # Lapses teams past their paid period and puts back teammates' overwritten Pro flags (apps/team/tasks.py).
+    "team-pro-grants": {
+        "task": "team-pro-grants",
+        "schedule": datetime.timedelta(hours=1),
         "options": {"queue": "cron_queue"},
     },
     # Feeds nobody fetches are never trimmed by a fetch (apps/rss_feeds/tasks.py TrimAbandonedFeeds).

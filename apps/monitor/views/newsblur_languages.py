@@ -18,10 +18,14 @@ PAYMENT_PROVIDERS = (
     "ios-archive-subscription",
     "ios-archive-extra-subscription",
     "ios-pro-subscription",
+    "ios-team-subscription",
+    "ios-team-enterprise-subscription",
     "android-subscription",
     "android-archive",
     "android-archive-extra",
     "android-pro",
+    "android-team",
+    "android-team-enterprise",
 )
 
 
@@ -87,6 +91,7 @@ def language_metrics(now=None):
             payment_date__date__gte=start.date(),
             payment_date__lte=now,
         )
+        .exclude(sandbox=True)
         .values("user__profile__signup_language")
         .annotate(
             since_start=Sum("payment_amount"),

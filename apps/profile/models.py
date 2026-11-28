@@ -32,11 +32,14 @@ from django.utils.translation import gettext, ngettext
 from paypal.standard.ipn.models import PayPalIPN
 from paypal.standard.ipn.signals import invalid_ipn_received, valid_ipn_received
 from zebra.signals import (
+    zebra_webhook_charge_dispute_created,
     zebra_webhook_charge_refunded,
     zebra_webhook_charge_succeeded,
     zebra_webhook_checkout_session_completed,
     zebra_webhook_customer_subscription_created,
+    zebra_webhook_customer_subscription_deleted,
     zebra_webhook_customer_subscription_updated,
+    zebra_webhook_invoice_paid,
     zebra_webhook_invoice_payment_failed,
     zebra_webhook_invoice_payment_succeeded,
 )
@@ -47,6 +50,13 @@ from apps.listen.models import MListenDaily
 from apps.reader.models import RUserStory, UserSubscription
 from apps.rss_feeds.models import Feed, MStarredStory, MStory
 from apps.rss_feeds.tasks import SchedulePremiumSetup
+from apps.team.models import (
+    Team,
+    TeamProGrant,
+    team_owner_id,
+    team_plan_fields,
+    team_pro_grant,
+)
 from utils import json_functions as json
 from utils import log as logging
 from utils.feed_functions import chunks
@@ -55,6 +65,12 @@ from utils.user_functions import generate_secret_token
 from vendor.paypalapi.exceptions import PayPalAPIResponseError
 from vendor.paypalapi.interface import PayPalInterface
 from vendor.timezones.fields import TimeZoneField
+
+# models.py: the stored PayPal IPNs an account's subscriptions and payments are read from. A notice whose
+# postback PayPal verified counts even when django-paypal flagged it for another reason. A flagged one PayPal
+# answered otherwise is left out (paypal_payment_was_flagged), as is one django-paypal couldn't read, which it
+# stores blank.
+PAYPAL_IPNS_COUNTED = Q(flag=False) | Q(response="VERIFIED")
 
 
 class Profile(models.Model):
@@ -126,9 +142,20 @@ class Profile(models.Model):
     # 365 so an annual subscriber never reads as monthly.
     MONTHLY_GAP_CEILING_DAYS = 180
     # Every price NewsBlur has billed annually: $12 and $24 grandfathered, $36 Premium,
-    # $99 Premium Archive, $299 Premium Pro yearly. Premium Pro's $29 monthly is the sole
-    # price absent here, which is what makes a charge at any of these mean a full year.
+    # $99 Premium Archive, $299 Premium Pro yearly. The MONTHLY_PRICES, Premium Pro's $29
+    # monthly and the team plans', are absent here, which is what makes a charge at any of
+    # these mean a full year.
     ANNUAL_PRICES = {12, 24, 36, 99, 159, 299}
+    # Prices only ever billed monthly: Premium Pro at $29, Premium Team at $79 and Premium Team
+    # Enterprise at $129, or $79.99 and $129.99 in the stores, which payment rows hold as whole
+    # dollars. A charge at one of these buys a month from its own date and doesn't stack with
+    # the account's other charges, so a first Premium Pro charge, a team owner's first charge,
+    # or one after an annual plan, doesn't read as a year.
+    MONTHLY_PRICES = {29, 79, 129}
+    # The team plans' MONTHLY_PRICES. A team charge also stays out of the cadence reading, which
+    # reads the plan an account pays for on its own, while a Premium Pro charge still sets the
+    # cadence an odd prorated amount is read by (premium_expire_from_payments).
+    TEAM_MONTHLY_PRICES = {79, 129}
     # A same-identifier store receipt arriving within this window is a duplicate
     # submission (relaunch, restore, race); beyond it, it's the next auto-renewal.
     # Old iOS clients (pre-14.4) send Apple's original_transaction_id, which is
@@ -143,6 +170,17 @@ class Profile(models.Model):
     # transaction id. They carry no uniqueness, so only the 3-day recent-payment
     # check can dedupe them.
     STORE_PLACEHOLDER_IDENTIFIERS = ("missing", "in-progress")
+    # models.py: the columns that hold the account's plan, which save() writes only from an instance that changed
+    # one of them.
+    TIER_FLAG_FIELDS = ("is_premium", "is_premium_trial", "is_archive", "is_archive_extra", "is_pro")
+
+    @classmethod
+    def team_payments(cls):
+        """models.py: the payment rows for a team plan, those that name one and older ones at a team plan's
+        price."""
+        return Q(plan__in=[plan for plan, _ in Team.PLAN_CHOICES]) | Q(
+            plan__isnull=True, payment_amount__in=cls.TEAM_MONTHLY_PRICES
+        )
 
     @property
     def is_self_hosted_ai(self):
@@ -160,20 +198,35 @@ class Profile(models.Model):
         return AnthropicProvider().is_configured()
 
     @property
+    def usage_billing_profile(self):
+        """The profile whose usage billing pays for this account's AI classifiers. On an active team it's the
+        owner's (apps/team/models.py team_owner_id), so a teammate's usage bills the owner against the owner's
+        spending limit."""
+        # Everyone on an active team carries the Pro flags, so other accounts skip the team lookup. This runs
+        # for every profile payload (canonical).
+        if not self.is_pro:
+            return self
+        owner_id = team_owner_id(self.user_id)
+        if not owner_id or owner_id == self.user_id:
+            return self
+        return Profile.objects.get(user_id=owner_id)
+
+    @property
     def can_use_ai_classifiers(self):
-        return bool(self.is_usage_billing) or self.is_self_hosted_ai
+        return bool(self.usage_billing_profile.is_usage_billing) or self.is_self_hosted_ai
 
     def get_usage_billing_spend(self):
         """Get current billing cycle spend from MLLMCost MongoDB records.
         Returns (current_spend_usd, limit_usd, is_limit_reached) tuple.
         """
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
+        billing = self.usage_billing_profile
+        if not billing.is_usage_billing and not self.is_self_hosted_ai:
             return (0.0, None, False)
 
         from apps.monitor.models import MLLMCost
 
-        current_spend = MLLMCost.get_current_cycle_spend(self.user_id)
-        limit = float(self.usage_billing_limit) if self.usage_billing_limit else None
+        current_spend = MLLMCost.get_current_cycle_spend(billing.user_id)
+        limit = float(billing.usage_billing_limit) if billing.usage_billing_limit else None
         if current_spend is None:
             # Analytics is down, so spend is unknown. Fail closed rather than
             # let usage billing run uncapped.
@@ -184,11 +237,12 @@ class Profile(models.Model):
     @property
     def is_usage_limit_reached(self):
         """Quick check: has user hit their spending limit? Uses Redis cache."""
-        if not self.usage_billing_limit:
+        billing = self.usage_billing_profile
+        if not billing.usage_billing_limit:
             return False
-        if not self.is_usage_billing and not self.is_self_hosted_ai:
+        if not billing.is_usage_billing and not self.is_self_hosted_ai:
             return False
-        return self._check_cached_limit_status()
+        return billing._check_cached_limit_status()
 
     def _check_cached_limit_status(self):
         """Check Redis cache for limit status, fall back to MongoDB."""
@@ -241,7 +295,23 @@ class Profile(models.Model):
             price = "price_0KK5cvwdsmP8XBla2tFdDhpy"
             if settings.DEBUG:
                 price = "price_0KK5twwdsmP8XBlasifbX56Z"
+        elif plan == "team":
+            # models.py: $79/month "Premium Team" (lookup key newsblur-premium-team-79), created 2026-11-26.
+            price = "price_0UgCfDwdsmP8XBlaft9XCHfp"
+            if settings.DEBUG:
+                price = "price_0UgCfCwdsmP8XBlakBsOX3AZ"
+        elif plan == "team_enterprise":
+            # models.py: $129/month "Premium Team Enterprise" (lookup key newsblur-premium-team-enterprise-129).
+            price = "price_0UgCfDwdsmP8XBlaqkniOnJy"
+            if settings.DEBUG:
+                price = "price_0UgCfDwdsmP8XBlakzTInxlu"
         return price
+
+    @classmethod
+    def stripe_price_plan(cls, price_id):
+        """The plan a Stripe price is for, as plan_to_stripe_price names it, or None."""
+        plans = ("premium", "archive", "archive_extra", "pro", "team", "team_enterprise")
+        return next((plan for plan in plans if price_id and price_id == cls.plan_to_stripe_price(plan)), None)
 
     @staticmethod
     def is_usage_billing_subscription(subscription):
@@ -283,7 +353,59 @@ class Profile(models.Model):
             price = "P-1AE0908250058421JM565SVY"
             if settings.DEBUG:
                 price = "P-1AE0908250058421JM565SVY"
+        elif plan == "team":
+            # models.py: $79/month "Premium Team", created 2026-11-27.
+            price = "P-8S7370738J488325JNMEUTOI"
+            if settings.DEBUG:
+                price = "P-26G78309H2256220LNMEUTOA"
+        elif plan == "team_enterprise":
+            # models.py: $129/month "Premium Team Enterprise", created 2026-11-27.
+            price = "P-82711566SE765874KNMEUTOI"
+            if settings.DEBUG:
+                price = "P-4PW05904U2821301YNMEUTOI"
         return price
+
+    @classmethod
+    def paypal_plan(cls, plan_id):
+        """The plan a PayPal plan id is for, as plan_to_paypal_plan_id names it, or None."""
+        plans = ("premium", "archive", "archive_extra", "pro", "team", "team_enterprise")
+        return next((plan for plan in plans if plan_id and plan_id == cls.plan_to_paypal_plan_id(plan)), None)
+
+    @classmethod
+    def stripe_payment_period(cls, charge):
+        """(plan, end of the period paid for) from the invoice a Stripe charge paid: the first line that charges for a
+        plan, a custom price for a team with more seats included (apps/team/stripe_billing.py price_plan), with the
+        service period Stripe gives it. (None, None) when the charge paid for no plan or Stripe can't say."""
+        from apps.team.stripe_billing import price_plan
+
+        invoice_id = charge.get("invoice")
+        if not isinstance(invoice_id, str):
+            return None, None
+        try:
+            invoice = stripe.Invoice.retrieve(invoice_id)
+        except stripe.error.StripeError as e:
+            logging.debug(" ---> Couldn't read Stripe invoice %s for its plan: %s" % (invoice_id, e))
+            return None, None
+        for line in (invoice.get("lines") or {}).get("data") or []:
+            plan = price_plan(line.get("price"))
+            if plan and (line.get("amount") or 0) > 0:
+                return plan, datetime.datetime.fromtimestamp(line["period"]["end"])
+        return None, None
+
+    @classmethod
+    def paypal_payment_period(cls, paypal_subscription, paid_on):
+        """(plan, end of the period paid for) for a payment a PayPal subscription took on paid_on: the subscription's
+        plan, and the billing cycle PayPal gives that plan when the subscription was read with it."""
+        plan = cls.paypal_plan(paypal_subscription.get("plan_id"))
+        for cycle in (paypal_subscription.get("plan") or {}).get("billing_cycles") or []:
+            frequency = cycle.get("frequency") or {}
+            unit = {"MONTH": "months", "YEAR": "years"}.get(frequency.get("interval_unit"))
+            if cycle.get("tenure_type") == "REGULAR" and unit:
+                interval = dateutil.relativedelta.relativedelta(
+                    **{unit: int(frequency.get("interval_count") or 1)}
+                )
+                return plan, datetime.datetime.combine(paid_on, datetime.time()) + interval
+        return plan, None
 
     @property
     def can_register_oauth_application(self):
@@ -292,7 +414,11 @@ class Profile(models.Model):
             and self.is_premium
             and not self.is_premium_trial
             and self.user.is_active
-            and (self.premium_expire is None or self.premium_expire > datetime.datetime.now())
+            and (
+                self.premium_expire is None
+                or self.premium_expire > datetime.datetime.now()
+                or team_pro_grant(self.user_id)
+            )
         )
 
     @property
@@ -423,6 +549,12 @@ class Profile(models.Model):
     def get_ask_ai_usage_message(self):
         return AskAIUsageTracker(self.user).get_usage_message()
 
+    @property
+    def team_fields(self):
+        """The team plan this account is on (apps/team/models.py team_plan_fields), for canonical and
+        templates/base.html."""
+        return team_plan_fields(self)
+
     def canonical(self):
         return {
             "is_premium": self.is_premium,
@@ -448,15 +580,54 @@ class Profile(models.Model):
             "is_self_hosted_ai": self.is_self_hosted_ai,
             "can_use_ai_classifiers": self.can_use_ai_classifiers,
             "usage_billing_limit": float(self.usage_billing_limit) if self.usage_billing_limit else None,
+            **self.team_fields,
         }
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        profile = super().from_db(db, field_names, values)
+        profile._remember_tier_flags()
+        return profile
+
+    def refresh_from_db(self, using=None, fields=None):
+        refreshed = None if fields is None else list(fields)
+        super().refresh_from_db(using=using, fields=fields)
+        self._remember_tier_flags(refreshed)
+
+    def _remember_tier_flags(self, fields=None):
+        """Note the loaded tier flags, or only those named, as this instance last read or wrote them. A deferred
+        flag isn't loaded here."""
+        remembered = dict(self.__dict__.get("_tier_flags_in_db") or {})
+        for name in self.TIER_FLAG_FIELDS:
+            if name in self.__dict__ and (fields is None or name in fields):
+                remembered[name] = self.__dict__[name]
+        self._tier_flags_in_db = remembered
+
+    def _tier_flags_unchanged(self):
+        remembered = self.__dict__.get("_tier_flags_in_db")
+        loaded = {name: self.__dict__[name] for name in self.TIER_FLAG_FIELDS if name in self.__dict__}
+        return remembered is not None and loaded == remembered
 
     def save(self, *args, **kwargs):
         if not self.secret_token:
             self.secret_token = generate_secret_token(self.user.username, 12)
+        # models.py: a request or task that loaded this profile before the plan changed elsewhere (a team seat
+        # starting or ending in apps/team/grants.py, another payment webhook) and saves the whole row after must
+        # not write the old plan back, so the tier flags are written only when this instance changed one.
+        if not args and kwargs.get("update_fields") is None and self._tier_flags_unchanged():
+            kwargs["update_fields"] = [
+                field.attname
+                for field in self._meta.concrete_fields
+                if not field.primary_key
+                and field.attname in self.__dict__
+                and field.attname not in self.TIER_FLAG_FIELDS
+            ]
         try:
             super(Profile, self).save(*args, **kwargs)
         except DatabaseError as e:
             print(f" ---> Profile not saved: {e}")
+        else:
+            self._remember_tier_flags(kwargs.get("update_fields"))
 
     def archive_deleted_user(self):
         """Archive user data before deletion for analytics and tracking."""
@@ -471,7 +642,7 @@ class Profile(models.Model):
         from apps.social.models import MSharedStory, MSocialProfile
 
         # Get payment history
-        payments = PaymentHistory.objects.filter(user=self.user)
+        payments = PaymentHistory.objects.filter(user=self.user).exclude(sandbox=True)
         payment_history = []
         total_payments = 0
         for payment in payments:
@@ -733,6 +904,8 @@ class Profile(models.Model):
             "~FMTier change: activate_premium (was: premium=%s, archive=%s, pro=%s, trial=%s)"
             % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+        if self.record_plan_on_team_grant(TeamProGrant.TIER_PREMIUM):
+            return True
 
         # Capture trial status before the atomic update clears it
         was_trial = self.is_premium_trial is True
@@ -830,6 +1003,27 @@ class Profile(models.Model):
             self.user.payments.filter(payment_provider="oauth-reader-grant").exclude(refunded=True).exists()
         )
 
+    def record_plan_on_team_grant(self, tier, downgrade_extra=False):
+        """A teammate's flags show team Pro (apps/team/grants.py), so a plan they buy or are given on their own is
+        recorded on their grant for when the seat ends, with no emails or flag changes, and its paid through date
+        is synced from their payments as the activate_* methods do. Returns False when they hold no grant,
+        including one whose seat ended while this ran."""
+        team_grant = team_pro_grant(self.user_id)
+        if not team_grant:
+            return False
+        if team_grant.record_own_plan(tier, downgrade_extra=downgrade_extra):
+            self.setup_premium_history()
+        return self.still_holds_team_grant()
+
+    def still_holds_team_grant(self):
+        """Asked once a plan of this account's own has been recorded on its team grant. A seat that ended in the
+        meantime (apps/team/grants.py release_team_pro) may have missed it and has rewritten the tier flags, so
+        they are reloaded for the caller to apply the plan to, as for anyone else."""
+        if team_pro_grant(self.user_id):
+            return True
+        self.refresh_from_db(fields=list(self.TIER_FLAG_FIELDS))
+        return False
+
     def extend_premium_by_days(self, days, tier=None):
         # A referral or gift must not replace the lifetime grant from apps/oauth/reader_grants.py.
         if self.is_pro and self.premium_expire is None and self.has_oauth_reader_grant():
@@ -837,15 +1031,21 @@ class Profile(models.Model):
 
         now = datetime.datetime.now()
 
-        # Ensure user is at the required tier
-        if tier == "pro" and not self.is_pro:
-            self.activate_pro()
-        elif tier == "archive" and not self.is_archive:
-            self.activate_archive()
-        elif tier == "archive_extra" and not self.is_archive_extra:
-            self.activate_archive_extra()
-        elif not self.is_premium:
-            self.activate_premium()
+        # Ensure user is at the required tier. A teammate's flags already show team Pro, so the credit's tier is
+        # recorded on their grant (apps/team/grants.py) and applies once the seat ends.
+        team_grant = team_pro_grant(self.user_id)
+        if team_grant:
+            team_grant.record_own_plan(tier or TeamProGrant.TIER_PREMIUM)
+            team_grant.record_own_credit(days)
+        if not team_grant or not self.still_holds_team_grant():
+            if tier == "pro" and not self.is_pro:
+                self.activate_pro()
+            elif tier == "archive" and not self.is_archive:
+                self.activate_archive()
+            elif tier == "archive_extra" and not self.is_archive_extra:
+                self.activate_archive_extra()
+            elif not self.is_premium:
+                self.activate_premium()
 
         # Extend premium_expire
         if self.premium_expire and self.premium_expire > now:
@@ -961,6 +1161,8 @@ class Profile(models.Model):
                 self.is_premium_trial,
             ),
         )
+        if self.record_plan_on_team_grant(tier, downgrade_extra=downgrade_extra):
+            return True
 
         was_trial = self.is_premium_trial
 
@@ -1077,6 +1279,8 @@ class Profile(models.Model):
             "~FMTier change: activate_pro (was: premium=%s, archive=%s, pro=%s, trial=%s)"
             % (self.is_premium, self.is_archive, self.is_pro, self.is_premium_trial),
         )
+        if self.record_plan_on_team_grant(TeamProGrant.TIER_PRO):
+            return True
 
         was_trial = self.is_premium_trial
 
@@ -1170,6 +1374,12 @@ class Profile(models.Model):
         # A canceled store subscription is independent of the grant in apps/oauth/reader_grants.py.
         if self.is_pro and self.has_oauth_reader_grant():
             return
+        # A teammate keeps team Pro (apps/team/grants.py). The plan that ended was their own.
+        team_grant = team_pro_grant(self.user_id)
+        if team_grant:
+            team_grant.record_own_plan_ended()
+            if self.still_holds_team_grant():
+                return
 
         logging.user(
             self.user,
@@ -1239,6 +1449,14 @@ class Profile(models.Model):
         if not existing_subscription:
             return
 
+        # models.py: a switch down from a team plan waits for the end of the month already paid for
+        # (apps/team/stripe_billing.py). Anything else switches at once below.
+        from apps.team.stripe_billing import switch_team_subscription
+
+        if switch_team_subscription(self, existing_subscription, plan):
+            self.setup_premium_history()
+            return True
+
         target_price = Profile.plan_to_stripe_price(plan)
         # Idempotent: if already on the target price, do nothing (safe to re-run).
         if existing_plan and existing_plan.id == target_price:
@@ -1278,15 +1496,21 @@ class Profile(models.Model):
             return
 
         if isinstance(canceled_paypal_sub_id, str):
-            self.refund_paypal_payment_from_subscription(canceled_paypal_sub_id, prorate=True)
+            self.refund_unused_paypal_payment(canceled_paypal_sub_id)
 
     def switch_paypal_subscription_approval_url(self, plan):
         paypal_api = self.paypal_api()
         if not paypal_api:
             return
+        from apps.team.paypal_billing import switch_start_time
+        from apps.team.stripe_billing import TEAM_PLANS
+
         paypal_return = reverse("paypal-return")
         if plan in ("archive", "archive_extra"):
             paypal_return = reverse("paypal-archive-return")
+        elif plan in TEAM_PLANS:
+            # models.py: the return page waits for the team (media/js/newsblur/payments/paypal_return.js).
+            paypal_return = f"{paypal_return}?plan={plan}"
 
         try:
             application_context = {
@@ -1299,14 +1523,17 @@ class Profile(models.Model):
                 application_context[
                     "return_url"
                 ] = f"https://{Site.objects.get_current().domain}{paypal_return}"
-            paypal_subscription = paypal_api.post(
-                f"/v1/billing/subscriptions",
-                {
-                    "plan_id": Profile.plan_to_paypal_plan_id(plan),
-                    "custom_id": self.user.pk,
-                    "application_context": application_context,
-                },
-            )
+            subscription = {
+                "plan_id": Profile.plan_to_paypal_plan_id(plan),
+                "custom_id": self.user.pk,
+                "application_context": application_context,
+            }
+            # models.py: a switch down from a team plan PayPal bills starts once the month already paid for
+            # ends (apps/team/paypal_billing.py).
+            start_time = switch_start_time(self, plan)
+            if start_time:
+                subscription["start_time"] = start_time
+            paypal_subscription = paypal_api.post(f"/v1/billing/subscriptions", subscription)
         except paypalrestsdk.ResourceNotFound as e:
             logging.user(
                 self.user, f"~FRCouldn't create paypal subscription: {self.paypal_sub_id} {plan}: {e}"
@@ -1484,6 +1711,9 @@ class Profile(models.Model):
         free_lifetime_premium = False
         verified_apple_expiration = None
         verified_apple_count = 0
+        monthly_price_expiration = None
+        monthly_price_count = 0
+        pro_monthly_dates = []
         payments = list(payments)
         verified_apple_periods = {}
         for payment in payments:
@@ -1520,6 +1750,19 @@ class Profile(models.Model):
                 continue
             # Only update expiration if payment in the last year
             if payment.payment_date > last_year:
+                # models.py: a payment recorded as a team plan's counts as one whatever its amount, since a custom
+                # price for a team with more seats charges more (apps/team/stripe_billing.py price_plan). It pays for
+                # the period recorded with it, or else a month.
+                team_plan = payment.plan in dict(Team.PLAN_CHOICES)
+                if team_plan or payment.payment_amount in cls.MONTHLY_PRICES:
+                    paid_until = payment.payment_date + datetime.timedelta(days=cls.MONTHLY_PERIOD_DAYS)
+                    if team_plan and payment.period_end:
+                        paid_until = payment.period_end
+                    monthly_price_expiration = max(monthly_price_expiration or paid_until, paid_until)
+                    monthly_price_count += 1
+                    if not team_plan and payment.payment_amount not in cls.TEAM_MONTHLY_PRICES:
+                        pro_monthly_dates.append(payment.payment_date)
+                    continue
                 recent_payment_dates.append(payment.payment_date)
                 if payment.payment_amount in cls.ANNUAL_PRICES and (
                     not latest_annual_payment_date or payment.payment_date > latest_annual_payment_date
@@ -1527,9 +1770,14 @@ class Profile(models.Model):
                     latest_annual_payment_date = payment.payment_date
 
         if not recent_payment_dates:
-            return verified_apple_expiration, free_lifetime_premium, verified_apple_count
+            expirations = [date for date in (verified_apple_expiration, monthly_price_expiration) if date]
+            return (
+                max(expirations, default=None),
+                free_lifetime_premium,
+                verified_apple_count + monthly_price_count,
+            )
 
-        period_days = cls.billing_period_days(recent_payment_dates)
+        period_days = cls.billing_period_days(recent_payment_dates + pro_monthly_dates)
         expiration = min(recent_payment_dates) + datetime.timedelta(
             days=period_days * len(recent_payment_dates)
         )
@@ -1540,7 +1788,13 @@ class Profile(models.Model):
             )
         if verified_apple_expiration:
             expiration = max(expiration, verified_apple_expiration)
-        return expiration, free_lifetime_premium, len(recent_payment_dates) + verified_apple_count
+        if monthly_price_expiration:
+            expiration = max(expiration, monthly_price_expiration)
+        return (
+            expiration,
+            free_lifetime_premium,
+            len(recent_payment_dates) + verified_apple_count + monthly_price_count,
+        )
 
     def setup_premium_history(self, alt_email=None, set_premium_expire=True, force_expiration=False):
         # Deduplicate payments: keep only one per provider per identifier, then per day.
@@ -1553,7 +1807,11 @@ class Profile(models.Model):
             "ios-archive-subscription",
             "ios-archive-extra-subscription",
             "ios-pro-subscription",
+            "ios-team-subscription",
+            "ios-team-enterprise-subscription",
             "android-subscription",
+            "android-team",
+            "android-team-enterprise",
         ]:
             deleted_count = 0
             # First pass: dedup by payment_identifier (same receipt re-sent). Store
@@ -1564,7 +1822,13 @@ class Profile(models.Model):
             # a duplicate regardless of age.
             if provider in ("paypal", "stripe"):
                 renewal_window = None
-            elif provider == "ios-pro-subscription":
+            elif provider in (
+                "ios-pro-subscription",
+                "ios-team-subscription",
+                "ios-team-enterprise-subscription",
+                "android-team",
+                "android-team-enterprise",
+            ):
                 renewal_window = datetime.timedelta(days=self.MONTHLY_RENEWAL_WINDOW_DAYS)
             else:
                 renewal_window = datetime.timedelta(days=self.ANNUAL_RENEWAL_WINDOW_DAYS)
@@ -1619,6 +1883,7 @@ class Profile(models.Model):
         # Track whether PayPal has a non-suspended primary so the Stripe loop
         # below doesn't silently override it when both providers have rows.
         paypal_has_active_primary = False
+        team_billed = False
 
         # Find modern Paypal payments
         self.retrieve_paypal_ids()
@@ -1641,6 +1906,7 @@ class Profile(models.Model):
                     f"~BY~SN~FRDeleting~FW duplicate paypal history: ~SB{deleted_paypal_payments} payments",
                 )
             paypal_api = self.paypal_api()
+            paypal_subscriptions = []
             for paypal_id_model in self.user.paypal_ids.all():
                 paypal_id = paypal_id_model.paypal_sub_id
                 try:
@@ -1687,6 +1953,7 @@ class Profile(models.Model):
                     if not transactions or "transactions" not in transactions:
                         logging.user(self.user, f"~FRCouldn't find paypal transactions: ~SB{paypal_id}")
                         continue
+                    paypal_subscriptions.append((paypal_subscription, transactions["transactions"]))
                     for transaction in transactions["transactions"]:
                         created = dateutil.parser.parse(transaction["time"]).date()
                         if transaction["status"] not in ["COMPLETED", "PARTIALLY_REFUNDED", "REFUNDED"]:
@@ -1698,6 +1965,7 @@ class Profile(models.Model):
                         refunded = None
                         if transaction["status"] in ["PARTIALLY_REFUNDED", "REFUNDED"]:
                             refunded = True
+                        plan, period_end = Profile.paypal_payment_period(paypal_subscription, created)
                         try:
                             PaymentHistory.objects.get_or_create(
                                 user=self.user,
@@ -1707,12 +1975,16 @@ class Profile(models.Model):
                                 ),
                                 payment_provider="paypal",
                                 refunded=refunded,
+                                defaults=dict(plan=plan, period_end=period_end),
                             )
                         except PaymentHistory.MultipleObjectsReturned:
                             pass  # Duplicate records exist, skip
 
                     ipns = PayPalIPN.objects.filter(
-                        Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
+                        Q(custom=self.user.username)
+                        | Q(payer_email=self.user.email)
+                        | Q(custom=self.user.pk),
+                        PAYPAL_IPNS_COUNTED,
                     ).order_by("-payment_date")
                     for transaction in ipns:
                         if transaction.txn_type != "subscr_payment":
@@ -1731,6 +2003,14 @@ class Profile(models.Model):
                             )
                         except PaymentHistory.MultipleObjectsReturned:
                             pass  # Duplicate records exist, skip
+
+            # models.py: a team subscription PayPal shows as paid starts or renews the owner's team, and while a
+            # team plan decides the account's plan no PayPal plan is activated below (apps/team/paypal_billing.py).
+            from apps.team import paypal_billing
+
+            if paypal_billing.sync_team_subscriptions(self, paypal_subscriptions):
+                team_billed = True
+                active_plan = None
         else:
             logging.user(self.user, "~FBNo Paypal payments")
 
@@ -1757,13 +2037,23 @@ class Profile(models.Model):
                 )
 
             stripe.api_key = settings.STRIPE_SECRET
+            from apps.team.stripe_billing import sync_team_subscriptions
+
             for stripe_id_model in self.user.stripe_ids.all():
                 stripe_id = stripe_id_model.stripe_id
                 stripe_customer = stripe.Customer.retrieve(stripe_id)
                 stripe_payments = stripe.Charge.list(customer=stripe_customer.id).data
                 stripe_subscriptions = stripe.Subscription.list(customer=stripe_customer.id).data
+                # models.py: a team subscription Stripe shows as paid starts or renews the owner's team, whatever
+                # else the customer pays for (apps/team/stripe_billing.py).
+                if sync_team_subscriptions(self, stripe_subscriptions):
+                    team_billed = True
 
                 for subscription in stripe_subscriptions:
+                    # models.py: the AI classifier usage billing sub isn't a plan, and Stripe lists it ahead of
+                    # an older tier sub.
+                    if Profile.is_usage_billing_subscription(subscription):
+                        continue
                     plan = subscription.plan
                     if not plan:
                         # Newer subscriptions may not have a top-level plan;
@@ -1793,23 +2083,51 @@ class Profile(models.Model):
                     seen_payments.add(created.date())
                     total_stripe_payments += 1
                     refunded = None
-                    if payment.refunded:
+                    # models.py: a disputed charge is taken back as a refunded one is (apps/team/billing.py).
+                    if payment.refunded or payment.get("disputed") is True:
                         refunded = True
                     try:
-                        PaymentHistory.objects.get_or_create(
+                        row, row_created = PaymentHistory.objects.get_or_create(
                             user=self.user,
                             payment_date=created,
                             payment_amount=payment.amount / 100.0,
                             payment_provider="stripe",
                             refunded=refunded,
                         )
+                        plan, period_end = (
+                            Profile.stripe_payment_period(payment) if row_created else (None, None)
+                        )
+                        if plan:
+                            PaymentHistory.objects.filter(pk=row.pk).update(plan=plan, period_end=period_end)
                     except PaymentHistory.MultipleObjectsReturned:
                         pass  # Duplicate records exist, skip
         else:
             logging.user(self.user, "~FBNo Stripe payments")
 
+        # models.py: an App Store or Google Play payment for a team plan that is still current is the team's
+        # (apps/team/app_store_billing.py, apps/team/play_billing.py), as a Stripe or PayPal one is.
+        if (
+            PaymentHistory.objects.filter(
+                Q(apple_expires_date__gt=datetime.datetime.now())
+                | Q(payment_provider__startswith="android-", period_end__gt=datetime.datetime.now()),
+                user=self.user,
+                plan__in=[plan for plan, _ in Team.PLAN_CHOICES],
+            )
+            .exclude(refunded=True)
+            .exists()
+        ):
+            team_billed = True
+
+        if team_billed:
+            # models.py: apps/team/billing.py writes the owner's plan and premium_expire by queryset.
+            self.refresh_from_db(fields=[*self.TIER_FLAG_FIELDS, "premium_expire"])
+
         # Calculate payments in last year, then add together
         payment_history = PaymentHistory.objects.filter(user=self.user)
+        if not Team.objects.filter(owner_id=self.user_id).exists():
+            # models.py: a team plan's payments pay for the team of the account that owns it, so they're no plan of
+            # its own for an account that owns none, such as an owner who handed theirs on (apps/team/billing.py).
+            payment_history = payment_history.exclude(Profile.team_payments())
         (
             new_premium_expire,
             free_lifetime_premium,
@@ -1850,12 +2168,18 @@ class Profile(models.Model):
             % (total_paypal_payments, total_stripe_payments, len(payment_history), self.premium_expire),
         )
 
+        # A teammate's flags show team Pro (apps/team/grants.py), so the plan they pay for is compared with the
+        # tier they hold on their own, and the activate_* calls below record it on their grant.
+        team_grant = team_pro_grant(self.user_id)
+        own = team_grant.own_flags() if team_grant else self
         has_current_paid_period = self.premium_expire and self.premium_expire > datetime.datetime.now()
         has_recent_paid_payment = recent_payments_count > 0
+        # models.py: a payment for a team plan starts the team or nothing, never Premium.
         if (
             set_premium_expire
             and has_current_paid_period
-            and (not self.is_premium or (self.is_premium_trial and has_recent_paid_payment))
+            and not team_billed
+            and (not own.is_premium or (own.is_premium_trial and has_recent_paid_payment))
         ):
             self.activate_premium()
 
@@ -1874,13 +2198,13 @@ class Profile(models.Model):
             Profile.plan_to_stripe_price("archive_extra"),
             Profile.plan_to_paypal_plan_id("archive_extra"),
         )
-        if active_plan == Profile.plan_to_stripe_price("pro") and not self.is_pro:
+        if active_plan == Profile.plan_to_stripe_price("pro") and not own.is_pro:
             self.activate_pro()
-        elif active_plan == Profile.plan_to_paypal_plan_id("pro") and not self.is_pro:
+        elif active_plan == Profile.plan_to_paypal_plan_id("pro") and not own.is_pro:
             self.activate_pro()
-        elif active_plan and active_plan in archive_extra_plans and not self.is_archive_extra:
+        elif active_plan and active_plan in archive_extra_plans and not own.is_archive_extra:
             self.activate_archive_extra()
-        elif active_plan and active_plan in archive_plans and (not self.is_archive or self.is_archive_extra):
+        elif active_plan and active_plan in archive_plans and (not own.is_archive or own.is_archive_extra):
             # Also covers an Archive Extra subscriber whose live subscription went back to plain Archive.
             self.activate_archive(downgrade_extra=True)
 
@@ -2161,6 +2485,16 @@ class Profile(models.Model):
                     )
                     self.cancel_premium_paypal()
 
+        if (
+            provider == "paypal"
+            and isinstance(refunded, int)
+            and Team.objects.filter(
+                owner_id=self.user_id, status=Team.STATUS_ACTIVE, billing_provider=Team.PROVIDER_PAYPAL
+            ).exists()
+        ):
+            # models.py: the sync ends at once a team this payment was for (apps/team/paypal_billing.py).
+            self.setup_premium_history()
+
         return refunded
 
     def refund_latest_stripe_payment(self, partial=False):
@@ -2196,6 +2530,11 @@ class Profile(models.Model):
             if original_payment:
                 original_payment.refunded = True
                 original_payment.save()
+            if Team.objects.filter(
+                owner_id=self.user_id, status=Team.STATUS_ACTIVE, billing_provider=Team.PROVIDER_STRIPE
+            ).exists():
+                # models.py: the sync ends at once a team this payment was for (apps/team/stripe_billing.py).
+                self.setup_premium_history()
 
         PaymentHistory.objects.create(
             user=self.user,
@@ -2239,10 +2578,23 @@ class Profile(models.Model):
         if prorate:
             transaction_date = dateutil.parser.parse(transaction["time"])
             days_since = (datetime.datetime.now() - transaction_date.replace(tzinfo=None)).days
-            if days_since < 365:
-                days_left = 365 - days_since
-                pct_left = days_left / 365
+            period_days = self.paypal_paid_period_days(
+                paypal_api, paypal_sub_id, transaction_date, int(refund_amount)
+            )
+            if not period_days:
+                logging.user(
+                    self.user, f"~FRCouldn't tell what paypal payment ~SB{transaction['id']}~SN paid for"
+                )
+                return "Couldn't tell how long PayPal payment %s paid for, so none of it was refunded" % (
+                    transaction["id"]
+                )
+            if days_since < period_days:
+                days_left = period_days - days_since
+                pct_left = days_left / period_days
                 refund_amount = pct_left * refund_amount
+            elif period_days < 365:
+                logging.user(self.user, f"~FRNothing left of the paypal payment's month: ~SB{transaction}")
+                return
             else:
                 logging.user(self.user, f"~FRCouldn't prorate paypal payment, too old: ~SB{transaction}")
         try:
@@ -2278,6 +2630,55 @@ class Profile(models.Model):
             refunded = response
 
         return refunded
+
+    def refund_unused_paypal_payment(self, paypal_sub_id):
+        """Refunds what is left of the period the latest payment on a PayPal subscription of this account's paid
+        for, when another plan of the account's own has replaced it. A refund that may be due and wasn't made is
+        emailed to staff, who can make it by hand. Returns what refund_paypal_payment_from_subscription does.
+        """
+        from apps.profile.tasks import EmailStaffNotification
+
+        refunded = self.refund_paypal_payment_from_subscription(paypal_sub_id, prorate=True)
+        if refunded is not None and not isinstance(refunded, int):
+            EmailStaffNotification.delay(
+                event_type="paypal_refund_not_made",
+                subject="PayPal refund not made: %s" % self.user.username,
+                body="%s replaced their PayPal subscription %s, but the unused part of its last payment wasn't "
+                "refunded (%s). It needs a look, and a refund by hand if one is due."
+                % (self.user.username, paypal_sub_id, str(refunded)[:500]),
+            )
+        return refunded
+
+    def paypal_paid_period_days(self, paypal_api, paypal_sub_id, paid_at, amount):
+        """The days a payment of amount whole dollars made at paid_at pays for: the period its payment row records,
+        the month after it at a monthly price and a year at an annual price, as premium_expire_from_payments reads
+        them, and otherwise the billing cycle of the subscription's plan at PayPal, the month after it for a monthly
+        plan, and a year for any other or when PayPal shows no plan, as for a subscription made before PayPal had
+        plans. None when PayPal can't be read, so the period isn't known."""
+        payment = PaymentHistory.objects.filter(
+            user=self.user,
+            payment_provider="paypal",
+            payment_date__date=paid_at.date(),
+            payment_amount=amount,
+        ).first()
+        if payment and payment.period_end:
+            return (payment.period_end - payment.payment_date).days
+        if amount in self.MONTHLY_PRICES:
+            return (paid_at + dateutil.relativedelta.relativedelta(months=1) - paid_at).days
+        if amount in self.ANNUAL_PRICES:
+            return self.ANNUAL_PERIOD_DAYS
+        try:
+            plan_id = paypal_api.get(f"/v1/billing/subscriptions/{paypal_sub_id}").get("plan_id")
+            plan = paypal_api.get(f"/v1/billing/plans/{plan_id}") if plan_id else {}
+        except paypalrestsdk.exceptions.ConnectionError as e:
+            logging.user(self.user, f"~FRCouldn't read the paypal plan of {paypal_sub_id}: {e}")
+            return None
+        for cycle in plan.get("billing_cycles") or []:
+            frequency = cycle.get("frequency") or {}
+            if cycle.get("tenure_type") == "REGULAR" and frequency.get("interval_unit") == "MONTH":
+                months = int(frequency.get("interval_count") or 1)
+                return (paid_at + dateutil.relativedelta.relativedelta(months=months) - paid_at).days
+        return self.ANNUAL_PERIOD_DAYS
 
     def refund_prorated_stripe_payment(self):
         """Refund a prorated portion of the latest Stripe payment based on unused days.
@@ -2382,7 +2783,7 @@ class Profile(models.Model):
             )
             return None
 
-        refunded = self.refund_paypal_payment_from_subscription(paypal_sub_id, prorate=True)
+        refunded = self.refund_unused_paypal_payment(paypal_sub_id)
         if refunded and isinstance(refunded, (int, float)):
             logging.user(
                 self.user,
@@ -2422,6 +2823,7 @@ class Profile(models.Model):
                 payment_amount__gt=0,
             )
             .exclude(refunded=True)
+            .exclude(sandbox=True)
             .order_by("-payment_date")
             .first()
         )
@@ -2505,7 +2907,10 @@ class Profile(models.Model):
         self.setup_premium_history()  # Sure, webhooks will force new history, but they take forever
         return stripe_cancel or paypal_cancel
 
-    def cancel_premium_paypal(self, cancel_older_subscriptions_only=False, force=False):
+    def cancel_premium_paypal(
+        self, cancel_older_subscriptions_only=False, force=False, subscription_ids=None
+    ):
+        """subscription_ids, when given, are the only PayPal subscriptions this may suspend (apps/team/grants.py)."""
         self.retrieve_paypal_ids()
         if not self.paypal_sub_id:
             logging.user(self.user, "~FRUser doesn't have a Paypal subscription, how did we get here?")
@@ -2520,6 +2925,8 @@ class Profile(models.Model):
         today = datetime.datetime.now().strftime("%B %d, %Y")
         for paypal_id_model in self.user.paypal_ids.all():
             paypal_id = paypal_id_model.paypal_sub_id
+            if subscription_ids is not None and paypal_id not in subscription_ids:
+                continue
             if cancel_older_subscriptions_only and paypal_id == self.paypal_sub_id:
                 logging.user(
                     self.user, "~FBNot canceling active Paypal subscription: %s" % self.paypal_sub_id
@@ -2589,12 +2996,15 @@ class Profile(models.Model):
         logging.user(self.user, "~FRCanceling classic Paypal subscription: %s" % paypal_id)
         return True
 
-    def cancel_premium_stripe(self, force=False, include_usage_billing=False):
+    def cancel_premium_stripe(self, force=False, include_usage_billing=False, subscription_ids=None):
+        """subscription_ids, when given, are the only Stripe subscriptions this may turn off (apps/team/grants.py)."""
         if not self.stripe_id:
             if force:
                 self.retrieve_stripe_ids()
             if not self.stripe_id:
                 return
+
+        from apps.team.stripe_billing import release_schedule
 
         stripe.api_key = settings.STRIPE_SECRET
         for stripe_id_model in self.user.stripe_ids.all():
@@ -2603,6 +3013,8 @@ class Profile(models.Model):
             try:
                 subscriptions = stripe.Subscription.list(customer=stripe_customer)
                 for subscription in subscriptions.data:
+                    if subscription_ids is not None and subscription["id"] not in subscription_ids:
+                        continue
                     # Switching to PayPal, refunding, or canceling renewal only stops the tier sub.
                     # The AI classifier usage billing sub keeps running unless the account is
                     # being deleted (apps/profile/models.py delete_user).
@@ -2612,6 +3024,8 @@ class Profile(models.Model):
                             "~FBNot canceling Stripe usage billing subscription: %s" % subscription["id"],
                         )
                         continue
+                    # models.py: a team plan's scheduled switch down is dropped so the cancel can go through.
+                    release_schedule(subscription)
                     stripe.Subscription.modify(subscription["id"], cancel_at_period_end=True)
                     logging.user(self.user, "~FRCanceling Stripe subscription: %s" % subscription["id"])
             except stripe.error.InvalidRequestError:
@@ -2762,7 +3176,8 @@ class Profile(models.Model):
 
     def retrieve_paypal_ids(self):
         ipns = PayPalIPN.objects.filter(
-            Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk)
+            Q(custom=self.user.username) | Q(payer_email=self.user.email) | Q(custom=self.user.pk),
+            PAYPAL_IPNS_COUNTED,
         ).order_by("-payment_date")
         if not len(ipns):
             return
@@ -2821,14 +3236,18 @@ class Profile(models.Model):
 
     def paypal_api(self):
         if self.paypal_sub_id:
-            api = paypalrestsdk.Api(
-                {
-                    "mode": "sandbox" if settings.DEBUG else "live",
-                    "client_id": settings.PAYPAL_API_CLIENTID,
-                    "client_secret": settings.PAYPAL_API_SECRET,
-                }
-            )
-            return api
+            return Profile.paypal_app_api()
+
+    @staticmethod
+    def paypal_app_api():
+        """PayPal's REST API with NewsBlur's own credentials, for calls about no one account in particular."""
+        return paypalrestsdk.Api(
+            {
+                "mode": "sandbox" if settings.DEBUG else "live",
+                "client_id": settings.PAYPAL_API_CLIENTID,
+                "client_secret": settings.PAYPAL_API_SECRET,
+            }
+        )
 
     def _duplicate_store_receipt_reason(self, payment_provider, payment_identifier, renewal_window_days):
         """Why this store receipt should not create a payment, or None when it should.
@@ -3506,7 +3925,7 @@ class Profile(models.Model):
             pass
 
         # Payment history
-        payments = PaymentHistory.objects.filter(user=user)
+        payments = PaymentHistory.objects.filter(user=user).exclude(sandbox=True)
         payment_count = payments.count()
         total_paid = sum(p.payment_amount for p in payments if not p.refunded)
         first_payment = payments.order_by("payment_date").first()
@@ -3536,12 +3955,16 @@ class Profile(models.Model):
             "archive": "Premium Archive",
             "archive_extra": "Premium Archive Extra",
             "pro": "Premium Pro",
+            "team": "Premium Team",
+            "team_enterprise": "Premium Team Enterprise",
         }
         previous_tier_names = {
             "free": "Free",
             "trial": "Trial",
             "premium": "Premium",
             "archive": "Premium Archive",
+            "archive_extra": "Premium Archive Extra",
+            "pro": "Premium Pro",
         }
         tier_display = tier_names.get(tier, tier)
         previous_tier_display = previous_tier_names.get(previous_tier, previous_tier)
@@ -3620,7 +4043,9 @@ class Profile(models.Model):
         account_age_days = (datetime.datetime.now() - date_joined_naive).days
 
         # Full payment history is the key thing to eyeball before we ever cancel anyone.
-        payments = list(PaymentHistory.objects.filter(user=user).order_by("-payment_date"))
+        payments = list(
+            PaymentHistory.objects.filter(user=user).exclude(sandbox=True).order_by("-payment_date")
+        )
         payment_count = len(payments)
         total_paid = sum(p.payment_amount for p in payments if not p.refunded)
         first_payment_date = payments[-1].payment_date if payments else None
@@ -4113,7 +4538,16 @@ class Profile(models.Model):
                 return
 
         # Plan names reuse the pricing pages' translations (templates/static/pricing_*.xhtml).
-        if self.is_pro:
+        # A team owner's plan is the team's (apps/team/models.py team_plan_fields).
+        team = self.team_fields
+        team_plan = team["team_plan"] if team["team_role"] == "owner" else None
+        if team_plan == "team_enterprise":
+            tier_name = gettext("Premium Team Enterprise")
+            amount = gettext("$129/month")
+        elif team_plan == "team":
+            tier_name = gettext("Premium Team")
+            amount = gettext("$79/month")
+        elif self.is_pro:
             tier_name = gettext("Premium Pro")
             amount = gettext("$29/month")
         elif self.is_archive:
@@ -4158,6 +4592,7 @@ class Profile(models.Model):
         payment = (
             PaymentHistory.objects.filter(user=self.user, payment_amount__gt=0)
             .exclude(refunded=True)
+            .exclude(sandbox=True)
             .order_by("-payment_date")
             .first()
         )
@@ -4501,6 +4936,7 @@ class Profile(models.Model):
                         user=row.user, payment_amount__gte=36, payment_date__gt=charged_since
                     )
                     .exclude(refunded=True)
+                    .exclude(sandbox=True)
                     .exists()
                 )
                 if upgraded:
@@ -4588,8 +5024,10 @@ class Profile(models.Model):
             since = row.paypal_canceled_date or row.email_sent_date
             # >= 29 (not 36) so a pro-monthly resubscribe ($29/mo on iOS) still counts; the old
             # grandfathered rates were $12/$24, so 29 cleanly excludes a stale grandfathered charge.
-            resub = PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29).exclude(
-                refunded=True
+            resub = (
+                PaymentHistory.objects.filter(user=row.user, payment_amount__gte=29)
+                .exclude(refunded=True)
+                .exclude(sandbox=True)
             )
             if since:
                 resub = resub.filter(payment_date__gt=since)
@@ -4847,6 +5285,13 @@ def paypal_payment_was_flagged(sender, **kwargs):
         )
         return {"code": -1, "message": "User doesn't exist."}
 
+    # models.py: a notice PayPal's postback didn't verify attaches no subscription to the account and starts
+    # no plan. One PayPal verified that django-paypal flagged for another reason, such as a txn_id it already
+    # stored or an unexpected payment_status, still records its payment.
+    if ipn_obj.response != "VERIFIED":
+        logging.user(user, "~BC~SB~FBPaypal subscription payment flagged: %s" % ipn_obj.flag_info)
+        return
+
     try:
         paypal_sub_id = ipn_obj.recurring_payment_id or ipn_obj.subscr_id
         if paypal_sub_id:
@@ -4976,7 +5421,9 @@ def stripe_checkout_session_completed(sender, full_json, **kwargs):
         # and those handlers look the profile up by stripe_id, so for a new customer they
         # can't find it and bail. Sync from Stripe here so the paid tier is activated no
         # matter which webhook lands first. (apps/profile/models.py)
-        profile.setup_premium_history()
+        from apps.team.stripe_billing import sync_stripe_event
+
+        sync_stripe_event(profile)
     else:
         logging.debug(
             " ---> Couldn't find Stripe user for checkout: user_id=%s stripe_id=%s"
@@ -5023,9 +5470,13 @@ def stripe_confirmed_plan_id(profile, subscription_id, plan_id):
     """
     archive_price = Profile.plan_to_stripe_price("archive")
     extra_price = Profile.plan_to_stripe_price("archive_extra")
-    if plan_id not in (archive_price, extra_price) or not profile.is_archive or profile.is_pro:
+    # A teammate's flags show team Pro (apps/team/grants.py), so the event is compared with the tier they pay for
+    # on their own, as in setup_premium_history.
+    team_grant = team_pro_grant(profile.user_id)
+    own = team_grant.own_flags() if team_grant else profile
+    if plan_id not in (archive_price, extra_price) or not own.is_archive or own.is_pro:
         return plan_id, False
-    current_price = extra_price if profile.is_archive_extra else archive_price
+    current_price = extra_price if own.is_archive_extra else archive_price
     if plan_id == current_price:
         return plan_id, False
     live_plan_id = stripe_current_plan_id(subscription_id)
@@ -5047,6 +5498,13 @@ def stripe_signup(sender, full_json, **kwargs):
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription signup")
+        # models.py: a team plan starts only on what Stripe reports as paid, never on this event's contents
+        # (apps/team/stripe_billing.py).
+        from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
+
+        if is_team_subscription(profile, full_json["data"]["object"]):
+            sync_stripe_event(profile)
+            return
         plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         # Prorate refund on old subscription before activating new tier
         if profile.paypal_sub_id and profile.active_provider == "paypal":
@@ -5097,6 +5555,12 @@ def stripe_subscription_updated(sender, full_json, **kwargs):
     plan_id = plan["id"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
+        # models.py: a team plan renews and switches only on what Stripe reports (apps/team/stripe_billing.py).
+        from apps.team.stripe_billing import is_team_subscription, sync_stripe_event
+
+        if is_team_subscription(profile, full_json["data"]["object"]):
+            sync_stripe_event(profile)
+            return
         active = not full_json["data"]["object"]["cancel_at"] and plan.get("active", True)
         plan_id, confirmed = stripe_confirmed_plan_id(profile, full_json["data"]["object"].get("id"), plan_id)
         logging.user(
@@ -5142,11 +5606,13 @@ zebra_webhook_customer_subscription_updated.connect(stripe_subscription_updated)
 
 
 def stripe_payment_history_sync(sender, full_json, **kwargs):
+    from apps.team.stripe_billing import sync_stripe_event
+
     stripe_id = full_json["data"]["object"]["customer"]
     try:
         profile = Profile.objects.get(stripe_id=stripe_id)
         logging.user(profile.user, "~BC~SB~FBStripe subscription payment")
-        profile.setup_premium_history()
+        sync_stripe_event(profile)
     except Profile.DoesNotExist:
         logging.debug(
             " ---> Stripe charge for unknown stripe_id=%s, deferring to checkout.session.completed"
@@ -5157,6 +5623,29 @@ def stripe_payment_history_sync(sender, full_json, **kwargs):
 
 zebra_webhook_charge_succeeded.connect(stripe_payment_history_sync)
 zebra_webhook_charge_refunded.connect(stripe_payment_history_sync)
+# models.py: a paid invoice, including a renewal recovered after failing, and a subscription that ended each change
+# what the account has paid for (apps/team/stripe_billing.py).
+zebra_webhook_invoice_paid.connect(stripe_payment_history_sync)
+zebra_webhook_customer_subscription_deleted.connect(stripe_payment_history_sync)
+
+
+def stripe_charge_disputed(sender, full_json, **kwargs):
+    """A dispute takes a payment back, so the account is synced from Stripe, which ends a team the payment was for
+    (apps/team/stripe_billing.py). The dispute names only its charge, and the charge names the customer."""
+    from apps.team.stripe_billing import sync_stripe_event
+
+    stripe.api_key = settings.STRIPE_SECRET
+    charge = stripe.Charge.retrieve(full_json["data"]["object"]["charge"])
+    customer = charge.get("customer")
+    profile = customer and Profile.objects.filter(stripe_id=customer).first()
+    if not profile:
+        logging.debug(" ---> Stripe dispute for unknown stripe_id=%s" % customer)
+        return
+    logging.user(profile.user, "~BC~SB~FRStripe charge disputed")
+    sync_stripe_event(profile)
+
+
+zebra_webhook_charge_dispute_created.connect(stripe_charge_disputed)
 
 
 def stripe_usage_billing_invoice_paid(sender, full_json, **kwargs):
@@ -5568,6 +6057,18 @@ class PaymentHistory(models.Model):
     apple_original_transaction_id = models.CharField(max_length=100, blank=True, null=True, db_index=True)
     apple_expires_date = models.DateTimeField(blank=True, null=True)
     refunded = models.BooleanField(blank=True, null=True)
+    # models.py: the plan and the end of the period the provider says this payment was for, as
+    # Profile.setup_premium_history reads them from Stripe and PayPal, as Apple signs them
+    # (apps/profile/apple_subscriptions.py), and as Google Play's record of a team plan's subscription gives them
+    # (apps/team/play_billing.py). Empty for any other store payment, one made before they were recorded, or one the
+    # provider can't say.
+    plan = models.CharField(max_length=32, blank=True, null=True)
+    period_end = models.DateTimeField(blank=True, null=True)
+    # models.py: a payment made in Apple's sandbox, where App Review, TestFlight and sandbox testers buy without being
+    # charged (apps/profile/apple_subscriptions.py), or a Google Play test purchase by a license tester or on a testing
+    # track (apps/team/play_billing.py). It starts and renews a plan like any payment, and no revenue report or payment
+    # total counts it.
+    sandbox = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
         return "[%s] $%s/%s %s" % (
@@ -5597,7 +6098,7 @@ class PaymentHistory(models.Model):
             if not payments:
                 payments = PaymentHistory.objects.filter(
                     payment_date__gte=start_date, payment_date__lte=end_date
-                )
+                ).exclude(sandbox=True)
                 payments = payments.aggregate(
                     avg=Avg("payment_amount"), sum=Sum("payment_amount"), count=Count("user")
                 )
@@ -5731,7 +6232,7 @@ class PaymentHistory(models.Model):
                 last_year_sum = count["sum"] or 0
                 last_year_count = count["count"]
 
-        total = cls.objects.all().aggregate(sum=Sum("payment_amount"))
+        total = cls.objects.exclude(sandbox=True).aggregate(sum=Sum("payment_amount"))
         output += "\nTotal: $%s\n" % total["sum"]
 
         print(output)
@@ -5973,7 +6474,12 @@ class MReferral(mongo.Document):
 
         # Determine referrer's current tier for credit calculation
         profile = referrer.profile
-        if profile.is_pro:
+        team_grant = team_pro_grant(referrer.pk)
+        if team_grant:
+            # A teammate's flags show team Pro (apps/team/grants.py); their credit follows the plan they have.
+            own_tier = team_grant.own_tier
+            referrer_tier = own_tier if own_tier in cls.TIER_YEARLY_COST else "premium"
+        elif profile.is_pro:
             referrer_tier = "pro"
         elif profile.is_archive and profile.is_archive_extra:
             referrer_tier = "archive_extra"

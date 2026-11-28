@@ -5,8 +5,6 @@ Provides endpoints for querying the archive with AI, managing conversations,
 and getting suggested questions.
 """
 
-from datetime import datetime
-
 from bson import ObjectId
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -18,6 +16,7 @@ from apps.archive_assistant.tasks import process_archive_query
 from apps.archive_extension.models import MArchivedStory
 from apps.archive_extension.utils import format_datetime_utc
 from apps.profile.models import Profile
+from apps.team.models import team_scope
 from utils import json_functions as json
 from utils import log as logging
 from utils.llm_models import ANTHROPIC_ARCHIVE_MODEL
@@ -292,10 +291,7 @@ def get_usage(request):
     profile = Profile.objects.get(user=user)
     daily_limit = 100 if profile.is_archive else 20
 
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_count = MArchiveAssistantUsage.objects(
-        user_id=user.pk, query_date__gte=today_start, source__in=["live", "cache"]
-    ).count()
+    today_count = MArchiveAssistantUsage.queries_today(user, team_scope(user))
 
     can_use, _ = MArchiveAssistantUsage.can_use(user)
 

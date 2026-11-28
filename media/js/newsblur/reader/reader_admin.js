@@ -19,6 +19,7 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         this.open_modal();
         this.fetch_payment_history();
         this.fetch_listen_usage();
+        this.fetch_team();
 
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
@@ -49,6 +50,10 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
                 $.make('legend', gettext('Listen'))
             ]),
             $.make('div', { className: 'NB-admin-listen' }, gettext('Loading...')),
+            $.make('fieldset', [
+                $.make('legend', gettext('Team'))
+            ]),
+            $.make('div', { className: 'NB-admin-team' }, gettext('Loading...')),
             $.make('fieldset', [
                 $.make('legend', gettext('Actions'))
             ]),
@@ -203,6 +208,115 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
         }, gettext("Reset Listen usage")));
     },
 
+    // ========
+    // = Team =
+    // ========
+
+    fetch_team: function () {
+        this.model.fetch_team_staff(this.user.get('user_id'), _.bind(function (data) {
+            this.render_team(data);
+        }, this), _.bind(function () {
+            $('.NB-admin-team', this.$modal).text(gettext("Couldn't load the team."));
+        }, this));
+    },
+
+    // reader_admin.js: data is the team as staff see it (apps/team/views.py staff_team), and error is the message
+    // the server refused an action with.
+    render_team: function (data, error) {
+        this.team_data = data;
+        var team = data.team;
+        var $team = $('.NB-admin-team', this.$modal).empty();
+        var plan_names = {
+            team: gettext("Premium Team"),
+            team_enterprise: gettext("Premium Team Enterprise")
+        };
+        var make_plan_chooser = function (plan) {
+            var $chooser = $.make('select', { className: 'NB-admin-team-plan' }, _.map(plan_names, function (name, value) {
+                return $.make('option', { value: value }, name);
+            }));
+            return $chooser.val(plan);
+        };
+        var make_button = function (class_name, label) {
+            return $.make('div', {
+                className: 'NB-modal-submit-button NB-modal-submit-green ' + class_name
+            }, label);
+        };
+
+        if (!team) {
+            $team.append($.make('div', { className: 'NB-admin-team-control' }, [
+                $.make('span', gettext("Not on a team.")),
+                data.can_comp && make_plan_chooser('team'),
+                data.can_comp && make_button('NB-admin-action-team-comp', gettext("Comp a team"))
+            ]));
+        } else {
+            var members = _.map(team.members, function (member) {
+                return interpolate(gettext("%(username)s (%(role)s)"), member, true);
+            });
+            $team.append($.make('dl', [
+                $.make('dt', gettext('Team:')),
+                $.make('dd', interpolate(gettext("%(name)s (id %(id)s)"), team, true)),
+                $.make('dt', gettext('Role:')),
+                $.make('dd', team.role),
+                $.make('dt', gettext('Owner:')),
+                $.make('dd', team.owner || gettext('Nobody')),
+                $.make('dt', gettext('Plan:')),
+                $.make('dd', plan_names[team.plan]),
+                $.make('dt', gettext('Status:')),
+                $.make('dd', team.status == 'active' ? gettext('Active') : gettext('Inactive')),
+                $.make('dt', gettext('Seats:')),
+                $.make('dd', interpolate(gettext("%(seats_used)s of %(seat_limit)s in use"), team, true)),
+                $.make('dt', gettext('Billing:')),
+                $.make('dd', team.comped ? gettext('Comped, no end') :
+                    _.compact([team.billing_provider, team.billing_reference]).join(', ') || gettext('None')),
+                $.make('dt', gettext('Paid through:')),
+                $.make('dd', team.paid_through || gettext('None')),
+                (team.pending_plan && $.make('dt', gettext('Switching to:'))),
+                (team.pending_plan && $.make('dd', plan_names[team.pending_plan] || team.pending_plan)),
+                (team.pending_owner && $.make('dt', gettext('Handing to:'))),
+                (team.pending_owner && $.make('dd', team.pending_owner)),
+                $.make('dt', gettext('Members:')),
+                $.make('dd', members.join(', '))
+            ]));
+            $team.append($.make('div', { className: 'NB-admin-team-control' }, [
+                $.make('input', {
+                    type: 'number',
+                    className: 'NB-admin-team-seat-limit',
+                    min: Math.max(team.seats_used, 1),
+                    max: team.max_seat_limit,
+                    value: team.seat_limit
+                }),
+                make_button('NB-admin-action-team-seats', gettext("Save seat limit"))
+            ]));
+            if (team.comped) {
+                $team.append($.make('div', { className: 'NB-admin-team-control' }, [
+                    make_plan_chooser(team.plan),
+                    make_button('NB-admin-action-team-plan', gettext("Save plan")),
+                    make_button('NB-admin-action-team-end-comp', gettext("End comp"))
+                ]));
+            } else if (data.can_comp) {
+                $team.append($.make('div', { className: 'NB-admin-team-control' }, [
+                    make_plan_chooser(team.plan),
+                    make_button('NB-admin-action-team-comp', gettext("Comp this team"))
+                ]));
+            }
+        }
+
+        if (error) {
+            $team.append($.make('div', { className: 'NB-admin-team-error' }, error));
+        }
+    },
+
+    team_action: function ($button, action, data) {
+        if ($button.hasClass('NB-disabled')) return;
+        $button.addClass('NB-disabled').text(gettext('Saving...'));
+
+        this.model.team_staff_action(action, _.extend({ user_id: this.user.get('user_id') }, data), _.bind(function (response) {
+            this.render_team(response);
+        }, this), _.bind(function (response) {
+            this.render_team(this.team_data, (response && response.message) || gettext("That didn't work. Try again."));
+        }, this));
+    },
+
     // ===========
     // = Actions =
     // ===========
@@ -286,6 +400,23 @@ _.extend(NEWSBLUR.ReaderUserAdmin.prototype, {
             }, function (data) {
                 $t.replaceWith($.make('div', interpolate(gettext("Error: %(error)s"), {error: JSON.stringify(data)}, true)));
             });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-team-seats' }, function ($t, $p) {
+            e.preventDefault();
+            self.team_action($t, 'seat_limit', { seat_limit: $('.NB-admin-team-seat-limit', self.$modal).val() });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-team-plan' }, function ($t, $p) {
+            e.preventDefault();
+            self.team_action($t, 'plan', { plan: $('.NB-admin-team-plan', self.$modal).val() });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-team-comp' }, function ($t, $p) {
+            e.preventDefault();
+            self.team_action($t, 'comp', { plan: $('.NB-admin-team-plan', self.$modal).val() });
+        });
+        $.targetIs(e, { tagSelector: '.NB-admin-action-team-end-comp' }, function ($t, $p) {
+            e.preventDefault();
+            if (!window.confirm(gettext("End this comp? The team's plan ends now for everyone on it."))) return;
+            self.team_action($t, 'end_comp', {});
         });
         $.targetIs(e, { tagSelector: '.NB-admin-action-opml' }, function ($t, $p) {
             e.preventDefault();

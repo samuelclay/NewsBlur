@@ -6,6 +6,7 @@ from django.views import View
 
 from apps.profile.models import PremiumPricingMigration, Profile, RNewUserQueue
 from apps.statistics.models import MStatistics
+from apps.team.models import TeamProGrant
 
 
 class Users(View):
@@ -15,6 +16,10 @@ class Users(View):
         last_day = datetime.datetime.utcnow() - datetime.timedelta(minutes=60 * 24)
         expiration_sec = 60 * 60  # 1 hour
         expiration_sec_short = 60 * 5  # 5 minutes
+        # newsblur_users.py: teammates carry Premium Pro's flags from their team's plan (apps/team/grants.py), so
+        # the paid counts leave them out and team_seats counts them. A team's owner holds a grant too, and pays.
+        teammates = dict(user__team_pro_grant__isnull=False, user__owned_team__isnull=True)
+        paying = Profile.objects.exclude(**teammates)
 
         data = {
             "all": MStatistics.get(
@@ -43,31 +48,37 @@ class Users(View):
             ),
             "premium": MStatistics.get(
                 "munin:users_premium",
-                lambda: Profile.objects.filter(is_premium=True).count(),
+                lambda: paying.filter(is_premium=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
             "premium_from_trial": MStatistics.get(
                 "munin:users_premium_from_trial",
-                lambda: Profile.objects.filter(is_premium=True, is_premium_trial=False).count(),
+                lambda: paying.filter(is_premium=True, is_premium_trial=False).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
             "premium_non_trial": MStatistics.get(
                 "munin:users_premium_non_trial",
-                lambda: Profile.objects.filter(is_premium=True).exclude(is_premium_trial=True).count(),
+                lambda: paying.filter(is_premium=True).exclude(is_premium_trial=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec,
             ),
             "archive": MStatistics.get(
                 "munin:users_archive",
-                lambda: Profile.objects.filter(is_archive=True).count(),
+                lambda: paying.filter(is_archive=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),
             "pro": MStatistics.get(
                 "munin:users_pro",
-                lambda: Profile.objects.filter(is_pro=True).count(),
+                lambda: paying.filter(is_pro=True).count(),
+                set_default=True,
+                expiration_sec=expiration_sec_short,
+            ),
+            "team_seats": MStatistics.get(
+                "munin:users_team_seats",
+                lambda: TeamProGrant.objects.filter(user__owned_team__isnull=True).count(),
                 set_default=True,
                 expiration_sec=expiration_sec_short,
             ),

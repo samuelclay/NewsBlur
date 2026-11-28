@@ -1,0 +1,20 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    {% if subscription == "app_store" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with team=team_name %}You joined {{ team }}, and the team gives your account Premium Pro. You also pay for NewsBlur yourself through the App Store, and only you can cancel that. So you don't pay twice, cancel it in your App Store subscriptions:{% endblocktrans %} <a href="{{ manage_url }}">{{ manage_url }}</a></p>
+    {% elif subscription == "play" %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with team=team_name %}You joined {{ team }}, and the team gives your account Premium Pro. You also pay for NewsBlur yourself through Google Play, and only you can cancel that. So you don't pay twice, cancel it in your Google Play subscriptions:{% endblocktrans %} <a href="{{ manage_url }}">{{ manage_url }}</a></p>
+    {% else %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with team=team_name %}You joined {{ team }}, and the team gives your account Premium Pro. So you don't pay twice, renewal of the plan you pay for yourself is now turned off.{% endblocktrans %}</p>
+    {% if paid_through %}
+    <p style="line-height: 20px;">{% blocktrans trimmed with date=paid_through|language_date:"F j, Y" %}Your own plan stays yours until {{ date }}, and you won't be charged for it again.{% endblocktrans %}</p>
+    {% endif %}
+    {% endif %}
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

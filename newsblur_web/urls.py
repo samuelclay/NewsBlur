@@ -80,6 +80,7 @@ urlpatterns = [
     url(r"^newsletters/", include("apps.newsletters.urls")),
     url(r"^categories/", include("apps.categories.urls")),
     url(r"^briefing/", include("apps.briefing.urls")),
+    url(r"^team/", include("apps.team.urls")),
     url(r"^_haproxychk", static_views.haproxy_check),
     url(r"^_dbcheck/postgres", static_views.postgres_check),
     url(r"^_dbcheck/mongo", static_views.mongo_check),

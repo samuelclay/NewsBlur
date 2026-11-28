@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const read = file => fs.readFileSync(path.join(__dirname, '../../media/js/newsblur/reader', file), 'utf8');
 
-test('every option card in Preferences has a drawing', () => {
+test('every option card in Preferences and the team dialog has a drawing', () => {
     const context = {
         NEWSBLUR: {},
         _: {
@@ -17,9 +17,10 @@ test('every option card in Preferences has a drawing', () => {
     };
     vm.runInNewContext(read('reader_preferences_art.js'), context);
     const art = context.NEWSBLUR.PreferencesArt;
-    // preferences_art.test.js: reader_preferences.js names a card's drawing as art: '...' or
+    // preferences_art.test.js: reader_preferences.js and reader_team.js name a card's drawing as art: '...' or
     // make_art('...'). A name with no drawing behind it would leave that card blank.
-    const names = [...read('reader_preferences.js').matchAll(/(?:art: |make_art\()'([\w-]+)'/g)].map(match => match[1]);
+    const names = ['reader_preferences.js', 'reader_team.js'].flatMap(file =>
+        [...read(file).matchAll(/(?:art: |make_art\()'([\w-]+)'/g)].map(match => match[1]));
 
     assert.ok(names.length > 60, 'found only ' + names.length + ' cards');
     assert.deepEqual(names.filter(name => !art.has(name)), []);

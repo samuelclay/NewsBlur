@@ -1,0 +1,12 @@
+{% load i18n utils_tags %}{% autoescape off %}{% current_domain as domain %}{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}
+
+{% blocktrans with owner=owner.username team=team_name %}{{ owner }} asked you to take over {{ team }} and become its owner on NewsBlur.{% endblocktrans %}
+
+{% if comped %}{% blocktrans with owner=owner.username %}The team's plan is free, so there's nothing to pay. Once you accept, the team is yours and {{ owner }} stays on it as a manager.{% endblocktrans %}{% else %}{% blocktrans with owner=owner.username plan=plan_name %}As its owner you pay for the team's {{ plan }} plan yourself from then on. It's ${{ price }} a month, or ${{ store_price }} a month through the App Store or Google Play. Once you've paid, the team is yours and {{ owner }} stays on it as a manager.{% endblocktrans %}{% endif %}
+
+{% trans "Accept or decline in your team:" %} https://{{ domain }}/?next=team
+
+{% blocktrans with date=expire_date|language_date:"F j, Y" %}The request runs out on {{ date }}.{% endblocktrans %}
+
+Sam
+{% endautoescape %}

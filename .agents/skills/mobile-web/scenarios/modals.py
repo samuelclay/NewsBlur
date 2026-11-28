@@ -23,6 +23,7 @@ MODALS = [
     ("intro", "NEWSBLUR.reader.open_intro_modal()"),
     ("keyboard", "NEWSBLUR.reader.open_keyboard_shortcuts_modal()"),
     ("faq", "NEWSBLUR.reader.open_faq_modal()"),
+    ("team", "NEWSBLUR.reader.open_team_modal()"),
 ]
 
 # modals.py: elements reaching past the screen edge that aren't inside something that scrolls

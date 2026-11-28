@@ -37,11 +37,17 @@ jobs:
       - name: Test Preferences saving
         run: node --test node/tests/preferences_save.test.js
 
+      - name: Test the team dialog's rules
+        run: node --test node/tests/team_dialog.test.js
+
       - name: Test theme switching
         run: node --test node/tests/theme_switch.test.js
 
       - name: Test feed and folder icons
         run: node --test node/tests/favicon.test.js
+
+      - name: Test the page a purchase returns to
+        run: node --test node/tests/paypal_return.test.js
 
       - name: Test reader motion lifecycles
         run: node --test utils/test_*motion.cjs

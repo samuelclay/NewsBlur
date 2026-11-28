@@ -33,13 +33,14 @@ class Test_LanguageAnalytics(TestCase):
         user.profile.refresh_from_db()
         return user
 
-    def payment(self, user, amount, when=None, refunded=None, provider="stripe"):
+    def payment(self, user, amount, when=None, refunded=None, provider="stripe", sandbox=None):
         return PaymentHistory.objects.create(
             user=user,
             payment_date=when or self.now,
             payment_amount=amount,
             payment_provider=provider,
             refunded=refunded,
+            sandbox=sandbox,
         )
 
     def sample(self, body, name, **labels):
@@ -221,6 +222,29 @@ class Test_LanguageAnalytics(TestCase):
             99,
         )
         self.assertEqual(self.sample(body, "newsblur_language_signups", language="fr", activity="all"), 1)
+
+    def test_app_store_team_payments_count_and_sandbox_payments_do_not(self):
+        user = self.user("team", language="fr")
+        self.payment(user, 79, provider="ios-team-subscription")
+        self.payment(user, 129, provider="ios-team-enterprise-subscription")
+        # App Review, TestFlight and sandbox testers aren't charged, however often the sandbox renews.
+        for provider in ("ios-team-subscription", "ios-pro-subscription"):
+            self.payment(user, 79, provider=provider, sandbox=True)
+        body = language_metrics(self.now)
+        self.assertEqual(
+            self.sample(body, "newsblur_language_payments_dollars", language="fr", period="since_start"), 208
+        )
+
+    def test_google_play_team_payments_count_and_test_purchases_do_not(self):
+        user = self.user("playteam", language="fr")
+        self.payment(user, 79, provider="android-team")
+        self.payment(user, 129, provider="android-team-enterprise")
+        # License testers and testing tracks aren't charged.
+        self.payment(user, 129, provider="android-team-enterprise", sandbox=True)
+        body = language_metrics(self.now)
+        self.assertEqual(
+            self.sample(body, "newsblur_language_payments_dollars", language="fr", period="since_start"), 208
+        )
 
     def test_date_only_provider_history_on_signup_day_is_included(self):
         user = self.user("date_only", language="fr")

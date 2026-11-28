@@ -1,10 +1,14 @@
 import datetime
+import json
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 
 from apps.profile.apple_subscriptions import apply_verified_apple_transaction
+from apps.profile.fake_app_store import FakeAppStore
 from apps.profile.models import PaymentHistory, Profile
 
 
@@ -126,7 +130,8 @@ class Test_AppleSubscriptions(TestCase):
 
     def test_ineligible_transactions_do_not_write_payments(self):
         for changes in (
-            {"environment": "Sandbox"},
+            # Xcode's StoreKit testing, which Apple doesn't sign.
+            {"environment": "Xcode"},
             {"revocationDate": self.payload["purchaseDate"]},
             {"isUpgraded": True},
             {"expiresDate": int((self.now - datetime.timedelta(days=1)).timestamp() * 1000)},
@@ -341,3 +346,138 @@ class Test_AppleSubscriptions(TestCase):
         with patch.object(Profile, "activate_premium", side_effect=concurrent_upgrade):
             self.apply()
         self.assertEqual(Profile.objects.get(user=self.user).premium_expire, pro_expiration)
+
+
+class Test_AppleReceipts(TestCase):
+    """apps/profile/views.py save_ios_receipt: a purchase the app posts, as a product id and a transaction id or as
+    the transaction StoreKit signed, with Apple's signing made by apps/profile/fake_app_store.py."""
+
+    def setUp(self):
+        self.app_store = FakeAppStore()
+        for target, kwargs in (
+            ("apps.profile.apple_notifications.apple_verifier", dict(side_effect=self.app_store.verifier)),
+            ("apps.profile.tasks.EmailNewPremium.delay", {}),
+            ("apps.profile.tasks.EmailNewPremiumPro.delay", {}),
+            ("apps.profile.tasks.EmailStaffPremiumUpgrade.delay", {}),
+            ("apps.profile.models.SchedulePremiumSetup.apply_async", {}),
+            ("apps.profile.models.UserSubscription.queue_new_feeds", {}),
+            ("apps.profile.models.UserSubscription.schedule_fetch_archive_feeds_for_user", {}),
+            ("apps.profile.models.Profile.setup_premium_history", {}),
+        ):
+            patcher = patch(target, **kwargs)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        self.user = User.objects.create_user(username="apple-receipts", password="password")
+        Profile.objects.filter(user=self.user).update(
+            is_premium=False, is_premium_trial=False, premium_expire=None
+        )
+        self.client.login(username="apple-receipts", password="password")
+
+    def post(self, **data):
+        return json.loads(self.client.post(reverse("save-ios-receipt"), data).content)
+
+    def profile(self):
+        return Profile.objects.get(user=self.user)
+
+    def test_a_product_the_server_does_not_sell_starts_nothing(self):
+        for product in ("missing", "newsblur_premium_team", "newsblur_premium_lifetime"):
+            response = self.post(product_identifier=product, transaction_identifier="1000000000001")
+            self.assertEqual(response["reason"], "unknown_product")
+        self.assertFalse(self.profile().is_premium)
+        self.assertFalse(PaymentHistory.objects.filter(user=self.user).exists())
+
+        # A subscription to a Premium price no longer sold still renews.
+        self.post(product_identifier="newsblur_premium_auto_renew_24", transaction_identifier="1000000000002")
+        self.assertTrue(self.profile().is_premium)
+
+    def test_a_signed_purchase_starts_or_upgrades_a_plan_and_an_ended_one_changes_nothing(self):
+        premium = self.app_store.transaction(self.user, "newsblur_premium_auto_renew_36", "2000001", days=365)
+        self.assertEqual(self.post(signed_transaction=self.app_store.sign(premium))["code"], 1)
+        self.assertEqual((self.profile().is_premium, self.profile().is_pro), (True, False))
+
+        pro = self.app_store.transaction(self.user, "newsblur_premium_pro", "2000002")
+        self.post(signed_transaction=self.app_store.sign(pro))
+        self.assertTrue(self.profile().is_pro)
+
+        ended = self.app_store.transaction(
+            self.user,
+            "newsblur_premium_archive_extra",
+            "2000003",
+            purchased_at=datetime.datetime.now() - datetime.timedelta(days=40),
+        )
+        self.assertEqual(self.post(signed_transaction=self.app_store.sign(ended))["reason"], "ended")
+
+    def test_a_signed_sandbox_purchase_starts_its_plan_and_counts_as_no_revenue(self):
+        """App Review and TestFlight buy in Apple's sandbox, without being charged."""
+        # A real payment a year ago, the month PaymentHistory.report compares this one with.
+        PaymentHistory.objects.create(
+            user=self.user,
+            payment_date=datetime.datetime.now() - relativedelta(years=1),
+            payment_amount=36,
+            payment_provider="stripe",
+        )
+        archive = self.app_store.transaction(
+            self.user, "newsblur_premium_archive", "2000001", days=1, environment="Sandbox"
+        )
+        self.assertEqual(self.post(signed_transaction=self.app_store.sign(archive))["code"], 1)
+        self.assertTrue(self.profile().is_archive)
+        # Pro is above the Archive the account has now, so it starts as the app's purchases always have.
+        pro = self.app_store.transaction(
+            self.user, "newsblur_premium_pro", "2000002", days=1, environment="Sandbox"
+        )
+        self.post(signed_transaction=self.app_store.sign(pro))
+        self.assertTrue(self.profile().is_pro)
+
+        self.assertIn("Total: $36\n", PaymentHistory.report()["output"])
+        self.assertFalse(self.profile().is_archive_extra)
+        self.assertFalse(PaymentHistory.objects.filter(payment_identifier="2000003").exists())
+
+    def paying_through_stripe(self, plan_flags, amount, paid_days_ago, period_days):
+        """apps/profile/test_apple_subscriptions.py: the account pays for its plan through Stripe, last paid
+        paid_days_ago for period_days. Returns when that period ends."""
+        paid_at = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(days=paid_days_ago)
+        PaymentHistory.objects.create(
+            user=self.user, payment_date=paid_at, payment_amount=amount, payment_provider="stripe"
+        )
+        paid_through = paid_at + datetime.timedelta(days=period_days)
+        Profile.objects.filter(user=self.user).update(
+            is_premium=True, premium_expire=paid_through, **plan_flags
+        )
+        return paid_through
+
+    def restore_three_days_before_it_ends(self, product, days):
+        """apps/profile/test_apple_subscriptions.py: Restore Purchases posts a purchase of product for days, three days
+        before Apple's expiry, with the history sync running. Returns the payment it recorded and Apple's dates.
+        """
+        bought = datetime.datetime.now().replace(microsecond=0) - datetime.timedelta(days=days - 3)
+        restored = self.app_store.transaction(self.user, product, "3000001", purchased_at=bought, days=days)
+        with patch.object(
+            Profile, "setup_premium_history", Test_AppleSubscriptions.real_setup_premium_history
+        ):
+            self.post(signed_transaction=self.app_store.sign(restored))
+        payment = PaymentHistory.objects.get(payment_identifier="3000001")
+        return payment, bought, bought + datetime.timedelta(days=days)
+
+    def test_a_restored_purchase_of_a_higher_plan_pays_only_until_apple_says_it_ends(self):
+        paid_through = self.paying_through_stripe({}, 36, paid_days_ago=300, period_days=365)
+
+        payment, bought, expires = self.restore_three_days_before_it_ends(
+            "newsblur_premium_archive", days=365
+        )
+
+        self.assertTrue(self.profile().is_archive)
+        # The Premium year paid through Stripe runs 65 more days. A year from now would be a year Apple never sold.
+        self.assertEqual(self.profile().premium_expire, paid_through)
+        self.assertEqual((payment.payment_date, payment.apple_expires_date), (bought, expires))
+
+    def test_a_restored_purchase_of_a_lower_plan_pays_only_until_apple_says_it_ends(self):
+        pro = dict(is_archive=True, is_pro=True)
+        paid_through = self.paying_through_stripe(pro, 29, paid_days_ago=20, period_days=31)
+
+        payment, bought, expires = self.restore_three_days_before_it_ends(
+            "newsblur_premium_auto_renew_36", days=365
+        )
+
+        self.assertTrue(self.profile().is_pro)
+        self.assertEqual(self.profile().premium_expire, paid_through)
+        self.assertEqual((payment.payment_date, payment.apple_expires_date), (bought, expires))

@@ -13,6 +13,7 @@ import re
 from urllib.parse import urlencode
 
 import dateutil
+import paypalrestsdk
 import requests
 import stripe
 from django.conf import settings
@@ -66,10 +67,21 @@ from apps.profile.models import (
     Profile,
     RNewUserQueue,
 )
+from apps.profile.tasks import TIER_NAMES
 from apps.reader.forms import LoginForm, SignupForm
 from apps.reader.models import RUserStory, UserSubscription, UserSubscriptionFolders
 from apps.rss_feeds.models import MStarredStory, MStarredStoryCounts
-from apps.social.models import MActivity, MSharedStory, MSocialProfile, MSocialServices, MSocialSubscription
+from apps.social.models import (
+    MActivity,
+    MSharedStory,
+    MSocialProfile,
+    MSocialServices,
+    MSocialSubscription,
+)
+from apps.team import play_billing
+from apps.team.models import Team, team_owner_id
+from apps.team.paypal_billing import refunded_sale_user, settled_by_team_sync
+from apps.team.stripe_billing import TEAM_PLANS, team_purchase_refusal
 from utils import json_functions as json
 from utils import log as logging
 from utils.languages import normalize_language
@@ -520,6 +532,37 @@ def find_paypal_user(data, custom_field="custom_id"):
     return None
 
 
+def _sent_by_paypal(request, data):
+    """views.py: with settings.PAYPAL_WEBHOOK_ID set, a notification is acted on only once PayPal's
+    verify-webhook-signature API confirms, from its transmission headers, that PayPal sent this event to that
+    webhook. Without it the notification is acted on as sent, and outside development and tests each one reports an
+    error, so a missing id is noticed."""
+    webhook_id = getattr(settings, "PAYPAL_WEBHOOK_ID", "")
+    if not webhook_id:
+        if not (settings.DEBUG or getattr(settings, "TEST_DEBUG", False)):
+            # views.py: one fixed message, without the notification, so Sentry keeps every report in one issue.
+            logging.error("PayPal webhook id is not configured, so a PayPal notification was not verified")
+        return True
+    headers = request.META
+    try:
+        response = Profile.paypal_app_api().post(
+            "/v1/notifications/verify-webhook-signature",
+            {
+                "auth_algo": headers.get("HTTP_PAYPAL_AUTH_ALGO", ""),
+                "cert_url": headers.get("HTTP_PAYPAL_CERT_URL", ""),
+                "transmission_id": headers.get("HTTP_PAYPAL_TRANSMISSION_ID", ""),
+                "transmission_sig": headers.get("HTTP_PAYPAL_TRANSMISSION_SIG", ""),
+                "transmission_time": headers.get("HTTP_PAYPAL_TRANSMISSION_TIME", ""),
+                "webhook_id": webhook_id,
+                "webhook_event": data,
+            },
+        )
+    except (paypalrestsdk.exceptions.ConnectionError, requests.exceptions.RequestException) as e:
+        logging.user(request, f" ---> Paypal webhook not verified, PayPal couldn't be asked: {e}")
+        return False
+    return response.get("verification_status") == "SUCCESS"
+
+
 def paypal_webhooks(request):
     try:
         data = json.decode(request.body)
@@ -536,6 +579,10 @@ def paypal_webhooks(request):
     if not data.get("event_type"):
         logging.user(request, f" ---> Paypal webhooks missing event_type, ignoring: {data}")
         return HttpResponse("OK")
+
+    if not _sent_by_paypal(request, data):
+        logging.user(request, f" ---> Paypal webhook refused, PayPal didn't verify it: {data['event_type']}")
+        return HttpResponse("Invalid signature.", status=400)
 
     logging.user(request, f" ---> Paypal webhooks {data['event_type']} data: {data}")
 
@@ -567,12 +614,16 @@ def paypal_webhooks(request):
             # users switching to PayPal — their active_provider was already "stripe",
             # so the cancel was skipped and the old Stripe sub kept auto-renewing.
             is_fresh_activation = data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and is_active_status
-            if is_fresh_activation:
+            # views.py: a team plan's subscription, or any while the account's team is paid for, is settled by
+            # setup_premium_history from what PayPal reports, without the refunds and cancellations here
+            # (apps/team/paypal_billing.py).
+            team_event = settled_by_team_sync(user.profile, data["resource"].get("plan_id"))
+            if is_fresh_activation and not team_event:
                 if user.profile.stripe_id:
                     user.profile.refund_prorated_stripe_payment()
                 user.profile.cancel_premium_stripe()
             user.profile.setup_premium_history()
-            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED":
+            if data["event_type"] == "BILLING.SUBSCRIPTION.ACTIVATED" and not team_event:
                 user.profile.cancel_and_prorate_existing_paypal_subscriptions(data)
     elif data["event_type"] == "PAYMENT.SALE.COMPLETED":
         user = find_paypal_user(data, custom_field="custom")
@@ -580,6 +631,11 @@ def paypal_webhooks(request):
             user.profile.setup_premium_history()
     elif data["event_type"] == "PAYMENT.CAPTURE.REFUNDED":
         user = find_paypal_user(data, custom_field="custom_id")
+        if user:
+            user.profile.setup_premium_history()
+    elif data["event_type"] in ["PAYMENT.SALE.REFUNDED", "PAYMENT.SALE.REVERSED"]:
+        # views.py: these name only the sale, so whose it is comes from PayPal's record of the sale.
+        user = refunded_sale_user(data["resource"])
         if user:
             user.profile.setup_premium_history()
     elif data["event_type"] in ["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.SUSPENDED"]:
@@ -722,7 +778,13 @@ def google_play_rtdn(request):
 
     sub_notification = notification.get("subscriptionNotification")
     if not sub_notification:
-        if notification.get("testNotification"):
+        voided = notification.get("voidedPurchaseNotification")
+        if voided:
+            # views.py: a refund or chargeback of a team plan's payment ends the team (apps/team/play_billing.py).
+            outcome = play_billing.end_voided_team(voided.get("purchaseToken"), voided.get("orderId"))
+            if outcome == "verify_later":
+                return HttpResponse("Retry", status=503)
+        elif notification.get("testNotification"):
             logging.debug(" ---> Google Play RTDN test notification received")
         return HttpResponse("OK")
 
@@ -734,6 +796,16 @@ def google_play_rtdn(request):
         " ---> Google Play RTDN type=%s subscription=%s token=%s..."
         % (notification_type, subscription_id, purchase_token[:20])
     )
+
+    # views.py: a team plan's notifications are read from Google's own record (apps/team/play_billing.py), and one
+    # Google couldn't be asked about is delivered again.
+    if play_billing.is_team_notification(purchase_token, subscription_id):
+        if play_billing.process_play_notification(purchase_token, notification_type) == "verify_later":
+            return HttpResponse("Retry", status=503)
+        return HttpResponse("OK")
+    if subscription_id and subscription_id not in play_billing.PLAY_PLANS:
+        logging.debug(" ---> Google Play RTDN for a product NewsBlur doesn't sell: %s" % subscription_id)
+        return HttpResponse("OK")
 
     # Look up user by purchase token
     user = find_google_play_user(purchase_token)
@@ -917,23 +989,69 @@ def profile_is_premium_archive(request):
     }
 
 
+# views.py: the products an app may post as a product id and a transaction id, and what starts each. Every other
+# product, the team plans among them, is posted as the transaction StoreKit signed (apps/profile/apple_subscriptions.py).
+IOS_RECEIPT_ACTIVATIONS = {
+    "newsblur_premium_auto_renew_24": "activate_ios_premium",
+    "newsblur_premium_auto_renew_36": "activate_ios_premium",
+    "newsblur_premium_archive": "activate_ios_archive",
+    "newsblur_premium_archive_extra": "activate_ios_archive_extra",
+    "newsblur_premium_pro": "activate_ios_pro",
+}
+# views.py: why an App Store purchase the app posted didn't change the account's plan (save_ios_receipt).
+IOS_PURCHASE_MESSAGES = {
+    "unknown_product": gettext_lazy("That isn't a NewsBlur plan, so your plan hasn't changed."),
+    "not_verified": gettext_lazy(
+        "The App Store couldn't confirm this purchase, so your plan hasn't changed."
+    ),
+    "verify_later": gettext_lazy(
+        "The App Store couldn't be reached to confirm this purchase. Try again shortly."
+    ),
+    "other_account": gettext_lazy("This purchase belongs to another NewsBlur account."),
+    "ended": gettext_lazy("This purchase has ended or was refunded, so your plan hasn't changed."),
+    "on_team": gettext_lazy(
+        "You're on another team, so this purchase didn't start a team of your own. NewsBlur has been told."
+    ),
+    "comped": gettext_lazy(
+        "Your team is already covered, so this purchase didn't change it. NewsBlur has been told."
+    ),
+}
+
+
+# views.py: why a Google Play purchase the app posted didn't change the account's plan (save_android_receipt).
+ANDROID_PURCHASE_MESSAGES = dict(
+    IOS_PURCHASE_MESSAGES,
+    not_verified=gettext_lazy("Google Play couldn't confirm this purchase, so your plan hasn't changed."),
+    verify_later=gettext_lazy("Google Play couldn't be reached to confirm this purchase. Try again shortly."),
+)
+
+
+def _ios_purchase_response(user, reason=None, messages=IOS_PURCHASE_MESSAGES):
+    """views.py: the account's plan, as the app reads it after a purchase, with code -1 and why when the purchase
+    didn't change it."""
+    response = dict(Profile.objects.get(user=user).canonical(), code=1)
+    if reason:
+        response.update(code=-1, reason=reason, message=str(messages[reason]))
+    return response
+
+
 @ajax_login_required
 @json.json_view
 def save_ios_receipt(request):
+    signed_transaction = request.POST.get("signed_transaction")
+    if signed_transaction:
+        return _save_signed_ios_purchase(request, signed_transaction)
     receipt = request.POST.get("receipt")
     product_identifier = request.POST.get("product_identifier")
     transaction_identifier = request.POST.get("transaction_identifier")
 
     logging.user(request, "~BM~FBSaving iOS Receipt: %s %s" % (product_identifier, transaction_identifier))
 
-    if product_identifier == "newsblur_premium_pro":
-        paid = request.user.profile.activate_ios_pro(transaction_identifier)
-    elif product_identifier == "newsblur_premium_archive_extra":
-        paid = request.user.profile.activate_ios_archive_extra(transaction_identifier)
-    elif product_identifier == "newsblur_premium_archive":
-        paid = request.user.profile.activate_ios_archive(transaction_identifier)
-    else:
-        paid = request.user.profile.activate_ios_premium(transaction_identifier)
+    activation = IOS_RECEIPT_ACTIVATIONS.get(product_identifier)
+    if not activation:
+        logging.user(request, "~BM~FRNot saving iOS Receipt for an unknown product: %s" % product_identifier)
+        return _ios_purchase_response(request.user, "unknown_product")
+    paid = getattr(request.user.profile, activation)(transaction_identifier)
     if paid:
         logging.user(
             request, "~BM~FBSending iOS Receipt email: %s %s" % (product_identifier, transaction_identifier)
@@ -958,6 +1076,28 @@ def save_ios_receipt(request):
     return request.user.profile
 
 
+def _save_signed_ios_purchase(request, signed_transaction):
+    """views.py: a purchase posted as the transaction StoreKit signed, verified as Apple's before it changes anything
+    (apps/profile/apple_notifications.py process_apple_purchase)."""
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
+
+    from apps.profile.apple_notifications import process_apple_purchase
+
+    try:
+        reason = process_apple_purchase(request.user, signed_transaction)
+    except VerificationException as exc:
+        # Never log signed receipts or secrets from requests in apps/profile/views.py.
+        retryable = exc.status == VerificationStatus.RETRYABLE_VERIFICATION_FAILURE
+        reason = "verify_later" if retryable else "not_verified"
+    except ValueError:
+        reason = "not_verified"
+    logging.user(request, "~BM~FBSaving signed iOS purchase: %s" % (reason or "applied"))
+    return _ios_purchase_response(request.user, reason)
+
+
 @ajax_login_required
 @json.json_view
 def save_android_receipt(request):
@@ -970,6 +1110,16 @@ def save_android_receipt(request):
         "~BM~FBSaving Android Receipt: %s %s (token: %s)"
         % (product_id, order_id, "yes" if purchase_token else "no"),
     )
+
+    # views.py: a team plan's purchase starts or changes a team only on Google's record of it
+    # (apps/team/play_billing.py), and a product NewsBlur doesn't sell starts nothing.
+    team_purchase, reason = play_billing.save_play_purchase(request.user, product_id, purchase_token)
+    if team_purchase:
+        logging.user(request, "~BM~FBSaving Android team purchase: %s" % (reason or "applied"))
+        return _ios_purchase_response(request.user, reason, ANDROID_PURCHASE_MESSAGES)
+    if product_id and product_id not in play_billing.PLAY_PLANS:
+        logging.user(request, "~BM~FRNot saving Android Receipt for an unknown product: %s" % product_id)
+        return _ios_purchase_response(request.user, "unknown_product", ANDROID_PURCHASE_MESSAGES)
 
     if purchase_token:
         request.user.profile.store_google_play_ids(
@@ -1122,6 +1272,10 @@ def switch_stripe_subscription(request):
     elif plan == "change_paypal":
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
 
     switch_successful = request.user.profile.switch_stripe_subscription(plan)
 
@@ -1132,9 +1286,27 @@ def switch_stripe_subscription(request):
     )
 
     if switch_successful:
-        return HttpResponseRedirect(reverse("stripe-return"))
+        return HttpResponseRedirect(_stripe_return_path(plan))
 
     return stripe_checkout(request)
+
+
+def _stripe_return_path(plan):
+    """views.py: after paying for a team plan the return page waits for the team, not for Premium
+    (media/js/newsblur/payments/paypal_return.js)."""
+    if plan in TEAM_PLANS:
+        return "%s?%s" % (reverse("stripe-return"), urlencode({"plan": plan}))
+    return reverse("stripe-return")
+
+
+def _team_purchase_refused(request, reason):
+    """views.py: the reader opens the team dialog with the reason (apps/team/stripe_billing.py
+    team_purchase_refusal)."""
+    logging.user(request, "~BR~FRTeam purchase refused: %s" % reason)
+    domain = Site.objects.get_current().domain
+    return HttpResponseRedirect(
+        "https://%s%s?%s" % (domain, reverse("index"), urlencode({"next": "team", "team_purchase": reason}))
+    )
 
 
 def switch_paypal_subscription(request):
@@ -1146,6 +1318,10 @@ def switch_paypal_subscription(request):
     elif plan == "change_paypal":
         paypal_url = request.user.profile.paypal_change_billing_details_url()
         return HttpResponseRedirect(paypal_url)
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user, Team.PROVIDER_PAYPAL)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
 
     approve_url = request.user.profile.switch_paypal_subscription_approval_url(plan)
 
@@ -1161,6 +1337,8 @@ def switch_paypal_subscription(request):
     paypal_return = reverse("paypal-return")
     if plan in ("archive", "archive_extra"):
         paypal_return = reverse("paypal-archive-return")
+    elif plan in TEAM_PLANS:
+        paypal_return = "%s?%s" % (paypal_return, urlencode({"plan": plan}))
     return HttpResponseRedirect(paypal_return)
 
 
@@ -1179,6 +1357,11 @@ def stripe_checkout(request):
         )
         return HttpResponseRedirect(checkout_session.url, status=303)
 
+    if plan in TEAM_PLANS:
+        refusal = team_purchase_refusal(request.user)
+        if refusal:
+            return _team_purchase_refused(request, refusal)
+
     price = Profile.plan_to_stripe_price(plan)
 
     session_dict = {
@@ -1190,7 +1373,7 @@ def stripe_checkout(request):
         ],
         "mode": "subscription",
         "metadata": {"newsblur_user_id": request.user.pk},
-        "success_url": "https://%s%s" % (domain, reverse("stripe-return")),
+        "success_url": "https://%s%s" % (domain, _stripe_return_path(plan)),
         "cancel_url": "https://%s%s" % (domain, reverse("index")),
     }
     if request.user.profile.stripe_id:
@@ -1261,6 +1444,25 @@ def setup_usage_billing(request):
         if app_platform:
             return _usage_billing_app_error(gettext("Usage-based billing isn't available right now."))
         return HttpResponseRedirect(reverse("index"))
+
+    # views.py: On an active team a teammate's AI filters bill the team's owner against the owner's
+    # spending limit (Profile.usage_billing_profile), so only the owner turns usage billing on.
+    owner_id = team_owner_id(request.user)
+    if owner_id and owner_id != request.user.pk:
+        logging.user(request, "~BR~FRUsage billing refused: the team's owner turns it on")
+        if app_platform:
+            return JsonResponse(
+                {
+                    "code": -1,
+                    "reason": "team_owner_only",
+                    "message": gettext(
+                        "On a team, AI filters are billed to the team's owner. Ask them to turn on usage billing."
+                    ),
+                }
+            )
+        return HttpResponseRedirect(
+            "https://%s%s?next=payments&usage_billing=team_owner_only" % (domain, reverse("index"))
+        )
 
     # Guard against duplicate subscriptions. Meter events are customer-scoped,
     # so any extra active sub on the same classifier prices silently double-bills
@@ -1611,8 +1813,12 @@ def payment_history(request):
             pass
 
     if paypal_api and not next_invoice and user.profile.premium_renewal and len(history):
+        # views.py: when PayPal says it bills next, which a payment's amount can't tell for a monthly plan or a
+        # prorated charge. A year after the last payment for a subscription PayPal can't read.
+        next_billing = Profile._parse_paypal_next_billing(user.profile.paypal_subscription_detail())
         next_invoice = dict(
-            payment_date=history[0].payment_date + dateutil.relativedelta.relativedelta(years=1),
+            payment_date=next_billing
+            or history[0].payment_date + dateutil.relativedelta.relativedelta(years=1),
             payment_amount=history[0].payment_amount,
             payment_provider="(scheduled)",
             scheduled=True,
@@ -1649,6 +1855,17 @@ def invoice(request, payment_id):
     # Calculate coverage period (1 year from payment date)
     coverage_start = payment.payment_date
     coverage_end = coverage_start + dateutil.relativedelta.relativedelta(years=1)
+    # views.py: Premium Team's $79 and Premium Team Enterprise's $129 each pay for a month
+    # (Profile.TEAM_MONTHLY_PRICES).
+    plan_name = TIER_NAMES.get({79: "team", 129: "team_enterprise"}.get(payment.payment_amount))
+    if plan_name:
+        coverage_end = coverage_start + dateutil.relativedelta.relativedelta(months=1)
+    # views.py: what Stripe or PayPal said the payment was for, where the history sync recorded it
+    # (Profile.setup_premium_history).
+    if payment.plan:
+        plan_name = TIER_NAMES.get(payment.plan)
+    if payment.period_end:
+        coverage_end = payment.period_end
 
     return render(
         request,
@@ -1660,6 +1877,7 @@ def invoice(request, payment_id):
             "user": payment.user,
             "coverage_start": coverage_start,
             "coverage_end": coverage_end,
+            "plan_name": plan_name,
         },
     )
 
@@ -2037,7 +2255,10 @@ def email_optout_token(request, username, secret):
 @require_POST
 @json.json_view
 def ios_subscription_status(request):
-    from appstoreserverlibrary.signed_data_verifier import VerificationException, VerificationStatus
+    from appstoreserverlibrary.signed_data_verifier import (
+        VerificationException,
+        VerificationStatus,
+    )
 
     from apps.profile.apple_notifications import process_apple_notification
 

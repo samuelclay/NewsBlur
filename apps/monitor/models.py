@@ -20,6 +20,10 @@ class MLLMCost(mongo.Document):
     """
 
     user_id = mongo.IntField()  # Optional - some features may be system-level
+    # models.py: whose usage billing paid for an AI classifier call when it was made, which is the team owner's
+    # for a teammate (Profile.usage_billing_profile). Only a teammate's row has it; every other row has only
+    # user_id, which is also who was billed.
+    billed_user_id = mongo.IntField()
     timestamp = mongo.DateTimeField(default=datetime.utcnow, required=True)
 
     # Provider/Model identification
@@ -52,6 +56,7 @@ class MLLMCost(mongo.Document):
             {"fields": ["model", "-timestamp"]},
             {"fields": ["user_id", "-timestamp"]},
             {"fields": ["user_id", "feature", "-timestamp"]},
+            {"fields": ["billed_user_id", "feature", "-timestamp"]},
         ],
         "db_alias": "nbanalytics",
     }
@@ -63,6 +68,9 @@ class MLLMCost(mongo.Document):
     @skip_when_analytics_down(default=None)
     def get_current_cycle_spend(cls, user_id):
         """Get total classifier spend for a user in the current billing month.
+
+        Counts the calls billed to the user when they were made (billed_user_id),
+        which for a team's owner includes each teammate's while they held a seat.
 
         Returns:
             float: Total cost in USD for current month's classifier usage, or
@@ -76,7 +84,7 @@ class MLLMCost(mongo.Document):
         pipeline = [
             {
                 "$match": {
-                    "user_id": user_id,
+                    "$or": [{"billed_user_id": user_id}, {"billed_user_id": None, "user_id": user_id}],
                     "feature": {"$in": ["story_classification", "vision_classification"]},
                     "timestamp": {"$gte": month_start},
                 }

@@ -433,6 +433,10 @@ NEWSBLUR.Views.FeedList = Backbone.View.extend({
             NEWSBLUR.reader.open_referrals_modal({ tab: 'refer' });
         } else if (next == 'gift') {
             NEWSBLUR.reader.open_referrals_modal({ tab: 'gift' });
+        } else if (next == 'team') {
+            // feed_list_view.js: where a team purchase ends up, and where the server sends one it refused, with
+            // the reason in team_purchase (apps/profile/views.py _team_purchase_refused).
+            NEWSBLUR.reader.open_team_modal({ team_purchase: $.getQueryString('team_purchase') });
         }
 
         var gift_redeemed = $.getQueryString('gift_redeemed');

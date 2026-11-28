@@ -260,14 +260,17 @@ class LLMCostTracker:
         cost_usd = cls.calculate_cost(model, input_tokens, output_tokens, duration_minutes, characters)
         total_tokens = input_tokens + output_tokens
 
-        # Check billing status for classifier features (reused for Redis and Stripe)
+        # Check billing status for classifier features (reused for Redis and Stripe). A teammate's usage
+        # bills their team's owner (Profile.usage_billing_profile), while the cost row keeps the teammate
+        # in user_id and the owner in billed_user_id. Only a teammate's row carries billed_user_id, which
+        # the release that declared the field can read; every other row counts for its user_id.
         is_billing_user = False
         profile = None
         if feature in ("story_classification", "vision_classification") and user_id:
             try:
                 from apps.profile.models import Profile
 
-                profile = Profile.objects.get(user_id=user_id)
+                profile = Profile.objects.get(user_id=user_id).usage_billing_profile
                 is_billing_user = bool(profile.is_usage_billing and profile.stripe_id)
             except Exception:
                 pass
@@ -291,6 +294,7 @@ class LLMCostTracker:
         try:
             cost_record = MLLMCost(
                 user_id=user_id,
+                billed_user_id=profile.user_id if profile and profile.user_id != user_id else None,
                 provider=provider,
                 model=model,
                 feature=feature,
@@ -311,7 +315,7 @@ class LLMCostTracker:
             # Report to Stripe meter for usage-based billing
             if is_billing_user:
                 cls._report_stripe_meter_event(feature, user_id, profile=profile)
-                cls._invalidate_limit_cache(user_id)
+                cls._invalidate_limit_cache(profile.user_id)
 
             return cost_record
 
@@ -339,7 +343,7 @@ class LLMCostTracker:
             if profile is None:
                 from apps.profile.models import Profile
 
-                profile = Profile.objects.get(user_id=user_id)
+                profile = Profile.objects.get(user_id=user_id).usage_billing_profile
             if not profile.is_usage_billing or not profile.stripe_id:
                 return
 

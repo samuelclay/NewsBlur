@@ -1,0 +1,13 @@
+{% extends "mail/email_base.xhtml" %}
+
+{% load i18n utils_tags %}
+
+{% block body %}
+    {% current_domain as domain %}
+    <p style="line-height: 20px;">{% blocktrans with username=user.username %}Hi {{ username }},{% endblocktrans %}</p>
+    <p style="line-height: 20px;">{% if comped %}{% blocktrans trimmed with team=team_name %}You own {{ team }} now. Its plan stays free.{% endblocktrans %}{% else %}{% blocktrans trimmed with team=team_name plan=plan_name %}You own {{ team }} now, and its {{ plan }} plan is billed to you from here on.{% endblocktrans %}{% endif %}{% if former_owner %} {% blocktrans trimmed with username=former_owner.username %}Everyone on the team keeps Premium Pro, and {{ username }} stays on it as a manager.{% endblocktrans %}{% endif %}</p>
+    <p style="line-height: 20px;">{% trans "Manage your team:" %} <a href="https://{{ domain }}/?next=team">{% trans "Open your team" %}</a></p>
+    <p style="line-height: 20px;">Sam</p>
+{% endblock %}
+
+{% block footer %}{% endblock %}

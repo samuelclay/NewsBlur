@@ -2770,6 +2770,38 @@ NEWSBLUR.AssetModel = Backbone.Router.extend({
         }, callback, error_callback);
     },
 
+    // assetmodel.js: staff only. The team an account is on, and what staff change on it: action is seat_limit, plan,
+    // comp or end_comp (apps/team/views.py staff_team). An action isn't retried, since the server refuses a repeat of a
+    // comp or an end of one that went through.
+    fetch_team_staff: function (user_id, callback, error_callback) {
+        this.make_request('/team/staff', {
+            user_id: user_id
+        }, callback, error_callback, { request_type: 'GET' });
+    },
+
+    team_staff_action: function (action, data, callback, error_callback) {
+        this.make_request('/team/staff/' + action, data, callback, error_callback, { retry: false });
+    },
+
+    // assetmodel.js: the team this account is on, or null (apps/team/views.py load_team).
+    fetch_team: function (callback, error_callback) {
+        this.make_request('/team/', {}, callback, error_callback, { request_type: 'GET' });
+    },
+
+    // assetmodel.js: one change to the team, named by its path under /team/ (apps/team/urls.py), which answers with
+    // the team as it is now or with a reason and a message. Not retried, since sending an invite or a request to hand
+    // the team over twice is not harmless.
+    team_action: function (action, data, callback, error_callback) {
+        this.make_request('/team/' + action, data, callback, error_callback, { retry: false });
+    },
+
+    fetch_team_activity: function (team_id, page, callback, error_callback) {
+        this.make_request('/team/activity', {
+            team_id: team_id,
+            page: page
+        }, callback, error_callback, { request_type: 'GET' });
+    },
+
     delete_saved_stories: function (timestamp, callback, error_callback) {
         var self = this;
         var pre_callback = function (data) {

@@ -13,6 +13,24 @@ from utils import log as logging
 stripe.api_key = options.STRIPE_SECRET
 
 
+def _signed_by_stripe(request):
+    """views.py: Stripe signs each event with the endpoint's secret, settings.STRIPE_WEBHOOK_SECRET, and an event
+    whose Stripe-Signature header doesn't match its body is refused. Without a secret the event is acted on as sent,
+    and outside development and tests each one reports an error, so a missing secret is noticed."""
+    secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
+    if not secret:
+        if not (settings.DEBUG or getattr(settings, "TEST_DEBUG", False)):
+            # views.py: one fixed message, without the event, so Sentry keeps every report in one issue.
+            logging.error("Stripe webhook secret is not configured, so a Stripe event was not verified")
+        return True
+    try:
+        stripe.Webhook.construct_event(request.body, request.META.get("HTTP_STRIPE_SIGNATURE", ""), secret)
+    except (ValueError, stripe.error.SignatureVerificationError) as e:
+        logging.debug(" ---> Stripe webhook refused, its signature didn't verify: %s" % e)
+        return False
+    return True
+
+
 def _try_to_get_customer_from_customer_id(stripe_customer_id):
     if options.ZEBRA_CUSTOMER_MODEL:
         m = apps.get_model(*options.ZEBRA_CUSTOMER_MODEL.split("."))
@@ -77,6 +95,8 @@ def webhooks_v2(request):
     """
     if request.method != "POST":
         return HttpResponse("Invalid Request.", status=400)
+    if not _signed_by_stripe(request):
+        return HttpResponse("Invalid signature.", status=400)
 
     event_json = json.loads(request.body)
     event_key = event_json["type"].replace(".", "_")

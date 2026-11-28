@@ -5069,6 +5069,12 @@
             NEWSBLUR.account = new NEWSBLUR.ReaderAccount(options);
         },
 
+        // reader.js: the team dialog (reader_team.js). options.team_purchase is why a team purchase was refused,
+        // options.tab the tab to open.
+        open_team_modal: function (options) {
+            NEWSBLUR.team_dialog = new NEWSBLUR.ReaderTeam(options);
+        },
+
         open_feedchooser_modal: function (options) {
             NEWSBLUR.feedchooser = new NEWSBLUR.ReaderFeedchooser(options);
         },
@@ -5464,6 +5470,10 @@
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-premium', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
                         $.make('div', { className: 'NB-menu-manage-title' }, gettext('Premium Subscription'))
+                    ]),
+                    $.make('li', { className: 'NB-menu-item NB-menu-manage-team', role: "button" }, [
+                        $.make('div', { className: 'NB-menu-manage-image' }),
+                        $.make('div', { className: 'NB-menu-manage-title' }, gettext('Team'))
                     ]),
                     $.make('li', { className: 'NB-menu-item NB-menu-manage-profile-editor', role: "button" }, [
                         $.make('div', { className: 'NB-menu-manage-image' }),
@@ -10170,6 +10180,14 @@
                 if (!$t.hasClass('NB-disabled')) {
                     $.modal.close(function () {
                         self.open_preferences_modal();
+                    });
+                }
+            });
+            $.targetIs(e, { tagSelector: '.NB-menu-manage-team' }, function ($t, $p) {
+                e.preventDefault();
+                if (!$t.hasClass('NB-disabled')) {
+                    $.modal.close(function () {
+                        self.open_team_modal();
                     });
                 }
             });

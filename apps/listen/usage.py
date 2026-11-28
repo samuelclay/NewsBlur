@@ -9,6 +9,9 @@ end. Voice previews have a separate daily allowance.
 
 Staff can reset an account's usage (reset_usage). That records a "reset" row, and every counter here only
 counts usage after the latest one, so the original rows stay as they were.
+
+On an active team every allowance here is one for the whole team, counted in the owner's weeks and days and from
+the owner's resets (apps/team/models.py TeamScope).
 """
 
 import datetime
@@ -17,6 +20,7 @@ import pytz
 from django.utils import formats
 from django.utils.translation import gettext, ngettext
 
+from apps.team.models import team_scope, usage_query
 from utils import log as logging
 
 from .models import MListenUsage
@@ -44,6 +48,7 @@ class ListenUsageTracker:
     def __init__(self, user):
         self.user = user
         self.profile = user.profile
+        self.team = team_scope(user)
         self._last_reset = None
         self._last_reset_loaded = False
 
@@ -78,8 +83,9 @@ class ListenUsageTracker:
 
     # Windows ------------------------------------------------------------------
     def _user_timezone(self):
+        timezone = self.team.owner_timezone if self.team else self.profile.timezone
         try:
-            return pytz.timezone(str(self.profile.timezone or "UTC"))
+            return pytz.timezone(str(timezone or "UTC"))
         except pytz.UnknownTimeZoneError:
             return pytz.UTC
 
@@ -123,11 +129,16 @@ class ListenUsageTracker:
         return self.week_window(now)
 
     # Resets -------------------------------------------------------------------
+    @property
+    def account_id(self):
+        """The account whose allowance this is: the team owner's on a team."""
+        return self.team.owner_id if self.team else self.user.pk
+
     def last_reset(self):
         """Looked up once per tracker, since every counter in a request asks for it."""
         if not self._last_reset_loaded:
             self._last_reset = (
-                MListenUsage.objects(user_id=self.user.pk, kind="reset").order_by("-created_at").first()
+                MListenUsage.objects(user_id=self.account_id, kind="reset").order_by("-created_at").first()
             )
             self._last_reset_loaded = True
         return self._last_reset
@@ -140,10 +151,11 @@ class ListenUsageTracker:
         return start
 
     def reset_usage(self, staff_user=None):
-        """Start this account's listening allowance and daily limits over from now. The usage rows themselves are
-        kept; the "reset" row marks where counting starts again (apps/listen/views.py listen_reset_usage)."""
+        """Start this account's listening allowance and daily limits over from now, its whole team's on a team.
+        The usage rows themselves are kept; the "reset" row marks where counting starts again (apps/listen/views.py
+        listen_reset_usage)."""
         self._last_reset = MListenUsage(
-            user_id=self.user.pk, kind="reset", reason="manual", plan_tier=self.tier
+            user_id=self.account_id, kind="reset", reason="manual", plan_tier=self.tier
         )
         self._last_reset.save()
         self._last_reset_loaded = True
@@ -153,6 +165,9 @@ class ListenUsageTracker:
         )
 
     # Counters -----------------------------------------------------------------
+    def _usage_since(self, start):
+        return usage_query(self.team, self.user.pk, start, "created_at")
+
     def seconds_used(self):
         start, end, _ = self.allowance_window()
         start = self._since_reset(start)
@@ -160,7 +175,7 @@ class ListenUsageTracker:
             [
                 {
                     "$match": {
-                        "user_id": self.user.pk,
+                        **self._usage_since(start),
                         "kind": "segment",
                         "cached": False,
                         "created_at": {"$gte": start, "$lt": end},
@@ -178,7 +193,7 @@ class ListenUsageTracker:
         start = self._since_reset(start)
         return set(
             MListenUsage.objects(
-                user_id=self.user.pk,
+                __raw__=self._usage_since(start),
                 kind="segment",
                 is_sample=True,
                 created_at__gte=start,
@@ -194,7 +209,7 @@ class ListenUsageTracker:
             [
                 {
                     "$match": {
-                        "user_id": self.user.pk,
+                        **self._usage_since(start),
                         "kind": "segment",
                         "is_sample": True,
                         "cached": False,
@@ -212,7 +227,7 @@ class ListenUsageTracker:
         start, end = self.day_window()
         start = self._since_reset(start)
         return MListenUsage.objects(
-            user_id=self.user.pk, kind="preview", created_at__gte=start, created_at__lt=end
+            __raw__=self._usage_since(start), kind="preview", created_at__gte=start, created_at__lt=end
         ).count()
 
     # Checks -------------------------------------------------------------------
@@ -240,11 +255,14 @@ class ListenUsageTracker:
 
     def check_preview(self):
         if self.previews_used() >= self.previews_limit:
-            return (
-                False,
-                "preview_limit",
-                gettext("You've played all your voice previews for today. They reset at midnight."),
-            )
+            if self.team:
+                message = gettext(
+                    "%(team)s has played all of today's voice previews, which everyone on the team shares. "
+                    "They reset at midnight."
+                ) % {"team": self.team.team_name}
+            else:
+                message = gettext("You've played all your voice previews for today. They reset at midnight.")
+            return False, "preview_limit", message
         return True, None, None
 
     # Recording ----------------------------------------------------------------
@@ -310,6 +328,15 @@ class ListenUsageTracker:
         return formats.date_format(reset_local.date(), "MONTH_DAY_FORMAT" if self.period == "month" else "l")
 
     def cap_message(self):
+        if self.team:
+            return gettext(
+                "%(team)s has listened to the %(limit)s of stories a week that everyone on the team shares. "
+                "Listening resets on %(day)s."
+            ) % {
+                "team": self.team.team_name,
+                "limit": self.format_duration(PRO_WEEKLY_SECONDS),
+                "day": self._reset_day(),
+            }
         if self.tier == "pro":
             return gettext(
                 "You've listened to %(limit)s of stories this week. Listening resets on %(day)s."
