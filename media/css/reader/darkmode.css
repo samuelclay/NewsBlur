@@ -1357,6 +1357,50 @@ body.NB-dark .NB-modal select,
     background-color: #303739;
 }
 
+/* Organize sites: the colors of the Reorganize with AI tab, by the names css/reader/reader.css
+ * gives them. graymode.css takes the blue out of the two grays below. */
+.NB-dark .NB-modal-organizer {
+    --nb-reorg-surface: var(--nb-dark-surface);
+    --nb-reorg-picked: var(--nb-dark-selected);
+    --nb-reorg-wash: var(--nb-dark-raised);
+    --nb-reorg-control: var(--nb-dark-canvas);
+    --nb-reorg-hover: var(--nb-dark-raised);
+    --nb-reorg-fill: var(--nb-dark-raised);
+    --nb-reorg-selected: var(--nb-dark-selected);
+    --nb-reorg-track: rgba(255, 255, 255, 0.12);
+    --nb-reorg-line: rgba(255, 255, 255, 0.08);
+    --nb-reorg-divider: rgba(255, 255, 255, 0.14);
+    --nb-reorg-border: var(--nb-dark-border);
+    --nb-reorg-border-hover: var(--nb-dark-muted);
+    --nb-reorg-frame: rgba(255, 255, 255, 0.14);
+    --nb-reorg-shadow: rgba(0, 0, 0, 0.5);
+    --nb-reorg-text-strong: var(--nb-dark-text);
+    --nb-reorg-text: var(--nb-dark-text);
+    --nb-reorg-text-soft: var(--nb-dark-text);
+    --nb-reorg-text-muted: var(--nb-dark-muted);
+    --nb-reorg-text-quiet: #9ca3af;
+    --nb-reorg-text-faint: #6b7280;
+    --nb-reorg-link: var(--nb-dark-link);
+    --nb-reorg-lock: var(--nb-dark-selected);
+    --nb-reorg-lock-text: var(--nb-dark-text);
+    --nb-reorg-green: #85bd67;
+    --nb-reorg-green-wash: rgba(133, 189, 103, 0.15);
+    --nb-reorg-green-solid: #32673c;
+    --nb-reorg-amber: #fcd34d;
+    --nb-reorg-amber-wash: rgba(245, 158, 11, 0.15);
+    --nb-reorg-amber-solid: #92400e;
+    --nb-reorg-amber-mark: #f59e0b;
+    --nb-reorg-red: #EF9A9A;
+    --nb-reorg-red-wash: rgba(248, 113, 113, 0.15);
+    --nb-reorg-red-solid: #8c3341;
+    --nb-reorg-error: #EF9A9A;
+    --nb-reorg-purple: #C4B5FD;
+    --nb-reorg-purple-wash: rgba(139, 92, 246, 0.18);
+    --nb-reorg-question-wash: rgba(248, 113, 113, 0.06);
+    --nb-reorg-question-edge: rgba(248, 113, 113, 0.35);
+    --nb-reorg-spinner-filter: invert(1);
+}
+
 /* Mute sites: Text color */
 .NB-dark .NB-feedchooser-info-counts {
     text-shadow: none;

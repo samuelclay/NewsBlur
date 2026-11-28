@@ -383,6 +383,15 @@ body.NB-dark:where(.NB-gray) {
     background-color: #353535;
 }
 
+/* graymode.css: the Reorganize with AI tab takes its colors from the dark palette above, except two
+ * grays darkmode.css writes out with a blue cast, and a green tint that would leave green text too
+ * faint on Gray's lighter surface. */
+.NB-dark:where(.NB-gray) .NB-modal-organizer {
+    --nb-reorg-text-quiet: #909090;
+    --nb-reorg-text-faint: #808080;
+    --nb-reorg-green-wash: rgba(133, 189, 103, 0.1);
+}
+
 .NB-dark:where(.NB-gray) .NB-modal-feedchooser .NB-feedchooser-tier-badge.NB-tier-free,
 .NB-dark:where(.NB-gray) .NB-modal-feedchooser .NB-feedchooser-progress-track {
     background-color: #404040;

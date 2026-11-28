@@ -177,6 +177,12 @@ html[dir="rtl"] .NB-callout-mouse-indicator .NB-callout-container .NB-callout-ar
     transform: none;
 }
 
+/* reader_rtl.css: the All moves view of Reorganize with AI (reader_organizer_ai.js) reads from a
+   site's old folder to its new one, so the arrow between them points toward the inline end. */
+html[dir="rtl"] .NB-modal-organizer .NB-organizer-ai-route-arrow {
+    transform: scaleX(-1);
+}
+
 
 /* ================================================= */
 /* = 5. Sliding controls                            = */

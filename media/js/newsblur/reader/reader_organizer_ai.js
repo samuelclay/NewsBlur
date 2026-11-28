@@ -1280,7 +1280,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             'data-index': index
         }, [
             $.make('span', { className: 'NB-organizer-ai-folder-icon-wrap' }, [$icon]),
-            $.make('span', { className: 'NB-organizer-ai-folder-title' }).text(folder.title),
+            $.make('span', { className: 'NB-organizer-ai-folder-title', dir: 'auto' }).text(folder.title),
             $.make('span', { className: 'NB-organizer-ai-folder-count' }).text(Inflector.commas(folder.site_count)),
             parent_lock
                 ? $.make('span', { className: 'NB-organizer-ai-locked-with-parent' }, [
@@ -1792,8 +1792,12 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             signature: null,
             tools_signature: null
         };
-        card.$parent = $.make('span', { className: 'NB-organizer-ai-card-parent' });
-        card.$name = $.make('span', { className: 'NB-organizer-ai-card-title' });
+        // Folder and site names carry dir="auto", so each reads in its own direction while the
+        // [dir="auto"] rule in reader.css lines it up with the page. The parent's name has a span of
+        // its own, so the chevron after it follows the page's direction instead of the name's.
+        card.$parent_name = $.make('span', { className: 'NB-organizer-ai-card-parent-name', dir: 'auto' });
+        card.$parent = $.make('span', { className: 'NB-organizer-ai-card-parent' }, [card.$parent_name]);
+        card.$name = $.make('span', { className: 'NB-organizer-ai-card-title', dir: 'auto' });
         card.$count = $.make('span', { className: 'NB-organizer-ai-card-count' });
         card.$tools = $.make('div', { className: 'NB-organizer-ai-card-tools' });
         card.$ops = $.make('div', { className: 'NB-organizer-ai-card-ops' });
@@ -1859,7 +1863,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         row.$el = $.make('div', { className: 'NB-organizer-ai-row' }, [
             this.make_site_icon(move.feed),
             $.make('div', { className: 'NB-organizer-ai-row-main' }, [
-                $.make('div', { className: 'NB-organizer-ai-row-title' }).text(move.title),
+                $.make('div', { className: 'NB-organizer-ai-row-title', dir: 'auto' }).text(move.title),
                 $.make('div', { className: 'NB-organizer-ai-row-sub' }, [row.$jump, side == 'in' && row.$reason])
             ]),
             row.$pill,
@@ -1922,7 +1926,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         row.$el = $.make('div', { className: 'NB-organizer-ai-row NB-organizer-ai-dead-row' }, [
             this.make_site_icon(dead.feed),
             $.make('div', { className: 'NB-organizer-ai-row-main' }, [
-                $.make('div', { className: 'NB-organizer-ai-row-title' }).text(dead.title),
+                $.make('div', { className: 'NB-organizer-ai-row-title', dir: 'auto' }).text(dead.title),
                 $.make('div', { className: 'NB-organizer-ai-row-sub' }, [
                     row.$folder,
                     $.make('span', { className: 'NB-organizer-ai-row-reason' }).text(this.dead_cause(dead.entry)),
@@ -1980,8 +1984,8 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
                     'aria-pressed': 'false'
                 }, label);
             });
-            row.$source = $.make('span', { className: 'NB-organizer-ai-route-from' });
-            row.$destination = $.make('span', { className: 'NB-organizer-ai-route-to' });
+            row.$source = $.make('span', { className: 'NB-organizer-ai-route-from', dir: 'auto' });
+            row.$destination = $.make('span', { className: 'NB-organizer-ai-route-to', dir: 'auto' });
             row.$route = $.make('span', { className: 'NB-organizer-ai-route' }, [
                 $.make('span', { className: 'NB-organizer-ai-jump-lock' }),
                 row.$source,
@@ -1992,7 +1996,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             row.$el = $.make('div', { className: 'NB-organizer-ai-row NB-organizer-ai-route-row' }, [
                 this.make_site_icon(move.feed),
                 $.make('div', { className: 'NB-organizer-ai-row-main' }, [
-                    $.make('div', { className: 'NB-organizer-ai-row-title' }).text(move.title),
+                    $.make('div', { className: 'NB-organizer-ai-row-title', dir: 'auto' }).text(move.title),
                     $.make('div', { className: 'NB-organizer-ai-row-sub' }, [
                         row.$route,
                         row.$reason
@@ -2415,7 +2419,8 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         if (signature != card.signature) {
             card.signature = signature;
             card.$el.toggleClass('NB-hidden', !visible).toggleClass('NB-organizer-ai-card-gone', view.gone);
-            card.$parent.text(view.parent).toggleClass('NB-hidden', !view.parent);
+            card.$parent_name.text(view.parent);
+            card.$parent.toggleClass('NB-hidden', !view.parent);
             card.$name.text(view.name);
             card.$count.text(view.count);
             card.$note.text(note).toggleClass('NB-hidden', !note);
@@ -2548,7 +2553,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             $.make('span', { className: 'NB-organizer-ai-unchanged-title' }, gettext('No changes')),
             _.map(folders, _.bind(function (folder) {
                 return $.make('span', { className: 'NB-organizer-ai-unchanged-folder' }, [
-                    $.make('span', { className: 'NB-organizer-ai-unchanged-name' }).text(this.review_folder_name(folder)),
+                    $.make('span', { className: 'NB-organizer-ai-unchanged-name', dir: 'auto' }).text(this.review_folder_name(folder)),
                     $.make('span', { className: 'NB-organizer-ai-unchanged-count' }).text(Inflector.commas(folder.after))
                 ]);
             }, this))
@@ -2671,11 +2676,12 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
                 type: 'button',
                 className: 'NB-organizer-ai-outline-folder',
                 'data-review': 'goto',
-                'data-id': item.id
+                'data-id': item.id,
+                title: item.name
             }, [
                 $.make('span', { className: 'NB-organizer-ai-outline-name' }, [
                     item.locked && $.make('span', { className: 'NB-organizer-ai-lock-icon' }),
-                    $.make('span', { className: 'NB-organizer-ai-outline-name-text' }).text(item.name)
+                    $.make('span', { className: 'NB-organizer-ai-outline-name-text', dir: 'auto' }).text(item.name)
                 ]),
                 $.make('span', { className: 'NB-organizer-ai-outline-counts' }, changes.concat([
                     $.make('span', { className: 'NB-organizer-ai-outline-total' }, Inflector.commas(item.after))
