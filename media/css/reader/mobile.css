@@ -2428,13 +2428,20 @@ body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folde
     padding-bottom: 8px;
 }
 
+/* mobile.css: a folder's name and count fill the first line, so its lock control, or the "Locked
+   with parent" label, always sits on the line under it. */
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder-title {
-    flex: 1 1 0;
+    flex: 1 1 calc(100% - 64px);
 }
 
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder .NB-organizer-ai-lock {
     flex: 1 1 100%;
     width: auto;
+    margin-inline-start: 24px;
+}
+
+body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-folder .NB-organizer-ai-locked-with-parent {
+    flex: 0 1 auto;
     margin-inline-start: 24px;
 }
 
@@ -2511,6 +2518,7 @@ body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row >
 /* mobile.css: three labelled choices take a row of their own under the site. */
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-route-row,
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-dead-row {
+    display: grid;
     grid-template-columns: 16px minmax(0, 1fr);
 }
 
@@ -2519,11 +2527,13 @@ body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-row >
     grid-column: 2;
     grid-row: 2;
     margin-top: 4px;
+    margin-inline-start: 0;
 }
 
+/* mobile.css: each button takes the room its label needs, and a long label wraps inside it. */
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choices-wide .NB-organizer-ai-choice-wide {
-    flex: 1 1 0;
-    min-width: 0;
+    flex: 1 1 auto;
+    white-space: normal;
 }
 
 /* mobile.css: everything a thumb presses is at least 40px tall. A destination chip stays small
@@ -2543,9 +2553,11 @@ body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choic
 }
 
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai-choice-wide {
-    height: 40px;
-    padding: 0 10px;
+    height: auto;
+    min-height: 40px;
+    padding: 4px 8px;
     font-size: 12px;
+    line-height: 15px;
 }
 
 body.NB-mobile #simplemodal-container .NB-modal-organizer .NB-organizer-ai :is(.NB-organizer-ai-step, .NB-organizer-ai-switch-option, .NB-organizer-ai-chip, .NB-organizer-ai-lock-button, .NB-organizer-ai-outline-folder, .NB-organizer-ai-lock-option, .NB-modal-submit-button) {

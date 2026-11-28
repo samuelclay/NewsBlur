@@ -32821,9 +32821,11 @@ h5.NB-classifier-section-header {
     color: var(--nb-reorg-text-faint);
 }
 
+/* The three choices take the width their labels need in the reader's language, and the folder's
+   name gives way. */
 .NB-modal-organizer .NB-organizer-ai-lock {
     flex: none;
-    width: 220px;
+    min-width: 220px;
     margin: 0;
     background-color: var(--nb-reorg-control);
 }
@@ -33226,19 +33228,23 @@ h5.NB-classifier-section-header {
     z-index: 4;
 }
 
+/* The parent's name and the folder's own read as one line of text, so a long path wraps between
+   words instead of squeezing the folder's name. */
 .NB-modal-organizer .NB-organizer-ai-card-name {
-    display: flex;
     flex: 0 1 auto;
-    align-items: center;
-    gap: 6px;
     min-width: 0;
     font-size: 13px;
     font-weight: bold;
     color: var(--nb-reorg-text-strong);
 }
 
+.NB-modal-organizer :is(.NB-organizer-ai-card-icon, .NB-organizer-ai-dead-icon) {
+    display: inline-block;
+    margin-inline-end: 6px;
+    vertical-align: -2px;
+}
+
 .NB-modal-organizer .NB-organizer-ai-card-icon {
-    flex: none;
     width: 14px;
     height: 14px;
     background-image: url('/media/embed/icons/nouns/folder-closed.svg');
@@ -33255,7 +33261,7 @@ h5.NB-classifier-section-header {
 
 .NB-modal-organizer .NB-organizer-ai-card-parent::after {
     content: "\203A";
-    padding-inline-start: 6px;
+    padding: 0 6px;
     color: var(--nb-reorg-text-faint);
 }
 
@@ -33477,10 +33483,12 @@ h5.NB-classifier-section-header {
 
 /* Review: Arriving and Leaving, each a list of site rows */
 
+/* The section's links move under its title, together, when both don't fit on one line. */
 .NB-modal-organizer .NB-organizer-ai-section-head {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 2px 10px;
     padding: 7px 10px 2px;
     font-size: 10px;
     font-weight: bold;
@@ -33544,9 +33552,25 @@ h5.NB-classifier-section-header {
     transition: none;
 }
 
+/* Three labelled choices sit beside the site while its name keeps 260px, and move under it in a
+   language whose labels need more room. */
 .NB-modal-organizer .NB-organizer-ai-route-row,
 .NB-modal-organizer .NB-organizer-ai-dead-row {
-    grid-template-columns: 16px minmax(0, 1fr) auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-site-icon-wrap {
+    flex: none;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-row-main {
+    flex: 1 1 260px;
+}
+
+.NB-modal-organizer :is(.NB-organizer-ai-route-row, .NB-organizer-ai-dead-row) > .NB-organizer-ai-choices {
+    margin-inline-start: auto;
 }
 
 .NB-modal-organizer .NB-organizer-ai-site-icon-wrap {
@@ -33607,6 +33631,7 @@ h5.NB-classifier-section-header {
     font: inherit;
     font-size: 11px;
     line-height: 15px;
+    text-align: start;
     cursor: pointer;
     border-color: var(--nb-reorg-border);
     background-color: var(--nb-reorg-wash);
@@ -33618,12 +33643,11 @@ h5.NB-classifier-section-header {
     color: var(--nb-reorg-link);
 }
 
+/* The whole sentence shows, wrapping inside the chip, since a translation can put the folder's
+   name anywhere in it. */
 .NB-modal-organizer .NB-organizer-ai-jump-text {
-    max-width: 220px;
-    unicode-bidi: plaintext;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .NB-modal-organizer .NB-organizer-ai-row-stay .NB-organizer-ai-jump-text {
@@ -33648,7 +33672,7 @@ h5.NB-classifier-section-header {
 }
 
 .NB-modal-organizer .NB-organizer-ai-pill {
-    max-width: 150px;
+    max-width: 190px;
     padding: 1px 7px;
     border-radius: 9px;
     overflow: hidden;
@@ -33829,7 +33853,6 @@ h5.NB-classifier-section-header {
 }
 
 .NB-modal-organizer .NB-organizer-ai-dead-icon {
-    flex: none;
     width: 14px;
     height: 14px;
     background-color: var(--nb-reorg-amber-mark);

@@ -1120,6 +1120,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
                     $.make('textarea', {
                         id: 'NB-organizer-ai-instructions',
                         className: 'NB-input NB-organizer-ai-instructions',
+                        dir: 'auto',
                         maxlength: NEWSBLUR.ReaderOrganizerAI.INSTRUCTIONS_LIMIT,
                         placeholder: gettext('Split Tech into smaller folders. No folder over 40 sites.')
                     }).val(this.form.instructions)
@@ -1854,7 +1855,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             $.make('span', { className: 'NB-organizer-ai-jump-lock' }),
             row.$jump_text
         ]);
-        row.$reason = $.make('span', { className: 'NB-organizer-ai-row-reason' });
+        row.$reason = $.make('span', { className: 'NB-organizer-ai-row-reason', dir: 'auto' });
         row.$pill = $.make('span', { className: 'NB-organizer-ai-pill' });
         var action = side == 'in' ? 'arrive' : 'leave';
         row.$yes = this.make_choice_button('yes', action, move.id, 'true');
@@ -1876,7 +1877,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         var line = { op: op, signature: null, visible: false };
         line.$tag = $.make('span', { className: 'NB-organizer-ai-op-tag NB-organizer-ai-op-tag-' + op.entry.type });
         line.$detail = $.make('span', { className: 'NB-organizer-ai-op-detail' });
-        line.$reason = $.make('span', { className: 'NB-organizer-ai-op-reason' });
+        line.$reason = $.make('span', { className: 'NB-organizer-ai-op-reason', dir: 'auto' });
         line.$note = $.make('div', { className: 'NB-organizer-ai-op-note' });
         line.$yes = this.make_choice_button('yes', 'op', op.id, 'true');
         line.$no = this.make_choice_button('no', 'op', op.id, 'false');
@@ -1992,7 +1993,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
                 $.make('span', { className: 'NB-organizer-ai-route-arrow' }),
                 row.$destination
             ]);
-            row.$reason = $.make('span', { className: 'NB-organizer-ai-row-reason' });
+            row.$reason = $.make('span', { className: 'NB-organizer-ai-row-reason', dir: 'auto' });
             row.$el = $.make('div', { className: 'NB-organizer-ai-row NB-organizer-ai-route-row' }, [
                 this.make_site_icon(move.feed),
                 $.make('div', { className: 'NB-organizer-ai-row-main' }, [
@@ -2028,6 +2029,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         this.$revise_input = $.make('textarea', {
             id: 'NB-organizer-ai-revise',
             className: 'NB-input NB-organizer-ai-revise-input',
+            dir: 'auto',
             maxlength: NEWSBLUR.ReaderOrganizerAI.INSTRUCTIONS_LIMIT,
             placeholder: gettext('Keep the photo blogs together. Split News by country.')
         }).val(this.revise_text);
@@ -2158,7 +2160,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         };
 
         if (row.side == 'in') {
-            view.jump = interpolate(copy ? gettext('Copy from %(folder)s') : gettext('From %(folder)s'), { folder: source_name }, true);
+            view.jump = [copy ? gettext('Copy from %(folder)s') : gettext('From %(folder)s'), { folder: source_name }];
             view.jump_title = interpolate(gettext('Show this move in %(folder)s'), { folder: source_name }, true);
             view.jump_locked = !!source.lock;
             view.reason = this.move_reason(move);
@@ -2171,21 +2173,21 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             } else {
                 view.pill = ['stay', no_folder
                     ? gettext('Stays, no folder')
-                    : interpolate(gettext('Stays in %(folder)s'), { folder: source_name }, true)];
+                    : [gettext('Stays in %(folder)s'), { folder: source_name }]];
             }
             view.no = no_folder || decision.arrive === false;
             view.yes = !view.no && outcome != 'ask';
             view.yes_label = copy ? gettext('Add a copy here') : gettext('Accept into this folder');
             view.no_label = gettext('Do not put it here');
         } else {
-            view.jump = interpolate(locked_source ? gettext('Copy offered to %(folder)s') : gettext('To %(folder)s'),
-                { folder: destination_name }, true);
+            view.jump = [locked_source ? gettext('Copy offered to %(folder)s') : gettext('To %(folder)s'),
+                { folder: destination_name }];
             view.jump_title = interpolate(gettext('Show this move in %(folder)s'), { folder: destination_name }, true);
             view.jump_locked = !!destination.lock;
             if (locked_source) {
                 view.choices = false;
                 if (outcome == 'both') {
-                    view.pill = ['both', interpolate(gettext('Also in %(folder)s'), { folder: destination_name }, true)];
+                    view.pill = ['both', [gettext('Also in %(folder)s'), { folder: destination_name }]];
                 } else if (outcome == 'ask') {
                     view.pill = ['ask', gettext('Copy undecided')];
                 } else {
@@ -2213,9 +2215,13 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             .removeClass(NEWSBLUR.ReaderOrganizerAI.OUTCOME_CLASSES)
             .addClass('NB-organizer-ai-row-' + outcome);
         row.$jump.attr('title', view.jump_title).toggleClass('NB-organizer-ai-jump-locked', view.jump_locked);
-        row.$jump_text.text(view.jump);
-        if (row.side == 'in') row.$reason.text(view.reason).toggleClass('NB-hidden', !view.reason);
-        row.$pill.attr('class', 'NB-organizer-ai-pill NB-organizer-ai-pill-' + view.pill[0]).text(view.pill[1]).attr('title', view.pill[1]);
+        this.write_text(row.$jump_text, view.jump);
+        if (row.side == 'in') this.write_text(row.$reason, view.reason).toggleClass('NB-hidden', !view.reason);
+        var pill = view.pill[1];
+        this.write_text(row.$pill, pill).attr({
+            'class': 'NB-organizer-ai-pill NB-organizer-ai-pill-' + view.pill[0],
+            title: _.isArray(pill) ? this.sentence_text(pill[0], pill[1]) : pill
+        });
         row.$choices.toggleClass('NB-hidden', !view.choices);
         row.$yes.attr({ 'aria-pressed': view.yes ? 'true' : 'false', title: view.yes_label, 'aria-label': view.yes_label });
         row.$no.attr({ 'aria-pressed': view.no ? 'true' : 'false', title: view.no_label, 'aria-label': view.no_label });
@@ -2237,8 +2243,8 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             return op.entry.type == 'merge' && op.entry.folder == move.entry.from;
         });
         if (!merge) return '';
-        return interpolate(gettext('Moves with %(folder)s as it merges.'),
-            { folder: this.review_folder_name(this.review_folder(move.source_id)) }, true);
+        return [gettext('Moves with %(folder)s as it merges.'),
+            { folder: this.review_folder_name(this.review_folder(move.source_id)) }];
     },
 
     fill_route_row: function (row) {
@@ -2266,7 +2272,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         row.$route.toggleClass('NB-organizer-ai-route-locked', !!view.locked);
         row.$source.text(view.source);
         row.$destination.text(view.destination);
-        row.$reason.text(view.reason).toggleClass('NB-hidden', !view.reason);
+        this.write_text(row.$reason, view.reason).toggleClass('NB-hidden', !view.reason);
         _.each(row.buttons, function ($button, route) {
             $button.attr('aria-pressed', route == view.outcome ? 'true' : 'false');
         });
@@ -2300,7 +2306,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         };
         line.$el.toggleClass('NB-hidden', !view.visible).toggleClass('NB-organizer-ai-op-rejected', !view.approved);
         line.$tag.text(tags[entry.type] || '');
-        line.$detail.text(view.detail).toggleClass('NB-hidden', !view.detail);
+        this.write_text(line.$detail, view.detail).toggleClass('NB-hidden', !view.detail);
         line.$reason.text(view.reason).toggleClass('NB-hidden', !view.reason);
         line.$note.text(view.note).toggleClass('NB-hidden', !view.note);
         line.$yes.attr({ 'aria-pressed': view.approved ? 'true' : 'false', title: gettext('Approve'), 'aria-label': gettext('Approve') });
@@ -2315,17 +2321,17 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         if (entry.type == 'create') {
             var new_folder = (this.review.data.folders || {})[entry.folder] || {};
             return new_folder.parent && new_folder.parent != NEWSBLUR.ReaderOrganizerAI.Rules.ROOT_KEY
-                ? interpolate(gettext('Inside %(folder)s'), { folder: name_of(new_folder.parent) }, true)
+                ? [gettext('Inside %(folder)s'), { folder: name_of(new_folder.parent) }]
                 : '';
         }
         if (entry.type == 'rename') {
-            return interpolate(gettext('“%(old)s” becomes “%(new)s”'), {
+            return [gettext('“%(old)s” becomes “%(new)s”'), {
                 old: folder ? folder.name_before : '',
                 'new': entry.name || ''
-            }, true);
+            }];
         }
-        if (entry.type == 'nest') return interpolate(gettext('Goes inside %(folder)s'), { folder: name_of(entry.parent) }, true);
-        if (entry.type == 'merge') return interpolate(gettext('Into %(folder)s, then removed'), { folder: name_of(entry.into) }, true);
+        if (entry.type == 'nest') return [gettext('Goes inside %(folder)s'), { folder: name_of(entry.parent) }];
+        if (entry.type == 'merge') return [gettext('Into %(folder)s, then removed'), { folder: name_of(entry.into) }];
         return '';
     },
 
@@ -2360,7 +2366,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         row.signature = signature;
 
         row.$el.toggleClass('NB-hidden', !view.visible);
-        row.$folder.text(interpolate(gettext('In %(folder)s'), { folder: view.folder }, true));
+        this.write_text(row.$folder, [gettext('In %(folder)s'), { folder: view.folder }]);
         _.each(row.buttons, function ($button, action) {
             $button.attr('aria-pressed', action == view.action ? 'true' : 'false');
         });
@@ -2705,8 +2711,8 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
                 { count: Inflector.commas(revisions_left) }, true)
             : gettext("This proposal can't be revised again.")));
         if (proposal.revision_request) {
-            notes.push($.make('p', { className: 'NB-organizer-ai-note NB-organizer-ai-revise-last' }).text(
-                interpolate(gettext('Revised as you asked: “%(request)s”'), { request: proposal.revision_request }, true)));
+            notes.push($.make('p', { className: 'NB-organizer-ai-note NB-organizer-ai-revise-last' },
+                this.sentence(gettext('Revised as you asked: “%(request)s”'), { request: proposal.revision_request })));
         }
         this.$revise_notes.empty().append(notes);
         var disabled = this.revising || revisions_left <= 0;
@@ -3399,7 +3405,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             _.map(skipped, _.bind(function (item) {
                 item = item || {};
                 return $.make('li', { className: 'NB-organizer-ai-skipped-item' }, [
-                    $.make('span', { className: 'NB-organizer-ai-skipped-what' }).text(this.skipped_title(item.id)),
+                    this.write_text($.make('span', { className: 'NB-organizer-ai-skipped-what' }), this.skipped_title(item.id)),
                     $.make('span', { className: 'NB-organizer-ai-skipped-why' }).text(this.skip_reason(item.reason))
                 ]);
             }, this)));
@@ -3428,7 +3434,7 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
         this.organizer.resize();
     },
 
-    // A skipped item in words, found in the proposal by its id.
+    // A skipped item in words, found in the proposal by its id, as [message, names] or a message.
     skipped_title: function (id) {
         var proposal = this.proposal;
         var data = proposal.proposal || {};
@@ -3441,28 +3447,28 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
 
         var move = find('moves');
         if (move) {
-            return interpolate(gettext('Move %(site)s to %(folder)s'),
-                { site: this.skipped_site_title(move.feed_id), folder: folder(move.to) }, true);
+            return [gettext('Move %(site)s to %(folder)s'),
+                { site: this.skipped_site_title(move.feed_id), folder: folder(move.to) }];
         }
         var op = find('ops');
-        if (op && op.type == 'create') return interpolate(gettext('Add the folder %(folder)s'), { folder: folder(op.folder) }, true);
+        if (op && op.type == 'create') return [gettext('Add the folder %(folder)s'), { folder: folder(op.folder) }];
         if (op && op.type == 'rename') {
-            return interpolate(gettext('Rename “%(old)s” to “%(new)s”'),
-                { old: folder(op.folder), 'new': _.isString(op.name) ? op.name : '' }, true);
+            return [gettext('Rename “%(old)s” to “%(new)s”'),
+                { old: folder(op.folder), 'new': _.isString(op.name) ? op.name : '' }];
         }
         if (op && op.type == 'nest') {
-            return interpolate(gettext('Put %(folder)s inside %(parent)s'), { folder: folder(op.folder), parent: folder(op.parent) }, true);
+            return [gettext('Put %(folder)s inside %(parent)s'), { folder: folder(op.folder), parent: folder(op.parent) }];
         }
         if (op && op.type == 'merge') {
-            return interpolate(gettext('Merge %(folder)s into %(into)s'), { folder: folder(op.folder), into: folder(op.into) }, true);
+            return [gettext('Merge %(folder)s into %(into)s'), { folder: folder(op.folder), into: folder(op.into) }];
         }
-        if (op && op.type == 'remove') return interpolate(gettext('Remove the folder %(folder)s'), { folder: folder(op.folder) }, true);
+        if (op && op.type == 'remove') return [gettext('Remove the folder %(folder)s'), { folder: folder(op.folder) }];
         var dead = find('dead');
         if (dead) {
             var action = ((proposal.decisions || {}).dead || {})[dead.id] || dead.suggest;
             var site = this.skipped_site_title(dead.feed_id);
-            if (action == 'unsubscribe') return interpolate(gettext('Unsubscribe from %(site)s'), { site: site }, true);
-            if (action == 'mute') return interpolate(gettext('Mute %(site)s'), { site: site }, true);
+            if (action == 'unsubscribe') return [gettext('Unsubscribe from %(site)s'), { site: site }];
+            if (action == 'mute') return [gettext('Mute %(site)s'), { site: site }];
         }
         return gettext('One of the proposed changes');
     },
@@ -3706,6 +3712,29 @@ NEWSBLUR.ReaderOrganizerAI.prototype = {
             'empty_request': gettext('Say what the AI should change, then try again.')
         };
         return messages[code] || gettext('Something went wrong. Please try again.');
+    },
+
+    // A translated sentence with names in it, such as folder and site names or the reader's own
+    // words, as nodes. Each name sits in a <bdi>, so it reads in its own direction and the sentence's
+    // punctuation stays where the translation put it.
+    sentence: function (message, names) {
+        var nodes = {};
+        _.each(names, function (name, key) {
+            nodes[key] = $.make('bdi').text(name)[0];
+        });
+        return NEWSBLUR.utils.interpolate_nodes(message, nodes);
+    },
+
+    // The same sentence as plain text, for a title.
+    sentence_text: function (message, names) {
+        return interpolate(message, names, true);
+    },
+
+    // Writes text into $el: the model's or the reader's own words as they are, or a sentence given
+    // as [message, names].
+    write_text: function ($el, text) {
+        if (_.isArray(text)) return $el.empty().append(this.sentence(text[0], text[1]));
+        return $el.text(text || '');
     },
 
     // An ISO date from the server ("...Z") in the reader's language and time zone.
