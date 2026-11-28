@@ -16688,6 +16688,15 @@
      "expr": "sum by (kind) (rate(newsblur_rate_limit_refused_total[5m])) * 60",
      "legendFormat": "Refused {{kind}} requests/min",
      "refId": "C"
+    },
+    {
+     "datasource": {
+      "type": "prometheus",
+      "uid": "U1-fPO3Mk"
+     },
+     "expr": "sum by (kind) (rate(newsblur_rate_limit_would_refuse_total[5m])) * 60",
+     "legendFormat": "Would refuse {{kind}} requests/min",
+     "refId": "D"
     }
    ],
    "title": "Rate Limited Requests",

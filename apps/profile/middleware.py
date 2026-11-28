@@ -976,15 +976,22 @@ class IPRateTrackingMiddleware:
         IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE where that limit is enforced. Returns None to let the
         view run.
         """
-        from utils.ip_rate_tracker import RATE_LIMIT_REFUSED_TOTAL, WOULD_BE_DENIED_TOTAL, RequestRateTracker
+        from utils.ip_rate_tracker import (
+            RATE_LIMIT_REFUSED_TOTAL,
+            RATE_LIMIT_WOULD_REFUSE_TOTAL,
+            RequestRateTracker,
+        )
 
         if request.path.startswith(self.UNTRACKED_PATHS):
+            return None
+        # Skip test mode, as AttackBanMiddleware does: other tests swap the Redis client for a mock
+        if getattr(settings, "TEST_DEBUG", False):
             return None
 
         try:
             kind = self.get_request_kind(request, view_func)
             count = self.request_tracker.track(request, kind)
-        except redis.RedisError as e:
+        except Exception as e:
             # Don't let tracking errors break the request
             logging.debug(" ***> Request rate tracking error: %s" % e)
             return None
@@ -993,15 +1000,16 @@ class IPRateTrackingMiddleware:
             return None
 
         ip = self.request_tracker.get_ip(request)
-        full_path = request.get_full_path()
+        # The host and the URL pattern say which page it was. The path and query string can carry
+        # tokens, so they stay out of the log.
+        route = "%s %s" % (request.get_host(), request.resolver_match.route)
         if kind == RequestRateTracker.KIND_PAGE:
             enforced = settings.IP_RATE_LIMITING_ENABLED
         else:
-            WOULD_BE_DENIED_TOTAL.inc()
+            RATE_LIMIT_WOULD_REFUSE_TOTAL.labels(kind=kind).inc()
             logging.user(
                 request,
-                "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)"
-                % (ip, full_path, count, kind),
+                "~FY~SB WOULD BLOCK ~SN~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, route, count, kind),
             )
             enforced = settings.IP_RATE_LIMITING_ENABLED and settings.IP_RATE_LIMITING_ANONYMOUS_ENABLED
         if not enforced:
@@ -1010,7 +1018,7 @@ class IPRateTrackingMiddleware:
         RATE_LIMIT_REFUSED_TOTAL.labels(kind=kind).inc()
         logging.user(
             request,
-            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, full_path, count, kind),
+            "~FW~BR~SB BLOCKED ~BT~FR Rate Limit: ~SB%s~SN~FR %s (%s %s/min)" % (ip, route, count, kind),
         )
         response = HttpResponse(
             '{"error": "Rate limit exceeded", "code": -1}',

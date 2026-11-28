@@ -47,6 +47,11 @@ RATE_LIMIT_REFUSED_TOTAL = Counter(
     "Total requests refused with 429 for going over the per-minute limit, by kind",
     ["kind"],
 )
+RATE_LIMIT_WOULD_REFUSE_TOTAL = Counter(
+    "newsblur_rate_limit_would_refuse_total",
+    "Total requests over the per-minute limit where it is only logged, by kind",
+    ["kind"],
+)
 
 # The ipaddress module counts this shared address space as neither private nor global, but the
 # internal proxies use it (AttackBanMiddleware in apps/profile/middleware.py skips it too).

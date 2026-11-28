@@ -48,7 +48,7 @@ Known DNS issues (diagnosed 2026-02-10):
 
 ## All Web Servers Flap Together
 
-When every `app_django` server in the HAProxy overview shows a short "since", or they all go DOWN and come back within a minute or two while the databases check healthy, the gunicorn workers were all busy at once. `/_haproxychk` does no work of its own, so it only times out when no worker is free.
+When every `app_django` server in the HAProxy overview shows a short "since", or they all go DOWN and come back within a minute or two while the databases check healthy, one likely cause is that the gunicorn workers were all busy at once: `/_haproxychk` does no work of its own, so a free worker answers it at once. Check the reason HAProxy gives for the failed checks (`L7TOUT` is a timeout; a refused connection points at a restart or the network instead) and the load on the web servers before settling on traffic.
 
 Every request is counted by address in one-minute windows (`RequestRateTracker` in `utils/ip_rate_tracker.py`), kept for an hour. The kinds are `page` (signed-out blurblog and shared-story pages), `anonymous` (every other signed-out request) and `user` (signed-in). To see who sent the most:
 

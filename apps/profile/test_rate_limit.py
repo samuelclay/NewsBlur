@@ -2,7 +2,7 @@
 (IPRateTrackingMiddleware in apps/profile/middleware.py, RequestRateTracker in utils/ip_rate_tracker.py)."""
 
 import uuid
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import redis
 from django.conf import settings
@@ -41,7 +41,8 @@ class Test_ClientAddress(SimpleTestCase):
         self.assertEqual(client_address(RequestFactory().get("/", REMOTE_ADDR="10.0.0.1")), "10.0.0.1")
 
 
-@override_settings(IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE=LIMIT, IP_RATE_LIMITING_ENABLED=True)
+# The middleware stands aside under TEST_DEBUG, so these classes turn that off to exercise it.
+@override_settings(IP_RATE_LIMIT_ANONYMOUS_PER_MINUTE=LIMIT, IP_RATE_LIMITING_ENABLED=True, TEST_DEBUG=False)
 class Test_RequestRateLimit(TestCase):
     def setUp(self):
         Site.objects.update_or_create(
@@ -116,6 +117,10 @@ class Test_RequestRateLimit(TestCase):
         with patch.object(RequestRateTracker, "track", side_effect=redis.ConnectionError("down")):
             self.assertEqual(self._blurblog().status_code, 200)
 
+        # A test elsewhere that swaps the Redis client for a mock gets a mock back as the count.
+        with patch.object(RequestRateTracker, "redis", MagicMock()):
+            self.assertEqual(self._blurblog().status_code, 200)
+
     # --- every other signed-out request -------------------------------------
 
     def test_other_signed_out_requests_are_served_past_the_limit(self):
@@ -126,6 +131,22 @@ class Test_RequestRateLimit(TestCase):
         self.assertEqual(self._statuses(self._front_page, LIMIT), [200] * LIMIT)
 
         self.assertEqual(self._front_page().status_code, 429)
+
+    def test_log_lines_for_requests_past_the_limit_leave_out_the_path_and_query(self):
+        with patch("apps.profile.middleware.logging.user") as log:
+            for _ in range(LIMIT + 1):
+                self.client.get(
+                    "/profile/email_optout/someone/pathtoken456",
+                    {"secret_token": "querytoken123"},
+                    HTTP_HOST="www.newsblur.com",
+                    HTTP_X_FORWARDED_FOR=VISITOR,
+                )
+
+        logged = " ".join(str(call.args[1]) for call in log.call_args_list)
+        self.assertIn("WOULD BLOCK", logged)
+        self.assertIn("email_optout", logged)
+        self.assertNotIn("pathtoken456", logged)
+        self.assertNotIn("querytoken123", logged)
 
     @override_settings(IP_RATE_LIMITING_ANONYMOUS_ENABLED=True)
     def test_health_checks_are_never_counted_or_refused(self):
@@ -153,7 +174,6 @@ class Test_RequestRateLimit(TestCase):
         self.assertEqual(tracker.get_top_addresses("page"), [(VISITOR, 2)])
 
 
-# AttackBanMiddleware stands aside under TEST_DEBUG, so this class turns that off to exercise it.
 @override_settings(TEST_DEBUG=False)
 class Test_BannedAddress(TestCase):
     """AttackBanMiddleware in apps/profile/middleware.py bans the address the load balancer recorded."""
