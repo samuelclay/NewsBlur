@@ -4640,6 +4640,28 @@ class Test_TeamPayPalBilling(TeamProMixin, TestCase):
         self.assertEqual([subscription["status"] for _, subscription, _ in subscribers], ["SUSPENDED"] * 4)
         self.assertEqual(self.staff_events(), ["team_paypal_refund_failed"])
 
+    def test_staff_hear_of_a_refund_not_made_when_one_own_plan_replaces_another(self):
+        """Someone on Archive at an unlisted price, with no period recorded for the payment, moves to Pro while
+        PayPal answers no read of a plan. The old subscription stops, nothing is refunded on a guess, and staff get
+        the payment to look at."""
+        user, subscription, payment = self.own_subscriber("mover", "archive", paid_days_ago=100)
+        payment["amount_with_breakdown"]["gross_amount"]["value"] = "60.00"
+        Profile.objects.get(user=user).setup_premium_history()
+        PaymentHistory.objects.filter(user=user).update(plan=None, period_end=None)
+        self.paypal.plans_readable = False
+
+        self.profile_post(user, "switch_paypal_subscription", plan="pro")
+        _, pro_subscription = self.paypal.created[-1]
+        self.paypal.approve(pro_subscription)
+        self.paypal.charge(pro_subscription)
+        self.subscription_event("BILLING.SUBSCRIPTION.ACTIVATED", pro_subscription)
+
+        self.assertEqual(subscription["status"], "SUSPENDED")
+        self.assertEqual(self.paypal.refunds, [])
+        self.assertEqual(self.staff_events(), ["paypal_refund_not_made"])
+        [notice] = EmailStaffNotification.delay.call_args_list
+        self.assertIn(payment["id"], notice.kwargs["body"])
+
     def test_switching_up_between_team_plans_refunds_what_is_left_of_the_month(self):
         owner, team_subscription = self.team_owner("teamowner", paid_at=self.now - self.days(20))
         team_payment = self.paypal.latest_payment(team_subscription)

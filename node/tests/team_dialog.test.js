@@ -181,3 +181,40 @@ test('a server date is read as UTC', () => {
     assert.equal(rules.parse_date('2026-12-11 21:25:54').toISOString(), '2026-12-11T21:25:54.000Z');
     assert.equal(rules.parse_date(null), null);
 });
+
+test('answers that come back out of order leave the newest change showing, and the team is read again once all are in', () => {
+    const { rules } = team_rules();
+    const sent = [];
+    const reads = [];
+    const dialog = Object.assign(Object.create(rules.prototype), {
+        team: { id: 7, invites: [{ id: 1 }] },
+        busy: {},
+        errors: {},
+        activity: {},
+        render() {},
+        set_status() {},
+        model: {
+            team_action: (action, params, success) => sent.push(success),
+            fetch_team: success => reads.push(success),
+        },
+    });
+
+    // reader_team.js act: a change made on its own is drawn from its own answer.
+    dialog.act('name', 'rename', { name: 'Harbor Dispatch' });
+    sent[0]({ code: 1, team: { id: 7, name: 'Harbor Dispatch', invites: [{ id: 1 }] } });
+    assert.equal(dialog.team.name, 'Harbor Dispatch');
+    assert.equal(reads.length, 0);
+
+    // An invite goes out, then the older invite is cancelled before the first answer is back. The cancel is
+    // answered first, and the invite's answer, made before the cancel, still lists the cancelled invite.
+    dialog.act('invite', 'invite', { emails: 'casey@example.com' });
+    dialog.act('revoke:1', 'revoke_invite', { invite_id: 1 });
+    sent[2]({ code: 1, team: { id: 7, invites: [] } });
+    assert.equal(reads.length, 0);
+    sent[1]({ code: 1, team: { id: 7, invites: [{ id: 1 }, { id: 2 }] } });
+    assert.deepEqual(plain(dialog.team.invites), []);
+
+    assert.equal(reads.length, 1);
+    reads[0]({ team: { id: 7, invites: [{ id: 2 }] } });
+    assert.deepEqual(plain(dialog.team.invites), [{ id: 2 }]);
+});

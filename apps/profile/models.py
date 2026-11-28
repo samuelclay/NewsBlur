@@ -1496,7 +1496,7 @@ class Profile(models.Model):
             return
 
         if isinstance(canceled_paypal_sub_id, str):
-            self.refund_paypal_payment_from_subscription(canceled_paypal_sub_id, prorate=True)
+            self.refund_unused_paypal_payment(canceled_paypal_sub_id)
 
     def switch_paypal_subscription_approval_url(self, plan):
         paypal_api = self.paypal_api()
@@ -2583,7 +2583,7 @@ class Profile(models.Model):
             )
             if not period_days:
                 logging.user(
-                    self.user, f"~FRCouldn't tell what the paypal payment paid for: ~SB{transaction}"
+                    self.user, f"~FRCouldn't tell what paypal payment ~SB{transaction['id']}~SN paid for"
                 )
                 return "Couldn't tell how long PayPal payment %s paid for, so none of it was refunded" % (
                     transaction["id"]
@@ -2629,6 +2629,24 @@ class Profile(models.Model):
             logging.user(self.user, "~FRCouldn't refund paypal payment: %s" % response)
             refunded = response
 
+        return refunded
+
+    def refund_unused_paypal_payment(self, paypal_sub_id):
+        """Refunds what is left of the period the latest payment on a PayPal subscription of this account's paid
+        for, when another plan of the account's own has replaced it. A refund that may be due and wasn't made is
+        emailed to staff, who can make it by hand. Returns what refund_paypal_payment_from_subscription does.
+        """
+        from apps.profile.tasks import EmailStaffNotification
+
+        refunded = self.refund_paypal_payment_from_subscription(paypal_sub_id, prorate=True)
+        if refunded is not None and not isinstance(refunded, int):
+            EmailStaffNotification.delay(
+                event_type="paypal_refund_not_made",
+                subject="PayPal refund not made: %s" % self.user.username,
+                body="%s replaced their PayPal subscription %s, but the unused part of its last payment wasn't "
+                "refunded (%s). It needs a look, and a refund by hand if one is due."
+                % (self.user.username, paypal_sub_id, str(refunded)[:500]),
+            )
         return refunded
 
     def paypal_paid_period_days(self, paypal_api, paypal_sub_id, paid_at, amount):
@@ -2765,7 +2783,7 @@ class Profile(models.Model):
             )
             return None
 
-        refunded = self.refund_paypal_payment_from_subscription(paypal_sub_id, prorate=True)
+        refunded = self.refund_unused_paypal_payment(paypal_sub_id)
         if refunded and isinstance(refunded, (int, float)):
             logging.user(
                 self.user,

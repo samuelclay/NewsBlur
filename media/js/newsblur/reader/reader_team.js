@@ -1079,7 +1079,9 @@ _.extend(NEWSBLUR.ReaderTeam.prototype, NEWSBLUR.SettingsDialog, {
     },
 
     // reader_team.js: sends one change and draws the dialog again from the team the server answers with. key
-    // names the control, which shows its own error and stays disabled while its change is out.
+    // names the control, which shows its own error and stays disabled while its change is out. Two controls can
+    // have changes out at once, and their answers can come back in either order, so only the answer to the
+    // newest change is drawn, and once every change is in the team is read again (settle_changes).
     act: function (key, action, data, options) {
         options = options || {};
         if (this.busy[key]) return;
@@ -1088,22 +1090,54 @@ _.extend(NEWSBLUR.ReaderTeam.prototype, NEWSBLUR.SettingsDialog, {
         this.set_status('saving', options.saving_message);
         this.render();
 
+        var sent = this.changes_sent = (this.changes_sent || 0) + 1;
+        this.changes_out = (this.changes_out || 0) + 1;
+        if (this.changes_out > 1) this.changes_overlapped = true;
+
         var params = _.extend(this.team ? { team_id: this.team.id } : {}, data);
         this.model.team_action(action, params, _.bind(function (response) {
             delete this.busy[key];
+            this.changes_out -= 1;
             if (response && _.isNumber(response.code) && response.code < 0) {
                 this.fail(key, response, options);
+                this.settle_changes();
                 return;
             }
-            if (response && _.has(response, 'team')) this.team = response.team;
+            if (response && _.has(response, 'team') && sent == this.changes_sent) this.team = response.team;
             this.activity.stale = true;
             if (options.success) options.success.call(this, response);
             this.set_status('saved', options.saved_message);
             this.render();
+            this.settle_changes();
         }, this), _.bind(function (response) {
             delete this.busy[key];
+            this.changes_out -= 1;
             this.fail(key, response, options);
+            this.settle_changes();
         }, this));
+    },
+
+    // reader_team.js: after changes that were out together, neither answer is sure to hold the other's change,
+    // so the team is read once more when the last of them is in. A failed read leaves the dialog as it is.
+    settle_changes: function () {
+        if (this.changes_out || !this.changes_overlapped) return;
+        this.changes_overlapped = false;
+        var read = this.changes_sent;
+        this.model.fetch_team(_.bind(function (data) {
+            if (read != this.changes_sent || this.changes_out) return;
+            this.team = data.team;
+            this.render();
+        }, this), function () {});
+    },
+
+    // reader_team.js: render() reads every draft back out of its field, so a draft that was sent is let go at
+    // the field. When sent is given, the draft is kept if the field no longer holds it: what was typed while
+    // the change was out stays.
+    forget_draft: function (name, sent) {
+        var $field = $('[data-draft="' + name + '"]', this.$modal);
+        if ($field.length && !_.isUndefined(sent) && $.trim($field.val()) != sent) return;
+        $field.removeAttr('data-draft');
+        delete this.drafts[name];
     },
 
     fail: function (key, response, options) {
@@ -1162,7 +1196,7 @@ _.extend(NEWSBLUR.ReaderTeam.prototype, NEWSBLUR.SettingsDialog, {
         this.act('invite', 'invite', { emails: emails, role: role }, {
             saving_message: gettext('Sending...'),
             saved_message: ngettext('Invite sent', 'Invites sent', count),
-            success: function () { this.drafts.invite_emails = ''; }
+            success: function () { this.forget_draft('invite_emails', emails); }
         });
     },
 
@@ -1177,7 +1211,7 @@ _.extend(NEWSBLUR.ReaderTeam.prototype, NEWSBLUR.SettingsDialog, {
             saved_message: gettext('Sent'),
             success: function (response) {
                 this.contact = { open: false, sent: response.message };
-                this.drafts.contact_name = this.drafts.contact_seats = this.drafts.contact_note = null;
+                _.each(['contact_name', 'contact_seats', 'contact_note'], function (name) { this.forget_draft(name); }, this);
             }
         });
     },
