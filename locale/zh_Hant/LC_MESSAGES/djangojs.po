@@ -1698,8 +1698,10 @@ msgstr "瀏覽器擴充功能"
 msgid "Browser menu"
 msgstr "瀏覽器選單"
 
-msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
-msgstr "正在開發任何人都能使用的公開 RSS 閱讀器嗎？你可能有資格免費取得 NewsBlur Premium Pro 帳號。"
+msgid ""
+"Building a public RSS reader that anyone can use? Your application may qualify to run without NewsBlur "
+"Premium Pro."
+msgstr "你正在打造任何人都能使用的公開 RSS 閱讀器嗎？你的應用程式可能符合資格，無需 NewsBlur Premium Pro 即可執行。"
 
 msgid "Built-in story lists in the sidebar"
 msgstr "側邊欄中的內建文章清單"

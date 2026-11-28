@@ -2109,8 +2109,10 @@ msgstr "إضافات المتصفح"
 msgid "Browser menu"
 msgstr "قائمة المتصفح"
 
-msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
-msgstr "هل تطوّر قارئ RSS عامًا يمكن لأي شخص استخدامه؟ قد تكون مؤهلًا للحصول على حساب NewsBlur Premium Pro مجاني."
+msgid ""
+"Building a public RSS reader that anyone can use? Your application may qualify to run without NewsBlur "
+"Premium Pro."
+msgstr "هل تنشئ قارئ RSS عامًا يمكن لأي شخص استخدامه؟ قد يكون تطبيقك مؤهلًا للعمل دون NewsBlur Premium Pro."
 
 msgid "Built-in story lists in the sidebar"
 msgstr "قوائم القصص المضمّنة في الشريط الجانبي"

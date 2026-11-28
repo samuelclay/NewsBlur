@@ -1698,8 +1698,10 @@ msgstr "브라우저 확장 프로그램"
 msgid "Browser menu"
 msgstr "브라우저 메뉴"
 
-msgid "Building a public RSS reader that anyone can use? You may qualify for a free NewsBlur Premium Pro account."
-msgstr "누구나 사용할 수 있는 공개 RSS 리더를 개발하고 계신가요? NewsBlur Premium Pro 계정을 무료로 받으실 수 있습니다."
+msgid ""
+"Building a public RSS reader that anyone can use? Your application may qualify to run without NewsBlur "
+"Premium Pro."
+msgstr "누구나 사용할 수 있는 공개 RSS 리더를 구축하고 계신가요? 애플리케이션이 NewsBlur 프리미엄 프로 없이 운영될 자격을 갖출 수 있습니다."
 
 msgid "Built-in story lists in the sidebar"
 msgstr "사이드바의 기본 스토리 목록"

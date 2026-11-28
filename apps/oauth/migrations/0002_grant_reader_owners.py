@@ -1,10 +1,7 @@
 from django.db import migrations
 
-from apps.oauth.reader_grants import grant_reader_accounts
-
-
-def grant_lifetime_pro(apps, schema_editor):
-    grant_reader_accounts(apps, schema_editor.connection.alias, apply=True, report=print)
+# In production this granted lifetime Premium Pro to the reader partners who own OAuth applications. Those
+# grants ended when oauth.0004_applicationexemption exempted the applications instead, so it does nothing now.
 
 
 class Migration(migrations.Migration):
@@ -12,4 +9,4 @@ class Migration(migrations.Migration):
         ("oauth", "0001_initial"),
         ("profile", "0034_language_cohort_index"),
     ]
-    operations = [migrations.RunPython(grant_lifetime_pro, migrations.RunPython.noop)]
+    operations = []
