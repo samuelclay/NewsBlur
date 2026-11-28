@@ -32998,20 +32998,959 @@ h5.NB-classifier-section-header {
     background-size: 14px;
 }
 
-.NB-modal-organizer .NB-organizer-ai-tally {
-    max-width: 320px;
-    margin: 14px auto 0;
-    padding: 0;
-    list-style: none;
-    text-align: start;
+/* Review: the proposal's changes by folder or as one list on the left, the decisions on the right */
+
+.NB-modal-organizer .NB-organizer-ai-review {
+    display: flex;
+    align-items: flex-start;
+    gap: 3%;
 }
 
-.NB-modal-organizer .NB-organizer-ai-tally-line {
-    padding: 6px 2px;
+.NB-modal-organizer .NB-organizer-ai-review .NB-hidden {
+    display: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-main {
+    flex: 0 0 70%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-side {
+    flex: 1 1 27%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-side > .NB-organizer-sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-error {
+    margin: 0 0 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    margin: 0 0 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch {
+    display: inline-flex;
+    border: 1px solid;
+    border-radius: 4px;
+    overflow: hidden;
+    border-color: #CFD1CA;
+    background-color: #F0F1EC;
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option {
+    padding: 2px 10px;
+    border: 0;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: transparent;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option + .NB-organizer-ai-switch-option {
+    border-inline-start: 1px solid;
+    border-inline-start-color: #CFD1CA;
+}
+
+.NB-modal-organizer .NB-organizer-ai-switch-option.NB-active {
+    font-weight: bold;
+    background-color: #FFFFFF;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip {
+    padding: 1px 9px;
+    border: 1px solid;
+    border-radius: 11px;
+    font: inherit;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    border-color: #CFD1CA;
+    background-color: #FFFFFF;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip:hover {
+    border-color: #A0A0A0;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip[aria-pressed="true"] {
+    font-weight: bold;
+    border-color: #404040;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-chip-both[aria-pressed="true"] {
+    border-color: #7A55B8;
+    color: #7A55B8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-list {
+    max-height: 560px;
+    overflow-y: auto;
+    border: 1px solid;
+    border-color: rgba(0, 0, 0, .2);
+    background-color: #F7F8F5;
+}
+
+.NB-modal-organizer .NB-organizer-ai-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: #CFD1CA;
+    font-size: 11px;
+    line-height: 16px;
+    background-color: #FFFFFF;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-legend-text {
+    margin-inline-end: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-review-empty {
+    padding: 32px 16px;
+    text-align: center;
+    font-size: 13px;
+    background-color: #FFFFFF;
+    color: #808080;
+}
+
+/* Review: a card for each folder the proposal touches */
+
+.NB-modal-organizer .NB-organizer-ai-card {
+    border-bottom: 1px solid;
+    border-bottom-color: #CFD1CA;
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    min-height: 22px;
+    padding: 6px 10px 5px;
     border-bottom: 1px solid;
     border-bottom-color: #ECEEE7;
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-menu-open .NB-organizer-ai-card-head {
+    z-index: 4;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-name {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
     font-size: 13px;
+    font-weight: bold;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    background-image: url('/media/embed/icons/nouns/folder-closed.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 14px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-parent {
+    font-weight: normal;
+    overflow-wrap: anywhere;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-parent::after {
+    content: "\203A";
+    padding-inline-start: 6px;
+    color: #A0A0A0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-title {
+    overflow-wrap: anywhere;
+    unicode-bidi: plaintext;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-gone .NB-organizer-ai-card-title {
+    text-decoration: line-through;
+    color: #909090;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-count {
+    flex: none;
+    font-size: 11px;
+    font-weight: normal;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-tools {
+    position: relative;
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin-inline-start: auto;
+}
+
+.NB-modal-organizer .NB-organizer-ai-card-note {
+    padding: 4px 10px 8px;
+    font-size: 11px;
+    line-height: 15px;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-dead-intro {
+    padding-top: 6px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 6px;
+    border: 1px solid;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    cursor: pointer;
+    border-color: #CFD1CA;
+    background-color: #F7F8F5;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button:hover {
+    border-color: #A0A0A0;
     color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-locked {
+    font-weight: bold;
+    background-color: #E9EDF3;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-icon {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    background-image: url('/media/embed/icons/nouns/lock-open.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-locked .NB-organizer-ai-lock-button-icon {
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-button-caret {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    background-image: url('/media/embed/icons/nouns/caret-down.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 8px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu {
+    position: absolute;
+    top: 100%;
+    inset-inline-end: 0;
+    z-index: 5;
+    width: 250px;
+    margin-top: 4px;
+    padding: 4px;
+    border: 1px solid;
+    border-radius: 6px;
+    border-color: #CFD1CA;
+    background-color: #FFFFFF;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 4px;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option:hover,
+.NB-modal-organizer .NB-organizer-ai-lock-menu-option[aria-checked="true"] {
+    background-color: #ECEEE7;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-title {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-menu-description {
+    display: block;
+    font-size: 11px;
+    line-height: 14px;
+    color: #707070;
+}
+
+/* Review: a folder change on a card */
+
+.NB-modal-organizer .NB-organizer-ai-op {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: #ECEEE7;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: #F7F8F5;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-main {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-what {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag {
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-color: #ECEEE7;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-create {
+    background-color: #E6F1DD;
+    color: #3F7426;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-rename,
+.NB-modal-organizer .NB-organizer-ai-op-tag-nest {
+    background-color: #FBF0D9;
+    color: #8A5A06;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-tag-merge,
+.NB-modal-organizer .NB-organizer-ai-op-tag-remove {
+    background-color: #F7E3DF;
+    color: #A2342B;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-detail {
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-rejected .NB-organizer-ai-op-detail {
+    text-decoration: line-through;
+    color: #909090;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-reason {
+    flex: 1 1 180px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-op-note {
+    flex-basis: 100%;
+    font-weight: bold;
+    color: #8A5A06;
+}
+
+/* Review: Arriving and Leaving, each a list of site rows */
+
+.NB-modal-organizer .NB-organizer-ai-section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px 2px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-arriving .NB-organizer-ai-section-title {
+    color: #3F7426;
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-leaving .NB-organizer-ai-section-title {
+    color: #A2342B;
+}
+
+.NB-modal-organizer .NB-organizer-ai-section-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    margin-inline-start: auto;
+    font-size: 11px;
+    font-weight: normal;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-link {
+    padding: 0;
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    color: #405BA8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-link:hover {
+    text-decoration: underline;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 2px 8px;
+    padding: 4px 10px;
+    transition: background-color .8s ease-out;
+    background-color: transparent;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row:hover {
+    background-color: #F7F8F5;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row.NB-organizer-ai-flash {
+    transition: none;
+    background-color: #FBF0D9;
+}
+
+.NB-reduce-motion .NB-modal-organizer .NB-organizer-ai-row {
+    transition: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-row,
+.NB-modal-organizer .NB-organizer-ai-dead-row {
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+}
+
+.NB-modal-organizer .NB-organizer-ai-site-icon-wrap {
+    display: flex;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-site-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-main {
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-title {
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 16px;
+    overflow-wrap: anywhere;
+    unicode-bidi: plaintext;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-stay .NB-organizer-ai-row-title {
+    color: #909090;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 6px;
+    font-size: 11px;
+    line-height: 16px;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-reason,
+.NB-modal-organizer .NB-organizer-ai-row-folder {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-folder {
+    color: #606060;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    max-width: 100%;
+    padding: 0 5px;
+    border: 1px solid;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 15px;
+    cursor: pointer;
+    border-color: #CFD1CA;
+    background-color: #F7F8F5;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump:hover {
+    border-color: #405BA8;
+    color: #405BA8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump-text {
+    max-width: 220px;
+    unicode-bidi: plaintext;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-modal-organizer .NB-organizer-ai-row-stay .NB-organizer-ai-jump-text {
+    text-decoration: line-through;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump-lock {
+    display: none;
+    flex: none;
+    width: 9px;
+    height: 9px;
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 9px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-jump-locked .NB-organizer-ai-jump-lock,
+.NB-modal-organizer .NB-organizer-ai-route-locked .NB-organizer-ai-jump-lock {
+    display: inline-block;
+    vertical-align: -1px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill {
+    max-width: 150px;
+    padding: 1px 7px;
+    border-radius: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 15px;
+    background-color: #ECEEE7;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-move {
+    background-color: #E6F1DD;
+    color: #3F7426;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-both {
+    background-color: #ECE4F7;
+    color: #6A47A6;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-ask {
+    background-color: #FBF0D9;
+    color: #8A5A06;
+}
+
+.NB-modal-organizer .NB-organizer-ai-pill-stay {
+    background-color: #ECEEE7;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choices {
+    display: inline-flex;
+    gap: 3px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    border-color: #CFD1CA;
+    background-color: #FFFFFF;
+    color: #A8A8A8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice:hover {
+    border-color: #909090;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-icon {
+    width: 11px;
+    height: 11px;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center center;
+    mask-position: center center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-yes .NB-organizer-ai-choice-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/check-fat.svg');
+    mask-image: url('/media/embed/icons/nouns/check-fat.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-no .NB-organizer-ai-choice-icon {
+    -webkit-mask-image: url('/media/embed/icons/nouns/close.svg');
+    mask-image: url('/media/embed/icons/nouns/close.svg');
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-yes[aria-pressed="true"] {
+    border-color: #4F8A34;
+    background-color: #4F8A34;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-no[aria-pressed="true"] {
+    border-color: #B23A30;
+    background-color: #B23A30;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide {
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    border-color: #CFD1CA;
+    background-color: #FFFFFF;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide:hover {
+    border-color: #909090;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-wide:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-keep[aria-pressed="true"],
+.NB-modal-organizer .NB-organizer-ai-choice-move[aria-pressed="true"] {
+    border-color: #4F8A34;
+    background-color: #4F8A34;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-mute[aria-pressed="true"] {
+    border-color: #B5760C;
+    background-color: #B5760C;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-both[aria-pressed="true"] {
+    border-color: #7A55B8;
+    background-color: #7A55B8;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-choice-unsubscribe[aria-pressed="true"],
+.NB-modal-organizer .NB-organizer-ai-choice-stay[aria-pressed="true"] {
+    border-color: #B23A30;
+    background-color: #B23A30;
+    color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route .NB-organizer-ai-jump-lock {
+    margin-inline-end: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-from,
+.NB-modal-organizer .NB-organizer-ai-route-to {
+    unicode-bidi: plaintext;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-to {
+    font-weight: bold;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-route-arrow {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 4px;
+    vertical-align: -1px;
+    background-image: url('/media/embed/icons/nouns/arrow-right.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-dead-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    background-color: #C8820F;
+    -webkit-mask-image: url('/media/embed/icons/nouns/warning.svg');
+    mask-image: url('/media/embed/icons/nouns/warning.svg');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    padding: 8px 10px 10px;
+    border-bottom: 1px solid;
+    border-bottom-color: #CFD1CA;
+    font-size: 11px;
+    line-height: 16px;
+    background-color: #FFFFFF;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-title {
+    flex-basis: 100%;
+    font-size: 12px;
+    font-weight: bold;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-folder {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-unchanged-count {
+    font-variant-numeric: tabular-nums;
+    color: #A0A0A0;
+}
+
+/* Review sidebar: the tally, the folders after, revising and applying */
+
+.NB-modal-organizer .NB-organizer-ai-tally-cells {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    padding: 4px;
+    text-align: center;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-cell {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 2px;
+    border: 1px solid;
+    border-color: #E3E5DE;
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-number {
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-approved .NB-organizer-ai-tally-number {
+    color: #4F8A34;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-rejected .NB-organizer-ai-tally-number {
+    color: #B23A30;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-label {
+    font-size: 10px;
+    line-height: 13px;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-box {
+    padding: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline {
+    max-height: 200px;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-folder {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 1px 4px;
+    border: 0;
+    border-radius: 3px;
+    font: inherit;
+    font-size: 11px;
+    line-height: 16px;
+    text-align: start;
+    cursor: pointer;
+    background-color: transparent;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-folder:hover {
+    background-color: #ECEEE7;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-name {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-name-text {
+    overflow: hidden;
+    unicode-bidi: plaintext;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-gone .NB-organizer-ai-outline-name-text {
+    text-decoration: line-through;
+    color: #A0A0A0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-counts {
+    display: flex;
+    flex: none;
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-in {
+    color: #4F8A34;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-out {
+    color: #B23A30;
+}
+
+.NB-modal-organizer .NB-organizer-ai-outline-total {
+    min-width: 2ch;
+    text-align: end;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-input {
+    display: block;
+    width: 100%;
+    min-height: 56px;
+    margin: 0;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-button,
+.NB-modal-organizer .NB-organizer-ai-apply-button {
+    display: block;
+    width: 100%;
+}
+
+.NB-modal-organizer .NB-organizer-ai-revise-last {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.NB-modal-organizer .NB-organizer-ai-apply {
+    margin-top: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-apply .NB-archive-callout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
 }
 
 /* ================= */
