@@ -32595,6 +32595,425 @@ h5.NB-classifier-section-header {
     margin: 6px 0 2px;
 }
 
+/* ================================= */
+/* = Organizer: Reorganize with AI = */
+/* ================================= */
+
+/* reader_organizer.js: both tabs grow with their content instead of the fixed height other
+   dialogs give their tabs, so the By hand tab lays out as it did before it had tabs. These
+   outrank the .NB-modal .NB-tab rules in modals.css, which loads after this file. */
+.NB-modal.NB-modal-organizer .NB-tab {
+    height: auto;
+    overflow: visible;
+    font-size: inherit;
+}
+
+.NB-modal.NB-modal-organizer .NB-tab.NB-active {
+    display: flow-root;
+}
+
+.NB-modal-organizer label.NB-organizer-sidebar-title {
+    display: block;
+}
+
+/* Steps: Set up, Review, Apply */
+
+.NB-modal-organizer .NB-organizer-ai-steps {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 10px 0 8px;
+    padding: 0;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-steps-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-steps-item + .NB-organizer-ai-steps-item::before {
+    content: "\203A";
+    padding: 0 2px;
+    color: #A0A0A0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 4px;
+    border: 0;
+    border-radius: 12px;
+    font: inherit;
+    cursor: pointer;
+    background-color: transparent;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step:disabled {
+    cursor: default;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step:not(:disabled):not(.NB-active):hover {
+    background-color: #F0F1EC;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step.NB-active {
+    font-weight: bold;
+    background-color: #ECEEE7;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: bold;
+    background-color: #E3E5DE;
+    color: #606060;
+}
+
+.NB-modal-organizer .NB-organizer-ai-step.NB-active .NB-organizer-ai-step-number {
+    background-color: #E0703A;
+    color: #FFFFFF;
+}
+
+/* Setup: locks on the left, the run's options on the right */
+
+.NB-modal-organizer .NB-organizer-ai-setup {
+    display: flex;
+    align-items: flex-start;
+    gap: 3%;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-folders {
+    flex: 0 0 70%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-options {
+    flex: 1 1 27%;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup .NB-organizer-sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folders {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 4px;
+    border: 1px solid;
+    border-color: rgba(0, 0, 0, .2);
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 30px;
+    padding: 3px 8px;
+    border-bottom: 1px solid;
+    border-bottom-color: #ECEEE7;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder:last-child {
+    border-bottom: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-icon-wrap {
+    display: flex;
+    flex: none;
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: bold;
+    overflow-wrap: anywhere;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-count {
+    flex: none;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: #909090;
+}
+
+.NB-modal-organizer .NB-organizer-ai-folder-skip .NB-organizer-ai-folder-title,
+.NB-modal-organizer .NB-organizer-ai-folder-skip .NB-organizer-ai-folder-count {
+    color: #A8A8A8;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock {
+    flex: none;
+    width: 220px;
+    margin: 0;
+    background-color: #F0F1EC;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock .NB-organizer-ai-lock-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: auto;
+    padding: 2px 6px 1px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-lock-icon {
+    display: inline-block;
+    flex: none;
+    width: 10px;
+    height: 10px;
+    background-image: url('/media/embed/icons/nouns/lock.svg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 10px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-locked-with-parent {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    background-color: #E9EDF3;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 5px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level:has(input:checked) {
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level input,
+.NB-modal-organizer .NB-organizer-ai-check input {
+    flex: none;
+    margin: 2px 0 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-level-description {
+    font-size: 11px;
+    line-height: 14px;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 2px 4px;
+    font-size: 12px;
+    line-height: 16px;
+    cursor: pointer;
+    color: #303030;
+}
+
+.NB-modal-organizer .NB-organizer-ai-instructions {
+    display: block;
+    width: 100%;
+    min-height: 72px;
+    margin: 0;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-setup-options .NB-organizer-ai-propose {
+    display: block;
+    width: 100%;
+    margin: 12px 0 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-note {
+    margin: 6px 0 0;
+    font-size: 11px;
+    line-height: 15px;
+    color: #808080;
+}
+
+.NB-modal-organizer .NB-organizer-ai-note-limit {
+    font-weight: bold;
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-error {
+    margin: 8px 0 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    background-color: #F7E3DF;
+    color: #7F080A;
+}
+
+/* Progress, review and applied: a centered panel */
+
+.NB-modal-organizer .NB-organizer-ai-center {
+    padding: 40px 24px 44px;
+    text-align: center;
+    border: 1px solid;
+    border-color: rgba(0, 0, 0, .2);
+    background-color: #FFFFFF;
+}
+
+.NB-modal-organizer .NB-organizer-ai-center .NB-organizer-ai-error {
+    display: inline-block;
+}
+
+.NB-modal-organizer .NB-organizer-ai-retry {
+    display: block;
+    margin: 12px auto 0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-center-text {
+    max-width: 420px;
+    margin: 0 auto 18px;
+    font-size: 13px;
+    line-height: 18px;
+    color: #707070;
+}
+
+.NB-modal-organizer .NB-organizer-ai-progress-track {
+    max-width: 320px;
+    height: 6px;
+    margin: 0 auto;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: #E3E5DE;
+}
+
+.NB-modal-organizer .NB-organizer-ai-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .3s ease;
+    background-color: #E0703A;
+}
+
+.NB-reduce-motion .NB-modal-organizer .NB-organizer-ai-progress-bar {
+    transition: none;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist {
+    max-width: 320px;
+    margin: 16px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 13px;
+    color: #A0A0A0;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-done {
+    color: #404040;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-current {
+    font-weight: bold;
+    color: #202020;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-icon {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 2px solid;
+    border-radius: 50%;
+    border-color: #D0D2CB;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-done .NB-organizer-ai-checklist-icon {
+    border: 0;
+    border-radius: 0;
+    background-image: url('/media/embed/icons/nouns/check-fat.svg');
+    background-size: 12px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-checklist-current .NB-organizer-ai-checklist-icon {
+    border: 0;
+    background-image: url('/media/embed/reader/ring_spinner.svg');
+    background-size: 14px;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally {
+    max-width: 320px;
+    margin: 14px auto 0;
+    padding: 0;
+    list-style: none;
+    text-align: start;
+}
+
+.NB-modal-organizer .NB-organizer-ai-tally-line {
+    padding: 6px 2px;
+    border-bottom: 1px solid;
+    border-bottom-color: #ECEEE7;
+    font-size: 13px;
+    color: #404040;
+}
+
 /* ================= */
 /* = Feed Selector = */
 /* ================= */

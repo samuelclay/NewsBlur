@@ -20,11 +20,22 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
     init: function () {
         this.reset_feeds();
+        this.ai = new NEWSBLUR.ReaderOrganizerAI(this);
         this.make_modal();
         this.open_modal();
 
         this.$modal.bind('click', $.rescope(this.handle_click, this));
         this.$modal.bind('change', $.rescope(this.handle_change, this));
+    },
+
+    switch_tab: function (tab) {
+        NEWSBLUR.Modal.prototype.switch_tab.call(this, tab);
+        if (tab == 'ai') this.ai.open();
+        this.resize();
+    },
+
+    handle_modal_closed: function () {
+        this.ai.close();
     },
 
     reset_feeds: function () {
@@ -37,67 +48,74 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
         var self = this;
 
         this.$modal = $.make('div', { className: 'NB-modal NB-modal-organizer' }, [
+            $.make('div', { className: 'NB-modal-tabs' }, [
+                $.make('div', { className: 'NB-modal-tab NB-active NB-modal-tab-hand' }, gettext('By hand')),
+                $.make('div', { className: 'NB-modal-tab NB-modal-tab-ai' }, gettext('Reorganize with AI'))
+            ]),
             $.make('h2', { className: 'NB-modal-title' }, [
                 $.make('div', { className: 'NB-modal-loading' }),
                 $.make('div', { className: 'NB-icon' }),
                 gettext('Organize sites'),
                 $.make('div', { className: 'NB-icon-dropdown' })
             ]),
-            $.make('div', { className: 'NB-organizer-sidebar' }, [
-                $.make('div', { className: 'NB-organizer-sidebar-hierarchy' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Show Folders')),
-                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
-                        $.make('ul', { className: 'segmented-control' }, [
-                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-nested NB-active' }, gettext('Nested')),
-                            $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-flat' }, gettext('Flat'))
+            $.make('div', { className: 'NB-tab NB-tab-hand NB-active' }, [
+                $.make('div', { className: 'NB-organizer-sidebar' }, [
+                    $.make('div', { className: 'NB-organizer-sidebar-hierarchy' }, [
+                        $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Show Folders')),
+                        $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                            $.make('ul', { className: 'segmented-control' }, [
+                                $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-nested NB-active' }, gettext('Nested')),
+                                $.make('li', { className: 'NB-organizer-hierarchy NB-organizer-hierarchy-flat' }, gettext('Flat'))
+                            ])
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-organizer-sidebar-move' }, [
+                        $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Move to folder')),
+                        $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                            NEWSBLUR.utils.make_folders(),
+                            $.make('div', { className: 'NB-icon-add', title: gettext("Add folder") }),
+                            $.make('div', { className: "NB-add-folder NB-hidden" }, [
+                                $.make('div', { className: 'NB-icon-subfolder' }),
+                                $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: gettext("New folder name...") })
+                            ]),
+                            $.make('div', { className: 'NB-error-move NB-error' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, gettext('Move')),
+                            $.make('div', { className: 'NB-loading' })
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
+                        $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Delete sites')),
+                        $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                            $.make('div', { className: 'NB-error-delete NB-error' }),
+                            $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, gettext('Delete')),
+                            $.make('div', { className: 'NB-loading' })
+                        ])
+                    ]),
+                    $.make('div', { className: 'NB-organizer-sidebar-jump' }, [
+                        $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Jump to Folder')),
+                        $.make('div', { className: 'NB-organizer-sidebar-container' }, [
+                            this.make_folders()
                         ])
                     ])
                 ]),
-                $.make('div', { className: 'NB-organizer-sidebar-move' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Move to folder')),
-                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
-                        NEWSBLUR.utils.make_folders(),
-                        $.make('div', { className: 'NB-icon-add', title: gettext("Add folder") }),
-                        $.make('div', { className: "NB-add-folder NB-hidden" }, [
-                            $.make('div', { className: 'NB-icon-subfolder' }),
-                            $.make('input', { type: 'text', id: 'NB-add-folder', className: 'NB-input NB-add-folder-input', name: 'new_folder_name', placeholder: gettext("New folder name...") })
-                        ]),
-                        $.make('div', { className: 'NB-error-move NB-error' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-green NB-disabled NB-action-move' }, gettext('Move')),
-                        $.make('div', { className: 'NB-loading' })
+                $.make('div', { className: 'NB-organizer-actionbar' }, [
+                    $.make('div', { className: 'NB-organizer-sorts' }, [
+                        $.make('div', { className: 'NB-organizer-action-title' }, gettext('Sort ')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, gettext('Name')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, gettext('Subscribers')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, gettext('Frequency')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-recency' }, gettext('Recency')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, gettext('Opens'))
+                    ]),
+                    $.make('div', { className: 'NB-organizer-selects' }, [
+                        $.make('div', { className: 'NB-organizer-action-title' }, gettext('Select')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-select-all' }, gettext('All')),
+                        $.make('div', { className: 'NB-organizer-action NB-action-select-none' }, gettext('None'))
                     ])
                 ]),
-                $.make('div', { className: 'NB-organizer-sidebar-delete' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Delete sites')),
-                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
-                        $.make('div', { className: 'NB-error-delete NB-error' }),
-                        $.make('div', { className: 'NB-modal-submit-button NB-modal-submit-red NB-disabled NB-action-delete' }, gettext('Delete')),
-                        $.make('div', { className: 'NB-loading' })
-                    ])
-                ]),
-                $.make('div', { className: 'NB-organizer-sidebar-jump' }, [
-                    $.make('div', { className: 'NB-organizer-sidebar-title' }, gettext('Jump to Folder')),
-                    $.make('div', { className: 'NB-organizer-sidebar-container' }, [
-                        this.make_folders()
-                    ])
-                ])
+                this.make_feeds()
             ]),
-            $.make('div', { className: 'NB-organizer-actionbar' }, [
-                $.make('div', { className: 'NB-organizer-sorts' }, [
-                    $.make('div', { className: 'NB-organizer-action-title' }, gettext('Sort ')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-alphabetical NB-active' }, gettext('Name')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-subscribers' }, gettext('Subscribers')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-frequency' }, gettext('Frequency')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-recency' }, gettext('Recency')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-mostused' }, gettext('Opens'))
-                ]),
-                $.make('div', { className: 'NB-organizer-selects' }, [
-                    $.make('div', { className: 'NB-organizer-action-title' }, gettext('Select')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-select-all' }, gettext('All')),
-                    $.make('div', { className: 'NB-organizer-action NB-action-select-none' }, gettext('None'))
-                ])
-            ]),
-            this.make_feeds()
+            this.ai.$tab
         ]);
     },
 
@@ -342,6 +360,13 @@ _.extend(NEWSBLUR.ReaderOrganizer.prototype, {
 
     handle_click: function (elem, e) {
         var self = this;
+
+        $.targetIs(e, { tagSelector: '.NB-modal-tab' },
+            _.bind(function ($t, $p) {
+                e.preventDefault();
+
+                this.switch_tab($t.hasClass('NB-modal-tab-ai') ? 'ai' : 'hand');
+            }, this));
 
         $.targetIs(e, { tagSelector: '.NB-organizer-action', childOf: '.NB-organizer-sorts' },
             _.bind(function ($t, $p) {
