@@ -83,6 +83,8 @@ Decided on 2026-11-26:
 - [x] Invite links are a path, `/team/join/<token>`, because the apps can claim a path but not a query string. The invite is carried through login or signup the way gift codes are, and the welcome page names the team before signup
 - [x] AI filters are pay per use. A teammate can use them once the owner turns usage billing on, and the cost goes on the owner's card with each teammate's share recorded
 - [x] Someone whose private feeds push the team past 10,000 sites can still join. Their sites beyond what fits are muted, newest first, and they choose which to keep
+- [x] The core is built on the server and the web first: team folders, read status, assignments and the coverage view. The iOS, macOS and Android screens, and buying a plan from each client, follow for everything at once (2026-11-28)
+- [x] The settings menu and the dashboard's Manage NewsBlur list mirror each other. The dashboard uses shorter names and no subtitles. An item added to one is added to the other, so Team is in both (2026-11-28)
 
 Still open. Each has a recommendation further down under "Open decisions":
 
@@ -915,7 +917,7 @@ The web dialog:
 
 ## Build order
 
-One step at a time, one agent at a time, each ending in passing tests and a commit. A step with screens is built on the server, then the web, then iOS and macOS, then Android, and is finished on all of them before the next step starts. The web version goes on localhost first so it can be looked at before the apps copy it.
+One step at a time, one agent at a time, each ending in passing tests and a commit. Steps 5 to 9, the core, are built on the server and the web first, and each web screen goes on localhost so it can be looked at and changed. Once the core works on the web, the iOS, macOS and Android screens are built for every step so far, along with buying a plan from each client. From then on a step with screens is built on the server, then the web, then iOS and macOS, then Android.
 
 Core:
 
@@ -924,6 +926,10 @@ Core:
 - [x] 3. Billing on the server: the two team plans on the owner's account through Stripe, PayPal, the App Store and Google Play, plan switches, lapses, ownership transfer, staff controls
 - [ ] 3b. Buying a team plan from each client: the web upgrade dialog (Stripe and PayPal), StoreKit 2 on iOS and macOS, Play Billing on Android, and the store products themselves. Built with step 4's screens
 - [ ] 4. Shared dialog pieces from Preferences, the team dialog with Members and Billing tabs, the join screen, the upgrade dialog row and callouts (web, iOS, Android)
+  - [x] Web: the shared dialog pieces, the team dialog with Members, Activity and Billing tabs, the staff Team section, Team in the settings menu and the dashboard list
+  - [ ] Web: the join screen, the upgrade dialog row with Stripe and PayPal, the contact form, callouts
+  - [ ] iOS and macOS
+  - [ ] Android
 - [ ] 5. Team folders on the server: models, real subscriptions, merged folder list, edit guards, rename fan out, leaving
 - [ ] 6. Team folders on screen: badges, manager editing, Folders tab, team folder dialog (web, iOS, Android)
 - [ ] 7. Read status on the server: modes, fan out, receipts, late joiners, undo
